@@ -62,7 +62,7 @@ def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
     )
 
     assert visuals_2d_via.origin.in_list == [(0.0, 0.0)]
-    traced_border = tracer_x2_plane_7x7.traced_grids_of_planes_from(
+    traced_border = tracer_x2_plane_7x7.traced_grid_list_from(
         grid=grid_2d_7x7.mask.border_grid_sub_1.binned
     )[1]
     assert (visuals_2d_via.border == traced_border).all()

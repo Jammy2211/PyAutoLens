@@ -295,7 +295,7 @@ class TestCompareToManualProfilesOnly:
 
         fit = al.FitInterferometer(dataset=interferometer_7_grid, tracer=tracer)
 
-        traced_grids_of_planes = tracer.traced_grids_of_planes_from(
+        traced_grids_of_planes = tracer.traced_grid_list_from(
             grid=interferometer_7_grid.grid
         )
 
@@ -321,7 +321,7 @@ class TestCompareToManualProfilesOnly:
 
         fit = al.FitInterferometer(dataset=interferometer_7_grid, tracer=tracer)
 
-        traced_grids_of_planes = tracer.traced_grids_of_planes_from(
+        traced_grids_of_planes = tracer.traced_grid_list_from(
             grid=interferometer_7_grid.grid
         )
 
@@ -835,9 +835,7 @@ class TestCompareToManualProfilesAndInversion:
 
         fit = al.FitInterferometer(dataset=interferometer_7_grid, tracer=tracer)
 
-        traced_grids = tracer.traced_grids_of_planes_from(
-            grid=interferometer_7_grid.grid
-        )
+        traced_grids = tracer.traced_grid_list_from(grid=interferometer_7_grid.grid)
 
         g0_visibilities = g0.visibilities_via_transformer_from(
             grid=traced_grids[0], transformer=interferometer_7_grid.transformer
@@ -898,9 +896,7 @@ class TestCompareToManualProfilesAndInversion:
 
         fit = al.FitInterferometer(dataset=interferometer_7_grid, tracer=tracer)
 
-        traced_grids = tracer.traced_grids_of_planes_from(
-            grid=interferometer_7_grid.grid
-        )
+        traced_grids = tracer.traced_grid_list_from(grid=interferometer_7_grid.grid)
 
         g0_visibilities = g0.visibilities_via_transformer_from(
             grid=traced_grids[0], transformer=interferometer_7_grid.transformer

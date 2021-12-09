@@ -53,7 +53,7 @@ from autogalaxy.profiles import (
 from autogalaxy.profiles.light_profiles import light_profiles_init as lp_init
 from autogalaxy.profiles.light_profiles import light_profiles_snr as lp_snr
 from autogalaxy.operate.image import OperateImage
-from autogalaxy.operate.lens import OperateLens
+from autogalaxy.operate.deflections import OperateDeflections
 from autogalaxy.quantity.dataset_quantity import DatasetQuantity
 from autogalaxy import convert
 

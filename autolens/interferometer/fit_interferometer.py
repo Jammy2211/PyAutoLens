@@ -104,7 +104,7 @@ class FitInterferometer(aa.FitInterferometer):
         """
         A dictionary associating galaxies with their corresponding model images
         """
-        galaxy_model_image_dict = self.tracer.galaxy_image_dict_from(grid=self.grid)
+        galaxy_model_image_dict = self.tracer.galaxy_image_2d_dict_from(grid=self.grid)
 
         for path, image in galaxy_model_image_dict.items():
             galaxy_model_image_dict[path] = image.binned
@@ -162,7 +162,7 @@ class FitInterferometer(aa.FitInterferometer):
 
     @property
     def total_mappers(self):
-        return len(list(filter(None, self.tracer.regularization_list_of_planes)))
+        return len(list(filter(None, self.tracer.regularization_pg_list)))
 
     def refit_with_new_preloads(self, preloads, settings_inversion=None):
 

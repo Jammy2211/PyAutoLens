@@ -88,53 +88,43 @@ def test__set_sparse_grid_of_planes():
 
     # sparse image plane of grids is None so no Preloading.
 
-    tracer_0 = MockTracer(sparse_image_plane_grid_list_of_planes=[None, None])
-    tracer_1 = MockTracer(sparse_image_plane_grid_list_of_planes=[None, None])
+    tracer_0 = MockTracer(sparse_image_plane_grid_pg_list=[None, None])
+    tracer_1 = MockTracer(sparse_image_plane_grid_pg_list=[None, None])
 
     fit_0 = MockFit(tracer=tracer_0)
     fit_1 = MockFit(tracer=tracer_1)
 
-    preloads = Preloads(sparse_image_plane_grid_list_of_planes=1)
-    preloads.set_sparse_image_plane_grid_list_of_planes(fit_0=fit_0, fit_1=fit_1)
+    preloads = Preloads(sparse_image_plane_grid_pg_list=1)
+    preloads.set_sparse_image_plane_grid_pg_list(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.sparse_image_plane_grid_list_of_planes is None
+    assert preloads.sparse_image_plane_grid_pg_list is None
 
     # sparse image plane of grids are different, indiciating the model parameters change the grid, so no preloading.
 
-    tracer_0 = MockTracer(
-        sparse_image_plane_grid_list_of_planes=[None, np.array([[1.0]])]
-    )
-    tracer_1 = MockTracer(
-        sparse_image_plane_grid_list_of_planes=[None, np.array([[2.0]])]
-    )
+    tracer_0 = MockTracer(sparse_image_plane_grid_pg_list=[None, np.array([[1.0]])])
+    tracer_1 = MockTracer(sparse_image_plane_grid_pg_list=[None, np.array([[2.0]])])
 
     fit_0 = MockFit(tracer=tracer_0)
     fit_1 = MockFit(tracer=tracer_1)
 
-    preloads = Preloads(sparse_image_plane_grid_list_of_planes=1)
-    preloads.set_sparse_image_plane_grid_list_of_planes(fit_0=fit_0, fit_1=fit_1)
+    preloads = Preloads(sparse_image_plane_grid_pg_list=1)
+    preloads.set_sparse_image_plane_grid_pg_list(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.sparse_image_plane_grid_list_of_planes is None
+    assert preloads.sparse_image_plane_grid_pg_list is None
 
     # sparse image plane of grids are the same meaning they are fixed in the model, so do preload.
 
-    tracer_0 = MockTracer(
-        sparse_image_plane_grid_list_of_planes=[None, np.array([[1.0]])]
-    )
-    tracer_1 = MockTracer(
-        sparse_image_plane_grid_list_of_planes=[None, np.array([[1.0]])]
-    )
+    tracer_0 = MockTracer(sparse_image_plane_grid_pg_list=[None, np.array([[1.0]])])
+    tracer_1 = MockTracer(sparse_image_plane_grid_pg_list=[None, np.array([[1.0]])])
 
     fit_0 = MockFit(tracer=tracer_0)
     fit_1 = MockFit(tracer=tracer_1)
 
-    preloads = Preloads(sparse_image_plane_grid_list_of_planes=1)
-    preloads.set_sparse_image_plane_grid_list_of_planes(fit_0=fit_0, fit_1=fit_1)
+    preloads = Preloads(sparse_image_plane_grid_pg_list=1)
+    preloads.set_sparse_image_plane_grid_pg_list(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.sparse_image_plane_grid_list_of_planes[0] is None
-    assert (
-        preloads.sparse_image_plane_grid_list_of_planes[1] == np.array([[1.0]])
-    ).all()
+    assert preloads.sparse_image_plane_grid_pg_list[0] is None
+    assert (preloads.sparse_image_plane_grid_pg_list[1] == np.array([[1.0]])).all()
 
 
 def test__info():
@@ -148,7 +138,7 @@ def test__info():
         w_tilde=None,
         use_w_tilde=False,
         traced_grids_of_planes_for_inversion=None,
-        sparse_image_plane_grid_list_of_planes=None,
+        sparse_image_plane_grid_pg_list=None,
         relocated_grid=None,
         mapper_list=None,
         operated_mapping_matrix=None,
@@ -195,7 +185,7 @@ def test__info():
         use_w_tilde=True,
         traced_grids_of_planes_for_inversion=1,
         relocated_grid=1,
-        sparse_image_plane_grid_list_of_planes=1,
+        sparse_image_plane_grid_pg_list=1,
         mapper_list=1,
         operated_mapping_matrix=1,
         curvature_matrix_preload=1,

@@ -92,9 +92,7 @@ class TracerPlotter(Plotter):
         plane_index
             The index of the plane in the `Tracer` used to make the `PlanePlotter`.
         """
-        plane_grid = self.tracer.traced_grids_of_planes_from(grid=self.grid)[
-            plane_index
-        ]
+        plane_grid = self.tracer.traced_grid_list_from(grid=self.grid)[plane_index]
 
         return aplt.PlanePlotter(
             plane=self.tracer.planes[plane_index],

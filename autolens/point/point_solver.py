@@ -255,7 +255,7 @@ class PointSolver(AbstractPointSolver):
         distance_to_source_centre=None,
         distance_to_mass_profile_centre=None,
     ):
-        """Given a `OperateLens` (e.g. a _MassProfile, `Galaxy`, `Plane` or `Tracer`) this class uses their
+        """Given a `OperateDeflections` (e.g. a _MassProfile, `Galaxy`, `Plane` or `Tracer`) this class uses their
         deflections_yx_2d_from method to determine the (y,x) coordinates the multiple-images appear given a (y,x)
         source-centre coordinate in the source-plane.
 

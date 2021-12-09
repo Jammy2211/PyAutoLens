@@ -141,6 +141,115 @@ def test__operate_image__visibilities_of_planes_from_grid_and_transformer(
     assert (visibilities[1] == visibilities_1).all()
 
 
+def test__operate_image__galaxy_blurred_image_2d_dict_via_convolver_from(
+    sub_grid_2d_7x7, blurring_grid_2d_7x7, convolver_7x7
+):
+
+    g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
+    g1 = al.Galaxy(
+        redshift=0.5,
+        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+        light_profile=al.lp.EllSersic(intensity=2.0),
+    )
+
+    g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=3.0))
+
+    g3 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=5.0))
+
+    g0_blurred_image = g0.blurred_image_2d_via_convolver_from(
+        grid=sub_grid_2d_7x7,
+        convolver=convolver_7x7,
+        blurring_grid=blurring_grid_2d_7x7,
+    )
+
+    g1_blurred_image = g1.blurred_image_2d_via_convolver_from(
+        grid=sub_grid_2d_7x7,
+        convolver=convolver_7x7,
+        blurring_grid=blurring_grid_2d_7x7,
+    )
+
+    g2_blurred_image = g2.blurred_image_2d_via_convolver_from(
+        grid=sub_grid_2d_7x7,
+        convolver=convolver_7x7,
+        blurring_grid=blurring_grid_2d_7x7,
+    )
+
+    g1_deflections = g1.deflections_yx_2d_from(grid=sub_grid_2d_7x7)
+
+    source_grid_2d_7x7 = sub_grid_2d_7x7 - g1_deflections
+
+    g1_blurring_deflections = g1.deflections_yx_2d_from(grid=blurring_grid_2d_7x7)
+
+    source_blurring_grid_2d_7x7 = blurring_grid_2d_7x7 - g1_blurring_deflections
+
+    g3_blurred_image = g3.blurred_image_2d_via_convolver_from(
+        grid=source_grid_2d_7x7,
+        convolver=convolver_7x7,
+        blurring_grid=source_blurring_grid_2d_7x7,
+    )
+
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[g3, g1, g0, g2], cosmology=cosmo.Planck15
+    )
+
+    blurred_image_dict = tracer.galaxy_blurred_image_2d_dict_via_convolver_from(
+        grid=sub_grid_2d_7x7,
+        convolver=convolver_7x7,
+        blurring_grid=blurring_grid_2d_7x7,
+    )
+
+    assert (blurred_image_dict[g0].slim == g0_blurred_image.slim).all()
+    assert (blurred_image_dict[g1].slim == g1_blurred_image.slim).all()
+    assert (blurred_image_dict[g2].slim == g2_blurred_image.slim).all()
+    assert (blurred_image_dict[g3].slim == g3_blurred_image.slim).all()
+
+
+def test__operate_image__galaxy_visibilities_dict_from_grid_and_transformer(
+    sub_grid_2d_7x7, transformer_7x7_7
+):
+
+    g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
+    g1 = al.Galaxy(
+        redshift=0.5,
+        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+        light_profile=al.lp.EllSersic(intensity=2.0),
+    )
+    g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=3.0))
+    g3 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=5.0))
+
+    g0_visibilities = g0.visibilities_via_transformer_from(
+        grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
+    )
+    g1_visibilities = g1.visibilities_via_transformer_from(
+        grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
+    )
+
+    g2_visibilities = g2.visibilities_via_transformer_from(
+        grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
+    )
+
+    g1_deflections = g1.deflections_yx_2d_from(grid=sub_grid_2d_7x7)
+
+    source_grid_2d_7x7 = sub_grid_2d_7x7 - g1_deflections
+
+    g3_visibilities = g3.visibilities_via_transformer_from(
+        grid=source_grid_2d_7x7, transformer=transformer_7x7_7
+    )
+
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[g3, g1, g0, g2], cosmology=cosmo.Planck15
+    )
+
+    visibilities_dict = tracer.galaxy_visibilities_dict_via_transformer_from(
+        grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
+    )
+
+    assert (visibilities_dict[g0] == g0_visibilities).all()
+    assert (visibilities_dict[g1] == g1_visibilities).all()
+    assert (visibilities_dict[g2] == g2_visibilities).all()
+    assert (visibilities_dict[g3] == g3_visibilities).all()
+
+
 def test__operate_lens__sums_individual_quantities():
 
     grid = al.Grid2D.uniform(shape_native=(50, 50), pixel_scales=0.15)

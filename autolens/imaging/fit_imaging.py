@@ -116,7 +116,7 @@ class FitImaging(aa.FitImaging):
         """
         A dictionary associating galaxies with their corresponding model images
         """
-        galaxy_model_image_dict = self.tracer.galaxy_blurred_image_dict_via_convolver_from(
+        galaxy_model_image_dict = self.tracer.galaxy_blurred_image_2d_dict_via_convolver_from(
             grid=self.grid,
             convolver=self.imaging.convolver,
             blurring_grid=self.imaging.blurring_grid,
@@ -188,7 +188,7 @@ class FitImaging(aa.FitImaging):
 
     @property
     def total_mappers(self):
-        return len(list(filter(None, self.tracer.regularization_list_of_planes)))
+        return len(list(filter(None, self.tracer.regularization_pg_list)))
 
     def refit_with_new_preloads(self, preloads, settings_inversion=None):
 

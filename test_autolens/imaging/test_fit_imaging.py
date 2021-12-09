@@ -730,10 +730,10 @@ class TestCompareToManualProfilesOnly:
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
-        traced_grids_of_planes = tracer.traced_grids_of_planes_from(
+        traced_grids_of_planes = tracer.traced_grid_list_from(
             grid=masked_imaging_7x7.grid
         )
-        traced_blurring_grids_of_planes = tracer.traced_grids_of_planes_from(
+        traced_blurring_grids_of_planes = tracer.traced_grid_list_from(
             grid=masked_imaging_7x7.blurring_grid
         )
 
@@ -1332,8 +1332,8 @@ class TestCompareToManualProfilesAndInversion:
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
-        traced_grids = tracer.traced_grids_of_planes_from(grid=masked_imaging_7x7.grid)
-        traced_blurring_grids = tracer.traced_grids_of_planes_from(
+        traced_grids = tracer.traced_grid_list_from(grid=masked_imaging_7x7.grid)
+        traced_blurring_grids = tracer.traced_grid_list_from(
             grid=masked_imaging_7x7.blurring_grid
         )
 
