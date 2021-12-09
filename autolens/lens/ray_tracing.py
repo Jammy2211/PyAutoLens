@@ -16,12 +16,11 @@ from autoarray.inversion.inversion.factory import inversion_interferometer_unpac
 
 from autogalaxy.plane.plane import AbstractPlane
 from autogalaxy.profiles.light_profiles.light_profiles_snr import LightProfileSNR
-from autogalaxy.operate.image import OperateImage
 
 from autolens.lens.model.preloads import Preloads
 
 
-class AbstractTracer(ABC, Dictable):
+class AbstractTracer(ABC, ag.OperateImageList, ag.OperateLens, Dictable):
     def __init__(self, planes, cosmology, profiling_dict: Optional[Dict] = None):
         """
         Ray-tracer for a lens system with any number of planes.
@@ -799,9 +798,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         )
 
         for (plane_index, plane) in enumerate(self.planes):
-            blurred_image_2d_list_of_galaxies = OperateImage.from_light_obj(
-                light_obj=plane
-            ).blurred_image_2d_list_via_convolver_from(
+            blurred_image_2d_list_of_galaxies = plane.blurred_image_2d_list_via_convolver_from(
                 grid=traced_grids_of_planes[plane_index],
                 convolver=convolver,
                 blurring_grid=traced_blurring_grids_of_planes[plane_index],
@@ -825,9 +822,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
         traced_grids_of_planes = self.traced_grids_of_planes_from(grid=grid)
 
         for (plane_index, plane) in enumerate(self.planes):
-            visibilities_list_of_galaxies = OperateImage.from_light_obj(
-                light_obj=plane
-            ).visibilities_list_via_transformer_from(
+            visibilities_list_of_galaxies = plane.visibilities_list_via_transformer_from(
                 grid=traced_grids_of_planes[plane_index], transformer=transformer
             )
             for (galaxy_index, galaxy) in enumerate(plane.galaxies):

@@ -1905,24 +1905,19 @@ class TestAbstractTracerData:
 
         g3 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=5.0))
 
-        g0_operate_image = al.OperateImage.from_light_obj(light_obj=g0)
-        g1_operate_image = al.OperateImage.from_light_obj(light_obj=g1)
-        g2_operate_image = al.OperateImage.from_light_obj(light_obj=g2)
-        g3_operate_image = al.OperateImage.from_light_obj(light_obj=g3)
-
-        g0_blurred_image = g0_operate_image.blurred_image_2d_via_convolver_from(
+        g0_blurred_image = g0.blurred_image_2d_via_convolver_from(
             grid=sub_grid_2d_7x7,
             convolver=convolver_7x7,
             blurring_grid=blurring_grid_2d_7x7,
         )
 
-        g1_blurred_image = g1_operate_image.blurred_image_2d_via_convolver_from(
+        g1_blurred_image = g1.blurred_image_2d_via_convolver_from(
             grid=sub_grid_2d_7x7,
             convolver=convolver_7x7,
             blurring_grid=blurring_grid_2d_7x7,
         )
 
-        g2_blurred_image = g2_operate_image.blurred_image_2d_via_convolver_from(
+        g2_blurred_image = g2.blurred_image_2d_via_convolver_from(
             grid=sub_grid_2d_7x7,
             convolver=convolver_7x7,
             blurring_grid=blurring_grid_2d_7x7,
@@ -1936,7 +1931,7 @@ class TestAbstractTracerData:
 
         source_blurring_grid_2d_7x7 = blurring_grid_2d_7x7 - g1_blurring_deflections
 
-        g3_blurred_image = g3_operate_image.blurred_image_2d_via_convolver_from(
+        g3_blurred_image = g3.blurred_image_2d_via_convolver_from(
             grid=source_grid_2d_7x7,
             convolver=convolver_7x7,
             blurring_grid=source_blurring_grid_2d_7x7,
@@ -1970,19 +1965,14 @@ class TestAbstractTracerData:
         g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=3.0))
         g3 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=5.0))
 
-        g0_operate_image = al.OperateImage.from_light_obj(light_obj=g0)
-        g1_operate_image = al.OperateImage.from_light_obj(light_obj=g1)
-        g2_operate_image = al.OperateImage.from_light_obj(light_obj=g2)
-        g3_operate_image = al.OperateImage.from_light_obj(light_obj=g3)
-
-        g0_visibilities = g0_operate_image.visibilities_via_transformer_from(
+        g0_visibilities = g0.visibilities_via_transformer_from(
             grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
         )
-        g1_visibilities = g1_operate_image.visibilities_via_transformer_from(
+        g1_visibilities = g1.visibilities_via_transformer_from(
             grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
         )
 
-        g2_visibilities = g2_operate_image.visibilities_via_transformer_from(
+        g2_visibilities = g2.visibilities_via_transformer_from(
             grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
         )
 
@@ -1990,7 +1980,7 @@ class TestAbstractTracerData:
 
         source_grid_2d_7x7 = sub_grid_2d_7x7 - g1_deflections
 
-        g3_visibilities = g3_operate_image.visibilities_via_transformer_from(
+        g3_visibilities = g3.visibilities_via_transformer_from(
             grid=source_grid_2d_7x7, transformer=transformer_7x7_7
         )
 

@@ -1,11 +1,8 @@
 from os import path
 import pytest
 
-from autoconf import conf
-import autolens as al
 import autolens.plot as aplt
 
-from autolens.plot.get_visuals import GetVisuals1D
 from autolens.plot.get_visuals import GetVisuals2D
 
 directory = path.dirname(path.realpath(__file__))
@@ -36,8 +33,6 @@ def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
         tracer=tracer_x2_plane_7x7, grid=grid_2d_7x7, plane_index=0
     )
 
-    operate_lens = al.OperateLens.from_mass_obj(mass_obj=tracer_x2_plane_7x7)
-
     assert visuals_2d_via.origin.in_list == [(0.0, 0.0)]
     assert (visuals_2d_via.border == grid_2d_7x7.mask.border_grid_sub_1.binned).all()
     assert visuals_2d_via.light_profile_centres.in_list == [
@@ -48,7 +43,7 @@ def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
     ]
     assert (
         visuals_2d_via.critical_curves[0]
-        == operate_lens.critical_curves_from(grid=grid_2d_7x7)[0]
+        == tracer_x2_plane_7x7.critical_curves_from(grid=grid_2d_7x7)[0]
     ).all()
     assert visuals_2d_via.vectors == 2
 
@@ -76,7 +71,8 @@ def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
     ]
     assert visuals_2d_via.mass_profile_centres == None
     assert (
-        visuals_2d_via.caustics[0] == operate_lens.caustics_from(grid=grid_2d_7x7)[0]
+        visuals_2d_via.caustics[0]
+        == tracer_x2_plane_7x7.caustics_from(grid=grid_2d_7x7)[0]
     ).all()
 
     include_2d = aplt.Include2D(
@@ -117,10 +113,6 @@ def test__via_fit_imaging_from(fit_imaging_x2_plane_7x7, grid_2d_7x7):
 
     visuals_2d_via = get_visuals.via_fit_imaging_from(fit=fit_imaging_x2_plane_7x7)
 
-    operate_lens = al.OperateLens.from_mass_obj(
-        mass_obj=fit_imaging_x2_plane_7x7.tracer
-    )
-
     assert visuals_2d_via.origin == (1.0, 1.0)
     assert (visuals_2d_via.mask == fit_imaging_x2_plane_7x7.mask).all()
     assert (
@@ -130,7 +122,7 @@ def test__via_fit_imaging_from(fit_imaging_x2_plane_7x7, grid_2d_7x7):
     assert visuals_2d_via.mass_profile_centres.in_list == [(0.0, 0.0)]
     assert (
         visuals_2d_via.critical_curves[0]
-        == operate_lens.critical_curves_from(grid=grid_2d_7x7)[0]
+        == fit_imaging_x2_plane_7x7.tracer.critical_curves_from(grid=grid_2d_7x7)[0]
     ).all()
     assert visuals_2d_via.vectors == 2
 

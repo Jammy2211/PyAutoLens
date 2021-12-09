@@ -81,7 +81,7 @@ def test__simulate_imaging_data_and_fit__no_psf_blurring__chi_squared_is_0__nois
 
     fit = al.FitImaging(dataset=masked_imaging, tracer=tracer)
 
-    assert fit.chi_squared > 0.0
+    assert fit.chi_squared >= 0.0
     assert fit.chi_squared < 1.0e-8
 
     file_path = path.join(

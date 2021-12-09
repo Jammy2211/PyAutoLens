@@ -55,7 +55,7 @@ class FitInterferometer(aa.FitInterferometer):
 
         self.tracer = tracer
 
-        self.profile_visibilities = self.operate_image.visibilities_via_transformer_from(
+        self.profile_visibilities = self.tracer.visibilities_via_transformer_from(
             grid=dataset.grid, transformer=dataset.transformer
         )
 
@@ -98,10 +98,6 @@ class FitInterferometer(aa.FitInterferometer):
     @property
     def grid(self):
         return self.interferometer.grid
-
-    @property
-    def operate_image(self) -> ag.OperateImage:
-        return ag.OperateImage.from_light_obj(light_obj=self.tracer)
 
     @property
     def galaxy_model_image_dict(self) -> {ag.Galaxy: np.ndarray}:
@@ -152,7 +148,7 @@ class FitInterferometer(aa.FitInterferometer):
 
     def model_visibilities_of_planes(self):
 
-        model_visibilities_of_planes = self.operate_image.visibilities_list_via_transformer_from(
+        model_visibilities_of_planes = self.tracer.visibilities_list_via_transformer_from(
             grid=self.interferometer.grid, transformer=self.interferometer.transformer
         )
 

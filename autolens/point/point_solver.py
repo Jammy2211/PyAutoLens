@@ -25,10 +25,8 @@ class AbstractPointSolver:
         self, lensing_obj, deflections_func, grid
     ):
 
-        operate_lens = ag.OperateLens.from_mass_obj(mass_obj=lensing_obj)
-
         magnifications = np.abs(
-            operate_lens.magnification_2d_via_hessian_from(
+            lensing_obj.magnification_2d_via_hessian_from(
                 grid=grid, buffer=grid.pixel_scale, deflections_func=deflections_func
             )
         )
@@ -56,7 +54,7 @@ class AbstractPointSolver:
 
         Parameters
         ----------
-        lensing_obj : autogalaxy.OperateLens
+        lensing_obj
             An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
             `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
         grid : autoarray.Grid2DIrregularUniform or ndarray
@@ -159,7 +157,7 @@ class AbstractPointSolver:
 
         Parameters
         ----------
-        lensing_obj : autogalaxy.OperateLens
+        lensing_obj
             An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
             `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
         grid : autoarray.Grid2DIrregularUniform or ndarray
@@ -212,7 +210,7 @@ class AbstractPointSolver:
 
             Parameters
             ----------
-            lensing_obj : autogalaxy.OperateLens
+            lensing_obj
                 An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
                 `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
             grid : autoarray.Grid2DIrregularUniform or ndarray
@@ -309,7 +307,7 @@ class PointSolver(AbstractPointSolver):
         pixel_scales : (float, float)
             The pixel-scale resolution of the buffed and upscaled grid that is formed around the input coordinate. If
             upscale > 1, the pixel_scales are reduced to pixel_scale / upscale_factor.
-        lensing_obj : autogalaxy.OperateLens
+        lensing_obj
             An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
             `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
         source_plane_coordinate : (float, float)
