@@ -4,6 +4,8 @@ from typing import Callable, Union
 
 from autoconf import conf
 
+from autofit.exc import PriorLimitException
+
 import autofit as af
 
 from autolens.imaging.fit_imaging import FitImaging
@@ -62,7 +64,7 @@ class FitMaker:
         """
         try:
             return self.fit_unit_instance_from(unit_value=unit_value)
-        except Exception:
+        except (Exception, IndexError, PriorLimitException):
             return self.fit_random_instance_from()
 
     def fit_unit_instance_from(
