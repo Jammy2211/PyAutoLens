@@ -102,7 +102,7 @@ class FitInterferometer(aa.FitInterferometer):
     @property
     def galaxy_model_image_dict(self) -> {ag.Galaxy: np.ndarray}:
         """
-        A dictionary associating galaxy_list with their corresponding model images
+        A dictionary associating galaxies with their corresponding model images
         """
         galaxy_model_image_dict = self.tracer.galaxy_image_2d_dict_from(grid=self.grid)
 
@@ -115,7 +115,7 @@ class FitInterferometer(aa.FitInterferometer):
 
             galaxy_model_image_dict.update(
                 {
-                    self.tracer.planes[plane_index].galaxy_list[
+                    self.tracer.planes[plane_index].galaxies[
                         0
                     ]: self.inversion.mapped_reconstructed_image
                 }
@@ -126,7 +126,7 @@ class FitInterferometer(aa.FitInterferometer):
     @property
     def galaxy_model_visibilities_dict(self) -> {ag.Galaxy: np.ndarray}:
         """
-        A dictionary associating galaxy_list with their corresponding model images
+        A dictionary associating galaxies with their corresponding model images
         """
         galaxy_model_visibilities_dict = self.tracer.galaxy_visibilities_dict_via_transformer_from(
             grid=self.interferometer.grid, transformer=self.interferometer.transformer
@@ -138,7 +138,7 @@ class FitInterferometer(aa.FitInterferometer):
 
             galaxy_model_visibilities_dict.update(
                 {
-                    self.tracer.planes[plane_index].galaxy_list[
+                    self.tracer.planes[plane_index].galaxies[
                         0
                     ]: self.inversion.mapped_reconstructed_data
                 }

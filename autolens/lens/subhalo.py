@@ -25,7 +25,7 @@ class SubhaloResult:
     def fit_imaging_before(self):
         return _fit_imaging_from(
             fit=self.result_no_subhalo,
-            galaxy_list=self.result_no_subhalo.instance.galaxy_list,
+            galaxies=self.result_no_subhalo.instance.galaxies,
         )
 
     def _subhalo_array_from(self, values_native) -> aa.Array2D:
@@ -104,9 +104,7 @@ class SubhaloResult:
 
         return self.grid_search_result._list_to_native(
             [
-                None
-                if instance is None
-                else instance.galaxy_list.subhalo.mass.mass_at_200
+                None if instance is None else instance.galaxies.subhalo.mass.mass_at_200
                 for instance in instance_list
             ]
         )
@@ -124,18 +122,14 @@ class SubhaloResult:
 
         centres_native[:, :, 0] = self.grid_search_result._list_to_native(
             lst=[
-                None
-                if instance is None
-                else instance.galaxy_list.subhalo.mass.centre[0]
+                None if instance is None else instance.galaxies.subhalo.mass.centre[0]
                 for instance in instance_list
             ]
         )
 
         centres_native[:, :, 1] = self.grid_search_result._list_to_native(
             lst=[
-                None
-                if instance is None
-                else instance.galaxy_list.subhalo.mass.centre[1]
+                None if instance is None else instance.galaxies.subhalo.mass.centre[1]
                 for instance in instance_list
             ]
         )

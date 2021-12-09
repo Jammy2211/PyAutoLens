@@ -15,35 +15,35 @@ from autolens.lens.model.aggregator.aggregator import _tracer_from
 
 def _fit_imaging_from(
     fit: af.Fit,
-    galaxy_list: List[ag.Galaxy],
+    galaxies: List[ag.Galaxy],
     settings_imaging: aa.SettingsImaging = None,
     settings_pixelization: aa.SettingsPixelization = None,
     settings_inversion: aa.SettingsInversion = None,
     use_preloaded_grid: bool = True,
 ) -> FitImaging:
     """
-    Returns a `FitImaging` object from a PyAutoFit database `Fit` object and an instance of galaxy_list from a non-linear
+    Returns a `FitImaging` object from a PyAutoFit database `Fit` object and an instance of galaxies from a non-linear
     search model-fit.
 
-    This function adds the `hyper_model_image` and `hyper_galaxy_image_path_dict` to the galaxy_list before performing the
+    This function adds the `hyper_model_image` and `hyper_galaxy_image_path_dict` to the galaxies before performing the
     fit, if they were used.
 
     Parameters
     ----------
     fit
         A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
-    galaxy_list
-        A list of galaxy_list corresponding to a sample of a non-linear search and model-fit.
+    galaxies
+        A list of galaxies corresponding to a sample of a non-linear search and model-fit.
 
     Returns
     -------
     FitImaging
-        The fit to the imaging dataset computed via an instance of galaxy_list.
+        The fit to the imaging dataset computed via an instance of galaxies.
     """
 
     imaging = _imaging_from(fit=fit, settings_imaging=settings_imaging)
 
-    tracer = _tracer_from(fit=fit, galaxy_list=galaxy_list)
+    tracer = _tracer_from(fit=fit, galaxies=galaxies)
 
     settings_pixelization = settings_pixelization or fit.value(
         name="settings_pixelization"
@@ -98,26 +98,26 @@ class FitImagingAgg(AbstractAgg):
         self.settings_inversion = settings_inversion
         self.use_preloaded_grid = use_preloaded_grid
 
-    def make_object_for_gen(self, fit, galaxy_list) -> FitImaging:
+    def make_object_for_gen(self, fit, galaxies) -> FitImaging:
         """
-        Creates a `FitImaging` object from a `ModelInstance` that contains the galaxy_list of a sample from a non-linear
+        Creates a `FitImaging` object from a `ModelInstance` that contains the galaxies of a sample from a non-linear
         search.
 
         Parameters
         ----------
         fit
             A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
-        galaxy_list
-            A list of galaxy_list corresponding to a sample of a non-linear search and model-fit.
+        galaxies
+            A list of galaxies corresponding to a sample of a non-linear search and model-fit.
 
         Returns
         -------
         FitImaging
-            A fit to imaging data whose galaxy_list are a sample of a PyAutoFit non-linear search.
+            A fit to imaging data whose galaxies are a sample of a PyAutoFit non-linear search.
         """
         return _fit_imaging_from(
             fit=fit,
-            galaxy_list=galaxy_list,
+            galaxies=galaxies,
             settings_imaging=self.settings_imaging,
             settings_pixelization=self.settings_pixelization,
             settings_inversion=self.settings_inversion,

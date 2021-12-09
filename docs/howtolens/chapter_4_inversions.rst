@@ -1,7 +1,7 @@
 Chapter 4: Inversions
 =====================
 
-In chapter 4, we use **Inversions** to reconstruct complex source galaxy_list on pixelized grids.
+In chapter 4, we use **Inversions** to reconstruct complex source galaxies on pixelized grids.
 
 The chapter contains the following tutorials:
 

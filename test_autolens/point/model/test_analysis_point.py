@@ -13,7 +13,7 @@ class TestAnalysisPoint:
     def test__make_result__result_imaging_is_returned(self, point_dict):
 
         model = af.Collection(
-            galaxy_list=af.Collection(
+            galaxies=af.Collection(
                 lens=al.Galaxy(redshift=0.5, point_0=al.ps.Point(centre=(0.0, 0.0)))
             )
         )
@@ -41,7 +41,7 @@ class TestAnalysisPoint:
         point_dict = al.PointDict(point_dataset_list=[point_dataset])
 
         model = af.Collection(
-            galaxy_list=af.Collection(
+            galaxies=af.Collection(
                 lens=al.Galaxy(redshift=0.5, point_0=al.ps.Point(centre=(0.0, 0.0)))
             )
         )
@@ -100,7 +100,7 @@ class TestAnalysisPoint:
         point_dict = al.PointDict(point_dataset_list=[point_dataset])
 
         model = af.Collection(
-            galaxy_list=af.Collection(
+            galaxies=af.Collection(
                 lens=al.Galaxy(
                     redshift=0.5,
                     sis=al.mp.SphIsothermal(einstein_radius=1.0),

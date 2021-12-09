@@ -18,7 +18,7 @@ class TestSimulatorImaging:
 
         source_galaxy = al.Galaxy(redshift=1.0, light=al.lp.EllSersic(intensity=0.3))
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[lens_galaxy, source_galaxy])
+        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         simulator = al.SimulatorImaging(
             psf=psf,
@@ -51,7 +51,7 @@ class TestSimulatorImaging:
 
         source_galaxy = al.Galaxy(redshift=1.0, light=al.lp.EllSersic(intensity=0.3))
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[lens_galaxy, source_galaxy])
+        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         simulator = al.SimulatorImaging(
             psf=psf,
@@ -62,7 +62,7 @@ class TestSimulatorImaging:
 
         imaging = simulator.via_deflections_and_galaxies_from(
             deflections=tracer.deflections_yx_2d_from(grid=grid),
-            galaxy_list=[source_galaxy],
+            galaxies=[source_galaxy],
         )
 
         imaging_via_image = simulator.via_image_from(
@@ -107,10 +107,10 @@ class TestSimulatorImaging:
         )
 
         imaging = simulator.via_galaxies_from(
-            galaxy_list=[lens_galaxy, source_galaxy], grid=grid
+            galaxies=[lens_galaxy, source_galaxy], grid=grid
         )
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[lens_galaxy, source_galaxy])
+        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
         imaging_via_image = simulator.via_image_from(
             image=tracer.image_2d_from(grid=grid)

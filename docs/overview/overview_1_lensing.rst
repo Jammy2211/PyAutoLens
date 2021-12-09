@@ -3,10 +3,10 @@
 Lensing
 =======
 
-When two galaxy_list are aligned perfectly down the line-of-sight to Earth, the background galaxy's light is bent by the
+When two galaxies are aligned perfectly down the line-of-sight to Earth, the background galaxy's light is bent by the
 intervening mass of the foreground galaxy. Its light can be fully bent around the foreground galaxy, traversing multiple
 paths to the Earth, meaning that the background galaxy is observed multiple times. This by-chance alignment of two
-galaxy_list is called a strong gravitational lens and a two-dimensional scheme of such a system is pictured below.
+galaxies is called a strong gravitational lens and a two-dimensional scheme of such a system is pictured below.
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/lensing/schematic.jpg
   :width: 600
@@ -53,7 +53,7 @@ Light Profiles
 We will ray-trace this ``Grid2D``'s (y,x) coordinates to calculate how a lens galaxy's mass deflects the source
 galaxy's light.
 
-This requires analytic functions representing the light and mass distributions of galaxy_list. **PyAutoLens**
+This requires analytic functions representing the light and mass distributions of galaxies. **PyAutoLens**
 uses ``Profile`` objects for this, such as the elliptical sersic ``LightProfile``:
 
 .. code-block:: bash
@@ -138,11 +138,11 @@ For anyone not familiar with gravitational lensing, don't worry about what the c
 The key thing to note is that the deflection angles describe how a given mass distribution deflects light-rays as they
 travel towards the Earth through the Universe.
 
-galaxy_list
+galaxies
 --------
 
 A ``Galaxy`` object is a collection of ``LightProfile`` and ``MassProfile`` objects at a given redshift. The code below
-creates two galaxy_list representing the lens and source galaxy_list shown in the strong lensing diagram above.
+creates two galaxies representing the lens and source galaxies shown in the strong lensing diagram above.
 
 .. code-block:: bash
 
@@ -160,8 +160,8 @@ model to create the appropriate strong lens system.
 
 .. code-block:: bash
 
-    tracer = al.Tracer.from_galaxy_list(
-        galaxy_list=[lens_galaxy, source_galaxy], cosmology=cosmo.Planck15
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[lens_galaxy, source_galaxy], cosmology=cosmo.Planck15
     )
 
 Ray Tracing
@@ -192,10 +192,10 @@ Extending Objects
 The **PyAutoLens** API has been designed such that all of the objects introduced above are extensible. ``Galaxy``
 objects can take many ``Profile``'s and ``Tracer`` objects many ``Galaxy``'s.
 
-If the galaxy_list are at different redshifts a strong lensing system with multiple lens planes will be created,
+If the galaxies are at different redshifts a strong lensing system with multiple lens planes will be created,
 performing complex multi-plane ray-tracing calculations.
 
-To finish, lets create a ``Tracer`` with 3 galaxy_list at 3 different redshifts, forming a system with two distinct
+To finish, lets create a ``Tracer`` with 3 galaxies at 3 different redshifts, forming a system with two distinct
 Einstein rings! The mass distribution of the first galaxy also has separate components for its stellar mass and
 dark matter, where the stellar mass using a ``LightMassProfile`` representing both its light and mass.
 
@@ -245,7 +245,7 @@ dark matter, where the stellar mass using a ``LightMassProfile`` representing bo
         ),
     )
 
-    tracer = al.Tracer.from_galaxy_list(galaxy_list=[lens_galaxy_0, lens_galaxy_1, source_galaxy])
+    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy_0, lens_galaxy_1, source_galaxy])
 
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
     tracer_plotter.figures_2d(image=True)

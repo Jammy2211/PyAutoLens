@@ -88,7 +88,7 @@ and mass component named ``mass``):
 
 .. code-block:: bash
 
-    lens = agg.model.galaxy_list.lens
+    lens = agg.model.galaxies.lens
     agg_query = agg.query(lens.mass == al.EllIsothermal)
 
     samples_gen = agg_query.values("samples")
@@ -98,7 +98,7 @@ inferred value of the ``einstein_radius`` for the ``EllIsothermal`` is above 1.0
 
 .. code-block:: bash
 
-    lens = agg.model.galaxy_list.lens
+    lens = agg.model.galaxies.lens
     agg_query = agg.query(lens.mass.einstein_radius > 1.0)
 
 Advanced queries can be constructed using logic, for example we below we combine the two queries above to find all

@@ -46,7 +46,7 @@ class Preloads(aa.Preloads):
             every galaxy in the model). This can be preloaded when no light profiles in the model vary.
         w_tilde
             A class containing values that enable an inversion's linear algebra to use the w-tilde formalism. This can
-            be preloaded when no component of the model changes the noise map (e.g. hyper galaxy_list are fixed).
+            be preloaded when no component of the model changes the noise map (e.g. hyper galaxies are fixed).
         use_w_tilde
             Whether to use the w tilde formalism, which superseeds the value in `SettingsInversions` such that w tilde
             will be disabled for model-fits it is not applicable (e.g. because the noise-map changes).

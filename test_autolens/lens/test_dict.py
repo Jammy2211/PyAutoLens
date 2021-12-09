@@ -21,8 +21,8 @@ def make_tracer():
 
     source_galaxy = al.Galaxy(redshift=1.0, disk=disk)
 
-    return al.Tracer.from_galaxy_list(
-        galaxy_list=[lens_galaxy, source_galaxy], cosmology=cosmo.Planck15
+    return al.Tracer.from_galaxies(
+        galaxies=[lens_galaxy, source_galaxy], cosmology=cosmo.Planck15
     )
 
 
@@ -32,7 +32,7 @@ def make_tracer_dict():
         "cosmology": "Planck15",
         "planes": [
             {
-                "galaxy_list": [
+                "galaxies": [
                     {
                         "hyper_galaxy": None,
                         "mass": {
@@ -52,7 +52,7 @@ def make_tracer_dict():
                 "type": "autogalaxy.plane.plane.Plane",
             },
             {
-                "galaxy_list": [
+                "galaxies": [
                     {
                         "disk": {
                             "centre": (0.3, 0.2),

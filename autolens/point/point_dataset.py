@@ -19,7 +19,7 @@ class PointDataset:
         """
         A collection of the data component that can be used for point-source model-fitting, for example fitting the
         observed positions of a a strongly lensed quasar or supernovae or in strong lens cluster modeling, where
-        there may be many tens or hundreds of individual source galaxy_list each of which are modeled as a point source.
+        there may be many tens or hundreds of individual source galaxies each of which are modeled as a point source.
 
         The name of the dataset is required for point-source model-fitting, as it pairs a point-source dataset with
         its corresponding point-source in the model-fit. For example, if a dataset has the name `source_1`, it will

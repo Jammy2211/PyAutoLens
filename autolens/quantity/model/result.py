@@ -27,7 +27,7 @@ class ResultQuantity(Result):
         A PyAutoFit object which contains the samples of the non-linear search, for example the chains of an MCMC
         run of samples of the nested sampler.
     model
-        The PyAutoFit model object, which includes model components representing the galaxy_list that are fitted to
+        The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
         the imaging data.
     search
         The non-linear search used to perform this model-fit.

@@ -29,7 +29,7 @@ class ResultInterferometer(ResultDataset):
         A PyAutoFit object which contains the samples of the non-linear search, for example the chains of an MCMC
         run of samples of the nested sampler.
     model
-        The PyAutoFit model object, which includes model components representing the galaxy_list that are fitted to
+        The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
         the interferometer data.
     search
         The non-linear search used to perform this model-fit.
@@ -77,7 +77,7 @@ class ResultInterferometer(ResultDataset):
     @property
     def visibilities_galaxy_dict(self) -> {str: ag.Galaxy}:
         """
-        A dictionary associating galaxy names with model visibilities of those galaxy_list
+        A dictionary associating galaxy names with model visibilities of those galaxies
         """
         return {
             galaxy_path: self.visibilities_for_galaxy(galaxy)

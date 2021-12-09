@@ -16,10 +16,10 @@ the `overview section of the readthedocs <https://pyautolens.readthedocs.io/en/l
 Strong Gravitational Lensing
 ============================
 
-When two galaxy_list are aligned down the line-of-sight to Earth, light rays from the background galaxy are deflected by the
-intervening mass of one or more foreground galaxy_list. Sometimes its light is fully deflected around the foreground galaxy_list,
+When two galaxies are aligned down the line-of-sight to Earth, light rays from the background galaxy are deflected by the
+intervening mass of one or more foreground galaxies. Sometimes its light is fully deflected around the foreground galaxies,
 traversing multiple paths to the Earth, meaning that the background galaxy is observed multiple times. This alignment
-of galaxy_list is called a strong gravitational lens, an example of which, SLACS1430+4105, is shown in the image
+of galaxies is called a strong gravitational lens, an example of which, SLACS1430+4105, is shown in the image
 below. The massive elliptical lens galaxy can be seen in the centre of the left panel, surrounded by a multiply
 imaged source galaxy whose light has been distorted into an 'Einstein ring'. The central and right panels shows
 reconstructions of the source's lensed and unlensed light distributions, which are created using a model of the lens
@@ -28,7 +28,7 @@ galaxy's mass to trace backwards how the source's light is gravitationally lense
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/master/files/imageaxis.png?raw=true
 
 Strong lensing provides astronomers with an invaluable tool to study a diverse range of topics, including the
-`structure of galaxy_list <https://academic.oup.com/mnras/article-abstract/489/2/2049/5550746>`_,
+`structure of galaxies <https://academic.oup.com/mnras/article-abstract/489/2/2049/5550746>`_,
 `dark matter <https://academic.oup.com/mnras/article/442/3/2017/1048278>`_ and the
 `expansion of the Universe <https://academic.oup.com/mnras/article/468/3/2590/3055701>`_.
 
@@ -88,12 +88,12 @@ below shows this in action:
     source_galaxy = al.Galaxy(redshift=1.0, light=exponential)
 
     """
-    We create the strong lens using a Tracer, which uses the galaxy_list, their redshifts
+    We create the strong lens using a Tracer, which uses the galaxies, their redshifts
     and an input cosmology to determine how light is deflected on its path to Earth.
     """
 
-    tracer = al.Tracer.from_galaxy_list(
-        galaxy_list=[lens_galaxy, source_galaxy], cosmology=cosmo.Planck15
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[lens_galaxy, source_galaxy], cosmology=cosmo.Planck15
     )
 
     """
@@ -144,7 +144,7 @@ code below shows how to setup and fit a lens model to a dataset:
 
     """
     To setup these profiles as model components whose parameters are free & fitted for
-    we set up each Galaxy as a Model and define the model as a Collection of all galaxy_list.
+    we set up each Galaxy as a Model and define the model as a Collection of all galaxies.
     """
     lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=lens_mass_profile)
     source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=source_light_profile)

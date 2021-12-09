@@ -11,25 +11,25 @@ from autolens.lens.ray_tracing import Tracer
 from autolens import exc
 
 
-def _tracer_from(fit: af.Fit, galaxy_list: List[ag.Galaxy]) -> Tracer:
+def _tracer_from(fit: af.Fit, galaxies: List[ag.Galaxy]) -> Tracer:
     """
-    Returns a `Tracer` object from a PyAutoFit database `Fit` object and an instance of galaxy_list from a non-linear
+    Returns a `Tracer` object from a PyAutoFit database `Fit` object and an instance of galaxies from a non-linear
     search model-fit.
 
-    This function adds the `hyper_model_image` and `hyper_galaxy_image_path_dict` to the galaxy_list before constructing
+    This function adds the `hyper_model_image` and `hyper_galaxy_image_path_dict` to the galaxies before constructing
     the `Tracer`, if they were used.
 
     Parameters
     ----------
     fit
         A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
-    galaxy_list
-        A list of galaxy_list corresponding to a sample of a non-linear search and model-fit.
+    galaxies
+        A list of galaxies corresponding to a sample of a non-linear search and model-fit.
 
     Returns
     -------
     Tracer
-        The tracer computed via an instance of galaxy_list.
+        The tracer computed via an instance of galaxies.
     """
 
     hyper_model_image = fit.value(name="hyper_model_image")
@@ -43,7 +43,7 @@ def _tracer_from(fit: af.Fit, galaxy_list: List[ag.Galaxy]) -> Tracer:
             gal[0] for gal in fit.instance.path_instance_tuples_for_class(ag.Galaxy)
         ]
 
-        for (galaxy_path, galaxy) in zip(galaxy_path_list, galaxy_list):
+        for (galaxy_path, galaxy) in zip(galaxy_path_list, galaxies):
 
             if galaxy_path in hyper_galaxy_image_path_dict:
                 galaxy.hyper_model_image = hyper_model_image
@@ -51,9 +51,9 @@ def _tracer_from(fit: af.Fit, galaxy_list: List[ag.Galaxy]) -> Tracer:
 
             galaxies_with_hyper.append(galaxy)
 
-        return Tracer.from_galaxy_list(galaxy_list=galaxies_with_hyper)
+        return Tracer.from_galaxies(galaxies=galaxies_with_hyper)
 
-    return Tracer.from_galaxy_list(galaxy_list=galaxy_list)
+    return Tracer.from_galaxies(galaxies=galaxies)
 
 
 class AbstractAgg(ABC):
@@ -72,17 +72,17 @@ class AbstractAgg(ABC):
         self.aggregator = aggregator
 
     @abstractmethod
-    def make_object_for_gen(self, fit: af.Fit, galaxy_list: List[ag.Galaxy]) -> object:
+    def make_object_for_gen(self, fit: af.Fit, galaxies: List[ag.Galaxy]) -> object:
         """
         For example, in the `TracerAgg` object, this function is overwritten such that it creates a `Tracer` from a
-        `ModelInstance` that contains the galaxy_list of a sample from a non-linear search.
+        `ModelInstance` that contains the galaxies of a sample from a non-linear search.
 
         Parameters
         ----------
         fit
             A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
-        galaxy_list
-            A list of galaxy_list corresponding to a sample of a non-linear search and model-fit.
+        galaxies
+            A list of galaxies corresponding to a sample of a non-linear search and model-fit.
 
         Returns
         -------
@@ -102,9 +102,7 @@ class AbstractAgg(ABC):
         """
 
         def func_gen(fit: af.Fit) -> Generator:
-            return self.make_object_for_gen(
-                fit=fit, galaxy_list=fit.instance.galaxy_list
-            )
+            return self.make_object_for_gen(fit=fit, galaxies=fit.instance.galaxies)
 
         return self.aggregator.map(func=func_gen)
 
@@ -171,9 +169,7 @@ class AbstractAgg(ABC):
                     instance = sample.instance_for_model(model=samples.model)
 
                     all_above_weight_list.append(
-                        self.make_object_for_gen(
-                            fit=fit, galaxy_list=instance.galaxy_list
-                        )
+                        self.make_object_for_gen(fit=fit, galaxies=instance.galaxies)
                     )
 
             return all_above_weight_list
@@ -209,7 +205,7 @@ class AbstractAgg(ABC):
             return [
                 self.make_object_for_gen(
                     fit=fit,
-                    galaxy_list=samples.instance_drawn_randomly_from_pdf().galaxy_list,
+                    galaxies=samples.instance_drawn_randomly_from_pdf().galaxies,
                 )
                 for i in range(total_samples)
             ]
@@ -225,24 +221,24 @@ class TracerAgg(AbstractAgg):
     search model-fit.
     """
 
-    def make_object_for_gen(self, fit, galaxy_list) -> Tracer:
+    def make_object_for_gen(self, fit, galaxies) -> Tracer:
         """
-        Creates a `Tracer` object from a `ModelInstance` that contains the galaxy_list of a sample from a non-linear
+        Creates a `Tracer` object from a `ModelInstance` that contains the galaxies of a sample from a non-linear
         search.
 
         Parameters
         ----------
         fit
             A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
-        galaxy_list
-            A list of galaxy_list corresponding to a sample of a non-linear search and model-fit.
+        galaxies
+            A list of galaxies corresponding to a sample of a non-linear search and model-fit.
 
         Returns
         -------
         Tracer
-            A tracer whose galaxy_list are a sample of a PyAutoFit non-linear search.
+            A tracer whose galaxies are a sample of a PyAutoFit non-linear search.
         """
-        return _tracer_from(fit=fit, galaxy_list=galaxy_list)
+        return _tracer_from(fit=fit, galaxies=galaxies)
 
 
 class SubhaloAgg:

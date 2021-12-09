@@ -15,8 +15,8 @@ def test__fit_via_mock_profile(dataset_quantity_7x7_array_2d):
         ),
     )
 
-    tracer = al.Tracer.from_galaxy_list(
-        galaxy_list=[al.Galaxy(redshift=0.5, mass=model_object)]
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[al.Galaxy(redshift=0.5, mass=model_object)]
     )
 
     fit_quantity = al.FitQuantity(

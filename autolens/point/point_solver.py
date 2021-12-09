@@ -46,7 +46,7 @@ class AbstractPointSolver:
         mass profile of the lensing object.
 
         The `PositionFinder` often finds multiple unphyiscal solutions near a mass profile due to the high levels of
-        demagnification. These are typically not observable in real galaxy_list and thus may benefit from being removed
+        demagnification. These are typically not observable in real galaxies and thus may benefit from being removed
         from the PositionFiner.
 
         The positions are removed by computing the distance between all grid points and the mass profile centres of

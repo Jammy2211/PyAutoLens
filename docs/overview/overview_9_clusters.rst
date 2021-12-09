@@ -3,7 +3,7 @@
 Cluster-Scale Lenses
 ====================
 
-Galaxy clusters are the beasts of strong lensing. They contain tens or hundreds of lens galaxy_list and lensed sources,
+Galaxy clusters are the beasts of strong lensing. They contain tens or hundreds of lens galaxies and lensed sources,
 with lensed sources at many different redshifts requiring full multi-plane ray-tracing calculations. They contain one
 or more brightest cluster galaxy(s) a large scale dark matter halo and have arcs with Einstein Radii 10.0" -> 100.0"
 and beyond.
@@ -42,16 +42,16 @@ Lens Model
 
 A cluster scale strong lens model is typically composed of the following:
 
- - One or more brightest cluster galaxy_list (BCG), which are sufficiently large that we model them individually.
+ - One or more brightest cluster galaxies (BCG), which are sufficiently large that we model them individually.
 
  - One or more cluster-scale dark matter halos, which are again modeled individually.
 
- - Tens or hundreds of galaxy cluster member galaxy_list. The low individual masses of these objects means we cannot
+ - Tens or hundreds of galaxy cluster member galaxies. The low individual masses of these objects means we cannot
   model them individually are constrain their mass, but their collectively large enough mass to need modeling. These
   are modeled using a scaling relation which assumes that light traces mass, where the luminosity of each individual
   galaxy is used to set up this scaling relation.
 
- - Tens or hundreds of source galaxy_list, each with multiple sets of images that constrain the lens model. These are
+ - Tens or hundreds of source galaxies, each with multiple sets of images that constrain the lens model. These are
  modeled as a point-source, although **PyAutoLens** includes tools for modeling the imaging data of sources once a good
  lens model is inferred. The source redshifts are also used to account for multi-plane ray-tracing.
 
@@ -68,15 +68,15 @@ Therefore, we again load the model from a ``.json`` file:
     sources_file = path.join(model_path, "sources.json")
     sources = af.Collection.from_json(file=sources_file)
 
-    galaxy_list = lenses + sources
+    galaxies = lenses + sources
 
-    model = af.Collection(galaxy_list=galaxy_list)
+    model = af.Collection(galaxies=galaxies)
 
 SExtractor Catalogues
 ---------------------
 
 Composing the lens model for cluster scale objects requires care, given there are could be hundreds of lenses and
-sources galaxy_list. Manually writing the model in a Python script, in the way we do for galaxy-scale lenses, is therefore
+sources galaxies. Manually writing the model in a Python script, in the way we do for galaxy-scale lenses, is therefore
 not feasible.
 
 For this cluster, we therefore composed the the model by interfacing with Source Extractor
@@ -109,9 +109,9 @@ The result contains information on the BCG, cluster scale dark matter halo and m
 
 .. code-block:: bash
 
-    print(result.max_log_likelihood_instance.galaxy_list.bcg.mass)
-    print(result.max_log_likelihood_instance.galaxy_list.dark.mass)
-    print(result.max_log_likelihood_instance.galaxy_list.scaling_relation)
+    print(result.max_log_likelihood_instance.galaxies.bcg.mass)
+    print(result.max_log_likelihood_instance.galaxies.dark.mass)
+    print(result.max_log_likelihood_instance.galaxies.scaling_relation)
 
 Extended Source Fitting
 -----------------------

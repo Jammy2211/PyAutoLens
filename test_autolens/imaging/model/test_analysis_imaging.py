@@ -18,14 +18,12 @@ directory = path.dirname(path.realpath(__file__))
 class TestAnalysisImaging:
     def test__make_result__result_imaging_is_returned(self, masked_imaging_7x7):
 
-        model = af.Collection(
-            galaxy_list=af.Collection(galaxy_0=al.Galaxy(redshift=0.5))
-        )
+        model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
         class MockInstance:
             def __init__(self):
 
-                self.galaxy_list = [al.Galaxy(redshift=0.5)]
+                self.galaxies = [al.Galaxy(redshift=0.5)]
 
         samples = mock.MockSamples(max_log_likelihood_instance=MockInstance())
 
@@ -49,7 +47,7 @@ class TestAnalysisImaging:
     ):
 
         model = af.Collection(
-            galaxy_list=af.Collection(
+            galaxies=af.Collection(
                 lens=al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal()),
                 source=al.Galaxy(redshift=1.0),
             )
@@ -71,7 +69,7 @@ class TestAnalysisImaging:
     ):
         lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
 
-        model = af.Collection(galaxy_list=af.Collection(lens=lens_galaxy))
+        model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
 
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
         instance = model.instance_from_unit_vector([])
@@ -95,7 +93,7 @@ class TestAnalysisImaging:
         model = af.Collection(
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
-            galaxy_list=af.Collection(lens=lens_galaxy),
+            galaxies=af.Collection(lens=lens_galaxy),
         )
 
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
@@ -114,14 +112,14 @@ class TestAnalysisImaging:
 
     def test__uses_hyper_fit_correctly(self, masked_imaging_7x7):
 
-        galaxy_list = af.ModelInstance()
-        galaxy_list.lens = al.Galaxy(
+        galaxies = af.ModelInstance()
+        galaxies.lens = al.Galaxy(
             redshift=0.5, light=al.lp.EllSersic(intensity=1.0), mass=al.mp.SphIsothermal
         )
-        galaxy_list.source = al.Galaxy(redshift=1.0, light=al.lp.EllSersic())
+        galaxies.source = al.Galaxy(redshift=1.0, light=al.lp.EllSersic())
 
         instance = af.ModelInstance()
-        instance.galaxy_list = galaxy_list
+        instance.galaxies = galaxies
 
         lens_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
         lens_hyper_image[4] = 10.0
@@ -129,7 +127,7 @@ class TestAnalysisImaging:
             fill_value=0.5, shape_native=(3, 3), pixel_scales=0.1
         )
 
-        hyper_galaxy_image_path_dict = {("galaxy_list", "lens"): lens_hyper_image}
+        hyper_galaxy_image_path_dict = {("galaxies", "lens"): lens_hyper_image}
 
         result = mock.MockResult(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
@@ -144,35 +142,35 @@ class TestAnalysisImaging:
             contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
         )
 
-        instance.galaxy_list.lens.hyper_galaxy = hyper_galaxy
+        instance.galaxies.lens.hyper_galaxy = hyper_galaxy
 
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
         g0 = al.Galaxy(
             redshift=0.5,
-            light_profile=instance.galaxy_list.lens.light,
-            mass_profile=instance.galaxy_list.lens.mass,
+            light_profile=instance.galaxies.lens.light,
+            mass_profile=instance.galaxies.lens.mass,
             hyper_galaxy=hyper_galaxy,
             hyper_model_image=hyper_model_image,
             hyper_galaxy_image=lens_hyper_image,
             hyper_minimum_value=0.0,
         )
-        g1 = al.Galaxy(redshift=1.0, light_profile=instance.galaxy_list.source.light)
+        g1 = al.Galaxy(redshift=1.0, light_profile=instance.galaxies.source.light)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
-        assert (fit.tracer.galaxy_list[0].hyper_galaxy_image == lens_hyper_image).all()
+        assert (fit.tracer.galaxies[0].hyper_galaxy_image == lens_hyper_image).all()
         assert analysis_log_likelihood == fit.log_likelihood
 
     def test__sets_up_hyper_galaxy_images__froms(self, masked_imaging_7x7):
 
         hyper_galaxy_image_path_dict = {
-            ("galaxy_list", "lens"): al.Array2D.ones(
+            ("galaxies", "lens"): al.Array2D.ones(
                 shape_native=(3, 3), pixel_scales=1.0
             ),
-            ("galaxy_list", "source"): al.Array2D.full(
+            ("galaxies", "source"): al.Array2D.full(
                 fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0
             ),
         }
@@ -189,12 +187,12 @@ class TestAnalysisImaging:
         )
 
         assert (
-            analysis.hyper_galaxy_image_path_dict[("galaxy_list", "lens")].native
+            analysis.hyper_galaxy_image_path_dict[("galaxies", "lens")].native
             == np.ones((3, 3))
         ).all()
 
         assert (
-            analysis.hyper_galaxy_image_path_dict[("galaxy_list", "source")].native
+            analysis.hyper_galaxy_image_path_dict[("galaxies", "source")].native
             == 2.0 * np.ones((3, 3))
         ).all()
 
@@ -211,8 +209,8 @@ class TestAnalysisImaging:
         )
 
         hyper_galaxy_image_path_dict = {
-            ("galaxy_list", "lens"): lens_hyper_image,
-            ("galaxy_list", "source"): source_hyper_image,
+            ("galaxies", "lens"): lens_hyper_image,
+            ("galaxies", "source"): source_hyper_image,
         }
 
         result = mock.MockResult(
@@ -220,18 +218,18 @@ class TestAnalysisImaging:
             hyper_model_image=hyper_model_image,
         )
 
-        galaxy_list = af.ModelInstance()
-        galaxy_list.lens = al.Galaxy(
+        galaxies = af.ModelInstance()
+        galaxies.lens = al.Galaxy(
             redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=1.0)
         )
-        galaxy_list.source = al.Galaxy(
+        galaxies.source = al.Galaxy(
             redshift=1.0,
             pixelization=al.pix.VoronoiMagnification(shape=(3, 3)),
             regularization=al.reg.Constant(),
         )
 
         instance = af.ModelInstance()
-        instance.galaxy_list = galaxy_list
+        instance.galaxies = galaxies
 
         analysis = al.AnalysisImaging(
             dataset=masked_imaging_7x7, hyper_dataset_result=result
@@ -243,14 +241,14 @@ class TestAnalysisImaging:
 
         assert stochastic_log_likelihoods is None
 
-        galaxy_list.source = al.Galaxy(
+        galaxies.source = al.Galaxy(
             redshift=1.0,
             pixelization=al.pix.VoronoiBrightnessImage(pixels=9),
             regularization=al.reg.Constant(),
         )
 
         instance = af.ModelInstance()
-        instance.galaxy_list = galaxy_list
+        instance.galaxies = galaxies
 
         analysis = al.AnalysisImaging(
             dataset=masked_imaging_7x7, hyper_dataset_result=result
@@ -272,7 +270,7 @@ class TestAnalysisImaging:
         )
 
         model = af.Collection(
-            galaxy_list=af.Collection(lens=lens_galaxy, source=source_galaxy)
+            galaxies=af.Collection(lens=lens_galaxy, source=source_galaxy)
         )
 
         instance = model.instance_from_unit_vector([])

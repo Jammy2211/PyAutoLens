@@ -21,7 +21,7 @@ class TestAnalysisDataset:
     ):
 
         model = af.Collection(
-            galaxy_list=af.Collection(
+            galaxies=af.Collection(
                 lens=al.Galaxy(
                     redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=100.0)
                 ),
@@ -93,7 +93,7 @@ class TestAnalysisDataset:
 
         lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
 
-        model = af.Collection(galaxy_list=af.Collection(lens=lens_galaxy))
+        model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
 
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 

@@ -64,18 +64,18 @@ class TestAbstractTracer:
     class TestProperties:
         def test__total_planes(self):
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[al.Galaxy(redshift=0.5)])
+            tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5)])
 
             assert tracer.total_planes == 1
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
             )
 
             assert tracer.total_planes == 2
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[
                     al.Galaxy(redshift=1.0),
                     al.Galaxy(redshift=2.0),
                     al.Galaxy(redshift=3.0),
@@ -84,8 +84,8 @@ class TestAbstractTracer:
 
             assert tracer.total_planes == 3
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[
                     al.Galaxy(redshift=1.0),
                     al.Galaxy(redshift=2.0),
                     al.Galaxy(redshift=1.0),
@@ -100,23 +100,23 @@ class TestAbstractTracer:
             gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
             gal_mp = al.Galaxy(redshift=0.5, mass_profile=al.mp.SphIsothermal())
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal, gal])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
 
             assert tracer.has_light_profile is False
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_mp, gal_mp])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_mp, gal_mp])
 
             assert tracer.has_light_profile is False
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_lp, gal_lp])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_lp])
 
             assert tracer.has_light_profile is True
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_lp, gal])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal])
 
             assert tracer.has_light_profile is True
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_lp, gal_mp])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_mp])
 
             assert tracer.has_light_profile is True
 
@@ -125,33 +125,33 @@ class TestAbstractTracer:
             g1 = al.Galaxy(redshift=1)
             g2 = al.Galaxy(redshift=2)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g1, g2])
 
-            assert tracer.plane_with_galaxy(g1).galaxy_list == [g1]
-            assert tracer.plane_with_galaxy(g2).galaxy_list == [g2]
+            assert tracer.plane_with_galaxy(g1).galaxies == [g1]
+            assert tracer.plane_with_galaxy(g2).galaxies == [g2]
 
         def test__has_galaxy_with_mass_profile(self, sub_grid_2d_7x7):
             gal = al.Galaxy(redshift=0.5)
             gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
             gal_mp = al.Galaxy(redshift=0.5, mass_profile=al.mp.SphIsothermal())
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal, gal])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
 
             assert tracer.has_mass_profile is False
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_mp, gal_mp])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_mp, gal_mp])
 
             assert tracer.has_mass_profile is True
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_lp, gal_lp])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_lp])
 
             assert tracer.has_mass_profile is False
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_lp, gal])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal])
 
             assert tracer.has_mass_profile is False
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_lp, gal_mp])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_mp])
 
             assert tracer.has_mass_profile is True
 
@@ -164,11 +164,11 @@ class TestAbstractTracer:
                 regularization=MockRegularization(),
             )
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal, gal])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
 
             assert tracer.plane_indexes_with_pixelizations == []
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_pix, gal])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal])
 
             assert tracer.plane_indexes_with_pixelizations == [0]
 
@@ -178,7 +178,7 @@ class TestAbstractTracer:
                 regularization=MockRegularization(),
             )
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_pix, gal])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal])
 
             assert tracer.plane_indexes_with_pixelizations == [1]
 
@@ -198,8 +198,8 @@ class TestAbstractTracer:
             gal1 = al.Galaxy(redshift=0.5)
             gal2 = al.Galaxy(redshift=0.75)
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[gal_pix_0, gal_pix_1, gal0, gal1, gal2]
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[gal_pix_0, gal_pix_1, gal0, gal1, gal2]
             )
 
             assert tracer.plane_indexes_with_pixelizations == [2, 4]
@@ -213,23 +213,23 @@ class TestAbstractTracer:
                 regularization=MockRegularization(),
             )
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal, gal])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
 
             assert tracer.has_pixelization is False
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_lp, gal_lp])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_lp])
 
             assert tracer.has_pixelization is False
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_pix, gal_pix])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal_pix])
 
             assert tracer.has_pixelization is True
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_pix, gal])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal])
 
             assert tracer.has_pixelization is True
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_pix, gal_lp])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal_lp])
 
             assert tracer.has_pixelization is True
 
@@ -242,23 +242,23 @@ class TestAbstractTracer:
                 regularization=MockRegularization(),
             )
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal, gal])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
 
             assert tracer.has_regularization is False
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_lp, gal_lp])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_lp])
 
             assert tracer.has_regularization is False
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_reg, gal_reg])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_reg, gal_reg])
 
             assert tracer.has_regularization is True
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_reg, gal])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_reg, gal])
 
             assert tracer.has_regularization is True
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_reg, gal_lp])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_reg, gal_lp])
 
             assert tracer.has_regularization is True
 
@@ -268,23 +268,23 @@ class TestAbstractTracer:
             gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
             gal_hyper = al.Galaxy(redshift=0.5, hyper_galaxy=al.HyperGalaxy())
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal, gal])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
 
             assert tracer.has_hyper_galaxy is False
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_lp, gal_lp])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_lp])
 
             assert tracer.has_hyper_galaxy is False
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_hyper, gal_hyper])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_hyper, gal_hyper])
 
             assert tracer.has_hyper_galaxy is True
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_hyper, gal])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_hyper, gal])
 
             assert tracer.has_hyper_galaxy is True
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_hyper, gal_lp])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_hyper, gal_lp])
 
             assert tracer.has_hyper_galaxy is True
 
@@ -300,35 +300,35 @@ class TestAbstractTracer:
             g2_lp = al.Galaxy(redshift=2.0, light_profile=al.lp.LightProfile())
             g3_lp = al.Galaxy(redshift=3.0, light_profile=al.lp.LightProfile())
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0_lp])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0_lp])
 
             assert tracer.upper_plane_index_with_light_profile == 0
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g0_lp])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g0_lp])
 
             assert tracer.upper_plane_index_with_light_profile == 0
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g1_lp])
+            tracer = al.Tracer.from_galaxies(galaxies=[g1_lp])
 
             assert tracer.upper_plane_index_with_light_profile == 0
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1_lp])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1_lp])
 
             assert tracer.upper_plane_index_with_light_profile == 1
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0_lp, g1_lp, g2_lp])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0_lp, g1_lp, g2_lp])
 
             assert tracer.upper_plane_index_with_light_profile == 2
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2_lp])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2_lp])
 
             assert tracer.upper_plane_index_with_light_profile == 2
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0_lp, g1, g2, g3_lp])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0_lp, g1, g2, g3_lp])
 
             assert tracer.upper_plane_index_with_light_profile == 3
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0_lp, g1, g2_lp, g3])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0_lp, g1, g2_lp, g3])
 
             assert tracer.upper_plane_index_with_light_profile == 2
 
@@ -341,11 +341,11 @@ class TestAbstractTracer:
                 regularization=MockRegularization(),
             )
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal, gal])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
 
             assert tracer.hyper_galaxy_image_pg_list == [[]]
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_pix, gal_pix])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal_pix])
 
             assert tracer.hyper_galaxy_image_pg_list == [[None, None]]
 
@@ -356,7 +356,7 @@ class TestAbstractTracer:
                 hyper_galaxy_image=1,
             )
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_pix, gal])
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal])
 
             assert tracer.hyper_galaxy_image_pg_list == [[1]]
 
@@ -385,8 +385,8 @@ class TestAbstractTracer:
                 hyper_galaxy_image=3,
             )
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[gal0, gal1, gal2, gal_pix0, gal_pix1, gal_pix2]
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[gal0, gal1, gal2, gal_pix0, gal_pix1, gal_pix2]
             )
 
             assert tracer.hyper_galaxy_image_pg_list == [[], [1], [], [], [2, 3]]
@@ -400,7 +400,7 @@ class TestAbstractTracer:
             )
             galaxy_no_pix = al.Galaxy(redshift=0.5)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[galaxy_no_pix, galaxy_pix])
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_pix])
 
             assert tracer.pixelization_pg_list[0] == []
             assert tracer.pixelization_pg_list[1][0].mapper == 1
@@ -423,8 +423,8 @@ class TestAbstractTracer:
                 regularization=MockRegularization(),
             )
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[galaxy_pix_0, galaxy_pix_1, galaxy_pix_2]
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[galaxy_pix_0, galaxy_pix_1, galaxy_pix_2]
             )
 
             assert tracer.pixelization_pg_list[0][0].mapper == 1
@@ -433,9 +433,7 @@ class TestAbstractTracer:
 
             galaxy_no_pix = al.Galaxy(redshift=0.5)
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[galaxy_no_pix, galaxy_no_pix]
-            )
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_no_pix])
 
             assert tracer.pixelization_pg_list == [[]]
 
@@ -448,7 +446,7 @@ class TestAbstractTracer:
             )
             galaxy_no_reg = al.Galaxy(redshift=0.5)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[galaxy_no_reg, galaxy_reg])
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_reg, galaxy_reg])
 
             assert tracer.regularization_pg_list[0] == []
             assert tracer.regularization_pg_list[1][0].regularization_matrix == 1
@@ -472,8 +470,8 @@ class TestAbstractTracer:
                 regularization=MockRegularization(regularization_matrix=3),
             )
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[galaxy_reg_0, galaxy_reg_1, galaxy_reg_2]
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[galaxy_reg_0, galaxy_reg_1, galaxy_reg_2]
             )
 
             assert tracer.regularization_pg_list[0][0].regularization_matrix == 1
@@ -485,34 +483,32 @@ class TestAbstractTracer:
 
             galaxy_no_reg = al.Galaxy(redshift=0.5)
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[galaxy_no_reg, galaxy_no_reg]
-            )
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_reg, galaxy_no_reg])
 
             assert tracer.regularization_pg_list == [[]]
 
     class TestGalaxyLists:
-        def test__galaxy_list__comes_in_plane_redshift_order(self, sub_grid_2d_7x7):
+        def test__galaxies__comes_in_plane_redshift_order(self, sub_grid_2d_7x7):
             g0 = al.Galaxy(redshift=0.5)
             g1 = al.Galaxy(redshift=0.5)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-            assert tracer.galaxy_list == [g0, g1]
+            assert tracer.galaxies == [g0, g1]
 
             g2 = al.Galaxy(redshift=1.0)
             g3 = al.Galaxy(redshift=1.0)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2, g3])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, g3])
 
-            assert tracer.galaxy_list == [g0, g1, g2, g3]
+            assert tracer.galaxies == [g0, g1, g2, g3]
 
             g4 = al.Galaxy(redshift=0.75)
             g5 = al.Galaxy(redshift=1.5)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2, g3, g4, g5])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, g3, g4, g5])
 
-            assert tracer.galaxy_list == [g0, g1, g4, g2, g3, g5]
+            assert tracer.galaxies == [g0, g1, g4, g2, g3, g5]
 
 
 class TestAbstractTracerLensing:
@@ -521,8 +517,8 @@ class TestAbstractTracerLensing:
             self, sub_grid_2d_7x7
         ):
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
             )
 
             traced_grids_of_planes = tracer.traced_grid_list_from(grid=sub_grid_2d_7x7)
@@ -557,8 +553,8 @@ class TestAbstractTracerLensing:
             self, sub_grid_2d_7x7_simple, gal_x1_mp
         ):
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[gal_x1_mp, al.Galaxy(redshift=1.0)]
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[gal_x1_mp, al.Galaxy(redshift=1.0)]
             )
 
             traced_grids_of_planes = tracer.traced_grid_list_from(
@@ -595,8 +591,8 @@ class TestAbstractTracerLensing:
             self, sub_grid_2d_7x7_simple, gal_x1_mp
         ):
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[gal_x1_mp, gal_x1_mp, al.Galaxy(redshift=1.0)]
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[gal_x1_mp, gal_x1_mp, al.Galaxy(redshift=1.0)]
             )
 
             traced_grids_of_planes = tracer.traced_grid_list_from(
@@ -653,8 +649,8 @@ class TestAbstractTracerLensing:
                 redshift=3.0, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
             )
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[g0, g1, g2, g3, g4, g5], cosmology=cosmo.Planck15
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[g0, g1, g2, g3, g4, g5], cosmology=cosmo.Planck15
             )
 
             traced_grids_of_planes = tracer.traced_grid_list_from(
@@ -730,8 +726,8 @@ class TestAbstractTracerLensing:
                 redshift=3.0, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
             )
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[g0, g1, g2, g3, g4, g5], cosmology=cosmo.Planck15
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[g0, g1, g2, g3, g4, g5], cosmology=cosmo.Planck15
             )
 
             traced_grids_of_planes = tracer.traced_grid_list_from(
@@ -791,8 +787,8 @@ class TestAbstractTracerLensing:
             self, sub_grid_2d_7x7_simple, gal_x1_mp
         ):
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[gal_x1_mp, al.Galaxy(redshift=1.0)]
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[gal_x1_mp, al.Galaxy(redshift=1.0)]
             )
 
             traced_grids_of_planes = tracer.traced_grid_list_from(
@@ -837,8 +833,8 @@ class TestAbstractTracerLensing:
                 redshift=3.0, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
             )
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[g0, g1, g2, g3, g4, g5], cosmology=cosmo.Planck15
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[g0, g1, g2, g3, g4, g5], cosmology=cosmo.Planck15
             )
 
             traced_grids_of_planes = tracer.traced_grid_list_from(
@@ -872,9 +868,9 @@ class TestAbstractTracerLensing:
             g1 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=2.0))
             g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=3.0))
 
-            image_plane = al.Plane(galaxy_list=[g0, g1, g2])
+            image_plane = al.Plane(galaxies=[g0, g1, g2])
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             image_plane_image = image_plane.image_2d_from(grid=sub_grid_2d_7x7)
 
@@ -889,10 +885,10 @@ class TestAbstractTracerLensing:
             g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
             g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=2.0))
 
-            image_plane = al.Plane(galaxy_list=[g0])
-            source_plane = al.Plane(galaxy_list=[g1])
+            image_plane = al.Plane(galaxies=[g0])
+            source_plane = al.Plane(galaxies=[g1])
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image = image_plane.image_2d_from(
                 grid=sub_grid_2d_7x7
@@ -913,13 +909,13 @@ class TestAbstractTracerLensing:
             )
             g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=2.0))
 
-            image_plane = al.Plane(galaxy_list=[g0])
+            image_plane = al.Plane(galaxies=[g0])
 
             source_plane_grid = image_plane.traced_grid_from(grid=sub_grid_2d_7x7)
 
-            source_plane = al.Plane(galaxy_list=[g1])
+            source_plane = al.Plane(galaxies=[g1])
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image = image_plane.image_2d_from(
                 grid=sub_grid_2d_7x7
@@ -940,7 +936,7 @@ class TestAbstractTracerLensing:
 
             g2_image = g2.image_2d_from(grid=sub_grid_2d_7x7)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             tracer_image = tracer.image_2d_from(grid=sub_grid_2d_7x7)
 
@@ -959,13 +955,13 @@ class TestAbstractTracerLensing:
                 mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
             )
 
-            image_plane = al.Plane(galaxy_list=[g0])
+            image_plane = al.Plane(galaxies=[g0])
 
             source_plane_grid = image_plane.traced_grid_from(grid=sub_grid_2d_7x7)
 
-            source_plane = al.Plane(galaxy_list=[g1])
+            source_plane = al.Plane(galaxies=[g1])
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             plane_image = image_plane.image_2d_from(
                 grid=sub_grid_2d_7x7
@@ -982,13 +978,13 @@ class TestAbstractTracerLensing:
             g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=0.2))
             g2 = al.Galaxy(redshift=2.0, light_profile=al.lp.EllSersic(intensity=0.3))
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[g0, g1, g2], cosmology=cosmo.Planck15
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[g0, g1, g2], cosmology=cosmo.Planck15
             )
 
-            plane_0 = al.Plane(galaxy_list=[g0])
-            plane_1 = al.Plane(galaxy_list=[g1])
-            plane_2 = al.Plane(galaxy_list=[g2])
+            plane_0 = al.Plane(galaxies=[g0])
+            plane_1 = al.Plane(galaxies=[g1])
+            plane_2 = al.Plane(galaxies=[g2])
 
             traced_grids_of_planes = tracer.traced_grid_list_from(grid=sub_grid_2d_7x7)
 
@@ -1010,8 +1006,8 @@ class TestAbstractTracerLensing:
             g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=0.2))
             g2 = al.Galaxy(redshift=2.0, light_profile=al.lp.EllSersic(intensity=0.3))
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[g0, g1, g2], cosmology=cosmo.Planck15
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[g0, g1, g2], cosmology=cosmo.Planck15
             )
 
             plane_0 = tracer.planes[0]
@@ -1038,13 +1034,13 @@ class TestAbstractTracerLensing:
             g3 = al.Galaxy(redshift=0.1, light_profile=al.lp.EllSersic(intensity=0.4))
             g4 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=0.5))
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[g0, g1, g2, g3, g4], cosmology=cosmo.Planck15
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[g0, g1, g2, g3, g4], cosmology=cosmo.Planck15
             )
 
-            plane_0 = al.Plane(galaxy_list=[g0, g3])
-            plane_1 = al.Plane(galaxy_list=[g1, g4])
-            plane_2 = al.Plane(galaxy_list=[g2])
+            plane_0 = al.Plane(galaxies=[g0, g3])
+            plane_1 = al.Plane(galaxies=[g1, g4])
+            plane_2 = al.Plane(galaxies=[g2])
 
             traced_grids_of_planes = tracer.traced_grid_list_from(grid=sub_grid_2d_7x7)
 
@@ -1067,12 +1063,12 @@ class TestAbstractTracerLensing:
             g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=0.2))
             g2 = al.Galaxy(redshift=2.0)
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[g0, g1, g2], cosmology=cosmo.Planck15
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[g0, g1, g2], cosmology=cosmo.Planck15
             )
 
-            plane_0 = al.Plane(galaxy_list=[g0])
-            plane_1 = al.Plane(galaxy_list=[g1])
+            plane_0 = al.Plane(galaxies=[g0])
+            plane_1 = al.Plane(galaxies=[g1])
 
             plane_0_image = plane_0.image_2d_from(grid=sub_grid_2d_7x7)
 
@@ -1106,7 +1102,7 @@ class TestAbstractTracerLensing:
 
             padded_g2_image = g2.image_2d_from(grid=padded_grid)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             padded_tracer_image = tracer.padded_image_2d_from(
                 grid=sub_grid_2d_7x7, psf_shape_2d=(3, 3)
@@ -1132,8 +1128,8 @@ class TestAbstractTracerLensing:
 
             padded_g2_image = g2.image_2d_from(grid=padded_grid)
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[g0, g1, g2], cosmology=cosmo.Planck15
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[g0, g1, g2], cosmology=cosmo.Planck15
             )
 
             padded_tracer_image = tracer.padded_image_2d_from(
@@ -1162,7 +1158,7 @@ class TestAbstractTracerLensing:
 
             padded_g2_image = g2.image_2d_from(grid=padded_grid)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             padded_tracer_image = tracer.padded_image_2d_from(
                 grid=grid_2d_iterate_7x7, psf_shape_2d=(3, 3)
@@ -1200,8 +1196,8 @@ class TestAbstractTracerLensing:
 
             g3_image = g3.image_2d_from(grid=source_grid_2d_7x7)
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[g3, g1, g0, g2], cosmology=cosmo.Planck15
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[g3, g1, g0, g2], cosmology=cosmo.Planck15
             )
 
             image_1d_dict = tracer.galaxy_image_2d_dict_from(grid=sub_grid_2d_7x7)
@@ -1226,9 +1222,9 @@ class TestAbstractTracerLensing:
             )
             g1 = al.Galaxy(redshift=0.5)
 
-            image_plane = al.Plane(galaxy_list=[g0])
+            image_plane = al.Plane(galaxies=[g0])
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_convergence = image_plane.convergence_2d_from(
                 grid=sub_grid_2d_7x7
@@ -1259,7 +1255,7 @@ class TestAbstractTracerLensing:
 
             g2_convergence = g2.convergence_2d_from(grid=sub_grid_2d_7x7)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             image_plane_convergence = tracer.image_plane.convergence_2d_from(
                 grid=sub_grid_2d_7x7
@@ -1294,7 +1290,7 @@ class TestAbstractTracerLensing:
 
             g1_convergence = g1.convergence_2d_from(grid=grid_2d_irregular_7x7)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_convergence = tracer.image_plane.convergence_2d_from(
                 grid=grid_2d_irregular_7x7
@@ -1313,8 +1309,8 @@ class TestAbstractTracerLensing:
             self, sub_grid_2d_7x7
         ):
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)]
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)]
             )
 
             assert (
@@ -1322,8 +1318,8 @@ class TestAbstractTracerLensing:
                 == np.zeros(shape=(7, 7))
             ).all()
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[al.Galaxy(redshift=0.1), al.Galaxy(redshift=0.2)]
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[al.Galaxy(redshift=0.1), al.Galaxy(redshift=0.2)]
             )
 
             assert (
@@ -1339,9 +1335,9 @@ class TestAbstractTracerLensing:
             )
             g1 = al.Galaxy(redshift=0.5)
 
-            image_plane = al.Plane(galaxy_list=[g0])
+            image_plane = al.Plane(galaxies=[g0])
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_potential = image_plane.potential_2d_from(grid=sub_grid_2d_7x7)
 
@@ -1370,7 +1366,7 @@ class TestAbstractTracerLensing:
 
             g2_potential = g2.potential_2d_from(grid=sub_grid_2d_7x7)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             image_plane_potential = tracer.image_plane.potential_2d_from(
                 grid=sub_grid_2d_7x7
@@ -1405,7 +1401,7 @@ class TestAbstractTracerLensing:
 
             g1_potential = g1.potential_2d_from(grid=grid_2d_irregular_7x7)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_potential = tracer.image_plane.potential_2d_from(
                 grid=grid_2d_irregular_7x7
@@ -1428,8 +1424,8 @@ class TestAbstractTracerLensing:
             self, sub_grid_2d_7x7
         ):
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)]
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)]
             )
 
             assert (
@@ -1437,8 +1433,8 @@ class TestAbstractTracerLensing:
                 == np.zeros(shape=(7, 7))
             ).all()
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[al.Galaxy(redshift=0.1), al.Galaxy(redshift=0.2)]
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[al.Galaxy(redshift=0.1), al.Galaxy(redshift=0.2)]
             )
 
             assert (
@@ -1456,9 +1452,9 @@ class TestAbstractTracerLensing:
             )
             g1 = al.Galaxy(redshift=0.5)
 
-            image_plane = al.Plane(galaxy_list=[g0])
+            image_plane = al.Plane(galaxies=[g0])
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_deflections = image_plane.deflections_yx_2d_from(
                 grid=sub_grid_2d_7x7
@@ -1491,7 +1487,7 @@ class TestAbstractTracerLensing:
 
             g2_deflections = g2.deflections_yx_2d_from(grid=sub_grid_2d_7x7)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             image_plane_deflections = tracer.image_plane.deflections_yx_2d_from(
                 grid=sub_grid_2d_7x7
@@ -1528,7 +1524,7 @@ class TestAbstractTracerLensing:
 
             g1_deflections = g1.deflections_yx_2d_from(grid=grid_2d_irregular_7x7)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             image_plane_deflections = tracer.image_plane.deflections_yx_2d_from(
                 grid=grid_2d_irregular_7x7
@@ -1555,8 +1551,8 @@ class TestAbstractTracerLensing:
             self, sub_grid_2d_7x7
         ):
 
-            tracer = al.Tracer.from_galaxy_list(
-                galaxy_list=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)]
+            tracer = al.Tracer.from_galaxies(
+                galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)]
             )
 
             tracer_deflections = tracer.deflections_of_planes_summed_from(
@@ -1582,7 +1578,7 @@ class TestAbstractTracerLensing:
             )
             g1 = al.Galaxy(redshift=1.0)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             grid_at_redshift = tracer.grid_at_redshift_from(
                 grid=sub_grid_2d_7x7, redshift=0.5
@@ -1625,7 +1621,7 @@ class TestAbstractTracerLensing:
             )
             g4 = al.Galaxy(redshift=2.0)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2, g3, g4])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, g3, g4])
 
             traced_grids_of_planes = tracer.traced_grid_list_from(grid=sub_grid_2d_7x7)
 
@@ -1680,7 +1676,7 @@ class TestAbstractTracerLensing:
             )
             g2 = al.Galaxy(redshift=2.0)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
             grid_at_redshift = tracer.grid_at_redshift_from(
                 grid=sub_grid_2d_7x7, redshift=1.9
@@ -1707,7 +1703,7 @@ class TestAbstractTracerLensing:
                 ),
             )
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+            tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
             grid_at_redshift = tracer.grid_at_redshift_from(
                 grid=sub_grid_2d_7x7.mask.unmasked_grid_sub_1, redshift=0.3
@@ -1742,7 +1738,7 @@ class TestAbstractTracerLensing:
                 hyper_galaxy_image=hyper_galaxy_image,
             )
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[galaxy_0, galaxy_1])
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1])
 
             assert (
                 tracer.contribution_map
@@ -1761,7 +1757,7 @@ class TestAbstractTracerLensing:
 
             galaxy_0 = al.Galaxy(redshift=0.5)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[galaxy_0, galaxy_1])
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1])
 
             assert (
                 tracer.contribution_map == tracer.source_plane.contribution_map
@@ -1775,7 +1771,7 @@ class TestAbstractTracerLensing:
 
             galaxy_1 = al.Galaxy(redshift=1.0)
 
-            tracer = al.Tracer.from_galaxy_list(galaxy_list=[galaxy_0, galaxy_1])
+            tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1])
 
             assert tracer.contribution_map == None
             assert tracer.contribution_map_list[0] == None
@@ -1794,7 +1790,7 @@ class TestAbstractTracerData:
         )
         galaxy_no_pix = al.Galaxy(redshift=0.5)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[galaxy_no_pix, galaxy_pix])
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_pix])
 
         pixelization_grids = tracer.sparse_image_plane_grid_pg_list_from(
             grid=sub_grid_2d_7x7
@@ -1825,8 +1821,8 @@ class TestAbstractTracerData:
         galaxy_no_pix_1 = al.Galaxy(redshift=0.5)
         galaxy_no_pix_2 = al.Galaxy(redshift=1.5)
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[
                 galaxy_pix0,
                 galaxy_pix1,
                 galaxy_no_pix_0,
@@ -1858,7 +1854,7 @@ class TestAbstractTracerData:
         )
         galaxy_no_pix = al.Galaxy(redshift=0.5)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[galaxy_no_pix, galaxy_pix])
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_pix])
 
         traced_pixelization_grids, sparse_image_grid = tracer.traced_sparse_grid_pg_list_from(
             grid=sub_grid_2d_7x7
@@ -1892,8 +1888,8 @@ class TestAbstractTracerData:
             regularization=MockRegularization(),
         )
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[galaxy_no_pix, galaxy_pix_0, galaxy_pix_1]
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[galaxy_no_pix, galaxy_pix_0, galaxy_pix_1]
         )
 
         traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = tracer.traced_sparse_grid_pg_list_from(
@@ -1937,8 +1933,8 @@ class TestAbstractTracerData:
         galaxy_no_pix_1 = al.Galaxy(redshift=0.5)
         galaxy_no_pix_2 = al.Galaxy(redshift=1.5)
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[
                 galaxy_pix_0,
                 galaxy_pix_1,
                 galaxy_no_pix_0,
@@ -1964,7 +1960,7 @@ class TestAbstractTracerData:
 
         galaxy_no_pix = al.Galaxy(redshift=0.5)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[galaxy_no_pix, galaxy_no_pix])
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_no_pix])
 
         mappers_of_planes = tracer.mapper_list_from(grid=sub_grid_2d_7x7)
         assert mappers_of_planes == []
@@ -1993,8 +1989,8 @@ class TestAbstractTracerData:
             regularization=MockRegularization(),
         )
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[galaxy_no_pix, galaxy_pix_0, galaxy_pix_1, galaxy_pix_2]
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[galaxy_no_pix, galaxy_pix_0, galaxy_pix_1, galaxy_pix_2]
         )
 
         mapper_list = tracer.mapper_list_from(grid=sub_grid_2d_7x7)
@@ -2025,8 +2021,8 @@ class TestAbstractTracerData:
             regularization=MockRegularization(),
         )
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[
                 galaxy_no_pix_0,
                 galaxy_no_pix_1,
                 galaxy_no_pix_2,
@@ -2046,7 +2042,7 @@ class TestAbstractTracerData:
 
         g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[al.Galaxy(redshift=0.5), g0])
+        tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
         inversion = tracer.inversion_imaging_from(
             grid=sub_grid_2d_7x7,
@@ -2071,7 +2067,7 @@ class TestAbstractTracerData:
 
         g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[al.Galaxy(redshift=0.5), g0])
+        tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
         inversion = tracer.inversion_interferometer_from(
             grid=sub_grid_2d_7x7,
@@ -2115,9 +2111,9 @@ class TestAbstractTracerData:
             hyper_minimum_value=0.0,
         )
 
-        plane_0 = al.Plane(redshift=0.5, galaxy_list=[galaxy_0])
-        plane_1 = al.Plane(redshift=0.5, galaxy_list=[galaxy_1])
-        plane_2 = al.Plane(redshift=1.0, galaxy_list=[al.Galaxy(redshift=0.5)])
+        plane_0 = al.Plane(redshift=0.5, galaxies=[galaxy_0])
+        plane_1 = al.Plane(redshift=0.5, galaxies=[galaxy_1])
+        plane_2 = al.Plane(redshift=1.0, galaxies=[al.Galaxy(redshift=0.5)])
 
         hyper_noise_map_0 = plane_0.hyper_noise_map_from(noise_map=noise_map_1d)
         hyper_noise_map_1 = plane_1.hyper_noise_map_from(noise_map=noise_map_1d)
@@ -2134,8 +2130,8 @@ class TestAbstractTracerData:
 
         assert (hyper_noise_map.slim == hyper_noise_map_0 + hyper_noise_map_1).all()
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[galaxy_0, galaxy_1], cosmology=cosmo.Planck15
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[galaxy_0, galaxy_1], cosmology=cosmo.Planck15
         )
 
         hyper_noise_maps = tracer.hyper_noise_map_list_from(noise_map=noise_map_1d)
@@ -2149,8 +2145,8 @@ class TestTracer:
         self, sub_grid_2d_7x7_simple
     ):
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
         )
 
         traced_deflections_between_planes = tracer.deflections_between_planes_from(
@@ -2191,9 +2187,7 @@ class TestTracer:
         self, sub_grid_2d_7x7_simple, gal_x1_mp
     ):
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[gal_x1_mp, al.Galaxy(redshift=1.0)]
-        )
+        tracer = al.Tracer.from_galaxies(galaxies=[gal_x1_mp, al.Galaxy(redshift=1.0)])
 
         traced_deflections_between_planes = tracer.deflections_between_planes_from(
             grid=sub_grid_2d_7x7_simple, plane_i=0, plane_j=1
@@ -2216,8 +2210,8 @@ class TestTracer:
         self, sub_grid_2d_7x7_simple, gal_x1_mp
     ):
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[gal_x1_mp, gal_x1_mp, al.Galaxy(redshift=1.0)]
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[gal_x1_mp, gal_x1_mp, al.Galaxy(redshift=1.0)]
         )
 
         traced_deflections_between_planes = tracer.deflections_between_planes_from(
@@ -2257,10 +2251,10 @@ class TestTracerFixedSlices:
 
         # Plane redshifts are [0.25, 0.5, 1.25, 2.0]
 
-        assert tracer.planes[0].galaxy_list == [los_g0, los_g1]
-        assert tracer.planes[1].galaxy_list == [lens_g0, los_g2, los_g3]
-        assert tracer.planes[2].galaxy_list == []
-        assert tracer.planes[3].galaxy_list == [source_g0]
+        assert tracer.planes[0].galaxies == [los_g0, los_g1]
+        assert tracer.planes[1].galaxies == [lens_g0, los_g2, los_g3]
+        assert tracer.planes[2].galaxies == []
+        assert tracer.planes[3].galaxies == [source_g0]
 
     def test__4_planes__data_grid_and_deflections_stacks_are_correct__sis_mass_profile(
         self, sub_grid_2d_7x7_simple
@@ -2295,7 +2289,7 @@ class TestTracerFixedSlices:
 
         traced_grids = tracer.traced_grid_list_from(grid=sub_grid_2d_7x7_simple)
 
-        # This test_autoarray is essentially the same as the TracerMulti test_autoarray, we just slightly change how many galaxy_list go
+        # This test_autoarray is essentially the same as the TracerMulti test_autoarray, we just slightly change how many galaxies go
         # in each plane and therefore change the factor in front of val for different planes.
 
         # The scaling factors are as follows and were computed indepedently from the test_autoarray.
@@ -2318,7 +2312,7 @@ class TestTracerFixedSlices:
             np.array([(1.0 - beta_01 * 2.0), 0.0]), 1e-4
         )
 
-        #  galaxy_list in this plane, so multiply by 3
+        #  galaxies in this plane, so multiply by 3
 
         defl11 = 3.0 * lens_g0.deflections_yx_2d_from(
             grid=np.array([[(1.0 - beta_01 * 2.0 * val), (1.0 - beta_01 * 2.0 * val)]])
@@ -2355,8 +2349,8 @@ class TestExtractAttribute:
             mp_1=MockMassProfile(value=0.6),
         )
 
-        plane_0 = al.Plane(galaxy_list=[al.Galaxy(redshift=0.5)], redshift=None)
-        plane_1 = al.Plane(galaxy_list=[al.Galaxy(redshift=1.0)], redshift=None)
+        plane_0 = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
+        plane_1 = al.Plane(galaxies=[al.Galaxy(redshift=1.0)], redshift=None)
 
         tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
@@ -2364,8 +2358,8 @@ class TestExtractAttribute:
 
         assert values == None
 
-        plane_0 = al.Plane(galaxy_list=[g0], redshift=None)
-        plane_1 = al.Plane(galaxy_list=[g1], redshift=None)
+        plane_0 = al.Plane(galaxies=[g0], redshift=None)
+        plane_1 = al.Plane(galaxies=[g1], redshift=None)
 
         tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
@@ -2377,8 +2371,8 @@ class TestExtractAttribute:
 
         assert values.in_list == [(1.0, 1.0), (2.0, 2.0)]
 
-        plane_0 = al.Plane(galaxy_list=[g0, g1], redshift=None)
-        plane_1 = al.Plane(galaxy_list=[g2], redshift=None)
+        plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)
+        plane_1 = al.Plane(galaxies=[g2], redshift=None)
 
         tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
@@ -2398,8 +2392,8 @@ class TestExtractAttribute:
             mp_1=MockMassProfile(value=0.6),
         )
 
-        plane_0 = al.Plane(galaxy_list=[al.Galaxy(redshift=0.5)], redshift=None)
-        plane_1 = al.Plane(galaxy_list=[al.Galaxy(redshift=1.0)], redshift=None)
+        plane_0 = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
+        plane_1 = al.Plane(galaxies=[al.Galaxy(redshift=1.0)], redshift=None)
 
         tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
@@ -2409,8 +2403,8 @@ class TestExtractAttribute:
 
         assert values == [None, None]
 
-        plane_0 = al.Plane(galaxy_list=[g0], redshift=None)
-        plane_1 = al.Plane(galaxy_list=[g1], redshift=None)
+        plane_0 = al.Plane(galaxies=[g0], redshift=None)
+        plane_1 = al.Plane(galaxies=[g1], redshift=None)
 
         tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
@@ -2428,9 +2422,9 @@ class TestExtractAttribute:
         assert values[0].in_list == [(1.0, 1.0)]
         assert values[1].in_list == [(2.0, 2.0)]
 
-        plane_0 = al.Plane(galaxy_list=[g0, g1], redshift=None)
-        plane_1 = al.Plane(galaxy_list=[al.Galaxy(redshift=0.5)], redshift=None)
-        plane_2 = al.Plane(galaxy_list=[g2], redshift=None)
+        plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)
+        plane_1 = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
+        plane_2 = al.Plane(galaxies=[g2], redshift=None)
 
         tracer = al.Tracer(planes=[plane_0, plane_1, plane_2], cosmology=None)
 
@@ -2461,8 +2455,8 @@ class TestExtractAttribute:
             mp_1=MockMassProfile(value=0.6),
         )
 
-        plane_0 = al.Plane(galaxy_list=[al.Galaxy(redshift=0.5)], redshift=None)
-        plane_1 = al.Plane(galaxy_list=[al.Galaxy(redshift=1.0)], redshift=None)
+        plane_0 = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
+        plane_1 = al.Plane(galaxies=[al.Galaxy(redshift=1.0)], redshift=None)
 
         tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
@@ -2472,8 +2466,8 @@ class TestExtractAttribute:
 
         assert values == [None, None]
 
-        plane_0 = al.Plane(galaxy_list=[g0], redshift=None)
-        plane_1 = al.Plane(galaxy_list=[g1], redshift=None)
+        plane_0 = al.Plane(galaxies=[g0], redshift=None)
+        plane_1 = al.Plane(galaxies=[g1], redshift=None)
 
         tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=None)
 
@@ -2491,9 +2485,9 @@ class TestExtractAttribute:
         assert values[0].in_list == [(1.0, 1.0)]
         assert values[1].in_list == [(2.0, 2.0)]
 
-        plane_0 = al.Plane(galaxy_list=[g0, g1], redshift=None)
-        plane_1 = al.Plane(galaxy_list=[al.Galaxy(redshift=0.5)], redshift=None)
-        plane_2 = al.Plane(galaxy_list=[g2], redshift=None)
+        plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)
+        plane_1 = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
+        plane_2 = al.Plane(galaxies=[g2], redshift=None)
 
         tracer = al.Tracer(planes=[plane_0, plane_1, plane_2], cosmology=None)
 
@@ -2526,7 +2520,7 @@ class TestExtractAttribute:
             mp_3=MockMassProfile(value=0.6),
         )
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2], cosmology=None)
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2], cosmology=None)
 
         profile = tracer.extract_profile(profile_name="mp_0")
 
@@ -2548,7 +2542,7 @@ class TestExtractAttribute:
             mp_3=MockMassProfile(value=0.6),
         )
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2], cosmology=None)
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2], cosmology=None)
 
         plane_index = tracer.extract_plane_index_of_profile(profile_name="mp_0")
 
@@ -2575,8 +2569,8 @@ class TestSNRLightProfiles:
 
         sersic = al.lp_snr.EllSersic(signal_to_noise_ratio=10.0, effective_radius=0.01)
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[
                 al.Galaxy(redshift=0.5, mass=mass),
                 al.Galaxy(redshift=1.0, light=sersic),
             ]
@@ -2609,9 +2603,7 @@ class TestRegression:
             mass_0=al.mp.EllIsothermal(centre=(2.0, 1.0), einstein_radius=1.0),
         )
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[galaxy, al.Galaxy(redshift=1.0)]
-        )
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
 
         convergence = tracer.convergence_2d_from(grid=grid)
         max_indexes = np.unravel_index(
@@ -2637,9 +2629,7 @@ class TestRegression:
             mass_0=al.mp.SphIsothermal(centre=(2.0, 1.0), einstein_radius=1.0),
         )
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[galaxy, al.Galaxy(redshift=1.0)]
-        )
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
 
         convergence = tracer.convergence_2d_from(grid=grid)
         max_indexes = np.unravel_index(
@@ -2672,9 +2662,7 @@ class TestRegression:
             mass_0=al.mp.EllIsothermal(centre=(2.0, 1.0), einstein_radius=1.0),
         )
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[galaxy, al.Galaxy(redshift=1.0)]
-        )
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
 
         convergence = tracer.convergence_2d_from(grid=grid)
         max_indexes = np.unravel_index(
@@ -2699,9 +2687,7 @@ class TestRegression:
             mass=al.mp.SphIsothermal(centre=(2.0, 1.0), einstein_radius=1.0),
         )
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[galaxy, al.Galaxy(redshift=1.0)]
-        )
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
 
         convergence = tracer.convergence_2d_from(grid=grid)
         max_indexes = np.unravel_index(
@@ -2741,7 +2727,7 @@ class TestDecorators:
             mask=mask, fractional_accuracy=1.0, sub_steps=[2]
         )
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_x1_lp])
+        tracer = al.Tracer.from_galaxies(galaxies=[gal_x1_lp])
 
         image = tracer.image_2d_from(grid=grid)
 
@@ -2759,7 +2745,7 @@ class TestDecorators:
             redshift=0.5, light=al.lp.EllSersic(centre=(0.08, 0.08), intensity=1.0)
         )
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[galaxy])
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy])
 
         image = tracer.image_2d_from(grid=grid)
 
@@ -2795,7 +2781,7 @@ class TestDecorators:
             mask=mask, fractional_accuracy=1.0, sub_steps=[2]
         )
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[gal_x1_lp])
+        tracer = al.Tracer.from_galaxies(galaxies=[gal_x1_lp])
 
         images = tracer.image_2d_list_from(grid=grid)
 
@@ -2813,7 +2799,7 @@ class TestDecorators:
             redshift=0.5, light=al.lp.EllSersic(centre=(0.08, 0.08), intensity=1.0)
         )
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[galaxy])
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy])
 
         images = tracer.image_2d_list_from(grid=grid)
 
@@ -2845,9 +2831,7 @@ class TestDecorators:
             mass=al.mp.EllIsothermal(centre=(0.08, 0.08), einstein_radius=1.0),
         )
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[galaxy, al.Galaxy(redshift=1.0)]
-        )
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
 
         deflections = tracer.deflections_yx_2d_from(grid=grid)
 
@@ -2866,9 +2850,7 @@ class TestDecorators:
             mass=al.mp.EllIsothermal(centre=(0.08, 0.08), einstein_radius=1.0),
         )
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[galaxy, al.Galaxy(redshift=1.0)]
-        )
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy, al.Galaxy(redshift=1.0)])
 
         deflections = tracer.deflections_yx_2d_from(grid=grid)
 

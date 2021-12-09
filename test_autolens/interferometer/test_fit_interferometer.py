@@ -13,7 +13,7 @@ class TestFitProperties:
 
         g2 = al.Galaxy(redshift=2.0)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
         fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
@@ -25,7 +25,7 @@ class TestFitProperties:
             regularization=al.reg.Constant(),
         )
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
         fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
@@ -68,7 +68,7 @@ class TestLikelihood:
         g0 = al.Galaxy(
             redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(2))
         )
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
         fit = al.FitInterferometer(dataset=interferometer, tracer=tracer)
 
@@ -125,7 +125,7 @@ class TestLikelihood:
 
         model_visibilities_manual = transformer.visibilities_from(image=image)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
         fit = al.FitInterferometer(dataset=interferometer, tracer=tracer)
 
@@ -204,7 +204,7 @@ class TestLikelihood:
         g0 = al.Galaxy(
             redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(2))
         )
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
@@ -233,7 +233,7 @@ class TestCompareToManualProfilesOnly:
 
         g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
         fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
@@ -291,7 +291,7 @@ class TestCompareToManualProfilesOnly:
         g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
         g2 = al.Galaxy(redshift=1.0)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
         fit = al.FitInterferometer(dataset=interferometer_7_grid, tracer=tracer)
 
@@ -317,7 +317,7 @@ class TestCompareToManualProfilesOnly:
         g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
         g2 = al.Galaxy(redshift=1.0)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
         fit = al.FitInterferometer(dataset=interferometer_7_grid, tracer=tracer)
 
@@ -367,7 +367,7 @@ class TestCompareToManualProfilesOnly:
 
         g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
         fit = al.FitInterferometer(
             dataset=interferometer_7,
@@ -399,7 +399,7 @@ class TestCompareToManualInversionOnly:
 
         g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[al.Galaxy(redshift=0.5), g0])
+        tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
         fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
@@ -490,7 +490,7 @@ class TestCompareToManualInversionOnly:
         g0 = al.Galaxy(redshift=0.5)
         g1 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
         fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
@@ -517,7 +517,7 @@ class TestCompareToManualInversionOnly:
         g0 = al.Galaxy(redshift=0.5)
         g1 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
         fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
@@ -554,7 +554,7 @@ class TestCompareToManualInversionOnly:
 
         g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[al.Galaxy(redshift=0.5), g0])
+        tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
         fit = al.FitInterferometer(
             dataset=interferometer_7,
@@ -581,7 +581,7 @@ class TestCompareToManualInversionOnly:
             hyper_galaxy_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
         )
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[al.Galaxy(redshift=0.5), g0])
+        tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
         fit_0 = al.FitInterferometer(
             dataset=interferometer_7,
@@ -619,7 +619,7 @@ class TestCompareToManualInversionOnly:
 
         g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[al.Galaxy(redshift=0.5), g0])
+        tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
         fit = al.FitInterferometer(
             dataset=interferometer_7_lop,
@@ -719,7 +719,7 @@ class TestCompareToManualProfilesAndInversion:
         reg = al.reg.Constant(coefficient=1.0)
         galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[galaxy_light, galaxy_pix])
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
         fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
@@ -831,7 +831,7 @@ class TestCompareToManualProfilesAndInversion:
         reg = al.reg.Constant(coefficient=1.0)
         galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2, galaxy_pix])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 
         fit = al.FitInterferometer(dataset=interferometer_7_grid, tracer=tracer)
 
@@ -892,7 +892,7 @@ class TestCompareToManualProfilesAndInversion:
         reg = al.reg.Constant(coefficient=1.0)
         galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2, galaxy_pix])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 
         fit = al.FitInterferometer(dataset=interferometer_7_grid, tracer=tracer)
 
@@ -962,7 +962,7 @@ class TestCompareToManualProfilesAndInversion:
         reg = al.reg.Constant(coefficient=1.0)
         galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[galaxy_light, galaxy_pix])
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
         fit = al.FitInterferometer(
             dataset=interferometer_7,

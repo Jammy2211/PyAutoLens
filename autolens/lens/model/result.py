@@ -25,7 +25,7 @@ class Result(AgResult):
     @property
     def source_plane_light_profile_centre(self) -> aa.Grid2DIrregular:
         """
-        Return a light profile centre of one of the a galaxy_list in the maximum log likelihood `Tracer`'s source-plane.
+        Return a light profile centre of one of the a galaxies in the maximum log likelihood `Tracer`'s source-plane.
         If there are multiple light profiles, the first light profile's centre is returned.
 
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
@@ -120,7 +120,7 @@ class Result(AgResult):
     @property
     def path_galaxy_tuples(self) -> [(str, ag.Galaxy)]:
         """
-        Tuples associating the names of galaxy_list with instances from the best fit
+        Tuples associating the names of galaxies with instances from the best fit
         """
         return self.instance.path_instance_tuples_for_class(cls=ag.Galaxy)
 
@@ -214,7 +214,7 @@ class ResultDataset(Result):
     @property
     def image_galaxy_dict(self) -> {str: ag.Galaxy}:
         """
-        A dictionary associating galaxy names with model images of those galaxy_list.
+        A dictionary associating galaxy names with model images of those galaxies.
 
         This is used for creating the hyper-dataset used by Analysis objects to adapt aspects of a model to the dataset
         being fitted.

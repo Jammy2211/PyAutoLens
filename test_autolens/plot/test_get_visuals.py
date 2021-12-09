@@ -36,10 +36,10 @@ def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
     assert visuals_2d_via.origin.in_list == [(0.0, 0.0)]
     assert (visuals_2d_via.border == grid_2d_7x7.mask.border_grid_sub_1.binned).all()
     assert visuals_2d_via.light_profile_centres.in_list == [
-        tracer_x2_plane_7x7.galaxy_list[1].light_profile_0.centre
+        tracer_x2_plane_7x7.galaxies[1].light_profile_0.centre
     ]
     assert visuals_2d_via.mass_profile_centres.in_list == [
-        tracer_x2_plane_7x7.galaxy_list[0].mass_profile_0.centre
+        tracer_x2_plane_7x7.galaxies[0].mass_profile_0.centre
     ]
     assert (
         visuals_2d_via.critical_curves[0]
@@ -67,7 +67,7 @@ def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
     )[1]
     assert (visuals_2d_via.border == traced_border).all()
     assert visuals_2d_via.light_profile_centres.in_list == [
-        tracer_x2_plane_7x7.galaxy_list[1].light_profile_0.centre
+        tracer_x2_plane_7x7.galaxies[1].light_profile_0.centre
     ]
     assert visuals_2d_via.mass_profile_centres is None
     assert (

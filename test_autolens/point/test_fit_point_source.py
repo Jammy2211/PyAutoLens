@@ -44,8 +44,8 @@ class TestAbstractFitPositionsSourcePlane:
 
     def test__same_as_above_with_real_tracer(self):
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[
                 al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=1.0)),
                 al.Galaxy(redshift=1.0),
             ]
@@ -72,8 +72,8 @@ class TestFitPositionsImage:
 
         point_source = al.ps.Point(centre=(0.1, 0.1))
         galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[al.Galaxy(redshift=0.5), galaxy_point_source]
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source]
         )
 
         positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
@@ -112,7 +112,7 @@ class TestFitPositionsImage:
 
         g0 = al.Galaxy(redshift=1.0, point_0=al.ps.Point(centre=(0.1, 0.1)))
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[al.Galaxy(redshift=0.5), g0])
+        tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
         positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
         noise_map = al.ValuesIrregular([0.5, 1.0])
@@ -147,7 +147,7 @@ class TestFitPositionsImage:
         g1 = al.Galaxy(redshift=1.0, point_0=al.ps.Point(centre=(0.1, 0.1)))
         g2 = al.Galaxy(redshift=2.0, point_1=al.ps.Point(centre=(0.1, 0.1)))
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
         positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
         noise_map = al.ValuesIrregular([0.5, 1.0])
@@ -190,8 +190,8 @@ class TestFitPositionsSource:
 
         point_source = al.ps.PointSourceChi(centre=(0.0, 0.0))
         galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[al.Galaxy(redshift=0.5), galaxy_point_source]
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source]
         )
 
         positions = al.Grid2DIrregular([(0.0, 1.0), (0.0, 2.0)])
@@ -215,9 +215,7 @@ class TestFitPositionsSource:
             mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0),
         )
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[galaxy_mass, galaxy_point_source]
-        )
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy_mass, galaxy_point_source])
 
         fit = al.FitPositionsSource(
             name="point_0", positions=positions, noise_map=noise_map, tracer=tracer
@@ -232,7 +230,7 @@ class TestFitPositionsSource:
         g1 = al.Galaxy(redshift=1.0, point_0=al.ps.Point(centre=(0.1, 0.1)))
         g2 = al.Galaxy(redshift=2.0, point_1=al.ps.Point(centre=(0.1, 0.1)))
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
         positions = al.Grid2DIrregular([(0.0, 1.0), (0.0, 2.0)])
         noise_map = al.ValuesIrregular([0.5, 1.0])
@@ -289,9 +287,7 @@ class TestFitFluxes:
 
         point_source = al.ps.PointFlux(centre=(0.1, 0.1), flux=2.0)
         galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[gal_x1_mp, galaxy_point_source]
-        )
+        tracer = al.Tracer.from_galaxies(galaxies=[gal_x1_mp, galaxy_point_source])
 
         fluxes = al.ValuesIrregular([1.0, 2.0])
         noise_map = al.ValuesIrregular([3.0, 1.0])
@@ -314,7 +310,7 @@ class TestFitFluxes:
         g1 = al.Galaxy(redshift=1.0, point_0=al.ps.PointFlux(flux=1.0))
         g2 = al.Galaxy(redshift=2.0, point_1=al.ps.PointFlux(flux=2.0))
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
         fluxes = al.ValuesIrregular([1.0])
         noise_map = al.ValuesIrregular([3.0])
@@ -365,8 +361,8 @@ class TestFitPointDict:
         point_source = al.ps.Point(centre=(0.1, 0.1))
         galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[al.Galaxy(redshift=0.5), galaxy_point_source]
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source]
         )
 
         positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
@@ -414,8 +410,8 @@ class TestFitPointDict:
         point_source = al.ps.PointFlux(centre=(0.1, 0.1), flux=2.0)
         galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[al.Galaxy(redshift=0.5), galaxy_point_source]
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source]
         )
 
         positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
@@ -487,12 +483,8 @@ class TestFitPointDict:
             redshift=1.0, point_1=al.ps.PointSourceChi(centre=(0.1, 0.1))
         )
 
-        tracer = al.Tracer.from_galaxy_list(
-            galaxy_list=[
-                al.Galaxy(redshift=0.5),
-                galaxy_point_image,
-                galaxy_point_source,
-            ]
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[al.Galaxy(redshift=0.5), galaxy_point_image, galaxy_point_source]
         )
 
         positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])

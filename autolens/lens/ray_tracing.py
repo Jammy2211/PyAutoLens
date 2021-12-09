@@ -23,19 +23,19 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         """
         Ray-tracer for a lens system with any number of planes.
 
-        The redshift of these planes are specified by the redshits of the galaxy_list; there is a unique plane redshift \
-        for every unique galaxy redshift (galaxy_list with identical redshifts are put in the same plane).
+        The redshift of these planes are specified by the redshits of the galaxies; there is a unique plane redshift \
+        for every unique galaxy redshift (galaxies with identical redshifts are put in the same plane).
 
         To perform multi-plane ray-tracing, a cosmology must be supplied so that deflection-angles can be rescaled \
-        according to the lens-geometry of the multi-plane system. All galaxy_list input to the tracer must therefore \
+        according to the lens-geometry of the multi-plane system. All galaxies input to the tracer must therefore \
         have redshifts.
 
         This tracer has only one grid (see gridStack) which is used for ray-tracing.
 
         Parameters
         ----------
-        galaxy_list : [Galaxy]
-            The list of galaxy_list in the ray-tracing calculation.
+        galaxies : [Galaxy]
+            The list of galaxies in the ray-tracing calculation.
         image_plane_grid : grid_stacks.GridStack
             The image-plane grid which is traced. (includes the grid, sub-grid, blurring-grid, etc.).
         border : masks.GridBorder
@@ -54,24 +54,11 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def from_galaxies(
         cls, galaxies, cosmology=cosmo.Planck15, profiling_dict: Optional[Dict] = None
     ):
-        return cls.from_galaxy_list(
-            galaxy_list=galaxies, cosmology=cosmology, profiling_dict=profiling_dict
-        )
 
-    @classmethod
-    def from_galaxy_list(
-        cls,
-        galaxy_list,
-        cosmology=cosmo.Planck15,
-        profiling_dict: Optional[Dict] = None,
-    ):
-
-        plane_redshifts = ag.util.plane.ordered_plane_redshifts_from(
-            galaxy_list=galaxy_list
-        )
+        plane_redshifts = ag.util.plane.ordered_plane_redshifts_from(galaxies=galaxies)
 
         galaxies_in_planes = ag.util.plane.galaxies_in_redshift_ordered_planes_from(
-            galaxy_list=galaxy_list, plane_redshifts=plane_redshifts
+            galaxies=galaxies, plane_redshifts=plane_redshifts
         )
 
         planes = []
@@ -79,7 +66,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         for plane_index in range(0, len(plane_redshifts)):
             planes.append(
                 ag.Plane(
-                    galaxy_list=galaxies_in_planes[plane_index],
+                    galaxies=galaxies_in_planes[plane_index],
                     profiling_dict=profiling_dict,
                 )
             )
@@ -102,7 +89,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
          *slices_between_main_planes*. Every galaxy is placed in its closest plane in redshift-space.
 
         To perform multi-plane ray-tracing, a cosmology must be supplied so that deflection-angles can be rescaled \
-        according to the lens-geometry of the multi-plane system. All galaxy_list input to the tracer must therefore \
+        according to the lens-geometry of the multi-plane system. All galaxies input to the tracer must therefore \
         have redshifts.
 
         This tracer has only one grid (see gridStack) which is used for ray-tracing.
@@ -110,7 +97,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         Parameters
         ----------
         lens_galaxies : [Galaxy]
-            The list of galaxy_list in the ray-tracing calculation.
+            The list of galaxies in the ray-tracing calculation.
         image_plane_grid : grid_stacks.GridStack
             The image-plane grid which is traced. (includes the grid, sub-grid, blurring-grid, etc.).
         planes_between_lenses : [int]
@@ -124,7 +111,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         """
 
         lens_redshifts = ag.util.plane.ordered_plane_redshifts_from(
-            galaxy_list=lens_galaxies
+            galaxies=lens_galaxies
         )
 
         plane_redshifts = ag.util.plane.ordered_plane_redshifts_with_slicing_from(
@@ -134,7 +121,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         )
 
         galaxies_in_planes = ag.util.plane.galaxies_in_redshift_ordered_planes_from(
-            galaxy_list=lens_galaxies + line_of_sight_galaxies,
+            galaxies=lens_galaxies + line_of_sight_galaxies,
             plane_redshifts=plane_redshifts,
         )
 
@@ -147,7 +134,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
             planes.append(
                 ag.Plane(
                     redshift=plane_redshifts[plane_index],
-                    galaxy_list=galaxies_in_planes[plane_index],
+                    galaxies=galaxies_in_planes[plane_index],
                 )
             )
 
@@ -171,8 +158,8 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
             json.dump(self.dict(), f, indent=4)
 
     @property
-    def galaxy_list(self) -> List[ag.Galaxy]:
-        return list([galaxy for plane in self.planes for galaxy in plane.galaxy_list])
+    def galaxies(self) -> List[ag.Galaxy]:
+        return list([galaxy for plane in self.planes for galaxy in plane.galaxies])
 
     @property
     def total_planes(self) -> int:
@@ -191,7 +178,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         return None not in self.plane_redshifts
 
     def plane_with_galaxy(self, galaxy) -> Plane:
-        return [plane for plane in self.planes if galaxy in plane.galaxy_list][0]
+        return [plane for plane in self.planes if galaxy in plane.galaxies][0]
 
     @aa.profile_func
     def sparse_image_plane_grid_pg_list_from(
@@ -338,7 +325,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
                 plane_index_insert = plane_index
 
         planes = self.planes
-        planes.insert(plane_index_insert, ag.Plane(redshift=redshift, galaxy_list=[]))
+        planes.insert(plane_index_insert, ag.Plane(redshift=redshift, galaxies=[]))
 
         tracer = Tracer(planes=planes, cosmology=self.cosmology)
 
@@ -381,7 +368,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         the instance of each galaxy as the dictionary keys.
 
         This object is used for hyper-features, which use the image of each galaxy in a model-fit in order to
-        adapt quantities like a pixelization or regularization scheme to the surface brightness of the galaxy_list being
+        adapt quantities like a pixelization or regularization scheme to the surface brightness of the galaxies being
         fitted.
 
         By inheriting from `OperateImageGalaxies` functions which apply operations of this dictionary are accessible,
@@ -406,7 +393,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
             images_of_galaxies = plane.image_2d_list_from(
                 grid=traced_grid_list[plane_index]
             )
-            for (galaxy_index, galaxy) in enumerate(plane.galaxy_list):
+            for (galaxy_index, galaxy) in enumerate(plane.galaxies):
                 galaxy_image_dict[galaxy] = images_of_galaxies[galaxy_index]
 
         return galaxy_image_dict
@@ -492,9 +479,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     @property
     def pixelization_list(self) -> List:
         return [
-            galaxy.pixelization
-            for galaxy in self.galaxy_list
-            if galaxy.has_pixelization
+            galaxy.pixelization for galaxy in self.galaxies if galaxy.has_pixelization
         ]
 
     @property
@@ -505,7 +490,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def regularization_list(self) -> List:
         return [
             galaxy.regularization
-            for galaxy in self.galaxy_list
+            for galaxy in self.galaxies
             if galaxy.has_regularization
         ]
 
@@ -684,7 +669,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         ValuesIrregular(values=[axis_ratio_0, axis_ratio_1])
 
-        If the image plane has has two galaxy_list with two mass profiles and the source plane another galaxy with a
+        If the image plane has has two galaxies with two mass profiles and the source plane another galaxy with a
         mass profile, the following:
 
         `tracer.extract_attribute(cls=MassProfile, name="centre")`
@@ -705,7 +690,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         attributes = [
             extract(value, attr_name)
-            for galaxy in self.galaxy_list
+            for galaxy in self.galaxies
             for value in galaxy.__dict__.values()
             if isinstance(value, cls)
         ]
@@ -731,7 +716,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         [ValuesIrregular(values=[axis_ratio_0]), ValuesIrregular(values=[axis_ratio_1])]
 
-        If the image plane has two galaxy_list with a mass profile each and the source plane another galaxy with a
+        If the image plane has two galaxies with a mass profile each and the source plane another galaxy with a
         mass profile, the following:
 
         `tracer.extract_attributes_of_planes(cls=MassProfile, name="centres")`
@@ -766,7 +751,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def extract_attributes_of_galaxies(self, cls, attr_name, filter_nones=False):
         """
         Returns an attribute of a class in the tracer as a list of `ValueIrregular` or `Grid2DIrregular` objects, where
-        the indexes of the list correspond to the tracer's galaxy_list. If a plane has multiple galaxy_list they are split
+        the indexes of the list correspond to the tracer's galaxies. If a plane has multiple galaxies they are split
         into separate indexes int he list.
 
         For example, if a tracer has an image-plane with a galaxy with a light profile and a source-plane with a galaxy
@@ -778,7 +763,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         [ValuesIrregular(values=[axis_ratio_0]), ValuesIrregular(values=[axis_ratio_1])]
 
-        If the image plane has two galaxy_list with a mass profile each and the source plane another galaxy with a
+        If the image plane has two galaxies with a mass profile each and the source plane another galaxy with a
         mass profile, the following:
 
         `tracer.extract_attributes_of_galaxies(cls=MassProfile, name="centres")`
@@ -809,7 +794,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
             return [
                 galaxy.extract_attribute(cls=cls, attr_name=attr_name)
-                for galaxy in self.galaxy_list
+                for galaxy in self.galaxies
                 if galaxy.extract_attribute(cls=cls, attr_name=attr_name) is not None
             ]
 
@@ -817,21 +802,21 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
             return [
                 galaxy.extract_attribute(cls=cls, attr_name=attr_name)
-                for galaxy in self.galaxy_list
+                for galaxy in self.galaxies
             ]
 
     def extract_profile(self, profile_name):
         """
         Returns a `LightProfile`, `MassProfile` or `Point` from the `Tracer` using the name of that component.
 
-        For example, if a tracer has two galaxy_list, `lens` and `source` with `LightProfile`'s name `light_0` and
+        For example, if a tracer has two galaxies, `lens` and `source` with `LightProfile`'s name `light_0` and
         `light_1`, the following:
 
         `tracer.extract_profile(profile_name="light_1")`
 
         Would return the `LightProfile` of the source plane.
         """
-        for galaxy in self.galaxy_list:
+        for galaxy in self.galaxies:
             try:
                 return galaxy.__dict__[profile_name]
             except KeyError:
@@ -842,7 +827,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         Returns the plane index of a  LightProfile`, `MassProfile` or `Point` from the `Tracer` using the name
         of that component.
 
-        For example, if a tracer has two galaxy_list, `lens` and `source` with `LightProfile`'s name `light_0` and
+        For example, if a tracer has two galaxies, `lens` and `source` with `LightProfile`'s name `light_0` and
         `light_1`, the following:
 
         `tracer.extract_profile(profile_name="light_1")`
@@ -850,7 +835,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         Would return `plane_index=1` given the profile is in the source plane.
         """
         for plane_index, plane in enumerate(self.planes):
-            for galaxy in plane.galaxy_list:
+            for galaxy in plane.galaxies:
                 if profile_name in galaxy.__dict__:
                     return plane_index
 
@@ -868,7 +853,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         traced_grids_of_planes = self.traced_grid_list_from(grid=grid)
 
         for plane_index, plane in enumerate(self.planes):
-            for galaxy in plane.galaxy_list:
+            for galaxy in plane.galaxies:
                 for light_profile in galaxy.light_profile_list:
                     if isinstance(light_profile, LightProfileSNR):
                         light_profile.set_intensity_from(

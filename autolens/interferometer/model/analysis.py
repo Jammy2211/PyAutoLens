@@ -42,7 +42,7 @@ class AnalysisInterferometer(AnalysisDataset):
         such as visualization, outputting results to hard-disk and storing results in a format that can be loaded after
         the model-fit is complete using PyAutoFit's database tools.
 
-        This Analysis class is used for all model-fits which fit galaxy_list (or objects containing galaxy_list like a
+        This Analysis class is used for all model-fits which fit galaxies (or objects containing galaxies like a
         `Tracer`) to an interferometer dataset.
 
         This class stores the settings used to perform the model-fit for certain components of the model (e.g. a
@@ -54,7 +54,7 @@ class AnalysisInterferometer(AnalysisDataset):
         dataset
             The interferometer dataset that the model is fitted too.
         hyper_dataset_result
-            The hyper-model image and hyper galaxy_list images of a previous result in a model-fitting pipeline, which are
+            The hyper-model image and hyper galaxies images of a previous result in a model-fitting pipeline, which are
             used by certain classes for adapting the analysis to the properties of the dataset.
         cosmology
             The Cosmology assumed for this analysis.
@@ -105,7 +105,7 @@ class AnalysisInterferometer(AnalysisDataset):
             The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
             visualization and the pickled objects used by the aggregator output by this function.
         model
-            The PyAutoFit model object, which includes model components representing the galaxy_list that are fitted to
+            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
             the imaging data.
         """
         self.check_and_replace_hyper_images(paths=paths)
@@ -136,8 +136,8 @@ class AnalysisInterferometer(AnalysisDataset):
         fitted.
 
         This passes the hyper model image and hyper galaxy images of the previous fit. These represent where different
-        galaxy_list in the dataset are located and thus allows the fit to adapt different aspects of the model to
-        different galaxy_list in the data.
+        galaxies in the dataset are located and thus allows the fit to adapt different aspects of the model to
+        different galaxies in the data.
 
         It also passes hyper visibilities, which are used to scale the noise of a visibility dataset.
 
@@ -160,28 +160,28 @@ class AnalysisInterferometer(AnalysisDataset):
     ) -> af.ModelInstance:
         """
         Using the model visibilities that were set up as the hyper dataset, associate the galaxy images of that result
-        with the galaxy_list in this model fit.
+        with the galaxies in this model fit.
 
         Association is performed based on galaxy names, whereby if the name of a galaxy in this search matches the
-        full-path name of galaxy_list in the hyper dataset the galaxy image is passed.
+        full-path name of galaxies in the hyper dataset the galaxy image is passed.
 
         If the galaxy collection has a different name then an association is not made.
 
-        For example, `galaxy_list.lens` will match with:
-            `galaxy_list.lens`
+        For example, `galaxies.lens` will match with:
+            `galaxies.lens`
         but not with:
-            `galaxy_list.source`
+            `galaxies.source`
 
         Parameters
         ----------
         instance
             An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
-            via a non-linear search), which has 0 or more galaxy_list in its tree.
+            via a non-linear search), which has 0 or more galaxies in its tree.
 
         Returns
         -------
         instance
-           The input instance with visibilities associated with galaxy_list where possible.
+           The input instance with visibilities associated with galaxies where possible.
         """
         if self.hyper_galaxy_visibilities_path_dict is not None:
             for galaxy_path, galaxy in instance.path_instance_tuples_for_class(
@@ -204,13 +204,13 @@ class AnalysisInterferometer(AnalysisDataset):
 
         For this analysis class, this function performs the following steps:
 
-        1) If the analysis has a hyper dataset, associated the model galaxy images of this dataset to the galaxy_list in
+        1) If the analysis has a hyper dataset, associated the model galaxy images of this dataset to the galaxies in
         the model instance.
 
         2) Extract attributes which model aspects of the data reductions, like the scaling the background sky
         and background noise.
 
-        3) Extracts all galaxy_list from the model instance and set up a `Tracer`, which includes ordering the galaxy_list
+        3) Extracts all galaxies from the model instance and set up a `Tracer`, which includes ordering the galaxies
         by redshift to set up each `Plane`.
 
         4) Use the `Tracer` and other attributes to create a `FitInterferometer` object, which performs steps such as
@@ -315,7 +315,7 @@ class AnalysisInterferometer(AnalysisDataset):
         Parameters
         ----------
         tracer
-            The tracer of galaxy_list whose ray-traced model images are used to fit the imaging data.
+            The tracer of galaxies whose ray-traced model images are used to fit the imaging data.
         hyper_image_sky
             A model component which scales the background sky level of the data before computing the log likelihood.
         hyper_background_noise
@@ -430,12 +430,12 @@ class AnalysisInterferometer(AnalysisDataset):
 
         The visualization performed by this function includes:
 
-        - Images of the best-fit `Tracer`, including the images of each of its galaxy_list.
+        - Images of the best-fit `Tracer`, including the images of each of its galaxies.
 
         - Images of the best-fit `FitInterferometer`, including the model-image, residuals and chi-squared of its fit
         to the imaging data.
 
-        - The hyper-images of the model-fit showing how the hyper galaxy_list are used to represent different galaxy_list in
+        - The hyper-images of the model-fit showing how the hyper galaxies are used to represent different galaxies in
         the dataset.
 
         - If hyper features are used to scale the noise, a `FitInterferometer` with these features turned off may be
@@ -510,7 +510,7 @@ class AnalysisInterferometer(AnalysisDataset):
             A PyAutoFit object which contains the samples of the non-linear search, for example the chains of an MCMC
             run of samples of the nested sampler.
         model
-            The PyAutoFit model object, which includes model components representing the galaxy_list that are fitted to
+            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
             the imaging data.
         """
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
@@ -539,7 +539,7 @@ class AnalysisInterferometer(AnalysisDataset):
             A PyAutoFit object which contains the samples of the non-linear search, for example the chains of an MCMC
             run of samples of the nested sampler.
         model
-            The PyAutoFit model object, which includes model components representing the galaxy_list that are fitted to
+            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
             the imaging data.
         search
             The non-linear search used to perform this model-fit.

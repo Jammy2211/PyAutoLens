@@ -736,7 +736,7 @@ class TestPositionSolver:
 
         g1 = al.Galaxy(redshift=1.0)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
         solver = PointSolver(grid=grid, pixel_scale_precision=0.01)
 
@@ -766,7 +766,7 @@ class TestPositionSolver:
 
         g2 = al.Galaxy(redshift=2.0)
 
-        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
         solver = PointSolver(grid=grid, pixel_scale_precision=0.01)
 

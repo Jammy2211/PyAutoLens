@@ -115,7 +115,7 @@ functions before the Python interpreter runs:
         The minimum percentage value the hyper image is mulitpled by in order to determine the value fluxes are rounded
         up to.
     hyper_noise_limit -> float
-        When noise scaling is activated (E.g. via hyper galaxy_list) this value is the highest value a noise value can
+        When noise scaling is activated (E.g. via hyper galaxies) this value is the highest value a noise value can
         numerically be scaled up too. This prevents extremely large noise map values creating numerically unstable
         log likelihood values.
     stochastic_outputs -> bool
