@@ -3,7 +3,7 @@ title: "`PyAutoLens`: Open-Source Strong Gravitational Lensing"
 tags:
   - astronomy
   - gravitational lensing
-  - galaxies
+  - galaxy_list
   - cosmology
   - Python
 authors:
@@ -80,9 +80,9 @@ bibliography: paper.bib
 # Summary
 
 Strong gravitational lensing, which can make a background source galaxy appears multiple times due to its light rays being 
-deflected by the mass of one or more foreground lens galaxies, provides astronomers with a powerful tool to study dark 
+deflected by the mass of one or more foreground lens galaxy_list, provides astronomers with a powerful tool to study dark 
 matter, cosmology and the most distant Universe. `PyAutoLens` is an open-source Python 3.6+ package for strong 
-gravitational lensing, with core features including fully automated strong lens modeling of galaxies and galaxy 
+gravitational lensing, with core features including fully automated strong lens modeling of galaxy_list and galaxy 
 clusters, support for direct imaging and interferometer datasets and comprehensive tools for simulating samples of 
 strong lenses. The API allows users to perform ray-tracing by using analytic light and mass profiles to build strong 
 lens systems. Accompanying `PyAutoLens` is the [autolens workspace](https://github.com/Jammy2211/autolens_workspace), which 
@@ -93,10 +93,10 @@ or checkout the [readthedocs](https://pyautolens.readthedocs.io/en/latest/) for 
 
 # Background
 
-When two galaxies are aligned down the line-of-sight to Earth, light rays from the background galaxy are deflected by the 
-intervening mass of one or more foreground galaxies. Sometimes its light is fully bent around the foreground galaxies, 
+When two galaxy_list are aligned down the line-of-sight to Earth, light rays from the background galaxy are deflected by the 
+intervening mass of one or more foreground galaxy_list. Sometimes its light is fully bent around the foreground galaxy_list, 
 traversing multiple paths to the Earth, meaning that the background galaxy is observed multiple times. This alignment 
-of galaxies is called a strong gravitational lens, an example of which, SLACS1430+4105, is shown in the image 
+of galaxy_list is called a strong gravitational lens, an example of which, SLACS1430+4105, is shown in the image 
 below. The massive elliptical lens galaxy can be seen in the centre of the left panel, surrounded by a multiply 
 imaged source galaxy whose light has been distorted into an Einstein ring. The central panel shows a `PyAutoLens`
 reconstruction of the lensed source's light, where the foreground lens's light was simultaneously fitted for and 
@@ -108,7 +108,7 @@ how the source's light is gravitationally lensed.
 
 Strong lensing provides astronomers with an invaluable tool to study a diverse range of topics. Mass modeling of 
 strong lenses has quantified the distribution of stars [@Koopmans2009] [@Sonnenfeld2015] [@Treu2009] [@Nightingale2019] 
-and invisible dark matter [@Vegetti2014] of galaxies. The source galaxy is highly magnified and reconstruction of 
+and invisible dark matter [@Vegetti2014] of galaxy_list. The source galaxy is highly magnified and reconstruction of 
 its light allows a view of fainter or more distant objects than would otherwise be possible [@Dye2014] [@Enia2018]. 
 Strong lensing is a competitive test of cosmological models, for example the expansion rate of the Universe can 
 be inferred from the 'time-delay' between different image paths to the same distant quasar [@Suyu2016]. Strong lensing
@@ -143,7 +143,7 @@ data via a non-linear search (e.g., `dynesty` [@dynesty], `emcee` [@emcee], `PyS
 lens model with a `Pixelization` and `Regularization` object, the background source's light is reconstructed using a 
 rectangular grid or Voronoi mesh that accounts for irregular galaxy morphologies. Lensed quasar and supernovae datasets 
 can be fitted using a `Point`, which uses their observed positions, flux-ratios and time-delays to fit the lens 
-model. Strong lensing clusters consisting of any number of lens galaxies can also be analysed with `PyAutoLens` using these objects.
+model. Strong lensing clusters consisting of any number of lens galaxy_list can also be analysed with `PyAutoLens` using these objects.
 
 Automated lens modeling uses `PyAutoFit`'s non-linear search chaining feature, which breaks the model-fit into 
 a chained sequence of non-linear searches. These fits pass information gained about simpler lens models fitted by earlier 

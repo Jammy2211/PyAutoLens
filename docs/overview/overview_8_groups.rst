@@ -4,14 +4,14 @@ Group-Scale Lenses
 ==================
 
 The strong lenses we've discussed so far have just a single lens galaxy responsible for the lensing, with a single
-source galaxy observed to be lensed. A strong lensing group is a system where there are multiple lens galaxies,
+source galaxy observed to be lensed. A strong lensing group is a system where there are multiple lens galaxy_list,
 deflecting the one or more background sources:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/groups/image.png
   :width: 400
   :alt: Alternative text
 
-The Source's ring is much larger than other examples (> 5.0") and there are clearly additional galaxies in and around
+The Source's ring is much larger than other examples (> 5.0") and there are clearly additional galaxy_list in and around
 the main lens galaxy. 
 
 Point Source
@@ -32,7 +32,7 @@ model and reduces the computational run-time of the model-fit.
 Model via JSON
 --------------
 
-We now compose the lens model. For groups there could be many hundreds of galaxies in the model. Whereas previous
+We now compose the lens model. For groups there could be many hundreds of galaxy_list in the model. Whereas previous
 examples explicitly wrote the model out via Python code, for group modeling we opt to write the model in .json files,
 which is loaded as follows:
 
@@ -47,9 +47,9 @@ which is loaded as follows:
     sources_file = path.join(model_path, "sources.json")
     sources = af.Collection.from_json(file=sources_file)
 
-    galaxies = lenses + sources
+    galaxy_list = lenses + sources
 
-    model = af.Collection(galaxies=galaxies)
+    model = af.Collection(galaxy_list=galaxy_list)
 
 This .json file contains all the information on this particular lens's model, including priors which adjust their
 centre to the centre of light of each lens galaxy. The script used to make the model can be viewed at
@@ -78,14 +78,14 @@ The result contains information on every galaxy in our lens model:
 
 .. code-block:: bash
 
-    print(result.max_log_likelihood_instance.galaxies.lens_0.mass)
-    print(result.max_log_likelihood_instance.galaxies.lens_1.mass)
-    print(result.max_log_likelihood_instance.galaxies.lens_2.mass)
+    print(result.max_log_likelihood_instance.galaxy_list.lens_0.mass)
+    print(result.max_log_likelihood_instance.galaxy_list.lens_1.mass)
+    print(result.max_log_likelihood_instance.galaxy_list.lens_2.mass)
 
 Extended Source Fitting
 -----------------------
 
-For group-scale lenses like this one, with a modest number of lens and source galaxies, **PyAutoLens** has all the
+For group-scale lenses like this one, with a modest number of lens and source galaxy_list, **PyAutoLens** has all the
 tools you need to perform extended surface-brightness fitting to the source's extended emission, including the use
 of a pixelized source reconstruction.
 

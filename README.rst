@@ -23,7 +23,7 @@ PyAutoLens: Open-Source Strong Lensing
 `Introduction on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=introduction.ipynb>`_ |
 `HowToLens <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
 
-When two or more galaxies are aligned perfectly down our line-of-sight, the background galaxy appears multiple times.
+When two or more galaxy_list are aligned perfectly down our line-of-sight, the background galaxy appears multiple times.
 This is called strong gravitational lensing and **PyAutoLens** makes it simple to model strong gravitational lenses,
 like this one:
 
@@ -85,11 +85,11 @@ lens ``Galaxy`` with an ``EllIsothermal`` ``MassProfile`` lenses a background so
     source_galaxy = al.Galaxy(redshift=1.0, disk=disk)
 
     """
-    We create the strong lens using a Tracer, which uses the galaxies, their redshifts
+    We create the strong lens using a Tracer, which uses the galaxy_list, their redshifts
     and an input cosmology to determine how light is deflected on its path to Earth.
     """
-    tracer = al.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy], cosmology=cosmo.Planck15
+    tracer = al.Tracer.from_galaxy_list(
+        galaxy_list=[lens_galaxy, source_galaxy], cosmology=cosmo.Planck15
     )
 
     """
@@ -136,11 +136,11 @@ with an ``EllSersic``.
 
     """
     To setup these profiles as model components whose parameters are free & fitted for
-    we set up each Galaxy as a Model and define the model as a Collection of all galaxies.
+    we set up each Galaxy as a Model and define the model as a Collection of all galaxy_list.
     """
     lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=lens_mass_profile)
     source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=source_light_profile)
-    model = af.Collection(galaxies=af.Collection(lens=lens_galaxy_model, source=source_galaxy_model))
+    model = af.Collection(galaxy_list=af.Collection(lens=lens_galaxy_model, source=source_galaxy_model))
 
     """
     We define the non-linear search used to fit the model to the data (in this case, Dynesty).

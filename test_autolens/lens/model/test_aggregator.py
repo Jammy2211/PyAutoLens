@@ -20,7 +20,7 @@ def make_path():
 @pytest.fixture(name="model")
 def make_model():
     return af.Collection(
-        galaxies=af.Collection(
+        galaxy_list=af.Collection(
             lens=af.Model(al.Galaxy, redshift=0.5, light=al.lp.EllSersic),
             source=af.Model(al.Galaxy, redshift=1.0, light=al.lp.EllSersic),
         )
@@ -32,7 +32,7 @@ def make_samples(model):
     galaxy_0 = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(centre=(0.0, 1.0)))
     galaxy_1 = al.Galaxy(redshift=1.0, light=al.lp.EllSersic())
 
-    tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1])
+    tracer = al.Tracer.from_galaxy_list(galaxy_list=[galaxy_0, galaxy_1])
 
     parameters = [model.prior_count * [1.0], model.prior_count * [10.0]]
 
@@ -81,9 +81,9 @@ class TestTracerAgg:
     #
     #     for tracer in tracer_gen:
     #
-    #         assert tracer.galaxies[0].redshift == 0.5
-    #         assert tracer.galaxies[0].light.centre == (0.0, 1.0)
-    #         assert tracer.galaxies[1].redshift == 1.0
+    #         assert tracer.galaxy_list[0].redshift == 0.5
+    #         assert tracer.galaxy_list[0].light.centre == (0.0, 1.0)
+    #         assert tracer.galaxy_list[1].redshift == 1.0
     #
     #     clean(database_file=database_file, result_path=result_path)
 
@@ -119,9 +119,9 @@ class TestTracerAgg:
 
                 i += 1
 
-                assert tracer.galaxies[0].redshift == 0.5
-                assert tracer.galaxies[0].light.centre == (10.0, 10.0)
-                assert tracer.galaxies[1].redshift == 1.0
+                assert tracer.galaxy_list[0].redshift == 0.5
+                assert tracer.galaxy_list[0].light.centre == (10.0, 10.0)
+                assert tracer.galaxy_list[1].redshift == 1.0
 
         assert i == 2
 
@@ -160,15 +160,15 @@ class TestTracerAgg:
 
                 if i == 1:
 
-                    assert tracer.galaxies[0].redshift == 0.5
-                    assert tracer.galaxies[0].light.centre == (1.0, 1.0)
-                    assert tracer.galaxies[1].redshift == 1.0
+                    assert tracer.galaxy_list[0].redshift == 0.5
+                    assert tracer.galaxy_list[0].light.centre == (1.0, 1.0)
+                    assert tracer.galaxy_list[1].redshift == 1.0
 
                 if i == 2:
 
-                    assert tracer.galaxies[0].redshift == 0.5
-                    assert tracer.galaxies[0].light.centre == (10.0, 10.0)
-                    assert tracer.galaxies[1].redshift == 1.0
+                    assert tracer.galaxy_list[0].redshift == 0.5
+                    assert tracer.galaxy_list[0].light.centre == (10.0, 10.0)
+                    assert tracer.galaxy_list[1].redshift == 1.0
 
             for weight in weight_gen:
 

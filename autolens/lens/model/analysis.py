@@ -55,7 +55,7 @@ class AnalysisLensing:
         self, instance: af.ModelInstance, profiling_dict: Optional[Dict] = None
     ) -> Tracer:
         """
-        Create a `Tracer` from the galaxies contained in a model instance.
+        Create a `Tracer` from the galaxy_list contained in a model instance.
 
         If PyAutoFit's profiling tools are used with the analsyis class, this function may receive a `profiling_dict`
         which times how long each set of the model-fit takes to perform.
@@ -72,10 +72,10 @@ class AnalysisLensing:
             An instance of the Tracer class that is used to then fit the dataset.
         """
         if hasattr(instance, "perturbation"):
-            instance.galaxies.subhalo = instance.perturbation
+            instance.galaxy_list.subhalo = instance.perturbation
 
-        return Tracer.from_galaxies(
-            galaxies=instance.galaxies,
+        return Tracer.from_galaxy_list(
+            galaxy_list=instance.galaxy_list,
             cosmology=self.cosmology,
             profiling_dict=profiling_dict,
         )
@@ -143,12 +143,12 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
     def set_preloads(self, paths: af.DirectoryPaths, model: af.Collection):
         """
         It is common for the model to have components whose parameters are all fixed, and thus the way that component
-        fits the data does not change. For example, if all parameter associated with the light profiles of galaxies
-        in the model are fixed, the image generated from these galaxies will not change irrespective of the model
+        fits the data does not change. For example, if all parameter associated with the light profiles of galaxy_list
+        in the model are fixed, the image generated from these galaxy_list will not change irrespective of the model
         parameters chosen by the non-linear search.
 
         Preloading exploits this to speed up the log likelihood function, by inspecting the model and storing in memory
-        quantities that do not change. For the example above, the image of all galaxies would be stored in memory and
+        quantities that do not change. For the example above, the image of all galaxy_list would be stored in memory and
         to perform every fit in the `log_likelihood_funtion`.
 
         This function sets up all preload quantities, which are described fully in the `preloads` modules. This
@@ -160,7 +160,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
             visualization and the pickled objects used by the aggregator output by this function.
         model
-            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
+            The PyAutoFit model object, which includes model components representing the galaxy_list that are fitted to
             the imaging data.
         """
 
@@ -227,7 +227,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
             visualization and the pickled objects used by the aggregator output by this function.
         model
-            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
+            The PyAutoFit model object, which includes model components representing the galaxy_list that are fitted to
             the imaging data.
         result
             The result of the model fit that has just been completed.

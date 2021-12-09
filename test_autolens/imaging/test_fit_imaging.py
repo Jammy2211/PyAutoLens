@@ -13,7 +13,7 @@ class TestFitProperties:
 
         g2 = al.Galaxy(redshift=2.0)
 
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -25,7 +25,7 @@ class TestFitProperties:
             regularization=al.reg.Constant(),
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -49,7 +49,7 @@ class TestFitProperties:
             regularization=al.reg.Constant(),
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
 
         fit = al.FitImaging(
             dataset=masked_imaging_7x7,
@@ -96,7 +96,7 @@ class TestLikelihood:
         g0 = al.Galaxy(
             redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(2))
         )
-        tracer = al.Tracer.from_galaxies(galaxies=[g0])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0])
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -200,7 +200,7 @@ class TestLikelihood:
         g0 = al.Galaxy(
             redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(2))
         )
-        tracer = al.Tracer.from_galaxies(galaxies=[g0])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0])
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -315,7 +315,7 @@ class TestLikelihood:
             hyper_minimum_value=0.0,
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[g0])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0])
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -415,7 +415,7 @@ class TestLikelihood:
         g0 = al.Galaxy(
             redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(2))
         )
-        tracer = al.Tracer.from_galaxies(galaxies=[g0])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0])
 
         hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
 
@@ -521,7 +521,7 @@ class TestLikelihood:
         g0 = al.Galaxy(
             redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(2))
         )
-        tracer = al.Tracer.from_galaxies(galaxies=[g0])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0])
 
         hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
@@ -643,7 +643,7 @@ class TestLikelihood:
             hyper_minimum_value=0.0,
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[g0])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0])
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -666,7 +666,7 @@ class TestCompareToManualProfilesOnly:
 
         g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
 
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -726,7 +726,7 @@ class TestCompareToManualProfilesOnly:
         g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
         g2 = al.Galaxy(redshift=1.0)
 
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -788,7 +788,7 @@ class TestCompareToManualProfilesOnly:
         )
         g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
 
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
 
         fit = al.FitImaging(
             dataset=masked_imaging_7x7,
@@ -874,7 +874,7 @@ class TestCompareToManualProfilesOnly:
 
         g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
 
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -923,7 +923,7 @@ class TestCompareToManualInversionOnly:
 
         g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[al.Galaxy(redshift=0.5), g0])
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -1004,7 +1004,7 @@ class TestCompareToManualInversionOnly:
         g0 = al.Galaxy(redshift=0.5)
         g1 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -1056,7 +1056,7 @@ class TestCompareToManualInversionOnly:
             hyper_minimum_value=0.0,
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[al.Galaxy(redshift=0.5), g0])
 
         fit = al.FitImaging(
             dataset=masked_imaging_7x7,
@@ -1153,7 +1153,7 @@ class TestCompareToManualInversionOnly:
 
         g0 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[al.Galaxy(redshift=0.5), g0])
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -1186,7 +1186,7 @@ class TestCompareToManualInversionOnly:
             hyper_galaxy_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[al.Galaxy(redshift=0.5), g0])
 
         fit_0 = al.FitImaging(
             dataset=masked_imaging_7x7,
@@ -1225,7 +1225,7 @@ class TestCompareToManualProfilesAndInversion:
         reg = al.reg.Constant(coefficient=1.0)
         galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[galaxy_light, galaxy_pix])
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -1326,7 +1326,7 @@ class TestCompareToManualProfilesAndInversion:
         reg = al.reg.Constant(coefficient=1.0)
         galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2, galaxy_pix])
 
         masked_imaging_7x7.image[0] = 3.0
 
@@ -1415,7 +1415,7 @@ class TestCompareToManualProfilesAndInversion:
         reg = al.reg.Constant(coefficient=1.0)
         galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[galaxy_light, galaxy_pix])
 
         fit = al.FitImaging(
             dataset=masked_imaging_7x7,
@@ -1529,7 +1529,7 @@ class TestCompareToManualProfilesAndInversion:
         reg = al.reg.Constant(coefficient=1.0)
         galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-        tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[galaxy_light, galaxy_pix])
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -1574,7 +1574,7 @@ class TestRefit:
 
         g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
 
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1])
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -1604,7 +1604,7 @@ class TestAttributes:
             redshift=1.0, light_profile=MockLightProfile(image_2d=3.0 * np.ones(1))
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
 
         fit = al.FitImaging(dataset=masked_imaging_no_blur_7x7, tracer=tracer)
 
@@ -1624,7 +1624,7 @@ class TestAttributes:
             redshift=1.0, light_profile=MockLightProfile(image_2d=3.0 * np.ones(1))
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0, g1, g2])
 
         fit = al.FitImaging(dataset=masked_imaging_no_blur_7x7, tracer=tracer)
 
@@ -1639,7 +1639,7 @@ class TestPreload:
             redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(1))
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[g0])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[g0])
 
         fit = al.FitImaging(dataset=masked_imaging_no_blur_7x7, tracer=tracer)
 

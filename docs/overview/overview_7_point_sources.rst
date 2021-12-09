@@ -3,7 +3,7 @@
 Point Sources
 =============
 
-So far, we have shown strongly lensed galaxies whose extended surface brightness is lensed into the awe-inspiring
+So far, we have shown strongly lensed galaxy_list whose extended surface brightness is lensed into the awe-inspiring
 giant arcs and Einstein rings we see in high quality telescope imaging. There are many lenses where the background
 source is not extended but is instead a point-source, for example strongly lensed quasars and supernovae.
 
@@ -41,7 +41,7 @@ To treat a source as a point source, we create it as a galaxy using ``Point`` ob
 
     source_galaxy = al.Galaxy(redshift=1.0, point_0=point_source)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer.from_galaxy_list(galaxy_list=[lens_galaxy, source_galaxy])
 
 Position Solving
 ----------------
@@ -154,8 +154,8 @@ the lens model.
     lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal)
     source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, point_0=al.ps.Point)
 
-    galaxies = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
-    model = af.Collection(galaxies=galaxies)
+    galaxy_list = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
+    model = af.Collection(galaxy_list=galaxy_list)
 
     search = af.DynestyStatic(name="overview_point_source")
 

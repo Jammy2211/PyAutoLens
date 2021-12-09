@@ -47,7 +47,7 @@ class AnalysisImaging(AnalysisDataset):
             The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
             visualization and the pickled objects used by the aggregator output by this function.
         model
-            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
+            The PyAutoFit model object, which includes model components representing the galaxy_list that are fitted to
             the imaging data.
         """
         self.check_and_replace_hyper_images(paths=paths)
@@ -80,13 +80,13 @@ class AnalysisImaging(AnalysisDataset):
 
         For this analysis class, this function performs the following steps:
 
-        1) If the analysis has a hyper dataset, associated the model galaxy images of this dataset to the galaxies in
+        1) If the analysis has a hyper dataset, associated the model galaxy images of this dataset to the galaxy_list in
         the model instance.
 
         2) Extract attributes which model aspects of the data reductions, like the scaling the background sky
         and background noise.
 
-        3) Extracts all galaxies from the model instance and set up a `Tracer`, which includes ordering the galaxies
+        3) Extracts all galaxy_list from the model instance and set up a `Tracer`, which includes ordering the galaxy_list
         by redshift to set up each `Plane`.
 
         4) Use the `Tracer` and other attributes to create a `FitImaging` object, which performs steps such as creating
@@ -201,7 +201,7 @@ class AnalysisImaging(AnalysisDataset):
         Parameters
         ----------
         tracer
-            The tracer of galaxies whose ray-traced model images are used to fit the imaging data.
+            The tracer of galaxy_list whose ray-traced model images are used to fit the imaging data.
         hyper_image_sky
             A model component which scales the background sky level of the data before computing the log likelihood.
         hyper_background_noise
@@ -399,12 +399,12 @@ class AnalysisImaging(AnalysisDataset):
 
         The visualization performed by this function includes:
 
-        - Images of the best-fit `Tracer`, including the images of each of its galaxies.
+        - Images of the best-fit `Tracer`, including the images of each of its galaxy_list.
 
         - Images of the best-fit `FitImaging`, including the model-image, residuals and chi-squared of its fit to
         the imaging data.
 
-        - The hyper-images of the model-fit showing how the hyper galaxies are used to represent different galaxies in
+        - The hyper-images of the model-fit showing how the hyper galaxy_list are used to represent different galaxy_list in
         the dataset.
 
         - If hyper features are used to scale the noise or background sky, a `FitImaging` with these features turned
@@ -478,7 +478,7 @@ class AnalysisImaging(AnalysisDataset):
             A PyAutoFit object which contains the samples of the non-linear search, for example the chains of an MCMC
             run of samples of the nested sampler.
         model
-            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
+            The PyAutoFit model object, which includes model components representing the galaxy_list that are fitted to
             the imaging data.
         """
         pixelization = ag.util.model.pixelization_from(model=model)
@@ -512,7 +512,7 @@ class AnalysisImaging(AnalysisDataset):
             A PyAutoFit object which contains the samples of the non-linear search, for example the chains of an MCMC
             run of samples of the nested sampler.
         model
-            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
+            The PyAutoFit model object, which includes model components representing the galaxy_list that are fitted to
             the imaging data.
         search
             The non-linear search used to perform this model-fit.

@@ -23,7 +23,7 @@ class SetupHyper(ag.SetupHyper):
     ):
         """
         The hyper setup of a pipeline, which controls how hyper-features in PyAutoLens template pipelines run,
-        for example controlling whether hyper galaxies are used to scale the noise and the non-linear searches used
+        for example controlling whether hyper galaxy_list are used to scale the noise and the non-linear searches used
         in these searchs.
 
         Users can write their own pipelines which do not use or require the *SetupHyper* class.
@@ -108,14 +108,14 @@ class SetupHyper(ag.SetupHyper):
 
         if hasattr(result, "hyper"):
             return self.hyper_galaxy_via_galaxy_model_from(
-                galaxy_model=result.hyper.model.galaxies.lens,
-                galaxy_instance=result.hyper.instance.galaxies.lens,
+                galaxy_model=result.hyper.model.galaxy_list.lens,
+                galaxy_instance=result.hyper.instance.galaxy_list.lens,
                 noise_factor_is_model=noise_factor_is_model,
             )
 
         return self.hyper_galaxy_via_galaxy_model_from(
-            galaxy_model=result.model.galaxies.lens,
-            galaxy_instance=result.instance.galaxies.lens,
+            galaxy_model=result.model.galaxy_list.lens,
+            galaxy_instance=result.instance.galaxy_list.lens,
             noise_factor_is_model=noise_factor_is_model,
         )
 
@@ -151,14 +151,14 @@ class SetupHyper(ag.SetupHyper):
 
         if hasattr(result, "hyper"):
             return self.hyper_galaxy_via_galaxy_model_from(
-                galaxy_model=result.hyper.model.galaxies.source,
-                galaxy_instance=result.hyper.instance.galaxies.source,
+                galaxy_model=result.hyper.model.galaxy_list.source,
+                galaxy_instance=result.hyper.instance.galaxy_list.source,
                 noise_factor_is_model=noise_factor_is_model,
             )
 
         return self.hyper_galaxy_via_galaxy_model_from(
-            galaxy_model=result.model.galaxies.source,
-            galaxy_instance=result.instance.galaxies.source,
+            galaxy_model=result.model.galaxy_list.source,
+            galaxy_instance=result.instance.galaxy_list.source,
             noise_factor_is_model=noise_factor_is_model,
         )
 

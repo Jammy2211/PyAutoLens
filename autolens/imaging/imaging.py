@@ -60,7 +60,7 @@ class SimulatorImaging(aa.SimulatorImaging):
         ----------
         name
         image : np.ndarray
-            The image before simulating (e.g. the lens and source galaxies before optics blurring and Imaging read-out).
+            The image before simulating (e.g. the lens and source galaxy_list before optics blurring and Imaging read-out).
         pixel_scales: float
             The scale of each pixel in arc seconds
         exposure_time_map : np.ndarray
@@ -92,13 +92,13 @@ class SimulatorImaging(aa.SimulatorImaging):
             kernel_shape=self.psf.shape_native
         )
 
-    def via_galaxies_from(self, galaxies, grid, name=None):
+    def via_galaxies_from(self, galaxy_list, grid, name=None):
         """
         Simulate imaging data for this data, as follows:
 
         1)  Setup the image-plane grid of the Imaging arrays, which defines the coordinates used for the ray-tracing.
 
-        2) Use this grid and the lens and source galaxies to setup a tracer, which generates the image of \
+        2) Use this grid and the lens and source galaxy_list to setup a tracer, which generates the image of \
            the simulated imaging data.
 
         3) Simulate the imaging data, using a special image which ensures edge-effects don't
@@ -110,11 +110,11 @@ class SimulatorImaging(aa.SimulatorImaging):
            imaging data instance.
         """
 
-        tracer = Tracer.from_galaxies(galaxies=galaxies)
+        tracer = Tracer.from_galaxy_list(galaxy_list=galaxy_list)
 
         return self.via_tracer_from(tracer=tracer, grid=grid, name=name)
 
-    def via_deflections_and_galaxies_from(self, deflections, galaxies, name=None):
+    def via_deflections_and_galaxies_from(self, deflections, galaxy_list, name=None):
 
         grid = aa.Grid2D.uniform(
             shape_native=deflections.shape_native,
@@ -124,6 +124,6 @@ class SimulatorImaging(aa.SimulatorImaging):
 
         deflected_grid = grid - deflections.binned
 
-        image = sum(map(lambda g: g.image_2d_from(grid=deflected_grid), galaxies))
+        image = sum(map(lambda g: g.image_2d_from(grid=deflected_grid), galaxy_list))
 
         return self.via_image_from(image=image, name=name)

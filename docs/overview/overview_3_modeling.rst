@@ -44,18 +44,18 @@ determined by a fitting procedure.
     )
     source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=al.lp.EllExponential)
 
-We combine the lens and source model galaxies above into a ``Collection``, which is the model we will fit. Note how
-we could easily extend this object to compose highly complex models containing many galaxies.
+We combine the lens and source model galaxy_list above into a ``Collection``, which is the model we will fit. Note how
+we could easily extend this object to compose highly complex models containing many galaxy_list.
 
-The reason we create separate ``Collection``'s for the ``galaxies`` and ``model`` is because the `model`
-can be extended to include other components than just galaxies.
+The reason we create separate ``Collection``'s for the ``galaxy_list`` and ``model`` is because the `model`
+can be extended to include other components than just galaxy_list.
 
 .. code-block:: bash
 
-    galaxies = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
-    model = af.Collection(galaxies=galaxies)
+    galaxy_list = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
+    model = af.Collection(galaxy_list=galaxy_list)
 
-In this example, we fit our strong lens data with two galaxies:
+In this example, we fit our strong lens data with two galaxy_list:
 
     - A lens galaxy with a elliptisl Dev Vaucouleurs ``LightProfile`` representing a bulge and
       elliptical isothermal ``MassProfile`` representing its mass.
@@ -119,8 +119,8 @@ we print the maximum log likelihood model inferred, but the result object contai
 
 .. code-block:: bash
 
-    print(result.max_log_likelihood_instance.galaxies.lens)
-    print(result.max_log_likelihood_instance.galaxies.source)
+    print(result.max_log_likelihood_instance.galaxy_list.lens)
+    print(result.max_log_likelihood_instance.galaxy_list.source)
 
 This result contains the full posterior information of our non-linear search, including all
 parameter samples, log likelihood values and tools to compute the errors on the lens model. **PyAutoLens** includes

@@ -348,7 +348,7 @@ class AbstractFitPositionsSourcePlane:
     ):
         """
         Given a positions dataset, which is a list of positions with names that associated them to model source
-        galaxies, use a `Tracer` to determine the traced coordinate positions in the source-plane.
+        galaxy_list, use a `Tracer` to determine the traced coordinate positions in the source-plane.
 
         Different children of this abstract class are available which use the traced coordinates to define a chi-squared
         value in different ways.
@@ -357,9 +357,9 @@ class AbstractFitPositionsSourcePlane:
         -----------
         positions : Grid2DIrregular
             The (y,x) arc-second coordinates of named positions which the log_likelihood is computed using. Positions
-            are paired to galaxies in the `Tracer` using their names.
+            are paired to galaxy_list in the `Tracer` using their names.
         tracer : Tracer
-            The object that defines the ray-tracing of the strong lens system of galaxies.
+            The object that defines the ray-tracing of the strong lens system of galaxy_list.
         noise_value
             The noise-value assumed when computing the log likelihood.
         """

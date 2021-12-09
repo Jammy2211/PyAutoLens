@@ -114,7 +114,7 @@ class FitImaging(aa.FitImaging):
     @property
     def galaxy_model_image_dict(self) -> {ag.Galaxy: np.ndarray}:
         """
-        A dictionary associating galaxies with their corresponding model images
+        A dictionary associating galaxy_list with their corresponding model images
         """
         galaxy_model_image_dict = self.tracer.galaxy_blurred_image_2d_dict_via_convolver_from(
             grid=self.grid,
@@ -128,7 +128,7 @@ class FitImaging(aa.FitImaging):
 
             galaxy_model_image_dict.update(
                 {
-                    self.tracer.planes[plane_index].galaxies[
+                    self.tracer.planes[plane_index].galaxy_list[
                         0
                     ]: self.inversion.mapped_reconstructed_image
                 }

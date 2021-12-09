@@ -56,7 +56,7 @@ Bugs:
 
 Future:
 
-    - Include output of data for a simulation (galaxies, imaging settings, etc).
+    - Include output of data for a simulation (galaxy_list, imaging settings, etc).
     - Population module for simulating large suites of 'realistic' lenses.
     - Positional / Quasar modeling (time-delays, variable cosmology, PSF refinement).
     - Multi-Imaging analysis.

@@ -14,12 +14,14 @@ directory = path.dirname(path.realpath(__file__))
 class TestAnalysisInterferometer:
     def test__make_result__result_interferometer_is_returned(self, interferometer_7):
 
-        model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
+        model = af.Collection(
+            galaxy_list=af.Collection(galaxy_0=al.Galaxy(redshift=0.5))
+        )
 
         class MockInstance:
             def __init__(self):
 
-                self.galaxies = [al.Galaxy(redshift=0.5)]
+                self.galaxy_list = [al.Galaxy(redshift=0.5)]
 
         samples = mock.MockSamples(max_log_likelihood_instance=MockInstance())
 
@@ -43,7 +45,7 @@ class TestAnalysisInterferometer:
     ):
 
         model = af.Collection(
-            galaxies=af.Collection(
+            galaxy_list=af.Collection(
                 lens=al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal()),
                 source=al.Galaxy(redshift=1.0),
             )
@@ -65,7 +67,7 @@ class TestAnalysisInterferometer:
     ):
         lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
 
-        model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
+        model = af.Collection(galaxy_list=af.Collection(lens=lens_galaxy))
 
         analysis = al.AnalysisInterferometer(dataset=interferometer_7)
 
@@ -86,7 +88,7 @@ class TestAnalysisInterferometer:
         lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
 
         model = af.Collection(
-            galaxies=af.Collection(lens=lens_galaxy),
+            galaxy_list=af.Collection(lens=lens_galaxy),
             hyper_background_noise=hyper_background_noise,
         )
 
@@ -108,17 +110,19 @@ class TestAnalysisInterferometer:
     def test__sets_up_hyper_galaxy_visibiltiies__froms(self, interferometer_7):
 
         hyper_galaxy_image_path_dict = {
-            ("galaxies", "lens"): al.Array2D.ones(
+            ("galaxy_list", "lens"): al.Array2D.ones(
                 shape_native=(3, 3), pixel_scales=1.0
             ),
-            ("galaxies", "source"): al.Array2D.full(
+            ("galaxy_list", "source"): al.Array2D.full(
                 fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0
             ),
         }
 
         hyper_galaxy_visibilities_path_dict = {
-            ("galaxies", "lens"): al.Visibilities.full(fill_value=4.0, shape_slim=(7,)),
-            ("galaxies", "source"): al.Visibilities.full(
+            ("galaxy_list", "lens"): al.Visibilities.full(
+                fill_value=4.0, shape_slim=(7,)
+            ),
+            ("galaxy_list", "source"): al.Visibilities.full(
                 fill_value=5.0, shape_slim=(7,)
             ),
         }
@@ -141,24 +145,24 @@ class TestAnalysisInterferometer:
         analysis.set_hyper_dataset(result=result)
 
         assert (
-            analysis.hyper_galaxy_image_path_dict[("galaxies", "lens")].native
+            analysis.hyper_galaxy_image_path_dict[("galaxy_list", "lens")].native
             == np.ones((3, 3))
         ).all()
 
         assert (
-            analysis.hyper_galaxy_image_path_dict[("galaxies", "source")].native
+            analysis.hyper_galaxy_image_path_dict[("galaxy_list", "source")].native
             == 2.0 * np.ones((3, 3))
         ).all()
 
         assert (analysis.hyper_model_image.native == 3.0 * np.ones((3, 3))).all()
 
         assert (
-            analysis.hyper_galaxy_visibilities_path_dict[("galaxies", "lens")]
+            analysis.hyper_galaxy_visibilities_path_dict[("galaxy_list", "lens")]
             == (4.0 + 4.0j) * np.ones((7,))
         ).all()
 
         assert (
-            analysis.hyper_galaxy_visibilities_path_dict[("galaxies", "source")]
+            analysis.hyper_galaxy_visibilities_path_dict[("galaxy_list", "source")]
             == (5.0 + 5.0j) * np.ones((7,))
         ).all()
 
@@ -166,18 +170,18 @@ class TestAnalysisInterferometer:
 
     def test__stochastic_log_likelihoods_for_instance(self, interferometer_7):
 
-        galaxies = af.ModelInstance()
-        galaxies.lens = al.Galaxy(
+        galaxy_list = af.ModelInstance()
+        galaxy_list.lens = al.Galaxy(
             redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=1.2)
         )
-        galaxies.source = al.Galaxy(
+        galaxy_list.source = al.Galaxy(
             redshift=1.0,
             pixelization=al.pix.VoronoiBrightnessImage(pixels=5),
             regularization=al.reg.Constant(),
         )
 
         instance = af.ModelInstance()
-        instance.galaxies = galaxies
+        instance.galaxy_list = galaxy_list
 
         lens_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
         lens_hyper_image[4] = 10.0
@@ -188,8 +192,8 @@ class TestAnalysisInterferometer:
         )
 
         hyper_galaxy_image_path_dict = {
-            ("galaxies", "lens"): lens_hyper_image,
-            ("galaxies", "source"): source_hyper_image,
+            ("galaxy_list", "lens"): lens_hyper_image,
+            ("galaxy_list", "source"): source_hyper_image,
         }
 
         result = mock.MockResult(

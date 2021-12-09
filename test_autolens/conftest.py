@@ -207,7 +207,7 @@ def make_point_dict():
     return fixtures.make_point_dict()
 
 
-# GALAXIES #
+# galaxy_list #
 
 
 @pytest.fixture(name="ps_0")

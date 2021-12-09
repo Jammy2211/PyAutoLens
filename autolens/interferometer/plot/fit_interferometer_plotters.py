@@ -260,7 +260,7 @@ class FitInterferometerPlotter(Plotter):
         """
         Standard subplot of the real-space attributes of the plotter's `FitInterferometer` object.
 
-        Depending on whether `LightProfile`'s or an `Inversion` are used to represent galaxies in the `Tracer`,
+        Depending on whether `LightProfile`'s or an `Inversion` are used to represent galaxy_list in the `Tracer`,
         different methods are called to create these real-space images.
         """
         if self.fit.inversion is None:

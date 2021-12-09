@@ -45,7 +45,7 @@ the lensed source's light using the ``LinearEqn``:
 
 .. code-block:: bash
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer.from_galaxy_list(galaxy_list=[lens_galaxy, source_galaxy])
 
     fit = al.FitImaging(dataset=imaging, tracer=tracer)
 

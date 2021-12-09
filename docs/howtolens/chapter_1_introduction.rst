@@ -14,14 +14,14 @@ The chapter contains the following tutorials:
 `Tutorial 2: Profiles <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_2_profiles.ipynb>`_
 - Analytic profiles representing light and mass distributions.
 
-`Tutorial 3: Galaxies <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_3_galaxies.ipynb>`_
+`Tutorial 3: galaxy_list <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_3_galaxies.ipynb>`_
 - The objects that make up a strong lens.
 
 `Tutorial 4: Planes <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_4_planes.ipynb>`_
-- Groups of galaxies at a common redshift.
+- Groups of galaxy_list at a common redshift.
 
 `Tutorial 5: Ray Tracing <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_5_ray_tracing.ipynb>`_
-- Using Grids and Galaxies to perform strong lens ray-tracing!
+- Using Grids and galaxy_list to perform strong lens ray-tracing!
 
 `Tutorial 6: More Ray Tracing <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_6_more_ray_tracing.ipynb>`_
 - Advanced strong lens ray-tracing.

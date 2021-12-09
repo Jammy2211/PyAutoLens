@@ -25,7 +25,7 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
     ):
         """
         The analysis performed for model-fitting a point-source dataset, for example fitting the point-sources of a
-        multiply imaged lensed quasar or supernovae of many source galaxies of a galaxy cluster.
+        multiply imaged lensed quasar or supernovae of many source galaxy_list of a galaxy cluster.
 
         The analysis brings together the data, model and non-linear search in the classes `log_likelihood_function`,
         which is called by every iteration of the non-linear search to compute a likelihood value which samples
@@ -59,7 +59,7 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
 
     def log_likelihood_function(self, instance):
         """
-        Determine the fit of the strong lens system of lens galaxies and source galaxies to the point source data.
+        Determine the fit of the strong lens system of lens galaxy_list and source galaxy_list to the point source data.
 
         Parameters
         ----------

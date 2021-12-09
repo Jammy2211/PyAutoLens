@@ -16,7 +16,7 @@ class TestSimulatorInterferometer:
 
         source_galaxy = al.Galaxy(redshift=1.0, light=al.lp.EllSersic(intensity=0.3))
 
-        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[lens_galaxy, source_galaxy])
 
         simulator = al.SimulatorInterferometer(
             uv_wavelengths=np.ones(shape=(7, 2)),
@@ -49,7 +49,7 @@ class TestSimulatorInterferometer:
 
         source_galaxy = al.Galaxy(redshift=1.0, light=al.lp.EllSersic(intensity=0.3))
 
-        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[lens_galaxy, source_galaxy])
 
         simulator = al.SimulatorInterferometer(
             uv_wavelengths=np.ones(shape=(7, 2)),
@@ -60,7 +60,7 @@ class TestSimulatorInterferometer:
 
         interferometer = simulator.via_deflections_and_galaxies_from(
             deflections=tracer.deflections_yx_2d_from(grid=grid),
-            galaxies=[source_galaxy],
+            galaxy_list=[source_galaxy],
         )
 
         interferometer_via_image = simulator.via_image_from(
@@ -107,10 +107,10 @@ class TestSimulatorInterferometer:
         )
 
         interferometer = simulator.via_galaxies_from(
-            galaxies=[lens_galaxy, source_galaxy], grid=grid
+            galaxy_list=[lens_galaxy, source_galaxy], grid=grid
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[lens_galaxy, source_galaxy])
 
         interferometer_via_image = simulator.via_image_from(
             image=tracer.image_2d_from(grid=grid)

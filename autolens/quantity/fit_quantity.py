@@ -19,7 +19,7 @@ class FitQuantity(ag.FitQuantity):
         can be computed.
 
         This is ultimately used in the `AnalysisQuantity` class to perform model-fitting of quantities of different
-        mass profiles, light profiles, galaxies, etc.
+        mass profiles, light profiles, galaxy_list, etc.
 
         Parameters
         ----------
@@ -27,7 +27,7 @@ class FitQuantity(ag.FitQuantity):
             The quantity that is to be fitted, which has a noise-map associated it with for computing goodness-of-fit
             metrics.
         tracer
-            The tracer of galaxies whose model quantities are used to fit the imaging data.  
+            The tracer of galaxy_list whose model quantities are used to fit the imaging data.  
         func_str
             A string giving the name of the method of the input `Plane` used to compute the quantity that fits
             the dataset.          

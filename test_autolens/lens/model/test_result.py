@@ -20,7 +20,7 @@ class TestResultAbstract:
     ):
 
         model = af.Collection(
-            galaxies=af.Collection(
+            galaxy_list=af.Collection(
                 lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)
             )
         )
@@ -30,8 +30,8 @@ class TestResultAbstract:
         result = search.fit(model=model, analysis=analysis_imaging_7x7)
 
         assert isinstance(result.max_log_likelihood_tracer, al.Tracer)
-        assert result.max_log_likelihood_tracer.galaxies[0].light.intensity == 1.0
-        assert result.max_log_likelihood_tracer.galaxies[1].light.intensity == 2.0
+        assert result.max_log_likelihood_tracer.galaxy_list[0].light.intensity == 1.0
+        assert result.max_log_likelihood_tracer.galaxy_list[1].light.intensity == 2.0
 
     def test__max_log_likelihood_tracer_source_light_profile_centres_correct(
         self, analysis_imaging_7x7
@@ -43,7 +43,7 @@ class TestResultAbstract:
             redshift=1.0, light=al.lp.SphSersic(centre=(1.0, 2.0), intensity=2.0)
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[lens, source])
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -63,7 +63,7 @@ class TestResultAbstract:
             redshift=1.0, light=al.lp.SphSersic(centre=(5.0, 6.0), intensity=2.0)
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[lens, source_0, source_1])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[lens, source_0, source_1])
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -81,7 +81,7 @@ class TestResultAbstract:
             redshift=2.0, light=al.lp.SphSersic(centre=(5.0, 6.0), intensity=2.0)
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[lens, source_0, source_1])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[lens, source_0, source_1])
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -91,7 +91,7 @@ class TestResultAbstract:
 
         assert result.source_plane_light_profile_centre.in_list == [(5.0, 6.0)]
 
-        tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5)])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[al.Galaxy(redshift=0.5)])
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -113,7 +113,7 @@ class TestResultAbstract:
             regularization=al.reg.Constant(coefficient=1.0),
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[lens, source])
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -133,7 +133,7 @@ class TestResultAbstract:
         lens = al.Galaxy(redshift=0.5, light=al.lp.SphSersic(intensity=1.0))
         source = al.Galaxy(redshift=1.0)
 
-        tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[lens, source])
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -155,7 +155,7 @@ class TestResultAbstract:
             regularization=al.reg.Constant(coefficient=1.0),
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[lens, source])
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -188,7 +188,7 @@ class TestResultAbstract:
             regularization=al.reg.Constant(coefficient=1.0),
         )
 
-        tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
+        tracer = al.Tracer.from_galaxy_list(galaxy_list=[lens, source])
 
         samples = mock.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -207,8 +207,8 @@ class TestResultAbstract:
         self, analysis_imaging_7x7
     ):
 
-        tracer = al.Tracer.from_galaxies(
-            galaxies=[
+        tracer = al.Tracer.from_galaxy_list(
+            galaxy_list=[
                 al.Galaxy(
                     redshift=0.5,
                     mass=al.mp.EllIsothermal(
@@ -284,12 +284,12 @@ class TestResultDataset:
 
     def test___image_dict(self, analysis_imaging_7x7):
 
-        galaxies = af.ModelInstance()
-        galaxies.lens = al.Galaxy(redshift=0.5)
-        galaxies.source = al.Galaxy(redshift=1.0)
+        galaxy_list = af.ModelInstance()
+        galaxy_list.lens = al.Galaxy(redshift=0.5)
+        galaxy_list.source = al.Galaxy(redshift=1.0)
 
         instance = af.ModelInstance()
-        instance.galaxies = galaxies
+        instance.galaxy_list = galaxy_list
 
         result = ResultImaging(
             samples=mock.MockSamples(max_log_likelihood_instance=instance),
@@ -299,11 +299,11 @@ class TestResultDataset:
         )
 
         image_dict = result.image_galaxy_dict
-        assert isinstance(image_dict[("galaxies", "lens")], np.ndarray)
-        assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
+        assert isinstance(image_dict[("galaxy_list", "lens")], np.ndarray)
+        assert isinstance(image_dict[("galaxy_list", "source")], np.ndarray)
 
-        result.instance.galaxies.lens = al.Galaxy(redshift=0.5)
+        result.instance.galaxy_list.lens = al.Galaxy(redshift=0.5)
 
         image_dict = result.image_galaxy_dict
-        assert (image_dict[("galaxies", "lens")].native == np.zeros((7, 7))).all()
-        assert isinstance(image_dict[("galaxies", "source")], np.ndarray)
+        assert (image_dict[("galaxy_list", "lens")].native == np.zeros((7, 7))).all()
+        assert isinstance(image_dict[("galaxy_list", "source")], np.ndarray)

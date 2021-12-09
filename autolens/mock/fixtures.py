@@ -41,15 +41,15 @@ def make_point_solver():
 
 
 def make_tracer_x1_plane_7x7():
-    return al.Tracer.from_galaxies(galaxies=[make_gal_x1_lp()])
+    return al.Tracer.from_galaxy_list(galaxy_list=[make_gal_x1_lp()])
 
 
 def make_tracer_x2_plane_7x7():
 
     source_gal_x1_lp = al.Galaxy(redshift=1.0, light_profile_0=make_lp_0())
 
-    return al.Tracer.from_galaxies(
-        galaxies=[make_gal_x1_mp(), make_gal_x1_lp(), source_gal_x1_lp]
+    return al.Tracer.from_galaxy_list(
+        galaxy_list=[make_gal_x1_mp(), make_gal_x1_lp(), source_gal_x1_lp]
     )
 
 
@@ -61,8 +61,8 @@ def make_tracer_x2_plane_inversion_7x7():
         regularization=al.reg.Constant(),
     )
 
-    return al.Tracer.from_galaxies(
-        galaxies=[make_gal_x1_mp(), make_gal_x1_lp(), source_gal_inversion]
+    return al.Tracer.from_galaxy_list(
+        galaxy_list=[make_gal_x1_mp(), make_gal_x1_lp(), source_gal_inversion]
     )
 
 
@@ -74,8 +74,8 @@ def make_tracer_x2_plane_voronoi_7x7():
         regularization=al.reg.Constant(),
     )
 
-    return al.Tracer.from_galaxies(
-        galaxies=[make_gal_x1_mp(), make_gal_x1_lp(), source_gal_inversion]
+    return al.Tracer.from_galaxy_list(
+        galaxy_list=[make_gal_x1_mp(), make_gal_x1_lp(), source_gal_inversion]
     )
 
 
@@ -83,8 +83,8 @@ def make_tracer_x2_plane_point():
 
     source_gal_x1_lp = al.Galaxy(redshift=1.0, point_0=al.ps.PointFlux())
 
-    return al.Tracer.from_galaxies(
-        galaxies=[make_gal_x1_mp(), make_gal_x1_lp(), source_gal_x1_lp]
+    return al.Tracer.from_galaxy_list(
+        galaxy_list=[make_gal_x1_mp(), make_gal_x1_lp(), source_gal_x1_lp]
     )
 
 
