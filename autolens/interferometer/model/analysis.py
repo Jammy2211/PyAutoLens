@@ -593,8 +593,8 @@ class AnalysisInterferometer(AnalysisDataset):
         paths.save_object("uv_wavelengths", self.dataset.uv_wavelengths)
         paths.save_object("real_space_mask", self.dataset.real_space_mask)
         paths.save_object("positions", self.positions)
-        if self.preloads.sparse_image_plane_grid_list_of_planes is not None:
+        if self.preloads.sparse_image_plane_grid_pg_list is not None:
             paths.save_object(
                 "preload_sparse_grids_of_planes",
-                self.preloads.sparse_image_plane_grid_list_of_planes,
+                self.preloads.sparse_image_plane_grid_pg_list,
             )

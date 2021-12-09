@@ -2,26 +2,23 @@ from abc import ABC
 from astropy import cosmology as cosmo
 import json
 import numpy as np
-from os import path
-import pickle
-from typing import Dict, Optional
+from typing import Dict, List, Optional, Tuple, Union
 
 import autoarray as aa
 import autogalaxy as ag
 
+from autoconf.dictable import Dictable
+
 from autoarray.inversion.inversion.factory import inversion_imaging_unpacked_from
 from autoarray.inversion.inversion.factory import inversion_interferometer_unpacked_from
-from autoconf.dictable import Dictable
-from autogalaxy import Plane
 
-from autogalaxy.lensing import LensingObject
-from autogalaxy.plane.plane import AbstractPlane
+from autogalaxy.plane.plane import Plane
 from autogalaxy.profiles.light_profiles.light_profiles_snr import LightProfileSNR
 
 from autolens.lens.model.preloads import Preloads
 
 
-class AbstractTracer(LensingObject, ABC, Dictable):
+class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def __init__(self, planes, cosmology, profiling_dict: Optional[Dict] = None):
         """
         Ray-tracer for a lens system with any number of planes.
@@ -50,14 +47,100 @@ class AbstractTracer(LensingObject, ABC, Dictable):
         self.planes = planes
         self.plane_redshifts = [plane.redshift for plane in planes]
         self.cosmology = cosmology
+
         self.profiling_dict = profiling_dict
 
-    def output_to_json(self, file_path: str):
+    @classmethod
+    def from_galaxies(
+        cls, galaxies, cosmology=cosmo.Planck15, profiling_dict: Optional[Dict] = None
+    ):
 
-        with open(file_path, "w+") as f:
-            json.dump(self.dict(), f, indent=4)
+        plane_redshifts = ag.util.plane.ordered_plane_redshifts_from(galaxies=galaxies)
 
-    def dict(self) -> dict:
+        galaxies_in_planes = ag.util.plane.galaxies_in_redshift_ordered_planes_from(
+            galaxies=galaxies, plane_redshifts=plane_redshifts
+        )
+
+        planes = []
+
+        for plane_index in range(0, len(plane_redshifts)):
+            planes.append(
+                ag.Plane(
+                    galaxies=galaxies_in_planes[plane_index],
+                    profiling_dict=profiling_dict,
+                )
+            )
+
+        return Tracer(planes=planes, cosmology=cosmology, profiling_dict=profiling_dict)
+
+    @classmethod
+    def sliced_tracer_from(
+        cls,
+        lens_galaxies,
+        line_of_sight_galaxies,
+        source_galaxies,
+        planes_between_lenses,
+        cosmology=cosmo.Planck15,
+    ):
+
+        """Ray-tracer for a lens system with any number of planes.
+
+        The redshift of these planes are specified by the input parameters *lens_redshifts* and \
+         *slices_between_main_planes*. Every galaxy is placed in its closest plane in redshift-space.
+
+        To perform multi-plane ray-tracing, a cosmology must be supplied so that deflection-angles can be rescaled \
+        according to the lens-geometry of the multi-plane system. All galaxies input to the tracer must therefore \
+        have redshifts.
+
+        This tracer has only one grid (see gridStack) which is used for ray-tracing.
+
+        Parameters
+        ----------
+        lens_galaxies : [Galaxy]
+            The list of galaxies in the ray-tracing calculation.
+        image_plane_grid : grid_stacks.GridStack
+            The image-plane grid which is traced. (includes the grid, sub-grid, blurring-grid, etc.).
+        planes_between_lenses : [int]
+            The number of slices between each main plane. The first entry in this list determines the number of slices \
+            between Earth (redshift 0.0) and main plane 0, the next between main planes 0 and 1, etc.
+        border : masks.GridBorder
+            The border of the grid, which is used to relocate demagnified traced pixels to the \
+            source-plane borders.
+        cosmology : astropy.cosmology
+            The cosmology of the ray-tracing calculation.
+        """
+
+        lens_redshifts = ag.util.plane.ordered_plane_redshifts_from(
+            galaxies=lens_galaxies
+        )
+
+        plane_redshifts = ag.util.plane.ordered_plane_redshifts_with_slicing_from(
+            lens_redshifts=lens_redshifts,
+            planes_between_lenses=planes_between_lenses,
+            source_plane_redshift=source_galaxies[0].redshift,
+        )
+
+        galaxies_in_planes = ag.util.plane.galaxies_in_redshift_ordered_planes_from(
+            galaxies=lens_galaxies + line_of_sight_galaxies,
+            plane_redshifts=plane_redshifts,
+        )
+
+        plane_redshifts.append(source_galaxies[0].redshift)
+        galaxies_in_planes.append(source_galaxies)
+
+        planes = []
+
+        for plane_index in range(0, len(plane_redshifts)):
+            planes.append(
+                ag.Plane(
+                    redshift=plane_redshifts[plane_index],
+                    galaxies=galaxies_in_planes[plane_index],
+                )
+            )
+
+        return Tracer(planes=planes, cosmology=cosmology)
+
+    def dict(self) -> Dict:
         tracer_dict = super().dict()
         tracer_dict["cosmology"] = self.cosmology.name
         tracer_dict["planes"] = [plane.dict() for plane in self.planes]
@@ -66,53 +149,308 @@ class AbstractTracer(LensingObject, ABC, Dictable):
     @staticmethod
     def from_dict(profile_dict):
         profile_dict["cosmology"] = getattr(cosmo, profile_dict["cosmology"])
-        profile_dict["planes"] = list(
-            map(AbstractPlane.from_dict, profile_dict["planes"])
-        )
+        profile_dict["planes"] = list(map(Plane.from_dict, profile_dict["planes"]))
         return Dictable.from_dict(profile_dict)
 
-    @property
-    def total_planes(self):
-        return len(self.plane_redshifts)
+    def output_to_json(self, file_path: str):
+
+        with open(file_path, "w+") as f:
+            json.dump(self.dict(), f, indent=4)
 
     @property
-    def image_plane(self):
-        return self.planes[0]
-
-    @property
-    def source_plane(self):
-        return self.planes[-1]
-
-    @property
-    def galaxies(self):
+    def galaxies(self) -> List[ag.Galaxy]:
         return list([galaxy for plane in self.planes for galaxy in plane.galaxies])
 
     @property
-    def all_planes_have_redshifts(self):
+    def total_planes(self) -> int:
+        return len(self.plane_redshifts)
+
+    @property
+    def image_plane(self) -> Plane:
+        return self.planes[0]
+
+    @property
+    def source_plane(self) -> Plane:
+        return self.planes[-1]
+
+    @property
+    def all_planes_have_redshifts(self) -> bool:
         return None not in self.plane_redshifts
 
+    def plane_with_galaxy(self, galaxy) -> Plane:
+        return [plane for plane in self.planes if galaxy in plane.galaxies][0]
+
+    @aa.profile_func
+    def sparse_image_plane_grid_pg_list_from(
+        self, grid: aa.type.Grid2DLike, settings_pixelization=aa.SettingsPixelization()
+    ) -> List[List]:
+        """
+        Specific pixelizations, like the `VoronoiMagnification`, begin by determining what will become its the
+        source-pixel centres by calculating them  in the image-plane. The `VoronoiBrightnessImage` pixelization
+        performs a KMeans clustering.
+        """
+
+        sparse_image_plane_grid_list_of_planes = []
+
+        for plane in self.planes:
+            sparse_image_plane_grid_list = plane.sparse_image_plane_grid_list_from(
+                grid=grid, settings_pixelization=settings_pixelization
+            )
+            sparse_image_plane_grid_list_of_planes.append(sparse_image_plane_grid_list)
+
+        return sparse_image_plane_grid_list_of_planes
+
+    @aa.grid_dec.grid_2d_to_structure_list
+    def traced_grid_list_from(
+        self, grid: aa.type.Grid2DLike, plane_index_limit=None
+    ) -> List[aa.type.Grid2DLike]:
+
+        traced_grids = []
+        traced_deflections = []
+
+        for (plane_index, plane) in enumerate(self.planes):
+
+            scaled_grid = grid.copy()
+
+            if plane_index > 0:
+                for previous_plane_index in range(plane_index):
+                    scaling_factor = ag.util.cosmology.scaling_factor_between_redshifts_from(
+                        redshift_0=self.plane_redshifts[previous_plane_index],
+                        redshift_1=plane.redshift,
+                        redshift_final=self.plane_redshifts[-1],
+                        cosmology=self.cosmology,
+                    )
+
+                    scaled_deflections = (
+                        scaling_factor * traced_deflections[previous_plane_index]
+                    )
+
+                    scaled_grid -= scaled_deflections
+
+            traced_grids.append(scaled_grid)
+
+            if plane_index_limit is not None:
+                if plane_index == plane_index_limit:
+                    return traced_grids
+
+            traced_deflections.append(plane.deflections_yx_2d_from(grid=scaled_grid))
+
+        return traced_grids
+
+    @aa.profile_func
+    def traced_sparse_grid_pg_list_from(
+        self,
+        grid: aa.type.Grid2DLike,
+        settings_pixelization=aa.SettingsPixelization(),
+        preloads=Preloads(),
+    ) -> Tuple[List[List], List[List]]:
+        """
+        Ray-trace the sparse image plane grid used to define the source-pixel centres by calculating the deflection
+        angles at (y,x) coordinate on the grid from the galaxy mass profiles and then ray-trace them from the
+        image-plane to the source plane.
+        """
+        if (
+            preloads.sparse_image_plane_grid_pg_list is None
+            or settings_pixelization.is_stochastic
+        ):
+
+            sparse_image_plane_grid_pg_list = self.sparse_image_plane_grid_pg_list_from(
+                grid=grid, settings_pixelization=settings_pixelization
+            )
+
+        else:
+
+            sparse_image_plane_grid_pg_list = preloads.sparse_image_plane_grid_pg_list
+
+        traced_sparse_grid_pg_list = []
+
+        for (plane_index, plane) in enumerate(self.planes):
+
+            if sparse_image_plane_grid_pg_list[plane_index] is None:
+                traced_sparse_grid_pg_list.append(None)
+            else:
+
+                traced_sparse_grids_list = []
+
+                for sparse_image_plane_grid in sparse_image_plane_grid_pg_list[
+                    plane_index
+                ]:
+
+                    try:
+                        traced_sparse_grids_list.append(
+                            self.traced_grid_list_from(grid=sparse_image_plane_grid)[
+                                plane_index
+                            ]
+                        )
+                    except AttributeError:
+                        traced_sparse_grids_list.append(None)
+
+                traced_sparse_grid_pg_list.append(traced_sparse_grids_list)
+
+        return traced_sparse_grid_pg_list, sparse_image_plane_grid_pg_list
+
+    def grid_at_redshift_from(
+        self, grid: aa.type.Grid2DLike, redshift: float
+    ) -> aa.type.Grid2DLike:
+        """For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \
+        the strong lens configuration.
+
+        This is performed using multi-plane ray-tracing and the existing redshifts and planes of the tracer. However, \
+        any redshift can be input even if a plane does not exist there, including redshifts before the first plane \
+        of the lens system.
+
+        Parameters
+        ----------
+        grid : ndsrray or aa.Grid2D
+            The image-plane grid which is traced to the redshift.
+        redshift
+            The redshift the image-plane grid is traced to.
+        """
+
+        if redshift <= self.plane_redshifts[0]:
+            return grid.copy()
+
+        plane_index_with_redshift = [
+            plane_index
+            for plane_index, plane in enumerate(self.planes)
+            if plane.redshift == redshift
+        ]
+
+        if plane_index_with_redshift:
+            return self.traced_grid_list_from(grid=grid)[plane_index_with_redshift[0]]
+
+        for plane_index, plane_redshift in enumerate(self.plane_redshifts):
+
+            if redshift < plane_redshift:
+                plane_index_insert = plane_index
+
+        planes = self.planes
+        planes.insert(plane_index_insert, ag.Plane(redshift=redshift, galaxies=[]))
+
+        tracer = Tracer(planes=planes, cosmology=self.cosmology)
+
+        return tracer.traced_grid_list_from(grid=grid)[plane_index_insert]
+
     @property
-    def has_light_profile(self):
+    def has_light_profile(self) -> bool:
         return any(list(map(lambda plane: plane.has_light_profile, self.planes)))
 
-    @property
-    def has_mass_profile(self):
-        return any(list(map(lambda plane: plane.has_mass_profile, self.planes)))
+    @aa.grid_dec.grid_2d_to_structure
+    @aa.profile_func
+    def image_2d_from(self, grid: aa.type.Grid2DLike) -> aa.Array2D:
+        return sum(self.image_2d_list_from(grid=grid))
+
+    @aa.grid_dec.grid_2d_to_structure_list
+    def image_2d_list_from(self, grid: aa.type.Grid2DLike) -> List[aa.Array2D]:
+
+        traced_grid_list = self.traced_grid_list_from(
+            grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
+        )
+
+        image_2d_list = [
+            self.planes[plane_index].image_2d_from(grid=traced_grid_list[plane_index])
+            for plane_index in range(len(traced_grid_list))
+        ]
+
+        if self.upper_plane_index_with_light_profile < self.total_planes - 1:
+            for plane_index in range(
+                self.upper_plane_index_with_light_profile, self.total_planes - 1
+            ):
+                image_2d_list.append(np.zeros(shape=image_2d_list[0].shape))
+
+        return image_2d_list
+
+    def galaxy_image_2d_dict_from(
+        self, grid: aa.type.Grid2DLike
+    ) -> {ag.Galaxy: np.ndarray}:
+        """
+        Returns a dictionary associating every `Galaxy` object in the `Tracer` with its corresponding 2D image, using
+        the instance of each galaxy as the dictionary keys.
+
+        This object is used for hyper-features, which use the image of each galaxy in a model-fit in order to
+        adapt quantities like a pixelization or regularization scheme to the surface brightness of the galaxies being
+        fitted.
+
+        By inheriting from `OperateImageGalaxies` functions which apply operations of this dictionary are accessible,
+        for example convolving every image with a PSF or applying a Fourier transform to create a galaxy-visibilities
+        dictionary.
+
+        Parameters
+        ----------
+        grid
+            The 2D (y,x) coordinates of the (masked) grid, in its original geometric reference frame.
+
+        Returns
+        -------
+        A dictionary associated every galaxy in the tracer with its corresponding 2D image.
+        """
+
+        galaxy_image_dict = dict()
+
+        traced_grid_list = self.traced_grid_list_from(grid=grid)
+
+        for (plane_index, plane) in enumerate(self.planes):
+            images_of_galaxies = plane.image_2d_list_from(
+                grid=traced_grid_list[plane_index]
+            )
+            for (galaxy_index, galaxy) in enumerate(plane.galaxies):
+                galaxy_image_dict[galaxy] = images_of_galaxies[galaxy_index]
+
+        return galaxy_image_dict
 
     @property
-    def has_pixelization(self):
+    def has_mass_profile(self) -> bool:
+        return any(list(map(lambda plane: plane.has_mass_profile, self.planes)))
+
+    @aa.grid_dec.grid_2d_to_structure
+    def deflections_yx_2d_from(
+        self, grid: aa.type.Grid2DLike
+    ) -> Union[aa.VectorYX2D, aa.VectorYX2DIrregular]:
+        return self.deflections_between_planes_from(grid=grid)
+
+    @aa.grid_dec.grid_2d_to_structure
+    def deflections_of_planes_summed_from(
+        self, grid: aa.type.Grid2DLike
+    ) -> Union[aa.VectorYX2D, aa.VectorYX2DIrregular]:
+        return sum([plane.deflections_yx_2d_from(grid=grid) for plane in self.planes])
+
+    @aa.grid_dec.grid_2d_to_structure
+    def deflections_between_planes_from(
+        self, grid: aa.type.Grid2DLike, plane_i=0, plane_j=-1
+    ) -> Union[aa.VectorYX2D, aa.VectorYX2DIrregular]:
+
+        traced_grids_list = self.traced_grid_list_from(grid=grid)
+
+        return traced_grids_list[plane_i] - traced_grids_list[plane_j]
+
+    @aa.grid_dec.grid_2d_to_structure
+    def convergence_2d_from(self, grid: aa.type.Grid2DLike) -> aa.Array2D:
+        return sum([plane.convergence_2d_from(grid=grid) for plane in self.planes])
+
+    @aa.grid_dec.grid_2d_to_structure
+    def potential_2d_from(self, grid: aa.type.Grid2DLike) -> aa.Array2D:
+        return sum([plane.potential_2d_from(grid=grid) for plane in self.planes])
+
+    @property
+    def has_pixelization(self) -> bool:
         return any(list(map(lambda plane: plane.has_pixelization, self.planes)))
 
     @property
-    def has_regularization(self):
+    def has_regularization(self) -> bool:
         return any(list(map(lambda plane: plane.has_regularization, self.planes)))
 
+    @aa.profile_func
+    def traced_grid_list_of_inversion_from(
+        self, grid: aa.type.Grid2DLike
+    ) -> List[aa.type.Grid2DLike]:
+        return self.traced_grid_list_from(grid=grid)
+
     @property
-    def has_hyper_galaxy(self):
+    def has_hyper_galaxy(self) -> bool:
         return any(list(map(lambda plane: plane.has_hyper_galaxy, self.planes)))
 
     @property
-    def upper_plane_index_with_light_profile(self):
+    def upper_plane_index_with_light_profile(self) -> int:
         return max(
             [
                 plane_index if plane.has_light_profile else 0
@@ -121,34 +459,201 @@ class AbstractTracer(LensingObject, ABC, Dictable):
         )
 
     @property
-    def point_dict(self):
+    def mass_profile_list(self):
+        return [plane.mass_profiles for plane in self.planes if plane.has_mass_profile]
 
-        point_dict = {}
+    @property
+    def plane_indexes_with_pixelizations(self):
+        plane_indexes_with_inversions = [
+            plane_index if plane.has_pixelization else None
+            for (plane_index, plane) in enumerate(self.planes)
+        ]
+        return [
+            plane_index
+            for plane_index in plane_indexes_with_inversions
+            if plane_index is not None
+        ]
+
+    @property
+    def pixelization_list(self) -> List:
+        return [
+            galaxy.pixelization for galaxy in self.galaxies if galaxy.has_pixelization
+        ]
+
+    @property
+    def pixelization_pg_list(self) -> List[List]:
+        return [plane.pixelization_list for plane in self.planes]
+
+    @property
+    def regularization_list(self) -> List:
+        return [
+            galaxy.regularization
+            for galaxy in self.galaxies
+            if galaxy.has_regularization
+        ]
+
+    @property
+    def regularization_pg_list(self) -> List[List]:
+        return [plane.regularization_list for plane in self.planes]
+
+    def mapper_list_from(
+        self,
+        grid: aa.type.Grid2DLike,
+        settings_pixelization=aa.SettingsPixelization(),
+        preloads=Preloads(),
+    ):
+
+        mapper_list = []
+
+        if preloads.traced_grids_of_planes_for_inversion is None:
+            traced_grids_of_planes = self.traced_grid_list_of_inversion_from(grid=grid)
+        else:
+            traced_grids_of_planes = preloads.traced_grids_of_planes_for_inversion
+
+        traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = self.traced_sparse_grid_pg_list_from(
+            grid=grid, settings_pixelization=settings_pixelization, preloads=preloads
+        )
+
+        for (plane_index, plane) in enumerate(self.planes):
+
+            if plane.has_pixelization:
+
+                for mapper_index in range(
+                    len(traced_sparse_grids_list_of_planes[plane_index])
+                ):
+
+                    mapper = plane.mapper_from(
+                        source_grid_slim=traced_grids_of_planes[plane_index],
+                        source_pixelization_grid=traced_sparse_grids_list_of_planes[
+                            plane_index
+                        ][mapper_index],
+                        data_pixelization_grid=sparse_image_plane_grid_list[
+                            plane_index
+                        ][mapper_index],
+                        pixelization=self.pixelization_pg_list[plane_index][
+                            mapper_index
+                        ],
+                        hyper_galaxy_image=self.hyper_galaxy_image_pg_list[plane_index][
+                            mapper_index
+                        ],
+                        settings_pixelization=settings_pixelization,
+                        preloads=preloads,
+                    )
+                    mapper_list.append(mapper)
+
+        return mapper_list
+
+    def inversion_imaging_from(
+        self,
+        grid,
+        image,
+        noise_map,
+        convolver,
+        w_tilde,
+        settings_pixelization=aa.SettingsPixelization(),
+        settings_inversion=aa.SettingsInversion(),
+        preloads=Preloads(),
+    ):
+
+        if preloads.mapper_list is None:
+
+            mapper_list = self.mapper_list_from(
+                grid=grid,
+                settings_pixelization=settings_pixelization,
+                preloads=preloads,
+            )
+
+        else:
+
+            mapper_list = preloads.mapper_list
+
+        return inversion_imaging_unpacked_from(
+            image=image,
+            noise_map=noise_map,
+            convolver=convolver,
+            w_tilde=w_tilde,
+            mapper_list=mapper_list,
+            regularization_list=self.regularization_list,
+            settings=settings_inversion,
+            preloads=preloads,
+            profiling_dict=self.profiling_dict,
+        )
+
+    def inversion_interferometer_from(
+        self,
+        grid,
+        visibilities,
+        noise_map,
+        transformer,
+        settings_pixelization=aa.SettingsPixelization(),
+        settings_inversion=aa.SettingsInversion(),
+        preloads=Preloads(),
+    ):
+
+        if preloads.mapper_list is None:
+
+            mapper_list = self.mapper_list_from(
+                grid=grid,
+                settings_pixelization=settings_pixelization,
+                preloads=preloads,
+            )
+
+        else:
+
+            mapper_list = preloads.mapper_list
+
+        return inversion_interferometer_unpacked_from(
+            visibilities=visibilities,
+            noise_map=noise_map,
+            transformer=transformer,
+            mapper_list=mapper_list,
+            regularization_list=self.regularization_list,
+            settings=settings_inversion,
+            profiling_dict=self.profiling_dict,
+        )
+
+    @property
+    def hyper_galaxy_image_pg_list(self) -> List[List]:
+        return [
+            plane.hyper_galaxies_with_pixelization_image_list for plane in self.planes
+        ]
+
+    def hyper_noise_map_from(self, noise_map: aa.Array2D) -> aa.Array2D:
+        return sum(self.hyper_noise_map_list_from(noise_map=noise_map))
+
+    def hyper_noise_map_list_from(self, noise_map: aa.Array2D) -> List[aa.Array2D]:
+        return [
+            plane.hyper_noise_map_from(noise_map=noise_map) for plane in self.planes
+        ]
+
+    @property
+    def contribution_map(self) -> Optional[aa.Array2D]:
+
+        contribution_map_list = self.contribution_map_list
+
+        contribution_map_list = [i for i in contribution_map_list if i is not None]
+
+        if contribution_map_list:
+            return sum(contribution_map_list)
+        else:
+            return None
+
+    @property
+    def contribution_map_list(self) -> List[aa.Array2D]:
+
+        contribution_map_list = []
 
         for plane in self.planes:
-            for key, value in plane.point_dict.items():
-                point_dict[key] = value
 
-        return point_dict
+            if plane.contribution_map is not None:
 
-    @property
-    def point_plane_index_dict(self):
+                contribution_map_list.append(plane.contribution_map)
 
-        point_dict = {}
+            else:
 
-        for index, plane in enumerate(self.planes):
-            for key, value in plane.point_dict.items():
-                point_dict[key] = index
+                contribution_map_list.append(None)
 
-        return point_dict
-
-    @property
-    def planes_with_light_profile(self):
-        return list(filter(lambda plane: plane.has_light_profile, self.planes))
-
-    @property
-    def planes_with_mass_profile(self):
-        return list(filter(lambda plane: plane.has_mass_profile, self.planes))
+        return contribution_map_list
 
     def extract_attribute(self, cls, attr_name):
         """
@@ -332,681 +837,6 @@ class AbstractTracer(LensingObject, ABC, Dictable):
                 if profile_name in galaxy.__dict__:
                     return plane_index
 
-    @property
-    def mass_profiles(self):
-        return [
-            item
-            for mass_profile in self.mass_profiles_of_planes
-            for item in mass_profile
-        ]
-
-    @property
-    def mass_profiles_of_planes(self):
-        return [plane.mass_profiles for plane in self.planes if plane.has_mass_profile]
-
-    @property
-    def plane_indexes_with_pixelizations(self):
-        plane_indexes_with_inversions = [
-            plane_index if plane.has_pixelization else None
-            for (plane_index, plane) in enumerate(self.planes)
-        ]
-        return [
-            plane_index
-            for plane_index in plane_indexes_with_inversions
-            if plane_index is not None
-        ]
-
-    @property
-    def pixelization_list_of_planes(self):
-        return [plane.pixelization_list for plane in self.planes]
-
-    @property
-    def pixelization_list(self):
-        return [
-            galaxy.pixelization for galaxy in self.galaxies if galaxy.has_pixelization
-        ]
-
-    @property
-    def regularization_list_of_planes(self):
-        return [plane.regularization_list for plane in self.planes]
-
-    @property
-    def regularization_list(self):
-        return [
-            galaxy.regularization
-            for galaxy in self.galaxies
-            if galaxy.has_regularization
-        ]
-
-    @property
-    def hyper_galaxy_image_list_of_planes(self):
-        return [plane.hyper_galaxy_image_list for plane in self.planes]
-
-    def plane_with_galaxy(self, galaxy):
-        return [plane for plane in self.planes if galaxy in plane.galaxies][0]
-
-    @classmethod
-    def load(cls, file_path, filename="tracer"):
-        with open(path.join(file_path, f"{filename}.pickle"), "rb") as f:
-            return pickle.load(f)
-
-    def save(self, file_path, filename="tracer"):
-        """
-        Save the tracer by serializing it with pickle.
-        """
-        with open(path.join(file_path, f"{filename}.pickle"), "wb") as f:
-            pickle.dump(self, f)
-
-
-class AbstractTracerLensing(AbstractTracer, ABC):
-    @aa.grid_dec.grid_2d_to_structure_list
-    def traced_grids_of_planes_from(self, grid, plane_index_limit=None):
-
-        traced_grids = []
-        traced_deflections = []
-
-        for (plane_index, plane) in enumerate(self.planes):
-
-            scaled_grid = grid.copy()
-
-            if plane_index > 0:
-                for previous_plane_index in range(plane_index):
-                    scaling_factor = ag.util.cosmology.scaling_factor_between_redshifts_from(
-                        redshift_0=self.plane_redshifts[previous_plane_index],
-                        redshift_1=plane.redshift,
-                        redshift_final=self.plane_redshifts[-1],
-                        cosmology=self.cosmology,
-                    )
-
-                    scaled_deflections = (
-                        scaling_factor * traced_deflections[previous_plane_index]
-                    )
-
-                    scaled_grid -= scaled_deflections
-
-            traced_grids.append(scaled_grid)
-
-            if plane_index_limit is not None:
-                if plane_index == plane_index_limit:
-                    return traced_grids
-
-            traced_deflections.append(plane.deflections_2d_from(grid=scaled_grid))
-
-        return traced_grids
-
-    @aa.profile_func
-    def traced_grids_of_inversion_from(self, grid):
-        return self.traced_grids_of_planes_from(grid=grid)
-
-    @aa.grid_dec.grid_2d_to_structure
-    def deflections_between_planes_from(self, grid, plane_i=0, plane_j=-1):
-
-        traced_grids_of_planes = self.traced_grids_of_planes_from(grid=grid)
-
-        return traced_grids_of_planes[plane_i] - traced_grids_of_planes[plane_j]
-
-    @aa.grid_dec.grid_2d_to_structure
-    @aa.profile_func
-    def image_2d_from(self, grid):
-        return sum(self.image_2d_of_planes_from(grid=grid))
-
-    @aa.grid_dec.grid_2d_to_structure_list
-    def image_2d_of_planes_from(self, grid):
-
-        traced_grids_of_planes = self.traced_grids_of_planes_from(
-            grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
-        )
-
-        images_of_planes = [
-            self.planes[plane_index].image_2d_from(
-                grid=traced_grids_of_planes[plane_index]
-            )
-            for plane_index in range(len(traced_grids_of_planes))
-        ]
-
-        if self.upper_plane_index_with_light_profile < self.total_planes - 1:
-            for plane_index in range(
-                self.upper_plane_index_with_light_profile, self.total_planes - 1
-            ):
-                images_of_planes.append(np.zeros(shape=images_of_planes[0].shape))
-
-        return images_of_planes
-
-    def padded_image_2d_from(self, grid, psf_shape_2d):
-
-        padded_grid = grid.padded_grid_from(kernel_shape_native=psf_shape_2d)
-
-        return self.image_2d_from(grid=padded_grid)
-
-    @aa.grid_dec.grid_2d_to_structure
-    def convergence_2d_from(self, grid):
-        return sum([plane.convergence_2d_from(grid=grid) for plane in self.planes])
-
-    @aa.grid_dec.grid_2d_to_structure
-    def potential_2d_from(self, grid):
-        return sum([plane.potential_2d_from(grid=grid) for plane in self.planes])
-
-    @aa.grid_dec.grid_2d_to_structure
-    def deflections_2d_from(self, grid):
-        return self.deflections_between_planes_from(grid=grid)
-
-    @aa.grid_dec.grid_2d_to_structure
-    def deflections_of_planes_summed_from(self, grid):
-        return sum([plane.deflections_2d_from(grid=grid) for plane in self.planes])
-
-    def grid_at_redshift_from(self, grid, redshift):
-        """For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \
-        the strong lens configuration.
-
-        This is performed using multi-plane ray-tracing and the existing redshifts and planes of the tracer. However, \
-        any redshift can be input even if a plane does not exist there, including redshifts before the first plane \
-        of the lens system.
-
-        Parameters
-        ----------
-        grid : ndsrray or aa.Grid2D
-            The image-plane grid which is traced to the redshift.
-        redshift
-            The redshift the image-plane grid is traced to.
-        """
-
-        if redshift <= self.plane_redshifts[0]:
-            return grid.copy()
-
-        plane_index_with_redshift = [
-            plane_index
-            for plane_index, plane in enumerate(self.planes)
-            if plane.redshift == redshift
-        ]
-
-        if plane_index_with_redshift:
-            return self.traced_grids_of_planes_from(grid=grid)[
-                plane_index_with_redshift[0]
-            ]
-
-        for plane_index, plane_redshift in enumerate(self.plane_redshifts):
-
-            if redshift < plane_redshift:
-                plane_index_insert = plane_index
-
-        planes = self.planes
-        planes.insert(plane_index_insert, ag.Plane(redshift=redshift, galaxies=[]))
-
-        tracer = Tracer(planes=planes, cosmology=self.cosmology)
-
-        return tracer.traced_grids_of_planes_from(grid=grid)[plane_index_insert]
-
-    @property
-    def contribution_map(self):
-
-        contribution_maps = self.contribution_maps_of_planes
-
-        contribution_maps = [i for i in contribution_maps if i is not None]
-
-        if contribution_maps:
-            return sum(contribution_maps)
-        else:
-            return None
-
-    @property
-    def contribution_maps_of_planes(self):
-
-        contribution_maps = []
-
-        for plane in self.planes:
-
-            if plane.contribution_map is not None:
-
-                contribution_maps.append(plane.contribution_map)
-
-            else:
-
-                contribution_maps.append(None)
-
-        return contribution_maps
-
-
-class AbstractTracerData(AbstractTracerLensing, ABC):
-    def blurred_image_2d_via_psf_from(self, grid, psf, blurring_grid):
-        """Extract the 1D image and 1D blurring image of every plane and blur each with the \
-        PSF using a psf (see imaging.convolution).
-
-        These are summed to give the tracer's overall blurred image in 1D.
-
-        Parameters
-        ----------
-        psf : hyper_galaxies.imaging.convolution.ConvolverImage
-            Class which performs the PSF convolution of a masked image in 1D.
-        """
-
-        if not self.has_light_profile:
-            return np.zeros(shape=grid.shape_slim)
-
-        image = self.image_2d_from(grid=grid)
-
-        blurring_image = self.image_2d_from(grid=blurring_grid)
-
-        return psf.convolved_array_with_mask_from(
-            array=image.binned.native + blurring_image.binned.native, mask=grid.mask
-        )
-
-    def blurred_images_of_planes_via_psf_from(self, grid, psf, blurring_grid):
-        """Extract the 1D image and 1D blurring image of every plane and blur each with the \
-        PSF using a psf (see imaging.convolution).
-
-        The blurred image of every plane is returned in 1D.
-
-        Parameters
-        ----------
-        psf : hyper_galaxies.imaging.convolution.ConvolverImage
-            Class which performs the PSF convolution of a masked image in 1D.
-        """
-
-        traced_grids_of_planes = self.traced_grids_of_planes_from(grid=grid)
-        traced_blurring_grids_of_planes = self.traced_grids_of_planes_from(
-            grid=blurring_grid
-        )
-        return [
-            plane.blurred_image_2d_via_psf_from(
-                grid=traced_grids_of_planes[plane_index],
-                psf=psf,
-                blurring_grid=traced_blurring_grids_of_planes[plane_index],
-            )
-            for (plane_index, plane) in enumerate(self.planes)
-        ]
-
-    def blurred_image_2d_via_convolver_from(self, grid, convolver, blurring_grid):
-        """
-        Extract the 1D image and 1D blurring image of every plane and blur each with the \
-        PSF using a convolver (see imaging.convolution).
-
-        These are summed to give the tracer's overall blurred image in 1D.
-
-        Parameters
-        ----------
-        convolver : hyper_galaxies.imaging.convolution.ConvolverImage
-            Class which performs the PSF convolution of a masked image in 1D.
-        """
-
-        if not self.has_light_profile:
-            return np.zeros(shape=grid.shape_slim)
-
-        image = self.image_2d_from(grid=grid)
-
-        blurring_image = self.image_2d_from(grid=blurring_grid)
-
-        return self.convolve_via_convolver(
-            image=image, blurring_image=blurring_image, convolver=convolver
-        )
-
-    @aa.profile_func
-    def convolve_via_convolver(self, image, blurring_image, convolver):
-
-        return convolver.convolve_image(image=image, blurring_image=blurring_image)
-
-    def blurred_images_of_planes_via_convolver_from(
-        self, grid, convolver, blurring_grid
-    ):
-        """Extract the 1D image and 1D blurring image of every plane and blur each with the \
-        PSF using a convolver (see imaging.convolution).
-
-        The blurred image of every plane is returned in 1D.
-
-        Parameters
-        ----------
-        convolver : hyper_galaxies.imaging.convolution.ConvolverImage
-            Class which performs the PSF convolution of a masked image in 1D.
-        """
-
-        traced_grids_of_planes = self.traced_grids_of_planes_from(grid=grid)
-        traced_blurring_grids_of_planes = self.traced_grids_of_planes_from(
-            grid=blurring_grid
-        )
-
-        return [
-            plane.blurred_image_2d_via_convolver_from(
-                grid=traced_grids_of_planes[plane_index],
-                convolver=convolver,
-                blurring_grid=traced_blurring_grids_of_planes[plane_index],
-            )
-            for (plane_index, plane) in enumerate(self.planes)
-        ]
-
-    def unmasked_blurred_image_2d_via_psf_from(self, grid, psf):
-
-        padded_grid = grid.padded_grid_from(kernel_shape_native=psf.shape_native)
-
-        padded_image = self.image_2d_from(grid=padded_grid)
-
-        return padded_grid.mask.unmasked_blurred_array_from(
-            padded_array=padded_image, psf=psf, image_shape=grid.mask.shape
-        )
-
-    def unmasked_blurred_image_of_planes_via_psf_from(self, grid, psf):
-
-        padded_grid = grid.padded_grid_from(kernel_shape_native=psf.shape_native)
-
-        traced_padded_grids = self.traced_grids_of_planes_from(grid=padded_grid)
-
-        unmasked_blurred_images_of_planes = []
-
-        for plane, traced_padded_grid in zip(self.planes, traced_padded_grids):
-            padded_image_1d = plane.image_2d_from(grid=traced_padded_grid)
-
-            unmasked_blurred_array_2d = padded_grid.mask.unmasked_blurred_array_from(
-                padded_array=padded_image_1d, psf=psf, image_shape=grid.mask.shape
-            )
-
-            unmasked_blurred_images_of_planes.append(unmasked_blurred_array_2d)
-
-        return unmasked_blurred_images_of_planes
-
-    def unmasked_blurred_image_of_planes_and_galaxies_via_psf_from(self, grid, psf):
-
-        unmasked_blurred_images_of_planes_and_galaxies = []
-
-        padded_grid = grid.padded_grid_from(kernel_shape_native=psf.shape_native)
-
-        traced_padded_grids = self.traced_grids_of_planes_from(grid=padded_grid)
-
-        for plane, traced_padded_grid in zip(self.planes, traced_padded_grids):
-            padded_image_1d_of_galaxies = plane.images_of_galaxies_from(
-                grid=traced_padded_grid
-            )
-
-            unmasked_blurred_array_2d_of_galaxies = list(
-                map(
-                    lambda padded_image_1d_of_galaxy: padded_grid.mask.unmasked_blurred_array_from(
-                        padded_array=padded_image_1d_of_galaxy,
-                        psf=psf,
-                        image_shape=grid.mask.shape,
-                    ),
-                    padded_image_1d_of_galaxies,
-                )
-            )
-
-            unmasked_blurred_images_of_planes_and_galaxies.append(
-                unmasked_blurred_array_2d_of_galaxies
-            )
-
-        return unmasked_blurred_images_of_planes_and_galaxies
-
-    def profile_visibilities_via_transformer_from(self, grid, transformer):
-
-        if not self.has_light_profile:
-            return np.zeros(shape=transformer.uv_wavelengths.shape[0])
-
-        image = self.image_2d_from(grid=grid)
-
-        return transformer.visibilities_from(image=image)
-
-    def profile_visibilities_of_planes_via_transformer_from(self, grid, transformer):
-
-        images_of_planes = self.image_2d_of_planes_from(grid=grid)
-        return [
-            transformer.visibilities_from(image=image) for image in images_of_planes
-        ]
-
-    @aa.profile_func
-    def sparse_image_plane_grid_list_of_planes_from(
-        self, grid, settings_pixelization=aa.SettingsPixelization()
-    ):
-        """
-        Specific pixelizations, like the `VoronoiMagnification`, begin by determining what will become its the
-        source-pixel centres by calculating them  in the image-plane. The `VoronoiBrightnessImage` pixelization
-        performs a KMeans clustering.
-        """
-
-        sparse_image_plane_grid_list_of_planes = []
-
-        for plane in self.planes:
-            sparse_image_plane_grid_list = plane.sparse_image_plane_grid_list_from(
-                grid=grid, settings_pixelization=settings_pixelization
-            )
-            sparse_image_plane_grid_list_of_planes.append(sparse_image_plane_grid_list)
-
-        return sparse_image_plane_grid_list_of_planes
-
-    @aa.profile_func
-    def traced_sparse_grids_list_of_planes_from(
-        self, grid, settings_pixelization=aa.SettingsPixelization(), preloads=Preloads()
-    ):
-        """
-        Ray-trace the sparse image plane grid used to define the source-pixel centres by calculating the deflection
-        angles at (y,x) coordinate on the grid from the galaxy mass profiles and then ray-trace them from the
-        image-plane to the source plane.
-        """
-        if (
-            preloads.sparse_image_plane_grid_list_of_planes is None
-            or settings_pixelization.is_stochastic
-        ):
-
-            sparse_image_plane_grid_list_of_planes = self.sparse_image_plane_grid_list_of_planes_from(
-                grid=grid, settings_pixelization=settings_pixelization
-            )
-
-        else:
-
-            sparse_image_plane_grid_list_of_planes = (
-                preloads.sparse_image_plane_grid_list_of_planes
-            )
-
-        traced_sparse_grid_list_of_planes = []
-
-        for (plane_index, plane) in enumerate(self.planes):
-
-            if sparse_image_plane_grid_list_of_planes[plane_index] is None:
-                traced_sparse_grid_list_of_planes.append(None)
-            else:
-
-                traced_sparse_grids_list = []
-
-                for sparse_image_plane_grid in sparse_image_plane_grid_list_of_planes[
-                    plane_index
-                ]:
-
-                    try:
-                        traced_sparse_grids_list.append(
-                            self.traced_grids_of_planes_from(
-                                grid=sparse_image_plane_grid
-                            )[plane_index]
-                        )
-                    except AttributeError:
-                        traced_sparse_grids_list.append(None)
-
-                traced_sparse_grid_list_of_planes.append(traced_sparse_grids_list)
-
-        return traced_sparse_grid_list_of_planes, sparse_image_plane_grid_list_of_planes
-
-    def mapper_list_from(
-        self, grid, settings_pixelization=aa.SettingsPixelization(), preloads=Preloads()
-    ):
-
-        mapper_list = []
-
-        if preloads.traced_grids_of_planes_for_inversion is None:
-            traced_grids_of_planes = self.traced_grids_of_inversion_from(grid=grid)
-        else:
-            traced_grids_of_planes = preloads.traced_grids_of_planes_for_inversion
-
-        traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list_of_planes = self.traced_sparse_grids_list_of_planes_from(
-            grid=grid, settings_pixelization=settings_pixelization, preloads=preloads
-        )
-
-        for (plane_index, plane) in enumerate(self.planes):
-
-            if plane.has_pixelization:
-
-                for mapper_index in range(
-                    len(traced_sparse_grids_list_of_planes[plane_index])
-                ):
-
-                    mapper = plane.mapper_from(
-                        source_grid_slim=traced_grids_of_planes[plane_index],
-                        source_pixelization_grid=traced_sparse_grids_list_of_planes[
-                            plane_index
-                        ][mapper_index],
-                        data_pixelization_grid=sparse_image_plane_grid_list_of_planes[
-                            plane_index
-                        ][mapper_index],
-                        pixelization=self.pixelization_list_of_planes[plane_index][
-                            mapper_index
-                        ],
-                        hyper_galaxy_image=self.hyper_galaxy_image_list_of_planes[
-                            plane_index
-                        ][mapper_index],
-                        settings_pixelization=settings_pixelization,
-                        preloads=preloads,
-                    )
-                    mapper_list.append(mapper)
-
-        return mapper_list
-
-    def inversion_imaging_from(
-        self,
-        grid,
-        image,
-        noise_map,
-        convolver,
-        w_tilde,
-        settings_pixelization=aa.SettingsPixelization(),
-        settings_inversion=aa.SettingsInversion(),
-        preloads=Preloads(),
-    ):
-
-        if preloads.mapper_list is None:
-
-            mapper_list = self.mapper_list_from(
-                grid=grid,
-                settings_pixelization=settings_pixelization,
-                preloads=preloads,
-            )
-
-        else:
-
-            mapper_list = preloads.mapper_list
-
-        return inversion_imaging_unpacked_from(
-            image=image,
-            noise_map=noise_map,
-            convolver=convolver,
-            w_tilde=w_tilde,
-            mapper_list=mapper_list,
-            regularization_list=self.regularization_list,
-            settings=settings_inversion,
-            preloads=preloads,
-            profiling_dict=self.profiling_dict,
-        )
-
-    def inversion_interferometer_from(
-        self,
-        grid,
-        visibilities,
-        noise_map,
-        transformer,
-        settings_pixelization=aa.SettingsPixelization(),
-        settings_inversion=aa.SettingsInversion(),
-        preloads=Preloads(),
-    ):
-
-        if preloads.mapper_list is None:
-
-            mapper_list = self.mapper_list_from(
-                grid=grid,
-                settings_pixelization=settings_pixelization,
-                preloads=preloads,
-            )
-
-        else:
-
-            mapper_list = preloads.mapper_list
-
-        return inversion_interferometer_unpacked_from(
-            visibilities=visibilities,
-            noise_map=noise_map,
-            transformer=transformer,
-            mapper_list=mapper_list,
-            regularization_list=self.regularization_list,
-            settings=settings_inversion,
-            profiling_dict=self.profiling_dict,
-        )
-
-    def hyper_noise_map_from(self, noise_map):
-        return sum(self.hyper_noise_maps_of_planes_from(noise_map=noise_map))
-
-    def hyper_noise_maps_of_planes_from(self, noise_map):
-        return [
-            plane.hyper_noise_map_from(noise_map=noise_map) for plane in self.planes
-        ]
-
-    def galaxy_image_dict_from(self, grid) -> {ag.Galaxy: np.ndarray}:
-        """
-        A dictionary associating galaxies with their corresponding model images
-        """
-
-        galaxy_image_dict = dict()
-
-        traced_grids_of_planes = self.traced_grids_of_planes_from(grid=grid)
-
-        for (plane_index, plane) in enumerate(self.planes):
-            images_of_galaxies = plane.images_of_galaxies_from(
-                grid=traced_grids_of_planes[plane_index]
-            )
-            for (galaxy_index, galaxy) in enumerate(plane.galaxies):
-                galaxy_image_dict[galaxy] = images_of_galaxies[galaxy_index]
-
-        return galaxy_image_dict
-
-    def galaxy_blurred_image_dict_via_convolver_from(
-        self, grid, convolver, blurring_grid
-    ) -> {ag.Galaxy: np.ndarray}:
-        """
-        A dictionary associating galaxies with their corresponding model images
-        """
-
-        galaxy_blurred_image_dict = dict()
-
-        traced_grids_of_planes = self.traced_grids_of_planes_from(grid=grid)
-
-        traced_blurring_grids_of_planes = self.traced_grids_of_planes_from(
-            grid=blurring_grid
-        )
-
-        for (plane_index, plane) in enumerate(self.planes):
-            blurred_images_of_galaxies = plane.blurred_images_of_galaxies_via_convolver_from(
-                grid=traced_grids_of_planes[plane_index],
-                convolver=convolver,
-                blurring_grid=traced_blurring_grids_of_planes[plane_index],
-            )
-            for (galaxy_index, galaxy) in enumerate(plane.galaxies):
-                galaxy_blurred_image_dict[galaxy] = blurred_images_of_galaxies[
-                    galaxy_index
-                ]
-
-        return galaxy_blurred_image_dict
-
-    def galaxy_profile_visibilities_dict_via_transformer_from(
-        self, grid, transformer
-    ) -> {ag.Galaxy: np.ndarray}:
-        """
-        A dictionary associating galaxies with their corresponding model images
-        """
-
-        galaxy_profile_visibilities_image_dict = dict()
-
-        traced_grids_of_planes = self.traced_grids_of_planes_from(grid=grid)
-
-        for (plane_index, plane) in enumerate(self.planes):
-            profile_visibilities_of_galaxies = plane.profile_visibilities_of_galaxies_via_transformer_from(
-                grid=traced_grids_of_planes[plane_index], transformer=transformer
-            )
-            for (galaxy_index, galaxy) in enumerate(plane.galaxies):
-                galaxy_profile_visibilities_image_dict[
-                    galaxy
-                ] = profile_visibilities_of_galaxies[galaxy_index]
-
-        return galaxy_profile_visibilities_image_dict
-
     def set_snr_of_snr_light_profiles(
         self,
         grid: aa.type.Grid2DLike,
@@ -1018,7 +848,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
             shape_native=grid.shape_native, pixel_scales=grid.pixel_scales, sub_size=1
         )
 
-        traced_grids_of_planes = self.traced_grids_of_planes_from(grid=grid)
+        traced_grids_of_planes = self.traced_grid_list_from(grid=grid)
 
         for plane_index, plane in enumerate(self.planes):
             for galaxy in plane.galaxies:
@@ -1030,99 +860,7 @@ class AbstractTracerData(AbstractTracerLensing, ABC):
                             background_sky_level=background_sky_level,
                         )
 
+    @aa.profile_func
+    def convolve_via_convolver(self, image, blurring_image, convolver):
 
-class Tracer(AbstractTracerData):
-    @property
-    def flux_hack(self):
-        """This is a placeholder to get flux modeling working for Nan Li before I do this proeprly. with dictionaries."""
-        return self.planes[1].galaxies[0].light_profiles[0].flux
-
-    @classmethod
-    def from_galaxies(
-        cls, galaxies, cosmology=cosmo.Planck15, profiling_dict: Optional[Dict] = None
-    ):
-
-        plane_redshifts = ag.util.plane.ordered_plane_redshifts_from(galaxies=galaxies)
-
-        galaxies_in_planes = ag.util.plane.galaxies_in_redshift_ordered_planes_from(
-            galaxies=galaxies, plane_redshifts=plane_redshifts
-        )
-
-        planes = []
-
-        for plane_index in range(0, len(plane_redshifts)):
-            planes.append(
-                ag.Plane(
-                    galaxies=galaxies_in_planes[plane_index],
-                    profiling_dict=profiling_dict,
-                )
-            )
-
-        return Tracer(planes=planes, cosmology=cosmology, profiling_dict=profiling_dict)
-
-    @classmethod
-    def sliced_tracer_from(
-        cls,
-        lens_galaxies,
-        line_of_sight_galaxies,
-        source_galaxies,
-        planes_between_lenses,
-        cosmology=cosmo.Planck15,
-    ):
-
-        """Ray-tracer for a lens system with any number of planes.
-
-        The redshift of these planes are specified by the input parameters *lens_redshifts* and \
-         *slices_between_main_planes*. Every galaxy is placed in its closest plane in redshift-space.
-
-        To perform multi-plane ray-tracing, a cosmology must be supplied so that deflection-angles can be rescaled \
-        according to the lens-geometry of the multi-plane system. All galaxies input to the tracer must therefore \
-        have redshifts.
-
-        This tracer has only one grid (see gridStack) which is used for ray-tracing.
-
-        Parameters
-        ----------
-        lens_galaxies : [Galaxy]
-            The list of galaxies in the ray-tracing calculation.
-        image_plane_grid : grid_stacks.GridStack
-            The image-plane grid which is traced. (includes the grid, sub-grid, blurring-grid, etc.).
-        planes_between_lenses : [int]
-            The number of slices between each main plane. The first entry in this list determines the number of slices \
-            between Earth (redshift 0.0) and main plane 0, the next between main planes 0 and 1, etc.
-        border : masks.GridBorder
-            The border of the grid, which is used to relocate demagnified traced pixels to the \
-            source-plane borders.
-        cosmology : astropy.cosmology
-            The cosmology of the ray-tracing calculation.
-        """
-
-        lens_redshifts = ag.util.plane.ordered_plane_redshifts_from(
-            galaxies=lens_galaxies
-        )
-
-        plane_redshifts = ag.util.plane.ordered_plane_redshifts_with_slicing_from(
-            lens_redshifts=lens_redshifts,
-            planes_between_lenses=planes_between_lenses,
-            source_plane_redshift=source_galaxies[0].redshift,
-        )
-
-        galaxies_in_planes = ag.util.plane.galaxies_in_redshift_ordered_planes_from(
-            galaxies=lens_galaxies + line_of_sight_galaxies,
-            plane_redshifts=plane_redshifts,
-        )
-
-        plane_redshifts.append(source_galaxies[0].redshift)
-        galaxies_in_planes.append(source_galaxies)
-
-        planes = []
-
-        for plane_index in range(0, len(plane_redshifts)):
-            planes.append(
-                ag.Plane(
-                    redshift=plane_redshifts[plane_index],
-                    galaxies=galaxies_in_planes[plane_index],
-                )
-            )
-
-        return Tracer(planes=planes, cosmology=cosmology)
+        return convolver.convolve_image(image=image, blurring_image=blurring_image)

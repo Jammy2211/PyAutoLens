@@ -235,7 +235,7 @@ class TestFitPositionsSource:
         positions = al.Grid2DIrregular([(0.0, 1.0), (0.0, 2.0)])
         noise_map = al.ValuesIrregular([0.5, 1.0])
 
-        traced_grids = tracer.traced_grids_of_planes_from(grid=positions)
+        traced_grids = tracer.traced_grid_list_from(grid=positions)
 
         fit_0 = al.FitPositionsSource(
             name="point_0", positions=positions, noise_map=noise_map, tracer=tracer
@@ -257,8 +257,8 @@ class TestFitFluxes:
     def test__one_set_of_fluxes__residuals_likelihood_correct(self):
 
         tracer = MockTracerPoint(
-            magnification=al.ValuesIrregular([2.0, 2.0]),
             profile=al.ps.PointFlux(flux=2.0),
+            magnification=al.ValuesIrregular([2.0, 2.0]),
         )
 
         fluxes = al.ValuesIrregular([1.0, 2.0])
@@ -328,7 +328,7 @@ class TestFitFluxes:
             tracer.deflections_between_planes_from, plane_i=0, plane_j=1
         )
 
-        magnification_0 = tracer.magnification_via_hessian_from(
+        magnification_0 = tracer.magnification_2d_via_hessian_from(
             grid=positions, deflections_func=deflections_func
         )
 
@@ -346,7 +346,7 @@ class TestFitFluxes:
             tracer.deflections_between_planes_from, plane_i=0, plane_j=2
         )
 
-        magnification_1 = tracer.magnification_via_hessian_from(
+        magnification_1 = tracer.magnification_2d_via_hessian_from(
             grid=positions, deflections_func=deflections_func
         )
 

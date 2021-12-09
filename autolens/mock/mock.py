@@ -168,27 +168,25 @@ class MockFit(AAMockFit):
 
 class MockTracer:
     def __init__(
-        self, traced_grids_of_planes=None, sparse_image_plane_grid_list_of_planes=None
+        self, traced_grids_of_planes=None, sparse_image_plane_grid_pg_list=None
     ):
 
         self.traced_grids_of_planes = traced_grids_of_planes
-        self.sparse_image_plane_grid_list_of_planes = (
-            sparse_image_plane_grid_list_of_planes
-        )
+        self.sparse_image_plane_grid_pg_list = sparse_image_plane_grid_pg_list
 
-    def traced_grids_of_planes_from(self, grid):
+    def traced_grid_list_from(self, grid):
 
         return self.traced_grids_of_planes
 
-    def sparse_image_plane_grid_list_of_planes_from(self, grid):
+    def sparse_image_plane_grid_pg_list_from(self, grid):
 
-        return self.sparse_image_plane_grid_list_of_planes
+        return self.sparse_image_plane_grid_pg_list
 
 
 class MockTracerPoint(MockTracer):
     def __init__(
         self,
-        sparse_image_plane_grid_list_of_planes=None,
+        sparse_image_plane_grid_pg_list=None,
         traced_grid=None,
         attribute=None,
         profile=None,
@@ -198,15 +196,15 @@ class MockTracerPoint(MockTracer):
     ):
 
         super().__init__(
-            sparse_image_plane_grid_list_of_planes=sparse_image_plane_grid_list_of_planes
+            sparse_image_plane_grid_pg_list=sparse_image_plane_grid_pg_list
         )
 
         self.positions = traced_grid
-        self.magnification = magnification
 
         self.attribute = attribute
         self.profile = profile
 
+        self.magnification = magnification
         self.einstein_radius = einstein_radius
         self.einstein_mass = einstein_mass
 
@@ -214,7 +212,7 @@ class MockTracerPoint(MockTracer):
     def planes(self):
         return [0, 1]
 
-    def deflections_2d_from(self):
+    def deflections_yx_2d_from(self):
         pass
 
     @property
@@ -227,10 +225,10 @@ class MockTracerPoint(MockTracer):
     def extract_profile(self, profile_name):
         return self.profile
 
-    def traced_grids_of_planes_from(self, grid, plane_index_limit=None):
+    def traced_grid_list_from(self, grid, plane_index_limit=None):
         return [self.positions]
 
-    def magnification_via_hessian_from(self, grid, deflections_func=None):
+    def magnification_2d_via_hessian_from(self, grid, deflections_func=None):
         return self.magnification
 
     def einstein_radius_from(self, grid):

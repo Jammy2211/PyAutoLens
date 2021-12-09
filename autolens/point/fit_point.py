@@ -36,6 +36,8 @@ class FitPointDict(dict):
             are the corresponding fits to the `PointDataset` it contained.
         """
 
+        self.tracer = tracer
+
         super().__init__()
 
         for key, point_dataset in point_dict.items():
@@ -225,7 +227,7 @@ class FitPositionsSource(aa.FitData):
 
         if len(tracer.planes) <= 2:
 
-            deflections = tracer.deflections_2d_from(grid=positions)
+            deflections = tracer.deflections_yx_2d_from(grid=positions)
 
         else:
 
@@ -274,6 +276,8 @@ class FitFluxes(aa.FitData):
         point_profile: Optional[ag.ps.Point] = None,
     ):
 
+        self.tracer = tracer
+
         self.name = name
         self.positions = positions
 
@@ -303,10 +307,10 @@ class FitFluxes(aa.FitData):
                 plane_j=upper_plane_index,
             )
         else:
-            deflections_func = tracer.deflections_2d_from
+            deflections_func = tracer.deflections_yx_2d_from
 
         self.magnifications = abs(
-            tracer.magnification_via_hessian_from(
+            self.tracer.magnification_2d_via_hessian_from(
                 grid=positions, deflections_func=deflections_func
             )
         )
@@ -361,9 +365,7 @@ class AbstractFitPositionsSourcePlane:
         """
         self.positions = positions
         self.noise_map = noise_map
-        self.source_plane_positions = tracer.traced_grids_of_planes_from(
-            grid=positions
-        )[-1]
+        self.source_plane_positions = tracer.traced_grid_list_from(grid=positions)[-1]
 
     @property
     def furthest_separations_of_source_plane_positions(self) -> aa.ValuesIrregular:

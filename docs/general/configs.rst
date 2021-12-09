@@ -287,7 +287,7 @@ the data. This is important for certain mass profiles, where the calculations re
 numerical integration.
 
 The *interpolate.ini* specifies for every `LightProfile` and `MassProfile` in **PyAutoLens** whether, when a
-`Grid2DInterpolate` object is passed into a from grid method (e.g deflections_2d_from_grid) the calculation should be
+`Grid2DInterpolate` object is passed into a from grid method (e.g deflections_yx_2d_from_grid) the calculation should be
 performed using interpolation or by computing every value on the grid explicitly at native resolution.
 
 The default *interpolate.ini* config file supplied with the **PyAutoLens** workspace specifies `False` for every

@@ -90,7 +90,7 @@ class TestAbstractPointSolver:
         )
 
         magnification = np.abs(
-            sis.magnification_via_hessian_from(grid=grid, buffer=grid.pixel_scale)
+            sis.magnification_2d_via_hessian_from(grid=grid, buffer=grid.pixel_scale)
         )
 
         assert magnification[0] > 1000.0
@@ -99,7 +99,7 @@ class TestAbstractPointSolver:
         solver = AbstractPointSolver(magnification_threshold=1000.0)
 
         positions = solver.grid_with_points_below_magnification_threshold_removed(
-            lensing_obj=sis, grid=grid, deflections_func=sis.deflections_2d_from
+            lensing_obj=sis, grid=grid, deflections_func=sis.deflections_yx_2d_from
         )
 
         assert positions.in_list == [(1.0, 0.0)]
@@ -108,7 +108,7 @@ class TestAbstractPointSolver:
         solver = AbstractPointSolver(magnification_threshold=0.0)
 
         positions = solver.grid_with_points_below_magnification_threshold_removed(
-            lensing_obj=sis, grid=grid, deflections_func=sis.deflections_2d_from
+            lensing_obj=sis, grid=grid, deflections_func=sis.deflections_yx_2d_from
         )
 
         assert positions.in_list == [(1.0, 0.0), (0.1, 0.0)]

@@ -55,7 +55,7 @@ class FitInterferometer(aa.FitInterferometer):
 
         self.tracer = tracer
 
-        self.profile_visibilities = tracer.profile_visibilities_via_transformer_from(
+        self.profile_visibilities = self.tracer.visibilities_via_transformer_from(
             grid=dataset.grid, transformer=dataset.transformer
         )
 
@@ -104,7 +104,7 @@ class FitInterferometer(aa.FitInterferometer):
         """
         A dictionary associating galaxies with their corresponding model images
         """
-        galaxy_model_image_dict = self.tracer.galaxy_image_dict_from(grid=self.grid)
+        galaxy_model_image_dict = self.tracer.galaxy_image_2d_dict_from(grid=self.grid)
 
         for path, image in galaxy_model_image_dict.items():
             galaxy_model_image_dict[path] = image.binned
@@ -128,7 +128,7 @@ class FitInterferometer(aa.FitInterferometer):
         """
         A dictionary associating galaxies with their corresponding model images
         """
-        galaxy_model_visibilities_dict = self.tracer.galaxy_profile_visibilities_dict_via_transformer_from(
+        galaxy_model_visibilities_dict = self.tracer.galaxy_visibilities_dict_via_transformer_from(
             grid=self.interferometer.grid, transformer=self.interferometer.transformer
         )
 
@@ -148,7 +148,7 @@ class FitInterferometer(aa.FitInterferometer):
 
     def model_visibilities_of_planes(self):
 
-        model_visibilities_of_planes = self.tracer.profile_visibilities_of_planes_via_transformer_from(
+        model_visibilities_of_planes = self.tracer.visibilities_list_via_transformer_from(
             grid=self.interferometer.grid, transformer=self.interferometer.transformer
         )
 
@@ -162,7 +162,7 @@ class FitInterferometer(aa.FitInterferometer):
 
     @property
     def total_mappers(self):
-        return len(list(filter(None, self.tracer.regularization_list_of_planes)))
+        return len(list(filter(None, self.tracer.regularization_pg_list)))
 
     def refit_with_new_preloads(self, preloads, settings_inversion=None):
 

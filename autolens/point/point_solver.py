@@ -26,7 +26,7 @@ class AbstractPointSolver:
     ):
 
         magnifications = np.abs(
-            lensing_obj.magnification_via_hessian_from(
+            lensing_obj.magnification_2d_via_hessian_from(
                 grid=grid, buffer=grid.pixel_scale, deflections_func=deflections_func
             )
         )
@@ -54,7 +54,7 @@ class AbstractPointSolver:
 
         Parameters
         ----------
-        lensing_obj : autogalaxy.LensingObject
+        lensing_obj
             An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
             `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
         grid : autoarray.Grid2DIrregularUniform or ndarray
@@ -157,7 +157,7 @@ class AbstractPointSolver:
 
         Parameters
         ----------
-        lensing_obj : autogalaxy.LensingObject
+        lensing_obj
             An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
             `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
         grid : autoarray.Grid2DIrregularUniform or ndarray
@@ -210,7 +210,7 @@ class AbstractPointSolver:
 
             Parameters
             ----------
-            lensing_obj : autogalaxy.LensingObject
+            lensing_obj
                 An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
                 `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
             grid : autoarray.Grid2DIrregularUniform or ndarray
@@ -255,8 +255,8 @@ class PointSolver(AbstractPointSolver):
         distance_to_source_centre=None,
         distance_to_mass_profile_centre=None,
     ):
-        """Given a `LensingObject` (e.g. a _MassProfile, `Galaxy`, `Plane` or `Tracer`) this class uses their
-        deflections_2d_from method to determine the (y,x) coordinates the multiple-images appear given a (y,x)
+        """Given a `OperateDeflections` (e.g. a _MassProfile, `Galaxy`, `Plane` or `Tracer`) this class uses their
+        deflections_yx_2d_from method to determine the (y,x) coordinates the multiple-images appear given a (y,x)
         source-centre coordinate in the source-plane.
 
         This is performed as follows:
@@ -307,7 +307,7 @@ class PointSolver(AbstractPointSolver):
         pixel_scales : (float, float)
             The pixel-scale resolution of the buffed and upscaled grid that is formed around the input coordinate. If
             upscale > 1, the pixel_scales are reduced to pixel_scale / upscale_factor.
-        lensing_obj : autogalaxy.LensingObject
+        lensing_obj
             An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
             `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
         source_plane_coordinate : (float, float)
@@ -336,7 +336,7 @@ class PointSolver(AbstractPointSolver):
     def solve(self, lensing_obj, source_plane_coordinate, upper_plane_index=None):
 
         if upper_plane_index is None:
-            deflections_func = lensing_obj.deflections_2d_from
+            deflections_func = lensing_obj.deflections_yx_2d_from
         else:
             deflections_func = partial(
                 lensing_obj.deflections_between_planes_from,

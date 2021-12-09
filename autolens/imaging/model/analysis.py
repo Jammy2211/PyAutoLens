@@ -564,8 +564,8 @@ class AnalysisImaging(AnalysisDataset):
         paths.save_object("psf", self.dataset.psf_unormalized)
         paths.save_object("mask", self.dataset.mask)
         paths.save_object("positions", self.positions)
-        if self.preloads.sparse_image_plane_grid_list_of_planes is not None:
+        if self.preloads.sparse_image_plane_grid_pg_list is not None:
             paths.save_object(
                 "preload_sparse_grids_of_planes",
-                self.preloads.sparse_image_plane_grid_list_of_planes,
+                self.preloads.sparse_image_plane_grid_pg_list,
             )

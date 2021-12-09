@@ -2,8 +2,10 @@ from os import path
 
 import autofit as af
 import autolens as al
-from autogalaxy.quantity.model.result import ResultQuantity
+
 from autogalaxy.mock import mock
+
+from autolens.quantity.model.result import ResultQuantity
 
 directory = path.dirname(path.realpath(__file__))
 

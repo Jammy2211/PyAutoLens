@@ -107,7 +107,7 @@ potential and deflection angles using the Cartesian grid:
 
     convergence = isothermal_mass_profile.convergence_2d_from_grid(grid=grid)
     potential = isothermal_mass_profile.potential_2d_from_grid(grid=grid)
-    deflections = isothermal_mass_profile.deflections_2d_from_grid(grid=grid)
+    deflections = isothermal_mass_profile.deflections_yx_2d_from_grid(grid=grid)
 
     mass_profile_plotter = aplt.MassProfilePlotter(
         mass_profile=isothermal_mass_profile, grid=grid

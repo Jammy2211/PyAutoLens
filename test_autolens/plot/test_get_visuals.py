@@ -1,11 +1,8 @@
 from os import path
 import pytest
 
-from autoconf import conf
-import autolens as al
 import autolens.plot as aplt
 
-from autolens.plot.get_visuals import GetVisuals1D
 from autolens.plot.get_visuals import GetVisuals2D
 
 directory = path.dirname(path.realpath(__file__))
@@ -20,7 +17,7 @@ def make_profile_plotter_setup():
 
 def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
 
-    visuals_2d = aplt.Visuals2D(vector_field=2)
+    visuals_2d = aplt.Visuals2D(vectors=2)
 
     include_2d = aplt.Include2D(
         origin=True,
@@ -48,7 +45,7 @@ def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
         visuals_2d_via.critical_curves[0]
         == tracer_x2_plane_7x7.critical_curves_from(grid=grid_2d_7x7)[0]
     ).all()
-    assert visuals_2d_via.vector_field == 2
+    assert visuals_2d_via.vectors == 2
 
     include_2d = aplt.Include2D(
         origin=True,
@@ -65,14 +62,14 @@ def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
     )
 
     assert visuals_2d_via.origin.in_list == [(0.0, 0.0)]
-    traced_border = tracer_x2_plane_7x7.traced_grids_of_planes_from(
+    traced_border = tracer_x2_plane_7x7.traced_grid_list_from(
         grid=grid_2d_7x7.mask.border_grid_sub_1.binned
     )[1]
     assert (visuals_2d_via.border == traced_border).all()
     assert visuals_2d_via.light_profile_centres.in_list == [
         tracer_x2_plane_7x7.galaxies[1].light_profile_0.centre
     ]
-    assert visuals_2d_via.mass_profile_centres == None
+    assert visuals_2d_via.mass_profile_centres is None
     assert (
         visuals_2d_via.caustics[0]
         == tracer_x2_plane_7x7.caustics_from(grid=grid_2d_7x7)[0]
@@ -92,17 +89,17 @@ def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
         tracer=tracer_x2_plane_7x7, grid=grid_2d_7x7, plane_index=0
     )
 
-    assert visuals_2d_via.origin == None
-    assert visuals_2d_via.border == None
-    assert visuals_2d_via.light_profile_centres == None
-    assert visuals_2d_via.mass_profile_centres == None
-    assert visuals_2d_via.critical_curves == None
-    assert visuals_2d_via.vector_field == 2
+    assert visuals_2d_via.origin is None
+    assert visuals_2d_via.border is None
+    assert visuals_2d_via.light_profile_centres is None
+    assert visuals_2d_via.mass_profile_centres is None
+    assert visuals_2d_via.critical_curves is None
+    assert visuals_2d_via.vectors == 2
 
 
 def test__via_fit_imaging_from(fit_imaging_x2_plane_7x7, grid_2d_7x7):
 
-    visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vector_field=2)
+    visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vectors=2)
     include_2d = aplt.Include2D(
         origin=True,
         mask=True,
@@ -127,7 +124,7 @@ def test__via_fit_imaging_from(fit_imaging_x2_plane_7x7, grid_2d_7x7):
         visuals_2d_via.critical_curves[0]
         == fit_imaging_x2_plane_7x7.tracer.critical_curves_from(grid=grid_2d_7x7)[0]
     ).all()
-    assert visuals_2d_via.vector_field == 2
+    assert visuals_2d_via.vectors == 2
 
     include_2d = aplt.Include2D(
         origin=False,
@@ -143,9 +140,9 @@ def test__via_fit_imaging_from(fit_imaging_x2_plane_7x7, grid_2d_7x7):
     visuals_2d_via = get_visuals.via_fit_imaging_from(fit=fit_imaging_x2_plane_7x7)
 
     assert visuals_2d_via.origin == (1.0, 1.0)
-    assert visuals_2d_via.mask == None
-    assert visuals_2d_via.border == None
-    assert visuals_2d_via.light_profile_centres == None
-    assert visuals_2d_via.mass_profile_centres == None
-    assert visuals_2d_via.critical_curves == None
-    assert visuals_2d_via.vector_field == 2
+    assert visuals_2d_via.mask is None
+    assert visuals_2d_via.border is None
+    assert visuals_2d_via.light_profile_centres is None
+    assert visuals_2d_via.mass_profile_centres is None
+    assert visuals_2d_via.critical_curves is None
+    assert visuals_2d_via.vectors == 2
