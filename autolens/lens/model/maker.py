@@ -63,8 +63,11 @@ class FitMaker:
             A fit object where an instance of the model has been fitted to the data.
         """
         try:
-            return self.fit_unit_instance_from(unit_value=unit_value)
-        except (Exception, IndexError, PriorLimitException):
+            try:
+                return self.fit_unit_instance_from(unit_value=unit_value)
+            except IndexError as e:
+                raise Exception from e
+        except (Exception, PriorLimitException):
             return self.fit_random_instance_from()
 
     def fit_unit_instance_from(
