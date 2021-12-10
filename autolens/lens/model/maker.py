@@ -117,9 +117,9 @@ class FitMaker:
 
         for i in range(preload_attempts):
 
-            instance = self.model.random_instance()
-
             try:
+
+                instance = self.model.random_instance()
 
                 conf.instance["general"]["model"][
                     "ignore_prior_limits"
