@@ -27,5 +27,6 @@ This work uses the following software packages:
 - `scikit-image` https://github.com/scikit-image/scikit-image [@scikit-image]
 - `scikit-learn` https://github.com/scikit-learn/scikit-learn [@scikit-learn]
 - `Scipy` https://github.com/scipy/scipy [@scipy]
+- `SQLite` https://www.sqlite.org/index.html [@sqlite]
 - `UltraNest` https://github.com/JohannesBuchner/UltraNest [@ultranest]
 - `Zeus` https://github.com/minaskar/zeus [@zeus1] [@zeus2]

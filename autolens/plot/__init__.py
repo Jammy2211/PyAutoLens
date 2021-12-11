@@ -72,6 +72,7 @@ from autogalaxy.profiles.plot.mass_profile_plotters import MassProfilePlotter
 from autogalaxy.profiles.plot.mass_profile_plotters import MassProfilePDFPlotter
 from autogalaxy.galaxy.plot.galaxy_plotters import GalaxyPlotter
 from autogalaxy.galaxy.plot.galaxy_plotters import GalaxyPDFPlotter
+from autogalaxy.quantity.plot.fit_quantity_plotters import FitQuantityPlotter
 
 from autogalaxy.imaging.plot.fit_imaging_plotters import FitImagingPlotter
 from autogalaxy.interferometer.plot.fit_interferometer_plotters import (
@@ -88,4 +89,3 @@ from autolens.interferometer.plot.fit_interferometer_plotters import (
 )
 from autolens.point.plot.fit_point_plotters import FitPointDatasetPlotter
 from autolens.lens.plot.ray_tracing_plotters import TracerPlotter
-from autolens.quantity.plot.fit_quantity_plotters import FitQuantityPlotter

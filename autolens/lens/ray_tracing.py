@@ -402,18 +402,23 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def has_mass_profile(self) -> bool:
         return any(list(map(lambda plane: plane.has_mass_profile, self.planes)))
 
+    @aa.grid_dec.grid_2d_to_vector_yx
     @aa.grid_dec.grid_2d_to_structure
     def deflections_yx_2d_from(
         self, grid: aa.type.Grid2DLike
     ) -> Union[aa.VectorYX2D, aa.VectorYX2DIrregular]:
-        return self.deflections_between_planes_from(grid=grid)
+        if self.total_planes > 1:
+            return self.deflections_between_planes_from(grid=grid)
+        return self.planes[0].deflections_yx_2d_from(grid=grid)
 
+    @aa.grid_dec.grid_2d_to_vector_yx
     @aa.grid_dec.grid_2d_to_structure
     def deflections_of_planes_summed_from(
         self, grid: aa.type.Grid2DLike
     ) -> Union[aa.VectorYX2D, aa.VectorYX2DIrregular]:
         return sum([plane.deflections_yx_2d_from(grid=grid) for plane in self.planes])
 
+    @aa.grid_dec.grid_2d_to_vector_yx
     @aa.grid_dec.grid_2d_to_structure
     def deflections_between_planes_from(
         self, grid: aa.type.Grid2DLike, plane_i=0, plane_j=-1
