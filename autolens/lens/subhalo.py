@@ -221,7 +221,9 @@ class SubhaloPlotter(AbstractPlotter):
         if show_median:
             if overwrite_title:
                 fit_imaging_plotter.set_title(label=f"Image {median_detection}")
-            fit_imaging_plotter.figures_2d(image=image)
+
+        #   fit_imaging_plotter.figures_2d(image=image)
+        fit_imaging_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
 
     def subplot_detection_imaging(self, remove_zeros: bool = False):
 
