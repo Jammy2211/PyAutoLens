@@ -20,7 +20,7 @@ class Preloads(aa.Preloads):
         traced_grids_of_planes_for_inversion: Optional[aa.Grid2D] = None,
         sparse_image_plane_grid_pg_list: Optional[List[List[aa.Grid2D]]] = None,
         relocated_grid: Optional[aa.Grid2D] = None,
-        mapper_list: Optional[aa.AbstractMapper] = None,
+        linear_obj_list: Optional[aa.AbstractMapper] = None,
         operated_mapping_matrix: Optional[np.ndarray] = None,
         curvature_matrix_preload: Optional[np.ndarray] = None,
         curvature_matrix_counts: Optional[np.ndarray] = None,
@@ -60,7 +60,7 @@ class Preloads(aa.Preloads):
         relocated_grid
             The two dimensional grids corresponding to the grid that has had its border pixels relocated for a
             pixelization in a lens fit. This can be preloaded when no mass profiles in the model vary.
-        mapper_list
+        linear_obj_list
             The mapper of a fit, which preloading avoids recalculation of the mapping matrix and image to source
             pixel mappings. This can be preloaded when no pixelizations in the model vary.
         operated_mapping_matrix
@@ -84,7 +84,7 @@ class Preloads(aa.Preloads):
             use_w_tilde=use_w_tilde,
             relocated_grid=relocated_grid,
             sparse_image_plane_grid_pg_list=sparse_image_plane_grid_pg_list,
-            mapper_list=mapper_list,
+            linear_obj_list=linear_obj_list,
             operated_mapping_matrix=operated_mapping_matrix,
             curvature_matrix_preload=curvature_matrix_preload,
             curvature_matrix_counts=curvature_matrix_counts,
@@ -124,7 +124,7 @@ class Preloads(aa.Preloads):
         preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
         preloads.set_sparse_image_plane_grid_pg_list(fit_0=fit_0, fit_1=fit_1)
         preloads.set_relocated_grid(fit_0=fit_0, fit_1=fit_1)
-        preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
+        preloads.set_linear_obj_list(fit_0=fit_0, fit_1=fit_1)
         preloads.set_operated_mapping_matrix_with_preloads(fit_0=fit_0, fit_1=fit_1)
         preloads.set_regularization_matrix_and_term(fit_0=fit_0, fit_1=fit_1)
 
@@ -316,13 +316,13 @@ class Preloads(aa.Preloads):
         line += [f"Use W Tilde = {self.use_w_tilde}\n\n"]
         line += [f"Blurred Image = {np.count_nonzero(self.blurred_image) != 0}\n"]
         line += [
-            f"Traced Grids of Planes (For LinearEqn) = {self.traced_grids_of_planes_for_inversion is not None}\n"
+            f"Traced Grids of Planes (For LEq) = {self.traced_grids_of_planes_for_inversion is not None}\n"
         ]
         line += [
             f"Sparse Image-Plane Grids of Planes = {self.sparse_image_plane_grid_pg_list is not None}\n"
         ]
         line += [f"Relocated Grid = {self.relocated_grid is not None}\n"]
-        line += [f"Mapper = {self.mapper_list is not None}\n"]
+        line += [f"Mapper = {self.linear_obj_list is not None}\n"]
         line += [
             f"Blurred Mapping Matrix = {self.operated_mapping_matrix is not None}\n"
         ]

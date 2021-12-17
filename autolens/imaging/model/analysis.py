@@ -344,6 +344,7 @@ class AnalysisImaging(AnalysisDataset):
         if not any(
             [
                 isinstance(pix, aa.pix.VoronoiBrightnessImage)
+                or isinstance(pix, aa.pix.DelaunayBrightnessImage)
                 for pix in tracer.pixelization_list
             ]
         ):

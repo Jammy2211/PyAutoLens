@@ -140,7 +140,7 @@ def test__info():
         traced_grids_of_planes_for_inversion=None,
         sparse_image_plane_grid_pg_list=None,
         relocated_grid=None,
-        mapper_list=None,
+        linear_obj_list=None,
         operated_mapping_matrix=None,
         curvature_matrix_preload=None,
     )
@@ -162,7 +162,7 @@ def test__info():
     i += 1
     assert lines[i] == f"Blurred Image = False\n"
     i += 1
-    assert lines[i] == f"Traced Grids of Planes (For LinearEqn) = False\n"
+    assert lines[i] == f"Traced Grids of Planes (For LEq) = False\n"
     i += 1
     assert lines[i] == f"Sparse Image-Plane Grids of Planes = False\n"
     i += 1
@@ -186,7 +186,7 @@ def test__info():
         traced_grids_of_planes_for_inversion=1,
         relocated_grid=1,
         sparse_image_plane_grid_pg_list=1,
-        mapper_list=1,
+        linear_obj_list=1,
         operated_mapping_matrix=1,
         curvature_matrix_preload=1,
         regularization_matrix=1,
@@ -210,7 +210,7 @@ def test__info():
     i += 1
     assert lines[i] == f"Blurred Image = True\n"
     i += 1
-    assert lines[i] == f"Traced Grids of Planes (For LinearEqn) = True\n"
+    assert lines[i] == f"Traced Grids of Planes (For LEq) = True\n"
     i += 1
     assert lines[i] == f"Sparse Image-Plane Grids of Planes = True\n"
     i += 1

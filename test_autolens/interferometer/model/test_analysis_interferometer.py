@@ -166,19 +166,6 @@ class TestAnalysisInterferometer:
 
     def test__stochastic_log_likelihoods_for_instance(self, interferometer_7):
 
-        galaxies = af.ModelInstance()
-        galaxies.lens = al.Galaxy(
-            redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=1.2)
-        )
-        galaxies.source = al.Galaxy(
-            redshift=1.0,
-            pixelization=al.pix.VoronoiBrightnessImage(pixels=5),
-            regularization=al.reg.Constant(),
-        )
-
-        instance = af.ModelInstance()
-        instance.galaxies = galaxies
-
         lens_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
         lens_hyper_image[4] = 10.0
         source_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
@@ -202,6 +189,32 @@ class TestAnalysisInterferometer:
             settings_lens=al.SettingsLens(stochastic_samples=2),
             hyper_dataset_result=result,
         )
+
+        galaxies = af.ModelInstance()
+        galaxies.source = al.Galaxy(
+            redshift=1.0,
+            pixelization=al.pix.VoronoiBrightnessImage(pixels=5),
+            regularization=al.reg.Constant(),
+        )
+
+        instance = af.ModelInstance()
+        instance.galaxies = galaxies
+
+        log_evidences = analysis.stochastic_log_likelihoods_for_instance(
+            instance=instance
+        )
+
+        assert len(log_evidences) == 2
+        assert log_evidences[0] != log_evidences[1]
+
+        galaxies.source = al.Galaxy(
+            redshift=1.0,
+            pixelization=al.pix.DelaunayBrightnessImage(pixels=5),
+            regularization=al.reg.Constant(),
+        )
+
+        instance = af.ModelInstance()
+        instance.galaxies = galaxies
 
         log_evidences = analysis.stochastic_log_likelihoods_for_instance(
             instance=instance

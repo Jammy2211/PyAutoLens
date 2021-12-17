@@ -409,7 +409,9 @@ class TestCompareToManualInversionOnly:
         )
 
         inversion = al.Inversion(
-            dataset=interferometer_7, mapper_list=[mapper], regularization_list=[reg]
+            dataset=interferometer_7,
+            linear_obj_list=[mapper],
+            regularization_list=[reg],
         )
 
         assert inversion.mapped_reconstructed_data == pytest.approx(
@@ -472,8 +474,8 @@ class TestCompareToManualInversionOnly:
         assert log_evidence == fit.log_evidence
         assert log_evidence == fit.figure_of_merit
 
-        mapped_reconstructed_image = al.util.linear_eqn.mapped_reconstructed_data_via_mapping_matrix_from(
-            mapping_matrix=fit.inversion.mapper_list[0].mapping_matrix,
+        mapped_reconstructed_image = al.util.leq.mapped_reconstructed_data_via_mapping_matrix_from(
+            mapping_matrix=fit.inversion.linear_obj_list[0].mapping_matrix,
             reconstruction=fit.inversion.reconstruction,
         )
 
@@ -499,7 +501,9 @@ class TestCompareToManualInversionOnly:
         )
 
         inversion = al.Inversion(
-            dataset=interferometer_7, mapper_list=[mapper], regularization_list=[reg]
+            dataset=interferometer_7,
+            linear_obj_list=[mapper],
+            regularization_list=[reg],
         )
 
         assert (fit.galaxy_model_image_dict[g0].native == np.zeros((7, 7))).all()
@@ -526,7 +530,9 @@ class TestCompareToManualInversionOnly:
         )
 
         inversion = al.Inversion(
-            dataset=interferometer_7, mapper_list=[mapper], regularization_list=[reg]
+            dataset=interferometer_7,
+            linear_obj_list=[mapper],
+            regularization_list=[reg],
         )
 
         assert (
@@ -634,7 +640,7 @@ class TestCompareToManualInversionOnly:
 
         inversion = al.Inversion(
             dataset=interferometer_7_lop,
-            mapper_list=[mapper],
+            linear_obj_list=[mapper],
             regularization_list=[reg],
             settings=al.SettingsInversion(use_linear_operators=True),
         )
@@ -699,8 +705,8 @@ class TestCompareToManualInversionOnly:
         assert log_evidence == fit.log_evidence
         assert log_evidence == fit.figure_of_merit
 
-        mapped_reconstructed_image = al.util.linear_eqn.mapped_reconstructed_data_via_mapping_matrix_from(
-            mapping_matrix=fit.inversion.mapper_list[0].mapping_matrix,
+        mapped_reconstructed_image = al.util.leq.mapped_reconstructed_data_via_mapping_matrix_from(
+            mapping_matrix=fit.inversion.linear_obj_list[0].mapping_matrix,
             reconstruction=fit.inversion.reconstruction,
         )
 
@@ -746,7 +752,7 @@ class TestCompareToManualProfilesAndInversion:
             visibilities=profile_subtracted_visibilities,
             noise_map=interferometer_7.noise_map,
             transformer=interferometer_7.transformer,
-            mapper_list=[mapper],
+            linear_obj_list=[mapper],
             regularization_list=[reg],
             settings=al.SettingsInversion(use_w_tilde=False),
         )
@@ -810,8 +816,8 @@ class TestCompareToManualProfilesAndInversion:
         assert log_evidence == fit.log_evidence
         assert log_evidence == fit.figure_of_merit
 
-        mapped_reconstructed_image = al.util.linear_eqn.mapped_reconstructed_data_via_mapping_matrix_from(
-            mapping_matrix=fit.inversion.mapper_list[0].mapping_matrix,
+        mapped_reconstructed_image = al.util.leq.mapped_reconstructed_data_via_mapping_matrix_from(
+            mapping_matrix=fit.inversion.linear_obj_list[0].mapping_matrix,
             reconstruction=fit.inversion.reconstruction,
         )
 
@@ -859,7 +865,7 @@ class TestCompareToManualProfilesAndInversion:
             visibilities=profile_subtracted_visibilities,
             noise_map=interferometer_7_grid.noise_map,
             transformer=interferometer_7_grid.transformer,
-            mapper_list=[mapper],
+            linear_obj_list=[mapper],
             regularization_list=[reg],
             settings=al.SettingsInversion(use_w_tilde=False),
         )
@@ -920,7 +926,7 @@ class TestCompareToManualProfilesAndInversion:
             visibilities=profile_subtracted_visibilities,
             noise_map=interferometer_7_grid.noise_map,
             transformer=interferometer_7_grid.transformer,
-            mapper_list=[mapper],
+            linear_obj_list=[mapper],
             regularization_list=[reg],
             settings=al.SettingsInversion(use_w_tilde=False),
         )

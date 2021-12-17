@@ -50,10 +50,10 @@ class TestAnalysisDataset:
             tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
         )
 
-        assert fit.inversion.mapper_list[0].source_grid_slim[4][0] == pytest.approx(
+        assert fit.inversion.linear_obj_list[0].source_grid_slim[4][0] == pytest.approx(
             97.19584, 1.0e-2
         )
-        assert fit.inversion.mapper_list[0].source_grid_slim[4][1] == pytest.approx(
+        assert fit.inversion.linear_obj_list[0].source_grid_slim[4][1] == pytest.approx(
             -3.699999, 1.0e-2
         )
 
@@ -70,7 +70,7 @@ class TestAnalysisDataset:
             tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
         )
 
-        assert fit.inversion.mapper_list[0].source_grid_slim[4][0] == pytest.approx(
+        assert fit.inversion.linear_obj_list[0].source_grid_slim[4][0] == pytest.approx(
             200.0, 1.0e-4
         )
 

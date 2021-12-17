@@ -250,9 +250,20 @@ class TestAnalysisImaging:
         instance = af.ModelInstance()
         instance.galaxies = galaxies
 
-        analysis = al.AnalysisImaging(
-            dataset=masked_imaging_7x7, hyper_dataset_result=result
+        stochastic_log_likelihoods = analysis.stochastic_log_likelihoods_for_instance(
+            instance=instance
         )
+
+        assert stochastic_log_likelihoods[0] != stochastic_log_likelihoods[1]
+
+        galaxies.source = al.Galaxy(
+            redshift=1.0,
+            pixelization=al.pix.DelaunayBrightnessImage(pixels=9),
+            regularization=al.reg.Constant(),
+        )
+
+        instance = af.ModelInstance()
+        instance.galaxies = galaxies
 
         stochastic_log_likelihoods = analysis.stochastic_log_likelihoods_for_instance(
             instance=instance
