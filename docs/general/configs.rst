@@ -268,7 +268,7 @@ Two examples using the 1D data fitting example for the config file **label.ini**
         The label given to that parameter for non-linear search plots using that parameter, e.g. the PDF plots. For
         example, if centre_1=x, the plot axis will be labeled 'x'.
 
-[subscript]
+[superscript]
     EllIsothermal -> str
         The subscript used on certain plots that show the results of different model-components. For example, if
         EllIsothermal=m, plots where the EllIsothermal are plotted will have a subscript m.

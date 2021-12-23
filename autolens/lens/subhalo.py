@@ -205,12 +205,20 @@ class SubhaloPlotter(AbstractPlotter):
         remove_zeros: bool = False,
         show_median: bool = True,
         overwrite_title=False,
+        transpose_array=False,
     ):
 
-        median_detection = np.round(np.median(self.detection_array_from()), 2)
+        array_overlay = self.detection_array_from(remove_zeros=remove_zeros)
+
+        median_detection = np.round(np.nanmedian(array_overlay), 2)
+
+        # Due to bug with flipped subhalo inv, can remove one day
+
+        if transpose_array:
+            array_overlay = np.fliplr(np.fliplr(array_overlay.native).T)
 
         visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
-            array_overlay=self.detection_array_from(remove_zeros=remove_zeros),
+            array_overlay=array_overlay,
             mass_profile_centres=self.subhalo_result.centres_native,
         )
 
