@@ -205,7 +205,7 @@ class SubhaloPlotter(AbstractPlotter):
         remove_zeros: bool = False,
         show_median: bool = True,
         overwrite_title=False,
-        transpose_array = False
+        transpose_array=False,
     ):
 
         array_overlay = self.detection_array_from(remove_zeros=remove_zeros)
@@ -216,7 +216,6 @@ class SubhaloPlotter(AbstractPlotter):
 
         if transpose_array:
             array_overlay = np.fliplr(np.fliplr(array_overlay.native).T)
-
 
         visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
             array_overlay=array_overlay,
