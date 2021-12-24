@@ -8,7 +8,6 @@ import autolens as al
 from autolens.lens.model import result as res
 from autolens.imaging.model.result import ResultImaging
 
-from autoarray.mock.mock import MockPixelization, MockRegularization
 from autolens.mock import mock
 
 directory = os.path.dirname(os.path.realpath(__file__))

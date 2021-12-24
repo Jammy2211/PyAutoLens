@@ -4,8 +4,11 @@ from autofit.mock.mock import MockSearch, MockSamples
 from autoarray.mock.mock import MockMask, MockDataset, MockFit as AAMockFit
 from autogalaxy.mock.mock import MockLightProfile, MockMassProfile
 
+from autofit.mock.mock import *
+from autofit.mock import mock as af_m
 
-class MockResult(af.MockResult):
+
+class MockResult(af_m.MockResult):
     def __init__(
         self,
         samples=None,

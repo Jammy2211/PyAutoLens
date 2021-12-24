@@ -96,7 +96,7 @@ class TestSimulatorImaging:
 
         grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, sub_size=1)
 
-        psf = al.Kernel2D.no_blur(pixel_scales=0.2)
+        psf = al.Kernel2D.manual_native(array=[[1.0]], pixel_scales=0.2)
 
         simulator = al.SimulatorImaging(
             psf=psf,

@@ -137,9 +137,9 @@ def make_masked_imaging_7x7():
     return fixtures.make_masked_imaging_7x7()
 
 
-@pytest.fixture(name="masked_imaging_no_blur_7x7")
-def make_masked_imaging_no_blur_7x7():
-    return fixtures.make_masked_imaging_no_blur_7x7()
+@pytest.fixture(name="masked_imaging_7x7_no_blur")
+def make_masked_imaging_7x7_no_blur():
+    return fixtures.make_masked_imaging_7x7_no_blur()
 
 
 @pytest.fixture(name="visibilities_7")

@@ -18,7 +18,7 @@ from autoarray.inversion.inversion.factory import (
 from autoarray.inversion.inversion.factory import (
     inversion_interferometer_unpacked_from as InversionInterferometer,
 )
-from autoarray.inversion.mappers.abstract import mapper as Mapper
+from autoarray.inversion.mappers.factory import mapper_from as Mapper
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.arrays.one_d.array_1d import Array1D

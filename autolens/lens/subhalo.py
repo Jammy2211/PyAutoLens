@@ -233,6 +233,26 @@ class SubhaloPlotter(AbstractPlotter):
         #   fit_imaging_plotter.figures_2d(image=image)
         fit_imaging_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
 
+    def figure_with_mass_overlay(self, image: bool = False, transpose_array=False):
+
+        array_overlay = self.subhalo_result.subhalo_mass_array_from()
+
+        # Due to bug with flipped subhalo inv, can remove one day
+
+        if transpose_array:
+            array_overlay = np.fliplr(np.fliplr(array_overlay.native).T)
+
+        visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
+            array_overlay=array_overlay,
+            mass_profile_centres=self.subhalo_result.centres_native,
+        )
+
+        fit_imaging_plotter = self.fit_imaging_detect_plotter_from(
+            visuals_2d=visuals_2d
+        )
+
+        fit_imaging_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
+
     def subplot_detection_imaging(self, remove_zeros: bool = False):
 
         self.open_subplot_figure(number_subplots=4)

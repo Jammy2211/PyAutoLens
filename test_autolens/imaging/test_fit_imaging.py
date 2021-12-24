@@ -1594,7 +1594,7 @@ class TestRefit:
 
 
 class TestAttributes:
-    def test__subtracted_images_of_planes(self, masked_imaging_no_blur_7x7):
+    def test__subtracted_images_of_planes(self, masked_imaging_7x7_no_blur):
 
         g0 = al.Galaxy(
             redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(1))
@@ -1610,7 +1610,7 @@ class TestAttributes:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.FitImaging(dataset=masked_imaging_no_blur_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
         assert fit.subtracted_images_of_planes[0].slim[0] == -4.0
         assert fit.subtracted_images_of_planes[1].slim[0] == -3.0
@@ -1630,14 +1630,14 @@ class TestAttributes:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-        fit = al.FitImaging(dataset=masked_imaging_no_blur_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
         assert fit.subtracted_images_of_planes[0].slim[0] == -4.0
         assert fit.subtracted_images_of_planes[1].slim[0] == -0.0
 
 
 class TestPreload:
-    def test__blurred_image_uses_preload_when_passed(self, masked_imaging_no_blur_7x7):
+    def test__blurred_image_uses_preload_when_passed(self, masked_imaging_7x7_no_blur):
 
         g0 = al.Galaxy(
             redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(1))
@@ -1645,7 +1645,7 @@ class TestPreload:
 
         tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
-        fit = al.FitImaging(dataset=masked_imaging_no_blur_7x7, tracer=tracer)
+        fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
         assert (fit.blurred_image == np.array([1.0])).all()
 
@@ -1653,7 +1653,7 @@ class TestPreload:
         preloads = al.Preloads(blurred_image=blurred_image)
 
         fit = al.FitImaging(
-            dataset=masked_imaging_no_blur_7x7, tracer=tracer, preloads=preloads
+            dataset=masked_imaging_7x7_no_blur, tracer=tracer, preloads=preloads
         )
 
         assert (fit.blurred_image == np.array([2.0])).all()

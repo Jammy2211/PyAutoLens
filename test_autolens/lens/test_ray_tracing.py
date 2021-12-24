@@ -2576,15 +2576,16 @@ class TestSNRLightProfiles:
             ]
         )
 
+        psf = al.Kernel2D.manual_native(array=[[1.0]], pixel_scales=1.0)
+
         simulator = al.SimulatorImaging(
+            psf=psf,
             exposure_time=exposure_time,
             noise_seed=1,
             background_sky_level=background_sky_level,
         )
 
         imaging = simulator.via_tracer_from(tracer=tracer, grid=grid)
-
-        print(imaging.signal_to_noise_map)
 
         assert 8.0 < imaging.signal_to_noise_map.native[0, 1] < 12.0
         assert 8.0 < imaging.signal_to_noise_map.native[1, 0] < 12.0
