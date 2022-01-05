@@ -458,7 +458,7 @@ class AnalysisImaging(AnalysisDataset):
     def save_results_for_aggregator(
         self,
         paths: af.DirectoryPaths,
-        samples: af.OptimizerSamples,
+        samples: af.Samples,
         model: af.Collection,
     ):
         """

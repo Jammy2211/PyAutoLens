@@ -26,6 +26,8 @@ class Preloads(aa.Preloads):
         curvature_matrix_counts: Optional[np.ndarray] = None,
         regularization_matrix: Optional[np.ndarray] = None,
         log_det_regularization_matrix_term: Optional[float] = None,
+            traced_sparse_grids_list_of_planes=None,
+            sparse_image_plane_grid_list=None,
         failed=False,
     ):
         """
@@ -90,6 +92,8 @@ class Preloads(aa.Preloads):
             curvature_matrix_counts=curvature_matrix_counts,
             regularization_matrix=regularization_matrix,
             log_det_regularization_matrix_term=log_det_regularization_matrix_term,
+            traced_sparse_grids_list_of_planes=traced_sparse_grids_list_of_planes,
+            sparse_image_plane_grid_list=sparse_image_plane_grid_list,
         )
 
         self.blurred_image = blurred_image

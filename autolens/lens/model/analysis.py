@@ -282,7 +282,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         raise NotImplementedError()
 
     def save_stochastic_outputs(
-        self, paths: af.DirectoryPaths, samples: af.OptimizerSamples
+        self, paths: af.DirectoryPaths, samples: af.Samples
     ):
         """
         Certain `Inversion`'s have stochasticity in their log likelihood estimate (e.g. due to how different KMeans

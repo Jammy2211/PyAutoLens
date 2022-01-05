@@ -517,9 +517,13 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         else:
             traced_grids_of_planes = preloads.traced_grids_of_planes_for_inversion
 
-        traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = self.traced_sparse_grid_pg_list_from(
-            grid=grid, settings_pixelization=settings_pixelization, preloads=preloads
-        )
+        if preloads.traced_sparse_grids_list_of_planes is None:
+            traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = self.traced_sparse_grid_pg_list_from(
+                grid=grid, settings_pixelization=settings_pixelization, preloads=preloads
+            )
+        else:
+            traced_sparse_grids_list_of_planes = preloads.traced_sparse_grids_list_of_planes
+            sparse_image_plane_grid_list = preloads.sparse_image_plane_grid_list
 
         for (plane_index, plane) in enumerate(self.planes):
 
