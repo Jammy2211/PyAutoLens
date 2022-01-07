@@ -291,30 +291,12 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         redshift
             The redshift the image-plane grid is traced to.
         """
-
-        if redshift <= self.plane_redshifts[0]:
-            return grid.copy()
-
-        plane_index_with_redshift = [
-            plane_index
-            for plane_index, plane in enumerate(self.planes)
-            if plane.redshift == redshift
-        ]
-
-        if plane_index_with_redshift:
-            return self.traced_grid_list_from(grid=grid)[plane_index_with_redshift[0]]
-
-        for plane_index, plane_redshift in enumerate(self.plane_redshifts):
-
-            if redshift < plane_redshift:
-                plane_index_insert = plane_index
-
-        planes = self.planes
-        planes.insert(plane_index_insert, ag.Plane(redshift=redshift, galaxies=[]))
-
-        tracer = Tracer(planes=planes, cosmology=self.cosmology)
-
-        return tracer.traced_grid_list_from(grid=grid)[plane_index_insert]
+        return ray_tracing_util.grid_at_redshift_from(
+            redshift=redshift,
+            galaxies=self.galaxies,
+            grid=grid,
+            cosmology=self.cosmology,
+        )
 
     @property
     def has_light_profile(self) -> bool:

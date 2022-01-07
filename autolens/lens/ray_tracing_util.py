@@ -84,51 +84,58 @@ def traced_grid_list_from(
     return traced_grid_list
 
 
-# def grid_at_redshift_from(
-#         redshift: float, galaxies: List[ag.Galaxy], grid: aa.type.Grid2DLike
-# ) -> aa.type.Grid2DLike:
-#     """
-#     For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in
-#     the strong lens configuration.
-#
-#     This is performed using multi-plane ray-tracing and a list of galaxies which are converted into a list of planes
-#     at a set of redshifts. the existing redshifts and planes of the tracer. Any redshift can be input even if a plane
-#     does not exist there, including redshifts before the first plane of the lens system.
-#
-#     Parameters
-#     ----------
-#     grid : ndsrray or aa.Grid2D
-#         The image-plane grid which is traced to the redshift.
-#     redshift
-#         The redshift the image-plane grid is traced to.
-#     """
-#
-#     plane_redshifts = ag.util.plane.ordered_plane_redshifts_from(galaxies=galaxies)
-#
-#     if redshift <= plane_redshifts[0]:
-#         return grid.copy()
-#
-#     planes = ag.util.plane.galaxies_in_redshift_ordered_planes_from(
-#             galaxies=galaxies, plane_redshifts=plane_redshifts
-#         )
-#
-#     plane_index_with_redshift = [
-#         plane_index
-#         for plane_index, plane in enumerate(planes)
-#         if plane.redshift == redshift
-#     ]
-#
-#     if plane_index_with_redshift:
-#         return self.traced_grid_list_from(grid=grid)[plane_index_with_redshift[0]]
-#
-#     for plane_index, plane_redshift in enumerate(self.plane_redshifts):
-#
-#         if redshift < plane_redshift:
-#             plane_index_insert = plane_index
-#
-#     planes = self.planes
-#     planes.insert(plane_index_insert, ag.Plane(redshift=redshift, galaxies=[]))
-#
-#     tracer = Tracer(planes=planes, cosmology=self.cosmology)
-#
-#     return tracer.traced_grid_list_from(grid=grid)[plane_index_insert]
+def grid_at_redshift_from(
+    redshift: float,
+    galaxies: List[ag.Galaxy],
+    grid: aa.type.Grid2DLike,
+    cosmology=cosmo.Planck15,
+) -> aa.type.Grid2DLike:
+    """
+    For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in
+    the strong lens configuration.
+
+    This is performed using multi-plane ray-tracing and a list of galaxies which are converted into a list of planes
+    at a set of redshifts. the existing redshifts and planes of the tracer. Any redshift can be input even if a plane
+    does not exist there, including redshifts before the first plane of the lens system.
+
+    Parameters
+    ----------
+    grid : ndsrray or aa.Grid2D
+        The image-plane grid which is traced to the redshift.
+    redshift
+        The redshift the image-plane grid is traced to.
+    """
+
+    plane_redshifts = ag.util.plane.ordered_plane_redshifts_from(galaxies=galaxies)
+
+    if redshift <= plane_redshifts[0]:
+        return grid.copy()
+
+    planes = ag.util.plane.planes_via_galaxies_from(galaxies=galaxies)
+
+    plane_index_with_redshift = [
+        plane_index
+        for plane_index, plane in enumerate(planes)
+        if plane.redshift == redshift
+    ]
+
+    if plane_index_with_redshift:
+
+        traced_grid_list = traced_grid_list_from(
+            planes=planes, grid=grid, cosmology=cosmology
+        )
+
+        return traced_grid_list[plane_index_with_redshift[0]]
+
+    for plane_index, plane_redshift in enumerate(plane_redshifts):
+
+        if redshift < plane_redshift:
+            plane_index_insert = plane_index
+
+    planes.insert(plane_index_insert, ag.Plane(redshift=redshift, galaxies=[]))
+
+    traced_grid_list = traced_grid_list_from(
+        planes=planes, grid=grid, cosmology=cosmology
+    )
+
+    return traced_grid_list[plane_index_insert]
