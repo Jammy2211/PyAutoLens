@@ -456,10 +456,7 @@ class AnalysisImaging(AnalysisDataset):
             )
 
     def save_results_for_aggregator(
-        self,
-        paths: af.DirectoryPaths,
-        samples: af.Samples,
-        model: af.Collection,
+        self, paths: af.DirectoryPaths, samples: af.Samples, model: af.Collection
     ):
         """
         At the end of a model-fit,  this routine saves attributes of the `Analysis` object to the `pickles`

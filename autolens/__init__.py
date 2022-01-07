@@ -37,7 +37,6 @@ from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 from autoarray.structures.kernel_2d import Kernel2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
-from autogalaxy import util
 
 from autogalaxy.galaxy.galaxy import Galaxy, HyperGalaxy, Redshift
 
@@ -85,7 +84,7 @@ from .point.model.analysis import AnalysisPoint
 from .point.point_solver import PointSolver
 from .quantity.fit_quantity import FitQuantity
 from .quantity.model.analysis import AnalysisQuantity
-
+from . import util
 
 from autoconf import conf
 

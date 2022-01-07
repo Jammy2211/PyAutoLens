@@ -17,6 +17,8 @@ from autogalaxy.profiles.light_profiles.light_profiles_snr import LightProfileSN
 
 from autolens.lens.model.preloads import Preloads
 
+from autolens.lens import ray_tracing_util
+
 
 class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def __init__(self, planes, cosmology, profiling_dict: Optional[Dict] = None):
@@ -55,21 +57,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         cls, galaxies, cosmology=cosmo.Planck15, profiling_dict: Optional[Dict] = None
     ):
 
-        plane_redshifts = ag.util.plane.ordered_plane_redshifts_from(galaxies=galaxies)
-
-        galaxies_in_planes = ag.util.plane.galaxies_in_redshift_ordered_planes_from(
-            galaxies=galaxies, plane_redshifts=plane_redshifts
+        planes = ag.util.plane.planes_via_galaxies_from(
+            galaxies=galaxies, profiling_dict=profiling_dict
         )
-
-        planes = []
-
-        for plane_index in range(0, len(plane_redshifts)):
-            planes.append(
-                ag.Plane(
-                    galaxies=galaxies_in_planes[plane_index],
-                    profiling_dict=profiling_dict,
-                )
-            )
 
         return Tracer(planes=planes, cosmology=cosmology, profiling_dict=profiling_dict)
 
@@ -204,38 +194,32 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def traced_grid_list_from(
         self, grid: aa.type.Grid2DLike, plane_index_limit=None
     ) -> List[aa.type.Grid2DLike]:
+        """
+        Performs multi-plane ray tracing on a 2D grid of Cartesian (y,x) coordinates using the mass profiles of the
+        galaxies and planes contained within the tracer.
 
-        traced_grids = []
-        traced_deflections = []
+        see `autolens.lens.ray_tracing.ray_tracing_util.traced_grid_list_from()` for a full description of the
+        calculation.
 
-        for (plane_index, plane) in enumerate(self.planes):
+        Parameters
+        ----------
+        grid
+            The 2D (y, x) coordinates on which multi-plane ray-tracing calculations are performed.
+        plane_index_limit
+            The integer index of the last plane which is used to perform ray-tracing, all planes with an index above
+            this value are omitted.
 
-            scaled_grid = grid.copy()
-
-            if plane_index > 0:
-                for previous_plane_index in range(plane_index):
-                    scaling_factor = ag.util.cosmology.scaling_factor_between_redshifts_from(
-                        redshift_0=self.plane_redshifts[previous_plane_index],
-                        redshift_1=plane.redshift,
-                        redshift_final=self.plane_redshifts[-1],
-                        cosmology=self.cosmology,
-                    )
-
-                    scaled_deflections = (
-                        scaling_factor * traced_deflections[previous_plane_index]
-                    )
-
-                    scaled_grid -= scaled_deflections
-
-            traced_grids.append(scaled_grid)
-
-            if plane_index_limit is not None:
-                if plane_index == plane_index_limit:
-                    return traced_grids
-
-            traced_deflections.append(plane.deflections_yx_2d_from(grid=scaled_grid))
-
-        return traced_grids
+        Returns
+        -------
+        traced_grid_list
+            A list of 2D (y,x) grids each of which are the input grid ray-traced to a redshift of the input list of planes.
+        """
+        return ray_tracing_util.traced_grid_list_from(
+            planes=self.planes,
+            grid=grid,
+            cosmology=self.cosmology,
+            plane_index_limit=plane_index_limit,
+        )
 
     @aa.profile_func
     def traced_sparse_grid_pg_list_from(
@@ -292,7 +276,8 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def grid_at_redshift_from(
         self, grid: aa.type.Grid2DLike, redshift: float
     ) -> aa.type.Grid2DLike:
-        """For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \
+        """
+        For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \
         the strong lens configuration.
 
         This is performed using multi-plane ray-tracing and the existing redshifts and planes of the tracer. However, \
@@ -519,10 +504,14 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         if preloads.traced_sparse_grids_list_of_planes is None:
             traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = self.traced_sparse_grid_pg_list_from(
-                grid=grid, settings_pixelization=settings_pixelization, preloads=preloads
+                grid=grid,
+                settings_pixelization=settings_pixelization,
+                preloads=preloads,
             )
         else:
-            traced_sparse_grids_list_of_planes = preloads.traced_sparse_grids_list_of_planes
+            traced_sparse_grids_list_of_planes = (
+                preloads.traced_sparse_grids_list_of_planes
+            )
             sparse_image_plane_grid_list = preloads.sparse_image_plane_grid_list
 
         for (plane_index, plane) in enumerate(self.planes):
