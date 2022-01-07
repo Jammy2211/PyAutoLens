@@ -10,9 +10,28 @@ from autolens import exc
 directory = path.dirname(path.realpath(__file__))
 
 
-class TestAnalysisAbstract:
+class TestAnalysisLensing:
+    def test__tracer_for_instance__subhalo_redshift_rescale_used(
+        self, analysis_imaging_7x7
+    ):
 
-    pass
+        model = af.Collection(
+            galaxies=af.Collection(
+                lens=al.Galaxy(
+                    redshift=0.5,
+                    mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0),
+                ),
+                subhalo=al.Galaxy(redshift=0.75, mass=al.mp.SphNFW(centre=(0.1, 0.2))),
+                source=al.Galaxy(redshift=1.0),
+            )
+        )
+
+        instance = model.instance_from_unit_vector([])
+        tracer = analysis_imaging_7x7.tracer_for_instance(instance=instance)
+
+        assert tracer.galaxies[1].mass.centre == pytest.approx(
+            (-0.19959, -0.39919), 1.0e-4
+        )
 
 
 class TestAnalysisDataset:

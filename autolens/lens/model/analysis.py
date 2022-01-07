@@ -21,6 +21,8 @@ from autolens.lens.model.visualizer import Visualizer
 from autolens.lens.ray_tracing import Tracer
 from autolens.lens.model.settings import SettingsLens
 
+from autolens.lens import ray_tracing_util
+
 logger = logging.getLogger(__name__)
 
 logger.setLevel(level="INFO")
@@ -73,6 +75,20 @@ class AnalysisLensing:
         """
         if hasattr(instance, "perturbation"):
             instance.galaxies.subhalo = instance.perturbation
+
+        # TODO : Need to think about how we do this without building it into the model attribute names.
+        # TODO : A Subhalo class that extends the Galaxy class maybe?
+
+        if hasattr(instance.galaxies, "subhalo"):
+
+            subhalo_centre = ray_tracing_util.grid_at_redshift_from(
+                galaxies=instance.galaxies,
+                redshift=instance.galaxies.subhalo.redshift,
+                grid=aa.Grid2DIrregular(grid=[instance.galaxies.subhalo.mass.centre]),
+                cosmology=self.cosmology,
+            )
+
+            instance.galaxies.subhalo.mass.centre = tuple(subhalo_centre.in_list[0])
 
         return Tracer.from_galaxies(
             galaxies=instance.galaxies,
