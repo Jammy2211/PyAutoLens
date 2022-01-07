@@ -28,6 +28,7 @@ class Preloads(aa.Preloads):
         log_det_regularization_matrix_term: Optional[float] = None,
         traced_sparse_grids_list_of_planes=None,
         sparse_image_plane_grid_list=None,
+        static_pixelization=None,
         failed=False,
     ):
         """
@@ -94,6 +95,7 @@ class Preloads(aa.Preloads):
             log_det_regularization_matrix_term=log_det_regularization_matrix_term,
             traced_sparse_grids_list_of_planes=traced_sparse_grids_list_of_planes,
             sparse_image_plane_grid_list=sparse_image_plane_grid_list,
+            static_pixelization=static_pixelization,
         )
 
         self.blurred_image = blurred_image
