@@ -21,6 +21,24 @@ class TestAnalysisLensing:
                     redshift=0.5,
                     mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0),
                 ),
+                subhalo=al.Galaxy(redshift=0.25, mass=al.mp.SphNFW(centre=(0.1, 0.2))),
+                source=al.Galaxy(redshift=1.0),
+            )
+        )
+
+        instance = model.instance_from_unit_vector([])
+        tracer = analysis_imaging_7x7.tracer_for_instance(instance=instance)
+
+        assert tracer.galaxies[0].mass.centre == pytest.approx(
+            (0.1, 0.2), 1.0e-4
+        )
+
+        model = af.Collection(
+            galaxies=af.Collection(
+                lens=al.Galaxy(
+                    redshift=0.5,
+                    mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0),
+                ),
                 subhalo=al.Galaxy(redshift=0.75, mass=al.mp.SphNFW(centre=(0.1, 0.2))),
                 source=al.Galaxy(redshift=1.0),
             )
