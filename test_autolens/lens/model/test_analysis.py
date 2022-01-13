@@ -29,9 +29,7 @@ class TestAnalysisLensing:
         instance = model.instance_from_unit_vector([])
         tracer = analysis_imaging_7x7.tracer_for_instance(instance=instance)
 
-        assert tracer.galaxies[0].mass.centre == pytest.approx(
-            (0.1, 0.2), 1.0e-4
-        )
+        assert tracer.galaxies[0].mass.centre == pytest.approx((0.1, 0.2), 1.0e-4)
 
         model = af.Collection(
             galaxies=af.Collection(

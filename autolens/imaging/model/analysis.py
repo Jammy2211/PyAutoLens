@@ -484,6 +484,8 @@ class AnalysisImaging(AnalysisDataset):
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
             if ag.util.model.isinstance_or_prior(
                 pixelization, aa.pix.VoronoiBrightnessImage
+            ) or ag.util.model.isinstance_or_prior(
+                pixelization, aa.pix.DelaunayBrightnessImage
             ):
                 self.save_stochastic_outputs(paths=paths, samples=samples)
 

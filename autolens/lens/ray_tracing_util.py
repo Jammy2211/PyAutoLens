@@ -49,6 +49,7 @@ def traced_grid_list_from(
     traced_grid_list
         A list of 2D (y,x) grids each of which are the input grid ray-traced to a redshift of the input list of planes.
     """
+
     traced_grid_list = []
     traced_deflection_list = []
 

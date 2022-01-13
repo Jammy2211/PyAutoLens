@@ -85,10 +85,10 @@ Next, install the source build dependencies of each project via pip:
 
 .. code-block:: bash
 
-   pip install -r PyAutoFit/requirements_source.txt
-   pip install -r PyAutoArray/requirements_source.txt
-   pip install -r PyAutoGalaxy/requirements_source.txt
-   pip install -r PyAutoLens/requirements_source.txt
+   pip install -r PyAutoFit/requirements.txt
+   pip install -r PyAutoArray/requirements.txt
+   pip install -r PyAutoGalaxy/requirements.txt
+   pip install -r PyAutoLens/requirements.txt
 
 If you are using a `conda` environment, add each source repository as follows:
 
