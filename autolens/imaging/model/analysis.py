@@ -345,6 +345,7 @@ class AnalysisImaging(AnalysisDataset):
             [
                 isinstance(pix, aa.pix.VoronoiBrightnessImage)
                 or isinstance(pix, aa.pix.DelaunayBrightnessImage)
+                or isinstance(pix, aa.pix.VoronoiNNBrightnessImage)
                 for pix in tracer.pixelization_list
             ]
         ):
@@ -482,10 +483,16 @@ class AnalysisImaging(AnalysisDataset):
         pixelization = ag.util.model.pixelization_from(model=model)
 
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
-            if ag.util.model.isinstance_or_prior(
-                pixelization, aa.pix.VoronoiBrightnessImage
-            ) or ag.util.model.isinstance_or_prior(
-                pixelization, aa.pix.DelaunayBrightnessImage
+            if (
+                ag.util.model.isinstance_or_prior(
+                    pixelization, aa.pix.VoronoiBrightnessImage
+                )
+                or ag.util.model.isinstance_or_prior(
+                    pixelization, aa.pix.DelaunayBrightnessImage
+                )
+                or ag.util.model.isinstance_or_prior(
+                    pixelization, aa.pix.VoronoiNNBrightnessImage
+                )
             ):
                 self.save_stochastic_outputs(paths=paths, samples=samples)
 

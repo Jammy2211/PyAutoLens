@@ -384,6 +384,7 @@ class AnalysisInterferometer(AnalysisDataset):
             [
                 isinstance(pix, aa.pix.VoronoiBrightnessImage)
                 or isinstance(pix, aa.pix.DelaunayBrightnessImage)
+                or isinstance(pix, aa.pix.VoronoiNNBrightnessImage)
                 for pix in tracer.pixelization_list
             ]
         ):
@@ -511,8 +512,21 @@ class AnalysisInterferometer(AnalysisDataset):
             The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
             the imaging data.
         """
+        pixelization = ag.util.model.pixelization_from(model=model)
+
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
-            self.save_stochastic_outputs(paths=paths, samples=samples)
+            if (
+                ag.util.model.isinstance_or_prior(
+                    pixelization, aa.pix.VoronoiBrightnessImage
+                )
+                or ag.util.model.isinstance_or_prior(
+                    pixelization, aa.pix.DelaunayBrightnessImage
+                )
+                or ag.util.model.isinstance_or_prior(
+                    pixelization, aa.pix.VoronoiNNBrightnessImage
+                )
+            ):
+                self.save_stochastic_outputs(paths=paths, samples=samples)
 
     def make_result(
         self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
