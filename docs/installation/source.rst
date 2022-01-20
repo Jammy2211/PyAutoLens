@@ -42,6 +42,13 @@ Next, install the **PyAutoLens** dependencies via pip:
 
    pip install -r PyAutoLens/requirements.txt
 
+For unit tests to pass you will also need the following optional requirements:
+
+.. code-block:: bash
+
+    pip install pynufft==2020.2.7
+    pip install pylops==1.11.1
+
 If you are using a `conda` environment, add the source repository as follows:
 
 .. code-block:: bash
@@ -89,6 +96,12 @@ Next, install the source build dependencies of each project via pip:
    pip install -r PyAutoArray/requirements.txt
    pip install -r PyAutoGalaxy/requirements.txt
    pip install -r PyAutoLens/requirements.txt
+
+For unit tests to pass you will also need the following optional requirements:
+
+.. code-block:: bash
+
+   pip install -r PyAutoArray/optional_requirements.txt
 
 If you are using a `conda` environment, add each source repository as follows:
 

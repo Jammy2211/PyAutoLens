@@ -42,10 +42,6 @@ Dependencies
 
 **pyquad** https://github.com/AshKelly/pyquad
 
-**pynufft**: https://github.com/jyhmiinlin/pynufft
-
-**PyLops**: https://github.com/PyLops/pylops
-
 **dynesty** https://github.com/joshspeagle/dynesty
 
 **emcee** https://github.com/dfm/emcee
@@ -71,5 +67,9 @@ Dependencies
 **scikit-learn**: https://github.com/scikit-learn/scikit-learn
 
 And the following optional dependencies:
+
+**pynufft**: https://github.com/jyhmiinlin/pynufft
+
+**PyLops**: https://github.com/PyLops/pylops
 
 **PyMultiNest** http://johannesbuchner.github.io/pymultinest-tutorial/install.html
