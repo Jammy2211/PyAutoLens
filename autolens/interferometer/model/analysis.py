@@ -372,7 +372,7 @@ class AnalysisInterferometer(AnalysisDataset):
         -------
         float
             A log likelihood cap which is applied in a stochastic model-fit to give improved error and posterior
-            estimates.
+            estimates. 
         """
         instance = self.associate_hyper_images(instance=instance)
         tracer = self.tracer_for_instance(instance=instance)
