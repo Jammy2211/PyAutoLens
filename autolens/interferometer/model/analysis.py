@@ -508,8 +508,9 @@ class AnalysisInterferometer(AnalysisDataset):
         pixelization = ag.util.model.pixelization_from(model=model)
 
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
-            if pixelization.is_stochastic:
-                self.save_stochastic_outputs(paths=paths, samples=samples)
+            if pixelization is not None:
+                if pixelization.is_stochastic:
+                    self.save_stochastic_outputs(paths=paths, samples=samples)
 
     def make_result(
         self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
