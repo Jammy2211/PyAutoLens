@@ -20,12 +20,9 @@ class TestAnalysisImaging:
 
         model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
-        class MockInstance:
-            def __init__(self):
+        instance = model.instance_from_prior_medians()
 
-                self.galaxies = [al.Galaxy(redshift=0.5)]
-
-        samples = mock.MockSamples(max_log_likelihood_instance=MockInstance())
+        samples = mock.MockSamples(max_log_likelihood_instance=instance)
 
         search = mock.MockSearch(name="test_search", samples=samples)
 
