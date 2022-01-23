@@ -380,14 +380,7 @@ class AnalysisInterferometer(AnalysisDataset):
         if not tracer.has_pixelization:
             return None
 
-        if not any(
-            [
-                isinstance(pix, aa.pix.VoronoiBrightnessImage)
-                or isinstance(pix, aa.pix.DelaunayBrightnessImage)
-                or isinstance(pix, aa.pix.VoronoiNNBrightnessImage)
-                for pix in tracer.pixelization_list
-            ]
-        ):
+        if not any([pix.is_stochastic for pix in tracer.pixelization_list]):
             return
 
         hyper_background_noise = self.hyper_background_noise_for_instance(
@@ -515,17 +508,7 @@ class AnalysisInterferometer(AnalysisDataset):
         pixelization = ag.util.model.pixelization_from(model=model)
 
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
-            if (
-                ag.util.model.isinstance_or_prior(
-                    pixelization, aa.pix.VoronoiBrightnessImage
-                )
-                or ag.util.model.isinstance_or_prior(
-                    pixelization, aa.pix.DelaunayBrightnessImage
-                )
-                or ag.util.model.isinstance_or_prior(
-                    pixelization, aa.pix.VoronoiNNBrightnessImage
-                )
-            ):
+            if pixelization.is_stochastic:
                 self.save_stochastic_outputs(paths=paths, samples=samples)
 
     def make_result(
