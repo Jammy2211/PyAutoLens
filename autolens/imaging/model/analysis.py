@@ -270,7 +270,12 @@ class AnalysisImaging(AnalysisDataset):
         start = time.time()
 
         for i in range(repeats):
-            fit = self.fit_imaging_for_instance(instance=instance)
+
+            try:
+                fit = self.fit_imaging_for_instance(instance=instance)
+            except exc.RayTracingException:
+                return
+
             fit.figure_of_merit
 
         fit_time = (time.time() - start) / repeats
@@ -421,7 +426,10 @@ class AnalysisImaging(AnalysisDataset):
         """
         instance = self.associate_hyper_images(instance=instance)
 
-        fit = self.fit_imaging_for_instance(instance=instance)
+        try:
+            fit = self.fit_imaging_for_instance(instance=instance)
+        except exc.RayTracingException:
+            return
 
         visualizer = VisualizerImaging(visualize_path=paths.image_path)
 

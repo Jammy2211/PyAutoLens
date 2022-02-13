@@ -19,7 +19,8 @@ command (the path to the ``output`` folder where the results of a non-linear sea
     from autoconf import conf
 
     conf.instance.push(
-        config_path="path/to/config", output_path=f"path/to/output"
+        config_path="path/to/config",
+        output_path=f"path/to/output"
     )
 
 general.ini
@@ -28,16 +29,16 @@ general.ini
 This config file is found at 'autolens_workspace/config/general.ini' and contains the following sections and variables:
 
 [output]
-    log_to_file -> bool
+    log_to_file : bool
         If True the outputs of processes like the non-linear search are logged to a file (and not printed to screen).
-    log_file -> str
+    log_file : str
         The file name the logged output is written to (in the non-linear search output folder).
-    log_level -> str
+    log_level : str
         The level of logging.
-    model_results_decimal_places -> int
+    model_results_decimal_places : int
         The number of decimal places the estimated values and errors of all parameters in the model.results file are
         output to.
-    remove_files -> bool
+    remove_files : bool
         If True, all output files of a non-linear search (e.g. samples, samples_backup, model.results, images, etc.)
         are deleted once the model-fit has completed.
 
@@ -49,7 +50,7 @@ This config file is found at 'autolens_workspace/config/general.ini' and contain
         This feature was implemented because super-computers often have a limit on the number of files allowed per
         user and the large number of files output by PyAutoLens can exceed this limit. By removing files the
         number of files is restricted only to the .zip files.
-    force_pickle_overwrite -> bool
+    force_pickle_overwrite : bool
         A model-fit outputs pickled files of the model, search, results, etc., which the database feature can load.
         If this setting it ``True`` these pickle files are recreated when a new model-fit is performed, even if
         the search is complete.
@@ -58,17 +59,17 @@ The following setting flips all images that are loaded by **PyAutoLens** so that
 the software ds9:
 
 [fits]
-    flip_for_ds9 -> bool
-        If `True`, the ndarray of all .fits files containing an image, noise-map, psf, etc, is flipped upside down
+    flip_for_ds9 : bool
+        If ``True``, the ndarray of all .fits files containing an image, noise-map, psf, etc, is flipped upside down
         so its orientation is the same as ds9.
 
 The following settings are specific for High Performance Super computer use with **PyAutoLens**.
 
 [hpc]
-    hpc_mode -> bool
-        If `True`, HPC mode is activated, which disables GUI visualization, logging to screen and other settings which
+    hpc_mode : bool
+        If ``True``, HPC mode is activated, which disables GUI visualization, logging to screen and other settings which
         are not suited to running on a super computer.
-    iterations_per_update -> int
+    iterations_per_update : int
         The number of iterations between every update (visualization, results output, etc) in HPC mode, which may be
         better suited to being less frequent on a super computer.
 
@@ -83,18 +84,18 @@ The library `numba <https://github.com/numba/numba>`_ is used to speed up functi
 functions before the Python interpreter runs:
 
 [numba]
-    nopython -> bool
+    nopython : bool
         If True, functions which hve a numba decorator must not convert back to Python during a run and thus must stay
         100% C. All PyAutoLens functions were developed with nopython mode turned on.
-    cache -> bool
+    cache : bool
         If True, the C version of numba functions are cached on the hard-disk so they do not need to be
         recompiled every time **PyAutoLens** is rerun. If False, the first time every function is run will have a small
         delay (0.1-1.0 seconds) as it has to be numba compiled again.
-    parallel -> bool
+    parallel : bool
         If True, all functions decorated with the numba.jit are run with parallel processing on.
 
 [inversion]
-    interpolated_grid_shape -> str {image_grid, source_grid}
+    interpolated_grid_shape : str {image_grid, source_grid}
         In order to output inversion reconstructions (which could be on a Voronoi grid) to a .fits file, the
         reconstruction is interpolated to a square grid of pixels. This option determines this grid:
 
@@ -104,7 +105,7 @@ functions before the Python interpreter runs:
         dimensions derived from the number of pixels used by the reconstruction.
 
 [hyper]
-    hyper_minimum_percent -> float
+    hyper_minimum_percent : float
         When creating hyper-images (see howtolens/chapter_5) all flux values below a certain value are rounded up an input
         value. This prevents negative flux values negatively impacting hyper-mode features or zeros creating division
         by zero errors.
@@ -114,15 +115,15 @@ functions before the Python interpreter runs:
 
         The minimum percentage value the hyper image is mulitpled by in order to determine the value fluxes are rounded
         up to.
-    hyper_noise_limit -> float
+    hyper_noise_limit : float
         When noise scaling is activated (E.g. via hyper galaxies) this value is the highest value a noise value can
         numerically be scaled up too. This prevents extremely large noise map values creating numerically unstable
         log likelihood values.
-    stochastic_outputs -> bool
+    stochastic_outputs : bool
         If ``True``, information on the stochastic likelihood behaviour of any KMeans based pixelization is output.
 
 [test]
-    test_mode -> bool
+    test_mode : bool
         If ``True`` this disables sampling of a search to provide a solution in one iteration. It is used for testing
         **PyAutoLens**.
 
@@ -139,29 +140,29 @@ object.
 The following config sections and variables are generic across all non-linear search configs:
 
 [updates]
-   iterations_per_update -> int
+   iterations_per_update : int
         The number of iterations of the non-linear search performed between every 'update', where an update performs
         visualization of the maximum log likelihood model, backing-up of the samples, output of the model.results
         file and logging.
-   visualize_every_update -> int
+   visualize_every_update : int
         For every visualize_every_update updates visualization is performed and output to the hard-disk during the
         non-linear using the maximum log likelihood model. A visualization_interval of -1 turns off on-the-fly
         visualization.
-   backup_every_update -> int
+   backup_every_update : int
         For every backup_every_update the results of the non-linear search in the samples foler and backed up into the
         samples_backup folder. A backup_every_update of -1 turns off backups during the non-linear search (it is still
         performed when the non-linear search terminates).
-   model_results_every_update -> int
+   model_results_every_update : int
         For every model_results_every_update the model.results file is updated with the maximum log likelihood model
         and parameter estimates with errors at 1 an 3 sigma confidence. A model_results_every_update of -1 turns off
         the model.results file being updated during the model-fit (it is still performed when the non-linear search
         terminates).
-   log_every_update -> int
+   log_every_update : int
         For every log_every_update the log file is updated with the output of the Python interpreter. A
         log_every_update of -1 turns off logging during the model-fit.
 
 [printing]
-    silence -> bool
+    silence : bool
         If True, the default print output of the non-linear search is silcened and not printed by the Python
         interpreter.
 
@@ -175,7 +176,7 @@ The following config sections and variables are generic across all non-linear se
         If ``True`` the width of the model parameters defined in the priors config file are used.
 
 [parallel]
-    number_of_cores -> int
+    number_of_cores : int
         For non-linear searches that support parallel procesing via the Python multiprocesing module, the number of
         cores the parallel run uses. If number_of_cores=1, the model-fit is performed in serial omitting the use
         of the multi-processing module.
@@ -192,7 +193,7 @@ visualization in **PyAutoLens**. The majority of config files are described in t
 The *general.ini* config contains the following sections and variables:
 
 [general]
-    backend -> str
+    backend : str
         The matploblib backend used for visualization (see
         https://gist.github.com/CMCDragonkai/4e9464d9f32f5893d837f3de2c43daa4 for a description of backends).
 
@@ -237,13 +238,13 @@ variables for every light profile and mass profile when it is used as a model. T
                 "lower": 0.0,
                 "upper": "inf"
             }
-        },
+        }
 
 The sections of this example config set the following:
 
 json config
-    type -> Prior
-        The default prior given to this parameter which is used by the non-linear search. In the example above, a
+    type : str {Uniform, Gaussian, LogUniform}
+        The default prior given to this parameter when used by the non-linear search. In the example above, a
         UniformPrior is used with lower_limit of 0.0 and upper_limit of 4.0. A GaussianPrior could be used by
         putting "Gaussian" in the "type" box, with "mean" and "sigma" used to set the default values. Any prior can be
         set in an analogous fashion (see the example configs).
@@ -259,44 +260,30 @@ json config
 notation
 --------
 
-The notation configs define the labels of every model-component parameter and its derived quantities, which are
-used when visualizing results (for example labeling the axis of the PDF triangle plots output by a non-linear search).
+The notation configs define the labels of every model parameter and its derived quantities, which are used when 
+visualizing results (for example labeling the axis of the PDF triangle plots output by a non-linear search).
+
 Two examples using the 1D data fitting example for the config file **label.ini** are:
 
 [label]
-    centre_0 -> str
-        The label given to that parameter for non-linear search plots using that parameter, e.g. the PDF plots. For
-        example, if centre_1=x, the plot axis will be labeled 'x'.
+    centre_0 : str
+        The label given to that parameter for non-linear search plots using that parameter, e.g. cornerplot PDF plots.
+        For example, if centre_1=x, the plot axis will be labeled 'x'.
 
 [superscript]
-    EllIsothermal -> str
-        The subscript used on certain plots that show the results of different model-components. For example, if
-        EllIsothermal=m, plots where the EllIsothermal are plotted will have a subscript m.
+    EllIsothermal : str
+        The superscript used on certain plots that show the results of different model-components. For example, if
+        EllIsothermal=mass, plots where the EllIsothermal are plotted will have a superscript `mass`.
 
 The **label_format.ini** config file specifies the format certain parameters are output as in output files like the
-*model.results* file.
+*model.results* file. This uses standard Python formatting strings.
 
 grids
 -----
 
-**interpolate.ini**
-
-The `Grid2DInterpolate` class speeds up the calculation of lensing quantities such as the potential or deflection angles
-by computing them on a grid of reduced resolution and interpolating the results to a grid at the native resolution of
-the data. This is important for certain mass profiles, where the calculations require computationally expensive
-numerical integration.
-
-The *interpolate.ini* specifies for every `LightProfile` and `MassProfile` in **PyAutoLens** whether, when a
-`Grid2DInterpolate` object is passed into a from grid method (e.g deflections_yx_2d_from_grid) the calculation should be
-performed using interpolation or by computing every value on the grid explicitly at native resolution.
-
-The default *interpolate.ini* config file supplied with the **PyAutoLens** workspace specifies `False` for every
-profile that does not require numerical integration (and therefore is fast to compute) and `True` for every profile
-which does (and therefore can see the calculation sped ups by factors of > x10).
-
 **radial_minimum.ini**
 
-The calculation of many quantities from `LightProfile`'s and *MassProfile's*, for example their image, convergence
+The calculation of many quantities from light profiles and mass profiles, for example their image, convergence
 or deflection angles are ill-defined at (y,x) coordinates (0.0, 0.0). This can lead **PyAutoLens** to crash if not
 handled carefully.
 

@@ -1,10 +1,10 @@
 ---
-title: "`PyAutoLens`: Open-Source Strong Gravitational Lensing"
+title: "`PyAutoGalaxy`: Open-Source Galaxy Modeling"
 tags:
   - astronomy
-  - gravitational lensing
+  - galaxy formation and evolution
   - galaxies
-  - cosmology
+  - interferometry
   - Python
 authors:
   - name: James. W. Nightingale
@@ -12,12 +12,12 @@ authors:
     affiliation: 1
   - name: Richard G. Hayes
     affiliation: 1
-  - name: Ashley Kelly
-    orcid: 0000-0003-3850-4469
-    affiliation: 1
   - name: Aristeidis Amvrosiadis
     orcid: 0000-0002-4465-1564
-    affiliation: 1    
+    affiliation: 1  
+  - name: Ashley Kelly
+    orcid: 0000-0003-3850-4469
+    affiliation: 1  
   - name: Amy Etherington
     affiliation: 1
   - name: Qiuhan He
@@ -71,8 +71,8 @@ affiliations:
   - name: School of Physics and Astronomy, Cardiff University, The Parade, Cardiff CF24 3AA, UK
     index: 7
 
-date: 26 October 2020
-codeRepository: https://github.com/Jammy2211/PyAutoLens
+date: 25 January 2022
+codeRepository: https://github.com/Jammy2211/PyAutoGalaxy
 license: MIT
 bibliography: paper.bib
 ---

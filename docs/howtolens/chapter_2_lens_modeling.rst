@@ -12,7 +12,7 @@ The chapter contains the following tutorials:
 - The Concepts of a parameter space and priors.
 
 `Tutorial 3: Realism and Complexity <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_2_lens_modeling/tutorial_3_realism_and_complexity.ipynb>`_
-- Finding a balance between realism and complexity when composing a lens model.
+- Finding a balance between realism and complexity when composing and fitting a lens model.
 
 `Tutorial 4: Dealing with Failure <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_2_lens_modeling/tutorial_4_dealing_with_failure.ipynb>`_
 - What to do when PyAutoLens finds an inaccurate lens model.

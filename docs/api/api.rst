@@ -85,8 +85,12 @@ Light Profiles
    SphDevVaucouleurs
    EllSersicCore
    SphSersicCore
+   EllExponentialCore
+   SphExponentialCore
    EllChameleon
    SphChameleon
+   EllEff
+   SphEff
 
 -------------
 Mass Profiles
@@ -119,13 +123,17 @@ Mass Profiles
     EllNFWGeneralized
     SphNFWGeneralized
     SphNFWTruncated
-    SphNFWTruncatedMCRLudlow
     SphNFWTruncatedMCRDuffy
+    SphNFWTruncatedMCRLudlow
+    SphNFWTruncatedMCRScatterLudlow
     EllNFW
     SphNFW
     SphNFWMCRDuffy
     SphNFWMCRLudlow
+    EllNFWMCRScatterLudlow
+    SphNFWMCRScatterLudlow
     EllNFWMCRLudlow
+    EllNFWGeneralizedMCRLudlow
 
 **Stellar Mass Profiles:**
 
@@ -167,7 +175,7 @@ Lensing
    SettingsLens
 
 ----------
-LEqs
+Inversions
 ----------
 
 .. currentmodule:: autoarray.inversion.pixelizations
@@ -178,8 +186,12 @@ LEqs
    :toctree: generated/
 
    Rectangular
+   DelaunayMagnification
+   DelaunayBrightnessImage
    VoronoiMagnification
    VoronoiBrightnessImage
+   VoronoiNNMagnification
+   VoronoiNNBrightnessImage
 
 .. currentmodule:: autoarray.inversion.regularization
 
@@ -189,7 +201,9 @@ LEqs
    :toctree: generated/
 
    Constant
+   ConstantSplit
    AdaptiveBrightness
+   AdaptiveBrightnessSplit
 
 .. currentmodule:: autolens
 
@@ -199,7 +213,6 @@ LEqs
    :toctree: generated/
 
    Mapper
-   LEq
 
 **Settings:**
 
@@ -228,7 +241,9 @@ Plots
     ImagingPlotter
     InterferometerPlotter
     LightProfilePlotter
+    LightProfilePDFPlotter
     MassProfilePlotter
+    MassProfilePDFPlotter
     GalaxyPlotter
     FitImagingPlotter
     FitInterferometerPlotter
@@ -340,4 +355,3 @@ Lens Modeling
    Emcee
    PySwarmsLocal
    PySwarmsGlobal
-   MultiNest

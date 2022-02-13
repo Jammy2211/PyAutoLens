@@ -6,7 +6,7 @@ In chapter 5, we use **hyper-mode** to adapt our lens models to the specific str
 The chapter contains the following tutorials:
 
 `Tutorial 1: Fit Problems <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_5_hyper_mode/tutorial_1_fit_problems.ipynb>`_
-- The short comings of our lens models and inversions.
+- The shortcomings of our lens models and inversions.
 
 `Tutorial 2: Brightness Adaption <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_5_hyper_mode/tutorial_2_brightness_adaption.ipynb>`_
 - Adapting the pixelization to the source's morphology.

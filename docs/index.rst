@@ -201,7 +201,6 @@ strong gravitational lensing with **PyAutoLens**.
    overview/overview_6_interferometry
    overview/overview_7_point_sources
    overview/overview_8_groups
-   overview/overview_9_clusters
 
 .. toctree::
    :caption: Installation:

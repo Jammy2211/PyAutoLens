@@ -7,7 +7,7 @@ different lens model.
 The chapter contains the following tutorials:
 
 `Tutorial 1: Search Chaining <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_3_search_chaining/tutorial_1_search_chaining.ipynb>`_
-- Breaking the lens modeling procedure into a chain sequence of model-fits.
+- Breaking the lens modeling procedure into a chained sequence of model-fits.
 
 `Tutorial 2: Prior Passing <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_3_search_chaining/tutorial_2_prior_passing.ipynb>`_
 - How the results of earlier searches are passed to later searches.

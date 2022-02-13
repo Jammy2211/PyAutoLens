@@ -1,10 +1,10 @@
-autoconf==2021.10.14.1
-autofit==2021.10.14.1
-autoarray==2021.10.14.1
-autogalaxy==2021.10.14.1
 astropy>=3.0.0
 numpydoc>=1.0.0
 matplotlib>=3.0.3
 numpy>=1.18.0
 pyprojroot==0.2.0
 scikit-learn==0.21.3
+autoconf==2022.02.13.1
+autofit==2022.02.13.1
+autoarray==2022.02.13.1
+autogalaxy==2021.10.14.1

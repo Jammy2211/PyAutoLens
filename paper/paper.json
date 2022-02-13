@@ -15,9 +15,9 @@
   "datePublished": "2020-10-26",
   "dateModified": "2020-10-26",
   "dateCreated": "2020-10-26",
-  "description": "PyAutoFit`: A Classy Probabilistic Programming Language for Model Composition and Fitting",
-  "keywords": "Python, statistics, Bayesian inference, probabilistic programming, model fitting",
+  "description": "PyAutoLens`: Open-Source Strong Gravitational Lensingg",
+  "keywords": "Python, gravitational lensing, cosmology, galaxy formation and evolution",
   "license": "MIT",
-  "title": "PyAutoFit",
+  "title": "PyAutoLens",
   "version": "v0.64.2"
 }
