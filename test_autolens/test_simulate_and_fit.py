@@ -274,6 +274,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
         dataset=interferometer,
         tracer=tracer,
         settings_pixelization=al.SettingsPixelization(use_border=False),
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit.chi_squared == pytest.approx(0.0)
@@ -296,6 +297,7 @@ def test__simulate_interferometer_data_and_fit__chi_squared_is_0__noise_normaliz
         dataset=interferometer,
         tracer=tracer,
         settings_pixelization=al.SettingsPixelization(use_border=False),
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
     assert abs(fit.chi_squared) < 1.0e-4
 
@@ -347,6 +349,10 @@ def test__simulate_interferometer_data_and_fit__known_likelihood():
         settings=al.SettingsInterferometer(transformer_class=al.TransformerDFT)
     )
 
-    fit = al.FitInterferometer(dataset=interferometer, tracer=tracer)
+    fit = al.FitInterferometer(
+        dataset=interferometer,
+        tracer=tracer,
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
+    )
 
     assert fit.figure_of_merit == pytest.approx(-5.433894158056919, 1.0e-2)

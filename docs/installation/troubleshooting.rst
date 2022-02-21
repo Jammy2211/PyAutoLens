@@ -59,13 +59,13 @@ You may then retry the autolens installation:
     pip install autolens
 
 In the above solution fails, you can manually install the following versions
-of ``llvmite==0.32.1``, ``numba==0.47.0`` and ``numpy==1.19.7`` which are known to work with **PyAutoLens**:
+of ``llvmlite==0.38.0``, ``numba==0.51.1`` and ``numpy==1.22.2`` which are known to work with **PyAutoLens**:
 
 .. code-block:: bash
 
-    pip install llvmlite==0.32.1
-    pip install numba==0.47.0 -ignore-installed llvmlite
-    pip install numpy==1.19.7
+    pip install llvmlite==0.38.0
+    pip install numba==0.53.1 -ignore-installed llvmlite
+    pip install numpy==1.22.2
 
     pip install autolens --ignore-installed llvmlite numba numpy
 
@@ -80,11 +80,11 @@ If numba and numpy are not on versions compatible with one another the following
 
     TypeError: expected dtype object, got 'numpy.dtype[float64]'
 
-The easiest solution is to downgrade to ``numpy==1.19.7``:
+The easiest solution is to downgrade to ``numpy==1.22.2``:
 
 .. code-block:: bash
 
-    pip install numpy==1.19.7
+    pip install numpy==1.22.2
 
 
 If you are still facing installation issues please `raise an issue on the GitHub issues page <https://github.com/Jammy2211/PyAutoLens/issues>`_.

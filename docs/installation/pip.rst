@@ -18,10 +18,20 @@ the installation has clean dependencies):
 
 .. code-block:: bash
 
-    pip install autolens==2022.02.13.1
+    pip install autolens==2022.02.14.1
 
 If this raises no errors **PyAutoLens** is installed! If there is an error check out
 the `troubleshooting section <https://pyautolens.readthedocs.io/en/latest/installation/troubleshooting.html>`_.
+
+You may get warnings which state something like:
+
+.. code-block:: bash
+
+    ERROR: autoarray 2022.2.14.1 has requirement numpy<=1.22.1, but you'll have numpy 1.22.2 which is incompatible.
+    ERROR: numba 0.53.1 has requirement llvmlite<0.37,>=0.36.0rc1, but you'll have llvmlite 0.38.0 which is incompatible.
+
+If you see these messages, they do not mean that the installation has failed and the instructions below will
+identify clearly if the installation is a success.
 
 Next, clone the ``autolens workspace`` (the line ``--depth 1`` clones only the most recent branch on
 the ``autolens_workspace``, reducing the download size):

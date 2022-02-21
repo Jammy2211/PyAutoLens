@@ -19,8 +19,11 @@ the main body of text, and delete as appropriate any packages your analysis did 
 the citation key for all of these projects.
 
 If you use decomposed mass models (e.g. stellar mass models like an ``EllSersic`` or dark matter models like
-an ``EllNFW``) please cite the following paper https://academic.oup.com/mnras/article/488/1/1387/5526256 under
-citation key ``Anowar2019``. Our deflection angle calculations are based on this method.
+an ``EllNFW``) please cite the following paper https://arxiv.org/abs/2106.11464 under
+citation key ``Oguri2021``. Our deflection angle calculations are based on this method.
+
+If you specifically use a decomposed mass model with the ``GeneralizedNFW`` please cite the following paper https://academic.oup.com/mnras/article/488/1/1387/5526256 under
+citation key ``Anowar2019``.
 
 The citations.bib file above also includes my work on `using strong lensing to study galaxy structure
 <https://ui.adsabs.harvard.edu/abs/2019MNRAS.489.2049N/abstract>`_. If you're feeling kind, please go ahead and stick

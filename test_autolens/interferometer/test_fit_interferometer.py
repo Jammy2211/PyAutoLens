@@ -77,7 +77,11 @@ def test__fit_figure_of_merit(interferometer_7):
 
     tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
-    fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
+    fit = al.FitInterferometer(
+        dataset=interferometer_7,
+        tracer=tracer,
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
+    )
 
     assert (fit.noise_map.slim == np.full(fill_value=2.0 + 2.0j, shape=(7,))).all()
     assert fit.log_evidence == pytest.approx(-1570173.14216, 1e-4)
@@ -128,6 +132,7 @@ def test__fit_figure_of_merit__include_hyper_methods(interferometer_7):
         dataset=interferometer_7,
         tracer=tracer,
         hyper_background_noise=hyper_background_noise,
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert (fit.noise_map.slim == np.full(fill_value=3.0 + 3.0j, shape=(7,))).all()
@@ -146,6 +151,7 @@ def test__fit_figure_of_merit__include_hyper_methods(interferometer_7):
         dataset=interferometer_7,
         tracer=tracer,
         hyper_background_noise=hyper_background_noise,
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert (fit.noise_map.slim == np.full(fill_value=3.0 + 3.0j, shape=(7,))).all()
@@ -204,14 +210,21 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-    fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
+    fit = al.FitInterferometer(
+        dataset=interferometer_7,
+        tracer=tracer,
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
+    )
 
     mapper = pix.mapper_from(
         source_grid_slim=interferometer_7.grid, source_pixelization_grid=None
     )
 
     inversion = al.Inversion(
-        dataset=interferometer_7, linear_obj_list=[mapper], regularization_list=[reg]
+        dataset=interferometer_7,
+        linear_obj_list=[mapper],
+        regularization_list=[reg],
+        settings=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert (fit.galaxy_model_image_dict[g0].native == np.zeros((7, 7))).all()
@@ -229,7 +242,11 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 
-    fit = al.FitInterferometer(dataset=interferometer_7_grid, tracer=tracer)
+    fit = al.FitInterferometer(
+        dataset=interferometer_7_grid,
+        tracer=tracer,
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
+    )
 
     traced_grids = tracer.traced_grid_list_from(grid=interferometer_7_grid.grid)
 
@@ -255,6 +272,8 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
         visibilities=profile_subtracted_visibilities,
         noise_map=interferometer_7_grid.noise_map,
         transformer=interferometer_7_grid.transformer,
+        w_tilde=interferometer_7.w_tilde,
+        dirty_image_w_tilde=interferometer_7.dirty_image_w_tilde,
         linear_obj_list=[mapper],
         regularization_list=[reg],
         settings=al.SettingsInversion(use_w_tilde=False),
@@ -322,14 +341,21 @@ def test___galaxy_model_visibilities_dict(interferometer_7, interferometer_7_gri
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-    fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
+    fit = al.FitInterferometer(
+        dataset=interferometer_7,
+        tracer=tracer,
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
+    )
 
     mapper = pix.mapper_from(
         source_grid_slim=interferometer_7.grid, source_pixelization_grid=None
     )
 
     inversion = al.Inversion(
-        dataset=interferometer_7, linear_obj_list=[mapper], regularization_list=[reg]
+        dataset=interferometer_7,
+        linear_obj_list=[mapper],
+        regularization_list=[reg],
+        settings=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert (
@@ -353,7 +379,11 @@ def test___galaxy_model_visibilities_dict(interferometer_7, interferometer_7_gri
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
 
-    fit = al.FitInterferometer(dataset=interferometer_7_grid, tracer=tracer)
+    fit = al.FitInterferometer(
+        dataset=interferometer_7_grid,
+        tracer=tracer,
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
+    )
 
     traced_grids = tracer.traced_grid_list_from(grid=interferometer_7_grid.grid)
 
@@ -379,6 +409,8 @@ def test___galaxy_model_visibilities_dict(interferometer_7, interferometer_7_gri
         visibilities=profile_subtracted_visibilities,
         noise_map=interferometer_7_grid.noise_map,
         transformer=interferometer_7_grid.transformer,
+        w_tilde=interferometer_7.w_tilde,
+        dirty_image_w_tilde=interferometer_7.dirty_image_w_tilde,
         linear_obj_list=[mapper],
         regularization_list=[reg],
         settings=al.SettingsInversion(use_w_tilde=False),
@@ -425,11 +457,13 @@ def test___stochastic_mode__gives_different_log_likelihood_list(interferometer_7
         dataset=interferometer_7,
         tracer=tracer,
         settings_pixelization=al.SettingsPixelization(is_stochastic=False),
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
     fit_1 = al.FitInterferometer(
         dataset=interferometer_7,
         tracer=tracer,
         settings_pixelization=al.SettingsPixelization(is_stochastic=False),
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit_0.log_evidence == fit_1.log_evidence
@@ -438,11 +472,13 @@ def test___stochastic_mode__gives_different_log_likelihood_list(interferometer_7
         dataset=interferometer_7,
         tracer=tracer,
         settings_pixelization=al.SettingsPixelization(is_stochastic=True),
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
     fit_1 = al.FitInterferometer(
         dataset=interferometer_7,
         tracer=tracer,
         settings_pixelization=al.SettingsPixelization(is_stochastic=True),
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit_0.log_evidence != fit_1.log_evidence
@@ -457,7 +493,11 @@ def test__total_mappers(interferometer_7):
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-    fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
+    fit = al.FitInterferometer(
+        dataset=interferometer_7,
+        tracer=tracer,
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
+    )
 
     assert fit.total_mappers == 0
 
@@ -469,6 +509,10 @@ def test__total_mappers(interferometer_7):
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-    fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
+    fit = al.FitInterferometer(
+        dataset=interferometer_7,
+        tracer=tracer,
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
+    )
 
     assert fit.total_mappers == 1

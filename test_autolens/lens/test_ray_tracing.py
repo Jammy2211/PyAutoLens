@@ -1677,6 +1677,8 @@ class TestAbstractTracerData:
             visibilities=interferometer_7.visibilities,
             noise_map=interferometer_7.noise_map,
             transformer=interferometer_7.transformer,
+            w_tilde=interferometer_7.w_tilde,
+            dirty_image_w_tilde=interferometer_7.dirty_image_w_tilde,
             settings_pixelization=al.SettingsPixelization(use_border=False),
         )
 
