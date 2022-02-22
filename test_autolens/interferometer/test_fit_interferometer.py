@@ -159,7 +159,9 @@ def test__fit_figure_of_merit__include_hyper_methods(interferometer_7):
     assert fit.figure_of_merit == pytest.approx(-892439.04665, 1.0e-4)
 
 
-def test___fit_figure_of_merit__linear_operator(interferometer_7_lop):
+def test___fit_figure_of_merit__different_settings(
+    interferometer_7, interferometer_7_lop
+):
 
     pix = al.pix.Rectangular(shape=(3, 3))
     reg = al.reg.Constant(coefficient=0.01)
@@ -169,9 +171,23 @@ def test___fit_figure_of_merit__linear_operator(interferometer_7_lop):
     tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
     fit = al.FitInterferometer(
+        dataset=interferometer_7,
+        tracer=tracer,
+        settings_inversion=al.SettingsInversion(
+            use_w_tilde=True, use_linear_operators=False
+        ),
+    )
+
+    assert (fit.noise_map.slim == np.full(fill_value=2.0 + 2.0j, shape=(7,))).all()
+    assert fit.log_evidence == pytest.approx(-66.90612, 1e-4)
+    assert fit.figure_of_merit == pytest.approx(-66.90612, 1.0e-4)
+
+    fit = al.FitInterferometer(
         dataset=interferometer_7_lop,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_linear_operators=True),
+        settings_inversion=al.SettingsInversion(
+            use_w_tilde=False, use_linear_operators=True
+        ),
     )
 
     assert (fit.noise_map.slim == np.full(fill_value=2.0 + 2.0j, shape=(7,))).all()
@@ -273,7 +289,6 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
         noise_map=interferometer_7_grid.noise_map,
         transformer=interferometer_7_grid.transformer,
         w_tilde=interferometer_7.w_tilde,
-        dirty_image_w_tilde=interferometer_7.dirty_image_w_tilde,
         linear_obj_list=[mapper],
         regularization_list=[reg],
         settings=al.SettingsInversion(use_w_tilde=False),
@@ -410,7 +425,6 @@ def test___galaxy_model_visibilities_dict(interferometer_7, interferometer_7_gri
         noise_map=interferometer_7_grid.noise_map,
         transformer=interferometer_7_grid.transformer,
         w_tilde=interferometer_7.w_tilde,
-        dirty_image_w_tilde=interferometer_7.dirty_image_w_tilde,
         linear_obj_list=[mapper],
         regularization_list=[reg],
         settings=al.SettingsInversion(use_w_tilde=False),

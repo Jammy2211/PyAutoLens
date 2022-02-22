@@ -76,7 +76,6 @@ class FitInterferometer(aa.FitInterferometer):
                 noise_map=noise_map,
                 transformer=dataset.transformer,
                 w_tilde=dataset.w_tilde,
-                dirty_image_w_tilde=dataset.dirty_image_w_tilde,
                 settings_pixelization=settings_pixelization,
                 settings_inversion=settings_inversion,
                 preloads=preloads,
