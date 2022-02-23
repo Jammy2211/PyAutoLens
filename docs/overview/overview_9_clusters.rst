@@ -80,7 +80,7 @@ sources galaxies. Manually writing the model in a Python script, in the way we d
 not feasible.
 
 For this cluster, we therefore composed the the model by interfacing with Source Extractor
-(https://sextractor.readthedocs.io/) catalogue files. A full illustration of how to make the lens and source models
+(https://sextract.readthedocs.io/) catalogue files. A full illustration of how to make the lens and source models
 from catalogue files is given at the following links:
 
  `lenses <https://github.com/Jammy2211/autolens_workspace/blob/master/scripts/cluster/model_maker/example__lenses.py>`_
