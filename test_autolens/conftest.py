@@ -5,7 +5,7 @@ import pytest
 from matplotlib import pyplot
 
 from autofit import conf
-from autolens.mock import fixtures
+from autolens import fixtures
 
 directory = path.dirname(path.realpath(__file__))
 

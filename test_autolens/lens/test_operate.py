@@ -8,9 +8,6 @@ from skimage import measure
 
 import autolens as al
 
-from autoarray.mock.mock import MockPixelization, MockRegularization
-from autolens.mock.mock import MockMassProfile
-
 test_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
 

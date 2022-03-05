@@ -8,8 +8,6 @@ import autolens as al
 from autolens.lens.model import result as res
 from autolens.imaging.model.result import ResultImaging
 
-from autolens.mock import mock
-
 directory = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -24,7 +22,7 @@ class TestResultAbstract:
             )
         )
 
-        search = mock.MockSearch(name="test_search_2", samples=samples_with_result)
+        search = al.m.MockSearch(name="test_search_2", samples=samples_with_result)
 
         result = search.fit(model=model, analysis=analysis_imaging_7x7)
 
@@ -44,7 +42,7 @@ class TestResultAbstract:
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
 
-        samples = mock.MockSamples(max_log_likelihood_instance=tracer)
+        samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
         result = res.Result(
             samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
@@ -64,7 +62,7 @@ class TestResultAbstract:
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens, source_0, source_1])
 
-        samples = mock.MockSamples(max_log_likelihood_instance=tracer)
+        samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
         result = res.Result(
             samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
@@ -82,7 +80,7 @@ class TestResultAbstract:
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens, source_0, source_1])
 
-        samples = mock.MockSamples(max_log_likelihood_instance=tracer)
+        samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
         result = res.Result(
             samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
@@ -92,7 +90,7 @@ class TestResultAbstract:
 
         tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5)])
 
-        samples = mock.MockSamples(max_log_likelihood_instance=tracer)
+        samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
         result = res.Result(
             samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
@@ -114,7 +112,7 @@ class TestResultAbstract:
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
 
-        samples = mock.MockSamples(max_log_likelihood_instance=tracer)
+        samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
         result = ResultImaging(
             samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
@@ -134,7 +132,7 @@ class TestResultAbstract:
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
 
-        samples = mock.MockSamples(max_log_likelihood_instance=tracer)
+        samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
         result = ResultImaging(
             samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
@@ -156,7 +154,7 @@ class TestResultAbstract:
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
 
-        samples = mock.MockSamples(max_log_likelihood_instance=tracer)
+        samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
         result = ResultImaging(
             samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
@@ -189,7 +187,7 @@ class TestResultAbstract:
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
 
-        samples = mock.MockSamples(max_log_likelihood_instance=tracer)
+        samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
         result = ResultImaging(
             samples=samples, analysis=analysis_imaging_7x7, model=None, search=None
@@ -220,7 +218,7 @@ class TestResultAbstract:
             ]
         )
 
-        samples = mock.MockSamples(max_log_likelihood_instance=tracer)
+        samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
         result = res.Result(
             samples=samples, model=None, analysis=analysis_imaging_7x7, search=None
@@ -291,7 +289,7 @@ class TestResultDataset:
         instance.galaxies = galaxies
 
         result = ResultImaging(
-            samples=mock.MockSamples(max_log_likelihood_instance=instance),
+            samples=al.m.MockSamples(max_log_likelihood_instance=instance),
             model=af.ModelMapper(),
             analysis=analysis_imaging_7x7,
             search=None,

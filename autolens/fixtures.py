@@ -1,8 +1,6 @@
 import autolens as al
 
-from autogalaxy.mock.fixtures import *
-from autofit.mock.mock import MockSearch
-from autolens.mock.mock import MockPointSolver
+from autogalaxy.fixtures import *
 
 
 def make_positions_x2():
@@ -154,5 +152,5 @@ def make_analysis_interferometer_7():
 def make_analysis_point_x2():
     return al.AnalysisPoint(
         point_dict=make_point_dict(),
-        solver=MockPointSolver(model_positions=make_positions_x2()),
+        solver=al.m.MockPointSolver(model_positions=make_positions_x2()),
     )

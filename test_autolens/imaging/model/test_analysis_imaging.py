@@ -9,7 +9,6 @@ import autolens as al
 from autolens.imaging.model.result import ResultImaging
 
 from autolens import exc
-from autolens.mock import mock
 
 
 directory = path.dirname(path.realpath(__file__))
@@ -22,9 +21,9 @@ class TestAnalysisImaging:
 
         instance = model.instance_from_prior_medians()
 
-        samples = mock.MockSamples(max_log_likelihood_instance=instance)
+        samples = al.m.MockSamples(max_log_likelihood_instance=instance)
 
-        search = mock.MockSearch(name="test_search", samples=samples)
+        search = al.m.MockSearch(name="test_search", samples=samples)
 
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
@@ -126,7 +125,7 @@ class TestAnalysisImaging:
 
         hyper_galaxy_image_path_dict = {("galaxies", "lens"): lens_hyper_image}
 
-        result = mock.MockResult(
+        result = al.m.MockResult(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
             hyper_model_image=hyper_model_image,
         )
@@ -172,7 +171,7 @@ class TestAnalysisImaging:
             ),
         }
 
-        result = mock.MockResult(
+        result = al.m.MockResult(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
             hyper_model_image=al.Array2D.full(
                 fill_value=3.0, shape_native=(3, 3), pixel_scales=1.0
@@ -210,7 +209,7 @@ class TestAnalysisImaging:
             ("galaxies", "source"): source_hyper_image,
         }
 
-        result = mock.MockResult(
+        result = al.m.MockResult(
             hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
             hyper_model_image=hyper_model_image,
         )

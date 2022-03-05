@@ -3,39 +3,37 @@ from os import path
 
 import autofit as af
 
-from autolens.mock.mock import MockFitImaging
-from autolens.mock.mock import MockTracer
-from autolens.lens.model.preloads import Preloads
+import autolens as al
 
 
 def test__set_blurred_image():
 
     # Blurred image is all zeros so preloads as zeros
 
-    fit_0 = MockFitImaging(blurred_image=np.zeros(2))
-    fit_1 = MockFitImaging(blurred_image=np.zeros(2))
+    fit_0 = al.m.MockFitImaging(blurred_image=np.zeros(2))
+    fit_1 = al.m.MockFitImaging(blurred_image=np.zeros(2))
 
-    preloads = Preloads(blurred_image=1)
+    preloads = al.Preloads(blurred_image=1)
     preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
 
     assert (preloads.blurred_image == np.zeros(2)).all()
 
     # Blurred image are different, indicating the model parameters change the grid, so no preloading.
 
-    fit_0 = MockFitImaging(blurred_image=np.array([1.0]))
-    fit_1 = MockFitImaging(blurred_image=np.array([2.0]))
+    fit_0 = al.m.MockFitImaging(blurred_image=np.array([1.0]))
+    fit_1 = al.m.MockFitImaging(blurred_image=np.array([2.0]))
 
-    preloads = Preloads(blurred_image=1)
+    preloads = al.Preloads(blurred_image=1)
     preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.blurred_image is None
 
     # Blurred images are the same meaning they are fixed in the model, so do preload.
 
-    fit_0 = MockFitImaging(blurred_image=np.array([1.0]))
-    fit_1 = MockFitImaging(blurred_image=np.array([1.0]))
+    fit_0 = al.m.MockFitImaging(blurred_image=np.array([1.0]))
+    fit_1 = al.m.MockFitImaging(blurred_image=np.array([1.0]))
 
-    preloads = Preloads(blurred_image=1)
+    preloads = al.Preloads(blurred_image=1)
     preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
 
     assert (preloads.blurred_image == np.array([1.0])).all()
@@ -45,39 +43,39 @@ def test__set_traced_grids_of_planes():
 
     # traced grids is None so no Preloading.
 
-    tracer_0 = MockTracer(traced_grids_of_planes=[None, None])
-    tracer_1 = MockTracer(traced_grids_of_planes=[None, None])
+    tracer_0 = al.m.MockTracer(traced_grids_of_planes=[None, None])
+    tracer_1 = al.m.MockTracer(traced_grids_of_planes=[None, None])
 
-    fit_0 = MockFitImaging(tracer=tracer_0)
-    fit_1 = MockFitImaging(tracer=tracer_1)
+    fit_0 = al.m.MockFitImaging(tracer=tracer_0)
+    fit_1 = al.m.MockFitImaging(tracer=tracer_1)
 
-    preloads = Preloads(traced_grids_of_planes_for_inversion=1)
+    preloads = al.Preloads(traced_grids_of_planes_for_inversion=1)
     preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.traced_grids_of_planes_for_inversion is None
 
     # traced grids are different, indiciating the model parameters change the grid, so no preloading.
 
-    tracer_0 = MockTracer(traced_grids_of_planes=[None, np.array([[1.0]])])
-    tracer_1 = MockTracer(traced_grids_of_planes=[None, np.array([[2.0]])])
+    tracer_0 = al.m.MockTracer(traced_grids_of_planes=[None, np.array([[1.0]])])
+    tracer_1 = al.m.MockTracer(traced_grids_of_planes=[None, np.array([[2.0]])])
 
-    fit_0 = MockFitImaging(tracer=tracer_0)
-    fit_1 = MockFitImaging(tracer=tracer_1)
+    fit_0 = al.m.MockFitImaging(tracer=tracer_0)
+    fit_1 = al.m.MockFitImaging(tracer=tracer_1)
 
-    preloads = Preloads(traced_grids_of_planes_for_inversion=1)
+    preloads = al.Preloads(traced_grids_of_planes_for_inversion=1)
     preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.traced_grids_of_planes_for_inversion is None
 
     # traced grids are the same meaning they are fixed in the model, so do preload.
 
-    tracer_0 = MockTracer(traced_grids_of_planes=[None, np.array([[1.0]])])
-    tracer_1 = MockTracer(traced_grids_of_planes=[None, np.array([[1.0]])])
+    tracer_0 = al.m.MockTracer(traced_grids_of_planes=[None, np.array([[1.0]])])
+    tracer_1 = al.m.MockTracer(traced_grids_of_planes=[None, np.array([[1.0]])])
 
-    fit_0 = MockFitImaging(tracer=tracer_0)
-    fit_1 = MockFitImaging(tracer=tracer_1)
+    fit_0 = al.m.MockFitImaging(tracer=tracer_0)
+    fit_1 = al.m.MockFitImaging(tracer=tracer_1)
 
-    preloads = Preloads(traced_grids_of_planes_for_inversion=1)
+    preloads = al.Preloads(traced_grids_of_planes_for_inversion=1)
     preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.traced_grids_of_planes_for_inversion[0] is None
@@ -88,39 +86,47 @@ def test__set_sparse_grid_of_planes():
 
     # sparse image plane of grids is None so no Preloading.
 
-    tracer_0 = MockTracer(sparse_image_plane_grid_pg_list=[None, None])
-    tracer_1 = MockTracer(sparse_image_plane_grid_pg_list=[None, None])
+    tracer_0 = al.m.MockTracer(sparse_image_plane_grid_pg_list=[None, None])
+    tracer_1 = al.m.MockTracer(sparse_image_plane_grid_pg_list=[None, None])
 
-    fit_0 = MockFitImaging(tracer=tracer_0)
-    fit_1 = MockFitImaging(tracer=tracer_1)
+    fit_0 = al.m.MockFitImaging(tracer=tracer_0)
+    fit_1 = al.m.MockFitImaging(tracer=tracer_1)
 
-    preloads = Preloads(sparse_image_plane_grid_pg_list=1)
+    preloads = al.Preloads(sparse_image_plane_grid_pg_list=1)
     preloads.set_sparse_image_plane_grid_pg_list(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.sparse_image_plane_grid_pg_list is None
 
     # sparse image plane of grids are different, indiciating the model parameters change the grid, so no preloading.
 
-    tracer_0 = MockTracer(sparse_image_plane_grid_pg_list=[None, np.array([[1.0]])])
-    tracer_1 = MockTracer(sparse_image_plane_grid_pg_list=[None, np.array([[2.0]])])
+    tracer_0 = al.m.MockTracer(
+        sparse_image_plane_grid_pg_list=[None, np.array([[1.0]])]
+    )
+    tracer_1 = al.m.MockTracer(
+        sparse_image_plane_grid_pg_list=[None, np.array([[2.0]])]
+    )
 
-    fit_0 = MockFitImaging(tracer=tracer_0)
-    fit_1 = MockFitImaging(tracer=tracer_1)
+    fit_0 = al.m.MockFitImaging(tracer=tracer_0)
+    fit_1 = al.m.MockFitImaging(tracer=tracer_1)
 
-    preloads = Preloads(sparse_image_plane_grid_pg_list=1)
+    preloads = al.Preloads(sparse_image_plane_grid_pg_list=1)
     preloads.set_sparse_image_plane_grid_pg_list(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.sparse_image_plane_grid_pg_list is None
 
     # sparse image plane of grids are the same meaning they are fixed in the model, so do preload.
 
-    tracer_0 = MockTracer(sparse_image_plane_grid_pg_list=[None, np.array([[1.0]])])
-    tracer_1 = MockTracer(sparse_image_plane_grid_pg_list=[None, np.array([[1.0]])])
+    tracer_0 = al.m.MockTracer(
+        sparse_image_plane_grid_pg_list=[None, np.array([[1.0]])]
+    )
+    tracer_1 = al.m.MockTracer(
+        sparse_image_plane_grid_pg_list=[None, np.array([[1.0]])]
+    )
 
-    fit_0 = MockFitImaging(tracer=tracer_0)
-    fit_1 = MockFitImaging(tracer=tracer_1)
+    fit_0 = al.m.MockFitImaging(tracer=tracer_0)
+    fit_1 = al.m.MockFitImaging(tracer=tracer_1)
 
-    preloads = Preloads(sparse_image_plane_grid_pg_list=1)
+    preloads = al.Preloads(sparse_image_plane_grid_pg_list=1)
     preloads.set_sparse_image_plane_grid_pg_list(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.sparse_image_plane_grid_pg_list[0] is None
@@ -133,7 +139,7 @@ def test__info():
 
     file_preloads = path.join(file_path, "preloads.summary")
 
-    preloads = Preloads(
+    preloads = al.Preloads(
         blurred_image=np.zeros(3),
         w_tilde=None,
         use_w_tilde=False,
@@ -179,7 +185,7 @@ def test__info():
     assert lines[i] == f"Log Det Regularization Matrix Term = False\n"
     i += 1
 
-    preloads = Preloads(
+    preloads = al.Preloads(
         blurred_image=1,
         w_tilde=1,
         use_w_tilde=True,

@@ -1,13 +1,14 @@
-import autolens as al
 import numpy as np
 import pytest
 
-from autogalaxy.mock.mock import MockLightProfile
+import autolens as al
 
 
 def test__model_visibilities(interferometer_7):
 
-    g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(2)))
+    g0 = al.Galaxy(
+        redshift=0.5, light_profile=al.m.MockLightProfile(image_2d=np.ones(2))
+    )
     tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
@@ -20,7 +21,9 @@ def test__model_visibilities(interferometer_7):
 
 def test__noise_map__with_and_without_hyper_background(interferometer_7):
 
-    g0 = al.Galaxy(redshift=0.5, light_profile=MockLightProfile(image_2d=np.ones(2)))
+    g0 = al.Galaxy(
+        redshift=0.5, light_profile=al.m.MockLightProfile(image_2d=np.ones(2))
+    )
     tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)

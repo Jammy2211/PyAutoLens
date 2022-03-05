@@ -7,7 +7,6 @@ from autoconf import conf
 import autofit as af
 import autolens as al
 from autofit.non_linear.samples import Sample
-from autolens.mock import mock
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -44,7 +43,7 @@ def make_samples(model):
         weight_list=[0.0, 1.0],
     )
 
-    return mock.MockSamples(
+    return al.m.MockSamples(
         model=model, sample_list=sample_list, max_log_likelihood_instance=tracer
     )
 
@@ -69,7 +68,7 @@ class TestTracerAgg:
     #
     #     clean(database_file=database_file, result_path=result_path)
     #
-    #     search = mock.MockSearch(samples=samples)
+    #     search = al.m.MockSearch(samples=samples)
     #     search.paths = af.DirectoryPaths(path_prefix=path_prefix)
     #     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
     #     search.fit(model=model, analysis=analysis)
@@ -98,8 +97,8 @@ class TestTracerAgg:
 
         clean(database_file=database_file, result_path=result_path)
 
-        search = mock.MockSearch(
-            samples=samples, result=mock.MockResult(model=model, samples=samples)
+        search = al.m.MockSearch(
+            samples=samples, result=al.m.MockResult(model=model, samples=samples)
         )
         search.paths = af.DirectoryPaths(path_prefix=path_prefix)
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
@@ -136,8 +135,8 @@ class TestTracerAgg:
 
         clean(database_file=database_file, result_path=result_path)
 
-        search = mock.MockSearch(
-            samples=samples, result=mock.MockResult(model=model, samples=samples)
+        search = al.m.MockSearch(
+            samples=samples, result=al.m.MockResult(model=model, samples=samples)
         )
         search.paths = af.DirectoryPaths(path_prefix=path_prefix)
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
