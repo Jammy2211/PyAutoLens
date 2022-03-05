@@ -2,7 +2,7 @@ from autoarray.plot.abstract_plotters import AbstractPlotter
 
 import autogalaxy.plot as aplt
 
-from autolens.point.fit_point import FitPointDataset
+from autolens.point.fit_point.point_dataset import FitPointDataset
 
 
 class FitPointDatasetPlotter(AbstractPlotter):

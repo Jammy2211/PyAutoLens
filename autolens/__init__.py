@@ -72,14 +72,12 @@ from .interferometer.fit_interferometer import FitInterferometer
 from .interferometer.model.analysis import AnalysisInterferometer
 from .point.point_dataset import PointDataset
 from .point.point_dataset import PointDict
-from .point.fit_point import (
-    FitPositionsSourceMaxSeparation,
-    FitPositionsImage,
-    FitPositionsSource,
-    FitFluxes,
-    FitPointDict,
-    FitPointDataset,
-)
+from .point.fit_point.point_dict import FitPointDict
+from .point.fit_point.point_dataset import FitPointDataset
+from .point.fit_point.fluxes import FitFluxes
+from .point.fit_point.positions_image import FitPositionsImage
+from .point.fit_point.positions_source import FitPositionsSource
+from .point.fit_point.max_separation import FitPositionsSourceMaxSeparation
 from .point.model.analysis import AnalysisPoint
 from .point.point_solver import PointSolver
 from .quantity.fit_quantity import FitQuantity

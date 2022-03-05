@@ -44,8 +44,6 @@ class FitImaging(aa.FitImaging):
 
         self.preloads = preloads
 
-        self.profiling_dict = profiling_dict
-
     @property
     def data(self):
         """

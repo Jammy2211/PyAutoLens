@@ -9,7 +9,7 @@ import autogalaxy as ag
 
 from autogalaxy.analysis.result import Result as AgResult
 
-from autolens.point.fit_point import FitPositionsSourceMaxSeparation
+from autolens.point.fit_point.max_separation import FitPositionsSourceMaxSeparation
 from autolens.lens.ray_tracing import Tracer
 from autolens.point.point_solver import PointSolver
 

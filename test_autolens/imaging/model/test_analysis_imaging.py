@@ -288,4 +288,3 @@ class TestAnalysisImaging:
 
         assert "regularization_term_0" in profiling_dict
         assert "log_det_regularization_matrix_term_0" in profiling_dict
-        assert "figure_of_merit_0" in profiling_dict

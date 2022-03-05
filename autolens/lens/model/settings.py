@@ -2,7 +2,7 @@ import copy
 
 from autoconf import conf
 
-from autolens.point.fit_point import FitPositionsSourceMaxSeparation
+from autolens.point.fit_point.max_separation import FitPositionsSourceMaxSeparation
 
 from autolens import exc
 
