@@ -15,7 +15,7 @@ class FitImaging(aa.FitImaging):
         tracer,
         hyper_image_sky=None,
         hyper_background_noise=None,
-        use_hyper_scaling=True,
+        use_hyper_scalings=True,
         settings_pixelization=aa.SettingsPixelization(),
         settings_inversion=aa.SettingsInversion(),
         preloads=Preloads(),
@@ -31,11 +31,13 @@ class FitImaging(aa.FitImaging):
             The tracer, which describes the ray-tracing and strong lens configuration.
         """
 
+        super().__init__(dataset=dataset, profiling_dict=profiling_dict)
+
         self.tracer = tracer
 
         self.hyper_image_sky = hyper_image_sky
         self.hyper_background_noise = hyper_background_noise
-        self.use_hyper_scaling = use_hyper_scaling
+        self.use_hyper_scalings = use_hyper_scalings
 
         self.settings_pixelization = settings_pixelization
         self.settings_inversion = settings_inversion
@@ -44,68 +46,97 @@ class FitImaging(aa.FitImaging):
 
         self.profiling_dict = profiling_dict
 
-        if use_hyper_scaling:
+    @property
+    def data(self):
+        """
+        Returns the imaging data, which may have a hyper scaling performed which rescales the background sky level
+        in order to account for uncertainty in the background sky subtraction.
+        """
+        if self.use_hyper_scalings:
 
-            image = hyper_image_from(
-                image=dataset.image, hyper_image_sky=hyper_image_sky
+            return hyper_image_from(
+                image=self.dataset.image, hyper_image_sky=self.hyper_image_sky
             )
 
-            noise_map = hyper_noise_map_from(
-                noise_map=dataset.noise_map,
-                tracer=tracer,
-                hyper_background_noise=hyper_background_noise,
+        return self.dataset.data
+
+    @property
+    def noise_map(self):
+        """
+        Returns the imaging noise-map, which may have a hyper scaling performed which increase the noise in regions of
+        the data that are poorly fitted in order to avoid overfitting.
+        """
+        if self.use_hyper_scalings:
+
+            return hyper_noise_map_from(
+                noise_map=self.dataset.noise_map,
+                tracer=self.tracer,
+                hyper_background_noise=self.hyper_background_noise,
             )
 
-        else:
+        return self.dataset.noise_map
 
-            image = dataset.image
-            noise_map = dataset.noise_map
+    @property
+    def blurred_image(self):
+        """
+        Returns the image of all light profiles in the fit's tracer convolved with the imaging dataset's PSF.
 
-        if preloads.blurred_image is None:
+        For certain lens models the blurred image does not change (for example when all light profiles in the tracer
+        are fixed in the lens model). For faster run-times the blurred image can be preloaded.
+        """
 
-            self.blurred_image = self.tracer.blurred_image_2d_via_convolver_from(
-                grid=dataset.grid,
-                convolver=dataset.convolver,
-                blurring_grid=dataset.blurring_grid,
+        if self.preloads.blurred_image is None:
+
+            return self.tracer.blurred_image_2d_via_convolver_from(
+                grid=self.dataset.grid,
+                convolver=self.dataset.convolver,
+                blurring_grid=self.dataset.blurring_grid,
             )
+        return self.preloads.blurred_image
 
-        else:
+    @property
+    def profile_subtracted_image(self):
+        """
+        Returns the dataset's image with all blurred light profile images in the fit's tracer subtracted.
+        """
+        return self.image - self.blurred_image
 
-            self.blurred_image = preloads.blurred_image
+    @property
+    def inversion(self):
+        """
+        If the tracer has linear objects which are used to fit the data (e.g. a pixelization) this function returns
+        the linear inversion.
 
-        self.profile_subtracted_image = image - self.blurred_image
+        The image passed to this function is the dataset's image with all light profile images of the tracer subtracted.
+        """
+        if self.tracer.has_pixelization:
 
-        if not tracer.has_pixelization:
-
-            inversion = None
-            model_image = self.blurred_image
-
-        else:
-
-            inversion = tracer.inversion_imaging_from(
-                grid=dataset.grid_inversion,
+            return self.tracer.inversion_imaging_from(
+                grid=self.dataset.grid_inversion,
                 image=self.profile_subtracted_image,
-                noise_map=noise_map,
-                convolver=dataset.convolver,
-                w_tilde=dataset.w_tilde,
-                settings_pixelization=settings_pixelization,
-                settings_inversion=settings_inversion,
-                preloads=preloads,
+                noise_map=self.noise_map,
+                convolver=self.dataset.convolver,
+                w_tilde=self.dataset.w_tilde,
+                settings_pixelization=self.settings_pixelization,
+                settings_inversion=self.settings_inversion,
             )
 
-            model_image = self.blurred_image + inversion.mapped_reconstructed_image
+    @property
+    def model_data(self):
+        """
+        Returns the model-image that is used to fit the data.
 
-        fit = aa.FitData(
-            data=image,
-            noise_map=noise_map,
-            model_data=model_image,
-            mask=dataset.mask,
-            inversion=inversion,
-            use_mask_in_fit=False,
-            profiling_dict=profiling_dict,
-        )
+        If the tracer does not have any linear objects and therefore omits an inversion, the model image is the
+        sum of all light profile images.
 
-        super().__init__(dataset=dataset, fit=fit, profiling_dict=profiling_dict)
+        If a inversion is included it is the sum of this sum and the inversion's reconstruction of the image.
+        """
+
+        if self.tracer.has_pixelization:
+
+            return self.blurred_image + self.inversion.mapped_reconstructed_data
+
+        return self.blurred_image
 
     @property
     def grid(self):
@@ -192,20 +223,18 @@ class FitImaging(aa.FitImaging):
 
     def refit_with_new_preloads(self, preloads, settings_inversion=None):
 
-        if self.profiling_dict is not None:
-            profiling_dict = {}
-        else:
-            profiling_dict = None
+        profiling_dict = {} if self.profiling_dict is not None else None
 
-        if settings_inversion is None:
-            settings_inversion = self.settings_inversion
+        settings_inversion = (
+            self.settings_inversion if settings_inversion is None else None
+        )
 
         return FitImaging(
             dataset=self.imaging,
             tracer=self.tracer,
             hyper_image_sky=self.hyper_image_sky,
             hyper_background_noise=self.hyper_background_noise,
-            use_hyper_scaling=self.use_hyper_scaling,
+            use_hyper_scalings=self.use_hyper_scalings,
             settings_pixelization=self.settings_pixelization,
             settings_inversion=settings_inversion,
             preloads=preloads,

@@ -116,7 +116,7 @@ def test__fit_figure_of_merit__include_hyper_methods(interferometer_7):
         dataset=interferometer_7,
         tracer=tracer,
         hyper_background_noise=hyper_background_noise,
-        use_hyper_scaling=False,
+        use_hyper_scalings=False,
     )
 
     assert fit.noise_map == pytest.approx(interferometer_7.noise_map, 1.0e-4)

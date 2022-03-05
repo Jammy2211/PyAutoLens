@@ -1,7 +1,12 @@
 import autofit as af
 
+from autoarray.fit.fit_dataset import FitDataset
 from autofit.mock.mock import MockSearch, MockSamples
-from autoarray.mock.mock import MockMask, MockDataset, MockFit as AAMockFit
+from autoarray.mock.mock import (
+    MockMask,
+    MockDataset,
+    MockFitImaging as AAMockFitImaging,
+)
 from autogalaxy.mock.mock import MockLightProfile, MockMassProfile
 
 from autofit.mock.mock import *
@@ -151,7 +156,7 @@ class MockResults(af.ResultsCollection):
         return len(self.__result_list)
 
 
-class MockFit(AAMockFit):
+class MockFitImaging(AAMockFitImaging):
     def __init__(
         self,
         tracer=None,
@@ -162,11 +167,15 @@ class MockFit(AAMockFit):
         blurred_image=None,
     ):
 
-        super().__init__(dataset=dataset, inversion=inversion, noise_map=noise_map)
+        super().__init__(
+            dataset=dataset,
+            inversion=inversion,
+            noise_map=noise_map,
+            blurred_image=blurred_image,
+        )
 
         self.tracer = tracer
         self.grid = grid
-        self.blurred_image = blurred_image
 
 
 class MockTracer:

@@ -3,8 +3,8 @@ from os import path
 
 import autofit as af
 
+from autolens.mock.mock import MockFitImaging
 from autolens.mock.mock import MockTracer
-from autolens.mock.mock import MockFit
 from autolens.lens.model.preloads import Preloads
 
 
@@ -12,8 +12,8 @@ def test__set_blurred_image():
 
     # Blurred image is all zeros so preloads as zeros
 
-    fit_0 = MockFit(blurred_image=np.zeros(2))
-    fit_1 = MockFit(blurred_image=np.zeros(2))
+    fit_0 = MockFitImaging(blurred_image=np.zeros(2))
+    fit_1 = MockFitImaging(blurred_image=np.zeros(2))
 
     preloads = Preloads(blurred_image=1)
     preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
@@ -22,8 +22,8 @@ def test__set_blurred_image():
 
     # Blurred image are different, indicating the model parameters change the grid, so no preloading.
 
-    fit_0 = MockFit(blurred_image=np.array([1.0]))
-    fit_1 = MockFit(blurred_image=np.array([2.0]))
+    fit_0 = MockFitImaging(blurred_image=np.array([1.0]))
+    fit_1 = MockFitImaging(blurred_image=np.array([2.0]))
 
     preloads = Preloads(blurred_image=1)
     preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
@@ -32,8 +32,8 @@ def test__set_blurred_image():
 
     # Blurred images are the same meaning they are fixed in the model, so do preload.
 
-    fit_0 = MockFit(blurred_image=np.array([1.0]))
-    fit_1 = MockFit(blurred_image=np.array([1.0]))
+    fit_0 = MockFitImaging(blurred_image=np.array([1.0]))
+    fit_1 = MockFitImaging(blurred_image=np.array([1.0]))
 
     preloads = Preloads(blurred_image=1)
     preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
@@ -48,8 +48,8 @@ def test__set_traced_grids_of_planes():
     tracer_0 = MockTracer(traced_grids_of_planes=[None, None])
     tracer_1 = MockTracer(traced_grids_of_planes=[None, None])
 
-    fit_0 = MockFit(tracer=tracer_0)
-    fit_1 = MockFit(tracer=tracer_1)
+    fit_0 = MockFitImaging(tracer=tracer_0)
+    fit_1 = MockFitImaging(tracer=tracer_1)
 
     preloads = Preloads(traced_grids_of_planes_for_inversion=1)
     preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
@@ -61,8 +61,8 @@ def test__set_traced_grids_of_planes():
     tracer_0 = MockTracer(traced_grids_of_planes=[None, np.array([[1.0]])])
     tracer_1 = MockTracer(traced_grids_of_planes=[None, np.array([[2.0]])])
 
-    fit_0 = MockFit(tracer=tracer_0)
-    fit_1 = MockFit(tracer=tracer_1)
+    fit_0 = MockFitImaging(tracer=tracer_0)
+    fit_1 = MockFitImaging(tracer=tracer_1)
 
     preloads = Preloads(traced_grids_of_planes_for_inversion=1)
     preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
@@ -74,8 +74,8 @@ def test__set_traced_grids_of_planes():
     tracer_0 = MockTracer(traced_grids_of_planes=[None, np.array([[1.0]])])
     tracer_1 = MockTracer(traced_grids_of_planes=[None, np.array([[1.0]])])
 
-    fit_0 = MockFit(tracer=tracer_0)
-    fit_1 = MockFit(tracer=tracer_1)
+    fit_0 = MockFitImaging(tracer=tracer_0)
+    fit_1 = MockFitImaging(tracer=tracer_1)
 
     preloads = Preloads(traced_grids_of_planes_for_inversion=1)
     preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
@@ -91,8 +91,8 @@ def test__set_sparse_grid_of_planes():
     tracer_0 = MockTracer(sparse_image_plane_grid_pg_list=[None, None])
     tracer_1 = MockTracer(sparse_image_plane_grid_pg_list=[None, None])
 
-    fit_0 = MockFit(tracer=tracer_0)
-    fit_1 = MockFit(tracer=tracer_1)
+    fit_0 = MockFitImaging(tracer=tracer_0)
+    fit_1 = MockFitImaging(tracer=tracer_1)
 
     preloads = Preloads(sparse_image_plane_grid_pg_list=1)
     preloads.set_sparse_image_plane_grid_pg_list(fit_0=fit_0, fit_1=fit_1)
@@ -104,8 +104,8 @@ def test__set_sparse_grid_of_planes():
     tracer_0 = MockTracer(sparse_image_plane_grid_pg_list=[None, np.array([[1.0]])])
     tracer_1 = MockTracer(sparse_image_plane_grid_pg_list=[None, np.array([[2.0]])])
 
-    fit_0 = MockFit(tracer=tracer_0)
-    fit_1 = MockFit(tracer=tracer_1)
+    fit_0 = MockFitImaging(tracer=tracer_0)
+    fit_1 = MockFitImaging(tracer=tracer_1)
 
     preloads = Preloads(sparse_image_plane_grid_pg_list=1)
     preloads.set_sparse_image_plane_grid_pg_list(fit_0=fit_0, fit_1=fit_1)
@@ -117,8 +117,8 @@ def test__set_sparse_grid_of_planes():
     tracer_0 = MockTracer(sparse_image_plane_grid_pg_list=[None, np.array([[1.0]])])
     tracer_1 = MockTracer(sparse_image_plane_grid_pg_list=[None, np.array([[1.0]])])
 
-    fit_0 = MockFit(tracer=tracer_0)
-    fit_1 = MockFit(tracer=tracer_1)
+    fit_0 = MockFitImaging(tracer=tracer_0)
+    fit_1 = MockFitImaging(tracer=tracer_1)
 
     preloads = Preloads(sparse_image_plane_grid_pg_list=1)
     preloads.set_sparse_image_plane_grid_pg_list(fit_0=fit_0, fit_1=fit_1)

@@ -339,7 +339,7 @@ class AnalysisInterferometer(AnalysisDataset):
             dataset=self.dataset,
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
-            use_hyper_scaling=use_hyper_scalings,
+            use_hyper_scalings=use_hyper_scalings,
             settings_pixelization=self.settings_pixelization,
             settings_inversion=self.settings_inversion,
             preloads=preloads,

@@ -21,6 +21,12 @@ projects. We include below instructions for building just **PyAutoLens** from so
 Building Only PyAutoLens
 ------------------------
 
+We upgrade pip to ensure certain libraries install:
+
+.. code-block:: bash
+
+    pip install --upgrade pip
+
 First, clone (or fork) the **PyAutoLens** GitHub repository:
 
 .. code-block:: bash
@@ -72,6 +78,12 @@ Finally, check the **PyAutoLens** unit tests run and pass (you may need to insta
 
 Building All Projects
 ---------------------
+
+We upgrade pip to ensure certain libraries install:
+
+.. code-block:: bash
+
+    pip install --upgrade pip
 
 First, clone (or fork) all 4 GitHub repositories:
 

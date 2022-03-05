@@ -113,7 +113,7 @@ class FitPointDataset:
         return log_likelihood_positions + log_likelihood_flux
 
 
-class FitPositionsImage(aa.FitData):
+class FitPositionsImage(aa.FitDataset):
     def __init__(
         self,
         name: str,
@@ -134,6 +134,8 @@ class FitPositionsImage(aa.FitData):
         noise_value
             The noise-value assumed when computing the log likelihood.
         """
+
+        super().__init__(dataset=positions)
 
         self.name = name
 
@@ -189,7 +191,7 @@ class FitPositionsImage(aa.FitData):
         return residual_positions.distances_to_coordinate(coordinate=(0.0, 0.0))
 
 
-class FitPositionsSource(aa.FitData):
+class FitPositionsSource(aa.FitDataset):
     def __init__(
         self,
         name: str,
@@ -209,6 +211,8 @@ class FitPositionsSource(aa.FitData):
         noise_value
             The noise-value assumed when computing the log likelihood.
         """
+
+        super().__init__(dataset=positions)
 
         self.name = name
 
@@ -265,7 +269,7 @@ class FitPositionsSource(aa.FitData):
         )
 
 
-class FitFluxes(aa.FitData):
+class FitFluxes(aa.FitDataset):
     def __init__(
         self,
         name: str,
@@ -275,6 +279,8 @@ class FitFluxes(aa.FitData):
         tracer: Tracer,
         point_profile: Optional[ag.ps.Point] = None,
     ):
+
+        super().__init__(dataset=fluxes)
 
         self.tracer = tracer
 
