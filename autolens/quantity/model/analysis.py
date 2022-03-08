@@ -78,7 +78,7 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
             The fit of the plane to the imaging dataset, which includes the log likelihood.
         """
 
-        tracer = self.tracer_for_instance(instance=instance)
+        tracer = self.tracer_via_instance_from(instance=instance)
 
         return FitQuantity(dataset=self.dataset, tracer=tracer, func_str=self.func_str)
 

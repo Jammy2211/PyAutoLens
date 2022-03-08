@@ -53,7 +53,7 @@ class AnalysisLensing:
         self.cosmology = cosmology
         self.settings_lens = settings_lens or SettingsLens()
 
-    def tracer_for_instance(
+    def tracer_via_instance_from(
         self, instance: af.ModelInstance, profiling_dict: Optional[Dict] = None
     ) -> Tracer:
         """
@@ -184,8 +184,8 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
         fit_maker = FitMaker(model=model, fit_func=self.fit_func)
 
-        fit_0 = fit_maker.fit_via_model(unit_value=0.45)
-        fit_1 = fit_maker.fit_via_model(unit_value=0.55)
+        fit_0 = fit_maker.fit_via_model_from(unit_value=0.45)
+        fit_1 = fit_maker.fit_via_model_from(unit_value=0.55)
 
         if fit_0 is None or fit_1 is None:
             self.preloads = Preloads(failed=True)
@@ -294,7 +294,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
         return mean
 
-    def stochastic_log_likelihoods_for_instance(self, instance) -> List[float]:
+    def stochastic_log_likelihoods_via_instance_from(self, instance) -> List[float]:
         raise NotImplementedError()
 
     def save_stochastic_outputs(self, paths: af.DirectoryPaths, samples: af.Samples):
@@ -328,7 +328,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
                 stochastic_log_likelihoods = np.asarray(json.load(f))
         except FileNotFoundError:
             instance = samples.max_log_likelihood_instance
-            stochastic_log_likelihoods = self.stochastic_log_likelihoods_for_instance(
+            stochastic_log_likelihoods = self.stochastic_log_likelihoods_via_instance_from(
                 instance=instance
             )
 

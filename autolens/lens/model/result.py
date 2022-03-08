@@ -20,7 +20,7 @@ class Result(AgResult):
         """
         An instance of a `Tracer` corresponding to the maximum log likelihood model inferred by the non-linear search.
         """
-        return self.analysis.tracer_for_instance(instance=self.instance)
+        return self.analysis.tracer_via_instance_from(instance=self.instance)
 
     @property
     def source_plane_light_profile_centre(self) -> aa.Grid2DIrregular:
@@ -133,9 +133,9 @@ class ResultDataset(Result):
 
         If a dataset is fitted the hyper images of the hyper dataset must first be associated with each galaxy.
         """
-        instance = self.analysis.associate_hyper_images(instance=self.instance)
+        instance = self.analysis.instance_with_associated_hyper_images_from(instance=self.instance)
 
-        return self.analysis.tracer_for_instance(instance=instance)
+        return self.analysis.tracer_via_instance_from(instance=instance)
 
     @property
     def max_log_likelihood_fit(self):
@@ -278,7 +278,7 @@ class ResultDataset(Result):
         these log likelihoods are computed using the same model but with different KMeans seeds.
 
         This function loads existing stochastic log likelihoods from the hard disk via a .json file. If the .json
-        file is not presented, then the log likelihoods are computed via the `stochastic_log_likelihoods_for_instance`
+        file is not presented, then the log likelihoods are computed via the `stochastic_log_likelihoods_via_instance_from`
         function of the associated Analysis class.
         """
         stochastic_log_likelihoods_json_file = path.join(

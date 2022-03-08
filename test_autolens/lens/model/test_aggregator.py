@@ -146,8 +146,8 @@ class TestTracerAgg:
         agg.add_directory(directory=result_path)
 
         tracer_agg = al.agg.TracerAgg(aggregator=agg)
-        tracer_pdf_gen = tracer_agg.all_above_weight_gen(minimum_weight=-1.0)
-        weight_pdf_gen = tracer_agg.weights_above_gen(minimum_weight=-1.0)
+        tracer_pdf_gen = tracer_agg.all_above_weight_gen_from(minimum_weight=-1.0)
+        weight_pdf_gen = tracer_agg.weights_above_gen_from(minimum_weight=-1.0)
 
         i = 0
 

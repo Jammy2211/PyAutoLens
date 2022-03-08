@@ -157,7 +157,7 @@ class TestFitInterferometerAgg:
         agg.add_directory(directory=result_path)
 
         fit_interferometer_agg = al.agg.FitInterferometerAgg(aggregator=agg)
-        fit_interferometer_pdf_gen = fit_interferometer_agg.all_above_weight_gen(
+        fit_interferometer_pdf_gen = fit_interferometer_agg.all_above_weight_gen_from(
             minimum_weight=-1.0
         )
 

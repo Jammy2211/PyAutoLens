@@ -90,7 +90,7 @@ class AbstractAgg(ABC):
             A generator that creates an object used in the model-fitting process of a non-linear search.
         """
 
-    def max_log_likelihood_gen(self) -> Generator:
+    def max_log_likelihood_gen_from(self) -> Generator:
         """
         Returns a generator using the maximum likelihood instance of a non-linear search.
 
@@ -106,7 +106,7 @@ class AbstractAgg(ABC):
 
         return self.aggregator.map(func=func_gen)
 
-    def weights_above_gen(self, minimum_weight: float) -> List:
+    def weights_above_gen_from(self, minimum_weight: float) -> List:
         """
         Returns a list of all weights above a minimum weight for every result.
 
@@ -135,7 +135,7 @@ class AbstractAgg(ABC):
 
         return self.aggregator.map(func=func)
 
-    def all_above_weight_gen(self, minimum_weight: float) -> Generator:
+    def all_above_weight_gen_from(self, minimum_weight: float) -> Generator:
         """
         Returns a generator which for every result generates a list of objects whose parameter values are all those
         in the non-linear search with a weight about an input `minimum_weight` value. This enables straight forward

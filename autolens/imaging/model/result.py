@@ -44,7 +44,7 @@ class ResultImaging(ResultDataset):
         An instance of a `FitImaging` corresponding to the maximum log likelihood model inferred by the non-linear
         search.
         """
-        return self.analysis.fit_imaging_for_instance(
+        return self.analysis.fit_imaging_via_instance_from(
             instance=self.instance,
             preload_overwrite=Preloads(use_w_tilde=False),
             check_positions=False,
@@ -63,4 +63,4 @@ class ResultImaging(ResultDataset):
         A list of the model image of every plane in the maximum log likelihood model, where all images are created
         without using a mask.
         """
-        return self.max_log_likelihood_fit.unmasked_blurred_image_of_planes
+        return self.max_log_likelihood_fit.unmasked_blurred_image_of_planes_list

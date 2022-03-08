@@ -174,12 +174,12 @@ class FitImagingPlotter(Plotter):
                     vmax_stored = True
                 else:
                     self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(
-                        self.fit.model_images_of_planes[plane_index]
+                        self.fit.model_images_of_planes_list[plane_index]
                     )
                     vmax_stored = False
 
                 self.mat_plot_2d.plot_array(
-                    array=self.fit.subtracted_images_of_planes[plane_index],
+                    array=self.fit.subtracted_images_of_planes_list[plane_index],
                     visuals_2d=self.get_visuals_2d(),
                     auto_labels=aplt.AutoLabels(
                         title=f"Subtracted Image of Plane {plane_index}",
@@ -198,7 +198,7 @@ class FitImagingPlotter(Plotter):
                 if self.fit.inversion is None or plane_index == 0:
 
                     self.mat_plot_2d.plot_array(
-                        array=self.fit.model_images_of_planes[plane_index],
+                        array=self.fit.model_images_of_planes_list[plane_index],
                         visuals_2d=self.get_visuals_2d(),
                         auto_labels=aplt.AutoLabels(
                             title=f"Model Image of Plane {plane_index}",

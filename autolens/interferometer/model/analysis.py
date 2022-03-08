@@ -155,7 +155,7 @@ class AnalysisInterferometer(AnalysisDataset):
             result.hyper_galaxy_visibilities_path_dict
         )
 
-    def associate_hyper_visibilities(
+    def instance_with_associated_hyper_visibilities_from(
         self, instance: af.ModelInstance
     ) -> af.ModelInstance:
         """
@@ -234,7 +234,7 @@ class AnalysisInterferometer(AnalysisDataset):
             The log likelihood indicating how well this model instance fitted the interferometer data.
         """
         try:
-            return self.fit_interferometer_for_instance(
+            return self.fit_interferometer_via_instance_from(
                 instance=instance
             ).figure_of_merit
         except (
@@ -247,7 +247,7 @@ class AnalysisInterferometer(AnalysisDataset):
         ) as e:
             raise exc.FitException from e
 
-    def fit_interferometer_for_instance(
+    def fit_interferometer_via_instance_from(
         self,
         instance: af.ModelInstance,
         use_hyper_scalings: bool = True,
@@ -281,25 +281,25 @@ class AnalysisInterferometer(AnalysisDataset):
         FitInterferometer
             The fit of the plane to the interferometer dataset, which includes the log likelihood.
         """
-        self.associate_hyper_images(instance=instance)
-        tracer = self.tracer_for_instance(instance=instance)
+        self.instance_with_associated_hyper_images_from(instance=instance)
+        tracer = self.tracer_via_instance_from(instance=instance)
 
         if check_positions:
             self.settings_lens.check_positions_trace_within_threshold_via_tracer(
                 tracer=tracer, positions=self.positions
             )
 
-        hyper_background_noise = self.hyper_background_noise_for_instance(
+        hyper_background_noise = self.hyper_background_noise_via_instance_from(
             instance=instance
         )
 
-        return self.fit_interferometer_for_tracer(
+        return self.fit_interferometer_via_tracer_from(
             tracer=tracer,
             hyper_background_noise=hyper_background_noise,
             use_hyper_scalings=use_hyper_scalings,
         )
 
-    def fit_interferometer_for_tracer(
+    def fit_interferometer_via_tracer_from(
         self,
         tracer: Tracer,
         hyper_background_noise: Optional[ag.hyper_data.HyperBackgroundNoise],
@@ -347,9 +347,9 @@ class AnalysisInterferometer(AnalysisDataset):
 
     @property
     def fit_func(self):
-        return self.fit_interferometer_for_instance
+        return self.fit_interferometer_via_instance_from
 
-    def stochastic_log_likelihoods_for_instance(self, instance):
+    def stochastic_log_likelihoods_via_instance_from(self, instance):
         """
         Certain `Inversion`'s have stochasticity in their log likelihood estimate.
 
@@ -374,8 +374,8 @@ class AnalysisInterferometer(AnalysisDataset):
             A log likelihood cap which is applied in a stochastic model-fit to give improved error and posterior
             estimates.
         """
-        instance = self.associate_hyper_images(instance=instance)
-        tracer = self.tracer_for_instance(instance=instance)
+        instance = self.instance_with_associated_hyper_images_from(instance=instance)
+        tracer = self.tracer_via_instance_from(instance=instance)
 
         if not tracer.has_pixelization:
             return None
@@ -383,7 +383,7 @@ class AnalysisInterferometer(AnalysisDataset):
         if not any([pix.is_stochastic for pix in tracer.pixelization_list]):
             return
 
-        hyper_background_noise = self.hyper_background_noise_for_instance(
+        hyper_background_noise = self.hyper_background_noise_via_instance_from(
             instance=instance
         )
 
@@ -450,9 +450,9 @@ class AnalysisInterferometer(AnalysisDataset):
             If True the visualization is being performed midway through the non-linear search before it is finished,
             which may change which images are output.
         """
-        instance = self.associate_hyper_images(instance=instance)
+        instance = self.instance_with_associated_hyper_images_from(instance=instance)
 
-        fit = self.fit_interferometer_for_instance(instance=instance)
+        fit = self.fit_interferometer_via_instance_from(instance=instance)
 
         visualizer = VisualizerInterferometer(visualize_path=paths.image_path)
 
@@ -470,7 +470,7 @@ class AnalysisInterferometer(AnalysisDataset):
         visualizer.visualize_contribution_maps(tracer=fit.tracer)
 
         if visualizer.plot_fit_no_hyper:
-            fit = self.fit_interferometer_for_tracer(
+            fit = self.fit_interferometer_via_tracer_from(
                 tracer=fit.tracer,
                 hyper_background_noise=None,
                 use_hyper_scalings=False,

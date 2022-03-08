@@ -69,7 +69,7 @@ class TestAnalysisInterferometer:
         instance = model.instance_from_unit_vector([])
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-        tracer = analysis.tracer_for_instance(instance=instance)
+        tracer = analysis.tracer_via_instance_from(instance=instance)
 
         fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
@@ -92,7 +92,7 @@ class TestAnalysisInterferometer:
         instance = model.instance_from_unit_vector([])
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-        tracer = analysis.tracer_for_instance(instance=instance)
+        tracer = analysis.tracer_via_instance_from(instance=instance)
 
         fit = al.FitInterferometer(
             dataset=interferometer_7,
@@ -197,7 +197,7 @@ class TestAnalysisInterferometer:
         instance = af.ModelInstance()
         instance.galaxies = galaxies
 
-        log_evidences = analysis.stochastic_log_likelihoods_for_instance(
+        log_evidences = analysis.stochastic_log_likelihoods_via_instance_from(
             instance=instance
         )
 
@@ -213,7 +213,7 @@ class TestAnalysisInterferometer:
         instance = af.ModelInstance()
         instance.galaxies = galaxies
 
-        log_evidences = analysis.stochastic_log_likelihoods_for_instance(
+        log_evidences = analysis.stochastic_log_likelihoods_via_instance_from(
             instance=instance
         )
 

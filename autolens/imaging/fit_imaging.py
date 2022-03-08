@@ -166,9 +166,9 @@ class FitImaging(aa.FitImaging):
         return galaxy_model_image_dict
 
     @property
-    def model_images_of_planes(self):
+    def model_images_of_planes_list(self):
 
-        model_images_of_planes = self.tracer.blurred_image_2d_list_via_psf_from(
+        model_images_of_planes_list = self.tracer.blurred_image_2d_list_via_psf_from(
             grid=self.grid,
             psf=self.imaging.psf,
             blurring_grid=self.imaging.blurring_grid,
@@ -176,32 +176,32 @@ class FitImaging(aa.FitImaging):
 
         for plane_index in self.tracer.plane_indexes_with_pixelizations:
 
-            model_images_of_planes[
+            model_images_of_planes_list[
                 plane_index
             ] += self.inversion.mapped_reconstructed_image
 
-        return model_images_of_planes
+        return model_images_of_planes_list
 
     @property
-    def subtracted_images_of_planes(self):
+    def subtracted_images_of_planes_list(self):
 
-        subtracted_images_of_planes = []
+        subtracted_images_of_planes_list = []
 
-        model_images_of_planes = self.model_images_of_planes
+        model_images_of_planes_list = self.model_images_of_planes_list
 
         for galaxy_index in range(len(self.tracer.planes)):
 
             other_planes_model_images = [
                 model_image
-                for i, model_image in enumerate(model_images_of_planes)
+                for i, model_image in enumerate(model_images_of_planes_list)
                 if i != galaxy_index
             ]
 
             subtracted_image = self.image - sum(other_planes_model_images)
 
-            subtracted_images_of_planes.append(subtracted_image)
+            subtracted_images_of_planes_list.append(subtracted_image)
 
-        return subtracted_images_of_planes
+        return subtracted_images_of_planes_list
 
     @property
     def unmasked_blurred_image(self):
@@ -210,7 +210,7 @@ class FitImaging(aa.FitImaging):
         )
 
     @property
-    def unmasked_blurred_image_of_planes(self):
+    def unmasked_blurred_image_of_planes_list(self):
         return self.tracer.unmasked_blurred_image_2d_list_via_psf_from(
             grid=self.grid, psf=self.imaging.psf
         )
@@ -224,7 +224,7 @@ class FitImaging(aa.FitImaging):
         profiling_dict = {} if self.profiling_dict is not None else None
 
         settings_inversion = (
-            self.settings_inversion if settings_inversion is None else None
+            self.settings_inversion if settings_inversion is None else settings_inversion
         )
 
         return FitImaging(

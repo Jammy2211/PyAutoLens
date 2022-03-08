@@ -150,7 +150,7 @@ class TestFitImagingAgg:
         agg.add_directory(directory=result_path)
 
         fit_imaging_agg = al.agg.FitImagingAgg(aggregator=agg)
-        fit_imaging_pdf_gen = fit_imaging_agg.all_above_weight_gen(minimum_weight=-1.0)
+        fit_imaging_pdf_gen = fit_imaging_agg.all_above_weight_gen_from(minimum_weight=-1.0)
 
         i = 0
 

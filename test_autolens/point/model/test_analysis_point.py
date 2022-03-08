@@ -52,7 +52,7 @@ class TestAnalysisPoint:
         instance = model.instance_from_unit_vector([])
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-        tracer = analysis.tracer_for_instance(instance=instance)
+        tracer = analysis.tracer_via_instance_from(instance=instance)
 
         fit_positions = al.FitPositionsImage(
             name="point_0",
@@ -116,7 +116,7 @@ class TestAnalysisPoint:
 
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-        tracer = analysis.tracer_for_instance(instance=instance)
+        tracer = analysis.tracer_via_instance_from(instance=instance)
 
         fit_positions = al.FitPositionsImage(
             name="point_0",

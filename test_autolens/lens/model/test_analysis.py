@@ -27,7 +27,7 @@ class TestAnalysisLensing:
         )
 
         instance = model.instance_from_unit_vector([])
-        tracer = analysis_imaging_7x7.tracer_for_instance(instance=instance)
+        tracer = analysis_imaging_7x7.tracer_via_instance_from(instance=instance)
 
         assert tracer.galaxies[0].mass.centre == pytest.approx((0.1, 0.2), 1.0e-4)
 
@@ -43,7 +43,7 @@ class TestAnalysisLensing:
         )
 
         instance = model.instance_from_unit_vector([])
-        tracer = analysis_imaging_7x7.tracer_for_instance(instance=instance)
+        tracer = analysis_imaging_7x7.tracer_via_instance_from(instance=instance)
 
         assert tracer.galaxies[1].mass.centre == pytest.approx(
             (-0.19959, -0.39919), 1.0e-4
@@ -80,8 +80,8 @@ class TestAnalysisDataset:
         analysis.dataset.grid_inversion[4] = np.array([[500.0, 0.0]])
 
         instance = model.instance_from_unit_vector([])
-        tracer = analysis.tracer_for_instance(instance=instance)
-        fit = analysis.fit_imaging_for_tracer(
+        tracer = analysis.tracer_via_instance_from(instance=instance)
+        fit = analysis.fit_imaging_via_tracer_from(
             tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
         )
 
@@ -100,8 +100,8 @@ class TestAnalysisDataset:
         analysis.dataset.grid_inversion[4] = np.array([300.0, 0.0])
 
         instance = model.instance_from_unit_vector([])
-        tracer = analysis.tracer_for_instance(instance=instance)
-        fit = analysis.fit_imaging_for_tracer(
+        tracer = analysis.tracer_via_instance_from(instance=instance)
+        fit = analysis.fit_imaging_via_tracer_from(
             tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
         )
 
@@ -133,7 +133,7 @@ class TestAnalysisDataset:
         analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
         instance = model.instance_from_unit_vector([])
-        tracer = analysis.tracer_for_instance(instance=instance)
+        tracer = analysis.tracer_via_instance_from(instance=instance)
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
         analysis.preloads.check_via_fit(fit=fit)

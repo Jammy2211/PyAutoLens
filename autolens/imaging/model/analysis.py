@@ -111,7 +111,7 @@ class AnalysisImaging(AnalysisDataset):
         """
 
         try:
-            return self.fit_imaging_for_instance(instance=instance).figure_of_merit
+            return self.fit_imaging_via_instance_from(instance=instance).figure_of_merit
         except (
             PixelizationException,
             exc.PixelizationException,
@@ -123,7 +123,7 @@ class AnalysisImaging(AnalysisDataset):
         ) as e:
             raise exc.FitException from e
 
-    def fit_imaging_for_instance(
+    def fit_imaging_via_instance_from(
         self,
         instance: af.ModelInstance,
         use_hyper_scalings: bool = True,
@@ -158,8 +158,8 @@ class AnalysisImaging(AnalysisDataset):
         FitImaging
             The fit of the plane to the imaging dataset, which includes the log likelihood.
         """
-        self.associate_hyper_images(instance=instance)
-        tracer = self.tracer_for_instance(
+        self.instance_with_associated_hyper_images_from(instance=instance)
+        tracer = self.tracer_via_instance_from(
             instance=instance, profiling_dict=profiling_dict
         )
 
@@ -168,13 +168,13 @@ class AnalysisImaging(AnalysisDataset):
                 tracer=tracer, positions=self.positions
             )
 
-        hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
+        hyper_image_sky = self.hyper_image_sky_via_instance_from(instance=instance)
 
-        hyper_background_noise = self.hyper_background_noise_for_instance(
+        hyper_background_noise = self.hyper_background_noise_via_instance_from(
             instance=instance
         )
 
-        return self.fit_imaging_for_tracer(
+        return self.fit_imaging_via_tracer_from(
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
@@ -183,7 +183,7 @@ class AnalysisImaging(AnalysisDataset):
             profiling_dict=profiling_dict,
         )
 
-    def fit_imaging_for_tracer(
+    def fit_imaging_via_tracer_from(
         self,
         tracer: Tracer,
         hyper_image_sky: Optional[ag.hyper_data.HyperImageSky],
@@ -235,7 +235,7 @@ class AnalysisImaging(AnalysisDataset):
 
     @property
     def fit_func(self):
-        return self.fit_imaging_for_instance
+        return self.fit_imaging_via_instance_from
 
     def profile_log_likelihood_function(
         self, instance: af.ModelInstance, paths: Optional[af.DirectoryPaths] = None
@@ -272,7 +272,7 @@ class AnalysisImaging(AnalysisDataset):
         for i in range(repeats):
 
             try:
-                fit = self.fit_imaging_for_instance(instance=instance)
+                fit = self.fit_imaging_via_instance_from(instance=instance)
             except exc.RayTracingException:
                 return
 
@@ -282,7 +282,7 @@ class AnalysisImaging(AnalysisDataset):
 
         info_dict["fit_time"] = fit_time
 
-        fit = self.fit_imaging_for_instance(
+        fit = self.fit_imaging_via_instance_from(
             instance=instance, profiling_dict=profiling_dict
         )
         fit.figure_of_merit
@@ -315,7 +315,7 @@ class AnalysisImaging(AnalysisDataset):
 
         return profiling_dict
 
-    def stochastic_log_likelihoods_for_instance(self, instance: af.ModelInstance):
+    def stochastic_log_likelihoods_via_instance_from(self, instance: af.ModelInstance):
         """
         Certain `Inversion`'s have stochasticity in their log likelihood estimate.
 
@@ -340,8 +340,8 @@ class AnalysisImaging(AnalysisDataset):
             A log likelihood cap which is applied in a stochastic model-fit to give improved error and posterior
             estimates.
         """
-        instance = self.associate_hyper_images(instance=instance)
-        tracer = self.tracer_for_instance(instance=instance)
+        instance = self.instance_with_associated_hyper_images_from(instance=instance)
+        tracer = self.tracer_via_instance_from(instance=instance)
 
         if not tracer.has_pixelization:
             return
@@ -349,9 +349,9 @@ class AnalysisImaging(AnalysisDataset):
         if not any([pix.is_stochastic for pix in tracer.pixelization_list]):
             return
 
-        hyper_image_sky = self.hyper_image_sky_for_instance(instance=instance)
+        hyper_image_sky = self.hyper_image_sky_via_instance_from(instance=instance)
 
-        hyper_background_noise = self.hyper_background_noise_for_instance(
+        hyper_background_noise = self.hyper_background_noise_via_instance_from(
             instance=instance
         )
 
@@ -424,10 +424,10 @@ class AnalysisImaging(AnalysisDataset):
             If True the visualization is being performed midway through the non-linear search before it is finished,
             which may change which images are output.
         """
-        instance = self.associate_hyper_images(instance=instance)
+        instance = self.instance_with_associated_hyper_images_from(instance=instance)
 
         try:
-            fit = self.fit_imaging_for_instance(instance=instance)
+            fit = self.fit_imaging_via_instance_from(instance=instance)
         except exc.RayTracingException:
             return
 
@@ -445,7 +445,7 @@ class AnalysisImaging(AnalysisDataset):
         visualizer.visualize_contribution_maps(tracer=fit.tracer)
 
         if visualizer.plot_fit_no_hyper:
-            fit = self.fit_imaging_for_tracer(
+            fit = self.fit_imaging_via_tracer_from(
                 tracer=fit.tracer,
                 hyper_image_sky=None,
                 hyper_background_noise=None,

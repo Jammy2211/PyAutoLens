@@ -458,11 +458,11 @@ def test___blurred_and_model_image_properties(masked_imaging_7x7):
     )
 
     assert blurred_images_of_planes[0].native == pytest.approx(
-        fit.model_images_of_planes[0].native, 1.0e-4
+        fit.model_images_of_planes_list[0].native, 1.0e-4
     )
 
     assert blurred_images_of_planes[1].native == pytest.approx(
-        fit.model_images_of_planes[1].native, 1.0e-4
+        fit.model_images_of_planes_list[1].native, 1.0e-4
     )
 
     unmasked_blurred_image = tracer.unmasked_blurred_image_2d_via_psf_from(
@@ -471,15 +471,15 @@ def test___blurred_and_model_image_properties(masked_imaging_7x7):
 
     assert (unmasked_blurred_image == fit.unmasked_blurred_image).all()
 
-    unmasked_blurred_image_of_planes = tracer.unmasked_blurred_image_2d_list_via_psf_from(
+    unmasked_blurred_image_of_planes_list = tracer.unmasked_blurred_image_2d_list_via_psf_from(
         grid=masked_imaging_7x7.grid, psf=masked_imaging_7x7.psf
     )
 
     assert (
-        unmasked_blurred_image_of_planes[0] == fit.unmasked_blurred_image_of_planes[0]
+        unmasked_blurred_image_of_planes_list[0] == fit.unmasked_blurred_image_of_planes_list[0]
     ).all()
     assert (
-        unmasked_blurred_image_of_planes[1] == fit.unmasked_blurred_image_of_planes[1]
+        unmasked_blurred_image_of_planes_list[1] == fit.unmasked_blurred_image_of_planes_list[1]
     ).all()
 
     pix = al.pix.Rectangular(shape=(3, 3))
@@ -500,9 +500,9 @@ def test___blurred_and_model_image_properties(masked_imaging_7x7):
         dataset=masked_imaging_7x7, linear_obj_list=[mapper], regularization_list=[reg]
     )
 
-    assert (fit.model_images_of_planes[0].native == np.zeros((7, 7))).all()
+    assert (fit.model_images_of_planes_list[0].native == np.zeros((7, 7))).all()
     assert inversion.mapped_reconstructed_image.native == pytest.approx(
-        fit.model_images_of_planes[1].native, 1.0e-4
+        fit.model_images_of_planes_list[1].native, 1.0e-4
     )
 
     galaxy_light = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
@@ -536,14 +536,14 @@ def test___blurred_and_model_image_properties(masked_imaging_7x7):
     )
 
     assert blurred_image.native == pytest.approx(
-        fit.model_images_of_planes[0].native, 1.0e-4
+        fit.model_images_of_planes_list[0].native, 1.0e-4
     )
     assert inversion.mapped_reconstructed_image.native == pytest.approx(
-        fit.model_images_of_planes[1].native, 1.0e-4
+        fit.model_images_of_planes_list[1].native, 1.0e-4
     )
 
 
-def test__subtracted_images_of_planes(masked_imaging_7x7_no_blur):
+def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur):
 
     g0 = al.Galaxy(
         redshift=0.5, light_profile=al.m.MockLightProfile(image_2d=np.ones(1))
@@ -561,9 +561,9 @@ def test__subtracted_images_of_planes(masked_imaging_7x7_no_blur):
 
     fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
-    assert fit.subtracted_images_of_planes[0].slim[0] == -4.0
-    assert fit.subtracted_images_of_planes[1].slim[0] == -3.0
-    assert fit.subtracted_images_of_planes[2].slim[0] == -2.0
+    assert fit.subtracted_images_of_planes_list[0].slim[0] == -4.0
+    assert fit.subtracted_images_of_planes_list[1].slim[0] == -3.0
+    assert fit.subtracted_images_of_planes_list[2].slim[0] == -2.0
 
     g0 = al.Galaxy(
         redshift=0.5, light_profile=al.m.MockLightProfile(image_2d=np.ones(1))
@@ -581,8 +581,8 @@ def test__subtracted_images_of_planes(masked_imaging_7x7_no_blur):
 
     fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
-    assert fit.subtracted_images_of_planes[0].slim[0] == -4.0
-    assert fit.subtracted_images_of_planes[1].slim[0] == -0.0
+    assert fit.subtracted_images_of_planes_list[0].slim[0] == -4.0
+    assert fit.subtracted_images_of_planes_list[1].slim[0] == -0.0
 
 
 def test___stochastic_mode__gives_different_log_likelihoods(masked_imaging_7x7):

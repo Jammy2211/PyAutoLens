@@ -46,7 +46,7 @@ class ResultInterferometer(ResultDataset):
         An instance of a `FitInterferometer` corresponding to the maximum log likelihood model inferred by the
         non-linear search.
         """
-        return self.analysis.fit_interferometer_for_instance(instance=self.instance)
+        return self.analysis.fit_interferometer_via_instance_from(instance=self.instance)
 
     @property
     def real_space_mask(self) -> aa.Mask2D:

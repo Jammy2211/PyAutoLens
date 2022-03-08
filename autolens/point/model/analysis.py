@@ -80,7 +80,7 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
 
     def fit_positions_for(self, instance):
 
-        tracer = self.tracer_for_instance(instance=instance)
+        tracer = self.tracer_via_instance_from(instance=instance)
 
         return FitPointDict(
             point_dict=self.point_dict, tracer=tracer, point_solver=self.solver
@@ -88,7 +88,7 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
 
     def visualize(self, paths, instance, during_analysis):
 
-        tracer = self.tracer_for_instance(instance=instance)
+        tracer = self.tracer_via_instance_from(instance=instance)
 
         visualizer = Visualizer(visualize_path=paths.image_path)
 

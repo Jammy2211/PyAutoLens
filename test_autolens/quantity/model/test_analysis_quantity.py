@@ -39,7 +39,7 @@ class TestAnalysisQuantity:
         instance = model.instance_from_unit_vector([])
         fit_figure_of_merit = analysis.log_likelihood_function(instance=instance)
 
-        tracer = analysis.tracer_for_instance(instance=instance)
+        tracer = analysis.tracer_via_instance_from(instance=instance)
 
         fit = al.FitQuantity(
             dataset=dataset_quantity_7x7_array_2d,

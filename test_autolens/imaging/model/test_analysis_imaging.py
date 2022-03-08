@@ -71,7 +71,7 @@ class TestAnalysisImaging:
         instance = model.instance_from_unit_vector([])
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-        tracer = analysis.tracer_for_instance(instance=instance)
+        tracer = analysis.tracer_via_instance_from(instance=instance)
 
         fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -96,7 +96,7 @@ class TestAnalysisImaging:
         instance = model.instance_from_unit_vector([])
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-        tracer = analysis.tracer_for_instance(instance=instance)
+        tracer = analysis.tracer_via_instance_from(instance=instance)
         fit = al.FitImaging(
             dataset=masked_imaging_7x7,
             tracer=tracer,
@@ -231,7 +231,7 @@ class TestAnalysisImaging:
             dataset=masked_imaging_7x7, hyper_dataset_result=result
         )
 
-        stochastic_log_likelihoods = analysis.stochastic_log_likelihoods_for_instance(
+        stochastic_log_likelihoods = analysis.stochastic_log_likelihoods_via_instance_from(
             instance=instance
         )
 
@@ -246,7 +246,7 @@ class TestAnalysisImaging:
         instance = af.ModelInstance()
         instance.galaxies = galaxies
 
-        stochastic_log_likelihoods = analysis.stochastic_log_likelihoods_for_instance(
+        stochastic_log_likelihoods = analysis.stochastic_log_likelihoods_via_instance_from(
             instance=instance
         )
 
@@ -261,7 +261,7 @@ class TestAnalysisImaging:
         instance = af.ModelInstance()
         instance.galaxies = galaxies
 
-        stochastic_log_likelihoods = analysis.stochastic_log_likelihoods_for_instance(
+        stochastic_log_likelihoods = analysis.stochastic_log_likelihoods_via_instance_from(
             instance=instance
         )
 
