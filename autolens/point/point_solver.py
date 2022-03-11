@@ -173,7 +173,7 @@ class AbstractPointSolver:
             deflection_grid=deflections
         )
 
-        source_plane_distances = source_plane_grid.distances_to_coordinate(
+        source_plane_distances = source_plane_grid.distances_to_coordinate_from(
             coordinate=source_plane_coordinate
         )
 
@@ -229,7 +229,7 @@ class AbstractPointSolver:
         source_plane_grid = grid.grid_via_deflection_grid_from(
             deflection_grid=deflections
         )
-        source_plane_distances = source_plane_grid.distances_to_coordinate(
+        source_plane_distances = source_plane_grid.distances_to_coordinate_from(
             coordinate=source_plane_coordinate
         )
 

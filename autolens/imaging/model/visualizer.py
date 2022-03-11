@@ -1,3 +1,5 @@
+from os import path
+
 from autolens.lens.model.visualizer import Visualizer
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.imaging.plot.fit_imaging_plotters import FitImagingPlotter
@@ -34,7 +36,7 @@ class VisualizerImaging(Visualizer):
         """
 
         def should_plot(name):
-            return plot_setting(section="fit", name=name)
+            return plot_setting(section=["fit", "fit_imaging"], name=name)
 
         mat_plot_2d = self.mat_plot_2d_from(subfolders=subfolders)
 
@@ -85,7 +87,7 @@ class VisualizerImaging(Visualizer):
             if should_plot("all_at_end_fits"):
 
                 mat_plot_2d = self.mat_plot_2d_from(
-                    subfolders="fit_imaging/fits", format="fits"
+                    subfolders=path.join("fit_imaging", "fits"), format="fits"
                 )
 
                 fit_imaging_plotter = FitImagingPlotter(

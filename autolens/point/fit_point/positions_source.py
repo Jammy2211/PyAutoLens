@@ -92,6 +92,6 @@ class FitPositionsSource(aa.FitDataset):
     @property
     def residual_map(self) -> aa.ValuesIrregular:
 
-        return self.model_positions.distances_to_coordinate(
+        return self.model_positions.distances_to_coordinate_from(
             coordinate=self.source_plane_coordinate
         )

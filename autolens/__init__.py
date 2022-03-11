@@ -21,20 +21,20 @@ from autoarray.inversion.inversion.factory import (
 from autoarray.inversion.mappers.factory import mapper_from as Mapper
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.structures.arrays.one_d.array_1d import Array1D
-from autoarray.structures.arrays.two_d.array_2d import Array2D
-from autoarray.structures.arrays.values import ValuesIrregular
-from autoarray.structures.grids.one_d.grid_1d import Grid1D
-from autoarray.structures.grids.two_d.grid_2d import Grid2D
-from autoarray.structures.grids.two_d.grid_2d import Grid2DSparse
-from autoarray.structures.grids.two_d.grid_2d_iterate import Grid2DIterate
-from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
-from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregularUniform
-from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
-from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
-from autoarray.structures.vectors.uniform import VectorYX2D
-from autoarray.structures.vectors.irregular import VectorYX2DIrregular
-from autoarray.structures.kernel_2d import Kernel2D
+from autoarray.structures.one_d.array_1d import Array1D
+from autoarray.structures.two_d.array_2d import Array2D
+from autoarray.structures.values import ValuesIrregular
+from autoarray.structures.one_d.grid_1d import Grid1D
+from autoarray.structures.two_d.grids.uniform import Grid2D
+from autoarray.structures.two_d.grids.sparse import Grid2DSparse
+from autoarray.structures.two_d.grids.iterate import Grid2DIterate
+from autoarray.structures.two_d.grids.irregular import Grid2DIrregular
+from autoarray.structures.two_d.grids.irregular import Grid2DIrregularUniform
+from autoarray.structures.two_d.grids.grid_2d_pixelization import Grid2DRectangular
+from autoarray.structures.two_d.grids.grid_2d_pixelization import Grid2DVoronoi
+from autoarray.structures.two_d.vectors.uniform import VectorYX2D
+from autoarray.structures.two_d.vectors.irregular import VectorYX2DIrregular
+from autoarray.structures.two_d.kernel_2d import Kernel2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 

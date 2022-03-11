@@ -38,7 +38,7 @@ class VisualizerInterferometer(Visualizer):
         """
 
         def should_plot(name):
-            return plot_setting(section="fit", name=name)
+            return plot_setting(section=["fit", "fit_interferometer"], name=name)
 
         mat_plot_1d = self.mat_plot_1d_from(subfolders=subfolders)
         mat_plot_2d = self.mat_plot_2d_from(subfolders=subfolders)
@@ -102,7 +102,7 @@ class VisualizerInterferometer(Visualizer):
             if should_plot("all_at_end_fits"):
 
                 mat_plot_2d = self.mat_plot_2d_from(
-                    subfolders="fit_interferometer/fits", format="fits"
+                    subfolders=path.join("fit_interferometer", "fits"), format="fits"
                 )
 
                 fit_interferometer_plotter = FitInterferometerPlotter(

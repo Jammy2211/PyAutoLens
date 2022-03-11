@@ -101,4 +101,4 @@ class FitPositionsImage(aa.FitDataset):
 
         residual_positions = self.positions - self.model_positions
 
-        return residual_positions.distances_to_coordinate(coordinate=(0.0, 0.0))
+        return residual_positions.distances_to_coordinate_from(coordinate=(0.0, 0.0))

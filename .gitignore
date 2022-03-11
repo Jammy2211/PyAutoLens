@@ -26,6 +26,7 @@ subplots/
 multinest
 .DS_Store
 temp.txt
+*.log
 *.swp
 .coverage
 dist/

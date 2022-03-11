@@ -4,23 +4,15 @@ from scipy.stats import norm
 from os import path
 import os
 
-from autoconf import conf
-
 import autoarray as aa
 import autogalaxy.plot as aplt
+
+from autogalaxy.analysis.visualizer import plot_setting
 
 from autogalaxy.analysis.visualizer import Visualizer as AgVisualizer
 
 from autolens.lens.ray_tracing import Tracer
 from autolens.lens.plot.ray_tracing_plotters import TracerPlotter
-
-
-def setting(section, name):
-    return conf.instance["visualize"]["plots"][section][name]
-
-
-def plot_setting(section, name):
-    return setting(section, name)
 
 
 class Visualizer(AgVisualizer):
