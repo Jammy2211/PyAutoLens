@@ -476,10 +476,12 @@ def test___blurred_and_model_image_properties(masked_imaging_7x7):
     )
 
     assert (
-        unmasked_blurred_image_of_planes_list[0] == fit.unmasked_blurred_image_of_planes_list[0]
+        unmasked_blurred_image_of_planes_list[0]
+        == fit.unmasked_blurred_image_of_planes_list[0]
     ).all()
     assert (
-        unmasked_blurred_image_of_planes_list[1] == fit.unmasked_blurred_image_of_planes_list[1]
+        unmasked_blurred_image_of_planes_list[1]
+        == fit.unmasked_blurred_image_of_planes_list[1]
     ).all()
 
     pix = al.pix.Rectangular(shape=(3, 3))

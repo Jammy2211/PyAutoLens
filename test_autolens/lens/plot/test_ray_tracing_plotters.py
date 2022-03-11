@@ -86,8 +86,12 @@ def test__all_individual_plotter(
 
 
 def test__figures_of_plane(
-    tracer_x2_plane_7x7,     sub_grid_2d_7x7,
-    mask_2d_7x7,include_2d_all, plot_path, plot_patch
+    tracer_x2_plane_7x7,
+    sub_grid_2d_7x7,
+    mask_2d_7x7,
+    include_2d_all,
+    plot_path,
+    plot_patch,
 ):
 
     tracer_plotter = aplt.TracerPlotter(
@@ -97,18 +101,14 @@ def test__figures_of_plane(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    tracer_plotter.figures_2d_of_planes(
-        plane_image=True, plane_grid=True
-    )
+    tracer_plotter.figures_2d_of_planes(plane_image=True, plane_grid=True)
 
     assert path.join(plot_path, "plane_image_of_plane_0.png") in plot_patch.paths
     assert path.join(plot_path, "plane_image_of_plane_1.png") in plot_patch.paths
 
     plot_patch.paths = []
 
-    tracer_plotter.figures_2d_of_planes(
-        plane_image=True, plane_index=0
-    )
+    tracer_plotter.figures_2d_of_planes(plane_image=True, plane_index=0)
 
     assert path.join(plot_path, "plane_image_of_plane_0.png") in plot_patch.paths
     assert path.join(plot_path, "plane_image_of_plane_1.png") not in plot_patch.paths

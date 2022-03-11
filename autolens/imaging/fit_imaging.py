@@ -224,7 +224,9 @@ class FitImaging(aa.FitImaging):
         profiling_dict = {} if self.profiling_dict is not None else None
 
         settings_inversion = (
-            self.settings_inversion if settings_inversion is None else settings_inversion
+            self.settings_inversion
+            if settings_inversion is None
+            else settings_inversion
         )
 
         return FitImaging(

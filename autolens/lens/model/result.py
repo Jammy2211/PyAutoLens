@@ -133,7 +133,9 @@ class ResultDataset(Result):
 
         If a dataset is fitted the hyper images of the hyper dataset must first be associated with each galaxy.
         """
-        instance = self.analysis.instance_with_associated_hyper_images_from(instance=self.instance)
+        instance = self.analysis.instance_with_associated_hyper_images_from(
+            instance=self.instance
+        )
 
         return self.analysis.tracer_via_instance_from(instance=instance)
 

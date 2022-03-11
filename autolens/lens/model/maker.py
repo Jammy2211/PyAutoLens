@@ -40,7 +40,9 @@ class FitMaker:
         self.model = model
         self.fit_func = fit_func
 
-    def fit_via_model_from(self, unit_value: float) -> Union[FitImaging, FitInterferometer]:
+    def fit_via_model_from(
+        self, unit_value: float
+    ) -> Union[FitImaging, FitInterferometer]:
         """
         Create a fit via the model.
 
