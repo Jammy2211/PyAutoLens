@@ -227,7 +227,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
                 )
                 self.hyper_galaxy_image_path_dict = hyper_galaxy_image_path_dict
 
-        except (FileNotFoundError, AttributeError, KeyError):
+        except (FileNotFoundError, AttributeError, KeyError, ModuleNotFoundError):
             pass
 
     def modify_after_fit(
