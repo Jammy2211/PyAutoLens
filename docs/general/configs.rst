@@ -29,16 +29,16 @@ general.ini
 This config file is found at 'autolens_workspace/config/general.ini' and contains the following sections and variables:
 
 [output]
-    log_to_file : bool
+    log_to_file
         If True the outputs of processes like the non-linear search are logged to a file (and not printed to screen).
-    log_file : str
+    log_file
         The file name the logged output is written to (in the non-linear search output folder).
-    log_level : str
+    log_level
         The level of logging.
     model_results_decimal_places : int
         The number of decimal places the estimated values and errors of all parameters in the model.results file are
         output to.
-    remove_files : bool
+    remove_files
         If True, all output files of a non-linear search (e.g. samples, samples_backup, model.results, images, etc.)
         are deleted once the model-fit has completed.
 
@@ -50,7 +50,7 @@ This config file is found at 'autolens_workspace/config/general.ini' and contain
         This feature was implemented because super-computers often have a limit on the number of files allowed per
         user and the large number of files output by PyAutoLens can exceed this limit. By removing files the
         number of files is restricted only to the .zip files.
-    force_pickle_overwrite : bool
+    force_pickle_overwrite
         A model-fit outputs pickled files of the model, search, results, etc., which the database feature can load.
         If this setting it ``True`` these pickle files are recreated when a new model-fit is performed, even if
         the search is complete.
@@ -59,14 +59,14 @@ The following setting flips all images that are loaded by **PyAutoLens** so that
 the software ds9:
 
 [fits]
-    flip_for_ds9 : bool
+    flip_for_ds9
         If ``True``, the ndarray of all .fits files containing an image, noise-map, psf, etc, is flipped upside down
         so its orientation is the same as ds9.
 
 The following settings are specific for High Performance Super computer use with **PyAutoLens**.
 
 [hpc]
-    hpc_mode : bool
+    hpc_mode
         If ``True``, HPC mode is activated, which disables GUI visualization, logging to screen and other settings which
         are not suited to running on a super computer.
     iterations_per_update : int
@@ -76,7 +76,7 @@ The following settings are specific for High Performance Super computer use with
 The following settings customize how a model is handled by **PyAutoFit**:
 
 [model]
-    ignore_prior_limits : bool
+    ignore_prior_limits
         If ``True`` the limits applied to priors will be ignored, where limits set upper / lower limits. This should be
         disabled if one has difficult manipulating results in the database due to a ``PriorLimitException``.
 
@@ -84,18 +84,18 @@ The library `numba <https://github.com/numba/numba>`_ is used to speed up functi
 functions before the Python interpreter runs:
 
 [numba]
-    nopython : bool
+    nopython
         If True, functions which hve a numba decorator must not convert back to Python during a run and thus must stay
         100% C. All PyAutoLens functions were developed with nopython mode turned on.
-    cache : bool
+    cache
         If True, the C version of numba functions are cached on the hard-disk so they do not need to be
         recompiled every time **PyAutoLens** is rerun. If False, the first time every function is run will have a small
         delay (0.1-1.0 seconds) as it has to be numba compiled again.
-    parallel : bool
+    parallel
         If True, all functions decorated with the numba.jit are run with parallel processing on.
 
 [inversion]
-    interpolated_grid_shape : str {image_grid, source_grid}
+    interpolated_grid_shape {image_grid, source_grid}
         In order to output inversion reconstructions (which could be on a Voronoi grid) to a .fits file, the
         reconstruction is interpolated to a square grid of pixels. This option determines this grid:
 
@@ -119,11 +119,11 @@ functions before the Python interpreter runs:
         When noise scaling is activated (E.g. via hyper galaxies) this value is the highest value a noise value can
         numerically be scaled up too. This prevents extremely large noise map values creating numerically unstable
         log likelihood values.
-    stochastic_outputs : bool
+    stochastic_outputs
         If ``True``, information on the stochastic likelihood behaviour of any KMeans based pixelization is output.
 
 [test]
-    test_mode : bool
+    test_mode
         If ``True`` this disables sampling of a search to provide a solution in one iteration. It is used for testing
         **PyAutoLens**.
 
@@ -162,7 +162,7 @@ The following config sections and variables are generic across all non-linear se
         log_every_update of -1 turns off logging during the model-fit.
 
 [printing]
-    silence : bool
+    silence
         If True, the default print output of the non-linear search is silcened and not printed by the Python
         interpreter.
 
@@ -170,9 +170,9 @@ The following config sections and variables are generic across all non-linear se
     sigma
         For non-linear search chaining and model prior passing, the sigma value of the inferred model parameter used
         as the sigma of the passed Gaussian prior.
-    use_errors : bool
+    use_errors
         If ``True``, the errors of the previous model's results are used when passing priors.
-    use_widths : bool
+    use_widths
         If ``True`` the width of the model parameters defined in the priors config file are used.
 
 [parallel]
@@ -193,7 +193,7 @@ visualization in **PyAutoLens**. The majority of config files are described in t
 The *general.ini* config contains the following sections and variables:
 
 [general]
-    backend : str
+    backend
         The matploblib backend used for visualization (see
         https://gist.github.com/CMCDragonkai/4e9464d9f32f5893d837f3de2c43daa4 for a description of backends).
 
@@ -243,7 +243,7 @@ variables for every light profile and mass profile when it is used as a model. T
 The sections of this example config set the following:
 
 json config
-    type : str {Uniform, Gaussian, LogUniform}
+    type {Uniform, Gaussian, LogUniform}
         The default prior given to this parameter when used by the non-linear search. In the example above, a
         UniformPrior is used with lower_limit of 0.0 and upper_limit of 4.0. A GaussianPrior could be used by
         putting "Gaussian" in the "type" box, with "mean" and "sigma" used to set the default values. Any prior can be
@@ -266,12 +266,12 @@ visualizing results (for example labeling the axis of the PDF triangle plots out
 Two examples using the 1D data fitting example for the config file **label.ini** are:
 
 [label]
-    centre_0 : str
+    centre_0
         The label given to that parameter for non-linear search plots using that parameter, e.g. cornerplot PDF plots.
         For example, if centre_1=x, the plot axis will be labeled 'x'.
 
 [superscript]
-    EllIsothermal : str
+    EllIsothermal
         The superscript used on certain plots that show the results of different model-components. For example, if
         EllIsothermal=mass, plots where the EllIsothermal are plotted will have a superscript `mass`.
 

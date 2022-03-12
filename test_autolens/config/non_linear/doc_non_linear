@@ -21,7 +21,7 @@ sampling_efficiency
     By default I would recommend a value of 0.8 (without constant efficiency mode) and 0.3 (with constant efficiency
     mode). Reduce to lower values if the inferred solution does not look accurate.
 
-const_efficiency_mode : bool
+const_efficiency_mode
 
     The sampling efficiency determines the acceptance rate MultiNest targets. However, if MultiNest cannot map out
     parameter-space accurately it reduce the acceptance rate. Constant efficiency mode forces MultiNest to maintain
@@ -47,7 +47,7 @@ evidence_tolerance
     precise estimate of parameter errors is not yet desired. Values of 100.0 / 1000.0 achieve this. For later searchs
     when error estimates are wanted use 0.5 or less.
 
-multimodal : bool
+multimodal
 
     Whether MultiNest uses multi-modal sampling, whereby the parameter space search will 'split' into multiple modes
     if it detects there are multiple peaks in log_likelihood space.
@@ -56,7 +56,7 @@ multimodal : bool
     arise one typically has much higher log_likelihood values than the other, thus multimodal mode leads to a decrease in
     run time sampling both modes. Thus, I recommend you keep this setting off.
 
-importance_nested_sampling : bool
+importance_nested_sampling
 
     Importance nested sampling mode uses information from the rejected points to improve the non-linear search. For
     lens modeling this appears to slow down the analysis with no clear benefit, so I recommend keeping it turned off.

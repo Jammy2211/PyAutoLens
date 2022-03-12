@@ -47,7 +47,7 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
         name
         image : np.ndarray
             The image before simulating (e.g. the lens and source galaxies before optics blurring and Imaging read-out).
-        pixel_scales: float
+        pixel_scales
             The scale of each pixel in arc seconds
         exposure_time_map : np.ndarray
             An arrays representing the effective exposure time of each pixel.

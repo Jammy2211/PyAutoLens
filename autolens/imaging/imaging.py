@@ -27,12 +27,12 @@ class SimulatorImaging(aa.SimulatorImaging):
             The exposure time of the simulated imaging.
         background_sky_level
             The level of the background sky of the simulated imaging.
-        normalize_psf : bool
+        normalize_psf
             If `True`, the PSF kernel is normalized so all values sum to 1.0.
         read_noise
             The level of read-noise added to the simulated imaging by drawing from a Gaussian distribution with
             sigma equal to the value `read_noise`.
-        add_poisson_noise : bool
+        add_poisson_noise
             Whether Poisson noise corresponding to photon count statistics on the imaging observation is added.
         noise_if_add_noise_false
             If noise is not added to the simulated dataset a `noise_map` must still be returned. This value gives
@@ -61,7 +61,7 @@ class SimulatorImaging(aa.SimulatorImaging):
         name
         image : np.ndarray
             The image before simulating (e.g. the lens and source galaxies before optics blurring and Imaging read-out).
-        pixel_scales: float
+        pixel_scales
             The scale of each pixel in arc seconds
         exposure_time_map : np.ndarray
             An arrays representing the effective exposure time of each pixel.
