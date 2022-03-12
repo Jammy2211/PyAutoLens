@@ -1,6 +1,8 @@
 import numpy as np
 from typing import Dict, Optional
 
+from autoconf import cached_property
+
 import autoarray as aa
 import autogalaxy as ag
 
@@ -75,7 +77,7 @@ class FitInterferometer(aa.FitInterferometer):
         """
         return self.visibilities - self.profile_visibilities
 
-    @property
+    @cached_property
     def inversion(self):
         """
         If the plane has linear objects which are used to fit the data (e.g. a pixelization) this function returns
