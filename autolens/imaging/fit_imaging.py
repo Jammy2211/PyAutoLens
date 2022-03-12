@@ -2,6 +2,8 @@ import numpy as np
 from typing import Dict, Optional
 
 from autoconf import conf
+from autoconf import cached_property
+
 import autoarray as aa
 import autogalaxy as ag
 
@@ -99,7 +101,7 @@ class FitImaging(aa.FitImaging):
         """
         return self.image - self.blurred_image
 
-    @property
+    @cached_property
     def inversion(self):
         """
         If the tracer has linear objects which are used to fit the data (e.g. a pixelization) this function returns
@@ -117,6 +119,7 @@ class FitImaging(aa.FitImaging):
                 w_tilde=self.dataset.w_tilde,
                 settings_pixelization=self.settings_pixelization,
                 settings_inversion=self.settings_inversion,
+                preloads=self.preloads
             )
 
     @property
