@@ -55,7 +55,9 @@ For unit tests to pass you will also need the following optional requirements:
     pip install pynufft==2020.2.7
     pip install pylops==1.11.1
 
-If you are using a `conda` environment, add the source repository as follows:
+If you are using a ``conda`` environment, add the source repository as follows:
+
+[NOTE: Certain versions of conda use the command ``conda develop`` (without a dash) instead of those shown below.]
 
 .. code-block:: bash
 
@@ -115,7 +117,9 @@ For unit tests to pass you will also need the following optional requirements:
 
    pip install -r PyAutoArray/optional_requirements.txt
 
-If you are using a `conda` environment, add each source repository as follows:
+If you are using a ``conda`` environment, add each source repository as follows:
+
+[NOTE: Certain versions of conda use the command ``conda develop`` (without a dash) instead of those shown below.]
 
 .. code-block:: bash
 
