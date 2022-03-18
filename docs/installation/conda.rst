@@ -34,7 +34,7 @@ see `here <https://pyautolens.readthedocs.io/en/latest/installation/troubleshoot
 
 .. code-block:: bash
 
-    pip install autolens==2022.02.14.1 --ignore-installed numba llvmlite
+    pip install autolens==2022.03.18.2 --ignore-installed numba llvmlite
 
 You may get warnings which state something like:
 
