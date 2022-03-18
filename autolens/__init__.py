@@ -39,6 +39,8 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
 from autogalaxy.galaxy.galaxy import Galaxy, HyperGalaxy, Redshift
+from autogalaxy.analysis.clump_model import ClumpModel
+from autogalaxy.analysis.clump_model import ClumpModelDisabled
 
 from autogalaxy.quantity.dataset_quantity import DatasetQuantity
 from autogalaxy.hyper import hyper_data
@@ -89,4 +91,4 @@ from autoconf import conf
 
 conf.instance.register(__file__)
 
-__version__ = "2022.02.14.1"
+__version__ = "2022.03.18.2"

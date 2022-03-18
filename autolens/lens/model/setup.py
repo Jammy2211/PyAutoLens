@@ -91,7 +91,7 @@ class SetupHyper(ag.SetupHyper):
 
         Parameters
         ----------
-        index : int
+        index
             The index of the previous search the `HyperGalaxy` `Model` is passed from.
         noise_factor_is_model
             If `True` the `noise_factor` of the `HyperGalaxy` is passed as a `model`, else it is passed as an
@@ -134,7 +134,7 @@ class SetupHyper(ag.SetupHyper):
 
         Parameters
         ----------
-        index : int
+        index
             The index of the previous search the `HyperGalaxy` `Model` is passed from.
         noise_factor_is_model
             If `True` the `noise_factor` of the `HyperGalaxy` is passed as a `model`, else it is passed as an

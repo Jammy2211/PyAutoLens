@@ -9,7 +9,7 @@ from autolens.lens.model.visualizer import plot_setting
 
 class VisualizerImaging(Visualizer):
     def visualize_fit_imaging(
-        self, fit: FitImaging, during_analysis: bool, subfolders: bool = "fit_imaging"
+        self, fit: FitImaging, during_analysis: bool, subfolders: str = "fit_imaging"
     ):
         """
         Visualizes a `FitImaging` object, which fits an imaging dataset.

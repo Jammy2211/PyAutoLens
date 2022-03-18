@@ -112,11 +112,11 @@ class AbstractPointSolver:
             pixel_scales : (float, float)
                 The pixel-scale resolution of the buffed and upscaled grid that is formed around the input coordinate. If
                 upscale > 1, the pixel_scales are reduced to pixel_scale / upscale_factor.
-            buffer : int
+            buffer
                 The number of pixels around the central (y,x) coordinate that the grid is computed on, i.e. how much it is
                 buffed. A buffer of 1 puts 1 pixel in every direction around the (y,x) coordinate, creating a 3x3 grid. A
                 buffer=2 places two pixels around it in every direction, creating a 5x5 grid. And so on.
-            upscale_factor : int
+            upscale_factor
                 The factor by which the resolution of the grid is increased relative to the input pixel-scales.
         """
 

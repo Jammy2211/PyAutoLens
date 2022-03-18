@@ -2,7 +2,7 @@ A description of the non_linear.ini config file is given here.
 
 [MultiNest]
 
-n_live_points : int
+n_live_points
 
     The number of live points used by MultiNest to sample non-linear parameter space. More points provides a more
     thorough sampling of parameter space, at the expense of taking longer to run. The number of live points required

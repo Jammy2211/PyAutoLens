@@ -35,7 +35,7 @@ This config file is found at 'autolens_workspace/config/general.ini' and contain
         The file name the logged output is written to (in the non-linear search output folder).
     log_level
         The level of logging.
-    model_results_decimal_places : int
+    model_results_decimal_places
         The number of decimal places the estimated values and errors of all parameters in the model.results file are
         output to.
     remove_files
@@ -69,7 +69,7 @@ The following settings are specific for High Performance Super computer use with
     hpc_mode
         If ``True``, HPC mode is activated, which disables GUI visualization, logging to screen and other settings which
         are not suited to running on a super computer.
-    iterations_per_update : int
+    iterations_per_update
         The number of iterations between every update (visualization, results output, etc) in HPC mode, which may be
         better suited to being less frequent on a super computer.
 
@@ -140,24 +140,24 @@ object.
 The following config sections and variables are generic across all non-linear search configs:
 
 [updates]
-   iterations_per_update : int
+   iterations_per_update
         The number of iterations of the non-linear search performed between every 'update', where an update performs
         visualization of the maximum log likelihood model, backing-up of the samples, output of the model.results
         file and logging.
-   visualize_every_update : int
+   visualize_every_update
         For every visualize_every_update updates visualization is performed and output to the hard-disk during the
         non-linear using the maximum log likelihood model. A visualization_interval of -1 turns off on-the-fly
         visualization.
-   backup_every_update : int
+   backup_every_update
         For every backup_every_update the results of the non-linear search in the samples foler and backed up into the
         samples_backup folder. A backup_every_update of -1 turns off backups during the non-linear search (it is still
         performed when the non-linear search terminates).
-   model_results_every_update : int
+   model_results_every_update
         For every model_results_every_update the model.results file is updated with the maximum log likelihood model
         and parameter estimates with errors at 1 an 3 sigma confidence. A model_results_every_update of -1 turns off
         the model.results file being updated during the model-fit (it is still performed when the non-linear search
         terminates).
-   log_every_update : int
+   log_every_update
         For every log_every_update the log file is updated with the output of the Python interpreter. A
         log_every_update of -1 turns off logging during the model-fit.
 
@@ -176,7 +176,7 @@ The following config sections and variables are generic across all non-linear se
         If ``True`` the width of the model parameters defined in the priors config file are used.
 
 [parallel]
-    number_of_cores : int
+    number_of_cores
         For non-linear searches that support parallel procesing via the Python multiprocesing module, the number of
         cores the parallel run uses. If number_of_cores=1, the model-fit is performed in serial omitting the use
         of the multi-processing module.

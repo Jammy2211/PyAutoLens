@@ -229,7 +229,7 @@ def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):
         tracer=tracer,
         hyper_image_sky=hyper_image_sky,
         hyper_background_noise=hyper_background_noise,
-        use_hyper_scalings=True,
+        use_hyper_scaling=True,
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 

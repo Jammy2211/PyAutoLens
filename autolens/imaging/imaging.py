@@ -37,7 +37,7 @@ class SimulatorImaging(aa.SimulatorImaging):
         noise_if_add_noise_false
             If noise is not added to the simulated dataset a `noise_map` must still be returned. This value gives
             the value of noise assigned to every pixel in the noise-map.
-        noise_seed : int
+        noise_seed
             The random seed used to add random noise, where -1 corresponds to a random seed every run.
         """
 

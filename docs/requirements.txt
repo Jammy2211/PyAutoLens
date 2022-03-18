@@ -4,7 +4,7 @@ matplotlib>=3.0.3
 numpy>=1.18.0
 pyprojroot==0.2.0
 scikit-learn==0.21.3
-autoconf==2022.02.14.1
-autofit==2022.02.14.1
-autoarray==2022.02.14.1
-autogalaxy==2022.02.14.1
+autoconf==2022.03.18.2
+autofit==2022.03.18.2
+autoarray==2022.03.18.2
+autogalaxy==2022.03.18.2

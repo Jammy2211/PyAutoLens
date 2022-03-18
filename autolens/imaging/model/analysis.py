@@ -126,7 +126,7 @@ class AnalysisImaging(AnalysisDataset):
     def fit_imaging_via_instance_from(
         self,
         instance: af.ModelInstance,
-        use_hyper_scalings: bool = True,
+        use_hyper_scaling: bool = True,
         preload_overwrite: Optional[Preloads] = None,
         check_positions: bool = True,
         profiling_dict: Optional[Dict] = None,
@@ -142,7 +142,7 @@ class AnalysisImaging(AnalysisDataset):
         instance
             An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
             via a non-linear search).
-        use_hyper_scalings
+        use_hyper_scaling
             If false, the scaling of the background sky and noise are not performed irrespective of the model components
             themselves.
         preload_overwrite
@@ -178,7 +178,7 @@ class AnalysisImaging(AnalysisDataset):
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
-            use_hyper_scalings=use_hyper_scalings,
+            use_hyper_scaling=use_hyper_scaling,
             preload_overwrite=preload_overwrite,
             profiling_dict=profiling_dict,
         )
@@ -188,7 +188,7 @@ class AnalysisImaging(AnalysisDataset):
         tracer: Tracer,
         hyper_image_sky: Optional[ag.hyper_data.HyperImageSky],
         hyper_background_noise: Optional[ag.hyper_data.HyperBackgroundNoise],
-        use_hyper_scalings: bool = True,
+        use_hyper_scaling: bool = True,
         preload_overwrite: Optional[Preloads] = None,
         profiling_dict: Optional[Dict] = None,
     ) -> FitImaging:
@@ -206,7 +206,7 @@ class AnalysisImaging(AnalysisDataset):
             A model component which scales the background sky level of the data before computing the log likelihood.
         hyper_background_noise
             A model component which scales the background noise level of the data before computing the log likelihood.
-        use_hyper_scalings
+        use_hyper_scaling
             If false, the scaling of the background sky and noise are not performed irrespective of the model components
             themselves.
         preload_overwrite
@@ -226,7 +226,7 @@ class AnalysisImaging(AnalysisDataset):
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
-            use_hyper_scalings=use_hyper_scalings,
+            use_hyper_scaling=use_hyper_scaling,
             settings_pixelization=self.settings_pixelization,
             settings_inversion=self.settings_inversion,
             preloads=preloads,
@@ -437,6 +437,9 @@ class AnalysisImaging(AnalysisDataset):
         visualizer.visualize_tracer(
             tracer=fit.tracer, grid=fit.grid, during_analysis=during_analysis
         )
+        visualizer.visualize_galaxies(
+            galaxies=fit.tracer.galaxies, grid=fit.grid, during_analysis=during_analysis
+        )
         if fit.inversion is not None:
             visualizer.visualize_inversion(
                 inversion=fit.inversion, during_analysis=during_analysis
@@ -449,7 +452,7 @@ class AnalysisImaging(AnalysisDataset):
                 tracer=fit.tracer,
                 hyper_image_sky=None,
                 hyper_background_noise=None,
-                use_hyper_scalings=False,
+                use_hyper_scaling=False,
                 preload_overwrite=Preloads(use_w_tilde=False),
             )
 

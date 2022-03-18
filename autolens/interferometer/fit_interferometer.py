@@ -15,7 +15,7 @@ class FitInterferometer(aa.FitInterferometer):
         dataset,
         tracer,
         hyper_background_noise=None,
-        use_hyper_scalings=True,
+        use_hyper_scaling=True,
         settings_pixelization=aa.SettingsPixelization(),
         settings_inversion=aa.SettingsInversion(),
         preloads=Preloads(),
@@ -34,7 +34,7 @@ class FitInterferometer(aa.FitInterferometer):
         self.tracer = tracer
 
         self.hyper_background_noise = hyper_background_noise
-        self.use_hyper_scalings = use_hyper_scalings
+        self.use_hyper_scaling = use_hyper_scaling
 
         self.settings_pixelization = settings_pixelization
         self.settings_inversion = settings_inversion
@@ -51,7 +51,7 @@ class FitInterferometer(aa.FitInterferometer):
         Returns the interferometer's noise-map, which may have a hyper scaling performed which increase the noise in
         regions of the data that are poorly fitted in order to avoid overfitting.
         """
-        if self.use_hyper_scalings and self.hyper_background_noise is not None:
+        if self.use_hyper_scaling and self.hyper_background_noise is not None:
 
             return self.hyper_background_noise.hyper_noise_map_complex_from(
                 noise_map=self.dataset.noise_map
@@ -95,7 +95,7 @@ class FitInterferometer(aa.FitInterferometer):
                 w_tilde=self.dataset.w_tilde,
                 settings_pixelization=self.settings_pixelization,
                 settings_inversion=self.settings_inversion,
-                preloads=self.preloads
+                preloads=self.preloads,
             )
 
     @property
@@ -198,7 +198,7 @@ class FitInterferometer(aa.FitInterferometer):
             dataset=self.interferometer,
             tracer=self.tracer,
             hyper_background_noise=self.hyper_background_noise,
-            use_hyper_scalings=self.use_hyper_scalings,
+            use_hyper_scaling=self.use_hyper_scaling,
             settings_pixelization=self.settings_pixelization,
             settings_inversion=settings_inversion,
             preloads=preloads,
