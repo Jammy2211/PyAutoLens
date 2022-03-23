@@ -30,7 +30,7 @@ copyright = "2020, James Nightingale, Richard Hayes"
 author = "James Nightingale, Richard Hayes"
 
 # The full version, including alpha/beta/rc tags
-release = "2021.10.14.1"
+release = "2022.03.18.2"
 master_doc = "index"
 
 

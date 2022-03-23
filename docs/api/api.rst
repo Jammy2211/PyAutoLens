@@ -19,7 +19,6 @@ Data Structures
    Grid1D
    Grid2D
    Grid2DIterate
-   Grid2DInterpolate
    Grid2DIrregular
    Kernel2D
    Convolver

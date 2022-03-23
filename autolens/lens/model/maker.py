@@ -99,11 +99,15 @@ class FitMaker:
 
         conf.instance["general"]["model"]["ignore_prior_limits"] = ignore_prior_limits
 
-        return self.fit_func(
+        fit = self.fit_func(
             instance=instance,
             preload_overwrite=Preloads(use_w_tilde=False),
             check_positions=False,
         )
+
+        fit.figure_of_merit
+
+        return fit
 
     def fit_random_instance_from(self) -> Union[FitImaging, FitInterferometer]:
         """
@@ -130,11 +134,16 @@ class FitMaker:
                     "ignore_prior_limits"
                 ] = ignore_prior_limits
 
-                return self.fit_func(
+                fit = self.fit_func(
                     instance=instance,
                     preload_overwrite=Preloads(use_w_tilde=False),
                     check_positions=False,
                 )
+
+                fit.figure_of_merit
+
+                return fit
+
             except Exception:
                 pass
 

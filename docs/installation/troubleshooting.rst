@@ -26,7 +26,7 @@ This means that ``llvmlite`` and ``numba`` are already installed, which you can 
    pip show llvmlite
    pip show numba
 
-**PyAutoLens** works fine across many versions of lvvmlite and numba, so you should be ok to circumvent this error by
+**PyAutoLens** works fine across many versions of llvmlite and numba, so you should be ok to circumvent this error by
 simply not reinstalling these libraries when you install **PyAutoLens**:
 
 .. code-block:: bash

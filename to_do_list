@@ -1,0 +1,36 @@
+__Tasks__
+
+- Build Server: Sort Authentification issues.
+- Logging: DISPLAY EVERYTHING (PSF SIZE, IMAGER SIZE, MASK STUFF, IT WILL STOP BUGS).
+- GUI code is horrific, clean up, CHECK IF INUT IS SCALED OR PIXELS.
+
+
+__Features__
+
+- Automated check of deflection angles against integration during lens modeling.
+- DM many subhalo sims.
+
+
+__Point Source__
+
+- Point source visusliazation, RMS of point source.
+
+
+__Documentation__
+
+- Search chaining readthedocs.
+- add https://arxiv.org/abs/2012.04665 where applicable.
+- FAQ My reconstruction is a demagnified solution.
+
+__Refactor__
+
+- Revert to SciPy quad, remove pyquad not installed.
+
+
+__Bugs__
+
+- No positions analysis bug, need to remove copy or something.
+- Point source raises exception if solver grid smaller than data in analysi class.
+- Sanity checks on datastructures wherer possible (e.g. output grid index is 2).
+- Sanity checks on things like mapper uitil, inversion util, where a user may input an incorrect array (e.g. an unasked
+noise map) and not get an error as an index limit is never hit.
