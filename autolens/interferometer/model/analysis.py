@@ -240,6 +240,7 @@ class AnalysisInterferometer(AnalysisDataset):
                 instance=instance
             ).figure_of_merit
         except (
+            PixelizationException,
             exc.PixelizationException,
             exc.InversionException,
             exc.GridException,

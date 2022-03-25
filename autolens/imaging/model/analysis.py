@@ -374,6 +374,7 @@ class AnalysisImaging(AnalysisDataset):
                     preloads=self.preloads,
                 ).log_evidence
             except (
+                PixelizationException,
                 exc.PixelizationException,
                 exc.InversionException,
                 exc.GridException,
