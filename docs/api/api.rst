@@ -26,9 +26,9 @@ Data Structures
    TransformerDFT
    TransformerNUFFT
 
---------
-Datasets
---------
+-------
+Imaging
+-------
 
 .. currentmodule:: autolens
 
@@ -38,19 +38,21 @@ Datasets
    Imaging
    SettingsImaging
    SimulatorImaging
-   SettingsInterferometer
-   Interferometer
-   SimulatorInterferometer
+   FitImaging
+   AnalysisImaging
 
--------
-Fitting
--------
+--------------
+Interferometer
+--------------
 
 .. autosummary::
    :toctree: generated/
 
-   FitImaging
+   SettingsInterferometer
+   Interferometer
+   SimulatorInterferometer
    FitInterferometer
+   AnalysisInterferometer
 
 ---------------------
 Point Source Modeling
@@ -64,6 +66,35 @@ Point Source Modeling
    FitPositionsImage
    FitFluxes
    PointSolver
+   AnalysisPoint
+
+-------------
+Lens Modeling
+-------------
+
+.. currentmodule:: autolens
+
+**Setup:**
+
+.. autosummary::
+   :toctree: generated/
+
+    SetupHyper
+    Preloads
+
+**Searches:**
+
+.. currentmodule:: autofit
+
+.. autosummary::
+   :toctree: generated/
+
+   DynestyStatic
+   DynestyDynamic
+   Emcee
+   PySwarmsLocal
+   PySwarmsGlobal
+
 
 --------------
 Light Profiles
@@ -324,33 +355,3 @@ Plots
     ParallelOverscanPlot
     SerialPrescanPlot
     SerialOverscanPlot
-
--------------
-Lens Modeling
--------------
-
-.. currentmodule:: autolens
-
-**Setup:**
-
-.. autosummary::
-   :toctree: generated/
-
-    AnalysisImaging
-    AnalysisInterferometer
-    AnalysisPoint
-    SetupHyper
-    Preloads
-
-**Searches:**
-
-.. currentmodule:: autofit
-
-.. autosummary::
-   :toctree: generated/
-
-   DynestyStatic
-   DynestyDynamic
-   Emcee
-   PySwarmsLocal
-   PySwarmsGlobal

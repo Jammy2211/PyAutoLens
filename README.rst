@@ -99,9 +99,8 @@ lens ``Galaxy`` with an ``EllIsothermal`` ``MassProfile`` lenses a background so
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
     tracer_plotter.figures_2d(image=True)
 
-With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates
-a simple analysis which fits the lens galaxy's mass with an ``EllIsothermal`` and the source galaxy's light
-with an ``EllSersic``.
+With **PyAutoLens**, you can begin modeling a lens in minutes. The example below demonstrates a simple analysis which
+fits the lens galaxy's mass with an ``EllIsothermal`` and the source galaxy's light with an ``EllSersic``.
 
 .. code-block:: python
 

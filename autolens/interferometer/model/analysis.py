@@ -8,6 +8,8 @@ import autofit as af
 import autoarray as aa
 import autogalaxy as ag
 
+from autoarray.exc import PixelizationException
+
 from autolens.lens.model.analysis import AnalysisDataset
 from autolens.lens.model.preloads import Preloads
 from autolens.lens.ray_tracing import Tracer
@@ -405,6 +407,7 @@ class AnalysisInterferometer(AnalysisDataset):
                     preloads=self.preloads,
                 ).log_evidence
             except (
+                PixelizationException,
                 exc.PixelizationException,
                 exc.InversionException,
                 exc.GridException,

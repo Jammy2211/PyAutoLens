@@ -77,9 +77,7 @@ def test__tracer_for_instance__subhalo_redshift_rescale_used(analysis_imaging_7x
     assert tracer.galaxies[1].mass.centre == pytest.approx((-0.19959, -0.39919), 1.0e-4)
 
 
-def test__use_border__determines_if_border_pixel_relocation_is_used(
-    self, masked_imaging_7x7
-):
+def test__use_border__determines_if_border_pixel_relocation_is_used(masked_imaging_7x7):
 
     model = af.Collection(
         galaxies=af.Collection(
@@ -136,9 +134,7 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(
     )
 
 
-def test__analysis_no_positions__removes_positions_and_threshold(
-    self, masked_imaging_7x7
-):
+def test__analysis_no_positions__removes_positions_and_threshold(masked_imaging_7x7):
 
     analysis = al.AnalysisImaging(
         dataset=masked_imaging_7x7,
@@ -150,7 +146,7 @@ def test__analysis_no_positions__removes_positions_and_threshold(
     assert analysis.no_positions.settings_lens.positions_threshold == None
 
 
-def test__check_preloads(self, masked_imaging_7x7):
+def test__check_preloads(masked_imaging_7x7):
 
     conf.instance["general"]["test"]["check_preloads"] = True
 
