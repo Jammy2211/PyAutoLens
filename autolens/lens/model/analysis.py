@@ -23,6 +23,8 @@ from autolens.lens.model.settings import SettingsLens
 
 from autolens.lens import ray_tracing_util
 
+from autolens import exc
+
 logger = logging.getLogger(__name__)
 
 logger.setLevel(level="INFO")
@@ -199,7 +201,10 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             self.preloads = Preloads(failed=True)
         else:
             self.preloads = Preloads.setup_all_via_fits(fit_0=fit_0, fit_1=fit_1)
-            self.preloads.check_via_fit(fit=fit_0)
+            try:
+                self.preloads.check_via_fit(fit=fit_0)
+            except (aa.exc.InversionException, exc.InversionException):
+                pass
 
         self.preloads.output_info_to_summary(file_path=paths.profile_path)
 

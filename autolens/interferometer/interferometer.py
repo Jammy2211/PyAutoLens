@@ -45,11 +45,11 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
         Parameters
         ----------
         name
-        image : np.ndarray
+        image
             The image before simulating (e.g. the lens and source galaxies before optics blurring and Imaging read-out).
         pixel_scales
             The scale of each pixel in arc seconds
-        exposure_time_map : np.ndarray
+        exposure_time_map
             An arrays representing the effective exposure time of each pixel.
         psf: PSF
             An arrays describing the PSF the simulated image is blurred with.

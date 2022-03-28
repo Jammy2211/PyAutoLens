@@ -464,7 +464,7 @@ def grid_buffed_around_coordinate_from(
 
     Parameters
     ----------
-    grid_slim : np.ndarray
+    grid_slim
         The irregular 1D grid of (y,x) coordinates over which a square uniform grid is overlaid.
     pixel_scales : (float, float)
         The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
@@ -559,7 +559,7 @@ def grid_square_neighbors_1d_from(shape_slim):
 
     Parameters
     ----------
-    shape_slim : np.ndarray
+    shape_slim
         The irregular 1D grid of (y,x) coordinates over which a square uniform grid is overlaid.
     pixel_scales : (float, float)
         The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
@@ -603,13 +603,13 @@ def grid_peaks_from(distance_1d, grid_slim, neighbors, has_neighbors):
 
     Parameters
     ----------
-    distance_1d : np.ndarray
+    distance_1d
         The distance of every (y,x) grid coordinate to the centre of the source in the source-plane.
-    grid_slim : np.ndarray
+    grid_slim
         The irregular 1D grid of (y,x) coordinates whose distances to the source are compared.
-    neighbors : np.ndarray
+    neighbors
         A 2D array of shape [pixels, 8] giving the 1D index of every grid pixel to its 8 neighboring pixels.
-    has_neighbors : np.ndarray
+    has_neighbors
         An array of bools, where `True` means a pixel has 8 neighbors and `False` means it has less than 8 and is not
         compared to the source distance.
     """
