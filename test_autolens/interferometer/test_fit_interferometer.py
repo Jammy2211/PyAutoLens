@@ -66,7 +66,11 @@ def test__fit_figure_of_merit(interferometer_7):
 
     tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-    fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
+    fit = al.FitInterferometer(
+        dataset=interferometer_7,
+        tracer=tracer,
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
+    )
 
     assert (fit.noise_map.slim == np.full(fill_value=2.0 + 2.0j, shape=(7,))).all()
     assert fit.log_evidence == pytest.approx(-66.90612, 1e-4)
@@ -109,6 +113,7 @@ def test__fit_figure_of_merit__include_hyper_methods(interferometer_7):
         dataset=interferometer_7,
         tracer=tracer,
         hyper_background_noise=hyper_background_noise,
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert (fit.noise_map.slim == np.full(fill_value=3.0 + 3.0j, shape=(7,))).all()
@@ -120,6 +125,7 @@ def test__fit_figure_of_merit__include_hyper_methods(interferometer_7):
         tracer=tracer,
         hyper_background_noise=hyper_background_noise,
         use_hyper_scaling=False,
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit.noise_map == pytest.approx(interferometer_7.noise_map, 1.0e-4)
@@ -197,7 +203,11 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-    fit = al.FitInterferometer(dataset=interferometer_7_grid, tracer=tracer)
+    fit = al.FitInterferometer(
+        dataset=interferometer_7_grid,
+        tracer=tracer,
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
+    )
 
     traced_grids_of_planes = tracer.traced_grid_list_from(
         grid=interferometer_7_grid.grid
@@ -310,7 +320,11 @@ def test___galaxy_model_visibilities_dict(interferometer_7, interferometer_7_gri
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-    fit = al.FitInterferometer(dataset=interferometer_7_grid, tracer=tracer)
+    fit = al.FitInterferometer(
+        dataset=interferometer_7_grid,
+        tracer=tracer,
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
+    )
 
     traced_grids_of_planes = tracer.traced_grid_list_from(
         grid=interferometer_7_grid.grid
