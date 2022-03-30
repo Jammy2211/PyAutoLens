@@ -48,7 +48,7 @@ setup(
         "Programming Language :: Python :: 3.8",
     ],
     keywords="cli",
-    packages=find_packages(exclude=["docs"]),
+    packages=find_packages(exclude=["docs", "test_autolens", "test_autolens*"]),
     install_requires=requirements,
     setup_requires=["pytest-runner"],
     tests_require=["pytest"],

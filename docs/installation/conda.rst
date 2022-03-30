@@ -6,6 +6,12 @@ Installation with conda
 Installation via a conda environment circumvents compatibility issues when installing certain libraries. This guide
 assumes you have a working installation of `conda <https://conda.io/miniconda.html>`_.
 
+First, update conda:
+
+.. code-block:: bash
+
+    conda update -n base -c defaults conda
+
 First, create a conda environment (we name this ``autolens`` to signify it is for the **PyAutoLens** install):
 
 The command below creates this environment with some of the bigger package requirements, the rest will be installed
@@ -13,7 +19,7 @@ with **PyAutoFit** via pip:
 
 .. code-block:: bash
 
-    conda create -n autolens astropy numba numpy scikit-image scikit-learn scipy
+    conda create -n autolens numba astropy scikit-image scikit-learn scipy
 
 Activate the conda environment (you will have to do this every time you want to run **PyAutoLens**):
 
@@ -28,13 +34,11 @@ We upgrade pip to ensure certain libraries install:
     pip install --upgrade pip
 
 The latest version of **PyAutoLens** is installed via pip as follows (specifying the version as shown below ensures
-the installation has clean dependencies, and we assume ``numba`` and ``llvmlite`` were successfully installed when
-creating the ``conda`` environment above,
-see `here <https://pyautolens.readthedocs.io/en/latest/installation/troubleshooting.html>`_ for more details):
+the installation has clean dependencies):
 
 .. code-block:: bash
 
-    pip install autolens==2022.03.30.1 --ignore-installed numba llvmlite
+    pip install autolens==2022.03.30.1
 
 You may get warnings which state something like:
 
