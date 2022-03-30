@@ -185,6 +185,7 @@ class TestAnalysisInterferometer:
             dataset=interferometer_7,
             settings_lens=al.SettingsLens(stochastic_samples=2),
             hyper_dataset_result=result,
+            settings_inversion=al.SettingsInversion(use_w_tilde=False),
         )
 
         galaxies = af.ModelInstance()
