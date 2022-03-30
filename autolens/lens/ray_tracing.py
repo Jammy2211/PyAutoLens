@@ -137,15 +137,10 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         return tracer_dict
 
     @staticmethod
-    def from_dict(profile_dict):
-        profile_dict["cosmology"] = getattr(cosmo, profile_dict["cosmology"])
-        profile_dict["planes"] = list(map(Plane.from_dict, profile_dict["planes"]))
-        return Dictable.from_dict(profile_dict)
-
-    def output_to_json(self, file_path: str):
-
-        with open(file_path, "w+") as f:
-            json.dump(self.dict(), f, indent=4)
+    def from_dict(cls_dict):
+        cls_dict["cosmology"] = getattr(cosmo, cls_dict["cosmology"])
+        cls_dict["planes"] = list(map(Plane.from_dict, cls_dict["planes"]))
+        return Dictable.from_dict(cls_dict)
 
     @property
     def galaxies(self) -> List[ag.Galaxy]:

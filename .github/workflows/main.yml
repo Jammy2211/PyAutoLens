@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]  # 3.9 not supported on numba as of 2020-02-11
+        python-version: [3.6, 3.7, 3.8, 3.9, '3.10']  # 3.9 not supported on numba as of 2020-02-11
     steps:
     - name: Checkout PyAutoConf
       uses: actions/checkout@v2
@@ -71,7 +71,6 @@ jobs:
         pip3 install -r PyAutoArray/requirements.txt
         pip3 install -r PyAutoArray/optional_requirements.txt
         pip3 install -r PyAutoGalaxy/requirements.txt
-        pip3 install -r PyAutoGalaxy/optional_requirements.txt
         pip3 install -r PyAutoLens/requirements.txt
     - name: Run tests
       run: |

@@ -3,7 +3,7 @@ __Tasks__
 - Build Server: Sort Authentification issues.
 - Logging: DISPLAY EVERYTHING (PSF SIZE, IMAGER SIZE, MASK STUFF, IT WILL STOP BUGS).
 - GUI code is horrific, clean up, CHECK IF INUT IS SCALED OR PIXELS.
-
+- Simulating lenses is slow because the iterate grid is used for all visualization. Make a "sub_size_1" grid property.
 
 __Features__
 

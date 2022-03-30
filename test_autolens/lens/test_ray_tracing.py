@@ -1674,8 +1674,9 @@ class TestAbstractTracerData:
             visibilities=interferometer_7.visibilities,
             noise_map=interferometer_7.noise_map,
             transformer=interferometer_7.transformer,
-            w_tilde=interferometer_7.w_tilde,
+            w_tilde=None,
             settings_pixelization=al.SettingsPixelization(use_border=False),
+            settings_inversion=al.SettingsInversion(use_w_tilde=False),
         )
 
         assert inversion.reconstruction[0] == pytest.approx(-0.2662, 1.0e-4)
@@ -2485,3 +2486,26 @@ class TestDecorators:
         deflections_sub_8 = galaxy.deflections_yx_2d_from(grid=grid_sub_8).binned
 
         assert deflections[4, 0] == deflections_sub_8[4, 0]
+
+
+class TestDictable:
+    def test__output_to_and_load_from_json(self):
+
+        json_file = path.join(
+            "{}".format(path.dirname(path.realpath(__file__))), "files", "tracer.json"
+        )
+
+        g0 = al.Galaxy(
+            redshift=0.5, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+        )
+        g1 = al.Galaxy(redshift=1.0)
+
+        tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+        tracer.output_to_json(file_path=json_file)
+
+        tracer_from_json = al.Tracer.from_json(file_path=json_file)
+
+        assert tracer_from_json.galaxies[0].redshift == 0.5
+        assert tracer_from_json.galaxies[1].redshift == 1.0
+        assert tracer_from_json.galaxies[0].mass_profile.einstein_radius == 1.0

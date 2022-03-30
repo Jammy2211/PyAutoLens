@@ -45,6 +45,7 @@ from autogalaxy.analysis.clump_model import ClumpModelDisabled
 from autogalaxy.quantity.dataset_quantity import DatasetQuantity
 from autogalaxy.hyper import hyper_data
 from autogalaxy.plane.plane import Plane
+from autogalaxy.profiles.geometry_profiles import EllProfile
 from autogalaxy.profiles import (
     point_sources as ps,
     light_profiles as lp,

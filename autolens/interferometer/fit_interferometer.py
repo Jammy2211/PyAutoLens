@@ -87,12 +87,17 @@ class FitInterferometer(aa.FitInterferometer):
         """
         if self.tracer.has_pixelization:
 
+            if self.settings_inversion.use_w_tilde:
+                w_tilde = self.dataset.w_tilde
+            else:
+                w_tilde = None
+
             return self.tracer.inversion_interferometer_from(
                 grid=self.dataset.grid_inversion,
                 visibilities=self.profile_subtracted_visibilities,
                 noise_map=self.noise_map,
                 transformer=self.dataset.transformer,
-                w_tilde=self.dataset.w_tilde,
+                w_tilde=w_tilde,
                 settings_pixelization=self.settings_pixelization,
                 settings_inversion=self.settings_inversion,
                 preloads=self.preloads,
