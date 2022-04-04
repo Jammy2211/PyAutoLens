@@ -111,9 +111,7 @@ class AnalysisImaging(AnalysisDataset):
         """
 
         try:
-            fom = self.fit_imaging_via_instance_from(instance=instance).figure_of_merit
-            print(fom)
-            return fom
+            return self.fit_imaging_via_instance_from(instance=instance).figure_of_merit
         except (
             PixelizationException,
             exc.PixelizationException,
@@ -165,14 +163,10 @@ class AnalysisImaging(AnalysisDataset):
             instance=instance, profiling_dict=profiling_dict
         )
 
-        print("Before POs")
-
         if check_positions:
             self.settings_lens.check_positions_trace_within_threshold_via_tracer(
                 tracer=tracer, positions=self.positions
             )
-
-        print("After Pos")
 
         hyper_image_sky = self.hyper_image_sky_via_instance_from(instance=instance)
 
