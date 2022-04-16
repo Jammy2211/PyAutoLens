@@ -1,10 +1,10 @@
 from os import path
 
-from autolens.lens.model.visualizer import Visualizer
+from autolens.analysis.visualizer import Visualizer
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.imaging.plot.fit_imaging_plotters import FitImagingPlotter
 
-from autolens.lens.model.visualizer import plot_setting
+from autolens.analysis.visualizer import plot_setting
 
 
 class VisualizerImaging(Visualizer):

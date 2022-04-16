@@ -6,7 +6,7 @@ from autoconf import cached_property
 import autoarray as aa
 import autogalaxy as ag
 
-from autolens.lens.model.preloads import Preloads
+from autolens.analysis.preloads import Preloads
 
 
 class FitInterferometer(aa.FitInterferometer):

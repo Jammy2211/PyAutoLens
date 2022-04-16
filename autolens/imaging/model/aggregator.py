@@ -7,10 +7,10 @@ import autogalaxy as ag
 from autogalaxy.imaging.model.aggregator import _imaging_from
 
 from autolens.imaging.fit_imaging import FitImaging
-from autolens.lens.model.preloads import Preloads
-from autolens.lens.model.aggregator.aggregator import AbstractAgg
+from autolens.analysis.preloads import Preloads
+from autolens.analysis.aggregator.aggregator import AbstractAgg
 
-from autolens.lens.model.aggregator.aggregator import _tracer_from
+from autolens.analysis.aggregator.aggregator import _tracer_from
 
 
 def _fit_imaging_from(

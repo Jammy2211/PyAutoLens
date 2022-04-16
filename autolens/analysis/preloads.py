@@ -5,13 +5,14 @@ from typing import Optional, List
 
 import autofit as af
 import autoarray as aa
+import autogalaxy as ag
 
 logger = logging.getLogger(__name__)
 
 logger.setLevel(level="INFO")
 
 
-class Preloads(aa.Preloads):
+class Preloads(ag.Preloads):
     def __init__(
         self,
         w_tilde: Optional[aa.WTildeImaging] = None,
@@ -84,6 +85,7 @@ class Preloads(aa.Preloads):
         super().__init__(
             w_tilde=w_tilde,
             use_w_tilde=use_w_tilde,
+            blurred_image=blurred_image,
             relocated_grid=relocated_grid,
             sparse_image_plane_grid_pg_list=sparse_image_plane_grid_pg_list,
             linear_obj_list=linear_obj_list,
@@ -96,7 +98,6 @@ class Preloads(aa.Preloads):
             sparse_image_plane_grid_list=sparse_image_plane_grid_list,
         )
 
-        self.blurred_image = blurred_image
         self.traced_grids_of_planes_for_inversion = traced_grids_of_planes_for_inversion
         self.failed = failed
 
@@ -133,34 +134,6 @@ class Preloads(aa.Preloads):
         preloads.set_regularization_matrix_and_term(fit_0=fit_0, fit_1=fit_1)
 
         return preloads
-
-    def set_blurred_image(self, fit_0, fit_1):
-        """
-        If the `LightProfile`'s in a model are all fixed parameters their corresponding image and therefore PSF blurred
-        image do not change during the model fit and can therefore be preloaded.
-
-        This function compares the blurred image of two fit's corresponding to two model instances, and preloads
-        the blurred image if the blurred image of both fits are the same.
-
-        The preload is typically used though out search chaining pipelines, as it is common to fix the lens light for
-        the majority of model-fits.
-
-        Parameters
-        ----------
-        fit_0
-            The first fit corresponding to a model with a specific set of unit-values.
-        fit_1
-            The second fit corresponding to a model with a different set of unit-values.
-        """
-        self.blurred_image = None
-
-        if np.max(abs(fit_0.blurred_image - fit_1.blurred_image)) < 1e-8:
-
-            self.blurred_image = fit_0.blurred_image
-
-            logger.info(
-                "PRELOADS - Blurred image (e.g. the image of all light profiles) is preloaded for this model-fit."
-            )
 
     def set_traced_grids_of_planes_for_inversion(self, fit_0, fit_1):
         """
@@ -268,27 +241,6 @@ class Preloads(aa.Preloads):
                         logger.info(
                             "PRELOADS - Sparse image-plane grids of planes is preloaded for this model-fit."
                         )
-
-    def output_info_to_summary(self, file_path):
-
-        file_preloads = path.join(file_path, "preloads.summary")
-
-        if self.failed:
-
-            logger.info(
-                "PRELOADS - Preloading failed as models gave too many exceptions, preloading therefore "
-                "not used."
-            )
-
-            af.formatter.output_list_of_strings_to_file(
-                file=file_preloads, list_of_strings=["FAILED"]
-            )
-
-        else:
-
-            af.formatter.output_list_of_strings_to_file(
-                file=file_preloads, list_of_strings=self.info
-            )
 
     def reset_all(self):
         """

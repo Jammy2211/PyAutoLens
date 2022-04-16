@@ -5,7 +5,7 @@ import pytest
 import autofit as af
 import autolens as al
 
-from autolens.lens.model import result as res
+from autolens.analysis import result as res
 from autolens.imaging.model.result import ResultImaging
 
 directory = os.path.dirname(os.path.realpath(__file__))

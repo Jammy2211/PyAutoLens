@@ -10,13 +10,13 @@ import autogalaxy as ag
 
 from autoarray.exc import PixelizationException
 
-from autolens.lens.model.analysis import AnalysisDataset
-from autolens.lens.model.preloads import Preloads
+from autolens.analysis.analysis import AnalysisDataset
+from autolens.analysis.preloads import Preloads
 from autolens.lens.ray_tracing import Tracer
 from autolens.interferometer.model.result import ResultInterferometer
 from autolens.interferometer.model.visualizer import VisualizerInterferometer
 from autolens.interferometer.fit_interferometer import FitInterferometer
-from autolens.lens.model.settings import SettingsLens
+from autolens.analysis.settings import SettingsLens
 
 from autolens import exc
 

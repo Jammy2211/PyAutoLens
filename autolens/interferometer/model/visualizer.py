@@ -2,9 +2,9 @@ from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.interferometer.plot.fit_interferometer_plotters import (
     FitInterferometerPlotter,
 )
-from autolens.lens.model.visualizer import Visualizer
+from autolens.analysis.visualizer import Visualizer
 
-from autolens.lens.model.visualizer import plot_setting
+from autolens.analysis.visualizer import plot_setting
 
 
 class VisualizerInterferometer(Visualizer):

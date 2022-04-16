@@ -1,8 +1,8 @@
 import autoarray as aa
 
 from autolens.imaging.fit_imaging import FitImaging
-from autolens.lens.model.result import ResultDataset
-from autolens.lens.model.preloads import Preloads
+from autolens.analysis.result import ResultDataset
+from autolens.analysis.preloads import Preloads
 
 
 class ResultImaging(ResultDataset):

@@ -57,71 +57,127 @@ def clean(database_file, result_path):
         shutil.rmtree(result_path)
 
 
-class TestFitInterferometerAgg:
+# def test__fit_interferometer_generator_from_aggregator(
+#     interferometer_7, mask_2d_7x7, samples, model
+# ):
+#
+#     path_prefix = "aggregator_fit_interferometer_gen"
+#
+#     database_file = path.join(conf.instance.output_path, "fit_interferometer.sqlite")
+#     result_path = path.join(conf.instance.output_path, path_prefix)
+#
+#     clean(database_file=database_file, result_path=result_path)
+#
+#     search = al.m.MockSearch(samples=samples)
+#     search.paths = af.DirectoryPaths(path_prefix=path_prefix)
+#     analysis = al.AnalysisInterferometer(dataset=interferometer_7)
+#     search.fit(model=model, analysis=analysis)
+#
+#     agg = af.Aggregator.from_database(filename=database_file)
+#     agg.add_directory(directory=result_path)
+#
+#     fit_interferometer_agg = al.agg.FitImagingAgg(aggregator=agg)
+#     fit_interferometer_gen = fit_interferometer_agg.max_log_likelihood()
+#
+#     for fit_interferometer in fit_interferometer_gen:
+#         assert (fit_interferometer.visibilities == interferometer_7.visibilities).all()
+#         assert (fit_interferometer.interferometer.real_space_mask == mask_2d_7x7).all()
+#
+#     clean(database_file=database_file, result_path=result_path)
 
-    # def test__fit_interferometer_generator_from_aggregator(
-    #     interferometer_7, mask_2d_7x7, samples, model
-    # ):
-    #
-    #     path_prefix = "aggregator_fit_interferometer_gen"
-    #
-    #     database_file = path.join(conf.instance.output_path, "fit_interferometer.sqlite")
-    #     result_path = path.join(conf.instance.output_path, path_prefix)
-    #
-    #     clean(database_file=database_file, result_path=result_path)
-    #
-    #     search = al.m.MockSearch(samples=samples)
-    #     search.paths = af.DirectoryPaths(path_prefix=path_prefix)
-    #     analysis = al.AnalysisInterferometer(dataset=interferometer_7)
-    #     search.fit(model=model, analysis=analysis)
-    #
-    #     agg = af.Aggregator.from_database(filename=database_file)
-    #     agg.add_directory(directory=result_path)
-    #
-    #     fit_interferometer_agg = al.agg.FitImagingAgg(aggregator=agg)
-    #     fit_interferometer_gen = fit_interferometer_agg.max_log_likelihood()
-    #
-    #     for fit_interferometer in fit_interferometer_gen:
-    #         assert (fit_interferometer.visibilities == interferometer_7.visibilities).all()
-    #         assert (fit_interferometer.interferometer.real_space_mask == mask_2d_7x7).all()
-    #
-    #     clean(database_file=database_file, result_path=result_path)
+def test__fit_interferometer_randomly_drawn_via_pdf_gen_from(
+    interferometer_7, samples, model
+):
 
-    def test__fit_interferometer_randomly_drawn_via_pdf_gen_from(
-        self, interferometer_7, samples, model
-    ):
+    path_prefix = "aggregator_fit_interferometer_gen"
 
-        path_prefix = "aggregator_fit_interferometer_gen"
+    database_file = path.join(
+        conf.instance.output_path, "fit_interferometer.sqlite"
+    )
+    result_path = path.join(conf.instance.output_path, path_prefix)
 
-        database_file = path.join(
-            conf.instance.output_path, "fit_interferometer.sqlite"
-        )
-        result_path = path.join(conf.instance.output_path, path_prefix)
+    clean(database_file=database_file, result_path=result_path)
 
-        clean(database_file=database_file, result_path=result_path)
+    result = al.m.MockResult(model=model, samples=samples)
 
-        search = al.m.MockSearch(
-            samples=samples, result=al.m.MockResult(model=model, samples=samples)
-        )
-        search.paths = af.DirectoryPaths(path_prefix=path_prefix)
-        analysis = al.AnalysisInterferometer(dataset=interferometer_7)
-        search.fit(model=model, analysis=analysis)
+    search = al.m.MockSearch(
+        samples=samples, result=result
+    )
+    search.paths = af.DirectoryPaths(path_prefix=path_prefix)
+    analysis = al.AnalysisInterferometer(dataset=interferometer_7)
+    search.fit(model=model, analysis=analysis)
 
-        agg = af.Aggregator.from_database(filename=database_file)
-        agg.add_directory(directory=result_path)
+    agg = af.Aggregator.from_database(filename=database_file)
+    agg.add_directory(directory=result_path)
 
-        fit_interferometer_agg = al.agg.FitInterferometerAgg(aggregator=agg)
-        fit_interferometer_pdf_gen = fit_interferometer_agg.randomly_drawn_via_pdf_gen_from(
-            total_samples=2
-        )
+    fit_interferometer_agg = al.agg.FitInterferometerAgg(aggregator=agg)
+    fit_interferometer_pdf_gen = fit_interferometer_agg.randomly_drawn_via_pdf_gen_from(
+        total_samples=2
+    )
 
-        i = 0
+    i = 0
 
-        for fit_interferometer_gen in fit_interferometer_pdf_gen:
+    for fit_interferometer_gen in fit_interferometer_pdf_gen:
 
-            for fit_interferometer in fit_interferometer_gen:
-                i += 1
+        for fit_interferometer in fit_interferometer_gen:
+            i += 1
 
+            assert fit_interferometer.tracer.galaxies[0].redshift == 0.5
+            assert fit_interferometer.tracer.galaxies[0].light.centre == (
+                10.0,
+                10.0,
+            )
+            assert fit_interferometer.tracer.galaxies[1].redshift == 1.0
+
+    assert i == 2
+
+    clean(database_file=database_file, result_path=result_path)
+
+def test__fit_interferometer_all_above_weight_gen(
+    interferometer_7, samples, model
+):
+
+    path_prefix = "aggregator_fit_interferometer_gen"
+
+    database_file = path.join(
+        conf.instance.output_path, "fit_interferometer.sqlite"
+    )
+    result_path = path.join(conf.instance.output_path, path_prefix)
+
+    clean(database_file=database_file, result_path=result_path)
+
+    search = al.m.MockSearch(
+        samples=samples, result=al.m.MockResult(model=model, samples=samples)
+    )
+    search.paths = af.DirectoryPaths(path_prefix=path_prefix)
+    analysis = al.AnalysisInterferometer(dataset=interferometer_7)
+    search.fit(model=model, analysis=analysis)
+
+    agg = af.Aggregator.from_database(filename=database_file)
+    agg.add_directory(directory=result_path)
+
+    fit_interferometer_agg = al.agg.FitInterferometerAgg(aggregator=agg)
+    fit_interferometer_pdf_gen = fit_interferometer_agg.all_above_weight_gen_from(
+        minimum_weight=-1.0
+    )
+
+    i = 0
+
+    for fit_interferometer_gen in fit_interferometer_pdf_gen:
+
+        for fit_interferometer in fit_interferometer_gen:
+
+            i += 1
+
+            if i == 1:
+                assert fit_interferometer.tracer.galaxies[0].redshift == 0.5
+                assert fit_interferometer.tracer.galaxies[0].light.centre == (
+                    1.0,
+                    1.0,
+                )
+                assert fit_interferometer.tracer.galaxies[1].redshift == 1.0
+
+            if i == 2:
                 assert fit_interferometer.tracer.galaxies[0].redshift == 0.5
                 assert fit_interferometer.tracer.galaxies[0].light.centre == (
                     10.0,
@@ -129,62 +185,6 @@ class TestFitInterferometerAgg:
                 )
                 assert fit_interferometer.tracer.galaxies[1].redshift == 1.0
 
-        assert i == 2
+    assert i == 2
 
-        clean(database_file=database_file, result_path=result_path)
-
-    def test__fit_interferometer_all_above_weight_gen(
-        self, interferometer_7, samples, model
-    ):
-
-        path_prefix = "aggregator_fit_interferometer_gen"
-
-        database_file = path.join(
-            conf.instance.output_path, "fit_interferometer.sqlite"
-        )
-        result_path = path.join(conf.instance.output_path, path_prefix)
-
-        clean(database_file=database_file, result_path=result_path)
-
-        search = al.m.MockSearch(
-            samples=samples, result=al.m.MockResult(model=model, samples=samples)
-        )
-        search.paths = af.DirectoryPaths(path_prefix=path_prefix)
-        analysis = al.AnalysisInterferometer(dataset=interferometer_7)
-        search.fit(model=model, analysis=analysis)
-
-        agg = af.Aggregator.from_database(filename=database_file)
-        agg.add_directory(directory=result_path)
-
-        fit_interferometer_agg = al.agg.FitInterferometerAgg(aggregator=agg)
-        fit_interferometer_pdf_gen = fit_interferometer_agg.all_above_weight_gen_from(
-            minimum_weight=-1.0
-        )
-
-        i = 0
-
-        for fit_interferometer_gen in fit_interferometer_pdf_gen:
-
-            for fit_interferometer in fit_interferometer_gen:
-
-                i += 1
-
-                if i == 1:
-                    assert fit_interferometer.tracer.galaxies[0].redshift == 0.5
-                    assert fit_interferometer.tracer.galaxies[0].light.centre == (
-                        1.0,
-                        1.0,
-                    )
-                    assert fit_interferometer.tracer.galaxies[1].redshift == 1.0
-
-                if i == 2:
-                    assert fit_interferometer.tracer.galaxies[0].redshift == 0.5
-                    assert fit_interferometer.tracer.galaxies[0].light.centre == (
-                        10.0,
-                        10.0,
-                    )
-                    assert fit_interferometer.tracer.galaxies[1].redshift == 1.0
-
-        assert i == 2
-
-        clean(database_file=database_file, result_path=result_path)
+    clean(database_file=database_file, result_path=result_path)

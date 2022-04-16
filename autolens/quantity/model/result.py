@@ -2,7 +2,7 @@ import autoarray as aa
 import autogalaxy as ag
 
 from autolens.lens.ray_tracing import Tracer
-from autolens.lens.model.result import Result
+from autolens.analysis.result import Result
 
 
 class ResultQuantity(Result):

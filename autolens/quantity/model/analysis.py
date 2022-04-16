@@ -5,9 +5,9 @@ import autogalaxy as ag
 
 from autogalaxy.quantity.model.visualizer import VisualizerQuantity
 
-from autolens.lens.model.visualizer import Visualizer
-from autolens.lens.model.analysis import AnalysisLensing
-from autolens.lens.model.settings import SettingsLens
+from autolens.analysis.visualizer import Visualizer
+from autolens.analysis.analysis import AnalysisLensing
+from autolens.analysis.settings import SettingsLens
 from autogalaxy.quantity.plot.fit_quantity_plotters import FitQuantityPlotter
 from autolens.quantity.model.result import ResultQuantity
 from autolens.quantity.fit_quantity import FitQuantity

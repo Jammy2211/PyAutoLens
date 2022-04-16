@@ -38,6 +38,8 @@ from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
+from autogalaxy.gui.clicker import Clicker
+from autogalaxy.gui.scribbler import Scribbler
 from autogalaxy.galaxy.galaxy import Galaxy, HyperGalaxy, Redshift
 from autogalaxy.analysis.clump_model import ClumpModel
 from autogalaxy.analysis.clump_model import ClumpModelDisabled
@@ -61,12 +63,12 @@ from autogalaxy.quantity.dataset_quantity import DatasetQuantity
 from autogalaxy import convert
 
 from . import plot
-from .lens.model import aggregator as agg
+from .analysis import aggregator as agg
 from .lens import subhalo
-from .lens.model.settings import SettingsLens
+from .analysis.settings import SettingsLens
 from .lens.ray_tracing import Tracer
-from .lens.model.preloads import Preloads
-from .lens.model.setup import SetupHyper
+from .analysis.preloads import Preloads
+from .analysis.setup import SetupHyper
 from .imaging.imaging import SimulatorImaging
 from .imaging.fit_imaging import FitImaging
 from .imaging.model.analysis import AnalysisImaging

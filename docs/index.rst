@@ -220,8 +220,9 @@ strong gravitational lensing with **PyAutoLens**.
 
    general/workspace
    general/configs
-   general/papers
+   general/likelihood_function
    general/citations
+   general/papers
    general/credits
 
 .. toctree::

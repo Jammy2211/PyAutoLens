@@ -8,13 +8,12 @@ from os import path
 
 from autoconf import conf
 import autofit as af
-import autoarray as aa
 import autogalaxy as ag
 
 from autoarray.exc import PixelizationException
 
-from autolens.lens.model.analysis import AnalysisDataset
-from autolens.lens.model.preloads import Preloads
+from autolens.analysis.analysis import AnalysisDataset
+from autolens.analysis.preloads import Preloads
 from autolens.lens.ray_tracing import Tracer
 from autolens.imaging.model.result import ResultImaging
 from autolens.imaging.model.visualizer import VisualizerImaging
@@ -61,10 +60,6 @@ class AnalysisImaging(AnalysisDataset):
             visualizer.visualize_hyper_images(
                 hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
                 hyper_model_image=self.hyper_model_image,
-            )
-
-            logger.info(
-                "PRELOADS - Setting up preloads, may take a few minutes for fits using an inversion."
             )
 
             self.set_preloads(paths=paths, model=model)
