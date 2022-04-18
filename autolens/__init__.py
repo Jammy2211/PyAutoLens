@@ -63,7 +63,7 @@ from autogalaxy.quantity.dataset_quantity import DatasetQuantity
 from autogalaxy import convert
 
 from . import plot
-from .analysis import aggregator as agg
+from . import aggregator as agg
 from .lens import subhalo
 from .analysis.settings import SettingsLens
 from .lens.ray_tracing import Tracer

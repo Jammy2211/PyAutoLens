@@ -253,4 +253,5 @@ strong gravitational lensing with **PyAutoLens**.
    advanced/database
    advanced/chaining
    advanced/slam
+   advanced/graphical
    advanced/hyper_mode

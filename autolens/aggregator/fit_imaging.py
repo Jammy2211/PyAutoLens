@@ -4,13 +4,12 @@ import autofit as af
 import autoarray as aa
 import autogalaxy as ag
 
-from autogalaxy.imaging.model.aggregator import _imaging_from
+from autogalaxy.aggregator.imaging import _imaging_from
+from autogalaxy.aggregator.abstract import AbstractAgg
 
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.analysis.preloads import Preloads
-from autolens.analysis.aggregator.aggregator import AbstractAgg
-
-from autolens.analysis.aggregator.aggregator import _tracer_from
+from autolens.aggregator.tracer import _tracer_from
 
 
 def _fit_imaging_from(

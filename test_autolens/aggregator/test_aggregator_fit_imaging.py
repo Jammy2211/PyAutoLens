@@ -84,6 +84,7 @@ def clean(database_file, result_path):
 #     clean(database_file=database_file, result_path=result_path)
 #
 
+
 def test__fit_imaging_randomly_drawn_via_pdf_gen_from(
     masked_imaging_7x7, samples, model
 ):
@@ -126,9 +127,8 @@ def test__fit_imaging_randomly_drawn_via_pdf_gen_from(
 
     clean(database_file=database_file, result_path=result_path)
 
-def test__fit_imaging_all_above_weight_gen(
-    masked_imaging_7x7, samples, model
-):
+
+def test__fit_imaging_all_above_weight_gen(masked_imaging_7x7, samples, model):
 
     path_prefix = "aggregator_fit_imaging_gen"
 
@@ -148,9 +148,7 @@ def test__fit_imaging_all_above_weight_gen(
     agg.add_directory(directory=result_path)
 
     fit_imaging_agg = al.agg.FitImagingAgg(aggregator=agg)
-    fit_imaging_pdf_gen = fit_imaging_agg.all_above_weight_gen_from(
-        minimum_weight=-1.0
-    )
+    fit_imaging_pdf_gen = fit_imaging_agg.all_above_weight_gen_from(minimum_weight=-1.0)
 
     i = 0
 

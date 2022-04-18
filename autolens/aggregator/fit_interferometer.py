@@ -4,13 +4,13 @@ import autofit as af
 import autoarray as aa
 import autogalaxy as ag
 
-from autogalaxy.interferometer.model.aggregator import _interferometer_from
+from autogalaxy.aggregator.interferometer import _interferometer_from
+from autogalaxy.aggregator.abstract import AbstractAgg
 
 from autolens.interferometer.fit_interferometer import FitInterferometer
-from autolens.analysis.aggregator.aggregator import AbstractAgg
 from autolens.analysis.preloads import Preloads
 
-from autolens.analysis.aggregator.aggregator import _tracer_from
+from autolens.aggregator.tracer import _tracer_from
 
 
 def _fit_interferometer_from(

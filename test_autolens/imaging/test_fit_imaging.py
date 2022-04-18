@@ -563,7 +563,7 @@ def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur):
 
     fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
-    fit.subtracted_images_of_planes_list # Fixes error where nan appears, weird.
+    fit.subtracted_images_of_planes_list  # Fixes error where nan appears, weird.
 
     assert fit.subtracted_images_of_planes_list[0].slim[0] == -4.0 or np.nan
     assert fit.subtracted_images_of_planes_list[1].slim[0] == -3.0 or np.nan

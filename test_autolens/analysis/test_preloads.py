@@ -6,7 +6,6 @@ import autofit as af
 import autolens as al
 
 
-
 def test__set_traced_grids_of_planes():
 
     # traced grids is None so no Preloading.

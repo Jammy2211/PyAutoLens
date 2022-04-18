@@ -470,9 +470,12 @@ class AnalysisInterferometer(AnalysisDataset):
             galaxies=fit.tracer.galaxies, grid=fit.grid, during_analysis=during_analysis
         )
         if fit.inversion is not None:
-            visualizer.visualize_inversion(
-                inversion=fit.inversion, during_analysis=during_analysis
-            )
+            try:
+                visualizer.visualize_inversion(
+                    inversion=fit.inversion, during_analysis=during_analysis
+                )
+            except IndexError:
+                pass
 
         visualizer.visualize_contribution_maps(tracer=fit.tracer)
 

@@ -12,6 +12,7 @@ import autoarray as aa
 
 from autogalaxy.analysis.analysis import AnalysisDataset as AgAnalysisDataset
 
+from autolens.analysis.maker import FitMaker
 from autolens.analysis.preloads import Preloads
 
 
@@ -162,11 +163,15 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
         self.settings_lens = settings_lens or SettingsLens()
 
-        self.preloads = Preloads()
+        self.preloads = self.preloads_cls()
 
     @property
     def preloads_cls(self):
         return Preloads
+
+    @property
+    def fit_maker_cls(self):
+        return FitMaker
 
     def log_likelihood_cap_from(
         self, stochastic_log_likelihoods_json_file: str
@@ -273,5 +278,3 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         analysis.settings_lens.positions_threshold = None
 
         return analysis
-
-
