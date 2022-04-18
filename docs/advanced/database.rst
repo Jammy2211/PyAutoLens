@@ -138,4 +138,4 @@ aware that one can easily start generating thousands or *millions* of model-fits
 large library of results other than the database!
 
 A complete description of the database is given in
-the `database folder on the autolens_workspace <https://github.com/Jammy2211/autolens_workspace/tree/release/notebooks/database>`_.
+the `database folder on the autolens_workspace <https://github.com/Jammy2211/autolens_workspace/tree/release/notebooks/results/database>`_.

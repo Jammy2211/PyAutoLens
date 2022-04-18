@@ -4,8 +4,10 @@ Interferometry
 ==============
 
 Alongside CCD imaging data, **PyAutoLens** supports the modeling of interferometer data from submillimeter and radio
-observatories. The dataset is fitted directly in the uv-plane, circumventing issues that arise when fitting a 'dirty
-image' such as correlated noise.
+observatories.
+
+The dataset is fitted directly in the uv-plane, circumventing issues that arise when fitting a 'dirty image' such as
+correlated noise.
 
 Real Space Mask
 ---------------
@@ -16,13 +18,9 @@ images are computed. It is this image that is mapped to Fourier space to compare
 
 .. code-block:: bash
 
-    real_space_mask = al.Mask2D.circular(
-        shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, sub_size=1, radius=3.0
+    real_space_mask = ag.Mask2D.circular(
+        shape_native=(400, 400), pixel_scales=0.025, radius=3.0
     )
-
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/image.png
-  :width: 400
-  :alt: Alternative text
 
 Interferometer Data
 -------------------
@@ -44,8 +42,7 @@ for an ``Imaging`` object.
     interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
     interferometer_plotter.figures_2d(visibilities=True, uv_wavelengths=True)
 
-Here is what the interferometer visibilities and uv wavelength (which represent the interferometer's baselines) looks
-like (these are representative of an ALMA dataset with ~ 1 million visibilities):
+Here is what the interferometer visibilities and uv wavelength (which represent the interferometer's baselines):
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/visibilities.png
   :width: 400
@@ -55,20 +52,43 @@ like (these are representative of an ALMA dataset with ~ 1 million visibilities)
   :width: 400
   :alt: Alternative text
 
+The data used in this overview contains only ~300 visibilities and is representative of a low resolution
+Square-Mile Array (SMA) dataset.
+
+We discuss below how **PyAutoLens** can scale up to large visibilities datasets from an instrument like ALMA.
+
+This can also plot the dataset in real-space, using the fast Fourier transforms described below.
+
+.. code-block:: bash
+
+    interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
+    interferometer_plotter.figures_2d(dirty_image=True, dirty_signal_to_noise_map=True)
+
+Here is what the image and signal-to-noise map look like in real space:
+
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/dirty_image.png
+  :width: 400
+  :alt: Alternative text
+
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/dirty_signal_to_noise_map.png
+  :width: 400
+  :alt: Alternative text
+
 UV-Plane FFT
 ------------
 
 To perform uv-plane modeling, **PyAutoLens** Fourier transforms the lensed image (computed via a ``Tracer``) from
-real-space to the uv-plane. This operation uses a ``Transformer`` object, of which there are multiple available
+real-space to the uv-plane.
+
+This operation uses a ``Transformer`` object, of which there are multiple available
 in **PyAutoLens**. This includes a direct Fourier transform which performs the exact Fourier transform without approximation.
 
 .. code-block:: bash
 
     transformer_class = al.TransformerDFT
 
-However, the direct Fourier transform is inefficient. For ~10 million visibilities, it requires **thousands of seconds**
-to perform a single transform. To model a lens, we'll perform tens of thousands of transforms, making this approach
-unfeasible for high quality ALMA and radio datasets.
+However, the direct Fourier transform is inefficient. For ~10 million visibilities, it requires thousands of seconds
+to perform a single transform. This approach is therefore unfeasible for high quality ALMA and radio datasets.
 
 For this reason, **PyAutoLens** supports the non-uniform fast fourier transform algorithm
 **PyNUFFT** (https://github.com/jyhmiinlin/pynufft), which is significantly faster, being able too perform a Fourier
@@ -98,6 +118,10 @@ The interferometer can now be passed to a ``FitInterferometer`` object to fit it
         interferometer=interferometer, tracer=tracer
     )
 
+    fit_interferometer_plotter = aplt.FitInterferometerPlotter(fit=fit)
+    fit_interferometer_plotter.subplot_fit_interferometer()
+    fit_interferometer_plotter.subplot_fit_real_space()
+
 Here is what the image of the tracer looks like before it is Fourier transformed to the uv-plane:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/image_pre_ft.png
@@ -110,22 +134,9 @@ And here is what the Fourier transformed model visibilities look like:
   :width: 400
   :alt: Alternative text
 
-To show the fit to the real and imaginary visibilities, we plot the residuals and chi-squared values as a function
-uv-distance:
+Here is what the fit of the galaxy looks like in real space (which is computed via a FFT from the uv-plane):
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/residual_map_real.png
-  :width: 400
-  :alt: Alternative text
-
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/residual_map_imag.png
-  :width: 400
-  :alt: Alternative text
-
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/chi_squared_map_real.png
-  :width: 400
-  :alt: Alternative text
-
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/chi_squared_map_imag.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/fit_dirty_images.png
   :width: 400
   :alt: Alternative text
 
@@ -133,9 +144,15 @@ Pixelized Sources
 -----------------
 
 Interferometer data can also be modeled using pixelized source's, which again perform the source reconstruction by
-directly fitting the visibilities in the uv-plane. The source reconstruction is visualized in real space:
+directly fitting the visibilities in the uv-plane.
 
-Computing this source recontruction would be extremely inefficient if **PyAutoLens** used a traditional approach to
+The source reconstruction is visualized in real space:
+
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/reconstruction.png
+  :width: 400
+  :alt: Alternative text
+
+Computing this source reconstruction would be extremely inefficient if **PyAutoLens** used a traditional approach to
 linear algebra which explicitly stored in memory the values required to solve for the source fluxes. In fact, for an
 interferometer dataset of ~10 million visibilities this would require **hundreds of GB of memory**!
 
@@ -143,9 +160,7 @@ interferometer dataset of ~10 million visibilities this would require **hundreds
 a sequence of memory-light linear operators.
 
 The combination of **PyNUFFT** and **PyLops** makes the analysis of ~10 million visibilities from observatories such as
-ALMA and JVLA feasible in **PyAutoLens**. However, the largest datasets may still require a degree of augmentation,
-averaging or tapering. Rest assured, we are actively working on new solution that will make the analysis of
-**hundreds of millions** of visibilities feasible.
+ALMA and JVLA feasible in **PyAutoLens**.
 
 Lens Modeling
 --------------
@@ -178,7 +193,10 @@ Gaussian noise to the visibilities:
 
 .. code-block:: bash
 
-    real_space_grid = al.Grid2D.uniform(shape_native=real_space_mask.shape_native, pixel_scales=real_space_mask.pixel_scales)
+    real_space_grid = ag.Grid2D.uniform(
+        shape_native=real_space_mask.shape_native,
+        pixel_scales=real_space_mask.pixel_scales
+    )
 
     simulator = al.SimulatorInterferometer(
         uv_wavelengths=uv_wavelengths,
@@ -187,7 +205,7 @@ Gaussian noise to the visibilities:
         noise_sigma=0.01,
     )
 
-    interferometer = simulator.from_tracer_and_grid(tracer=tracer, grid=real_space_grid)
+    interferometer = simulator.via_tracer_from(tracer=tracer, grid=real_space_grid)
 
 Wrap-Up
 -------

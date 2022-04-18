@@ -4,7 +4,7 @@ Pixelized Sources
 =================
 
 **PyAutoLens** can reconstruct the light of a strongly lensed source-galaxy using a pixel-grid, using a process
-called an ``LEq``.
+called an ``Inversion``.
 
 Lets use a ``Pixelization`` to reconstruct the source-galaxy of the image below, noting how complex the lensed source
 appears, with multiple rings and clumps of light:
@@ -16,7 +16,7 @@ appears, with multiple rings and clumps of light:
 Rectangular Example
 -------------------
 
-To fit this image with an ``LEq``, we first mask the ``Imaging`` object:
+To fit this image with an ``Inversion``, we first mask the ``Imaging`` object:
 
 .. code-block:: bash
 
@@ -27,7 +27,9 @@ To fit this image with an ``LEq``, we first mask the ``Imaging`` object:
    imaging = imaging.apply_mask(mask=mask)
 
 To reconstruct the source using a pixel-grid, we simply pass it the ``Pixelization`` class we want to reconstruct its
-light using. We also pass a ``Regularization`` scheme which applies a smoothness prior on the source reconstruction.
+light using.
+
+We also pass a ``Regularization`` scheme which applies a smoothness prior on the source reconstruction.
 
 Below, we use a ``Rectangular`` pixelization with resolution 40 x 40 and a ``Constant`` regularization scheme:
 
@@ -41,7 +43,7 @@ Below, we use a ``Rectangular`` pixelization with resolution 40 x 40 and a ``Con
 
 To fit the data, we simply pass this source-galaxy into a ``Tracer`` (complete with lens galaxy mass model). The
 ``FitImaging`` object will automatically use the source galaxy's ``Pixelization`` and ``Regularization`` to reconstruct
-the lensed source's light using the ``LEq``:
+the lensed source's light using the ``Inversion``:
 
 .. code-block:: bash
 
@@ -87,8 +89,10 @@ how the source reconstruction accurately fits the image of the strong lens:
 Wrap-Up
 -------
 
-This was a brief overview of *LEqs* with **PyAutoLens**. There is a lot more to using *LEqs* then presented
-here, which is covered in chapters 4 and 5 of the **HowToLens**, specifically:
+This was a brief overview of ``Inverion``'s with **PyAutoLens**.
+
+There is a lot more to using ``Inverion``'s then presented here, which is covered in chapters 4 and 5 of
+the **HowToLens**, specifically:
 
     - How the source reconstruction calculates the flux-values of the source pixels when it performs the reconsturction.
     - What exactly regularization is and why it is necessary.

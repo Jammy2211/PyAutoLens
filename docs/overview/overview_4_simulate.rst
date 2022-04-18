@@ -16,14 +16,14 @@ and accounting for the background sky in the exposure which adds Poisson noise:
 
 .. code-block:: bash
 
-    psf = al.Kernel2D.from_gaussian(
-        shape_native=(11, 11), sigma=0.1, pixel_scales=grid.pixel_scales
+    psf_2d = ag.Kernel2D.from_gaussian(
+        shape_native=(11, 11), sigma=0.1, pixel_scales=grid_2d.pixel_scales
     )
 
     simulator = al.SimulatorImaging(
         exposure_time=300.0,
         background_sky_level=1.0,
-        psf=psf,
+        psf=psf_2d,
         add_poisson_noise=True,
     )
 
@@ -72,8 +72,8 @@ Below, we show what a strong lens looks like for different instruments.
   :width: 400
   :alt: Alternative text
 
-Wrap U
-------
+Wrap Up
+-------
 
 The ``autolens_workspace`` includes many example simulators for simulating strong lenses with a range of different
 physical properties, to make imaging datasets for a variety of telescopes (e.g. Hubble, Euclid) as well as

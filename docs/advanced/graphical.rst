@@ -12,7 +12,7 @@ which is fitted simultaneously to many lens datasets, each with their own unique
 
 An extension to a graphical model is a **hierarchical model**. Here, the shared parameter(s) of the model do not have
 exactly the same value in every dataset. Instead, the shared parameter(s) are drawn from a common parent
-distribution (e.g. a Gaussian). It is the parameters of this parent distribution that we would consider shared
+distribution (e.g. a Gaussian). It is the parameters of this parent distribution that are shared
 across the dataset, and these are the parameters we ultimately wish to infer to understand the global behaviour of the
 model.
 

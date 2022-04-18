@@ -5,7 +5,7 @@ What is PyAutoLens?
 audience anyone with an interest in astronomy and cosmology.
 
 The software comes distributed with the **HowToLens** Jupyter notebook lectures, which are written assuming no
-previous knowledge about what gravitational lensing is and teach a new user the theory and statistics required analyse
+previous knowledge about what gravitational lensing is and teach a new user the theory and statistics required to analyse
 strong lens data. Checkout `the howtolens section of
 the readthedocs <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_.
 

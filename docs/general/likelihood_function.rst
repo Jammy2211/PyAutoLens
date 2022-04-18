@@ -13,6 +13,6 @@ Links to every notebook are provided at the GitHub repository linked to below. W
 GitHub repository (as opposed to direct links to each) because the URLs to notebooks on the ``autolens_workspace``
 may change after papers are published.
 
-By linking to this repository a permenant URL is provided.
+By linking to this repository a permanent URL is provided.
 
 https://github.com/Jammy2211/autolens_likelihood_function

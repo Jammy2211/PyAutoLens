@@ -40,8 +40,6 @@ Dependencies
 
 **PyAutoGalaxy** https://github.com/Jammy2211/PyAutoGalaxy
 
-**pyquad** https://github.com/AshKelly/pyquad
-
 **dynesty** https://github.com/joshspeagle/dynesty
 
 **emcee** https://github.com/dfm/emcee

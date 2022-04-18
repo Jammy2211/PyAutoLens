@@ -3,8 +3,10 @@
 Lens Modeling
 =============
 
-We can use a ``Tracer`` to fit data of a strong lens with its model-image and quantify its goodness-of-fit via a
-*log_likelihood*. Of course, when observe an image of a strong lens, we have no idea what combination of
+We can use a ``Tracer`` to fit data of a strong lens and quantify its goodness-of-fit via a
+*log_likelihood*.
+
+Of course, when observe an image of a strong lens, we have no idea what combination of
 ``LightProfile``'s and ``MassProfiles``'s will produce a model-image that looks like the strong lens we observed:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/image.png
@@ -77,6 +79,10 @@ very effective at lens modeling.
 
     search = af.DynestyStatic(name="search_example")
 
+**PyAutoLens** supports many model-fitting algorithms, including maximum likelihood estimators and MCMC, which are
+documented throughout the workspace.
+
+
 Analysis
 --------
 
@@ -114,8 +120,9 @@ Once a model-fit is running, **PyAutoLens** outputs the results of the search to
 lens model parameter estimates with errors non-linear samples and the visualization of the best-fit lens model inferred
 by the search so far.
 
-The fit above returns a ``Result`` object, which includes lots of information on the lens model. Below,
-we print the maximum log likelihood model inferred, but the result object contains full posterior information!
+The fit above returns a ``Result`` object, which includes lots of information on the lens model.
+
+Below we print the maximum log likelihood model inferred.
 
 .. code-block:: bash
 
@@ -123,9 +130,10 @@ we print the maximum log likelihood model inferred, but the result object contai
     print(result.max_log_likelihood_instance.galaxies.source)
 
 This result contains the full posterior information of our non-linear search, including all
-parameter samples, log likelihood values and tools to compute the errors on the lens model. **PyAutoLens** includes
-many visualization tools for plotting the results of a non-linear search, for example we can make a corner plot of the
-probability density function (PDF):
+parameter samples, log likelihood values and tools to compute the errors on the lens model.
+
+**PyAutoLens** includes many visualization tools for plotting the results of a non-linear search, for example we can
+make a corner plot of the probability density function (PDF):
 
 .. code-block:: bash
 
@@ -156,14 +164,14 @@ low chi-squared values:
   :width: 600
   :alt: Alternative text
 
-The script ``autolens_workspace/examples/model/result.py`` contains a full description of all information contained
+The script ``autolens_workspace/notebooks/results`` contains a full description of all information contained
 in a ``Result``.
 
 Model Customization
 -------------------
 
 The ``Model`` can be fully customized, making it simple to parameterize and fit many different lens models
-using any combination of ``LightProfile``'s and ``MassProfile``'s light profiles:
+using any combination of ``LightProfile``'s and ``MassProfile``'s:
 
 .. code-block:: bash
 
@@ -193,23 +201,6 @@ using any combination of ``LightProfile``'s and ``MassProfile``'s light profiles
 
 The above fit used the non-linear search ``dynesty``, but **PyAutoLens** supports many other methods and their
 setting can be easily customized:
-
-.. code-block:: bash
-
-    """Nested Samplers"""
-
-    search = af.MultiNest(name="multinest", n_live_points=50, sampling_efficiency=0.5, evidence_tolerance=0.8)
-    search = af.DynestyStatic(name="dynesty_static", nlive=50, sample="rwalk")
-    search = af.DynestyDynamic(name="dynesty_dynamic", sample="hslice")
-
-    """MCMC"""
-
-    search = af.Emcee(name="emcee", nwalkers=50, nsteps=500)
-
-    """Optimizers"""
-
-    search = af.PySwarmsLocal(name="pso_local", n_particles=50)
-    search = af.PySwarmsGlobal(name="pso_global", n_particles=50).
 
 Wrap-Up
 -------

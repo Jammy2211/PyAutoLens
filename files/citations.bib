@@ -171,40 +171,6 @@ year = {2015}
   title = {`PyAutoLens`: Open-Source Strong Gravitational Lensing},
   journal = {J. Open Source Softw.}
 }
-@article{multinest,
-abstract = {We present further development and the first public release of our multimodal nested sampling algorithm, called MultiNest. This Bayesian inference tool calculates the evidence, with an associated error estimate, and produces posterior samples from distributions that may contain multiple modes and pronounced (curving) degeneracies in high dimensions. The developments presented here lead to further substantial improvements in sampling efficiency and robustness, as compared to the original algorithm presented in Feroz and Hobson, which itself significantly outperformed existing Markov chain Monte Carlo techniques in a wide range of astrophysical inference problems. The accuracy and economy of the MultiNest algorithm are demonstrated by application to two toy problems and to a cosmological inference problem focusing on the extension of the vanilla $\Lambda$ cold dark matter model to include spatial curvature and a varying equation of state for dark energy. The MultiNest software, which is fully parallelized using MPI and includes an interface to CosmoMC, is available at http://www.mrao.cam.ac.uk/software/multinest/. It will also be released as part of the SuperBayeS package, for the analysis of supersymmetric theories of particle physics, at http://www.superbayes.org. {\textcopyright} 2009 RAS.},
-archivePrefix = {arXiv},
-arxivId = {0809.3437},
-author = {Feroz, F. and Hobson, M. P. and Bridges, M.},
-doi = {10.1111/j.1365-2966.2009.14548.x},
-eprint = {0809.3437},
-isbn = {0035-8711},
-issn = {00358711},
-journal = {MNRAS},
-keywords = {Methods: Data analysis,Methods: Statistical},
-number = {4},
-pages = {1601--1614},
-pmid = {29176},
-title = {{MultiNest: An efficient and robust Bayesian inference tool for cosmology and particle physics}},
-volume = {398},
-year = {2009}
-}
-@article{pymultinest,
-abstract = {Context. Aims. Active galactic nuclei are known to have complex X-ray spectra that depend on both the properties of the accreting super-massive black hole (e.g. mass, accretion rate) and the distribution of obscuring material in its vicinity (i.e. the "torus"). Often however, simple and even unphysical models are adopted to represent the X-ray spectra of AGN, which do not capture the complexity and diversity of the observations. In the case of blank field surveys in particular, this should have an impact on e.g. the determination of the AGN luminosity function, the inferred accretion history of the Universe and also on our understanding of the relation between AGN and their host galaxies. Methods. We develop a Bayesian framework for model comparison and parameter estimation of X-ray spectra. We take into account uncertainties associated with both the Poisson nature of X-ray data and the determination of source redshift using photometric methods. We also demonstrate how Bayesian model comparison can be used to select among ten different physically motivated X-ray spectral models the one that provides a better representation of the observations. This methodology is applied to X-ray AGN in the 4 Ms Chandra Deep Field South. Results. For the {\~{}}350 AGN in that field, our analysis identifies four components needed to represent the diversity of the observed X-ray spectra: (1) an intrinsic power law; (2) a cold obscurer which reprocesses the radiation due to photo-electric absorption, Compton scattering and Fe-K fluorescence; (3) an unabsorbed power law associated with Thomson scattering off ionised clouds; and (4) Compton reflection, most noticeable from a stronger-than-expected Fe-K line. Simpler models, such as a photo-electrically absorbed power law with a Thomson scattering component, are ruled out with decisive evidence (B {\textgreater} 100). We also find that ignoring the Thomson scattering component results in underestimation of the inferred column density, NH, of the obscurer. Regarding the geometry of the obscurer, there is strong evidence against both a completely closed (e.g. sphere), or entirely open (e.g. blob of material along the line of sight), toroidal geometry in favour of an intermediate case. Conclusions. Despite the use of low-count spectra, our methodology is able to draw strong inferences on the geometry of the torus. Simpler models are ruled out in favour of a geometrically extended structure with significant Compton scattering. We confirm the presence of a soft component, possibly associated with Thomson scattering off ionised clouds in the opening angle of the torus. The additional Compton reflection required by data over that predicted by toroidal geometry models, may be a sign of a density gradient in the torus or reflection off the accretion disk. Finally, we release a catalogue of AGN in the CDFS with estimated parameters such as the accretion luminosity in the 2-10 keV band and the column density, NH, of the obscurer. {\textcopyright} ESO, 2014.},
-archivePrefix = {arXiv},
-arxivId = {1402.0004},
-author = {Buchner, J. and Georgakakis, A. and Nandra, K. and Hsu, L. and Rangel, C. and Brightman, M. and Merloni, A. and Salvato, M. and Donley, J. and Kocevski, D.},
-doi = {10.1051/0004-6361/201322971},
-eprint = {1402.0004},
-file = {:home/jammy/Documents/Papers/Stats/ButchnerPyMultiNest.pdf:pdf},
-issn = {14320746},
-journal = {A&A},
-keywords = {Accretion, accretion disks,galaxies: high-redshift,galaxies: nuclei,Methods: data analysis,Methods: statistical,X-rays: galaxies},
-pages = {A125},
-title = {{X-ray spectral modelling of the AGN obscuring region in the CDFS: Bayesian model selection and catalogue}},
-volume = {564},
-year = {2014}
-}
 @article{pynufft,
 abstract = {A Python non-uniform fast Fourier transform (PyNUFFT) package has been developed to accelerate multidimensional non-Cartesian image reconstruction on heterogeneous platforms. Since scientific computing with Python encompasses a mature and integrated environment, the time efficiency of the NUFFT algorithm has been a major obstacle to real-time non-Cartesian image reconstruction with Python. The current PyNUFFT software enables multi-dimensional NUFFT accelerated on a heterogeneous platform, which yields an efficient solution to many non-Cartesian imaging problems. The PyNUFFT also provides several solvers, including the conjugate gradient method, 1 total variation regularized ordinary least square (L1TV-OLS), and 1 total variation regularized least absolute deviation (L1TV-LAD). Metaprogramming libraries have been employed to accelerate PyNUFFT. The PyNUFFT package has been tested on multi-core central processing units (CPUs) and graphic processing units (GPUs), with acceleration factors of 6.3–9.5× on a 32-thread CPU platform and 5.4–13× on a GPU.},
 author = {Lin, Jyh Miin},
@@ -218,16 +184,6 @@ pages = {1--22},
 title = {{Python non-uniform fast fourier transform (PyNUFFT): An accelerated non-cartesian MRI package on a heterogeneous platform (CPU/GPU)}},
 volume = {4},
 year = {2018}
-}
-@software{pyquad,
-  author       = {Ashley J. Kelly},
-  title        = {pyquad},
-  month        = jul,
-  year         = 2020,
-  publisher    = {Zenodo},
-  version      = {0.6.4},
-  doi          = {10.5281/zenodo.3936959},
-  url          = {https://doi.org/10.5281/zenodo.3936959}
 }
 @article{pyswarms,
     author  = {Lester James V. Miranda},
