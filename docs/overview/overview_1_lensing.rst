@@ -38,8 +38,8 @@ units to arc-seconds):
     grid = al.Grid2D.uniform(
         shape_native=(50, 50), pixel_scales=0.05
     )
-    grid_plotter = aplt.Grid2DPlotter(grid=grid)
-    grid_plotter.figure_2d()
+    grid_2d_plotter = aplt.Grid2DPlotter(grid=grid)
+    grid_2d_plotter.figure_2d()
 
 This is what our ``Grid2D`` looks like:
 
