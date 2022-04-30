@@ -31,7 +31,9 @@ class AbstractFitPositionsSourcePlane:
         """
         self.positions = positions
         self.noise_map = noise_map
-        self.source_plane_positions = tracer.traced_grid_list_from(grid=positions)[-1]
+        self.source_plane_positions = tracer.traced_grid_2d_list_from(grid=positions)[
+            -1
+        ]
 
     @property
     def furthest_separations_of_source_plane_positions(self) -> aa.ValuesIrregular:

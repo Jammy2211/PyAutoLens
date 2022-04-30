@@ -510,7 +510,7 @@ class TestAbstractTracer:
 
 class TestAbstractTracerLensing:
     class TestTracedGridsFromGrid:
-        def test__traced_grid_list_from__same_as_util(self, sub_grid_2d_7x7_simple):
+        def test__traced_grid_2d_list_from__same_as_util(self, sub_grid_2d_7x7_simple):
 
             g0 = al.Galaxy(
                 redshift=2.0, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
@@ -537,13 +537,13 @@ class TestAbstractTracerLensing:
                 galaxies=galaxies, cosmology=cosmo.Planck15
             )
 
-            traced_grid_list = tracer.traced_grid_list_from(
+            traced_grid_list = tracer.traced_grid_2d_list_from(
                 grid=sub_grid_2d_7x7_simple, plane_index_limit=1
             )
 
             planes = al.util.plane.planes_via_galaxies_from(galaxies=galaxies)
 
-            traced_grid_list_via_util = al.util.ray_tracing.traced_grid_list_from(
+            traced_grid_list_via_util = al.util.ray_tracing.traced_grid_2d_list_from(
                 planes=planes, grid=sub_grid_2d_7x7_simple, plane_index_limit=1
             )
 
@@ -679,7 +679,9 @@ class TestAbstractTracerLensing:
             plane_1 = al.Plane(galaxies=[g1])
             plane_2 = al.Plane(galaxies=[g2])
 
-            traced_grids_of_planes = tracer.traced_grid_list_from(grid=sub_grid_2d_7x7)
+            traced_grids_of_planes = tracer.traced_grid_2d_list_from(
+                grid=sub_grid_2d_7x7
+            )
 
             image = (
                 plane_0.image_2d_from(grid=sub_grid_2d_7x7)
@@ -707,7 +709,9 @@ class TestAbstractTracerLensing:
             plane_1 = tracer.planes[1]
             plane_2 = tracer.planes[2]
 
-            traced_grids_of_planes = tracer.traced_grid_list_from(grid=sub_grid_2d_7x7)
+            traced_grids_of_planes = tracer.traced_grid_2d_list_from(
+                grid=sub_grid_2d_7x7
+            )
 
             image = (
                 plane_0.image_2d_from(grid=sub_grid_2d_7x7)
@@ -735,7 +739,9 @@ class TestAbstractTracerLensing:
             plane_1 = al.Plane(galaxies=[g1, g4])
             plane_2 = al.Plane(galaxies=[g2])
 
-            traced_grids_of_planes = tracer.traced_grid_list_from(grid=sub_grid_2d_7x7)
+            traced_grids_of_planes = tracer.traced_grid_2d_list_from(
+                grid=sub_grid_2d_7x7
+            )
 
             image = (
                 plane_0.image_2d_from(grid=sub_grid_2d_7x7)
@@ -1260,7 +1266,7 @@ class TestAbstractTracerLensing:
             ).all()
 
     class TestGridAtRedshift:
-        def test__grid_at_redshift_from__same_as_util(self, sub_grid_2d_7x7):
+        def test__grid_2d_at_redshift_from__same_as_util(self, sub_grid_2d_7x7):
             g0 = al.Galaxy(
                 redshift=0.5,
                 mass_profile=al.mp.SphIsothermal(
@@ -1291,21 +1297,21 @@ class TestAbstractTracerLensing:
 
             tracer = al.Tracer.from_galaxies(galaxies=galaxies)
 
-            grid_at_redshift_via_util = al.util.ray_tracing.grid_at_redshift_from(
+            grid_at_redshift_via_util = al.util.ray_tracing.grid_2d_at_redshift_from(
                 galaxies=galaxies, grid=sub_grid_2d_7x7, redshift=0.5
             )
 
-            grid_at_redshift = tracer.grid_at_redshift_from(
+            grid_at_redshift = tracer.grid_2d_at_redshift_from(
                 grid=sub_grid_2d_7x7, redshift=0.5
             )
 
             assert grid_at_redshift == pytest.approx(grid_at_redshift_via_util, 1.0e-4)
 
-            grid_at_redshift_via_util = al.util.ray_tracing.grid_at_redshift_from(
+            grid_at_redshift_via_util = al.util.ray_tracing.grid_2d_at_redshift_from(
                 galaxies=galaxies, grid=sub_grid_2d_7x7, redshift=1.75
             )
 
-            grid_at_redshift = tracer.grid_at_redshift_from(
+            grid_at_redshift = tracer.grid_2d_at_redshift_from(
                 grid=sub_grid_2d_7x7, redshift=1.75
             )
 
@@ -1547,8 +1553,12 @@ class TestAbstractTracerData:
             grid=sub_grid_2d_7x7
         )
 
-        traced_grid_pix_0 = tracer.traced_grid_list_from(grid=np.array([[1.0, 1.0]]))[2]
-        traced_grid_pix_1 = tracer.traced_grid_list_from(grid=np.array([[2.0, 2.0]]))[4]
+        traced_grid_pix_0 = tracer.traced_grid_2d_list_from(
+            grid=np.array([[1.0, 1.0]])
+        )[2]
+        traced_grid_pix_1 = tracer.traced_grid_2d_list_from(
+            grid=np.array([[2.0, 2.0]])
+        )[4]
 
         assert traced_sparse_grids_list_of_planes[0] == None
         assert traced_sparse_grids_list_of_planes[1] == None
@@ -1889,7 +1899,7 @@ class TestTracerFixedSlices:
             cosmology=cosmo.Planck15,
         )
 
-        traced_grids = tracer.traced_grid_list_from(grid=sub_grid_2d_7x7_simple)
+        traced_grids = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7_simple)
 
         # This test_autoarray is essentially the same as the TracerMulti test_autoarray, we just slightly change how many galaxies go
         # in each plane and therefore change the factor in front of val for different planes.

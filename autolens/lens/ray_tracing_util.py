@@ -5,7 +5,7 @@ import autoarray as aa
 import autogalaxy as ag
 
 
-def traced_grid_list_from(
+def traced_grid_2d_list_from(
     planes: List[ag.Plane],
     grid: aa.type.Grid2DLike,
     cosmology=cosmo.Planck15,
@@ -85,7 +85,7 @@ def traced_grid_list_from(
     return traced_grid_list
 
 
-def grid_at_redshift_from(
+def grid_2d_at_redshift_from(
     redshift: float,
     galaxies: List[ag.Galaxy],
     grid: aa.type.Grid2DLike,
@@ -136,7 +136,7 @@ def grid_at_redshift_from(
 
     if plane_index_with_redshift:
 
-        traced_grid_list = traced_grid_list_from(
+        traced_grid_list = traced_grid_2d_list_from(
             planes=planes, grid=grid, cosmology=cosmology
         )
 
@@ -149,7 +149,7 @@ def grid_at_redshift_from(
 
     planes.insert(plane_index_insert, ag.Plane(redshift=redshift, galaxies=[]))
 
-    traced_grid_list = traced_grid_list_from(
+    traced_grid_list = traced_grid_2d_list_from(
         planes=planes, grid=grid, cosmology=cosmology
     )
 

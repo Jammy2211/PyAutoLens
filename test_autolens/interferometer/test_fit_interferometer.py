@@ -209,7 +209,7 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
-    traced_grids_of_planes = tracer.traced_grid_list_from(
+    traced_grids_of_planes = tracer.traced_grid_2d_list_from(
         grid=interferometer_7_grid.grid
     )
 
@@ -265,7 +265,7 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
-    traced_grids = tracer.traced_grid_list_from(grid=interferometer_7_grid.grid)
+    traced_grids = tracer.traced_grid_2d_list_from(grid=interferometer_7_grid.grid)
 
     g0_visibilities = g0.visibilities_via_transformer_from(
         grid=traced_grids[0], transformer=interferometer_7_grid.transformer
@@ -326,7 +326,7 @@ def test___galaxy_model_visibilities_dict(interferometer_7, interferometer_7_gri
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
-    traced_grids_of_planes = tracer.traced_grid_list_from(
+    traced_grids_of_planes = tracer.traced_grid_2d_list_from(
         grid=interferometer_7_grid.grid
     )
 
@@ -405,7 +405,7 @@ def test___galaxy_model_visibilities_dict(interferometer_7, interferometer_7_gri
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
-    traced_grids = tracer.traced_grid_list_from(grid=interferometer_7_grid.grid)
+    traced_grids = tracer.traced_grid_2d_list_from(grid=interferometer_7_grid.grid)
 
     g0_visibilities = g0.visibilities_via_transformer_from(
         grid=traced_grids[0], transformer=interferometer_7_grid.transformer

@@ -6,7 +6,7 @@ class MockTracer:
         self.traced_grids_of_planes = traced_grids_of_planes
         self.sparse_image_plane_grid_pg_list = sparse_image_plane_grid_pg_list
 
-    def traced_grid_list_from(self, grid):
+    def traced_grid_2d_list_from(self, grid):
 
         return self.traced_grids_of_planes
 
@@ -57,7 +57,7 @@ class MockTracerPoint(MockTracer):
     def extract_profile(self, profile_name):
         return self.profile
 
-    def traced_grid_list_from(self, grid, plane_index_limit=None):
+    def traced_grid_2d_list_from(self, grid, plane_index_limit=None):
         return [self.positions]
 
     def magnification_2d_via_hessian_from(self, grid, deflections_func=None):

@@ -12,6 +12,24 @@ __Features__
 - DM many subhalo sims.
 
 
+__Image To Source Mapping__
+
+Mapping image arrays (e.g. the data) to the source plane so we can compare how the source-plane appears.
+
+- Do for simple rectangular grid, then add subgrid, interpolation.
+- Make magnification equivalent.
+
+
+__Clump API__
+
+- Scripts describing what a clump is.
+- Example scripts showing how every clump maker task relates to autofit model composition.
+- Point Source Models via PointModel API.
+- Gradually build examples of increasing complexity (e.g. using elliptical measurements, luminosity / scaling relations,
+hierarchical models, prior passing).
+- Rich: API for fitting model sub components one by one, built into clump API.
+- Multiwavelength 0_0.
+
 __Point Source__
 
 - Point source visusliazation, RMS of point source.
@@ -30,6 +48,7 @@ __Refactor__
 
 __Bugs__
 
+- Raise exception if mask not applied to imaging and it is passed to analysis.
 - No positions analysis bug, need to remove copy or something.
 - Point source raises exception if solver grid smaller than data in analysi class.
 - Sanity checks on datastructures wherer possible (e.g. output grid index is 2).

@@ -186,14 +186,14 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         return sparse_image_plane_grid_list_of_planes
 
     @aa.grid_dec.grid_2d_to_structure_list
-    def traced_grid_list_from(
+    def traced_grid_2d_list_from(
         self, grid: aa.type.Grid2DLike, plane_index_limit=None
     ) -> List[aa.type.Grid2DLike]:
         """
         Performs multi-plane ray tracing on a 2D grid of Cartesian (y,x) coordinates using the mass profiles of the
         galaxies and planes contained within the tracer.
 
-        see `autolens.lens.ray_tracing.ray_tracing_util.traced_grid_list_from()` for a full description of the
+        see `autolens.lens.ray_tracing.ray_tracing_util.traced_grid_2d_list_from()` for a full description of the
         calculation.
 
         Parameters
@@ -210,7 +210,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
             A list of 2D (y,x) grids each of which are the input grid ray-traced to a redshift of the input list of planes.
         """
 
-        return ray_tracing_util.traced_grid_list_from(
+        return ray_tracing_util.traced_grid_2d_list_from(
             planes=self.planes,
             grid=grid,
             cosmology=self.cosmology,
@@ -258,7 +258,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
                     try:
                         traced_sparse_grids_list.append(
-                            self.traced_grid_list_from(grid=sparse_image_plane_grid)[
+                            self.traced_grid_2d_list_from(grid=sparse_image_plane_grid)[
                                 plane_index
                             ]
                         )
@@ -269,7 +269,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         return traced_sparse_grid_pg_list, sparse_image_plane_grid_pg_list
 
-    def grid_at_redshift_from(
+    def grid_2d_at_redshift_from(
         self, grid: aa.type.Grid2DLike, redshift: float
     ) -> aa.type.Grid2DLike:
         """
@@ -287,7 +287,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         redshift
             The redshift the image-plane grid is traced to.
         """
-        return ray_tracing_util.grid_at_redshift_from(
+        return ray_tracing_util.grid_2d_at_redshift_from(
             redshift=redshift,
             galaxies=self.galaxies,
             grid=grid,
@@ -306,7 +306,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     @aa.grid_dec.grid_2d_to_structure_list
     def image_2d_list_from(self, grid: aa.type.Grid2DLike) -> List[aa.Array2D]:
 
-        traced_grid_list = self.traced_grid_list_from(
+        traced_grid_list = self.traced_grid_2d_list_from(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
         )
 
@@ -350,7 +350,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         galaxy_image_dict = dict()
 
-        traced_grid_list = self.traced_grid_list_from(grid=grid)
+        traced_grid_list = self.traced_grid_2d_list_from(grid=grid)
 
         for (plane_index, plane) in enumerate(self.planes):
             images_of_galaxies = plane.image_2d_list_from(
@@ -387,7 +387,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         self, grid: aa.type.Grid2DLike, plane_i=0, plane_j=-1
     ) -> Union[aa.VectorYX2D, aa.VectorYX2DIrregular]:
 
-        traced_grids_list = self.traced_grid_list_from(grid=grid)
+        traced_grids_list = self.traced_grid_2d_list_from(grid=grid)
 
         return traced_grids_list[plane_i] - traced_grids_list[plane_j]
 
@@ -408,10 +408,10 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         return any(list(map(lambda plane: plane.has_regularization, self.planes)))
 
     @aa.profile_func
-    def traced_grid_list_of_inversion_from(
+    def traced_grid_2d_list_of_inversion_from(
         self, grid: aa.type.Grid2DLike
     ) -> List[aa.type.Grid2DLike]:
-        return self.traced_grid_list_from(grid=grid)
+        return self.traced_grid_2d_list_from(grid=grid)
 
     @property
     def has_hyper_galaxy(self) -> bool:
@@ -476,7 +476,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         linear_obj_list = []
 
         if preloads.traced_grids_of_planes_for_inversion is None:
-            traced_grids_of_planes = self.traced_grid_list_of_inversion_from(grid=grid)
+            traced_grids_of_planes = self.traced_grid_2d_list_of_inversion_from(
+                grid=grid
+            )
         else:
             traced_grids_of_planes = preloads.traced_grids_of_planes_for_inversion
 
@@ -828,7 +830,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
             shape_native=grid.shape_native, pixel_scales=grid.pixel_scales, sub_size=1
         )
 
-        traced_grids_of_planes = self.traced_grid_list_from(grid=grid)
+        traced_grids_of_planes = self.traced_grid_2d_list_from(grid=grid)
 
         for plane_index, plane in enumerate(self.planes):
             for galaxy in plane.galaxies:

@@ -97,7 +97,7 @@ class GetVisuals2D(gv.GetVisuals2D):
         border = self.get("border", value=grid.mask.border_grid_sub_1.binned)
 
         if border is not None and len(border) > 0 and plane_index > 0:
-            border = tracer.traced_grid_list_from(grid=border)[plane_index]
+            border = tracer.traced_grid_2d_list_from(grid=border)[plane_index]
 
         light_profile_centres = self.get(
             "light_profile_centres",

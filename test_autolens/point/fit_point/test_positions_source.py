@@ -52,7 +52,7 @@ def test__multi_plane_position_solving():
     positions = al.Grid2DIrregular([(0.0, 1.0), (0.0, 2.0)])
     noise_map = al.ValuesIrregular([0.5, 1.0])
 
-    traced_grids = tracer.traced_grid_list_from(grid=positions)
+    traced_grids = tracer.traced_grid_2d_list_from(grid=positions)
 
     fit_0 = al.FitPositionsSource(
         name="point_0", positions=positions, noise_map=noise_map, tracer=tracer

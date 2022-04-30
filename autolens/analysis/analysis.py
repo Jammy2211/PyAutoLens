@@ -82,7 +82,7 @@ class AnalysisLensing:
 
         if hasattr(instance.galaxies, "subhalo"):
 
-            subhalo_centre = ray_tracing_util.grid_at_redshift_from(
+            subhalo_centre = ray_tracing_util.grid_2d_at_redshift_from(
                 galaxies=instance.galaxies,
                 redshift=instance.galaxies.subhalo.redshift,
                 grid=aa.Grid2DIrregular(grid=[instance.galaxies.subhalo.mass.centre]),
