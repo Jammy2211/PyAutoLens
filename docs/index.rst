@@ -199,8 +199,9 @@ strong gravitational lensing with **PyAutoLens**.
    overview/overview_4_simulate
    overview/overview_5_pixelizations
    overview/overview_6_interferometry
-   overview/overview_7_point_sources
-   overview/overview_8_groups
+   overview/overview_7_multi_wavelength
+   overview/overview_8_point_sources
+   overview/overview_9_groups
 
 .. toctree::
    :caption: Installation:

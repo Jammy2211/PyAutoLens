@@ -1,5 +1,5 @@
 ---
-title: "`PyAutoGalaxy`: Open-Source Galaxy Modeling"
+title: "`PyAutoLens`: Open-Source Lens Modeling"
 tags:
   - astronomy
   - galaxy formation and evolution
@@ -72,7 +72,7 @@ affiliations:
     index: 7
 
 date: 25 January 2022
-codeRepository: https://github.com/Jammy2211/PyAutoGalaxy
+codeRepository: https://github.com/Jammy2211/PyAutoLens
 license: MIT
 bibliography: paper.bib
 ---
