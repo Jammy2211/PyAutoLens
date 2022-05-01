@@ -52,6 +52,22 @@ def test__visualizes_ray_tracing__uses_configs(
     assert convergence.shape == (5, 5)
 
 
+def test__visualizes_image_with_positions__uses_configs(
+    image_7x7, positions_x2, include_2d_all, plot_path, plot_patch
+):
+
+    if os.path.exists(plot_path):
+        shutil.rmtree(plot_path)
+
+    visualizer = vis.Visualizer(visualize_path=plot_path)
+
+    visualizer.visualize_image_with_positions(image=image_7x7, positions=positions_x2)
+
+    plot_path = path.join(plot_path, "positions")
+
+    assert path.join(plot_path, "image_with_positions.png") in plot_patch.paths
+
+
 def test__visualize_stochastic_histogram(masked_imaging_7x7, plot_path, plot_patch):
 
     visualizer = vis.Visualizer(visualize_path=plot_path)

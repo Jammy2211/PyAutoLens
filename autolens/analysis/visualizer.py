@@ -124,6 +124,47 @@ class Visualizer(AgVisualizer):
                     magnification=True,
                 )
 
+    def visualize_image_with_positions(
+        self, image: aa.Array2D, positions: aa.Grid2DIrregular
+    ):
+        """
+        Visualizes the positions of a model-fit, where these positions are used to resample lens models where
+        the positions to do trace within an input threshold of one another in the source-plane.
+
+        Images are output to the `image` folder of the `visualize_path` in a subfolder called `positions`. When
+        used with a non-linear search the `visualize_path` points to the search's results folder.
+
+        The visualization is an image of the strong lens with the positions overlaid.
+
+        The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
+        [ray_tracing] header.
+
+        Parameters
+        ----------
+        imaging
+            The imaging dataset whose image the positions are overlaid.
+        position
+            The 2D (y,x) arc-second positions used to resample inaccurate mass models.
+        """
+
+        def should_plot(name):
+            return plot_setting(section=["positions"], name=name)
+
+        mat_plot_2d = self.mat_plot_2d_from(subfolders="positions")
+
+        if positions is not None:
+            visuals_2d = aplt.Visuals2D(positions=positions)
+
+            image_plotter = aplt.Array2DPlotter(
+                array=image,
+                mat_plot_2d=mat_plot_2d,
+                include_2d=self.include_2d,
+                visuals_2d=visuals_2d,
+            )
+            image_plotter.set_filename("image_with_positions")
+            if should_plot("image_with_positions"):
+                image_plotter.figure_2d()
+
     def visualize_hyper_images(
         self,
         hyper_galaxy_image_path_dict: {str, aa.Array2D},

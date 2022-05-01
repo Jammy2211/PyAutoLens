@@ -118,6 +118,11 @@ class AnalysisInterferometer(AnalysisDataset):
 
             visualizer.visualize_interferometer(interferometer=self.interferometer)
 
+            if self.positions is not None:
+                visualizer.visualize_image_with_positions(
+                    image=self.interferometer.dirty_image, positions=self.positions
+                )
+
             visualizer.visualize_hyper_images(
                 hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
                 hyper_model_image=self.hyper_model_image,

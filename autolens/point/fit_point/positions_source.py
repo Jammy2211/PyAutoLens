@@ -83,7 +83,9 @@ class FitPositionsSource(aa.FitDataset):
                 grid=self.positions, plane_i=0, plane_j=upper_plane_index
             )
 
-        return self.positions.grid_via_deflection_grid_from(deflection_grid=deflections)
+        return self.positions.grid_2d_via_deflection_grid_from(
+            deflection_grid=deflections
+        )
 
     @property
     def model_positions(self) -> aa.Grid2DIrregular:
