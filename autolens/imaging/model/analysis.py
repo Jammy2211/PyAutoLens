@@ -57,10 +57,10 @@ class AnalysisImaging(AnalysisDataset):
 
             visualizer.visualize_imaging(imaging=self.imaging)
 
-            if self.positions is not None:
-                visualizer.visualize_image_with_positions(
-                    image=self.imaging.image, positions=self.positions
-                )
+            # if self.positions is not None:
+            #     visualizer.visualize_image_with_positions(
+            #         image=self.imaging.image, positions=self.positions
+            #     )
 
             visualizer.visualize_hyper_images(
                 hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
@@ -68,6 +68,13 @@ class AnalysisImaging(AnalysisDataset):
             )
 
             self.set_preloads(paths=paths, model=model)
+
+        visualizer = VisualizerImaging(visualize_path=paths.image_path)
+
+        if self.positions is not None:
+            visualizer.visualize_image_with_positions(
+                image=self.imaging.image, positions=self.positions
+            )
 
         return self
 
