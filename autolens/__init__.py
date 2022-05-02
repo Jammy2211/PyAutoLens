@@ -94,4 +94,4 @@ from autoconf import conf
 
 conf.instance.register(__file__)
 
-__version__ = "2022.03.30.1"
+__version__ = "2022.05.02.1"

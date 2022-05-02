@@ -485,7 +485,10 @@ class AnalysisImaging(AnalysisDataset):
             The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
             the imaging data.
         """
-        pixelization = ag.util.model.pixelization_from(model=model)
+        try:
+            pixelization = ag.util.model.pixelization_from(model=model)
+        except AttributeError:
+            return
 
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
             if pixelization is not None:

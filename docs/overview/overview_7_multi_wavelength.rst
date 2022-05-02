@@ -152,7 +152,7 @@ We do this using the combined analysis object as follows:
 .. code-block:: bash
 
     analysis = analysis.with_free_parameters(
-        *[model.galaxies.lens.bulge.intensity, model.galaxies.source.bulge.intensity]
+        model.galaxies.lens.bulge.intensity, model.galaxies.source.bulge.intensity
     )
 
 In this simple overview, this has added two additional free parameters to the model whereby:
