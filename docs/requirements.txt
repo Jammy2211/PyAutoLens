@@ -8,6 +8,7 @@ autoconf==2022.05.02.1
 autofit==2022.05.02.1
 autoarray==2022.05.02.1
 autogalaxy==2022.05.02.1
+sphinx==4.0.0
 furo
 myst-parser
 sphinx_copybutton
