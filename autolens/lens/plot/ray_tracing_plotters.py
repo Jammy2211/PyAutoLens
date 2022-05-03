@@ -325,7 +325,9 @@ class TracerPlotter(Plotter):
                 image=True, title_suffix=f" Of Plane {plane_index}"
             )
 
-        self.mat_plot_2d.output.subplot_to_figure(auto_filename=f"subplot_lensed_images")
+        self.mat_plot_2d.output.subplot_to_figure(
+            auto_filename=f"subplot_lensed_images"
+        )
         self.close_subplot_figure()
 
     def subplot_plane_images(self):

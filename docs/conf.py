@@ -1,5 +1,6 @@
 import datetime
 from typing import Any, Dict
+
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
@@ -57,9 +58,7 @@ templates_path = ["_templates"]
 
 # -- Options for extlinks ----------------------------------------------------
 
-extlinks = {
-    "pypi": ("https://pypi.org/project/%s/", ""),
-}
+extlinks = {"pypi": ("https://pypi.org/project/%s/", "")}
 
 # -- Options for intersphinx -------------------------------------------------
 
@@ -74,10 +73,7 @@ todo_include_todos = True
 
 # -- Options for Markdown files ----------------------------------------------
 
-myst_enable_extensions = [
-    "colon_fence",
-    "deflist",
-]
+myst_enable_extensions = ["colon_fence", "deflist"]
 myst_heading_anchors = 3
 
 autosummary_generate = True
@@ -99,7 +95,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_theme = "furo"
 html_title = "PyAutoLens"
 html_short_title = "PyAutoLens"
-html_permalinks_icon = '<span>#</span>'
+html_permalinks_icon = "<span>#</span>"
 html_last_updated_fmt = "%b %d, %Y"
 
 html_show_sourcelink = False
@@ -126,7 +122,7 @@ html_theme_options = {
     "light_css_variables": {
         "color-brand-primary": "#7C4DFF",
         "color-brand-content": "#7C4DFF",
-    },
+    }
 }
 
 if "READTHEDOCS" in os.environ:
@@ -139,4 +135,3 @@ if "READTHEDOCS" in os.environ:
 from sphinx.builders.html import StandaloneHTMLBuilder
 
 StandaloneHTMLBuilder.supported_image_types = ["image/gif", "image/png", "image/jpeg"]
-
