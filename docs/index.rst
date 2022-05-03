@@ -61,7 +61,7 @@ below shows this in action:
     coordinates are used.
     """
 
-    grid = al.Grid2D.uniform(
+    grid_2d = al.Grid2D.uniform(
         shape_native=(50, 50),
         pixel_scales=0.05,  # <- Conversion from pixel units to arc-seconds.
     )
@@ -101,7 +101,7 @@ below shows this in action:
     plotting the image of the lensed source.
     """
 
-    aplt.Tracer.image(tracer=tracer, grid=grid)
+    aplt.Tracer.image(tracer=tracer, grid=grid_2d)
 
 To perform lens modeling, **PyAutoLens** adopts the probabilistic programming
 language `PyAutoFit <https://github.com/rhayes777/PyAutoFit>`_. **PyAutoFit** allows users to compose a
@@ -133,7 +133,7 @@ code below shows how to setup and fit a lens model to a dataset:
     mask = al.Mask2D.circular(
         shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
     )
-    imaging = imaging.apply_mask(mask=mask)
+    imaging = imaging.apply_mask(mask=mask_2d)
 
     """
     We model the lens galaxy using an elliptical isothermal mass profile and

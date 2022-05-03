@@ -19,7 +19,7 @@ https://www.astro.caltech.edu/~george/qsolens/)
 
 To use **PyAutoLens** we first import autolens and the plot module.
 
-.. code-block:: bash
+.. code-block:: python
 
    import autolens as al
    import autolens.plot as aplt
@@ -33,12 +33,12 @@ are two-dimensional Cartesian grids of (y,x) coordinates.
 Below, we create and plot a uniform Cartesian ``Grid2D`` (the ``pixel_scales`` describes the conversion from pixel
 units to arc-seconds):
 
-.. code-block:: bash
+.. code-block:: python
 
-    grid = al.Grid2D.uniform(
+    grid_2d = al.Grid2D.uniform(
         shape_native=(50, 50), pixel_scales=0.05
     )
-    grid_2d_plotter = aplt.Grid2DPlotter(grid=grid)
+    grid_2d_plotter = aplt.Grid2DPlotter(grid=grid_2d)
     grid_2d_plotter.figure_2d()
 
 This is what our ``Grid2D`` looks like:
@@ -56,7 +56,7 @@ galaxy's light.
 This requires analytic functions representing the light and mass distributions of galaxies. **PyAutoLens**
 uses ``Profile`` objects for this, such as the elliptical sersic ``LightProfile``:
 
-.. code-block:: bash
+.. code-block:: python
 
     sersic_light_profile = al.lp.EllSersic(
         centre=(0.0, 0.0),
@@ -69,16 +69,16 @@ uses ``Profile`` objects for this, such as the elliptical sersic ``LightProfile`
 By passing this ``Profile`` a ``Grid2D``, we can evaluate the light at every coordinate on that ``Grid2D``, creating an
 image of the ``LightProfile``:
 
-.. code-block:: bash
+.. code-block:: python
 
-    image = sersic_light_profile.image_2d_from_grid(grid=grid)
+    image_2d = sersic_light_profile.image_2d_from(grid=grid_2d)
 
 The **PyAutoLens** plot module provides methods for plotting objects and their properties, like the ``LightProfile``'s image.
 
-.. code-block:: bash
+.. code-block:: python
 
     light_profile_plotter = aplt.LightProfilePlotter(
-        light_profile=sersic_light_profile, grid=grid
+        light_profile=sersic_light_profile, grid=grid_2d
     )
     light_profile_plotter.figures_2d(image=True)
 
@@ -97,7 +97,7 @@ calculations.
 Below we create an elliptical isothermal ``MassProfile`` and calculate and display its convergence, gravitational
 potential and deflection angles using the Cartesian grid:
 
-.. code-block:: bash
+.. code-block:: python
 
     isothermal_mass_profile = al.mp.EllIsothermal(
         centre=(0.0, 0.0),
@@ -105,12 +105,12 @@ potential and deflection angles using the Cartesian grid:
         einstein_radius=1.6,
     )
 
-    convergence = isothermal_mass_profile.convergence_2d_from_grid(grid=grid)
-    potential = isothermal_mass_profile.potential_2d_from_grid(grid=grid)
-    deflections = isothermal_mass_profile.deflections_yx_2d_from_grid(grid=grid)
+    convergence = isothermal_mass_profile.convergence_2d_from(grid=grid_2d)
+    potential = isothermal_mass_profile.potential_2d_from(grid=grid_2d)
+    deflections = isothermal_mass_profile.deflections_yx_2d_from(grid=grid_2d)
 
     mass_profile_plotter = aplt.MassProfilePlotter(
-        mass_profile=isothermal_mass_profile, grid=grid
+        mass_profile=isothermal_mass_profile, grid=grid_2d
     )
     mass_profile_plotter.figures_2d(
         convergence=True, potential=True, deflections_y=True, deflections_x=True
@@ -144,7 +144,7 @@ galaxies
 A ``Galaxy`` object is a collection of ``LightProfile`` and ``MassProfile`` objects at a given redshift. The code below
 creates two galaxies representing the lens and source galaxies shown in the strong lensing diagram above.
 
-.. code-block:: bash
+.. code-block:: python
 
    lens_galaxy = al.Galaxy(
        redshift=0.5, light=sersic_light_profile, mass=isothermal_mass_profile
@@ -158,7 +158,7 @@ the source galaxy. It there depends on the redshifts of the ``Galaxy`` objects.
 By passing these ``Galaxy`` objects to a ``Tracer``, **PyAutoLens** uses these galaxy redshifts and a cosmological
 model to create the appropriate strong lens system.
 
-.. code-block:: bash
+.. code-block:: python
 
     tracer = al.Tracer.from_galaxies(
         galaxies=[lens_galaxy, source_galaxy], cosmology=cosmo.Planck15
@@ -173,11 +173,11 @@ When calculating this image, the ``Tracer`` performs all ray-tracing for the str
 the lens galaxy's total mass distribution to deflect the light-rays that are traced to the source galaxy. As a result,
 the source appears as a multiply imaged and strongly lensed Einstein ring.
 
-.. code-block:: bash
+.. code-block:: python
 
-    image = tracer.image_2d_from_grid(grid=grid)
+    image_2d = tracer.image_2d_from(grid=grid_2d)
 
-    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
+    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid_2d)
     tracer_plotter.figures_2d(image=True)
 
 This makes the image below, where the source's light appears as a multiply imaged and strongly lensed Einstein ring.
@@ -199,7 +199,7 @@ To finish, lets create a ``Tracer`` with 3 galaxies at 3 different redshifts, fo
 Einstein rings! The mass distribution of the first galaxy also has separate components for its stellar mass and
 dark matter, where the stellar mass using a ``LightMassProfile`` representing both its light and mass.
 
-.. code-block:: bash
+.. code-block:: python
 
     lens_galaxy_0 = al.Galaxy(
         redshift=0.5,
@@ -247,7 +247,7 @@ dark matter, where the stellar mass using a ``LightMassProfile`` representing bo
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy_0, lens_galaxy_1, source_galaxy])
 
-    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
+    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid_2d)
     tracer_plotter.figures_2d(image=True)
 
 This is what the lens looks like:

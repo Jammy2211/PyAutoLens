@@ -20,7 +20,7 @@ Point Source
 
 Just like for group-scale lenses, we will fit the cluster using a point-source dataset.
 
-.. code-block:: bash
+.. code-block:: python
 
     point_dict = al.PointDict.from_json(
         file_path=path.join(dataset_path, "point_dict.json")
@@ -33,9 +33,9 @@ To model a cluster, we assume that every source galaxy is a ``PointSrcChi`` mode
 evaluated in the source-plane. This removes the need to iteratively solve the lens equation. However, we still define
 a ``PointSolver``, incase we wish to perform image-plane fits.
 
-.. code-block:: bash
+.. code-block:: python
 
-    point_solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
+    point_solver = al.PointSolver(grid=grid_2d, pixel_scale_precision=0.025)
 
 Lens Model
 ----------
@@ -57,7 +57,7 @@ A cluster scale strong lens model is typically composed of the following:
 
 Therefore, we again load the model from a ``.json`` file:
 
-.. code-block:: bash
+.. code-block:: python
 
     model_path = path.join("scripts", "group", "models")
     model_file = path.join(model_path, "lens_x3__source_x1.json")
@@ -94,7 +94,7 @@ Lens Modeling
 
 We are now able to model this dataset as a point source:
 
-.. code-block:: bash
+.. code-block:: python
 
     search = af.DynestyStatic(name="overview_clusters")
 
@@ -107,7 +107,7 @@ Result
 
 The result contains information on the BCG, cluster scale dark matter halo and mass-light scaling relation:
 
-.. code-block:: bash
+.. code-block:: python
 
     print(result.max_log_likelihood_instance.galaxies.bcg.mass)
     print(result.max_log_likelihood_instance.galaxies.dark.mass)

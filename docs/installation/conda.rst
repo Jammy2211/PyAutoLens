@@ -3,6 +3,9 @@
 Installation with conda
 =======================
 
+Install
+-------
+
 Installation via a conda environment circumvents compatibility issues when installing certain libraries. This guide
 assumes you have a working installation of `conda <https://conda.io/miniconda.html>`_.
 
@@ -50,6 +53,13 @@ You may get warnings which state something like:
 If you see these messages, they do not mean that the installation has failed and the instructions below will
 identify clearly if the installation is a success.
 
+If there are no errors (but only the warnings above) **PyAutoLens** is installed! 
+
+If there is an error check out the `troubleshooting section <https://pyautolens.readthedocs.io/en/latest/installation/troubleshooting.html>`_.
+
+Workspace
+---------
+
 Next, clone the ``autolens workspace`` (the line ``--depth 1`` clones only the most recent branch on
 the ``autolens_workspace``, reducing the download size):
 
@@ -64,6 +74,13 @@ Run the ``welcome.py`` script to get started!
 .. code-block:: bash
 
    python3 welcome.py
+
+It should be clear that **PyAutoLens** runs without issue. 
+
+If there is an error check out the `troubleshooting section <https://pyautolens.readthedocs.io/en/latest/installation/troubleshooting.html>`_.
+
+Optional
+--------
 
 For interferometer analysis there are two optional dependencies that must be installed via the commands:
 

@@ -3,91 +3,66 @@
 Troubleshooting
 ===============
 
-LLVMLite / numba
-----------------
+Pip Version
+-----------
 
-The libraries ``numba`` and ``llvmlite`` cause known installation issues when installing via ``conda`` or ``pip``.
-
-There are three circumstances where these errors arise:
-
-**1) llvmlite and numba are already installed**
-
-In this case, the installation of autolens raises an exception like the one below:
-
-.. code-block:: bash
-
-   Cannot uninstall 'llvmlite'. It is a distutils installed project and thus we cannot accurately determine which
-   files belong to it which would lead to only a partial uninstall.
-
-This means that ``llvmlite`` and ``numba`` are already installed, which you can check as follows:
-
-.. code-block:: bash
-
-   pip show llvmlite
-   pip show numba
-
-**PyAutoLens** works fine across many versions of llvmlite and numba, so you should be ok to circumvent this error by
-simply not reinstalling these libraries when you install **PyAutoLens**:
-
-.. code-block:: bash
-
-    pip install autolens --ignore-installed llvmlite numba
-
-**2) llvmlite and numba are not already installed**
-
-In this case, a dependency error will arise where one of these libraries could not be installed. If you are trying to
-install via pip, we recommend you instead follow the `installation via conda <https://pyautolens.readthedocs.io/en/latest/installation/conda.html>`_ instructions
-which install these libraries as part of the ``conda`` environment.
-
-A common error for installing llvmlite is that a config file is missing:
-
-.. code-block:: bash
-
-   Failed to install - No such file or directory: 'llvm-config': 'llvm-config'
-
-The first solution to try is to upgrade your pip via one of the following commands:
+If an error message appears after trying to run ``pip install autolens`` first make sure you are using
+the latest version of pip.
 
 .. code-block:: bash
 
     pip install --upgrade pip
     pip3 install --upgrade pip
 
-You may then retry the autolens installation:
+NumPy / numba
+-------------
+
+The libraries ``numpy`` and ``numba`` can be installed with incompatible versions.
+
+An error message like the one below occurs when importing **PyAutoGalaxy**:
 
 .. code-block:: bash
 
-    pip install autolens
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+      File "/home/jammy/venvs/PyAutoMay2/lib/python3.8/site-packages/autolens/__init__.py", line 1, in <module>
+        from autoarray import preprocess
+      File "/home/jammy/venvs/PyAutoMay2/lib/python3.8/site-packages/autoarray/__init__.py", line 2, in <module>
+        from . import type
+      File "/home/jammy/venvs/PyAutoMay2/lib/python3.8/site-packages/autoarray/type.py", line 7, in <module>
+        from autoarray.mask.mask_1d import Mask1D
+      File "/home/jammy/venvs/PyAutoMay2/lib/python3.8/site-packages/autoarray/mask/mask_1d.py", line 8, in <module>
+        from autoarray.structures.arrays import array_1d_util
+      File "/home/jammy/venvs/PyAutoMay2/lib/python3.8/site-packages/autoarray/structures/arrays/array_1d_util.py", line 5, in <module>
+        from autoarray import numba_util
+      File "/home/jammy/venvs/PyAutoMay2/lib/python3.8/site-packages/autoarray/numba_util.py", line 2, in <module>
+        import numba
+      File "/home/jammy/venvs/PyAutoMay2/lib/python3.8/site-packages/numba/__init__.py", line 200, in <module>
+        _ensure_critical_deps()
+      File "/home/jammy/venvs/PyAutoMay2/lib/python3.8/site-packages/numba/__init__.py", line 140, in _ensure_critical_deps
+        raise ImportError("Numba needs NumPy 1.21 or less")
+    ImportError: Numba needs NumPy 1.21 or less
 
-In the above solution fails, you can manually install the following versions
-of ``llvmlite==0.38.0``, ``numba==0.51.1`` and ``numpy==1.22.2`` which are known to work with **PyAutoLens**:
-
-.. code-block:: bash
-
-    pip install llvmlite==0.38.0
-    pip install numba==0.53.1 -ignore-installed llvmlite
-    pip install numpy==1.22.2
-
-    pip install autolens --ignore-installed llvmlite numba numpy
-
-This may raise warnings, but **PyAutoLens** has been tested with this combination of versions which have had less
-installation issues.
-
-**3) The version of numba and numpy clash**
-
-If numba and numpy are not on versions compatible with one another the following error can arise when running autolens:
-
-.. code-block:: bash
-
-    TypeError: expected dtype object, got 'numpy.dtype[float64]'
-
-The easiest solution is to downgrade to ``numpy==1.22.2``:
+This can be fixed by reinstalling numpy with the version requested by the error message, in the example
+numpy 1.21 (you should replace the ``==1.21.0`` with a different version if requested).
 
 .. code-block:: bash
 
-    pip install numpy==1.22.2
+    pip install numpy==1.21.0
 
+Pip / Conda
+-----------
 
-If you are still facing installation issues please `raise an issue on the GitHub issues page <https://github.com/Jammy2211/PyAutoLens/issues>`_.
+If you are trying to `install via pip <https://pyautolens.readthedocs.io/en/latest/installation/pip.html>`_ but
+still haing issues, we recommend you try to `install via conda <https://pyautogalaxy.readthedocs.io/en/latest/installation/conda.html>`_
+instead, or visa versa.
+
+Support
+-------
+
+If you are still having issues with installation, please raise an issue on the
+`autolens_workspace issues page <https://github.com/Jammy2211/autolens_workspace/issues>`_ with a description of the
+problem and your system setup (operating system, Python version, etc.).
 
 Current Working Directory
 -------------------------
@@ -105,7 +80,6 @@ The reasons for this are so that **PyAutoLens** can:
  - Load configuration settings from config files in the ``autolens_workspace/config`` folder.
  - Load example data from the ``autolens_workspace/dataset`` folder.
  - Output the results of models fits to your hard-disk to the ``autolens/output`` folder.
- - Import modules from the ``autolens_workspace``, for example ``from autolens_workspace.transdimensional import pipelines``.
 
 If you have any errors relating to importing modules, loading data or outputting results it is likely because you
 are not running the script with the ``autolens_workspace`` as the working directory!
@@ -135,10 +109,3 @@ works (TKAgg has worked on Linux machines, Qt5Agg has worked on new MACs). For e
 
     [general]
     backend = TKAgg
-
-Support
--------
-
-If you are still having issues with installation or using **PyAutoLens** in general, please raise an issue on the
-`autolens_workspace issues page <https://github.com/Jammy2211/autolens_workspace/issues>`_ with a description of the
-problem and your system setup (operating system, Python version, etc.).

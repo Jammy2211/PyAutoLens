@@ -25,7 +25,7 @@ are interested in developing your own software to perform advanced model-fitting
 
 We import it separately to **PyAutoLens**
 
-.. code-block:: bash
+.. code-block:: python
 
     import autofit as af
 
@@ -36,7 +36,7 @@ We compose the lens model that we fit to the data using a ``Model`` object, whic
 ``LightProfile`` and ``MassProfile`` used previously, however their parameters are not specified and are instead
 determined by a fitting procedure.
 
-.. code-block:: bash
+.. code-block:: python
 
     lens_galaxy_model = af.Model(
         al.Galaxy,
@@ -52,7 +52,7 @@ we could easily extend this object to compose highly complex models containing m
 The reason we create separate ``Collection``'s for the ``galaxies`` and ``model`` is because the `model`
 can be extended to include other components than just galaxies.
 
-.. code-block:: bash
+.. code-block:: python
 
     galaxies = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
     model = af.Collection(galaxies=galaxies)
@@ -75,7 +75,7 @@ maximizing its *log likelihood*.
 In this example we use ``dynesty`` (https://github.com/joshspeagle/dynesty), a nested sampling algorithm we find is
 very effective at lens modeling.
 
-.. code-block:: bash
+.. code-block:: python
 
     search = af.DynestyStatic(name="search_example")
 
@@ -89,7 +89,7 @@ Analysis
 We next create an ``AnalysisImaging`` object, which contains the ``log likelihood function`` that the non-linear
 search calls to fit the lens model to the data.
 
-.. code-block:: bash
+.. code-block:: python
 
     analysis = al.AnalysisImaging(dataset=imaging)
 
@@ -99,7 +99,7 @@ Model-Fit
 To perform the model-fit we pass the model and analysis to the search's fit method. This will output results (e.g.,
 dynesty samples, model parameters, visualization) to hard-disk.
 
-.. code-block:: bash
+.. code-block:: python
 
     result = search.fit(model=model, analysis=analysis)
 
@@ -124,7 +124,7 @@ The fit above returns a ``Result`` object, which includes lots of information on
 
 Below we print the maximum log likelihood model inferred.
 
-.. code-block:: bash
+.. code-block:: python
 
     print(result.max_log_likelihood_instance.galaxies.lens)
     print(result.max_log_likelihood_instance.galaxies.source)
@@ -135,7 +135,7 @@ parameter samples, log likelihood values and tools to compute the errors on the 
 **PyAutoLens** includes many visualization tools for plotting the results of a non-linear search, for example we can
 make a corner plot of the probability density function (PDF):
 
-.. code-block:: bash
+.. code-block:: python
 
     dynesty_plotter = aplt.DynestyPlotter(samples=result.samples)
     dynesty_plotter.cornerplot()
@@ -149,7 +149,7 @@ Here is an example of how a PDF estimated for a lens model appears:
 The result also contains the maximum log likelihood ``Tracer`` and ``FitImaging`` objects and which can easily be
 plotted.
 
-.. code-block:: bash
+.. code-block:: python
 
     tracer_plotter = aplt.TracerPlotter(tracer=result.max_log_likelihood_tracer, grid=mask.masked_grid)
     tracer_plotter.subplot_tracer()
@@ -173,7 +173,7 @@ Model Customization
 The ``Model`` can be fully customized, making it simple to parameterize and fit many different lens models
 using any combination of ``LightProfile``'s and ``MassProfile``'s:
 
-.. code-block:: bash
+.. code-block:: python
 
     lens_galaxy_model = af.Model(
         al.Galaxy,

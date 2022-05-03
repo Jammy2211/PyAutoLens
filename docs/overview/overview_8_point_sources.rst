@@ -28,7 +28,7 @@ source plane. This is an iterative problem performed in a very different way to 
 
 To treat a source as a point source, we create it as a galaxy using ``Point`` object and pass it to a tracer:
 
-.. code-block:: bash
+.. code-block:: python
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
@@ -54,10 +54,10 @@ There are many options that can be passed to a ``PositionsSovler``, below we onl
 image-plane coordinates to be calculated too, which is 0.001", much lower than the resolution fo the data we observed
 the point-sources on!
 
-.. code-block:: bash
+.. code-block:: python
 
     solver = al.PointSolver(
-        grid=grid,
+        grid=grid_2d,
         pixel_scale_precision=0.001,
     )
 
@@ -79,7 +79,7 @@ of each multiple image and their noise values (which would be the resolution of 
 
 The positions below correspond to those of an ``EllIsothermal`` mass model.
 
-.. code-block:: bash
+.. code-block:: python
 
     point_dataset = al.PointDataset(
         name="point_0",
@@ -97,13 +97,13 @@ Each point source dataset is therefore passed into a ``PointDict`` object before
 this simple example only one dataset is passed in, but in the galaxy-cluster examples you'll see this object makes it
 straightforward to model datasets with many lensed sources.
 
-.. code-block:: bash
+.. code-block:: python
 
     point_dict = al.PointDict(point_dataset_list=[point_dataset])
 
 We can print the ``positions`` of this dictionary and dataset, as well as their noise-map values.
 
-.. code-block:: bash
+.. code-block:: python
 
     print("Point Source Dataset Name:")
     print(point_dict["point_0"].name)
@@ -131,7 +131,7 @@ This uses the names of each point-source in the dataset and model to create indi
 ``fluxes`` and other attributes that could be fitted. This allows us to inspect the residual-map,
 chi-squared, likelihood, etc of every individual fit to part of our point source dataset.
 
-.. code-block:: bash
+.. code-block:: python
 
     fit = al.FitPointDict(point_dict=point_dict, tracer=tracer, point_solver=solver)
 
@@ -149,7 +149,7 @@ This uses an ``AnalysisPoint`` object which fits the lens model in the correct w
 This includes mapping the ``name``'s of each dataset in the ``PointDict`` to the names of the point sources in
 the lens model.
 
-.. code-block:: bash
+.. code-block:: python
 
     lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal)
     source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, point_0=al.ps.Point)

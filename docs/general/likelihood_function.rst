@@ -1,5 +1,8 @@
 .. _likelihood_function:
 
+Likelihood Function
+===================
+
 The ``autolens_workspace`` contains Jupyter notebooks describing the (log) likelihood functions used by **PyAutoLens**.
 
 The notebooks provide a step-by-step guide of how **PyAutoLens** fits strong lens data, with the aim to make

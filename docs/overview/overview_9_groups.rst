@@ -21,13 +21,13 @@ Modeling group scale lenses is challenging, because each individual galaxy must 
 For this simple overview, we will therefore model the system as a point source, which reduces the complexity of the 
 model and reduces the computational run-time of the model-fit.
 
-.. code-block:: bash
+.. code-block:: python
 
     point_dict = al.PointDict.from_json(
         file_path=path.join(dataset_path, "point_dict.json")
     )
 
-    point_solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
+    point_solver = al.PointSolver(grid=grid_2d, pixel_scale_precision=0.025)
 
 Model via JSON
 --------------
@@ -36,7 +36,7 @@ We now compose the lens model. For groups there could be many hundreds of galaxi
 examples explicitly wrote the model out via Python code, for group modeling we opt to write the model in .json files,
 which is loaded as follows:
 
-.. code-block:: bash
+.. code-block:: python
 
     model_path = path.join("scripts", "group", "models")
     model_file = path.join(model_path, "lens_x3__source_x1.json")
@@ -61,7 +61,7 @@ Lens Modeling
 We are now able to model this dataset as a point source, using the exact same tools we used in the point source
 overview.
 
-.. code-block:: bash
+.. code-block:: python
 
     search = af.DynestyStatic(name="overview_groups")
 
@@ -76,7 +76,7 @@ Result
 
 The result contains information on every galaxy in our lens model:
 
-.. code-block:: bash
+.. code-block:: python
 
     print(result.max_log_likelihood_instance.galaxies.lens_0.mass)
     print(result.max_log_likelihood_instance.galaxies.lens_1.mass)

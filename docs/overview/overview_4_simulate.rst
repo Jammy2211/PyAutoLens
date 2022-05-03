@@ -14,7 +14,7 @@ Hubble Space Telescope goes through observe a strong lens. This includes account
 determine the signal-to-noise of the data, blurring the observed light of the strong lens with the telescope optics
 and accounting for the background sky in the exposure which adds Poisson noise:
 
-.. code-block:: bash
+.. code-block:: python
 
     psf_2d = ag.Kernel2D.from_gaussian(
         shape_native=(11, 11), sigma=0.1, pixel_scales=grid_2d.pixel_scales
@@ -30,9 +30,9 @@ and accounting for the background sky in the exposure which adds Poisson noise:
 Once we have a simulator, we can use it to create an imaging dataset which consists of an image, noise-map and
 Point Spread Function (PSF) by passing it a tracer and grid:
 
-.. code-block:: bash
+.. code-block:: python
 
-    imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
+    imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid_2d)
 
 Here is what our dataset looks like:
 

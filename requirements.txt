@@ -1,5 +1,0 @@
-astropy>=3.0.0
-numpydoc>=1.0.0
-matplotlib>=3.0.3
-numpy>=1.18.0
-pyprojroot==0.2.0

@@ -18,13 +18,13 @@ Rectangular Example
 
 To fit this image with an ``Inversion``, we first mask the ``Imaging`` object:
 
-.. code-block:: bash
+.. code-block:: python
 
    mask = al.Mask2D.circular(
       shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.6
     )
 
-   imaging = imaging.apply_mask(mask=mask)
+   imaging = imaging.apply_mask(mask=mask_2d)
 
 To reconstruct the source using a pixel-grid, we simply pass it the ``Pixelization`` class we want to reconstruct its
 light using.
@@ -33,7 +33,7 @@ We also pass a ``Regularization`` scheme which applies a smoothness prior on the
 
 Below, we use a ``Rectangular`` pixelization with resolution 40 x 40 and a ``Constant`` regularization scheme:
 
-.. code-block:: bash
+.. code-block:: python
 
     source_galaxy = al.Galaxy(
         redshift=1.0,
@@ -45,7 +45,7 @@ To fit the data, we simply pass this source-galaxy into a ``Tracer`` (complete w
 ``FitImaging`` object will automatically use the source galaxy's ``Pixelization`` and ``Regularization`` to reconstruct
 the lensed source's light using the ``Inversion``:
 
-.. code-block:: bash
+.. code-block:: python
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 

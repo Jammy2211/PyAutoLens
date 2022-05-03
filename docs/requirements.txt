@@ -8,3 +8,8 @@ autoconf==2022.05.02.1
 autofit==2022.05.02.1
 autoarray==2022.05.02.1
 autogalaxy==2022.05.02.1
+furo
+myst-parser
+sphinx_copybutton
+sphinx_design
+sphinx_inline_tabs

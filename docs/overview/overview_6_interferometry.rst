@@ -16,9 +16,9 @@ To begin, we define a real-space mask. Although interferometer lens modeling is 
 therefore Fourier space, we still need to define the grid of coordinates in real-space from which the lensed source's
 images are computed. It is this image that is mapped to Fourier space to compare to the uv-plane data.
 
-.. code-block:: bash
+.. code-block:: python
 
-    real_space_mask = ag.Mask2D.circular(
+    real_space_mask_2d = ag.Mask2D.circular(
         shape_native=(400, 400), pixel_scales=0.025, radius=3.0
     )
 
@@ -28,7 +28,7 @@ Interferometer Data
 We next load an ``Interferometer`` dataset from fits files, which follows the same API that we have seen
 for an ``Imaging`` object.
 
-.. code-block:: bash
+.. code-block:: python
 
     dataset_path = "/path/to/dataset/folder"
 
@@ -36,7 +36,7 @@ for an ``Imaging`` object.
         visibilities_path=path.join(dataset_path, "visibilities.fits"),
         noise_map_path=path.join(dataset_path, "noise_map.fits"),
         uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
-        real_space_mask=real_space_mask
+        real_space_mask=real_space_mask_2d
     )
 
     interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
@@ -59,7 +59,7 @@ We discuss below how **PyAutoLens** can scale up to large visibilities datasets 
 
 This can also plot the dataset in real-space, using the fast Fourier transforms described below.
 
-.. code-block:: bash
+.. code-block:: python
 
     interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
     interferometer_plotter.figures_2d(dirty_image=True, dirty_signal_to_noise_map=True)
@@ -83,7 +83,7 @@ real-space to the uv-plane.
 This operation uses a ``Transformer`` object, of which there are multiple available
 in **PyAutoLens**. This includes a direct Fourier transform which performs the exact Fourier transform without approximation.
 
-.. code-block:: bash
+.. code-block:: python
 
     transformer_class = al.TransformerDFT
 
@@ -94,14 +94,14 @@ For this reason, **PyAutoLens** supports the non-uniform fast fourier transform 
 **PyNUFFT** (https://github.com/jyhmiinlin/pynufft), which is significantly faster, being able too perform a Fourier
 transform of ~10 million in less than a second!
 
-.. code-block:: bash
+.. code-block:: python
 
     transformer_class = al.TransformerNUFFT
 
 To perform a fit, we follow the same process we did for imaging. We do not need to mask an interferometer dataset,
 but we will apply the settings above:
 
-.. code-block:: bash
+.. code-block:: python
 
     interferometer = interferometer.apply_settings(
         settings=al.SettingsInterferometer(transformer_class=transformer_class)
@@ -112,7 +112,7 @@ Fitting
 
 The interferometer can now be passed to a ``FitInterferometer`` object to fit it to a data-set:
 
-.. code-block:: bash
+.. code-block:: python
 
     fit = al.FitInterferometer(
         interferometer=interferometer, tracer=tracer
@@ -172,7 +172,7 @@ Whereas we previously used an ``AnalysisImaging`` object, we instead use an ``An
 the lens model in the correct way for an interferometer dataset. This includes mapping the lens model from real-space
 to the uv-plane via the Fourier transform discussed above:
 
-.. code-block:: bash
+.. code-block:: python
 
     lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal)
     source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=al.lp.EllExponential)
@@ -191,9 +191,9 @@ Simulations
 Simulated interferometer datasets can be generated using the ``SimulatorInterferometer`` object, which includes adding
 Gaussian noise to the visibilities:
 
-.. code-block:: bash
+.. code-block:: python
 
-    real_space_grid = ag.Grid2D.uniform(
+    real_space_grid_2d = ag.Grid2D.uniform(
         shape_native=real_space_mask.shape_native,
         pixel_scales=real_space_mask.pixel_scales
     )

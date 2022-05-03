@@ -12,7 +12,7 @@ Loading Data
 We are now going to use a ``Tracer`` to fit imaging data of a strong lens, which we begin by loading
 from .fits files as an ``Imaging`` object:
 
-.. code-block:: bash
+.. code-block:: python
 
     dataset_path = "/path/to/dataset/folder"
 
@@ -46,13 +46,13 @@ Masking
 We now need to mask the data, so that regions where there is no signal (e.g. the edges) are omitted from the fit. To do
 this we can use a ``Mask2D`` object, which for this example we'll create as a 3.0" circle.
 
-.. code-block:: bash
+.. code-block:: python
 
     mask = al.Mask2D.circular(
         shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, sub_size=1, radius=3.0
     )
 
-    imaging = imaging.apply_mask(mask=mask)
+    imaging = imaging.apply_mask(mask=mask_2d)
 
     imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
     imaging_plotter.figures_2d(image=True)
@@ -74,7 +74,7 @@ By passing a ``Tracer`` and ``Imaging`` object to a ``FitImaging`` object, we cr
 The model-image is the image of the ``Tracer`` blurred with the ``Imaging`` dataset's PSF, ensuring our fit to the data
 provides a like-with-like comparison.
 
-.. code-block:: bash
+.. code-block:: python
 
     fit = al.FitImaging(dataset=masked_imaging, tracer=tracer)
 
@@ -96,7 +96,7 @@ The ``FitImaging`` object does a lot more than just create the model-image, it a
 the data to produce a residual-map and combines this with the noise-map to compute a chi-squared-map, both of which
 we can plot:
 
-.. code-block:: bash
+.. code-block:: python
 
     fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit)
 
@@ -119,7 +119,7 @@ chi-squared values minimized:
 Most importantly, the ``FitImaging`` object also provides us with a *log likelihood*, a single value measure of how good
 our ``Tracer`` fitted the dataset:
 
-.. code-block:: bash
+.. code-block:: python
 
     print(fit.log_likelihood)
 

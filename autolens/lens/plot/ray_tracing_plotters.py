@@ -306,6 +306,28 @@ class TracerPlotter(Plotter):
             deflections_x=True,
         )
 
+    def subplot_lensed_images(self):
+        """
+        Subplot of the lensed image of every plane.
+
+        For example, for a 2 plane `Tracer`, this creates a subplot with 2 panels, one for the image-plane image
+        and one for the source-plane lensed image. If there are 3 planes, 3 panels are created, showing
+        images at each plane.
+        """
+        number_subplots = self.tracer.total_planes
+
+        self.open_subplot_figure(number_subplots=number_subplots)
+
+        for plane_index in range(0, self.tracer.total_planes):
+
+            plane_plotter = self.plane_plotter_from(plane_index=plane_index)
+            plane_plotter.figures_2d(
+                image=True, title_suffix=f" Of Plane {plane_index}"
+            )
+
+        self.mat_plot_2d.output.subplot_to_figure(auto_filename=f"subplot_lensed_images")
+        self.close_subplot_figure()
+
     def subplot_plane_images(self):
         """
         Subplot of the image of every plane in its own plane.
