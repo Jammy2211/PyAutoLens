@@ -131,6 +131,6 @@ them. If you are interested please contact me! (https://github.com/Jammy2211).
 Wrap-Up
 -------
 
-The ``cluster`` package of the ``autolens_workspace`` contains numerous example scripts for performing cluster-sale
+The `clusters <https://github.com/Jammy2211/autolens_workspace/tree/release/notebooks/clusters>`_ package of the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_  contains numerous example scripts for performing cluster-sale
 modeling and simulating cluster-scale strong lens datasets.
 

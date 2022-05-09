@@ -113,7 +113,7 @@ def test__info():
         traced_grids_of_planes_for_inversion=None,
         sparse_image_plane_grid_pg_list=None,
         relocated_grid=None,
-        linear_obj_list=None,
+        mapper_list=None,
         operated_mapping_matrix=None,
         curvature_matrix_preload=None,
     )
@@ -159,7 +159,7 @@ def test__info():
         traced_grids_of_planes_for_inversion=1,
         relocated_grid=1,
         sparse_image_plane_grid_pg_list=1,
-        linear_obj_list=1,
+        mapper_list=1,
         operated_mapping_matrix=1,
         curvature_matrix_preload=1,
         regularization_matrix=1,

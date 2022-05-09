@@ -1566,13 +1566,13 @@ class TestAbstractTracerData:
         assert traced_sparse_grids_list_of_planes[3] == None
         assert (traced_sparse_grids_list_of_planes[4][0] == traced_grid_pix_1).all()
 
-    def test__linear_obj_list_from__x2_planes(self, sub_grid_2d_7x7):
+    def test__mapper_list_from__x2_planes(self, sub_grid_2d_7x7):
 
         galaxy_no_pix = al.Galaxy(redshift=0.5)
 
         tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_no_pix])
 
-        mappers_of_planes = tracer.linear_obj_list_from(grid=sub_grid_2d_7x7)
+        mappers_of_planes = tracer.mapper_list_from(grid=sub_grid_2d_7x7)
         assert mappers_of_planes == []
 
         galaxy_no_pix = al.Galaxy(redshift=0.5)
@@ -1603,11 +1603,11 @@ class TestAbstractTracerData:
             galaxies=[galaxy_no_pix, galaxy_pix_0, galaxy_pix_1, galaxy_pix_2]
         )
 
-        linear_obj_list = tracer.linear_obj_list_from(grid=sub_grid_2d_7x7)
+        mapper_list = tracer.mapper_list_from(grid=sub_grid_2d_7x7)
 
-        assert linear_obj_list == [1, 2, 3]
+        assert mapper_list == [1, 2, 3]
 
-    def test__linear_obj_list_from__multi_plane(self, sub_grid_2d_7x7):
+    def test__mapper_list_from__multi_plane(self, sub_grid_2d_7x7):
 
         galaxy_no_pix_0 = al.Galaxy(
             redshift=0.25,
@@ -1641,9 +1641,9 @@ class TestAbstractTracerData:
             ]
         )
 
-        linear_obj_list = tracer.linear_obj_list_from(grid=sub_grid_2d_7x7)
+        mapper_list = tracer.mapper_list_from(grid=sub_grid_2d_7x7)
 
-        assert linear_obj_list == [1, 2]
+        assert mapper_list == [1, 2]
 
     def test__inversion_imaging_from(self, sub_grid_2d_7x7, masked_imaging_7x7):
 

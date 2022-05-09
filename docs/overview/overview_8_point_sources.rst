@@ -166,7 +166,7 @@ the lens model.
 Wrap-Up
 -------
 
-The ``point_source`` package of the ``autolens_workspace`` contains numerous example scripts for performing point source
+The `point_source <https://github.com/Jammy2211/autolens_workspace/tree/release/notebooks/point_source>`_ package of the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_  contains numerous example scripts for performing point source
 modeling to datasets where there are only a couple of lenses and lensed sources, which fall under the category of
 'galaxy scale' objects.
 

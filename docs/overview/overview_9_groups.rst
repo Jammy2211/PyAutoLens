@@ -107,5 +107,5 @@ at `this link. <https://github.com/Jammy2211/autolens_workspace/blob/master/note
 Wrap-Up
 -------
 
-The ``group`` package of the ``autolens_workspace`` contains numerous example scripts for performing group-sale modeling
+The `group <https://github.com/Jammy2211/autolens_workspace/tree/release/notebooks/group>`_ package of the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ contains numerous example scripts for performing group-sale modeling
 and simulating group-scale strong lens datasets.

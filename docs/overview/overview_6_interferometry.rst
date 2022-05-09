@@ -210,5 +210,6 @@ Gaussian noise to the visibilities:
 Wrap-Up
 -------
 
-The ``interferometer`` package of the ``autolens_workspace`` contains numerous example scripts for performing
+The `interferometer <https://github.com/Jammy2211/autolens_workspace/tree/release/notebooks/interferometer>`_ package
+of the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ contains numerous example scripts for performing
 interferometer modeling and simulating strong lens interferometer datasets.

@@ -466,14 +466,14 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def regularization_pg_list(self) -> List[List]:
         return [plane.regularization_list for plane in self.planes]
 
-    def linear_obj_list_from(
+    def mapper_list_from(
         self,
         grid: aa.type.Grid2DLike,
         settings_pixelization=aa.SettingsPixelization(),
         preloads=Preloads(),
     ):
 
-        linear_obj_list = []
+        mapper_list = []
 
         if preloads.traced_grids_of_planes_for_inversion is None:
             traced_grids_of_planes = self.traced_grid_2d_list_of_inversion_from(
@@ -519,9 +519,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
                         settings_pixelization=settings_pixelization,
                         preloads=preloads,
                     )
-                    linear_obj_list.append(mapper)
+                    mapper_list.append(mapper)
 
-        return linear_obj_list
+        return mapper_list
 
     def inversion_imaging_from(
         self,
@@ -535,9 +535,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         preloads=Preloads(),
     ):
 
-        if preloads.linear_obj_list is None:
+        if preloads.mapper_list is None:
 
-            linear_obj_list = self.linear_obj_list_from(
+            mapper_list = self.mapper_list_from(
                 grid=grid,
                 settings_pixelization=settings_pixelization,
                 preloads=preloads,
@@ -545,7 +545,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         else:
 
-            linear_obj_list = preloads.linear_obj_list
+            mapper_list = preloads.mapper_list
+
+        linear_obj_list = mapper_list
 
         return inversion_imaging_unpacked_from(
             image=image,
@@ -571,9 +573,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         preloads=Preloads(),
     ):
 
-        if preloads.linear_obj_list is None:
+        if preloads.mapper_list is None:
 
-            linear_obj_list = self.linear_obj_list_from(
+            mapper_list = self.mapper_list_from(
                 grid=grid,
                 settings_pixelization=settings_pixelization,
                 preloads=preloads,
@@ -581,7 +583,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         else:
 
-            linear_obj_list = preloads.linear_obj_list
+            mapper_list = preloads.mapper_list
+
+        linear_obj_list = mapper_list
 
         return inversion_interferometer_unpacked_from(
             visibilities=visibilities,

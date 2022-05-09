@@ -75,6 +75,6 @@ Below, we show what a strong lens looks like for different instruments.
 Wrap Up
 -------
 
-The ``autolens_workspace`` includes many example simulators for simulating strong lenses with a range of different
-physical properties, to make imaging datasets for a variety of telescopes (e.g. Hubble, Euclid) as well as
-interferometer datasets.
+The autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_  includes many example simulators for
+simulating strong lenses with a range of different physical properties, to make imaging datasets for a variety of
+telescopes (e.g. Hubble, Euclid) as well as interferometer datasets.

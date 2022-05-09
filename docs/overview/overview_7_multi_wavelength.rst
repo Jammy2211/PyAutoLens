@@ -32,7 +32,7 @@ Every dataset in our multi-wavelength observations can have its own unique pixel
 
 .. code-block:: python
 
-    pixel_scales_list = [0.08, 0.012]
+    pixel_scales_list = [0.08, 0.12]
 
 Multi-wavelength imaging datasets do not use any new objects or class in **PyAutoLens**.
 
@@ -220,8 +220,8 @@ to a dataset observed in the g and I bands.
 
     for wavelength, imaging in zip(wavelength_list, imaging_list):
 
-        lens_intensity = af.Add(af.Multiply(wavelength, lens_m), lens_c)
-        source_intensity = af.Add(af.Multiply(wavelength, source_m), source_c)
+        lens_intensity = (wavelength * lens_m) + lens_c
+        source_intensity = (wavelength * source_m) + source_c
 
         analysis_list.append(
             al.AnalysisImaging(dataset=imaging).with_model(
@@ -259,11 +259,9 @@ sub millimeter wavelengths.
 
 A number of benefits are apparently if we combine the analysis of both datasets at both wavelengths:
 
- - The lens galaxy is invisible at sub-mm wavelengths, making it straight-forward to infer a lens mass model by
- fitting the source at submm wavelengths.
+ - The lens galaxy is invisible at sub-mm wavelengths, making it straight-forward to infer a lens mass model by fitting the source at submm wavelengths.
 
- - The source galaxy appears completely different in the g-band and at sub-millimeter wavelengths, providing a lot
- more information with which to constrain the lens galaxy mass model.
+ - The source galaxy appears completely different in the g-band and at sub-millimeter wavelengths, providing a lot more information with which to constrain the lens galaxy mass model.
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/multiwavelength/dirty_image.png
   :width: 400
@@ -272,3 +270,10 @@ A number of benefits are apparently if we combine the analysis of both datasets 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/multiwavelength/g_image.png
   :width: 400
   :alt: Alternative text
+
+Wrap-Up
+-------
+
+The `multi <https://github.com/Jammy2211/autolens_workspace/tree/release/notebooks/multi>`_ package
+of the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ contains numerous example scripts for performing
+multi-wavelength modeling and simulating strong lenses with multiple datasets.
