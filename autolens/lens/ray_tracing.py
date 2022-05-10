@@ -466,6 +466,29 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def regularization_pg_list(self) -> List[List]:
         return [plane.regularization_list for plane in self.planes]
 
+    def light_profile_linear_func_list_from(
+        self, grid: aa.type.Grid2DLike, preloads=Preloads()
+    ):
+
+        light_profile_linear_func_list = []
+
+        # if preloads.traced_grids_of_planes_for_inversion is None:
+        traced_grids_of_planes_list = self.traced_grid_2d_list_from(grid=grid)
+        # else:
+        #  traced_grids_of_planes = preloads.traced_grids_of_planes_for_inversion
+
+        for (plane_index, plane) in enumerate(self.planes):
+
+            if plane.has_light_profile_linear:
+
+                light_profiles_linear_of_plane_list = plane.light_profile_linear_func_list_from(
+                    source_grid_slim=traced_grids_of_planes_list[plane_index]
+                )
+
+                light_profile_linear_func_list += light_profiles_linear_of_plane_list
+
+        return light_profile_linear_func_list
+
     def mapper_list_from(
         self,
         grid: aa.type.Grid2DLike,
@@ -476,11 +499,11 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         mapper_list = []
 
         if preloads.traced_grids_of_planes_for_inversion is None:
-            traced_grids_of_planes = self.traced_grid_2d_list_of_inversion_from(
+            traced_grids_of_planes_list = self.traced_grid_2d_list_of_inversion_from(
                 grid=grid
             )
         else:
-            traced_grids_of_planes = preloads.traced_grids_of_planes_for_inversion
+            traced_grids_of_planes_list = preloads.traced_grids_of_planes_for_inversion
 
         if preloads.traced_sparse_grids_list_of_planes is None:
             traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = self.traced_sparse_grid_pg_list_from(
@@ -503,7 +526,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
                 ):
 
                     mapper = plane.mapper_from(
-                        source_grid_slim=traced_grids_of_planes[plane_index],
+                        source_grid_slim=traced_grids_of_planes_list[plane_index],
                         source_pixelization_grid=traced_sparse_grids_list_of_planes[
                             plane_index
                         ][mapper_index],
@@ -834,14 +857,14 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
             shape_native=grid.shape_native, pixel_scales=grid.pixel_scales, sub_size=1
         )
 
-        traced_grids_of_planes = self.traced_grid_2d_list_from(grid=grid)
+        traced_grids_of_planes_list = self.traced_grid_2d_list_from(grid=grid)
 
         for plane_index, plane in enumerate(self.planes):
             for galaxy in plane.galaxies:
                 for light_profile in galaxy.light_profile_list:
                     if isinstance(light_profile, LightProfileSNR):
                         light_profile.set_intensity_from(
-                            grid=traced_grids_of_planes[plane_index],
+                            grid=traced_grids_of_planes_list[plane_index],
                             exposure_time=exposure_time,
                             background_sky_level=background_sky_level,
                         )

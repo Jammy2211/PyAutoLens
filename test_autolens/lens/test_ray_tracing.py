@@ -1566,6 +1566,61 @@ class TestAbstractTracerData:
         assert traced_sparse_grids_list_of_planes[3] == None
         assert (traced_sparse_grids_list_of_planes[4][0] == traced_grid_pix_1).all()
 
+    def test__light_profile_linear_func_list_from__x2_planes(self, sub_grid_2d_7x7):
+
+        galaxy_no_pix = al.Galaxy(redshift=0.5)
+
+        tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_no_pix])
+
+        light_profile_linear_func_list = tracer.light_profile_linear_func_list_from(
+            grid=sub_grid_2d_7x7
+        )
+
+        assert light_profile_linear_func_list == []
+
+        lp_linear_0 = al.lp_linear.LightProfileLinear()
+        lp_linear_1 = al.lp_linear.LightProfileLinear()
+        lp_linear_2 = al.lp_linear.LightProfileLinear()
+
+        galaxy_no_linear = al.Galaxy(redshift=0.5)
+        galaxy_linear_0 = al.Galaxy(
+            redshift=0.5, lp_linear=lp_linear_0, mass=al.mp.SphIsothermal()
+        )
+
+        galaxy_linear_1 = al.Galaxy(
+            redshift=1.0, lp_linear=lp_linear_1, mass=al.mp.SphIsothermal()
+        )
+        galaxy_linear_2 = al.Galaxy(redshift=2.0, lp_linear=lp_linear_2)
+
+        tracer = al.Tracer.from_galaxies(
+            galaxies=[
+                galaxy_no_linear,
+                galaxy_linear_0,
+                galaxy_linear_1,
+                galaxy_linear_2,
+            ]
+        )
+
+        light_profile_linear_func_list = tracer.light_profile_linear_func_list_from(
+            grid=sub_grid_2d_7x7
+        )
+
+        assert light_profile_linear_func_list[0].light_profile == lp_linear_0
+        assert light_profile_linear_func_list[1].light_profile == lp_linear_1
+        assert light_profile_linear_func_list[2].light_profile == lp_linear_2
+
+        traced_grid_list = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)
+
+        assert light_profile_linear_func_list[0].grid == pytest.approx(
+            sub_grid_2d_7x7, 1.0e-4
+        )
+        assert light_profile_linear_func_list[1].grid == pytest.approx(
+            traced_grid_list[1], 1.0e-4
+        )
+        assert light_profile_linear_func_list[2].grid == pytest.approx(
+            traced_grid_list[2], 1.0e-4
+        )
+
     def test__mapper_list_from__x2_planes(self, sub_grid_2d_7x7):
 
         galaxy_no_pix = al.Galaxy(redshift=0.5)
