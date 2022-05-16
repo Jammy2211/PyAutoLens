@@ -1,4 +1,5 @@
 from astropy import cosmology as cosmo
+import numba
 
 import autofit as af
 
@@ -75,7 +76,7 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
         try:
             fit = self.fit_positions_for(instance=instance)
             return fit.log_likelihood
-        except ValueError as e:
+        except (AttributeError, ValueError, TypeError, numba.TypingError) as e:
             raise exc.FitException from e
 
     def fit_positions_for(self, instance):

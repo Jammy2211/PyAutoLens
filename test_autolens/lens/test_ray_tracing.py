@@ -91,15 +91,10 @@ class TestAbstractTracer:
 
             assert tracer.total_planes == 2
 
-        def test__has_galaxy_with_light_profile(self):
+        def test__has_light_profile(self):
 
-            gal = al.Galaxy(redshift=0.5)
             gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
             gal_mp = al.Galaxy(redshift=0.5, mass_profile=al.mp.SphIsothermal())
-
-            tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
-
-            assert tracer.has_light_profile is False
 
             tracer = al.Tracer.from_galaxies(galaxies=[gal_mp, gal_mp])
 
@@ -109,13 +104,29 @@ class TestAbstractTracer:
 
             assert tracer.has_light_profile is True
 
-            tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal])
-
-            assert tracer.has_light_profile is True
-
             tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_mp])
 
             assert tracer.has_light_profile is True
+
+        def test__has_light_profile_linear(self):
+
+            gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
+            gal_lp_linear = al.Galaxy(
+                redshift=0.5, light_profile=al.lp_linear.EllSersic()
+            )
+            gal_mp = al.Galaxy(redshift=0.5, mass_profile=al.mp.SphIsothermal())
+
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_mp])
+
+            assert tracer.has_light_profile_linear is False
+
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_lp_linear, gal_lp_linear])
+
+            assert tracer.has_light_profile_linear is True
+
+            tracer = al.Tracer.from_galaxies(galaxies=[gal_lp_linear, gal_mp])
+
+            assert tracer.has_light_profile_linear is True
 
         def test_plane_with_galaxy(self, sub_grid_2d_7x7):
 
