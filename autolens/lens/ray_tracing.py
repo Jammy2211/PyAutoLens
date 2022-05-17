@@ -585,7 +585,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         if preloads.mapper_list is None:
 
             mapper_list = self.mapper_list_from(
-                grid=dataset.grid,
+                grid=dataset.grid_inversion,
                 settings_pixelization=settings_pixelization,
                 preloads=preloads,
             )
