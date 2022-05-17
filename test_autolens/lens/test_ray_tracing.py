@@ -1457,6 +1457,21 @@ def test__mapper_list_from(sub_grid_2d_7x7):
 
 def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
 
+    g_linear = al.Galaxy(redshift=0.5, light_linear=al.lp_linear.EllSersic())
+
+    tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g_linear])
+
+    inversion = tracer.inversion_imaging_from(
+        dataset=masked_imaging_7x7,
+        image=masked_imaging_7x7.image,
+        noise_map=masked_imaging_7x7.noise_map,
+        w_tilde=masked_imaging_7x7.w_tilde,
+        settings_pixelization=al.SettingsPixelization(use_border=False),
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
+    )
+
+    assert inversion.reconstruction[0] == pytest.approx(0.002310, 1.0e-2)
+
     pix = al.pix.Rectangular(shape=(3, 3))
     reg = al.reg.Constant(coefficient=0.0)
 
@@ -1481,6 +1496,21 @@ def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
 def test__inversion_interferometer_from(sub_grid_2d_7x7, interferometer_7):
 
     interferometer_7.data = al.Visibilities.ones(shape_slim=(7,))
+
+    g_linear = al.Galaxy(redshift=0.5, light_linear=al.lp_linear.EllSersic())
+
+    tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g_linear])
+
+    inversion = tracer.inversion_interferometer_from(
+        dataset=interferometer_7,
+        visibilities=interferometer_7.visibilities,
+        noise_map=interferometer_7.noise_map,
+        w_tilde=None,
+        settings_pixelization=al.SettingsPixelization(use_border=False),
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
+    )
+
+    assert inversion.reconstruction[0] == pytest.approx(0.000513447, 1.0e-5)
 
     pix = al.pix.Rectangular(shape=(7, 7))
     reg = al.reg.Constant(coefficient=0.0)

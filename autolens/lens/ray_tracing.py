@@ -484,9 +484,15 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         light_profile_linear_func_list = []
 
         traced_grids_of_planes_list = self.traced_grid_2d_list_from(grid=grid)
-        traced_blurring_grids_of_planes_list = self.traced_grid_2d_list_from(
-            grid=blurring_grid
-        )
+
+        if blurring_grid is not None:
+            traced_blurring_grids_of_planes_list = self.traced_grid_2d_list_from(
+                grid=blurring_grid
+            )
+        else:
+            traced_blurring_grids_of_planes_list = [None] * len(
+                traced_grids_of_planes_list
+            )
 
         # if preloads.traced_grids_of_planes_for_inversion is None:
         # else:
