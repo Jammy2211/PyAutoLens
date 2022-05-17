@@ -112,10 +112,9 @@ class FitImaging(aa.FitImaging):
         if self.tracer.has_pixelization:
 
             return self.tracer.inversion_imaging_from(
-                grid=self.dataset.grid_inversion,
+                dataset=self.dataset,
                 image=self.profile_subtracted_image,
                 noise_map=self.noise_map,
-                convolver=self.dataset.convolver,
                 w_tilde=self.dataset.w_tilde,
                 settings_pixelization=self.settings_pixelization,
                 settings_inversion=self.settings_inversion,

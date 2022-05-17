@@ -93,10 +93,9 @@ class FitInterferometer(aa.FitInterferometer):
                 w_tilde = None
 
             return self.tracer.inversion_interferometer_from(
-                grid=self.dataset.grid_inversion,
+                dataset=self.dataset,
                 visibilities=self.profile_subtracted_visibilities,
                 noise_map=self.noise_map,
-                transformer=self.dataset.transformer,
                 w_tilde=w_tilde,
                 settings_pixelization=self.settings_pixelization,
                 settings_inversion=self.settings_inversion,
