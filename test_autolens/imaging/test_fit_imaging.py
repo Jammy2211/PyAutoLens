@@ -202,6 +202,45 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
     assert fit.figure_of_merit == pytest.approx(-37667.0303, 1.0e-4)
 
 
+def test__fit_figure_of_merit__different_linear_obj_lists_for_inversion(
+    masked_imaging_7x7
+):
+
+    g0_linear = al.Galaxy(
+        redshift=0.5,
+        light_profile=al.lp_linear.EllSersic(sersic_index=1.0),
+        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+    )
+
+    g1_linear = al.Galaxy(
+        redshift=1.0, light_profile=al.lp_linear.EllSersic(sersic_index=4.0)
+    )
+
+    tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1_linear])
+
+    fit = al.FitImaging(
+        dataset=masked_imaging_7x7,
+        tracer=tracer,
+        settings_inversion=al.SettingsInversion(
+            use_w_tilde=False, linear_func_only_use_evidence=False
+        ),
+    )
+
+    assert fit.log_likelihood == pytest.approx(-14.573607, 1e-4)
+    assert fit.figure_of_merit == pytest.approx(-14.573607, 1.0e-4)
+
+    fit = al.FitImaging(
+        dataset=masked_imaging_7x7,
+        tracer=tracer,
+        settings_inversion=al.SettingsInversion(
+            use_w_tilde=False, linear_func_only_use_evidence=True
+        ),
+    )
+
+    assert fit.log_evidence == pytest.approx(-21.268862, 1e-4)
+    assert fit.figure_of_merit == pytest.approx(-21.268862, 1.0e-4)
+
+
 def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):
 
     hyper_galaxy = al.HyperGalaxy(
