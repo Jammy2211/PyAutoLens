@@ -1,18 +1,24 @@
+from autolens.lens.mock.mock_to_inversion import MockTracerToInversion
+
+
 class MockTracer:
     def __init__(
         self, traced_grids_of_planes=None, sparse_image_plane_grid_pg_list=None
     ):
 
-        self.traced_grids_of_planes = traced_grids_of_planes
         self.sparse_image_plane_grid_pg_list = sparse_image_plane_grid_pg_list
+        self.traced_grids_of_planes = traced_grids_of_planes
 
     def traced_grid_2d_list_from(self, grid):
 
         return self.traced_grids_of_planes
 
-    def sparse_image_plane_grid_pg_list_from(self, grid):
-
-        return self.sparse_image_plane_grid_pg_list
+    @property
+    def to_inversion(self):
+        return MockTracerToInversion(
+            tracer=MockTracer,
+            sparse_image_plane_grid_pg_list=self.sparse_image_plane_grid_pg_list,
+        )
 
 
 class MockTracerPoint(MockTracer):

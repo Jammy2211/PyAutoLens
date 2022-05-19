@@ -63,7 +63,9 @@ class Result(AgResult):
 
         grid = self.analysis.dataset.mask.unmasked_grid_sub_1
 
-        solver = PointSolver(grid=grid, pixel_scale_precision=0.001, distance_to_mass_profile_centre=0.05)
+        solver = PointSolver(
+            grid=grid, pixel_scale_precision=0.001, distance_to_mass_profile_centre=0.05
+        )
 
         multiple_images = solver.solve(
             lensing_obj=self.max_log_likelihood_tracer,

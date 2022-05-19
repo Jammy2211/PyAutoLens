@@ -8,19 +8,20 @@ import autoarray as aa
 import autogalaxy as ag
 
 from autolens.analysis.preloads import Preloads
+from autolens.lens.ray_tracing import Tracer
 
 
 class FitImaging(aa.FitImaging):
     def __init__(
         self,
-        dataset,
-        tracer,
-        hyper_image_sky=None,
-        hyper_background_noise=None,
-        use_hyper_scaling=True,
-        settings_pixelization=aa.SettingsPixelization(),
-        settings_inversion=aa.SettingsInversion(),
-        preloads=Preloads(),
+        dataset: aa.Imaging,
+        tracer: Tracer,
+        hyper_image_sky: Optional[ag.hyper_data.HyperImageSky] = None,
+        hyper_background_noise: Optional[ag.hyper_data.HyperBackgroundNoise] = None,
+        use_hyper_scaling: bool = True,
+        settings_pixelization: aa.SettingsPixelization = aa.SettingsPixelization(),
+        settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
+        preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -109,7 +110,7 @@ class FitImaging(aa.FitImaging):
 
         The image passed to this function is the dataset's image with all light profile images of the tracer subtracted.
         """
-        if self.tracer.has_pixelization:
+        if self.tracer.has_pixelization or self.tracer.has_light_profile_linear:
 
             return self.tracer.to_inversion.inversion_imaging_from(
                 dataset=self.dataset,
@@ -132,7 +133,7 @@ class FitImaging(aa.FitImaging):
         If a inversion is included it is the sum of this sum and the inversion's reconstruction of the image.
         """
 
-        if self.tracer.has_pixelization:
+        if self.tracer.has_pixelization or self.tracer.has_light_profile_linear:
 
             return self.blurred_image + self.inversion.mapped_reconstructed_data
 
