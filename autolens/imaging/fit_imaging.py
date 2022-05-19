@@ -111,7 +111,7 @@ class FitImaging(aa.FitImaging):
         """
         if self.tracer.has_pixelization:
 
-            return self.tracer.inversion_imaging_from(
+            return self.tracer.to_inversion.inversion_imaging_from(
                 dataset=self.dataset,
                 image=self.profile_subtracted_image,
                 noise_map=self.noise_map,
@@ -219,7 +219,7 @@ class FitImaging(aa.FitImaging):
 
     @property
     def total_mappers(self):
-        return len(list(filter(None, self.tracer.regularization_pg_list)))
+        return len(list(filter(None, self.tracer.regularization_list)))
 
     def refit_with_new_preloads(self, preloads, settings_inversion=None):
 

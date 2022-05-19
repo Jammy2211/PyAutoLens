@@ -207,11 +207,11 @@ class Preloads(ag.Preloads):
 
         self.sparse_image_plane_grid_pg_list = None
 
-        sparse_image_plane_grid_pg_list_0 = fit_0.tracer.sparse_image_plane_grid_pg_list_from(
+        sparse_image_plane_grid_pg_list_0 = fit_0.tracer.to_inversion.sparse_image_plane_grid_pg_list_from(
             grid=fit_0.dataset.grid_inversion
         )
 
-        sparse_image_plane_grid_pg_list_1 = fit_1.tracer.sparse_image_plane_grid_pg_list_from(
+        sparse_image_plane_grid_pg_list_1 = fit_1.tracer.to_inversion.sparse_image_plane_grid_pg_list_from(
             grid=fit_1.dataset.grid_inversion
         )
 

@@ -92,7 +92,7 @@ class FitInterferometer(aa.FitInterferometer):
             else:
                 w_tilde = None
 
-            return self.tracer.inversion_interferometer_from(
+            return self.tracer.to_inversion.inversion_interferometer_from(
                 dataset=self.dataset,
                 visibilities=self.profile_subtracted_visibilities,
                 noise_map=self.noise_map,
@@ -186,7 +186,7 @@ class FitInterferometer(aa.FitInterferometer):
 
     @property
     def total_mappers(self):
-        return len(list(filter(None, self.tracer.regularization_pg_list)))
+        return len(list(filter(None, self.tracer.regularization_list)))
 
     def refit_with_new_preloads(self, preloads, settings_inversion=None):
 
