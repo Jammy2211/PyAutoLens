@@ -7,8 +7,11 @@ from os import path
 from scipy.stats import norm
 from typing import Dict, Optional, List
 
+from autoconf import conf
+
 import autofit as af
 import autoarray as aa
+import autogalaxy as ag
 
 from autogalaxy.analysis.analysis import AnalysisDataset as AgAnalysisDataset
 
@@ -215,6 +218,51 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
     def stochastic_log_likelihoods_via_instance_from(self, instance) -> List[float]:
         raise NotImplementedError()
+
+    def save_results_for_aggregator(
+        self, paths: af.DirectoryPaths, samples: af.Samples, model: af.Collection
+    ):
+        """
+        At the end of a model-fit,  this routine saves attributes of the `Analysis` object to the `pickles`
+        folder such that they can be loaded after the analysis using PyAutoFit's database and aggregator tools.
+
+        For this analysis it outputs the following:
+
+        - The stochastic log likelihoods of a pixelization, provided the pixelization has functionality that can
+        compute likelihoods for different KMeans seeds and grids (e.g. `VoronoiBrightnessImage).
+
+        Parameters
+        ----------
+        paths
+            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            visualization, and the pickled objects used by the aggregator output by this function.
+        samples
+            A PyAutoFit object which contains the samples of the non-linear search, for example the chains of an MCMC
+            run of samples of the nested sampler.
+        model
+            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
+            the imaging data.
+        """
+        pixelization = ag.util.model.pixelization_from(model=model)
+
+        if pixelization is not None:
+
+            tracer = self.tracer_via_instance_from(
+                instance=samples.max_log_likelihood_instance
+            )
+
+            sparse_image_plane_grid_pg_list = tracer.to_inversion.sparse_image_plane_grid_pg_list_from(
+                grid=self.dataset.grid_inversion
+            )
+
+            paths.save_object(
+                "preload_sparse_grids_of_planes", sparse_image_plane_grid_pg_list
+            )
+
+        if conf.instance["general"]["hyper"]["stochastic_outputs"]:
+            if pixelization is not None:
+                if pixelization.is_stochastic:
+                    self.save_stochastic_outputs(paths=paths, samples=samples)
 
     def save_stochastic_outputs(self, paths: af.DirectoryPaths, samples: af.Samples):
         """

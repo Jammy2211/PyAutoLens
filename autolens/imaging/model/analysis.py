@@ -461,40 +461,6 @@ class AnalysisImaging(AnalysisDataset):
                 fit=fit, during_analysis=during_analysis, subfolders="fit_no_hyper"
             )
 
-    def save_results_for_aggregator(
-        self, paths: af.DirectoryPaths, samples: af.Samples, model: af.Collection
-    ):
-        """
-        At the end of a model-fit,  this routine saves attributes of the `Analysis` object to the `pickles`
-        folder such that they can be loaded after the analysis using PyAutoFit's database and aggregator tools.
-
-        For this analysis it outputs the following:
-
-        - The stochastic log likelihoods of a pixelization, provided the pixelization has functionality that can
-        compute likelihoods for different KMeans seeds and grids (e.g. `VoronoiBrightnessImage).
-
-        Parameters
-        ----------
-        paths
-            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
-            visualization, and the pickled objects used by the aggregator output by this function.
-        samples
-            A PyAutoFit object which contains the samples of the non-linear search, for example the chains of an MCMC
-            run of samples of the nested sampler.
-        model
-            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
-            the imaging data.
-        """
-        try:
-            pixelization = ag.util.model.pixelization_from(model=model)
-        except AttributeError:
-            return
-
-        if conf.instance["general"]["hyper"]["stochastic_outputs"]:
-            if pixelization is not None:
-                if pixelization.is_stochastic:
-                    self.save_stochastic_outputs(paths=paths, samples=samples)
-
     def make_result(
         self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
     ) -> ResultImaging:
@@ -547,12 +513,12 @@ class AnalysisImaging(AnalysisDataset):
 
         This function also outputs attributes specific to an imaging dataset:
 
-       - Its PSF.
-       - Its mask.
-       - The positions of the brightest pixels in the lensed source which are used to discard mass models.
-       - The preloaded image-plane source plane pixelization if used by the analysis. This ensures that differences in
-       the scikit-learn library do not lead to different pixelizations being computed if results are transferred from
-       a HPC to laptop.
+        - Its PSF.
+        - Its mask.
+        - The positions of the brightest pixels in the lensed source which are used to discard mass models.
+        - The preloaded image-plane source plane pixelization if used by the analysis. This ensures that differences in
+        the scikit-learn library do not lead to different pixelizations being computed if results are transferred from
+        a HPC to laptop.
 
         It is common for these attributes to be loaded by many of the template aggregator functions given in the
         `aggregator` modules. For example, when using the database tools to perform a fit, the default behaviour is for
@@ -570,8 +536,3 @@ class AnalysisImaging(AnalysisDataset):
         paths.save_object("psf", self.dataset.psf_unormalized)
         paths.save_object("mask", self.dataset.mask)
         paths.save_object("positions", self.positions)
-        if self.preloads.sparse_image_plane_grid_pg_list is not None:
-            paths.save_object(
-                "preload_sparse_grids_of_planes",
-                self.preloads.sparse_image_plane_grid_pg_list,
-            )
