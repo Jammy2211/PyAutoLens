@@ -235,7 +235,7 @@ strong gravitational lensing with **PyAutoLens**.
    howtolens/chapter_1_introduction
    howtolens/chapter_2_lens_modeling
    howtolens/chapter_3_search_chaining
-   howtolens/chapter_4_inversions
+   howtolens/chapter_4_pixelizations
    howtolens/chapter_5_hyper_mode
    howtolens/chapter_optional
 

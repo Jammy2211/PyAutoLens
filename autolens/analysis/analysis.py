@@ -247,7 +247,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             tracer = result.max_log_likelihood_tracer
 
             sparse_image_plane_grid_pg_list = tracer.to_inversion.sparse_image_plane_grid_pg_list_from(
-                grid=self.dataset.grid_inversion
+                grid=self.dataset.grid_pixelized
             )
 
             paths.save_object(

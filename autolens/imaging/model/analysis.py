@@ -289,7 +289,7 @@ class AnalysisImaging(AnalysisDataset):
 
         info_dict["image_pixels"] = self.imaging.grid.sub_shape_slim
         info_dict["sub_size_light_profiles"] = self.imaging.grid.sub_size
-        info_dict["sub_size_inversion"] = self.imaging.grid_inversion.sub_size
+        info_dict["sub_size_pixelized"] = self.imaging.grid_pixelized.sub_size
         info_dict["psf_shape_2d"] = self.imaging.psf.shape_native
 
         if fit.inversion is not None:

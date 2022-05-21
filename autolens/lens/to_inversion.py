@@ -225,7 +225,7 @@ class TracerToInversion:
         if preloads.mapper_list is None:
 
             mapper_list = self.mapper_list_from(
-                grid=dataset.grid_inversion,
+                grid=dataset.grid_pixelized,
                 settings_pixelization=settings_pixelization,
                 preloads=preloads,
             )

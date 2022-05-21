@@ -158,11 +158,11 @@ class Preloads(ag.Preloads):
         self.traced_grids_of_planes_for_inversion = None
 
         traced_grids_of_planes_0 = fit_0.tracer.traced_grid_2d_list_from(
-            grid=fit_0.dataset.grid_inversion
+            grid=fit_0.dataset.grid_pixelized
         )
 
         traced_grids_of_planes_1 = fit_1.tracer.traced_grid_2d_list_from(
-            grid=fit_1.dataset.grid_inversion
+            grid=fit_1.dataset.grid_pixelized
         )
 
         if traced_grids_of_planes_0[-1] is not None:
@@ -208,11 +208,11 @@ class Preloads(ag.Preloads):
         self.sparse_image_plane_grid_pg_list = None
 
         sparse_image_plane_grid_pg_list_0 = fit_0.tracer.to_inversion.sparse_image_plane_grid_pg_list_from(
-            grid=fit_0.dataset.grid_inversion
+            grid=fit_0.dataset.grid_pixelized
         )
 
         sparse_image_plane_grid_pg_list_1 = fit_1.tracer.to_inversion.sparse_image_plane_grid_pg_list_from(
-            grid=fit_1.dataset.grid_inversion
+            grid=fit_1.dataset.grid_pixelized
         )
 
         if sparse_image_plane_grid_pg_list_0[-1] is not None:

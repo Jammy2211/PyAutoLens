@@ -17,7 +17,7 @@ class SetupHyper(ag.SetupHyper):
         search_inversion_cls: Optional[af.NonLinearSearch] = None,
         search_noise_cls: Optional[af.NonLinearSearch] = None,
         search_bc_cls: Optional[af.NonLinearSearch] = None,
-        search_inversion_dict: Optional[dict] = None,
+        search_pixelized_dict: Optional[dict] = None,
         search_noise_dict: Optional[dict] = None,
         search_bc_dict: Optional[dict] = None,
     ):
@@ -45,7 +45,7 @@ class SetupHyper(ag.SetupHyper):
             performed objected between later searchs in a pipeline.
         search_inversion_cls
             The non-linear search used by every hyper model-fit search.
-        search_inversion_dict
+        search_pixelized_dict
             The dictionary of search options for the hyper model-fit searches.
         """
         hyper_galaxies = hyper_galaxies_lens or hyper_galaxies_source
@@ -57,7 +57,7 @@ class SetupHyper(ag.SetupHyper):
             search_inversion_cls=search_inversion_cls,
             search_noise_cls=search_noise_cls,
             search_bc_cls=search_bc_cls,
-            search_inversion_dict=search_inversion_dict,
+            search_pixelized_dict=search_pixelized_dict,
             search_noise_dict=search_noise_dict,
             search_bc_dict=search_bc_dict,
         )
