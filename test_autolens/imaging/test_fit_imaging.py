@@ -221,24 +221,11 @@ def test__fit_figure_of_merit__different_linear_obj_lists_for_inversion(
     fit = al.FitImaging(
         dataset=masked_imaging_7x7,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(
-            use_w_tilde=False, linear_func_only_use_evidence=False
-        ),
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit.log_likelihood == pytest.approx(-14.573607, 1e-4)
     assert fit.figure_of_merit == pytest.approx(-14.573607, 1.0e-4)
-
-    fit = al.FitImaging(
-        dataset=masked_imaging_7x7,
-        tracer=tracer,
-        settings_inversion=al.SettingsInversion(
-            use_w_tilde=False, linear_func_only_use_evidence=True
-        ),
-    )
-
-    assert fit.log_evidence == pytest.approx(-21.268862, 1e-4)
-    assert fit.figure_of_merit == pytest.approx(-21.268862, 1.0e-4)
 
 
 def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):

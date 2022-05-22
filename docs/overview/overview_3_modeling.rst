@@ -202,6 +202,35 @@ using any combination of ``LightProfile``'s and ``MassProfile``'s:
 The above fit used the non-linear search ``dynesty``, but **PyAutoLens** supports many other methods and their
 setting can be easily customized:
 
+Linear Light Profiles
+---------------------
+
+**PyAutoLens** supports 'linear light profiles', where the ``intensity`` parameters of all parametric components are 
+solved via linear algebra every time the model is fitted using a process called an inversion. This inversion always 
+computes ``intensity`` values that give the best fit to the data (e.g. they maximize the likelihood) given the other 
+parameter values of the light profile.
+
+The ``intensity`` parameter of each light profile is therefore not a free parameter in the model-fit, reducing the
+dimensionality of non-linear parameter space by the number of light profiles (in the example below by 3) and removing 
+the degeneracies that occur between the ``intnensity`` and other light profile
+parameters (e.g. ``effective_radius``, ``sersic_index``).
+
+For complex models, linear light profiles are a powerful way to simplify the parameter space to ensure the best-fit
+model is inferred.
+
+.. code-block:: python
+
+    sersic_linear = al.lp_linear.EllSersic()
+    
+    lens_model_linear = af.Model(
+        al.Galaxy,
+        redshift=0.5,
+        bulge=ag.lp_linear.EllDevVaucouleurs,
+        disk=ag.lp_linear.EllSersic,
+    )
+    
+    source_model_linear = af.Model(al.Galaxy, redshift=1.0, disk=al.lp_linear.EllExponential)
+
 Wrap-Up
 -------
 
