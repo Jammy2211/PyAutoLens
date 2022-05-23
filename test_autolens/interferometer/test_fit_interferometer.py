@@ -110,7 +110,6 @@ def test__fit_figure_of_merit(interferometer_7):
     fit = al.FitInterferometer(
         dataset=interferometer_7,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit.log_likelihood == pytest.approx(-23.44419, 1e-4)
@@ -121,7 +120,6 @@ def test__fit_figure_of_merit(interferometer_7):
     fit = al.FitInterferometer(
         dataset=interferometer_7,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit.log_evidence == pytest.approx(-34.393456, 1e-4)

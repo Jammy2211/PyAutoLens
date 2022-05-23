@@ -216,7 +216,6 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
     fit = al.FitImaging(
         dataset=masked_imaging_7x7,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit.log_likelihood == pytest.approx(-14.573607, 1e-4)
@@ -227,7 +226,6 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
     fit = al.FitImaging(
         dataset=masked_imaging_7x7,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit.log_evidence == pytest.approx(-22.79906, 1e-4)
