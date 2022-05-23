@@ -43,6 +43,7 @@ def test__noise_map__with_and_without_hyper_background(interferometer_7):
 
 
 def test__fit_figure_of_merit(interferometer_7):
+
     g0 = al.Galaxy(
         redshift=0.5,
         light_profile=al.lp.EllSersic(intensity=1.0),
@@ -94,11 +95,6 @@ def test__fit_figure_of_merit(interferometer_7):
     assert fit.log_evidence == pytest.approx(-1570173.14216, 1e-4)
     assert fit.figure_of_merit == pytest.approx(-1570173.14216, 1.0e-4)
 
-
-def test__fit_figure_of_merit__different_linear_obj_lists_for_inversion(
-    interferometer_7
-):
-
     g0_linear = al.Galaxy(
         redshift=0.5,
         light_profile=al.lp_linear.EllSersic(sersic_index=1.0),
@@ -119,6 +115,17 @@ def test__fit_figure_of_merit__different_linear_obj_lists_for_inversion(
 
     assert fit.log_likelihood == pytest.approx(-23.44419, 1e-4)
     assert fit.figure_of_merit == pytest.approx(-23.44419, 1.0e-4)
+
+    tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, galaxy_pix])
+
+    fit = al.FitInterferometer(
+        dataset=interferometer_7,
+        tracer=tracer,
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
+    )
+
+    assert fit.log_evidence == pytest.approx(-34.393456, 1e-4)
+    assert fit.figure_of_merit == pytest.approx(-34.393456, 1.0e-4)
 
 
 def test__fit_figure_of_merit__include_hyper_methods(interferometer_7):
