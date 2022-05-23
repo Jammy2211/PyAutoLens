@@ -203,6 +203,12 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
+    lens_galaxy_linear = al.Galaxy(
+        redshift=0.5,
+        light=al.lp_linear.EllSersic(centre=(0.1, 0.1)),
+        mass=al.mp.EllIsothermal(centre=(0.1, 0.1), einstein_radius=1.0),
+    )
+
     source_galaxy_linear = al.Galaxy(
         redshift=1.0,
         bulge=al.lp_linear.EllSersic(sersic_index=1.0),
@@ -210,7 +216,7 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
     )
 
     tracer_linear = al.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy_linear]
+        galaxies=[lens_galaxy_linear, source_galaxy_linear]
     )
 
     fit_linear = al.FitInterferometer(
@@ -221,6 +227,88 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
     )
 
     assert fit_linear.inversion.reconstruction == pytest.approx(
-        np.array([0.1, 0.2]), 1.0e-4
+        np.array([0.1, 0.1, 0.2]), 1.0e-4
     )
     assert fit.log_likelihood == fit_linear.log_likelihood
+
+
+def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixelization():
+
+    grid = al.Grid2D.uniform(shape_native=(51, 51), pixel_scales=0.1, sub_size=1)
+
+    lens_galaxy = al.Galaxy(
+        redshift=0.5,
+        light=al.lp.EllSersic(centre=(0.1, 0.1), intensity=100.0),
+        mass=al.mp.EllIsothermal(centre=(0.1, 0.1), einstein_radius=1.0),
+    )
+
+    source_galaxy = al.Galaxy(
+        redshift=1.0,
+        bulge=al.lp.EllSersic(intensity=0.1, sersic_index=1.0),
+        disk=al.lp.EllSersic(intensity=0.2, sersic_index=4.0),
+    )
+
+    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+
+    simulator = al.SimulatorInterferometer(
+        uv_wavelengths=np.array(
+            [
+                [0.04, 200.0, 0.3, 400000.0, 60000000.0],
+                [0.00003, 500.0, 600000.0, 0.1, 75555555],
+            ]
+        ),
+        transformer_class=al.TransformerDFT,
+        exposure_time=300.0,
+        noise_if_add_noise_false=1.0,
+        noise_sigma=None,
+    )
+
+    interferometer = simulator.via_tracer_from(tracer=tracer, grid=grid)
+
+    interferometer = interferometer.apply_settings(
+        settings=al.SettingsInterferometer(
+            grid_class=al.Grid2D, transformer_class=al.TransformerDFT, sub_size=1
+        )
+    )
+
+    lens_galaxy_linear = al.Galaxy(
+        redshift=0.5,
+        light=al.lp_linear.EllSersic(centre=(0.1, 0.1)),
+        mass=al.mp.EllIsothermal(centre=(0.1, 0.1), einstein_radius=1.0),
+    )
+
+    source_galaxy_linear = al.Galaxy(
+        redshift=1.0,
+        pixelization=al.pix.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=0.01),
+    )
+
+    tracer_linear = al.Tracer.from_galaxies(
+        galaxies=[lens_galaxy_linear, source_galaxy_linear]
+    )
+
+    fit_linear = al.FitInterferometer(
+        dataset=interferometer,
+        tracer=tracer_linear,
+        settings_pixelization=al.SettingsPixelization(use_border=False),
+        settings_inversion=al.SettingsInversion(use_w_tilde=False),
+    )
+
+    assert fit_linear.inversion.reconstruction == pytest.approx(
+        np.array(
+            [
+                9.55586733e-02,
+                9.25185159e-02,
+                9.46061586e-02,
+                1.41551082e-01,
+                1.41121951e-01,
+                1.41101745e-01,
+                1.84366117e-01,
+                1.85599209e-01,
+                1.83850053e-01,
+                1.00338735e02,
+            ]
+        ),
+        1.0e-4,
+    )
+    assert fit_linear.figure_of_merit == pytest.approx(-29.20551989, 1.0e-4)
