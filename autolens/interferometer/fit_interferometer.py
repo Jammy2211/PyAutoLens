@@ -6,11 +6,13 @@ from autoconf import cached_property
 import autoarray as aa
 import autogalaxy as ag
 
+from autogalaxy.abstract_fit import AbstractFit
+
 from autolens.analysis.preloads import Preloads
 from autolens.lens.ray_tracing import Tracer
 
 
-class FitInterferometer(aa.FitInterferometer):
+class FitInterferometer(aa.FitInterferometer, AbstractFit):
     def __init__(
         self,
         dataset: aa.Interferometer,
@@ -45,6 +47,7 @@ class FitInterferometer(aa.FitInterferometer):
         self.profiling_dict = profiling_dict
 
         super().__init__(dataset=dataset, profiling_dict=profiling_dict)
+        super(AbstractFit).__init__()
 
     @property
     def noise_map(self):

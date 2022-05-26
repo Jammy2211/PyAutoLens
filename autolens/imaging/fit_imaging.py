@@ -7,11 +7,13 @@ from autoconf import cached_property
 import autoarray as aa
 import autogalaxy as ag
 
+from autogalaxy.abstract_fit import AbstractFit
+
 from autolens.analysis.preloads import Preloads
 from autolens.lens.ray_tracing import Tracer
 
 
-class FitImaging(aa.FitImaging):
+class FitImaging(aa.FitImaging, AbstractFit):
     def __init__(
         self,
         dataset: aa.Imaging,
@@ -35,6 +37,7 @@ class FitImaging(aa.FitImaging):
         """
 
         super().__init__(dataset=dataset, profiling_dict=profiling_dict)
+        super(AbstractFit).__init__()
 
         self.tracer = tracer
 

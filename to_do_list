@@ -5,6 +5,10 @@ __Tasks__
 - GUI code is horrific, clean up, CHECK IF INUT IS SCALED OR PIXELS.
 - Simulating lenses is slow because the iterate grid is used for all visualization. Make a "sub_size_1" grid property.
 
+__HowToLens__
+
+- Add equations to lectures from likelihood function noteobok.
+
 __Features__
 
 - Mass visualization for large runs in single folder, which works for database runs.

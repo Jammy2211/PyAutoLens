@@ -229,6 +229,15 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
     assert fit_linear.inversion.reconstruction == pytest.approx(
         np.array([0.1, 0.1, 0.2]), 1.0e-4
     )
+    assert fit_linear.linear_light_profile_intensity_dict[
+        lens_galaxy_linear.light
+    ] == pytest.approx(0.1, 1.0e-2)
+    assert fit_linear.linear_light_profile_intensity_dict[
+        source_galaxy_linear.bulge
+    ] == pytest.approx(0.1, 1.0e-2)
+    assert fit_linear.linear_light_profile_intensity_dict[
+        source_galaxy_linear.disk
+    ] == pytest.approx(0.2, 1.0e-2)
     assert fit.log_likelihood == fit_linear.log_likelihood
 
 
@@ -302,6 +311,6 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixeli
                 1.83726575e-01, 1.00338472e+02
             ]
         ),
-        1.0e-4,
+        1.0e-2,
     )
     assert fit_linear.figure_of_merit == pytest.approx(-29.20551989, 1.0e-4)
