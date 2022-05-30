@@ -111,6 +111,12 @@ class AnalysisImaging(AnalysisDataset):
         """
 
         try:
+            if instance.galaxies.source.bulge.effective_radius < 0.0:
+                stop
+        except AttributeError:
+            pass
+
+        try:
             return self.fit_imaging_via_instance_from(instance=instance).figure_of_merit
         except (
             PixelizationException,
@@ -462,7 +468,7 @@ class AnalysisImaging(AnalysisDataset):
             )
 
     def make_result(
-        self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
+        self, samples: af.PDFSamples, model: af.Collection, sigma=1.0, use_errors=True, use_widths=False
     ) -> ResultImaging:
         """
         After the non-linear search is complete create its `Result`, which includes:
@@ -486,15 +492,13 @@ class AnalysisImaging(AnalysisDataset):
         model
             The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
             the imaging data.
-        search
-            The non-linear search used to perform this model-fit.
 
         Returns
         -------
         ResultImaging
             The result of fitting the model to the imaging dataset, via a non-linear search.
         """
-        return ResultImaging(samples=samples, model=model, analysis=self, search=search)
+        return ResultImaging(samples=samples, model=model, analysis=self)
 
     def save_attributes_for_aggregator(self, paths: af.DirectoryPaths):
         """

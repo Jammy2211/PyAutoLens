@@ -497,7 +497,7 @@ class AnalysisInterferometer(AnalysisDataset):
             )
 
     def make_result(
-        self, samples: af.PDFSamples, model: af.Collection, search: af.NonLinearSearch
+        self, samples: af.PDFSamples, model: af.Collection, sigma=1.0, use_errors=True, use_widths=False
     ):
         """
         After the non-linear search is complete create its `Result`, which includes:
@@ -521,8 +521,6 @@ class AnalysisInterferometer(AnalysisDataset):
         model
             The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
             the imaging data.
-        search
-            The non-linear search used to perform this model-fit.
 
         Returns
         -------
@@ -530,7 +528,7 @@ class AnalysisInterferometer(AnalysisDataset):
             The result of fitting the model to the imaging dataset, via a non-linear search.
         """
         return ResultInterferometer(
-            samples=samples, model=model, analysis=self, search=search
+            samples=samples, model=model, analysis=self,
         )
 
     def save_attributes_for_aggregator(self, paths: af.DirectoryPaths):
