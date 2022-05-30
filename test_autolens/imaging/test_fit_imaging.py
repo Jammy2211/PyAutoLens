@@ -319,6 +319,8 @@ def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):
 
 def test__galaxy_model_image_dict(masked_imaging_7x7):
 
+    # Normal Light Profiles Only
+
     g0 = al.Galaxy(
         redshift=0.5,
         light_profile=al.lp.EllSersic(intensity=1.0),
@@ -354,113 +356,87 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
 
     assert fit.galaxy_model_image_dict[g0] == pytest.approx(g0_blurred_image, 1.0e-4)
     assert fit.galaxy_model_image_dict[g1] == pytest.approx(g1_blurred_image, 1.0e-4)
-    assert (fit.galaxy_model_image_dict[g2].slim == np.zeros(9)).all()
+    assert (fit.galaxy_model_image_dict[g2] == np.zeros(9)).all()
 
     assert fit.model_image.native == pytest.approx(
         fit.galaxy_model_image_dict[g0].native + fit.galaxy_model_image_dict[g1].native,
         1.0e-4,
     )
 
-    pix = al.pix.Rectangular(shape=(3, 3))
-    reg = al.reg.Constant(coefficient=1.0)
+    # Linear Light Profiles Only
 
-    g0 = al.Galaxy(redshift=0.5)
-    g1 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+    g0_linear = al.Galaxy(
+        redshift=0.5,
+        light_profile=al.lp_linear.EllSersic(),
+        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+    )
+    g1_linear = al.Galaxy(redshift=1.0, light_profile=al.lp_linear.EllSersic())
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+    tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1_linear, g2])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
-    mapper = pix.mapper_from(
-        source_grid_slim=masked_imaging_7x7.grid, source_pixelization_grid=None
+    assert fit.galaxy_model_image_dict[g0_linear][4] == pytest.approx(
+        -4.99645959e-01, 1.0e-2
+    )
+    assert fit.galaxy_model_image_dict[g1_linear][4] == pytest.approx(
+        1.9986499980, 1.0e-2
+    )
+    assert (fit.galaxy_model_image_dict[g2] == np.zeros(9)).all()
+
+    assert fit.model_image == pytest.approx(
+        fit.galaxy_model_image_dict[g0_linear] + fit.galaxy_model_image_dict[g1_linear],
+        1.0e-4,
     )
 
-    inversion = al.Inversion(
-        dataset=masked_imaging_7x7,
-        linear_obj_list=[mapper],
-        regularization_list=[reg],
-        settings=al.SettingsInversion(use_w_tilde=False),
-    )
-
-    assert (fit.galaxy_model_image_dict[g0] == np.zeros(9)).all()
-
-    assert fit.galaxy_model_image_dict[g1].native == pytest.approx(
-        inversion.mapped_reconstructed_image.native, 1.0e-4
-    )
-
-    assert fit.model_image.native == pytest.approx(
-        fit.galaxy_model_image_dict[g1].native, 1.0e-4
-    )
-
-    g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
-    g1 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=2.0))
-    g2 = al.Galaxy(redshift=0.5)
+    # Pixelization + Regularizaiton only
 
     pix = al.pix.Rectangular(shape=(3, 3))
     reg = al.reg.Constant(coefficient=1.0)
-    galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2, galaxy_pix])
+    g0_no_light = al.Galaxy(
+        redshift=0.5, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+    )
+    galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+
+    tracer = al.Tracer.from_galaxies(galaxies=[g0_no_light, galaxy_pix_0])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert (fit.galaxy_model_image_dict[g0_no_light] == np.zeros(9)).all()
+    assert fit.galaxy_model_image_dict[galaxy_pix_0][4] == pytest.approx(
+        1.259965886, 1.0e-4
+    )
+
+    assert fit.model_image == pytest.approx(
+        fit.galaxy_model_image_dict[galaxy_pix_0], 1.0e-4
+    )
+
+    # Normal light + Linear Light PRofiles + Pixelization + Regularizaiton
+
+    galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[g0, g0_linear, g2, galaxy_pix_0, galaxy_pix_1]
+    )
 
     masked_imaging_7x7.image[0] = 3.0
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
-    traced_grids = tracer.traced_grid_2d_list_from(grid=masked_imaging_7x7.grid)
-    traced_blurring_grids = tracer.traced_grid_2d_list_from(
-        grid=masked_imaging_7x7.blurring_grid
+    assert fit.galaxy_model_image_dict[g0] == pytest.approx(g0_blurred_image, 1.0e-4)
+
+    assert fit.galaxy_model_image_dict[g0_linear][4] == pytest.approx(
+        -650.736682, 1.0e-4
     )
 
-    g0_image = g0.image_2d_from(grid=traced_grids[0])
-    g0_blurring_image = g0.image_2d_from(grid=traced_blurring_grids[0])
-
-    g0_blurred_image = masked_imaging_7x7.convolver.convolve_image(
-        image=g0_image, blurring_image=g0_blurring_image
+    assert fit.galaxy_model_image_dict[galaxy_pix_0][4] == pytest.approx(
+        1.08219997, 1.0e-4
     )
-
-    g1_image = g1.image_2d_from(grid=traced_grids[1])
-    g1_blurring_image = g1.image_2d_from(grid=traced_blurring_grids[1])
-
-    g1_blurred_image = masked_imaging_7x7.convolver.convolve_image(
-        image=g1_image, blurring_image=g1_blurring_image
+    assert fit.galaxy_model_image_dict[galaxy_pix_1][4] == pytest.approx(
+        1.0822004, 1.0e-4
     )
-
-    blurred_image = g0_blurred_image + g1_blurred_image
-
-    profile_subtracted_image = masked_imaging_7x7.image - blurred_image
-
-    mapper = pix.mapper_from(
-        source_grid_slim=masked_imaging_7x7.grid,
-        settings=al.SettingsPixelization(use_border=False),
-    )
-
-    inversion = al.InversionImaging(
-        image=profile_subtracted_image,
-        noise_map=masked_imaging_7x7.noise_map,
-        convolver=masked_imaging_7x7.convolver,
-        w_tilde=masked_imaging_7x7.w_tilde,
-        linear_obj_list=[mapper],
-        regularization_list=[reg],
-    )
-
     assert (fit.galaxy_model_image_dict[g2] == np.zeros(9)).all()
-
-    assert fit.galaxy_model_image_dict[g0].native == pytest.approx(
-        g0_blurred_image.native, 1.0e-4
-    )
-    assert fit.galaxy_model_image_dict[g1].native == pytest.approx(
-        g1_blurred_image.native, 1.0e-4
-    )
-    assert fit.galaxy_model_image_dict[galaxy_pix].native == pytest.approx(
-        inversion.mapped_reconstructed_image.native, 1.0e-4
-    )
-
-    assert fit.model_image.native == pytest.approx(
-        fit.galaxy_model_image_dict[g0].native
-        + fit.galaxy_model_image_dict[g1].native
-        + inversion.mapped_reconstructed_image.native,
-        1.0e-4,
-    )
 
 
 def test___blurred_and_model_image_properties(masked_imaging_7x7):

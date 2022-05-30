@@ -151,25 +151,17 @@ class FitImaging(aa.FitImaging, AbstractFit):
         """
         A dictionary associating galaxies with their corresponding model images
         """
-        galaxy_model_image_dict = self.tracer.galaxy_blurred_image_2d_dict_via_convolver_from(
+        galaxy_blurred_image_2d_dict = self.tracer.galaxy_blurred_image_2d_dict_via_convolver_from(
             grid=self.grid,
             convolver=self.imaging.convolver,
             blurring_grid=self.imaging.blurring_grid,
         )
 
-        # TODO : Extend to multiple inversioons across Planes
+        galaxy_linear_obj_image_dict = self.galaxy_linear_obj_data_dict_from(
+            use_image=True
+        )
 
-        for plane_index in self.tracer.plane_indexes_with_pixelizations:
-
-            galaxy_model_image_dict.update(
-                {
-                    self.tracer.planes[plane_index].galaxies[
-                        0
-                    ]: self.inversion.mapped_reconstructed_image
-                }
-            )
-
-        return galaxy_model_image_dict
+        return {**galaxy_blurred_image_2d_dict, **galaxy_linear_obj_image_dict}
 
     @property
     def model_images_of_planes_list(self):
