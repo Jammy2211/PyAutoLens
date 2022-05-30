@@ -7,6 +7,61 @@ import autolens as al
 test_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
 
+def test__lp_linear_func_galaxy_dict_from(sub_grid_2d_7x7, blurring_grid_2d_7x7):
+
+    galaxy_no_pix = al.Galaxy(redshift=0.5)
+
+    tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_no_pix])
+
+    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+
+    lp_linear_func_galaxy_dict = tracer_to_inversion.lp_linear_func_galaxy_dict_from(
+        grid=sub_grid_2d_7x7, blurring_grid=blurring_grid_2d_7x7
+    )
+
+    assert lp_linear_func_galaxy_dict == {}
+
+    lp_linear_0 = al.lp_linear.LightProfileLinear()
+    lp_linear_1 = al.lp_linear.LightProfileLinear()
+    lp_linear_2 = al.lp_linear.LightProfileLinear()
+
+    galaxy_no_linear = al.Galaxy(redshift=0.5)
+    galaxy_linear_0 = al.Galaxy(
+        redshift=0.5, lp_linear=lp_linear_0, mass=al.mp.SphIsothermal()
+    )
+
+    galaxy_linear_1 = al.Galaxy(
+        redshift=1.0, lp_linear=lp_linear_1, mass=al.mp.SphIsothermal()
+    )
+    galaxy_linear_2 = al.Galaxy(redshift=2.0, lp_linear=lp_linear_2)
+
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[galaxy_no_linear, galaxy_linear_0, galaxy_linear_1, galaxy_linear_2]
+    )
+
+    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+
+    lp_linear_func_galaxy_dict = tracer_to_inversion.lp_linear_func_galaxy_dict_from(
+        grid=sub_grid_2d_7x7, blurring_grid=blurring_grid_2d_7x7
+    )
+
+    lp_linear_func_list = list(lp_linear_func_galaxy_dict.keys())
+
+    assert lp_linear_func_galaxy_dict[lp_linear_func_list[0]] == galaxy_linear_0
+    assert lp_linear_func_galaxy_dict[lp_linear_func_list[1]] == galaxy_linear_1
+    assert lp_linear_func_galaxy_dict[lp_linear_func_list[2]] == galaxy_linear_2
+
+    assert lp_linear_func_list[0].light_profile == lp_linear_0
+    assert lp_linear_func_list[1].light_profile == lp_linear_1
+    assert lp_linear_func_list[2].light_profile == lp_linear_2
+
+    traced_grid_list = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)
+
+    assert lp_linear_func_list[0].grid == pytest.approx(sub_grid_2d_7x7, 1.0e-4)
+    assert lp_linear_func_list[1].grid == pytest.approx(traced_grid_list[1], 1.0e-4)
+    assert lp_linear_func_list[2].grid == pytest.approx(traced_grid_list[2], 1.0e-4)
+
+
 def test__pixelization_pg_list(sub_grid_2d_7x7):
     galaxy_pix = al.Galaxy(
         redshift=1.0,
@@ -355,7 +410,7 @@ def test__traced_sparse_grid_pg_list_from(sub_grid_2d_7x7):
     assert (traced_sparse_grids_list_of_planes[4][0] == traced_grid_pix_1).all()
 
 
-def test__light_profile_linear_func_list_from(sub_grid_2d_7x7, blurring_grid_2d_7x7):
+def test__mapper_galaxy_dict_from(sub_grid_2d_7x7):
 
     galaxy_no_pix = al.Galaxy(redshift=0.5)
 
@@ -363,63 +418,10 @@ def test__light_profile_linear_func_list_from(sub_grid_2d_7x7, blurring_grid_2d_
 
     tracer_to_inversion = al.TracerToInversion(tracer=tracer)
 
-    light_profile_linear_func_list = tracer_to_inversion.light_profile_linear_func_list_from(
-        grid=sub_grid_2d_7x7, blurring_grid=blurring_grid_2d_7x7
+    mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict_from(
+        grid=sub_grid_2d_7x7
     )
-
-    assert light_profile_linear_func_list == []
-
-    lp_linear_0 = al.lp_linear.LightProfileLinear()
-    lp_linear_1 = al.lp_linear.LightProfileLinear()
-    lp_linear_2 = al.lp_linear.LightProfileLinear()
-
-    galaxy_no_linear = al.Galaxy(redshift=0.5)
-    galaxy_linear_0 = al.Galaxy(
-        redshift=0.5, lp_linear=lp_linear_0, mass=al.mp.SphIsothermal()
-    )
-
-    galaxy_linear_1 = al.Galaxy(
-        redshift=1.0, lp_linear=lp_linear_1, mass=al.mp.SphIsothermal()
-    )
-    galaxy_linear_2 = al.Galaxy(redshift=2.0, lp_linear=lp_linear_2)
-
-    tracer = al.Tracer.from_galaxies(
-        galaxies=[galaxy_no_linear, galaxy_linear_0, galaxy_linear_1, galaxy_linear_2]
-    )
-
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
-
-    light_profile_linear_func_list = tracer_to_inversion.light_profile_linear_func_list_from(
-        grid=sub_grid_2d_7x7, blurring_grid=blurring_grid_2d_7x7
-    )
-
-    assert light_profile_linear_func_list[0].light_profile == lp_linear_0
-    assert light_profile_linear_func_list[1].light_profile == lp_linear_1
-    assert light_profile_linear_func_list[2].light_profile == lp_linear_2
-
-    traced_grid_list = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)
-
-    assert light_profile_linear_func_list[0].grid == pytest.approx(
-        sub_grid_2d_7x7, 1.0e-4
-    )
-    assert light_profile_linear_func_list[1].grid == pytest.approx(
-        traced_grid_list[1], 1.0e-4
-    )
-    assert light_profile_linear_func_list[2].grid == pytest.approx(
-        traced_grid_list[2], 1.0e-4
-    )
-
-
-def test__mapper_list_from(sub_grid_2d_7x7):
-
-    galaxy_no_pix = al.Galaxy(redshift=0.5)
-
-    tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_no_pix])
-
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
-
-    mappers_of_planes = tracer_to_inversion.mapper_list_from(grid=sub_grid_2d_7x7)
-    assert mappers_of_planes == []
+    assert mapper_galaxy_dict == {}
 
     galaxy_no_pix = al.Galaxy(redshift=0.5)
     galaxy_pix_0 = al.Galaxy(
@@ -451,7 +453,15 @@ def test__mapper_list_from(sub_grid_2d_7x7):
 
     tracer_to_inversion = al.TracerToInversion(tracer=tracer)
 
-    mapper_list = tracer_to_inversion.mapper_list_from(grid=sub_grid_2d_7x7)
+    mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict_from(
+        grid=sub_grid_2d_7x7
+    )
+
+    mapper_list = list(mapper_galaxy_dict.keys())
+
+    assert mapper_galaxy_dict[mapper_list[0]] == galaxy_pix_0
+    assert mapper_galaxy_dict[mapper_list[1]] == galaxy_pix_1
+    assert mapper_galaxy_dict[mapper_list[2]] == galaxy_pix_2
 
     assert mapper_list == [1, 2, 3]
 
@@ -489,7 +499,14 @@ def test__mapper_list_from(sub_grid_2d_7x7):
 
     tracer_to_inversion = al.TracerToInversion(tracer=tracer)
 
-    mapper_list = tracer_to_inversion.mapper_list_from(grid=sub_grid_2d_7x7)
+    mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict_from(
+        grid=sub_grid_2d_7x7
+    )
+
+    mapper_list = list(mapper_galaxy_dict.keys())
+
+    assert mapper_galaxy_dict[mapper_list[0]] == galaxy_pix_0
+    assert mapper_galaxy_dict[mapper_list[1]] == galaxy_pix_1
 
     assert mapper_list == [1, 2]
 

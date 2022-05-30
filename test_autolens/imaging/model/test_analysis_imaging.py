@@ -37,9 +37,8 @@ def test__make_result__result_imaging_is_returned(masked_imaging_7x7):
 
     assert isinstance(result, ResultImaging)
 
-def test__positions_do_not_trace_within_threshold__raises_exception(
-    masked_imaging_7x7
-):
+
+def test__positions_do_not_trace_within_threshold__raises_exception(masked_imaging_7x7):
 
     model = af.Collection(
         galaxies=af.Collection(
@@ -59,6 +58,7 @@ def test__positions_do_not_trace_within_threshold__raises_exception(
     with pytest.raises(exc.RayTracingException):
         analysis.log_likelihood_function(instance=instance)
 
+
 def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
     masked_imaging_7x7
 ):
@@ -75,6 +75,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
     assert fit.log_likelihood == analysis_log_likelihood
+
 
 def test__figure_of_merit__includes_hyper_image_and_noise__matches_fit(
     masked_imaging_7x7
@@ -104,6 +105,7 @@ def test__figure_of_merit__includes_hyper_image_and_noise__matches_fit(
     )
 
     assert fit.log_likelihood == analysis_log_likelihood
+
 
 def test__uses_hyper_fit_correctly(masked_imaging_7x7):
 
@@ -159,12 +161,11 @@ def test__uses_hyper_fit_correctly(masked_imaging_7x7):
     assert (fit.tracer.galaxies[0].hyper_galaxy_image == lens_hyper_image).all()
     assert analysis_log_likelihood == fit.log_likelihood
 
+
 def test__sets_up_hyper_galaxy_images__froms(masked_imaging_7x7):
 
     hyper_galaxy_image_path_dict = {
-        ("galaxies", "lens"): al.Array2D.ones(
-            shape_native=(3, 3), pixel_scales=1.0
-        ),
+        ("galaxies", "lens"): al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
         ("galaxies", "source"): al.Array2D.full(
             fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0
         ),
@@ -192,6 +193,7 @@ def test__sets_up_hyper_galaxy_images__froms(masked_imaging_7x7):
     ).all()
 
     assert (analysis.hyper_model_image.native == 3.0 * np.ones((3, 3))).all()
+
 
 def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
 
@@ -265,6 +267,7 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
     )
 
     assert stochastic_log_likelihoods[0] != stochastic_log_likelihoods[1]
+
 
 def test__profile_log_likelihood_function(masked_imaging_7x7):
 

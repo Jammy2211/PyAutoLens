@@ -29,6 +29,7 @@ def test__max_log_likelihood_tracer_available_as_result(
     assert result.max_log_likelihood_tracer.galaxies[0].light.intensity == 1.0
     assert result.max_log_likelihood_tracer.galaxies[1].light.intensity == 2.0
 
+
 def test__max_log_likelihood_tracer_source_light_profile_centres_correct(
     analysis_imaging_7x7
 ):
@@ -43,9 +44,7 @@ def test__max_log_likelihood_tracer_source_light_profile_centres_correct(
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
-    result = res.Result(
-        samples=samples, analysis=analysis_imaging_7x7, model=None
-    )
+    result = res.Result(samples=samples, analysis=analysis_imaging_7x7, model=None)
 
     assert result.source_plane_light_profile_centre.in_list == [(1.0, 2.0)]
 
@@ -63,9 +62,7 @@ def test__max_log_likelihood_tracer_source_light_profile_centres_correct(
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
-    result = res.Result(
-        samples=samples, analysis=analysis_imaging_7x7, model=None
-    )
+    result = res.Result(samples=samples, analysis=analysis_imaging_7x7, model=None)
 
     assert result.source_plane_light_profile_centre.in_list == [(1.0, 2.0)]
 
@@ -81,9 +78,7 @@ def test__max_log_likelihood_tracer_source_light_profile_centres_correct(
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
-    result = res.Result(
-        samples=samples, analysis=analysis_imaging_7x7, model=None
-    )
+    result = res.Result(samples=samples, analysis=analysis_imaging_7x7, model=None)
 
     assert result.source_plane_light_profile_centre.in_list == [(5.0, 6.0)]
 
@@ -91,11 +86,10 @@ def test__max_log_likelihood_tracer_source_light_profile_centres_correct(
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
-    result = res.Result(
-        samples=samples, analysis=analysis_imaging_7x7, model=None
-    )
+    result = res.Result(samples=samples, analysis=analysis_imaging_7x7, model=None)
 
     assert result.source_plane_light_profile_centre == None
+
 
 def test__max_log_likelihood_tracer_source_inversion_centres_correct(
     analysis_imaging_7x7
@@ -113,9 +107,7 @@ def test__max_log_likelihood_tracer_source_inversion_centres_correct(
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
-    result = ResultImaging(
-        samples=samples, analysis=analysis_imaging_7x7, model=None
-    )
+    result = ResultImaging(samples=samples, analysis=analysis_imaging_7x7, model=None)
 
     assert (
         result.source_plane_inversion_centre.in_list[0]
@@ -133,15 +125,12 @@ def test__max_log_likelihood_tracer_source_inversion_centres_correct(
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
-    result = ResultImaging(
-        samples=samples, analysis=analysis_imaging_7x7, model=None
-    )
+    result = ResultImaging(samples=samples, analysis=analysis_imaging_7x7, model=None)
 
     assert result.source_plane_inversion_centre == None
 
-def test__max_log_likelihood_tracer_source_centres_correct(
-    analysis_imaging_7x7
-):
+
+def test__max_log_likelihood_tracer_source_centres_correct(analysis_imaging_7x7):
 
     lens = al.Galaxy(redshift=0.5, light=al.lp.SphSersic(intensity=1.0))
     source = al.Galaxy(
@@ -155,13 +144,12 @@ def test__max_log_likelihood_tracer_source_centres_correct(
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
-    result = ResultImaging(
-        samples=samples, analysis=analysis_imaging_7x7, model=None
-    )
+    result = ResultImaging(samples=samples, analysis=analysis_imaging_7x7, model=None)
 
     assert result.source_plane_centre.in_list[0] == pytest.approx(
         (-0.916666, -0.916666), 1.0e-4
     )
+
 
 def test__max_log_likelihood_tracer__multiple_image_positions_of_source_plane_centres_and_separations(
     analysis_imaging_7x7
@@ -170,9 +158,7 @@ def test__max_log_likelihood_tracer__multiple_image_positions_of_source_plane_ce
     lens = al.Galaxy(
         redshift=0.5,
         mass=al.mp.EllIsothermal(
-            centre=(0.001, 0.001),
-            einstein_radius=1.0,
-            elliptical_comps=(0.0, 0.111111),
+            centre=(0.001, 0.001), einstein_radius=1.0, elliptical_comps=(0.0, 0.111111)
         ),
     )
 
@@ -188,9 +174,7 @@ def test__max_log_likelihood_tracer__multiple_image_positions_of_source_plane_ce
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
-    result = ResultImaging(
-        samples=samples, analysis=analysis_imaging_7x7, model=None
-    )
+    result = ResultImaging(samples=samples, analysis=analysis_imaging_7x7, model=None)
 
     multiple_images = result.image_plane_multiple_image_positions
 
@@ -199,18 +183,15 @@ def test__max_log_likelihood_tracer__multiple_image_positions_of_source_plane_ce
     assert multiple_images.in_list[1][0] == pytest.approx(-0.19287109, 1.0e-4)
     assert multiple_images.in_list[1][1] == pytest.approx(0.27978516, 1.0e-4)
 
-def test__image_plane_multiple_image_positions_and_threshold(
-    analysis_imaging_7x7
-):
+
+def test__image_plane_multiple_image_positions_and_threshold(analysis_imaging_7x7):
 
     tracer = al.Tracer.from_galaxies(
         galaxies=[
             al.Galaxy(
                 redshift=0.5,
                 mass=al.mp.EllIsothermal(
-                    centre=(0.1, 0.0),
-                    einstein_radius=1.0,
-                    elliptical_comps=(0.0, 0.0),
+                    centre=(0.1, 0.0), einstein_radius=1.0, elliptical_comps=(0.0, 0.0)
                 ),
             ),
             al.Galaxy(redshift=1.0, bulge=al.lp.SphSersic(centre=(0.0, 0.0))),
@@ -219,16 +200,14 @@ def test__image_plane_multiple_image_positions_and_threshold(
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
-    result = res.Result(
-        samples=samples, model=None, analysis=analysis_imaging_7x7
-    )
+    result = res.Result(samples=samples, model=None, analysis=analysis_imaging_7x7)
 
-    assert result.image_plane_multiple_image_positions.in_list[0][
-        0
-    ] == pytest.approx(1.0004, 1.0e-2)
-    assert result.image_plane_multiple_image_positions.in_list[1][
-        0
-    ] == pytest.approx(-1.0004, 1.0e-2)
+    assert result.image_plane_multiple_image_positions.in_list[0][0] == pytest.approx(
+        1.0004, 1.0e-2
+    )
+    assert result.image_plane_multiple_image_positions.in_list[1][0] == pytest.approx(
+        -1.0004, 1.0e-2
+    )
 
     assert result.positions_threshold_from() == pytest.approx(0.000973519, 1.0e-4)
     assert result.positions_threshold_from(factor=5.0) == pytest.approx(
@@ -244,21 +223,18 @@ def test__results_include_mask__available_as_property(
 ):
 
     result = res.ResultDataset(
-        samples=samples_with_result,
-        analysis=analysis_imaging_7x7,
-        model=None,
+        samples=samples_with_result, analysis=analysis_imaging_7x7, model=None
     )
 
     assert (result.mask == masked_imaging_7x7.mask).all()
+
 
 def test__results_include_positions__available_as_property(
     analysis_imaging_7x7, masked_imaging_7x7, samples_with_result
 ):
 
     result = res.ResultDataset(
-        samples=samples_with_result,
-        analysis=analysis_imaging_7x7,
-        model=None,
+        samples=samples_with_result, analysis=analysis_imaging_7x7, model=None
     )
 
     assert result.positions == None
@@ -274,6 +250,7 @@ def test__results_include_positions__available_as_property(
     )
 
     assert (result.positions[0] == np.array([1.0, 1.0])).all()
+
 
 def test___image_dict(analysis_imaging_7x7):
 

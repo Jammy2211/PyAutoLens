@@ -107,20 +107,14 @@ def test__fit_figure_of_merit(interferometer_7):
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1_linear])
 
-    fit = al.FitInterferometer(
-        dataset=interferometer_7,
-        tracer=tracer,
-    )
+    fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
     assert fit.log_likelihood == pytest.approx(-23.44419, 1e-4)
     assert fit.figure_of_merit == pytest.approx(-23.44419, 1.0e-4)
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, galaxy_pix])
 
-    fit = al.FitInterferometer(
-        dataset=interferometer_7,
-        tracer=tracer,
-    )
+    fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
     assert fit.log_evidence == pytest.approx(-34.393456, 1e-4)
     assert fit.figure_of_merit == pytest.approx(-34.393456, 1.0e-4)

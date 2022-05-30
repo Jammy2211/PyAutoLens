@@ -468,7 +468,12 @@ class AnalysisImaging(AnalysisDataset):
             )
 
     def make_result(
-        self, samples: af.PDFSamples, model: af.Collection, sigma=1.0, use_errors=True, use_widths=False
+        self,
+        samples: af.PDFSamples,
+        model: af.Collection,
+        sigma=1.0,
+        use_errors=True,
+        use_widths=False,
     ) -> ResultImaging:
         """
         After the non-linear search is complete create its `Result`, which includes:

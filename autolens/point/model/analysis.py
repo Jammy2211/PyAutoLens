@@ -94,7 +94,12 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
         visualizer = Visualizer(visualize_path=paths.image_path)
 
     def make_result(
-        self, samples: af.PDFSamples, model: af.Collection, sigma=1.0, use_errors=True, use_widths=False
+        self,
+        samples: af.PDFSamples,
+        model: af.Collection,
+        sigma=1.0,
+        use_errors=True,
+        use_widths=False,
     ):
         return ResultPoint(samples=samples, model=model, analysis=self)
 

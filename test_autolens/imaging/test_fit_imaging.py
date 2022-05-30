@@ -213,20 +213,14 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1_linear])
 
-    fit = al.FitImaging(
-        dataset=masked_imaging_7x7,
-        tracer=tracer,
-    )
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
     assert fit.log_likelihood == pytest.approx(-14.573607, 1e-4)
     assert fit.figure_of_merit == pytest.approx(-14.573607, 1.0e-4)
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, galaxy_pix])
 
-    fit = al.FitImaging(
-        dataset=masked_imaging_7x7,
-        tracer=tracer,
-    )
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
     assert fit.log_evidence == pytest.approx(-22.79906, 1e-4)
     assert fit.figure_of_merit == pytest.approx(-22.79906, 1.0e-4)
