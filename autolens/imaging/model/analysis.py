@@ -111,12 +111,6 @@ class AnalysisImaging(AnalysisDataset):
         """
 
         try:
-            if instance.galaxies.source.bulge.effective_radius < 0.0:
-                stop
-        except AttributeError:
-            pass
-
-        try:
             return self.fit_imaging_via_instance_from(instance=instance).figure_of_merit
         except (
             PixelizationException,
@@ -431,12 +425,11 @@ class AnalysisImaging(AnalysisDataset):
             If True the visualization is being performed midway through the non-linear search before it is finished,
             which may change which images are output.
         """
+
         instance = self.instance_with_associated_hyper_images_from(instance=instance)
 
-        try:
-            fit = self.fit_imaging_via_instance_from(instance=instance)
-        except exc.RayTracingException:
-            return
+
+        fit = self.fit_imaging_via_instance_from(instance=instance)
 
         visualizer = VisualizerImaging(visualize_path=paths.image_path)
 

@@ -166,17 +166,20 @@ class FitImaging(aa.FitImaging, AbstractFit):
     @property
     def model_images_of_planes_list(self):
 
-        model_images_of_planes_list = self.tracer.blurred_image_2d_list_via_psf_from(
-            grid=self.grid,
-            psf=self.imaging.psf,
-            blurring_grid=self.imaging.blurring_grid,
-        )
+        galaxy_model_image_dict = self.galaxy_model_image_dict
 
-        for plane_index in self.tracer.plane_indexes_with_pixelizations:
+        model_images_of_planes_list = [
+            aa.Array2D.manual_mask(
+                array=np.zeros(self.dataset.grid.shape_slim), mask=self.dataset.mask
+            )
+            for i in range(self.tracer.total_planes)
+        ]
 
-            model_images_of_planes_list[
-                plane_index
-            ] += self.inversion.mapped_reconstructed_image
+        for plane_index, plane in enumerate(self.tracer.planes):
+            for galaxy in plane.galaxies:
+                model_images_of_planes_list[plane_index] += galaxy_model_image_dict[
+                    galaxy
+                ]
 
         return model_images_of_planes_list
 

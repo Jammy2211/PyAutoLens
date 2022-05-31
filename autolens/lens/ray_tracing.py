@@ -1,22 +1,17 @@
 from abc import ABC
 from astropy import cosmology as cosmo
-import json
 import numpy as np
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Union
 
 import autoarray as aa
 import autogalaxy as ag
 
 from autoconf.dictable import Dictable
 
-from autoarray.inversion.inversion.factory import inversion_imaging_unpacked_from
-from autoarray.inversion.inversion.factory import inversion_interferometer_unpacked_from
-
 from autogalaxy.plane.plane import Plane
 from autogalaxy.profiles.light_profiles.light_profiles_snr import LightProfileSNR
 
 from autolens.lens.to_inversion import TracerToInversion
-from autolens.analysis.preloads import Preloads
 
 from autolens.lens import ray_tracing_util
 

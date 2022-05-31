@@ -134,8 +134,9 @@ class Preloads(ag.Preloads):
         preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
 
         if preloads.mapper_list is not None:
-            preloads.mapper_galaxy_dict = fit_0.plane.to_inversion.mapper_galaxy_dict_from(
-                grid=fit_0.dataset.grid_inversion
+
+            preloads.mapper_galaxy_dict = fit_0.tracer.to_inversion.mapper_galaxy_dict_from(
+                grid=fit_0.dataset.grid_pixelized
             )
 
         preloads.set_operated_mapping_matrix_with_preloads(fit_0=fit_0, fit_1=fit_1)

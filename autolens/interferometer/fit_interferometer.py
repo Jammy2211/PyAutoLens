@@ -134,59 +134,44 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         """
         galaxy_model_image_dict = self.tracer.galaxy_image_2d_dict_from(grid=self.grid)
 
-        for path, image in galaxy_model_image_dict.items():
-            galaxy_model_image_dict[path] = image.binned
+        galaxy_linear_obj_image_dict = self.galaxy_linear_obj_data_dict_from(
+            use_image=True
+        )
 
-        # TODO : Extend to multiple inversioons across Planes
-
-        for plane_index in self.tracer.plane_indexes_with_pixelizations:
-
-            galaxy_model_image_dict.update(
-                {
-                    self.tracer.planes[plane_index].galaxies[
-                        0
-                    ]: self.inversion.mapped_reconstructed_image
-                }
-            )
-
-        return galaxy_model_image_dict
+        return {**galaxy_model_image_dict, **galaxy_linear_obj_image_dict}
 
     @property
     def galaxy_model_visibilities_dict(self) -> {ag.Galaxy: np.ndarray}:
-        """
-        A dictionary associating galaxies with their corresponding model images
-        """
+
         galaxy_model_visibilities_dict = self.tracer.galaxy_visibilities_dict_via_transformer_from(
             grid=self.interferometer.grid, transformer=self.interferometer.transformer
         )
 
-        # TODO : Extend to multiple inversioons across Planes
-
-        for plane_index in self.tracer.plane_indexes_with_pixelizations:
-
-            galaxy_model_visibilities_dict.update(
-                {
-                    self.tracer.planes[plane_index].galaxies[
-                        0
-                    ]: self.inversion.mapped_reconstructed_data
-                }
-            )
-
-        return galaxy_model_visibilities_dict
-
-    def model_visibilities_of_planes(self):
-
-        model_visibilities_of_planes = self.tracer.visibilities_list_via_transformer_from(
-            grid=self.interferometer.grid, transformer=self.interferometer.transformer
+        galaxy_linear_obj_visibilities_dict = self.galaxy_linear_obj_data_dict_from(
+            use_image=False
         )
 
-        for plane_index in self.tracer.plane_indexes_with_pixelizations:
+        return {**galaxy_model_visibilities_dict, **galaxy_linear_obj_visibilities_dict}
 
-            model_visibilities_of_planes[
-                plane_index
-            ] += self.inversion.mapped_reconstructed_image
+    @property
+    def model_visibilities_of_planes_list(self):
 
-        return model_visibilities_of_planes
+        galaxy_model_visibilities_dict = self.galaxy_model_visibilities_dict
+
+        model_visibilities_of_planes_list = [
+            aa.Visibilities.zeros(
+                shape_slim=(self.dataset.visibilities.shape_slim,)
+            )
+            for i in range(self.tracer.total_planes)
+        ]
+
+        for plane_index, plane in enumerate(self.tracer.planes):
+            for galaxy in plane.galaxies:
+                model_visibilities_of_planes_list[plane_index] += galaxy_model_visibilities_dict[
+                    galaxy
+                ]
+
+        return model_visibilities_of_planes_list
 
     @property
     def total_mappers(self):
