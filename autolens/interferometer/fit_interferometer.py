@@ -159,17 +159,15 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         galaxy_model_visibilities_dict = self.galaxy_model_visibilities_dict
 
         model_visibilities_of_planes_list = [
-            aa.Visibilities.zeros(
-                shape_slim=(self.dataset.visibilities.shape_slim,)
-            )
+            aa.Visibilities.zeros(shape_slim=(self.dataset.visibilities.shape_slim,))
             for i in range(self.tracer.total_planes)
         ]
 
         for plane_index, plane in enumerate(self.tracer.planes):
             for galaxy in plane.galaxies:
-                model_visibilities_of_planes_list[plane_index] += galaxy_model_visibilities_dict[
-                    galaxy
-                ]
+                model_visibilities_of_planes_list[
+                    plane_index
+                ] += galaxy_model_visibilities_dict[galaxy]
 
         return model_visibilities_of_planes_list
 

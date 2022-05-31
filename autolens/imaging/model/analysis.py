@@ -221,12 +221,19 @@ class AnalysisImaging(AnalysisDataset):
         """
         preloads = self.preloads if preload_overwrite is None else preload_overwrite
 
+        if self.hyper_galaxy_image_path_dict is not None:
+            hyper_galaxy_image = self.hyper_galaxy_image_path_dict[("galaxies", "source")]
+        else:
+            hyper_galaxy_image = None
+
         return FitImaging(
             dataset=self.dataset,
             tracer=tracer,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
             use_hyper_scaling=use_hyper_scaling,
+            hyper_model_image=self.hyper_model_image,
+            hyper_galaxy_image=hyper_galaxy_image,
             settings_pixelization=self.settings_pixelization,
             settings_inversion=self.settings_inversion,
             preloads=preloads,
@@ -361,6 +368,11 @@ class AnalysisImaging(AnalysisDataset):
 
         log_evidences = []
 
+        if self.hyper_galaxy_image_path_dict is not None:
+            hyper_galaxy_image = self.hyper_galaxy_image_path_dict[("galaxies", "source")]
+        else:
+            hyper_galaxy_image = None
+
         for i in range(self.settings_lens.stochastic_samples):
 
             try:
@@ -369,6 +381,8 @@ class AnalysisImaging(AnalysisDataset):
                     tracer=tracer,
                     hyper_image_sky=hyper_image_sky,
                     hyper_background_noise=hyper_background_noise,
+                    hyper_model_image=self.hyper_model_image,
+                    hyper_galaxy_image=hyper_galaxy_image,
                     settings_pixelization=settings_pixelization,
                     settings_inversion=self.settings_inversion,
                     preloads=self.preloads,
@@ -428,7 +442,6 @@ class AnalysisImaging(AnalysisDataset):
 
         instance = self.instance_with_associated_hyper_images_from(instance=instance)
 
-
         fit = self.fit_imaging_via_instance_from(instance=instance)
 
         visualizer = VisualizerImaging(visualize_path=paths.image_path)
@@ -445,7 +458,7 @@ class AnalysisImaging(AnalysisDataset):
                 inversion=fit.inversion, during_analysis=during_analysis
             )
 
-        visualizer.visualize_contribution_maps(tracer=fit.tracer)
+     #   visualizer.visualize_contribution_maps(tracer=fit.tracer)
 
         if visualizer.plot_fit_no_hyper:
             fit = self.fit_imaging_via_tracer_from(
