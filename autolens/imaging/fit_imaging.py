@@ -21,8 +21,6 @@ class FitImaging(aa.FitImaging, AbstractFit):
         hyper_image_sky: Optional[ag.hyper_data.HyperImageSky] = None,
         hyper_background_noise: Optional[ag.hyper_data.HyperBackgroundNoise] = None,
         use_hyper_scaling: bool = True,
-        hyper_model_image: Optional[aa.Array2D] = None,
-        hyper_galaxy_image: Optional[aa.Array2D] = None,
         settings_pixelization: aa.SettingsPixelization = aa.SettingsPixelization(),
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads: Preloads = Preloads(),
@@ -46,9 +44,6 @@ class FitImaging(aa.FitImaging, AbstractFit):
         self.hyper_image_sky = hyper_image_sky
         self.hyper_background_noise = hyper_background_noise
         self.use_hyper_scaling = use_hyper_scaling
-
-        self.hyper_model_image = hyper_model_image
-        self.hyper_galaxy_image = hyper_galaxy_image
 
         self.settings_pixelization = settings_pixelization
         self.settings_inversion = settings_inversion
@@ -81,8 +76,6 @@ class FitImaging(aa.FitImaging, AbstractFit):
                 noise_map=self.dataset.noise_map,
                 tracer=self.tracer,
                 hyper_background_noise=self.hyper_background_noise,
-                hyper_model_image=self.hyper_model_image,
-                hyper_galaxy_image=self.hyper_galaxy_image,
             )
 
         return self.dataset.noise_map
@@ -127,8 +120,6 @@ class FitImaging(aa.FitImaging, AbstractFit):
                 image=self.profile_subtracted_image,
                 noise_map=self.noise_map,
                 w_tilde=self.dataset.w_tilde,
-                hyper_model_image=self.hyper_model_image,
-                hyper_galaxy_image=self.hyper_galaxy_image,
                 settings_pixelization=self.settings_pixelization,
                 settings_inversion=self.settings_inversion,
                 preloads=self.preloads,
@@ -245,8 +236,6 @@ class FitImaging(aa.FitImaging, AbstractFit):
             hyper_image_sky=self.hyper_image_sky,
             hyper_background_noise=self.hyper_background_noise,
             use_hyper_scaling=self.use_hyper_scaling,
-            hyper_model_image=self.hyper_model_image,
-            hyper_galaxy_image=self.hyper_galaxy_image,
             settings_pixelization=self.settings_pixelization,
             settings_inversion=settings_inversion,
             preloads=preloads,
@@ -262,19 +251,9 @@ def hyper_image_from(image, hyper_image_sky):
         return image
 
 
-def hyper_noise_map_from(
-    noise_map,
-    tracer,
-    hyper_background_noise,
-    hyper_model_image: Optional[aa.Array2D] = None,
-    hyper_galaxy_image: Optional[aa.Array2D] = None,
-):
+def hyper_noise_map_from(noise_map, tracer, hyper_background_noise):
 
-    hyper_noise_map = tracer.hyper_noise_map_from(
-        noise_map=noise_map,
-        hyper_model_image=hyper_model_image,
-        hyper_galaxy_image=hyper_galaxy_image,
-    )
+    hyper_noise_map = tracer.hyper_noise_map_from(noise_map=noise_map)
 
     if hyper_background_noise is not None:
         noise_map = hyper_background_noise.hyper_noise_map_from(noise_map=noise_map)

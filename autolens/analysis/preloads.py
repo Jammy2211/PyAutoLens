@@ -136,7 +136,7 @@ class Preloads(ag.Preloads):
         if preloads.mapper_list is not None:
 
             preloads.mapper_galaxy_dict = fit_0.tracer.to_inversion.mapper_galaxy_dict_from(
-                grid=fit_0.dataset.grid_pixelized, hyper_model_image=fit_0.hyper_model_image, hyper_galaxy_image=fit_0.hyper_galaxy_image
+                grid=fit_0.dataset.grid_pixelized
             )
 
         preloads.set_operated_mapping_matrix_with_preloads(fit_0=fit_0, fit_1=fit_1)
@@ -217,11 +217,11 @@ class Preloads(ag.Preloads):
         self.sparse_image_plane_grid_pg_list = None
 
         sparse_image_plane_grid_pg_list_0 = fit_0.tracer.to_inversion.sparse_image_plane_grid_pg_list_from(
-            grid=fit_0.dataset.grid_pixelized, hyper_galaxy_image=fit_0.hyper_galaxy_image
+            grid=fit_0.dataset.grid_pixelized
         )
 
         sparse_image_plane_grid_pg_list_1 = fit_1.tracer.to_inversion.sparse_image_plane_grid_pg_list_from(
-            grid=fit_1.dataset.grid_pixelized, hyper_galaxy_image=fit_0.hyper_galaxy_image
+            grid=fit_1.dataset.grid_pixelized
         )
 
         if sparse_image_plane_grid_pg_list_0[-1] is not None:

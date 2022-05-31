@@ -452,17 +452,9 @@ def test__model_images_of_planes_list(masked_imaging_7x7):
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
-    assert fit.model_images_of_planes_list[0] == pytest.approx(
-        fit.galaxy_model_image_dict[g0], 1.0e-4
-    )
-    assert fit.model_images_of_planes_list[1] == pytest.approx(
-        fit.galaxy_model_image_dict[g1_linear], 1.0e-4
-    )
-    assert fit.model_images_of_planes_list[2] == pytest.approx(
-        fit.galaxy_model_image_dict[galaxy_pix_0]
-        + fit.galaxy_model_image_dict[galaxy_pix_1],
-        1.0e-4,
-    )
+    assert fit.model_images_of_planes_list[0] == pytest.approx(fit.galaxy_model_image_dict[g0], 1.0e-4)
+    assert fit.model_images_of_planes_list[1] == pytest.approx(fit.galaxy_model_image_dict[g1_linear], 1.0e-4)
+    assert fit.model_images_of_planes_list[2] == pytest.approx(fit.galaxy_model_image_dict[galaxy_pix_0] + fit.galaxy_model_image_dict[galaxy_pix_1], 1.0e-4)
 
 
 def test___unmasked_blurred_images(masked_imaging_7x7):

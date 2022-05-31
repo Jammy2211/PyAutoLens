@@ -380,33 +380,12 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
             if galaxy.has_regularization
         ]
 
-    def hyper_noise_map_from(
-        self,
-        noise_map: aa.Array2D,
-        hyper_model_image: Optional[aa.Array2D] = None,
-        hyper_galaxy_image: Optional[aa.Array2D] = None,
-    ) -> aa.Array2D:
-        return sum(
-            self.hyper_noise_map_list_from(
-                noise_map=noise_map,
-                hyper_model_image=hyper_model_image,
-                hyper_galaxy_image=hyper_galaxy_image,
-            )
-        )
+    def hyper_noise_map_from(self, noise_map: aa.Array2D) -> aa.Array2D:
+        return sum(self.hyper_noise_map_list_from(noise_map=noise_map))
 
-    def hyper_noise_map_list_from(
-        self,
-        noise_map: aa.Array2D,
-        hyper_model_image: Optional[aa.Array2D] = None,
-        hyper_galaxy_image: Optional[aa.Array2D] = None,
-    ) -> List[aa.Array2D]:
+    def hyper_noise_map_list_from(self, noise_map: aa.Array2D) -> List[aa.Array2D]:
         return [
-            plane.hyper_noise_map_from(
-                noise_map=noise_map,
-                hyper_model_image=hyper_model_image,
-                hyper_galaxy_image=hyper_galaxy_image,
-            )
-            for plane in self.planes
+            plane.hyper_noise_map_from(noise_map=noise_map) for plane in self.planes
         ]
 
     @property

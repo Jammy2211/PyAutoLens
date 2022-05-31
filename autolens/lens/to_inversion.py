@@ -82,7 +82,7 @@ class TracerToInversion:
 
     @aa.profile_func
     def sparse_image_plane_grid_pg_list_from(
-        self, grid: aa.type.Grid2DLike, settings_pixelization=aa.SettingsPixelization(), hyper_galaxy_image = None
+        self, grid: aa.type.Grid2DLike, settings_pixelization=aa.SettingsPixelization()
     ) -> List[List]:
         """
         Specific pixelizations, like the `VoronoiMagnification`, begin by determining what will become its the
@@ -94,7 +94,7 @@ class TracerToInversion:
 
         for plane in self.planes:
             sparse_image_plane_grid_list = plane.to_inversion.sparse_image_plane_grid_list_from(
-                grid=grid, settings_pixelization=settings_pixelization, hyper_galaxy_image=hyper_galaxy_image
+                grid=grid, settings_pixelization=settings_pixelization
             )
             sparse_image_plane_grid_list_of_planes.append(sparse_image_plane_grid_list)
 
@@ -106,7 +106,6 @@ class TracerToInversion:
         grid: aa.type.Grid2DLike,
         settings_pixelization=aa.SettingsPixelization(),
         preloads=Preloads(),
-            hyper_galaxy_image=None
     ) -> Tuple[List[List], List[List]]:
         """
         Ray-trace the sparse image plane grid used to define the source-pixel centres by calculating the deflection
@@ -119,7 +118,7 @@ class TracerToInversion:
         ):
 
             sparse_image_plane_grid_pg_list = self.sparse_image_plane_grid_pg_list_from(
-                grid=grid, settings_pixelization=settings_pixelization, hyper_galaxy_image=hyper_galaxy_image
+                grid=grid, settings_pixelization=settings_pixelization
             )
 
         else:
@@ -158,8 +157,6 @@ class TracerToInversion:
         grid: aa.type.Grid2DLike,
         settings_pixelization=aa.SettingsPixelization(),
         preloads=Preloads(),
-            hyper_model_image: Optional[aa.Array2D] = None,
-            hyper_galaxy_image: Optional[aa.Array2D] = None,
     ) -> Dict[aa.AbstractMapper, ag.Galaxy]:
 
         mapper_galaxy_dict = {}
@@ -176,7 +173,6 @@ class TracerToInversion:
                 grid=grid,
                 settings_pixelization=settings_pixelization,
                 preloads=preloads,
-                hyper_galaxy_image=hyper_galaxy_image
             )
         else:
             traced_sparse_grids_list_of_planes = (
@@ -205,7 +201,9 @@ class TracerToInversion:
                         pixelization=self.pixelization_pg_list[plane_index][
                             mapper_index
                         ],
-                        hyper_galaxy_image=hyper_galaxy_image,
+                        hyper_galaxy_image=self.hyper_galaxy_image_pg_list[plane_index][
+                            mapper_index
+                        ],
                         settings_pixelization=settings_pixelization,
                         preloads=preloads,
                     )
@@ -219,10 +217,8 @@ class TracerToInversion:
     def linear_obj_galaxy_dict_from(
         self,
         dataset: Union[aa.Imaging, aa.Interferometer],
-        settings_pixelization: aa.SettingsPixelization = aa.SettingsPixelization(),
-        preloads: Preloads = Preloads(),
-            hyper_model_image: Optional[aa.Array2D] = None,
-            hyper_galaxy_image: Optional[aa.Array2D] = None,
+        settings_pixelization:aa.SettingsPixelization=aa.SettingsPixelization(),
+        preloads:Preloads=Preloads(),
     ) -> Dict[Union[ag.LightProfileLinearObjFunc, aa.AbstractMapper], ag.Galaxy]:
 
         lp_linear_func_galaxy_dict = self.lp_linear_func_galaxy_dict_from(
@@ -236,8 +232,6 @@ class TracerToInversion:
             mapper_galaxy_dict = self.mapper_galaxy_dict_from(
                 grid=dataset.grid_pixelized,
                 settings_pixelization=settings_pixelization,
-            hyper_model_image=hyper_model_image,
-            hyper_galaxy_image=hyper_galaxy_image,
                 preloads=preloads,
             )
 
@@ -253,8 +247,6 @@ class TracerToInversion:
         image: aa.Array2D,
         noise_map: aa.Array2D,
         w_tilde: aa.WTildeImaging,
-            hyper_model_image: Optional[aa.Array2D] = None,
-            hyper_galaxy_image: Optional[aa.Array2D] = None,
         settings_pixelization: aa.SettingsPixelization = aa.SettingsPixelization(),
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads: Preloads = Preloads(),
@@ -262,8 +254,6 @@ class TracerToInversion:
 
         linear_obj_galaxy_dict = self.linear_obj_galaxy_dict_from(
             dataset=dataset,
-            hyper_model_image=hyper_model_image,
-            hyper_galaxy_image=hyper_galaxy_image,
             settings_pixelization=settings_pixelization,
             preloads=preloads,
         )
