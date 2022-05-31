@@ -428,7 +428,6 @@ class AnalysisImaging(AnalysisDataset):
 
         instance = self.instance_with_associated_hyper_images_from(instance=instance)
 
-
         fit = self.fit_imaging_via_instance_from(instance=instance)
 
         visualizer = VisualizerImaging(visualize_path=paths.image_path)

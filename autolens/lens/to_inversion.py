@@ -217,8 +217,8 @@ class TracerToInversion:
     def linear_obj_galaxy_dict_from(
         self,
         dataset: Union[aa.Imaging, aa.Interferometer],
-        settings_pixelization:aa.SettingsPixelization=aa.SettingsPixelization(),
-        preloads:Preloads=Preloads(),
+        settings_pixelization: aa.SettingsPixelization = aa.SettingsPixelization(),
+        preloads: Preloads = Preloads(),
     ) -> Dict[Union[ag.LightProfileLinearObjFunc, aa.AbstractMapper], ag.Galaxy]:
 
         lp_linear_func_galaxy_dict = self.lp_linear_func_galaxy_dict_from(
