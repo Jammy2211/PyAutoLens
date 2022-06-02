@@ -118,6 +118,7 @@ class AnalysisImaging(AnalysisDataset):
             exc.InversionException,
             exc.GridException,
             ValueError,
+            TypeError,
             np.linalg.LinAlgError,
             OverflowError,
         ) as e:
