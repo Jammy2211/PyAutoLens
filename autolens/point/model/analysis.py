@@ -1,7 +1,7 @@
-from astropy import cosmology as cosmo
 import numba
 
 import autofit as af
+import autogalaxy as ag
 
 from autolens.analysis.analysis import AnalysisLensing
 from autolens.analysis.visualizer import Visualizer
@@ -21,7 +21,7 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
         point_dict: PointDict,
         solver: PointSolver,
         imaging=None,
-        cosmology=cosmo.Planck15,
+        cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_lens=SettingsLens(),
     ):
         """

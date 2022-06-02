@@ -5,6 +5,9 @@ import pytest
 from matplotlib import pyplot
 
 from autofit import conf
+
+import autogalaxy as ag
+
 from autolens import fixtures
 
 directory = path.dirname(path.realpath(__file__))
@@ -267,6 +270,11 @@ def make_tracer_x2_plane_voronoi_7x7():
 @pytest.fixture(name="tracer_x2_plane_point")
 def make_tracer_x2_plane_point():
     return fixtures.make_tracer_x2_plane_point()
+
+
+@pytest.fixture(name="planck15")
+def make_planck15():
+    return fixtures.make_planck15()
 
 
 ### QUANTITY ###

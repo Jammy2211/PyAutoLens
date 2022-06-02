@@ -35,7 +35,7 @@ def test__operate_image__blurred_images_2d_via_psf_from__for_tracer_gives_list_o
         grid=source_grid_2d_7x7, psf=psf_3x3, blurring_grid=source_blurring_grid_2d_7x7
     )
 
-    tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
+    tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=al.cosmo.Planck15())
 
     blurred_image = tracer.blurred_image_2d_via_psf_from(
         grid=sub_grid_2d_7x7, psf=psf_3x3, blurring_grid=blurring_grid_2d_7x7
@@ -84,7 +84,7 @@ def test__operate_image__blurred_images_2d_via_convolver_from__for_tracer_gives_
         blurring_grid=source_blurring_grid_2d_7x7,
     )
 
-    tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=cosmo.Planck15)
+    tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=al.cosmo.Planck15())
 
     blurred_image = tracer.blurred_image_2d_via_convolver_from(
         grid=sub_grid_2d_7x7,
@@ -128,7 +128,9 @@ def test__operate_image__visibilities_of_planes_from_grid_and_transformer(
         grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
     )
 
-    tracer = al.Tracer(planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15)
+    tracer = al.Tracer(
+        planes=[plane_0, plane_1, plane_2], cosmology=al.cosmo.Planck15()
+    )
 
     visibilities = tracer.visibilities_list_via_transformer_from(
         grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
@@ -186,7 +188,7 @@ def test__operate_image__galaxy_blurred_image_2d_dict_via_convolver_from(
     )
 
     tracer = al.Tracer.from_galaxies(
-        galaxies=[g3, g1, g0, g2], cosmology=cosmo.Planck15
+        galaxies=[g3, g1, g0, g2], cosmology=al.cosmo.Planck15()
     )
 
     blurred_image_dict = tracer.galaxy_blurred_image_2d_dict_via_convolver_from(
@@ -234,7 +236,7 @@ def test__operate_image__galaxy_visibilities_dict_from_grid_and_transformer(
     )
 
     tracer = al.Tracer.from_galaxies(
-        galaxies=[g3, g1, g0, g2], cosmology=cosmo.Planck15
+        galaxies=[g3, g1, g0, g2], cosmology=al.cosmo.Planck15()
     )
 
     visibilities_dict = tracer.galaxy_visibilities_dict_via_transformer_from(
@@ -262,7 +264,8 @@ def test__operate_lens__sums_individual_quantities():
     plane = al.Plane(galaxies=[galaxy_0, galaxy_1])
 
     tracer = al.Tracer(
-        planes=[plane, al.Plane(redshift=1.0, galaxies=None)], cosmology=cosmo.Planck15
+        planes=[plane, al.Plane(redshift=1.0, galaxies=None)],
+        cosmology=al.cosmo.Planck15(),
     )
 
     einstein_mass = tracer.einstein_mass_angular_from(grid=grid)

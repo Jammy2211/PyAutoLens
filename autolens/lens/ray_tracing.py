@@ -1,5 +1,4 @@
 from abc import ABC
-from astropy import cosmology as cosmo
 import numpy as np
 from typing import Dict, List, Optional, Union
 
@@ -17,7 +16,12 @@ from autolens.lens import ray_tracing_util
 
 
 class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
-    def __init__(self, planes, cosmology, profiling_dict: Optional[Dict] = None):
+    def __init__(
+        self,
+        planes,
+        cosmology: ag.cosmo.LensingCosmology,
+        profiling_dict: Optional[Dict] = None,
+    ):
         """
         Ray-tracer for a lens system with any number of planes.
 
@@ -50,7 +54,10 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
     @classmethod
     def from_galaxies(
-        cls, galaxies, cosmology=cosmo.Planck15, profiling_dict: Optional[Dict] = None
+        cls,
+        galaxies,
+        cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
+        profiling_dict: Optional[Dict] = None,
     ):
 
         planes = ag.util.plane.planes_via_galaxies_from(
@@ -66,7 +73,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         line_of_sight_galaxies,
         source_galaxies,
         planes_between_lenses,
-        cosmology=cosmo.Planck15,
+        cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):
 
         """Ray-tracer for a lens system with any number of planes.
@@ -134,7 +141,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
     @staticmethod
     def from_dict(cls_dict):
-        cls_dict["cosmology"] = getattr(cosmo, cls_dict["cosmology"])
+        cls_dict["cosmology"] = getattr(ag.cosmo, cls_dict["cosmology"])
         cls_dict["planes"] = list(map(Plane.from_dict, cls_dict["planes"]))
         return Dictable.from_dict(cls_dict)
 

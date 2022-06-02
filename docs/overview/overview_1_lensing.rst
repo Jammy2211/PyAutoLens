@@ -161,7 +161,7 @@ model to create the appropriate strong lens system.
 .. code-block:: python
 
     tracer = al.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy], cosmology=cosmo.Planck15
+        galaxies=[lens_galaxy, source_galaxy], cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15()
     )
 
 Ray Tracing

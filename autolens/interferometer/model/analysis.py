@@ -1,9 +1,7 @@
-from astropy import cosmology as cosmo
 import logging
 import numpy as np
 from typing import Optional
 
-from autoconf import conf
 import autofit as af
 import autoarray as aa
 import autogalaxy as ag
@@ -31,7 +29,7 @@ class AnalysisInterferometer(AnalysisDataset):
         dataset,
         positions: aa.Grid2DIrregular = None,
         hyper_dataset_result=None,
-        cosmology=cosmo.Planck15,
+        cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_pixelization: aa.SettingsPixelization = None,
         settings_inversion: aa.SettingsInversion = None,
         settings_lens: SettingsLens = None,

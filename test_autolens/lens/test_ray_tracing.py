@@ -485,7 +485,9 @@ def test__padded_image_2d_from(sub_grid_2d_7x7, grid_2d_iterate_7x7):
 
     padded_g2_image = g2.image_2d_from(grid=padded_grid)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2], cosmology=cosmo.Planck15)
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[g0, g1, g2], cosmology=al.cosmo.Planck15()
+    )
 
     padded_tracer_image = tracer.padded_image_2d_from(
         grid=sub_grid_2d_7x7, psf_shape_2d=(3, 3)
@@ -548,7 +550,7 @@ def test__galaxy_image_2d_dict_from(sub_grid_2d_7x7):
     g3_image = g3.image_2d_from(grid=source_grid_2d_7x7)
 
     tracer = al.Tracer.from_galaxies(
-        galaxies=[g3, g1, g0, g2], cosmology=cosmo.Planck15
+        galaxies=[g3, g1, g0, g2], cosmology=al.cosmo.Planck15()
     )
 
     image_1d_dict = tracer.galaxy_image_2d_dict_from(grid=sub_grid_2d_7x7)
@@ -882,7 +884,7 @@ def test__traced_grid_2d_list_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
 
     galaxies = [g0, g1, g2, g3, g4, g5]
 
-    tracer = al.Tracer.from_galaxies(galaxies=galaxies, cosmology=cosmo.Planck15)
+    tracer = al.Tracer.from_galaxies(galaxies=galaxies, cosmology=al.cosmo.Planck15())
 
     traced_grid_list = tracer.traced_grid_2d_list_from(
         grid=sub_grid_2d_7x7_simple, plane_index_limit=1
@@ -902,7 +904,9 @@ def test__traced_grid_2d_list_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
     g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=0.2))
     g2 = al.Galaxy(redshift=2.0, light_profile=al.lp.EllSersic(intensity=0.3))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2], cosmology=cosmo.Planck15)
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[g0, g1, g2], cosmology=al.cosmo.Planck15()
+    )
 
     plane_0 = al.Plane(galaxies=[g0])
     plane_1 = al.Plane(galaxies=[g1])
@@ -925,7 +929,9 @@ def test__traced_grid_2d_list_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
     g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=0.2))
     g2 = al.Galaxy(redshift=2.0, light_profile=al.lp.EllSersic(intensity=0.3))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2], cosmology=cosmo.Planck15)
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[g0, g1, g2], cosmology=al.cosmo.Planck15()
+    )
 
     plane_0 = tracer.planes[0]
     plane_1 = tracer.planes[1]
@@ -951,7 +957,7 @@ def test__traced_grid_2d_list_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
     g4 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=0.5))
 
     tracer = al.Tracer.from_galaxies(
-        galaxies=[g0, g1, g2, g3, g4], cosmology=cosmo.Planck15
+        galaxies=[g0, g1, g2, g3, g4], cosmology=al.cosmo.Planck15()
     )
 
     plane_0 = al.Plane(galaxies=[g0, g3])
@@ -977,7 +983,9 @@ def test__traced_grid_2d_list_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
     g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=0.2))
     g2 = al.Galaxy(redshift=2.0)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2], cosmology=cosmo.Planck15)
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[g0, g1, g2], cosmology=al.cosmo.Planck15()
+    )
 
     plane_0 = al.Plane(galaxies=[g0])
     plane_1 = al.Plane(galaxies=[g1])
@@ -1101,7 +1109,9 @@ def test__hyper_noise_map_list_from(sub_grid_2d_7x7):
     hyper_noise_map_0 = plane_0.hyper_noise_map_from(noise_map=noise_map_1d)
     hyper_noise_map_1 = plane_1.hyper_noise_map_from(noise_map=noise_map_1d)
 
-    tracer = al.Tracer(planes=[plane_0, plane_1, plane_2], cosmology=cosmo.Planck15)
+    tracer = al.Tracer(
+        planes=[plane_0, plane_1, plane_2], cosmology=al.cosmo.Planck15()
+    )
 
     hyper_noise_maps = tracer.hyper_noise_map_list_from(noise_map=noise_map_1d)
 
@@ -1114,7 +1124,7 @@ def test__hyper_noise_map_list_from(sub_grid_2d_7x7):
     assert (hyper_noise_map.slim == hyper_noise_map_0 + hyper_noise_map_1).all()
 
     tracer = al.Tracer.from_galaxies(
-        galaxies=[galaxy_0, galaxy_1], cosmology=cosmo.Planck15
+        galaxies=[galaxy_0, galaxy_1], cosmology=al.cosmo.Planck15()
     )
 
     hyper_noise_maps = tracer.hyper_noise_map_list_from(noise_map=noise_map_1d)
@@ -1382,7 +1392,7 @@ def test__sliced_tracer_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
         line_of_sight_galaxies=[los_g0, los_g1, los_g2, los_g3],
         source_galaxies=[source_g0],
         planes_between_lenses=[1, 1],
-        cosmology=cosmo.Planck15,
+        cosmology=al.cosmo.Planck15(),
     )
 
     # Plane redshifts are [0.25, 0.5, 1.25, 2.0]
@@ -1418,7 +1428,7 @@ def test__sliced_tracer_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
         line_of_sight_galaxies=[los_g0, los_g1, los_g2, los_g3],
         source_galaxies=[source_g0],
         planes_between_lenses=[1, 1],
-        cosmology=cosmo.Planck15,
+        cosmology=al.cosmo.Planck15(),
     )
 
     traced_grids = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7_simple)

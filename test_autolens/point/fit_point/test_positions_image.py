@@ -108,8 +108,8 @@ def test__multi_plane_position_solving():
         point_solver=point_solver,
     )
 
-    scaling_factor = al.util.cosmology.scaling_factor_between_redshifts_from(
-        redshift_0=0.5, redshift_1=1.0, redshift_final=2.0, cosmology=tracer.cosmology
+    scaling_factor = tracer.cosmology.scaling_factor_between_redshifts_from(
+        redshift_0=0.5, redshift_1=1.0, redshift_final=2.0
     )
 
     assert fit_0.model_positions[0, 0] == pytest.approx(

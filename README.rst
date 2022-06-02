@@ -89,7 +89,7 @@ lens ``Galaxy`` with an ``EllIsothermal`` ``MassProfile`` lenses a background so
     and an input cosmology to determine how light is deflected on its path to Earth.
     """
     tracer = al.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy], cosmology=cosmo.Planck15
+        galaxies=[lens_galaxy, source_galaxy], cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15()
     )
 
     """

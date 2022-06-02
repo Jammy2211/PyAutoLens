@@ -102,7 +102,7 @@ class TestTracedGridListFrom:
         planes = al.util.plane.planes_via_galaxies_from(galaxies=galaxies)
 
         traced_grid_list = al.util.ray_tracing.traced_grid_2d_list_from(
-            planes=planes, grid=sub_grid_2d_7x7_simple, cosmology=cosmo.Planck15
+            planes=planes, grid=sub_grid_2d_7x7_simple, cosmology=al.cosmo.Planck15()
         )
 
         # The scaling factors are as follows and were computed independently from the test_autoarray.
@@ -192,7 +192,7 @@ class TestTracedGridListFrom:
             planes=planes,
             grid=sub_grid_2d_7x7_simple,
             plane_index_limit=1,
-            cosmology=cosmo.Planck15,
+            cosmology=al.cosmo.Planck15(),
         )
 
         # The scaling factors are as follows and were computed independently from the test_autoarray.

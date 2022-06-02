@@ -1,5 +1,3 @@
-from astropy import cosmology as cosmo
-
 import autofit as af
 import autogalaxy as ag
 
@@ -18,7 +16,7 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
         self,
         dataset: ag.DatasetQuantity,
         func_str: str,
-        cosmology=cosmo.Planck15,
+        cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_lens=SettingsLens(),
     ):
         """

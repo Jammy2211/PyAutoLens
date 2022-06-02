@@ -1,4 +1,3 @@
-from astropy import cosmology as cosmo
 from typing import List
 
 import autoarray as aa
@@ -8,7 +7,7 @@ import autogalaxy as ag
 def traced_grid_2d_list_from(
     planes: List[ag.Plane],
     grid: aa.type.Grid2DLike,
-    cosmology=cosmo.Planck15,
+    cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     plane_index_limit: int = None,
 ):
     """
@@ -61,11 +60,10 @@ def traced_grid_2d_list_from(
 
         if plane_index > 0:
             for previous_plane_index in range(plane_index):
-                scaling_factor = ag.util.cosmology.scaling_factor_between_redshifts_from(
+                scaling_factor = cosmology.scaling_factor_between_redshifts_from(
                     redshift_0=plane_redshifts[previous_plane_index],
                     redshift_1=plane.redshift,
                     redshift_final=plane_redshifts[-1],
-                    cosmology=cosmology,
                 )
 
                 scaled_deflections = (
@@ -89,7 +87,7 @@ def grid_2d_at_redshift_from(
     redshift: float,
     galaxies: List[ag.Galaxy],
     grid: aa.type.Grid2DLike,
-    cosmology=cosmo.Planck15,
+    cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
 ) -> aa.type.Grid2DLike:
     """
     Given a list of galaxies whose redshifts define a multi-plane lensing system and an input grid of (y,x) arc-second

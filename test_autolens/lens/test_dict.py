@@ -1,5 +1,4 @@
 import pytest
-from astropy import cosmology as cosmo
 
 import autolens as al
 
@@ -22,7 +21,7 @@ def make_tracer():
     source_galaxy = al.Galaxy(redshift=1.0, disk=disk)
 
     return al.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy], cosmology=cosmo.Planck15
+        galaxies=[lens_galaxy, source_galaxy], cosmology=al.cosmo.Planck15()
     )
 
 
