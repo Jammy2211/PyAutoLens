@@ -104,9 +104,14 @@ class AnalysisLensing:
                 profiling_dict=profiling_dict,
             )
 
+        if hasattr(instance, "cosmology"):
+            cosmology = instance.cosmology
+        else:
+            cosmology = self.cosmology
+
         return Tracer.from_galaxies(
             galaxies=instance.galaxies,
-            cosmology=self.cosmology,
+            cosmology=cosmology,
             profiling_dict=profiling_dict,
         )
 
