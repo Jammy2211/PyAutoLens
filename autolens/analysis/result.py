@@ -4,9 +4,11 @@ import json
 from typing import Dict
 
 from autoconf import conf
+import autofit as af
 import autoarray as aa
 import autogalaxy as ag
 
+from autofit.non_linear.paths.abstract import AbstractPaths
 from autogalaxy.analysis.result import Result as AgResult
 
 from autolens.point.fit_point.max_separation import FitPositionsSourceMaxSeparation
@@ -269,8 +271,7 @@ class ResultDataset(Result):
 
         return hyper_model_image
 
-    @property
-    def stochastic_log_likelihoods(self) -> np.ndarray:
+    def stochastic_log_likelihoods_from(self, paths:AbstractPaths) -> np.ndarray:
         """
         Certain `Inversion`'s have stochasticity in their log likelihood estimate.
 
@@ -286,21 +287,21 @@ class ResultDataset(Result):
         function of the associated Analysis class.
         """
         stochastic_log_likelihoods_json_file = path.join(
-            self.search.paths.output_path, "stochastic_log_likelihoods.json"
+            paths.output_path, "stochastic_log_likelihoods.json"
         )
 
-        self.search.paths.restore()
+        paths.restore()
 
         try:
             with open(stochastic_log_likelihoods_json_file, "r") as f:
                 stochastic_log_likelihoods = np.asarray(json.load(f))
         except FileNotFoundError:
             self.analysis.save_stochastic_outputs(
-                paths=self.search.paths, samples=self.samples
+                paths=paths, samples=self.samples
             )
             with open(stochastic_log_likelihoods_json_file, "r") as f:
                 stochastic_log_likelihoods = np.asarray(json.load(f))
 
-        self.search.paths.zip_remove()
+        paths.zip_remove()
 
         return stochastic_log_likelihoods
