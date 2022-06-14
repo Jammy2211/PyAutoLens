@@ -38,7 +38,55 @@ def test__make_result__result_imaging_is_returned(masked_imaging_7x7):
     assert isinstance(result, ResultImaging)
 
 
-def test__positions_do_not_trace_within_threshold__raises_exception(masked_imaging_7x7):
+def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
+    masked_imaging_7x7
+):
+    lens = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
+
+    model = af.Collection(galaxies=af.Collection(lens=lens))
+
+    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+    instance = model.instance_from_unit_vector([])
+    analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
+
+    tracer = analysis.tracer_via_instance_from(instance=instance)
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert fit.log_likelihood == analysis_log_likelihood
+
+
+def test__figure_of_merit__includes_hyper_image_and_noise__matches_fit(
+    masked_imaging_7x7
+):
+
+    hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
+    hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
+
+    lens = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
+
+    model = af.Collection(
+        hyper_image_sky=hyper_image_sky,
+        hyper_background_noise=hyper_background_noise,
+        galaxies=af.Collection(lens=lens),
+    )
+
+    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+    instance = model.instance_from_unit_vector([])
+    analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
+
+    tracer = analysis.tracer_via_instance_from(instance=instance)
+    fit = al.FitImaging(
+        dataset=masked_imaging_7x7,
+        tracer=tracer,
+        hyper_image_sky=hyper_image_sky,
+        hyper_background_noise=hyper_background_noise,
+    )
+
+    assert fit.log_likelihood == analysis_log_likelihood
+
+
+def test__positions_thresholding__use_resampling__raises_exception(masked_imaging_7x7):
 
     model = af.Collection(
         galaxies=af.Collection(
@@ -63,52 +111,69 @@ def test__positions_do_not_trace_within_threshold__raises_exception(masked_imagi
         analysis.log_likelihood_function(instance=instance)
 
 
-def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
+def test__positions_thresholding__uses_likelihood_overwrites__changes_likelihood(
     masked_imaging_7x7
 ):
-    lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
 
-    model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
+    lens = al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal())
+    source = al.Galaxy(redshift=1.0, light=al.lp.SphSersic())
+
+    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+
+    instance = model.instance_from_unit_vector([])
 
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
-    instance = model.instance_from_unit_vector([])
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
     tracer = analysis.tracer_via_instance_from(instance=instance)
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
-    assert fit.log_likelihood == analysis_log_likelihood
+    assert fit.log_likelihood == pytest.approx(analysis_log_likelihood, 1.0e-4)
+    assert analysis_log_likelihood == pytest.approx(-6258.043397009, 1.0e-4)
 
-
-def test__figure_of_merit__includes_hyper_image_and_noise__matches_fit(
-    masked_imaging_7x7
-):
-
-    hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
-    hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
-
-    lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
-
-    model = af.Collection(
-        hyper_image_sky=hyper_image_sky,
-        hyper_background_noise=hyper_background_noise,
-        galaxies=af.Collection(lens=lens_galaxy),
+    positions_thresholder = al.PositionsThresholder(
+        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
+        threshold=0.01,
+        use_likelihood_penalty=True,
     )
 
-    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
-    instance = model.instance_from_unit_vector([])
+    analysis = al.AnalysisImaging(
+        dataset=masked_imaging_7x7, positions_thresholder=positions_thresholder
+    )
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    tracer = analysis.tracer_via_instance_from(instance=instance)
-    fit = al.FitImaging(
-        dataset=masked_imaging_7x7,
-        tracer=tracer,
-        hyper_image_sky=hyper_image_sky,
-        hyper_background_noise=hyper_background_noise,
+    log_likelihood_penalty = positions_thresholder.log_likelihood_penalty_from(
+        tracer=tracer
     )
 
-    assert fit.log_likelihood == analysis_log_likelihood
+    assert analysis_log_likelihood == pytest.approx(
+        fit.log_likelihood + log_likelihood_penalty, 1.0e-4
+    )
+    assert analysis_log_likelihood == pytest.approx(15790.657146, 1.0e-4)
+
+    positions_thresholder = al.PositionsThresholder(
+        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
+        threshold=0.01,
+        use_likelihood_overwrite=True,
+    )
+
+    analysis = al.AnalysisImaging(
+        dataset=masked_imaging_7x7, positions_thresholder=positions_thresholder
+    )
+    analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
+
+    log_likelihood_penalty_base = positions_thresholder.log_likelihood_penalty_base_from(
+        dataset=masked_imaging_7x7
+    )
+    log_likelihood_penalty = positions_thresholder.log_likelihood_penalty_from(
+        tracer=tracer
+    )
+
+    assert analysis_log_likelihood == pytest.approx(
+        log_likelihood_penalty_base + log_likelihood_penalty, 1.0e-4
+    )
+    assert analysis_log_likelihood == pytest.approx(22033.0667718, 1.0e-4)
 
 
 def test__uses_hyper_fit_correctly(masked_imaging_7x7):
@@ -275,16 +340,14 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
 
 def test__profile_log_likelihood_function(masked_imaging_7x7):
 
-    lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
-    source_galaxy = al.Galaxy(
+    lens = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
+    source = al.Galaxy(
         redshift=1.0,
         regularization=al.reg.Constant(coefficient=1.0),
         pixelization=al.pix.Rectangular(shape=(3, 3)),
     )
 
-    model = af.Collection(
-        galaxies=af.Collection(lens=lens_galaxy, source=source_galaxy)
-    )
+    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
     instance = model.instance_from_unit_vector([])
 

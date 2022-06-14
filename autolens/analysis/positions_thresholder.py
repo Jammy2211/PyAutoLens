@@ -88,21 +88,40 @@ class PositionsThresholder:
         dataset
             The imaging or interferometer dataset from which the penalty base is computed.
         """
+
         residual_map = aa.util.fit.residual_map_from(
             data=dataset.data, model_data=np.zeros(dataset.data.shape)
         )
-        chi_suqared_map = aa.util.fit.chi_squared_map_from(
-            residual_map=residual_map, noise_map=dataset.noise_map
-        )
-        chi_squared = aa.util.fit.chi_squared_from(chi_squared_map=chi_suqared_map)
 
-        noise_normalization = aa.util.fit.noise_normalization_from(
-            noise_map=dataset.noise_map
-        )
+        if isinstance(dataset, aa.Imaging):
+
+            chi_squared_map = aa.util.fit.chi_squared_map_from(
+                residual_map=residual_map, noise_map=dataset.noise_map
+            )
+
+            chi_squared = aa.util.fit.chi_squared_from(chi_squared_map=chi_squared_map)
+
+            noise_normalization = aa.util.fit.noise_normalization_from(
+                noise_map=dataset.noise_map
+            )
+
+        else:
+
+            chi_squared_map = aa.util.fit.chi_squared_map_complex_from(
+                residual_map=residual_map, noise_map=dataset.noise_map
+            )
+
+            chi_squared = aa.util.fit.chi_squared_complex_from(
+                chi_squared_map=chi_squared_map
+            )
+
+            noise_normalization = aa.util.fit.noise_normalization_complex_from(
+                noise_map=dataset.noise_map
+            )
 
         return -0.5 * (chi_squared + noise_normalization)
 
-    def log_likelihood_penalty_from(self, positions, tracer):
+    def log_likelihood_penalty_from(self, tracer):
         """
         The fast log likelihood penalty scheme returns an alternative penalty log likelihood for any model where the
         image-plane positions to not trace within a threshold distance of one another in the source-plane.
@@ -122,7 +141,7 @@ class PositionsThresholder:
             return
 
         positions_fit = FitPositionsSourceMaxSeparation(
-            positions=positions, noise_map=None, tracer=tracer
+            positions=self.positions, noise_map=None, tracer=tracer
         )
 
         if not positions_fit.max_separation_within_threshold(self.threshold):
@@ -139,7 +158,7 @@ class PositionsThresholder:
             return None
 
         log_likelihood_positions_penalty = self.log_likelihood_penalty_from(
-            tracer=tracer, positions=self.positions
+            tracer=tracer
         )
 
         if self.use_likelihood_penalty:

@@ -35,35 +35,6 @@ def test__make_result__result_interferometer_is_returned(interferometer_7):
     assert isinstance(result, ResultInterferometer)
 
 
-def test__positions_do_not_trace_within_threshold__raises_exception(
-    interferometer_7, mask_2d_7x7
-):
-
-    model = af.Collection(
-        galaxies=af.Collection(
-            lens=al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal()),
-            source=al.Galaxy(redshift=1.0),
-        )
-    )
-
-    positions_thresholder = al.PositionsThresholder(
-        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
-        threshold=0.01,
-        use_resampling=True,
-    )
-
-    analysis = al.AnalysisInterferometer(
-        dataset=interferometer_7,
-        positions_thresholder=positions_thresholder,
-        settings_lens=al.SettingsLens(threshold=0.01),
-    )
-
-    instance = model.instance_from_unit_vector([])
-
-    with pytest.raises(exc.RayTracingException):
-        analysis.log_likelihood_function(instance=instance)
-
-
 def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(interferometer_7):
     lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
 
@@ -107,6 +78,100 @@ def test__figure_of_merit__includes_hyper_image_and_noise__matches_fit(
     )
 
     assert fit.log_likelihood == analysis_log_likelihood
+
+
+def test__positions_thresholding__use_resampling__raises_exception(
+    interferometer_7, mask_2d_7x7
+):
+
+    model = af.Collection(
+        galaxies=af.Collection(
+            lens=al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal()),
+            source=al.Galaxy(redshift=1.0),
+        )
+    )
+
+    positions_thresholder = al.PositionsThresholder(
+        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
+        threshold=0.01,
+        use_resampling=True,
+    )
+
+    analysis = al.AnalysisInterferometer(
+        dataset=interferometer_7,
+        positions_thresholder=positions_thresholder,
+        settings_lens=al.SettingsLens(threshold=0.01),
+    )
+
+    instance = model.instance_from_unit_vector([])
+
+    with pytest.raises(exc.RayTracingException):
+        analysis.log_likelihood_function(instance=instance)
+
+
+def test__positions_thresholding__uses_likelihood_overwrites__changes_likelihood(
+    interferometer_7, mask_2d_7x7
+):
+
+    lens = al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal())
+    source = al.Galaxy(redshift=1.0, light=al.lp.SphSersic())
+
+    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+
+    analysis = al.AnalysisInterferometer(dataset=interferometer_7)
+
+    instance = model.instance_from_unit_vector([])
+    analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
+
+    tracer = analysis.tracer_via_instance_from(instance=instance)
+
+    fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
+
+    assert fit.log_likelihood == analysis_log_likelihood
+    assert analysis_log_likelihood == pytest.approx(-127914.36273, 1.0e-4)
+
+    positions_thresholder = al.PositionsThresholder(
+        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
+        threshold=0.01,
+        use_likelihood_penalty=True,
+    )
+
+    analysis = al.AnalysisInterferometer(
+        dataset=interferometer_7, positions_thresholder=positions_thresholder
+    )
+    analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
+
+    log_likelihood_penalty = positions_thresholder.log_likelihood_penalty_from(
+        tracer=tracer
+    )
+
+    assert analysis_log_likelihood == pytest.approx(
+        fit.log_likelihood + log_likelihood_penalty, 1.0e-4
+    )
+    assert analysis_log_likelihood == pytest.approx(-105865.66219, 1.0e-4)
+
+    positions_thresholder = al.PositionsThresholder(
+        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
+        threshold=0.01,
+        use_likelihood_overwrite=True,
+    )
+
+    analysis = al.AnalysisInterferometer(
+        dataset=interferometer_7, positions_thresholder=positions_thresholder
+    )
+    analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
+
+    log_likelihood_penalty_base = positions_thresholder.log_likelihood_penalty_base_from(
+        dataset=interferometer_7
+    )
+    log_likelihood_penalty = positions_thresholder.log_likelihood_penalty_from(
+        tracer=tracer
+    )
+
+    assert analysis_log_likelihood == pytest.approx(
+        log_likelihood_penalty_base + log_likelihood_penalty, 1.0e-4
+    )
+    assert analysis_log_likelihood == pytest.approx(22024.381343, 1.0e-4)
 
 
 def test__sets_up_hyper_galaxy_visibiltiies__froms(interferometer_7):
