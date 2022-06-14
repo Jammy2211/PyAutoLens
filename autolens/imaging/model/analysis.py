@@ -172,10 +172,10 @@ class AnalysisImaging(AnalysisDataset):
             instance=instance, profiling_dict=profiling_dict
         )
 
-        # if check_positions:
-        #     self.settings_lens.check_positions_trace_within_threshold_via_tracer(
-        #         tracer=tracer, positions=self.positions
-        #     )
+        if check_positions and self.settings_lens.positions_resampling:
+            self.settings_lens.check_positions_trace_within_threshold_via_tracer(
+                tracer=tracer, positions=self.positions
+            )
 
         hyper_image_sky = self.hyper_image_sky_via_instance_from(instance=instance)
 

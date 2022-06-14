@@ -33,9 +33,6 @@ class SettingsLens:
         self.stochastic_samples = stochastic_samples
         self.stochastic_histogram_bins = stochastic_histogram_bins
 
-        self.einstein_radius_estimate = None
-        self.einstein_radius_count = None
-
     def log_likelihood_penalty_base_from(
         self, dataset: Union[aa.Imaging, aa.Interferometer]
     ) -> float:
@@ -117,16 +114,3 @@ class SettingsLens:
                 return
 
             raise exc.RayTracingException
-
-    def modify_positions_threshold(self, positions_threshold):
-
-        settings = copy.copy(self)
-        settings.positions_threshold = positions_threshold
-        return settings
-
-    def modify_einstein_radius_estimate(self, einstein_radius_estimate):
-
-        settings = copy.copy(self)
-        settings.einstein_radius_estimate = einstein_radius_estimate
-        settings.einstein_radius_count = 0
-        return settings

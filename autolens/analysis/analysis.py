@@ -192,14 +192,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
         If any of these settings are on, the `SettingsLens` object must have an input `positions_threshold` and
         its corresponding `Analysis` class positions. This is checked by this function.
-
-        Parameters
-        ----------
-        positions
-
-        Returns
-        -------
-
         """
 
         positions_error_str = (
