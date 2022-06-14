@@ -10,6 +10,7 @@ from autoarray.exc import PixelizationException
 
 from autolens.analysis.analysis import AnalysisDataset
 from autolens.analysis.preloads import Preloads
+from autolens.analysis.positions_thresholder import PositionsThresholder
 from autolens.lens.ray_tracing import Tracer
 from autolens.interferometer.model.result import ResultInterferometer
 from autolens.interferometer.model.visualizer import VisualizerInterferometer
@@ -27,7 +28,7 @@ class AnalysisInterferometer(AnalysisDataset):
     def __init__(
         self,
         dataset,
-        positions: aa.Grid2DIrregular = None,
+        positions_thresholder: Optional[PositionsThresholder] = None,
         hyper_dataset_result=None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_pixelization: aa.SettingsPixelization = None,
@@ -69,7 +70,7 @@ class AnalysisInterferometer(AnalysisDataset):
         """
         super().__init__(
             dataset=dataset,
-            positions=positions,
+            positions_thresholder=positions_thresholder,
             hyper_dataset_result=hyper_dataset_result,
             cosmology=cosmology,
             settings_pixelization=settings_pixelization,
@@ -116,9 +117,10 @@ class AnalysisInterferometer(AnalysisDataset):
 
             visualizer.visualize_interferometer(interferometer=self.interferometer)
 
-            if self.positions is not None:
+            if self.positions_thresholder is not None:
                 visualizer.visualize_image_with_positions(
-                    image=self.interferometer.dirty_image, positions=self.positions
+                    image=self.interferometer.dirty_image,
+                    positions=self.positions_thresholder,
                 )
 
             visualizer.visualize_hyper_images(
@@ -239,6 +241,14 @@ class AnalysisInterferometer(AnalysisDataset):
             The log likelihood indicating how well this model instance fitted the interferometer data.
         """
         try:
+
+            log_likelihood_positions_overwrite = self.log_likelihood_function_positions_overwrite(
+                instance=instance
+            )
+
+            if log_likelihood_positions_overwrite is not None:
+                return log_likelihood_positions_overwrite
+
             return self.fit_interferometer_via_instance_from(
                 instance=instance
             ).figure_of_merit
@@ -291,10 +301,8 @@ class AnalysisInterferometer(AnalysisDataset):
         self.instance_with_associated_hyper_images_from(instance=instance)
         tracer = self.tracer_via_instance_from(instance=instance)
 
-        if check_positions:
-            self.settings_lens.check_positions_trace_within_threshold_via_tracer(
-                tracer=tracer, positions=self.positions
-            )
+        if self.positions_thresholder is not None and check_positions:
+            self.positions_thresholder.resample_if_not_within_threshold(tracer=tracer)
 
         hyper_background_noise = self.hyper_background_noise_via_instance_from(
             instance=instance
@@ -572,7 +580,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
         paths.save_object("uv_wavelengths", self.dataset.uv_wavelengths)
         paths.save_object("real_space_mask", self.dataset.real_space_mask)
-        paths.save_object("positions", self.positions)
+        paths.save_object("positions", self.positions_thresholder)
         if self.preloads.sparse_image_plane_grid_pg_list is not None:
             paths.save_object(
                 "preload_sparse_grids_of_planes",

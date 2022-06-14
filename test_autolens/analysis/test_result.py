@@ -239,17 +239,23 @@ def test__results_include_positions__available_as_property(
 
     assert result.positions == None
 
+    positions_thresholder = al.PositionsThresholder(
+        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
+        threshold=1.0,
+        use_resampling=True,
+    )
+
     analysis = al.AnalysisImaging(
         dataset=masked_imaging_7x7,
-        positions=al.Grid2DIrregular([[(1.0, 1.0)]]),
-        settings_lens=al.SettingsLens(positions_threshold=1.0),
+        positions_thresholder=positions_thresholder,
+        settings_lens=al.SettingsLens(threshold=1.0),
     )
 
     result = res.ResultDataset(
         samples=samples_with_result, analysis=analysis, model=None
     )
 
-    assert (result.positions[0] == np.array([1.0, 1.0])).all()
+    assert (result.positions[0] == np.array([1.0, 100.0])).all()
 
 
 def test___image_dict(analysis_imaging_7x7):

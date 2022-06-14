@@ -14,14 +14,14 @@ class TestCheckPositionsTrace:
             ]
         )
 
-        settings = al.SettingsLens(positions_threshold=50.0)
-        settings.check_positions_trace_within_threshold_via_tracer(
+        settings = al.SettingsLens(threshold=50.0)
+        settings.resample_if_not_within_threshold(
             tracer=tracer, positions=al.Grid2DIrregular([(1.0, 1.0), (2.0, 2.0)])
         )
 
-        settings = al.SettingsLens(positions_threshold=0.0)
+        settings = al.SettingsLens(threshold=0.0)
         with pytest.raises(exc.RayTracingException):
-            settings.check_positions_trace_within_threshold_via_tracer(
+            settings.resample_if_not_within_threshold(
                 tracer=tracer, positions=al.Grid2DIrregular([(1.0, 1.0), (2.0, 2.0)])
             )
 
@@ -31,7 +31,7 @@ class TestCheckPositionsTrace:
             galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
         )
 
-        settings.check_positions_trace_within_threshold_via_tracer(
+        settings.resample_if_not_within_threshold(
             tracer=tracer, positions=al.Grid2DIrregular([(1.0, 1.0), (2.0, 2.0)])
         )
 
@@ -41,6 +41,6 @@ class TestCheckPositionsTrace:
             galaxies=[al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal())]
         )
 
-        settings.check_positions_trace_within_threshold_via_tracer(
+        settings.resample_if_not_within_threshold(
             tracer=tracer, positions=al.Grid2DIrregular([(1.0, 1.0), (2.0, 2.0)])
         )

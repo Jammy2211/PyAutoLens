@@ -47,10 +47,14 @@ def test__positions_do_not_trace_within_threshold__raises_exception(masked_imagi
         )
     )
 
-    analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7,
+    positions_thresholder = al.PositionsThresholder(
         positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
-        settings_lens=al.SettingsLens(positions_resampling=True, positions_threshold=0.01),
+        threshold=0.01,
+        use_resampling=True,
+    )
+
+    analysis = al.AnalysisImaging(
+        dataset=masked_imaging_7x7, positions_thresholder=positions_thresholder
     )
 
     instance = model.instance_from_unit_vector([])

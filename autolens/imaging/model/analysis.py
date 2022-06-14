@@ -57,9 +57,9 @@ class AnalysisImaging(AnalysisDataset):
 
             visualizer.visualize_imaging(imaging=self.imaging)
 
-            if self.positions is not None:
+            if self.positions_thresholder is not None:
                 visualizer.visualize_image_with_positions(
-                    image=self.imaging.image, positions=self.positions
+                    image=self.imaging.image, positions=self.positions_thresholder
                 )
 
             visualizer.visualize_hyper_images(
@@ -112,12 +112,12 @@ class AnalysisImaging(AnalysisDataset):
 
         try:
 
-            log_likelihood_positions = self.log_likelihood_function_positions(
+            log_likelihood_positions_overwrite = self.log_likelihood_function_positions_overwrite(
                 instance=instance
             )
 
-            if log_likelihood_positions is not None:
-                return log_likelihood_positions
+            if log_likelihood_positions_overwrite is not None:
+                return log_likelihood_positions_overwrite
 
             return self.fit_imaging_via_instance_from(instance=instance).figure_of_merit
         except (
@@ -172,10 +172,8 @@ class AnalysisImaging(AnalysisDataset):
             instance=instance, profiling_dict=profiling_dict
         )
 
-        if check_positions and self.settings_lens.positions_resampling:
-            self.settings_lens.check_positions_trace_within_threshold_via_tracer(
-                tracer=tracer, positions=self.positions
-            )
+        if self.positions_thresholder is not None and check_positions:
+            self.positions_thresholder.resample_if_not_within_threshold(tracer=tracer)
 
         hyper_image_sky = self.hyper_image_sky_via_instance_from(instance=instance)
 
@@ -545,4 +543,4 @@ class AnalysisImaging(AnalysisDataset):
 
         paths.save_object("psf", self.dataset.psf_unormalized)
         paths.save_object("mask", self.dataset.mask)
-        paths.save_object("positions", self.positions)
+        paths.save_object("positions", self.positions_thresholder)

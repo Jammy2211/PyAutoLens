@@ -111,15 +111,15 @@ class Result(AgResult):
             positions=positions, noise_map=None, tracer=self.max_log_likelihood_tracer
         )
 
-        positions_threshold = factor * np.max(
+        threshold = factor * np.max(
             positions_fits.max_separation_of_source_plane_positions
         )
 
         if minimum_threshold is not None:
-            if positions_threshold < minimum_threshold:
+            if threshold < minimum_threshold:
                 return minimum_threshold
 
-        return positions_threshold
+        return threshold
 
     @property
     def path_galaxy_tuples(self) -> [(str, ag.Galaxy)]:
@@ -167,7 +167,8 @@ class ResultDataset(Result):
         The (y,x) arc-second coordinates of the lensed sources brightest pixels, which are used for discarding mass
         models which do not trace within a threshold in the source-plane of one another.
         """
-        return self.analysis.positions
+        if self.analysis.positions_thresholder is not None:
+            return self.analysis.positions_thresholder.positions
 
     @property
     def source_plane_centre(self) -> aa.Grid2DIrregular:
