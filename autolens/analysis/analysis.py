@@ -175,6 +175,8 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
         self.preloads = self.preloads_cls()
 
+        self.check_position_setup()
+
     @property
     def preloads_cls(self):
         return Preloads
@@ -182,6 +184,93 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
     @property
     def fit_maker_cls(self):
         return FitMaker
+
+    def check_position_setup(self):
+        """
+        There are multiple different settings which change how image-plane positions are used during a lens
+        model-fit (e.g. `positions_resampling`, `positions_likelihood_penalty`).
+
+        If any of these settings are on, the `SettingsLens` object must have an input `positions_threshold` and
+        its corresponding `Analysis` class positions. This is checked by this function.
+
+        Parameters
+        ----------
+        positions
+
+        Returns
+        -------
+
+        """
+
+        positions_error_str = (
+            "The SettingsLens object has one of the following three inputs turned on:\n\n "
+            "positions_resampling\n "
+            "positions_likelihood_penalty\n "
+            "positions_likelihood_penalty_fast\n\n"
+        )
+
+        if (
+            self.settings_lens.positions_resampling
+            or self.settings_lens.positions_likelihood_penalty
+            or self.settings_lens.positions_likelihood_penalty_fast
+        ):
+
+            if self.settings_lens.positions_threshold is None:
+                raise exc.AnalysisException(
+                    f"{positions_error_str}"
+                    f"However, SettingsLens has no input positions_threshold value.\n\n"
+                    "Please input a positions_threshold to SettingsLens."
+                )
+
+            if self.positions is None:
+                raise exc.AnalysisException(
+                    f"{positions_error_str}"
+                    f"However, AnalysisImaging has no positions.\n\n"
+                    "Please input the positions to AnalysisLens."
+                )
+
+            if self.positions is not None:
+
+                if len(self.positions) == 1:
+                    raise exc.AnalysisException(
+                        f"{positions_error_str}"
+                        f"However, the positions input into AnalysisImaging has length one "
+                        f"(e.g. it is only one (y,x) coordinate and therefore cannot be compared with other images).\n\n"
+                        "Please input more positions into AnalysisLens."
+                    )
+
+    def log_likelihood_function_positions(
+        self, instance: af.ModelInstance
+    ) -> Optional[float]:
+
+        if (
+            self.settings_lens.positions_likelihood_penalty
+            or self.settings_lens.positions_likelihood_penalty_fast
+        ):
+
+            tracer = self.tracer_via_instance_from(instance=instance)
+
+            log_likelihood_positions_penalty = self.settings_lens.positions_log_likelihood_penalty_from(
+                tracer=tracer, positions=self.positions
+            )
+
+        else:
+
+            return None
+
+        if self.settings_lens.positions_likelihood_penalty:
+            return (
+                self.fit_func(instance=instance).figure_of_merit
+                + log_likelihood_positions_penalty
+            )
+
+        if self.settings_lens.positions_likelihood_penalty_fast:
+
+            log_likelihood_penalty_base = self.settings_lens.log_likelihood_penalty_base_from(
+                dataset=self.dataset
+            )
+
+            return log_likelihood_penalty_base + log_likelihood_positions_penalty
 
     def log_likelihood_cap_from(
         self, stochastic_log_likelihoods_json_file: str
@@ -317,13 +406,3 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             max_log_evidence=np.max(samples.log_likelihood_list),
             histogram_bins=self.settings_lens.stochastic_histogram_bins,
         )
-
-    @property
-    def no_positions(self):
-
-        analysis = copy.deepcopy(self)
-
-        analysis.positions = None
-        analysis.settings_lens.positions_threshold = None
-
-        return analysis

@@ -14,6 +14,7 @@ __Features__
 - Mass visualization for large runs in single folder, which works for database runs.
 - Automated check of deflection angles against integration during lens modeling.
 - DM many subhalo sims.
+- Automatically blurring grid padding and extraction.
 
 
 __Image To Source Mapping__
@@ -47,7 +48,6 @@ __Documentation__
 
 __Refactor__
 
-- Revert to SciPy quad, remove pyquad not installed.
 
 
 __Bugs__
@@ -58,3 +58,22 @@ __Bugs__
 - Sanity checks on datastructures wherer possible (e.g. output grid index is 2).
 - Sanity checks on things like mapper uitil, inversion util, where a user may input an incorrect array (e.g. an unasked
 noise map) and not get an error as an index limit is never hit.
+
+
+
+__SLam2__
+
+- Source parametric (using linear profiles) solely to estimate positions.
+
+- Lens Light (Sersic or MGE) + SIE or Light Dark + Source Inversion w/ new LH position LH func.
+- Source hyper.
+- Lens Light (Sersic or MGE) + SIE / PL or Light Dark + Source Inversion w/ new LH position LH func (Refit to improve hyper image).
+- Hyper phase.
+
+- Mass total: Lens Light (Optional, default off) + More Complex Mass + Source Inversion w/ new position LH func.
+- Mass Light Dark: Mass pipeline specifically for light_dark linear transition.
+
+- Subhalo pipeline.
+
+- BG Sky linear, remove bg sky noise.
+- fixed pixel number for source by default.

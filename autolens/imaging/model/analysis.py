@@ -111,6 +111,14 @@ class AnalysisImaging(AnalysisDataset):
         """
 
         try:
+
+            log_likelihood_positions = self.log_likelihood_function_positions(
+                instance=instance
+            )
+
+            if log_likelihood_positions is not None:
+                return log_likelihood_positions
+
             return self.fit_imaging_via_instance_from(instance=instance).figure_of_merit
         except (
             PixelizationException,
@@ -164,10 +172,10 @@ class AnalysisImaging(AnalysisDataset):
             instance=instance, profiling_dict=profiling_dict
         )
 
-        if check_positions:
-            self.settings_lens.check_positions_trace_within_threshold_via_tracer(
-                tracer=tracer, positions=self.positions
-            )
+        # if check_positions:
+        #     self.settings_lens.check_positions_trace_within_threshold_via_tracer(
+        #         tracer=tracer, positions=self.positions
+        #     )
 
         hyper_image_sky = self.hyper_image_sky_via_instance_from(instance=instance)
 

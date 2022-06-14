@@ -291,7 +291,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
             images_of_galaxies = plane.image_2d_list_from(
                 grid=traced_grid_list[plane_index]
             )
+
             for (galaxy_index, galaxy) in enumerate(plane.galaxies):
+
                 galaxy_image_dict[galaxy] = images_of_galaxies[galaxy_index]
 
         return galaxy_image_dict

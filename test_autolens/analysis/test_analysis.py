@@ -134,18 +134,6 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(masked_imagi
     )
 
 
-def test__analysis_no_positions__removes_positions_and_threshold(masked_imaging_7x7):
-
-    analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7,
-        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
-        settings_lens=al.SettingsLens(positions_threshold=0.01),
-    )
-
-    assert analysis.no_positions.positions == None
-    assert analysis.no_positions.settings_lens.positions_threshold == None
-
-
 def test__check_preloads(masked_imaging_7x7):
 
     conf.instance["general"]["test"]["check_preloads"] = True
@@ -174,3 +162,102 @@ def test__check_preloads(masked_imaging_7x7):
     # conf.instance["general"]["test"]["check_preloads"] = False
     #
     # analysis.check_preloads(fit=fit)
+
+
+def test__check_positions(masked_imaging_7x7):
+
+    settings_lens = al.SettingsLens(
+        positions_resampling=False,
+        positions_likelihood_penalty=False,
+        positions_likelihood_penalty_fast=False,
+    )
+
+    al.AnalysisImaging(dataset=masked_imaging_7x7, settings_lens=settings_lens)
+
+    # No positions input into Analysis for any setting
+
+    with pytest.raises(exc.AnalysisException):
+
+        settings_lens = al.SettingsLens(
+            positions_resampling=True, positions_threshold=0.1
+        )
+
+        al.AnalysisImaging(dataset=masked_imaging_7x7, settings_lens=settings_lens)
+
+    with pytest.raises(exc.AnalysisException):
+
+        settings_lens = al.SettingsLens(
+            positions_likelihood_penalty=True, positions_threshold=0.1
+        )
+
+        al.AnalysisImaging(dataset=masked_imaging_7x7, settings_lens=settings_lens)
+
+    with pytest.raises(exc.AnalysisException):
+
+        settings_lens = al.SettingsLens(
+            positions_likelihood_penalty_fast=True, positions_threshold=0.1
+        )
+
+        al.AnalysisImaging(dataset=masked_imaging_7x7, settings_lens=settings_lens)
+
+    # No positions input but no threshold
+
+    positions = al.Grid2DIrregular([(1.0, 2.0), (3.0, 4.0)])
+
+    with pytest.raises(exc.AnalysisException):
+
+        settings_lens = al.SettingsLens(positions_resampling=True)
+
+        al.AnalysisImaging(
+            dataset=masked_imaging_7x7, positions=positions, settings_lens=settings_lens
+        )
+
+    with pytest.raises(exc.AnalysisException):
+
+        settings_lens = al.SettingsLens(positions_likelihood_penalty=True)
+
+        al.AnalysisImaging(
+            dataset=masked_imaging_7x7, positions=positions, settings_lens=settings_lens
+        )
+
+    with pytest.raises(exc.AnalysisException):
+
+        settings_lens = al.SettingsLens(positions_likelihood_penalty_fast=True)
+
+        al.AnalysisImaging(
+            dataset=masked_imaging_7x7, positions=positions, settings_lens=settings_lens
+        )
+
+    # Positions input with threshold but positions are length 1.
+
+    positions = al.Grid2DIrregular([(1.0, 2.0)])
+
+    with pytest.raises(exc.AnalysisException):
+
+        settings_lens = al.SettingsLens(
+            positions_resampling=True, positions_threshold=0.1
+        )
+
+        al.AnalysisImaging(
+            dataset=masked_imaging_7x7, positions=positions, settings_lens=settings_lens
+        )
+
+    with pytest.raises(exc.AnalysisException):
+
+        settings_lens = al.SettingsLens(
+            positions_likelihood_penalty=True, positions_threshold=0.1
+        )
+
+        al.AnalysisImaging(
+            dataset=masked_imaging_7x7, positions=positions, settings_lens=settings_lens
+        )
+
+    with pytest.raises(exc.AnalysisException):
+
+        settings_lens = al.SettingsLens(
+            positions_likelihood_penalty_fast=True, positions_threshold=0.1
+        )
+
+        al.AnalysisImaging(
+            dataset=masked_imaging_7x7, positions=positions, settings_lens=settings_lens
+        )

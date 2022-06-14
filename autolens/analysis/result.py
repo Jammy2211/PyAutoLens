@@ -271,7 +271,7 @@ class ResultDataset(Result):
 
         return hyper_model_image
 
-    def stochastic_log_likelihoods_from(self, paths:AbstractPaths) -> np.ndarray:
+    def stochastic_log_likelihoods_from(self, paths: AbstractPaths) -> np.ndarray:
         """
         Certain `Inversion`'s have stochasticity in their log likelihood estimate.
 
@@ -296,9 +296,7 @@ class ResultDataset(Result):
             with open(stochastic_log_likelihoods_json_file, "r") as f:
                 stochastic_log_likelihoods = np.asarray(json.load(f))
         except FileNotFoundError:
-            self.analysis.save_stochastic_outputs(
-                paths=paths, samples=self.samples
-            )
+            self.analysis.save_stochastic_outputs(paths=paths, samples=self.samples)
             with open(stochastic_log_likelihoods_json_file, "r") as f:
                 stochastic_log_likelihoods = np.asarray(json.load(f))
 
