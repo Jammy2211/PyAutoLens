@@ -59,7 +59,7 @@ class AnalysisImaging(AnalysisDataset):
 
             if self.positions_thresholder is not None:
                 visualizer.visualize_image_with_positions(
-                    image=self.imaging.image, positions=self.positions_thresholder
+                    image=self.imaging.image, positions=self.positions_thresholder.positions
                 )
 
             visualizer.visualize_hyper_images(
@@ -113,7 +113,7 @@ class AnalysisImaging(AnalysisDataset):
         try:
 
             log_likelihood_positions_overwrite = self.log_likelihood_function_positions_overwrite(
-                instance=instance
+                instance=instance,
             )
 
             if log_likelihood_positions_overwrite is not None:
@@ -168,9 +168,6 @@ class AnalysisImaging(AnalysisDataset):
             The fit of the plane to the imaging dataset, which includes the log likelihood.
         """
         self.instance_with_associated_hyper_images_from(instance=instance)
-        tracer = self.tracer_via_instance_from(
-            instance=instance, profiling_dict=profiling_dict
-        )
 
         if self.positions_thresholder is not None and check_positions:
             self.positions_thresholder.resample_if_not_within_threshold(tracer=tracer)
@@ -437,6 +434,11 @@ class AnalysisImaging(AnalysisDataset):
 
         fit = self.fit_imaging_via_instance_from(instance=instance)
 
+        try:
+            fit.inversion.reconstruction
+        except exc.InversionException:
+            return
+
         visualizer = VisualizerImaging(visualize_path=paths.image_path)
 
         visualizer.visualize_fit_imaging(fit=fit, during_analysis=during_analysis)
@@ -543,4 +545,4 @@ class AnalysisImaging(AnalysisDataset):
 
         paths.save_object("psf", self.dataset.psf_unormalized)
         paths.save_object("mask", self.dataset.mask)
-        paths.save_object("positions", self.positions_thresholder)
+        paths.save_object("positions_thresholder", self.positions_thresholder)

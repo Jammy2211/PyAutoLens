@@ -120,7 +120,7 @@ class AnalysisInterferometer(AnalysisDataset):
             if self.positions_thresholder is not None:
                 visualizer.visualize_image_with_positions(
                     image=self.interferometer.dirty_image,
-                    positions=self.positions_thresholder,
+                    positions=self.positions_thresholder.positions,
                 )
 
             visualizer.visualize_hyper_images(
@@ -470,6 +470,11 @@ class AnalysisInterferometer(AnalysisDataset):
 
         fit = self.fit_interferometer_via_instance_from(instance=instance)
 
+        try:
+            fit.inversion.reconstruction
+        except exc.InversionException:
+            return
+
         visualizer = VisualizerInterferometer(visualize_path=paths.image_path)
 
         visualizer.visualize_fit_interferometer(
@@ -580,7 +585,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
         paths.save_object("uv_wavelengths", self.dataset.uv_wavelengths)
         paths.save_object("real_space_mask", self.dataset.real_space_mask)
-        paths.save_object("positions", self.positions_thresholder)
+        paths.save_object("positions_thresholder", self.positions_thresholder)
         if self.preloads.sparse_image_plane_grid_pg_list is not None:
             paths.save_object(
                 "preload_sparse_grids_of_planes",
