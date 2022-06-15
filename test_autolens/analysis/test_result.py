@@ -239,10 +239,9 @@ def test__results_include_positions__available_as_property(
 
     assert result.positions == None
 
-    positions_thresholder = al.PositionsThresholder(
+    positions_thresholder = al.PositionsResample(
         positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
         threshold=1.0,
-        use_resampling=True,
     )
 
     analysis = al.AnalysisImaging(

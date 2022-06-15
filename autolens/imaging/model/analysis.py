@@ -57,9 +57,10 @@ class AnalysisImaging(AnalysisDataset):
 
             visualizer.visualize_imaging(imaging=self.imaging)
 
-            if self.positions_thresholder is not None:
+            if self.positions is not None:
                 visualizer.visualize_image_with_positions(
-                    image=self.imaging.image, positions=self.positions_thresholder.positions
+                    image=self.imaging.image,
+                    positions=self.positions.positions,
                 )
 
             visualizer.visualize_hyper_images(
@@ -110,15 +111,16 @@ class AnalysisImaging(AnalysisDataset):
             The log likelihood indicating how well this model instance fitted the imaging data.
         """
 
-        try:
+        if self.positions is not None:
 
-            log_likelihood_positions_overwrite = self.log_likelihood_function_positions_overwrite(
-                instance=instance,
+            log_likelihood_positions_overwrite = self.positions.log_likelihood_function_positions_overwrite(
+                instance=instance, analysis=self
             )
 
             if log_likelihood_positions_overwrite is not None:
                 return log_likelihood_positions_overwrite
 
+        try:
             return self.fit_imaging_via_instance_from(instance=instance).figure_of_merit
         except (
             PixelizationException,
@@ -137,7 +139,6 @@ class AnalysisImaging(AnalysisDataset):
         instance: af.ModelInstance,
         use_hyper_scaling: bool = True,
         preload_overwrite: Optional[Preloads] = None,
-        check_positions: bool = True,
         profiling_dict: Optional[Dict] = None,
     ) -> FitImaging:
         """
@@ -168,9 +169,7 @@ class AnalysisImaging(AnalysisDataset):
             The fit of the plane to the imaging dataset, which includes the log likelihood.
         """
         self.instance_with_associated_hyper_images_from(instance=instance)
-
-        if self.positions_thresholder is not None and check_positions:
-            self.positions_thresholder.resample_if_not_within_threshold(tracer=tracer)
+        tracer = self.tracer_via_instance_from(instance=instance, profiling_dict=profiling_dict)
 
         hyper_image_sky = self.hyper_image_sky_via_instance_from(instance=instance)
 
@@ -545,4 +544,4 @@ class AnalysisImaging(AnalysisDataset):
 
         paths.save_object("psf", self.dataset.psf_unormalized)
         paths.save_object("mask", self.dataset.mask)
-        paths.save_object("positions_thresholder", self.positions_thresholder)
+        paths.save_object("positions_thresholder", self.positions)

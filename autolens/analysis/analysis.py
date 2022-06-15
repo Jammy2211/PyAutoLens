@@ -4,7 +4,7 @@ import logging
 import numpy as np
 from os import path
 from scipy.stats import norm
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Union
 
 from autoconf import conf
 
@@ -17,7 +17,8 @@ from autogalaxy.analysis.analysis import AnalysisDataset as AgAnalysisDataset
 from autolens.analysis.result import ResultDataset
 from autolens.analysis.maker import FitMaker
 from autolens.analysis.preloads import Preloads
-from autolens.analysis.positions_thresholder import PositionsThresholder
+from autolens.analysis.positions import PositionsResample
+from autolens.analysis.positions import PositionsLHOverwrite
 from autolens.analysis.visualizer import Visualizer
 from autolens.lens.ray_tracing import Tracer
 from autolens.analysis.settings import SettingsLens
@@ -119,7 +120,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
     def __init__(
         self,
         dataset,
-        positions_thresholder: Optional[PositionsThresholder] = None,
+        positions_thresholder: Optional[Union[PositionsResample, PositionsLHOverwrite]] = None,
         hyper_dataset_result=None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_pixelization: aa.SettingsPixelization = None,
@@ -168,7 +169,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             self=self, settings_lens=settings_lens, cosmology=cosmology
         )
 
-        self.positions_thresholder = positions_thresholder
+        self.positions = positions_thresholder
 
         self.settings_lens = settings_lens or SettingsLens()
 
@@ -181,21 +182,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
     @property
     def fit_maker_cls(self):
         return FitMaker
-
-    def log_likelihood_function_positions_overwrite(
-        self, instance: af.ModelInstance
-    ) -> Optional[float]:
-
-        if self.positions_thresholder is not None:
-
-            tracer = self.tracer_via_instance_from(instance=instance)
-
-            return self.positions_thresholder.log_likelihood_function_positions_overwrite(
-                instance=instance,
-                tracer=tracer,
-                fit_func=self.fit_func,
-                dataset=self.dataset,
-            )
 
     def log_likelihood_cap_from(
         self, stochastic_log_likelihoods_json_file: str

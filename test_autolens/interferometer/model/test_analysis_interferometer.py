@@ -80,7 +80,7 @@ def test__figure_of_merit__includes_hyper_image_and_noise__matches_fit(
     assert fit.log_likelihood == analysis_log_likelihood
 
 
-def test__positions_thresholding__use_resampling__raises_exception(
+def test__positions__resample__raises_exception(
     interferometer_7, mask_2d_7x7
 ):
 
@@ -91,10 +91,9 @@ def test__positions_thresholding__use_resampling__raises_exception(
         )
     )
 
-    positions_thresholder = al.PositionsThresholder(
+    positions_thresholder = al.PositionsResample(
         positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
         threshold=0.01,
-        use_resampling=True,
     )
 
     analysis = al.AnalysisInterferometer(
@@ -109,7 +108,7 @@ def test__positions_thresholding__use_resampling__raises_exception(
         analysis.log_likelihood_function(instance=instance)
 
 
-def test__positions_thresholding__uses_likelihood_overwrites__changes_likelihood(
+def test__positions__likelihood_overwrite__changes_likelihood(
     interferometer_7, mask_2d_7x7
 ):
 
@@ -130,30 +129,9 @@ def test__positions_thresholding__uses_likelihood_overwrites__changes_likelihood
     assert fit.log_likelihood == analysis_log_likelihood
     assert analysis_log_likelihood == pytest.approx(-127914.36273, 1.0e-4)
 
-    positions_thresholder = al.PositionsThresholder(
+    positions_thresholder = al.PositionsLHOverwrite(
         positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
         threshold=0.01,
-        use_likelihood_penalty=True,
-    )
-
-    analysis = al.AnalysisInterferometer(
-        dataset=interferometer_7, positions_thresholder=positions_thresholder
-    )
-    analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
-
-    log_likelihood_penalty = positions_thresholder.log_likelihood_penalty_from(
-        tracer=tracer
-    )
-
-    assert analysis_log_likelihood == pytest.approx(
-        fit.log_likelihood + log_likelihood_penalty, 1.0e-4
-    )
-    assert analysis_log_likelihood == pytest.approx(-105865.66219, 1.0e-4)
-
-    positions_thresholder = al.PositionsThresholder(
-        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
-        threshold=0.01,
-        use_likelihood_overwrite=True,
     )
 
     analysis = al.AnalysisInterferometer(
@@ -169,9 +147,9 @@ def test__positions_thresholding__uses_likelihood_overwrites__changes_likelihood
     )
 
     assert analysis_log_likelihood == pytest.approx(
-        log_likelihood_penalty_base + log_likelihood_penalty, 1.0e-4
+        log_likelihood_penalty_base - log_likelihood_penalty, 1.0e-4
     )
-    assert analysis_log_likelihood == pytest.approx(22024.381343, 1.0e-4)
+    assert analysis_log_likelihood == pytest.approx(-22048700567.590656, 1.0e-4)
 
 
 def test__sets_up_hyper_galaxy_visibiltiies__froms(interferometer_7):

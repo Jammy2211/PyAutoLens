@@ -6,77 +6,40 @@ import autofit as af
 
 from autoconf import conf
 
-from autolens.imaging.model.analysis import AnalysisDataset
 from autolens.lens.ray_tracing import Tracer
 from autolens.point.fit_point.max_separation import FitPositionsSourceMaxSeparation
 
 from autolens import exc
 
 
-# TODO : Split into 3 classes.
-# TODO : replace `resample_if_not_within_threshold` in new class with `log_likelihood_function_positions_overwrite`.
 # TODO : max sure `if not tracer.has_mass_profile or len(tracer.planes) == 1:` is used correct for all resamplers.
 
-class AbstractPositionsThresholder:
-    def __init__(
-        self,
-        positions: aa.Grid2DIrregular,
-        threshold: float,
-    ):
+
+class AbstractPositions:
+    def __init__(self, positions: aa.Grid2DIrregular, threshold: float):
 
         if len(positions) == 1:
             raise exc.PositionsException(
-                f"The positions input into the PositionsThresholder have length one "
+                f"The positions input into the Positions have length one "
                 f"(e.g. it is only one (y,x) coordinate and therefore cannot be compared with other images).\n\n"
-                "Please input more positions into the PositionsThresholder."
+                "Please input more positions into the Positions."
             )
 
         self.positions = positions
         self.threshold = threshold
 
-    def log_likelihood_penalty_from(self, tracer: Tracer) -> Optional[float]:
-        """
-        The fast log likelihood penalty scheme returns an alternative penalty log likelihood for any model where the
-        image-plane positions to not trace within a threshold distance of one another in the source-plane.
-
-        This `log_likelihood_penalty` is defined as:
-
-        log_Likelihood_penalty_base - log_likelihood_penalty_factor * (max_source_plane_separation - threshold)
-
-        The `log_likelihood_penalty` is only used if `max_source_plane_separation > threshold`.
-
-        Parameters
-        ----------
-        dataset
-            The imaging or interferometer dataset from which the penalty base is computed.
-        """
-        if not tracer.has_mass_profile or len(tracer.planes) == 1:
-            return
-
-        positions_fit = FitPositionsSourceMaxSeparation(
-            positions=self.positions, noise_map=None, tracer=tracer
-        )
-
-        if not positions_fit.max_separation_within_threshold(self.threshold):
-
-            return 100.0 * (
-                positions_fit.max_separation_of_source_plane_positions - self.threshold
-            )
-
     def log_likelihood_function_positions_overwrite(
-        self, instance: af.ModelInstance, analysis : AnalysisDataset
+        self, instance: af.ModelInstance, analysis: "AnalysisDataset"
     ) -> Optional[float]:
         raise NotImplementedError
 
-class PositionsResample(AbstractPositionsThresholder):
 
+class PositionsResample(AbstractPositions):
     def log_likelihood_function_positions_overwrite(
-        self, instance: af.ModelInstance, analysis : AnalysisDataset
+        self, instance: af.ModelInstance, analysis: "AnalysisDataset"
     ) -> Optional[float]:
 
-        tracer = analysis.tracer_via_instance_from(
-            instance=instance,
-        )
+        tracer = analysis.tracer_via_instance_from(instance=instance)
 
         if not tracer.has_mass_profile or len(tracer.planes) == 1:
             return
@@ -92,29 +55,14 @@ class PositionsResample(AbstractPositionsThresholder):
 
             raise exc.RayTracingException
 
-class PositionsLHPenalty(AbstractPositionsThresholder):
 
-    def log_likelihood_function_positions_overwrite(
-        self, instance: af.ModelInstance, analysis : AnalysisDataset
-    ) -> Optional[float]:
+class PositionsLHOverwrite(AbstractPositions):
 
-        tracer = analysis.tracer_via_instance_from(
-            instance=instance,
-        )
+    def __init__(self, positions: aa.Grid2DIrregular, threshold: float, log_likelihood_penalty_factor : float = 1e8):
 
-        log_likelihood_positions_penalty = self.log_likelihood_penalty_from(
-            tracer=tracer
-        )
+        super().__init__(positions=positions, threshold=threshold)
 
-        if log_likelihood_positions_penalty is None:
-            return None
-
-        return (
-            analysis.fit_func(instance=instance).figure_of_merit
-            - log_likelihood_positions_penalty
-        )
-
-class PositionsLHOverwrite(AbstractPositionsThresholder):
+        self.log_likelihood_penalty_factor = log_likelihood_penalty_factor
 
     def log_likelihood_penalty_base_from(
         self, dataset: Union[aa.Imaging, aa.Interferometer]
@@ -171,13 +119,40 @@ class PositionsLHOverwrite(AbstractPositionsThresholder):
 
         return -0.5 * (chi_squared + noise_normalization)
 
+    def log_likelihood_penalty_from(self, tracer: Tracer) -> Optional[float]:
+        """
+        The fast log likelihood penalty scheme returns an alternative penalty log likelihood for any model where the
+        image-plane positions to not trace within a threshold distance of one another in the source-plane.
+
+        This `log_likelihood_penalty` is defined as:
+
+        log_Likelihood_penalty_base - log_likelihood_penalty_factor * (max_source_plane_separation - threshold)
+
+        The `log_likelihood_penalty` is only used if `max_source_plane_separation > threshold`.
+
+        Parameters
+        ----------
+        dataset
+            The imaging or interferometer dataset from which the penalty base is computed.
+        """
+        if not tracer.has_mass_profile or len(tracer.planes) == 1:
+            return
+
+        positions_fit = FitPositionsSourceMaxSeparation(
+            positions=self.positions, noise_map=None, tracer=tracer
+        )
+
+        if not positions_fit.max_separation_within_threshold(self.threshold):
+
+            return self.log_likelihood_penalty_factor * (
+                positions_fit.max_separation_of_source_plane_positions - self.threshold
+            )
+
     def log_likelihood_function_positions_overwrite(
-        self, instance: af.ModelInstance, analysis : AnalysisDataset
+        self, instance: af.ModelInstance, analysis: "AnalysisDataset"
     ) -> Optional[float]:
 
-        tracer = analysis.tracer_via_instance_from(
-            instance=instance,
-        )
+        tracer = analysis.tracer_via_instance_from(instance=instance)
 
         log_likelihood_positions_penalty = self.log_likelihood_penalty_from(
             tracer=tracer

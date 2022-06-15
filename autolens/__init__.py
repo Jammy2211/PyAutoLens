@@ -70,7 +70,8 @@ from .lens import subhalo
 from .analysis.settings import SettingsLens
 from .lens.ray_tracing import Tracer
 from .lens.to_inversion import TracerToInversion
-from .analysis.positions_thresholder import PositionsThresholder
+from .analysis.positions import PositionsResample
+from .analysis.positions import PositionsLHOverwrite
 from .analysis.preloads import Preloads
 from .analysis.setup import SetupHyper
 from .imaging.imaging import SimulatorImaging
