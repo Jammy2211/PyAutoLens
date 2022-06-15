@@ -184,7 +184,7 @@ def test__max_log_likelihood_tracer__multiple_image_positions_of_source_plane_ce
     assert multiple_images.in_list[1][1] == pytest.approx(0.27978516, 1.0e-4)
 
 
-def test__image_plane_multiple_image_positions_and_threshold(analysis_imaging_7x7):
+def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
 
     tracer = al.Tracer.from_galaxies(
         galaxies=[
@@ -209,6 +209,25 @@ def test__image_plane_multiple_image_positions_and_threshold(analysis_imaging_7x
         -1.0004, 1.0e-2
     )
 
+
+def test__positions_threshold_from(analysis_imaging_7x7):
+
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[
+            al.Galaxy(
+                redshift=0.5,
+                mass=al.mp.EllIsothermal(
+                    centre=(0.1, 0.0), einstein_radius=1.0, elliptical_comps=(0.0, 0.0)
+                ),
+            ),
+            al.Galaxy(redshift=1.0, bulge=al.lp.SphSersic(centre=(0.0, 0.0))),
+        ]
+    )
+
+    samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
+
+    result = res.Result(samples=samples, model=None, analysis=analysis_imaging_7x7)
+
     assert result.positions_threshold_from() == pytest.approx(0.000973519, 1.0e-4)
     assert result.positions_threshold_from(factor=5.0) == pytest.approx(
         5.0 * 0.000973519, 1.0e-4
@@ -216,6 +235,39 @@ def test__image_plane_multiple_image_positions_and_threshold(analysis_imaging_7x
     assert result.positions_threshold_from(minimum_threshold=0.2) == pytest.approx(
         0.2, 1.0e-4
     )
+
+
+def test__positions_likelihood_from(analysis_imaging_7x7):
+
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[
+            al.Galaxy(
+                redshift=0.5,
+                mass=al.mp.EllIsothermal(
+                    centre=(0.1, 0.0), einstein_radius=1.0, elliptical_comps=(0.0, 0.0)
+                ),
+            ),
+            al.Galaxy(redshift=1.0, bulge=al.lp.SphSersic(centre=(0.0, 0.0))),
+        ]
+    )
+
+    samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
+
+    result = res.Result(samples=samples, model=None, analysis=analysis_imaging_7x7)
+
+    positions_likelihood = result.positions_likelihood_from(
+        factor=0.1, minimum_threshold=0.2
+    )
+
+    assert isinstance(positions_likelihood, al.PositionsLHOverwrite)
+    assert positions_likelihood.threshold == pytest.approx(0.2, 1.0e-4)
+
+    positions_likelihood = result.positions_likelihood_from(
+        factor=0.1, minimum_threshold=0.2, use_resample=True
+    )
+
+    assert isinstance(positions_likelihood, al.PositionsLHResample)
+    assert positions_likelihood.threshold == pytest.approx(0.2, 1.0e-4)
 
 
 def test__results_include_mask__available_as_property(

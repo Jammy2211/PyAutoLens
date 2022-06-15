@@ -1,16 +1,18 @@
 from os import path
 import numpy as np
 import json
-from typing import Dict
+from typing import Dict, Union
 
 from autoconf import conf
-import autofit as af
+
 import autoarray as aa
 import autogalaxy as ag
 
 from autofit.non_linear.paths.abstract import AbstractPaths
 from autogalaxy.analysis.result import Result as AgResult
 
+from autolens.analysis.positions import PositionsLHResample
+from autolens.analysis.positions import PositionsLHOverwrite
 from autolens.point.fit_point.max_separation import FitPositionsSourceMaxSeparation
 from autolens.lens.ray_tracing import Tracer
 from autolens.point.point_solver import PointSolver
@@ -120,6 +122,19 @@ class Result(AgResult):
                 return minimum_threshold
 
         return threshold
+
+    def positions_likelihood_from(
+        self, factor=1.0, minimum_threshold=None, use_resample=False
+    ) -> Union[PositionsLHOverwrite, PositionsLHResample]:
+
+        positions = self.image_plane_multiple_image_positions
+        threshold = self.positions_threshold_from(
+            factor=factor, minimum_threshold=minimum_threshold
+        )
+
+        if not use_resample:
+            return PositionsLHOverwrite(positions=positions, threshold=threshold)
+        return PositionsLHResample(positions=positions, threshold=threshold)
 
     @property
     def path_galaxy_tuples(self) -> [(str, ag.Galaxy)]:
