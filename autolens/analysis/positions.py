@@ -71,7 +71,7 @@ class PositionsLHResample(AbstractPositionsLH):
             raise exc.RayTracingException
 
 
-class PositionsLHOverwrite(AbstractPositionsLH):
+class PositionsLHPenalty(AbstractPositionsLH):
     def __init__(
         self,
         positions: aa.Grid2DIrregular,

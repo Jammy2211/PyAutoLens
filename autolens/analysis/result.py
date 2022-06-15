@@ -12,7 +12,7 @@ from autofit.non_linear.paths.abstract import AbstractPaths
 from autogalaxy.analysis.result import Result as AgResult
 
 from autolens.analysis.positions import PositionsLHResample
-from autolens.analysis.positions import PositionsLHOverwrite
+from autolens.analysis.positions import PositionsLHPenalty
 from autolens.point.fit_point.max_separation import FitPositionsSourceMaxSeparation
 from autolens.lens.ray_tracing import Tracer
 from autolens.point.point_solver import PointSolver
@@ -125,7 +125,7 @@ class Result(AgResult):
 
     def positions_likelihood_from(
         self, factor=1.0, minimum_threshold=None, use_resample=False
-    ) -> Union[PositionsLHOverwrite, PositionsLHResample]:
+    ) -> Union[PositionsLHPenalty, PositionsLHResample]:
 
         positions = self.image_plane_multiple_image_positions
         threshold = self.positions_threshold_from(
@@ -133,7 +133,7 @@ class Result(AgResult):
         )
 
         if not use_resample:
-            return PositionsLHOverwrite(positions=positions, threshold=threshold)
+            return PositionsLHPenalty(positions=positions, threshold=threshold)
         return PositionsLHResample(positions=positions, threshold=threshold)
 
     @property

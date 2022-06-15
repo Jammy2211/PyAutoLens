@@ -126,7 +126,7 @@ def test__positions__likelihood_overwrite__changes_likelihood(
     assert fit.log_likelihood == analysis_log_likelihood
     assert analysis_log_likelihood == pytest.approx(-127914.36273, 1.0e-4)
 
-    positions_likelihood = al.PositionsLHOverwrite(
+    positions_likelihood = al.PositionsLHPenalty(
         positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01
     )
 

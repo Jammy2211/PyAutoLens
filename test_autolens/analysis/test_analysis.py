@@ -150,7 +150,7 @@ def test__modify_before_fit__inversion_no_positions_likelihood__raises_exception
     with pytest.raises(exc.AnalysisException):
         analysis.modify_before_fit(paths=af.DirectoryPaths(), model=model)
 
-    positions_likelihood = al.PositionsLHOverwrite(
+    positions_likelihood = al.PositionsLHPenalty(
         positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01
     )
 

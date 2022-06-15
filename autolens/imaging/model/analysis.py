@@ -445,10 +445,11 @@ class AnalysisImaging(AnalysisDataset):
                 output_path=paths.output_path, tracer=fit.tracer
             )
 
-        try:
-            fit.inversion.reconstruction
-        except exc.InversionException:
-            return
+        if fit.inversion is not None:
+            try:
+                fit.inversion.reconstruction
+            except exc.InversionException:
+                return
 
         visualizer = VisualizerImaging(visualize_path=paths.image_path)
 

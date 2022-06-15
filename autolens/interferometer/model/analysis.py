@@ -11,7 +11,7 @@ from autoarray.exc import PixelizationException
 from autolens.analysis.analysis import AnalysisDataset
 from autolens.analysis.preloads import Preloads
 from autolens.analysis.positions import PositionsLHResample
-from autolens.analysis.positions import PositionsLHOverwrite
+from autolens.analysis.positions import PositionsLHPenalty
 from autolens.lens.ray_tracing import Tracer
 from autolens.interferometer.model.result import ResultInterferometer
 from autolens.interferometer.model.visualizer import VisualizerInterferometer
@@ -30,7 +30,7 @@ class AnalysisInterferometer(AnalysisDataset):
         self,
         dataset,
         positions_likelihood: Optional[
-            Union[PositionsLHResample, PositionsLHOverwrite]
+            Union[PositionsLHResample, PositionsLHPenalty]
         ] = None,
         hyper_dataset_result=None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
@@ -487,10 +487,11 @@ class AnalysisInterferometer(AnalysisDataset):
                 output_path=paths.output_path, tracer=fit.tracer
             )
 
-        try:
-            fit.inversion.reconstruction
-        except exc.InversionException:
-            return
+        if fit.inversion is not None:
+            try:
+                fit.inversion.reconstruction
+            except exc.InversionException:
+                return
 
         visualizer = VisualizerInterferometer(visualize_path=paths.image_path)
 

@@ -18,7 +18,7 @@ from autolens.analysis.result import ResultDataset
 from autolens.analysis.maker import FitMaker
 from autolens.analysis.preloads import Preloads
 from autolens.analysis.positions import PositionsLHResample
-from autolens.analysis.positions import PositionsLHOverwrite
+from autolens.analysis.positions import PositionsLHPenalty
 from autolens.analysis.visualizer import Visualizer
 from autolens.lens.ray_tracing import Tracer
 from autolens.analysis.settings import SettingsLens
@@ -121,7 +121,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         self,
         dataset,
         positions_likelihood: Optional[
-            Union[PositionsLHResample, PositionsLHOverwrite]
+            Union[PositionsLHResample, PositionsLHPenalty]
         ] = None,
         hyper_dataset_result=None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),

@@ -259,7 +259,7 @@ def test__positions_likelihood_from(analysis_imaging_7x7):
         factor=0.1, minimum_threshold=0.2
     )
 
-    assert isinstance(positions_likelihood, al.PositionsLHOverwrite)
+    assert isinstance(positions_likelihood, al.PositionsLHPenalty)
     assert positions_likelihood.threshold == pytest.approx(0.2, 1.0e-4)
 
     positions_likelihood = result.positions_likelihood_from(
