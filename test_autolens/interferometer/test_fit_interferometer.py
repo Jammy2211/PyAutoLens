@@ -237,12 +237,12 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
-    traced_grids_of_planes = tracer.traced_grid_2d_list_from(
+    traced_grid_2d_list_from = tracer.traced_grid_2d_list_from(
         grid=interferometer_7_grid.grid
     )
 
-    g0_image = g0.image_2d_from(grid=traced_grids_of_planes[0])
-    g1_image = g1.image_2d_from(grid=traced_grids_of_planes[1])
+    g0_image = g0.image_2d_from(grid=traced_grid_2d_list_from[0])
+    g1_image = g1.image_2d_from(grid=traced_grid_2d_list_from[1])
 
     assert fit.galaxy_model_image_dict[g0] == pytest.approx(g0_image, 1.0e-4)
     assert fit.galaxy_model_image_dict[g1] == pytest.approx(g1_image, 1.0e-4)
@@ -337,16 +337,16 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
-    traced_grids_of_planes = tracer.traced_grid_2d_list_from(
+    traced_grid_2d_list_from = tracer.traced_grid_2d_list_from(
         grid=interferometer_7_grid.grid
     )
 
     g0_profile_visibilities = g0.visibilities_via_transformer_from(
-        grid=traced_grids_of_planes[0], transformer=interferometer_7_grid.transformer
+        grid=traced_grid_2d_list_from[0], transformer=interferometer_7_grid.transformer
     )
 
     g1_profile_visibilities = g1.visibilities_via_transformer_from(
-        grid=traced_grids_of_planes[1], transformer=interferometer_7_grid.transformer
+        grid=traced_grid_2d_list_from[1], transformer=interferometer_7_grid.transformer
     )
 
     assert fit.galaxy_model_visibilities_dict[g0].slim == pytest.approx(

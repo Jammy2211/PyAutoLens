@@ -45,8 +45,7 @@ class ResultImaging(ResultDataset):
         search.
         """
         return self.analysis.fit_imaging_via_instance_from(
-            instance=self.instance,
-            preload_overwrite=Preloads(use_w_tilde=False),
+            instance=self.instance, preload_overwrite=Preloads(use_w_tilde=False)
         )
 
     @property

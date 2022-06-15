@@ -95,13 +95,12 @@ def test__positions__resample__raises_exception(masked_imaging_7x7):
         )
     )
 
-    positions_thresholder = al.PositionsResample(
-        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
-        threshold=0.01,
+    positions_likelihood = al.PositionsLHResample(
+        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01
     )
 
     analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7, positions_thresholder=positions_thresholder
+        dataset=masked_imaging_7x7, positions_likelihood=positions_likelihood
     )
 
     instance = model.instance_from_unit_vector([])
@@ -110,9 +109,7 @@ def test__positions__resample__raises_exception(masked_imaging_7x7):
         analysis.log_likelihood_function(instance=instance)
 
 
-def test__positions__likelihood_overwrites__changes_likelihood(
-    masked_imaging_7x7
-):
+def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x7):
 
     lens = al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal())
     source = al.Galaxy(redshift=1.0, light=al.lp.SphSersic())
@@ -131,20 +128,19 @@ def test__positions__likelihood_overwrites__changes_likelihood(
     assert fit.log_likelihood == pytest.approx(analysis_log_likelihood, 1.0e-4)
     assert analysis_log_likelihood == pytest.approx(-6258.043397009, 1.0e-4)
 
-    positions_thresholder = al.PositionsLHOverwrite(
-        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
-        threshold=0.01,
+    positions_likelihood = al.PositionsLHOverwrite(
+        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01
     )
 
     analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7, positions_thresholder=positions_thresholder
+        dataset=masked_imaging_7x7, positions_likelihood=positions_likelihood
     )
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    log_likelihood_penalty_base = positions_thresholder.log_likelihood_penalty_base_from(
+    log_likelihood_penalty_base = positions_likelihood.log_likelihood_penalty_base_from(
         dataset=masked_imaging_7x7
     )
-    log_likelihood_penalty = positions_thresholder.log_likelihood_penalty_from(
+    log_likelihood_penalty = positions_likelihood.log_likelihood_penalty_from(
         tracer=tracer
     )
 

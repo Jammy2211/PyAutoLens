@@ -17,7 +17,7 @@ from autogalaxy.analysis.analysis import AnalysisDataset as AgAnalysisDataset
 from autolens.analysis.result import ResultDataset
 from autolens.analysis.maker import FitMaker
 from autolens.analysis.preloads import Preloads
-from autolens.analysis.positions import PositionsResample
+from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHOverwrite
 from autolens.analysis.visualizer import Visualizer
 from autolens.lens.ray_tracing import Tracer
@@ -120,12 +120,15 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
     def __init__(
         self,
         dataset,
-        positions_thresholder: Optional[Union[PositionsResample, PositionsLHOverwrite]] = None,
+        positions_likelihood: Optional[
+            Union[PositionsLHResample, PositionsLHOverwrite]
+        ] = None,
         hyper_dataset_result=None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_pixelization: aa.SettingsPixelization = None,
         settings_inversion: aa.SettingsInversion = None,
         settings_lens: SettingsLens = None,
+        raise_inversion_positions_likelihood_exception: bool = True,
     ):
         """
         Analysis classes are used by PyAutoFit to fit a model to a dataset via a non-linear search.
@@ -140,10 +143,10 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         ----------
         dataset
             The imaging, interferometer or other dataset that the model if fitted too.
-        positions_thresholder
-            Image-pixel coordinates in arc-seconds corresponding to the multiple images of the lensed source galaxy.
-            If the `settings_lens` attribute has a `threshold`, these positions must trace within this
-            threshold of one another in the source-plane or else the model is discarded.
+        positions_likelihood
+            An object which alters the likelihood function to include a term which accounts for whether
+            image-pixel coordinates in arc-seconds corresponding to the multiple images of the lensed source galaxy
+            trace close to one another in the source-plane.
         cosmology
             The AstroPy Cosmology assumed for this analysis.
         settings_pixelization
@@ -155,6 +158,11 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         settings_lens
             Settings controlling the lens calculation, for example how close the lensed source's multiple images have
             to trace within one another in the source plane for the model to not be discarded.
+        raise_inversion_positions_likelihood_exception
+            If an inversion is used without the `positions_likelihood` it is likely a systematic solution will
+            be inferred, in which case an Exception is raised before the model-fit begins to inform the user
+            of this. This exception is not raised if this input is False, allowing the user to perform the model-fit
+            anyway.
         """
 
         super().__init__(
@@ -169,11 +177,59 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             self=self, settings_lens=settings_lens, cosmology=cosmology
         )
 
-        self.positions = positions_thresholder
+        self.positions_likelihood = positions_likelihood
 
         self.settings_lens = settings_lens or SettingsLens()
 
         self.preloads = self.preloads_cls()
+
+        self.raise_inversion_positions_likelihood_exception = (
+            raise_inversion_positions_likelihood_exception
+        )
+
+    def modify_before_fit(self, paths: af.DirectoryPaths, model: af.Collection):
+        """
+        PyAutoFit calls this function immediately before the non-linear search begins, therefore it can be used to
+        perform tasks using the final model parameterization.
+
+        This function:
+
+        - Checks that the hyper-dataset is consistent with previous hyper-datasets if the model-fit is being
+        resumed from a previous run.
+
+        - Checks the model and raises exceptions if certain critieria are not met.
+
+        Once inherited from it also visualizes objects which do not change throughout the model fit like the dataset.
+
+        Parameters
+        ----------
+        paths
+            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            visualization and the pickled objects used by the aggregator output by this function.
+        model
+            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
+            the imaging data.
+        """
+
+        self.raise_exceptions(model=model)
+
+        self.check_and_replace_hyper_images(paths=paths)
+
+    def raise_exceptions(self, model):
+
+        if ag.util.model.has_pixelization_from(model=model):
+            if (
+                self.positions_likelihood is None
+                and self.raise_inversion_positions_likelihood_exception
+            ):
+                raise exc.AnalysisException(
+                    "You have begun a model-fit which reconstructs the source using a pixelization.\n\n"
+                    "However, you have not input a `positions_likelihood` object.\n\n"
+                    "It is likely your model-fit will infer an inaccurate solution.\n\n "
+                    ""
+                    "Please read the following GitHub issue for a description of why this is, and how to set up"
+                    "a positions likelihood object."
+                )
 
     @property
     def preloads_cls(self):

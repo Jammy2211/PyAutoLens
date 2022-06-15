@@ -36,9 +36,14 @@ class AnalysisImaging(AnalysisDataset):
         PyAutoFit calls this function immediately before the non-linear search begins, therefore it can be used to
         perform tasks using the final model parameterization.
 
-        This function checks that the hyper-dataset is consistent with previous hyper-datasets if the model-fit is
-        being resumed from a previous run, and it visualizes objects which do not change throughout the model fit
-        like the dataset.
+        This function:
+
+        - Checks that the hyper-dataset is consistent with previous hyper-datasets if the model-fit is being
+        resumed from a previous run.
+
+        - Checks the model and raises exceptions if certain critieria are not met.
+
+        Once inherited from it also visualizes objects which do not change throughout the model fit like the dataset.
 
         Parameters
         ----------
@@ -49,7 +54,7 @@ class AnalysisImaging(AnalysisDataset):
             The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
             the imaging data.
         """
-        self.check_and_replace_hyper_images(paths=paths)
+        super().modify_before_fit(paths=paths, model=model)
 
         if not paths.is_complete:
 
@@ -57,10 +62,10 @@ class AnalysisImaging(AnalysisDataset):
 
             visualizer.visualize_imaging(imaging=self.imaging)
 
-            if self.positions is not None:
+            if self.positions_likelihood is not None:
                 visualizer.visualize_image_with_positions(
                     image=self.imaging.image,
-                    positions=self.positions.positions,
+                    positions=self.positions_likelihood.positions,
                 )
 
             visualizer.visualize_hyper_images(
@@ -111,9 +116,9 @@ class AnalysisImaging(AnalysisDataset):
             The log likelihood indicating how well this model instance fitted the imaging data.
         """
 
-        if self.positions is not None:
+        if self.positions_likelihood is not None:
 
-            log_likelihood_positions_overwrite = self.positions.log_likelihood_function_positions_overwrite(
+            log_likelihood_positions_overwrite = self.positions_likelihood.log_likelihood_function_positions_overwrite(
                 instance=instance, analysis=self
             )
 
@@ -169,7 +174,9 @@ class AnalysisImaging(AnalysisDataset):
             The fit of the plane to the imaging dataset, which includes the log likelihood.
         """
         self.instance_with_associated_hyper_images_from(instance=instance)
-        tracer = self.tracer_via_instance_from(instance=instance, profiling_dict=profiling_dict)
+        tracer = self.tracer_via_instance_from(
+            instance=instance, profiling_dict=profiling_dict
+        )
 
         hyper_image_sky = self.hyper_image_sky_via_instance_from(instance=instance)
 
@@ -433,6 +440,11 @@ class AnalysisImaging(AnalysisDataset):
 
         fit = self.fit_imaging_via_instance_from(instance=instance)
 
+        if self.positions_likelihood is not None:
+            self.positions_likelihood.output_positions_info(
+                output_path=paths.output_path, tracer=fit.tracer
+            )
+
         try:
             fit.inversion.reconstruction
         except exc.InversionException:
@@ -544,4 +556,4 @@ class AnalysisImaging(AnalysisDataset):
 
         paths.save_object("psf", self.dataset.psf_unormalized)
         paths.save_object("mask", self.dataset.mask)
-        paths.save_object("positions_thresholder", self.positions)
+        paths.save_object("positions_likelihood", self.positions_likelihood)

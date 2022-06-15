@@ -80,9 +80,7 @@ def test__figure_of_merit__includes_hyper_image_and_noise__matches_fit(
     assert fit.log_likelihood == analysis_log_likelihood
 
 
-def test__positions__resample__raises_exception(
-    interferometer_7, mask_2d_7x7
-):
+def test__positions__resample__raises_exception(interferometer_7, mask_2d_7x7):
 
     model = af.Collection(
         galaxies=af.Collection(
@@ -91,14 +89,13 @@ def test__positions__resample__raises_exception(
         )
     )
 
-    positions_thresholder = al.PositionsResample(
-        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
-        threshold=0.01,
+    positions_likelihood = al.PositionsLHResample(
+        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01
     )
 
     analysis = al.AnalysisInterferometer(
         dataset=interferometer_7,
-        positions_thresholder=positions_thresholder,
+        positions_likelihood=positions_likelihood,
         settings_lens=al.SettingsLens(threshold=0.01),
     )
 
@@ -129,20 +126,19 @@ def test__positions__likelihood_overwrite__changes_likelihood(
     assert fit.log_likelihood == analysis_log_likelihood
     assert analysis_log_likelihood == pytest.approx(-127914.36273, 1.0e-4)
 
-    positions_thresholder = al.PositionsLHOverwrite(
-        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
-        threshold=0.01,
+    positions_likelihood = al.PositionsLHOverwrite(
+        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01
     )
 
     analysis = al.AnalysisInterferometer(
-        dataset=interferometer_7, positions_thresholder=positions_thresholder
+        dataset=interferometer_7, positions_likelihood=positions_likelihood
     )
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    log_likelihood_penalty_base = positions_thresholder.log_likelihood_penalty_base_from(
+    log_likelihood_penalty_base = positions_likelihood.log_likelihood_penalty_base_from(
         dataset=interferometer_7
     )
-    log_likelihood_penalty = positions_thresholder.log_likelihood_penalty_from(
+    log_likelihood_penalty = positions_likelihood.log_likelihood_penalty_from(
         tracer=tracer
     )
 

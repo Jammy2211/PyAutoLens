@@ -1,8 +1,10 @@
 import numpy as np
 from typing import Optional, Union
+from os import path
 
 import autoarray as aa
 import autofit as af
+from autofit.tools.util import open_
 
 from autoconf import conf
 
@@ -15,7 +17,7 @@ from autolens import exc
 # TODO : max sure `if not tracer.has_mass_profile or len(tracer.planes) == 1:` is used correct for all resamplers.
 
 
-class AbstractPositions:
+class AbstractPositionsLH:
     def __init__(self, positions: aa.Grid2DIrregular, threshold: float):
 
         if len(positions) == 1:
@@ -33,8 +35,21 @@ class AbstractPositions:
     ) -> Optional[float]:
         raise NotImplementedError
 
+    def output_positions_info(self, output_path: str, tracer: Tracer):
 
-class PositionsResample(AbstractPositions):
+        positions_fit = FitPositionsSourceMaxSeparation(
+            positions=self.positions, noise_map=None, tracer=tracer
+        )
+
+        with open_(path.join(output_path, "positions.info"), "w+") as f:
+            f.write(f"Positions: \n {self.positions} \n\n")
+            f.write(f"Threshold = {self.threshold} \n")
+            f.write(
+                f"Max Source Plane Seperation of Maximum Likelihood Model = {positions_fit.max_separation_of_source_plane_positions}"
+            )
+
+
+class PositionsLHResample(AbstractPositionsLH):
     def log_likelihood_function_positions_overwrite(
         self, instance: af.ModelInstance, analysis: "AnalysisDataset"
     ) -> Optional[float]:
@@ -56,9 +71,13 @@ class PositionsResample(AbstractPositions):
             raise exc.RayTracingException
 
 
-class PositionsLHOverwrite(AbstractPositions):
-
-    def __init__(self, positions: aa.Grid2DIrregular, threshold: float, log_likelihood_penalty_factor : float = 1e8):
+class PositionsLHOverwrite(AbstractPositionsLH):
+    def __init__(
+        self,
+        positions: aa.Grid2DIrregular,
+        threshold: float,
+        log_likelihood_penalty_factor: float = 1e8,
+    ):
 
         super().__init__(positions=positions, threshold=threshold)
 
@@ -153,6 +172,9 @@ class PositionsLHOverwrite(AbstractPositions):
     ) -> Optional[float]:
 
         tracer = analysis.tracer_via_instance_from(instance=instance)
+
+        if not tracer.has_mass_profile or len(tracer.planes) == 1:
+            return
 
         log_likelihood_positions_penalty = self.log_likelihood_penalty_from(
             tracer=tracer

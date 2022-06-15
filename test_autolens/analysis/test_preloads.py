@@ -10,8 +10,8 @@ def test__set_traced_grids_of_planes():
 
     # traced grids is None so no Preloading.
 
-    tracer_0 = al.m.MockTracer(traced_grids_of_planes=[None, None])
-    tracer_1 = al.m.MockTracer(traced_grids_of_planes=[None, None])
+    tracer_0 = al.m.MockTracer(traced_grid_2d_list_from=[None, None])
+    tracer_1 = al.m.MockTracer(traced_grid_2d_list_from=[None, None])
 
     fit_0 = al.m.MockFitImaging(tracer=tracer_0)
     fit_1 = al.m.MockFitImaging(tracer=tracer_1)
@@ -23,8 +23,8 @@ def test__set_traced_grids_of_planes():
 
     # traced grids are different, indiciating the model parameters change the grid, so no preloading.
 
-    tracer_0 = al.m.MockTracer(traced_grids_of_planes=[None, np.array([[1.0]])])
-    tracer_1 = al.m.MockTracer(traced_grids_of_planes=[None, np.array([[2.0]])])
+    tracer_0 = al.m.MockTracer(traced_grid_2d_list_from=[None, np.array([[1.0]])])
+    tracer_1 = al.m.MockTracer(traced_grid_2d_list_from=[None, np.array([[2.0]])])
 
     fit_0 = al.m.MockFitImaging(tracer=tracer_0)
     fit_1 = al.m.MockFitImaging(tracer=tracer_1)
@@ -36,8 +36,8 @@ def test__set_traced_grids_of_planes():
 
     # traced grids are the same meaning they are fixed in the model, so do preload.
 
-    tracer_0 = al.m.MockTracer(traced_grids_of_planes=[None, np.array([[1.0]])])
-    tracer_1 = al.m.MockTracer(traced_grids_of_planes=[None, np.array([[1.0]])])
+    tracer_0 = al.m.MockTracer(traced_grid_2d_list_from=[None, np.array([[1.0]])])
+    tracer_1 = al.m.MockTracer(traced_grid_2d_list_from=[None, np.array([[1.0]])])
 
     fit_0 = al.m.MockFitImaging(tracer=tracer_0)
     fit_1 = al.m.MockFitImaging(tracer=tracer_1)

@@ -167,8 +167,8 @@ class ResultDataset(Result):
         The (y,x) arc-second coordinates of the lensed sources brightest pixels, which are used for discarding mass
         models which do not trace within a threshold in the source-plane of one another.
         """
-        if self.analysis.positions is not None:
-            return self.analysis.positions.positions
+        if self.analysis.positions_likelihood is not None:
+            return self.analysis.positions_likelihood.positions
 
     @property
     def source_plane_centre(self) -> aa.Grid2DIrregular:

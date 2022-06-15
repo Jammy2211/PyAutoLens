@@ -912,12 +912,12 @@ def test__traced_grid_2d_list_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
     plane_1 = al.Plane(galaxies=[g1])
     plane_2 = al.Plane(galaxies=[g2])
 
-    traced_grids_of_planes = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)
+    traced_grid_2d_list_from = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)
 
     image = (
         plane_0.image_2d_from(grid=sub_grid_2d_7x7)
-        + plane_1.image_2d_from(grid=traced_grids_of_planes[1])
-        + plane_2.image_2d_from(grid=traced_grids_of_planes[2])
+        + plane_1.image_2d_from(grid=traced_grid_2d_list_from[1])
+        + plane_2.image_2d_from(grid=traced_grid_2d_list_from[2])
     )
 
     tracer_image = tracer.image_2d_from(grid=sub_grid_2d_7x7)
@@ -937,12 +937,12 @@ def test__traced_grid_2d_list_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
     plane_1 = tracer.planes[1]
     plane_2 = tracer.planes[2]
 
-    traced_grids_of_planes = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)
+    traced_grid_2d_list_from = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)
 
     image = (
         plane_0.image_2d_from(grid=sub_grid_2d_7x7)
-        + plane_1.image_2d_from(grid=traced_grids_of_planes[1])
-        + plane_2.image_2d_from(grid=traced_grids_of_planes[2])
+        + plane_1.image_2d_from(grid=traced_grid_2d_list_from[1])
+        + plane_2.image_2d_from(grid=traced_grid_2d_list_from[2])
     )
 
     tracer_image = tracer.image_2d_from(grid=sub_grid_2d_7x7)
@@ -964,12 +964,12 @@ def test__traced_grid_2d_list_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
     plane_1 = al.Plane(galaxies=[g1, g4])
     plane_2 = al.Plane(galaxies=[g2])
 
-    traced_grids_of_planes = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)
+    traced_grid_2d_list_from = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)
 
     image = (
         plane_0.image_2d_from(grid=sub_grid_2d_7x7)
-        + plane_1.image_2d_from(grid=traced_grids_of_planes[1])
-        + plane_2.image_2d_from(grid=traced_grids_of_planes[2])
+        + plane_1.image_2d_from(grid=traced_grid_2d_list_from[1])
+        + plane_2.image_2d_from(grid=traced_grid_2d_list_from[2])
     )
 
     tracer_image = tracer.image_2d_from(grid=sub_grid_2d_7x7)

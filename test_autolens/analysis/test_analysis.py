@@ -134,6 +134,32 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(masked_imagi
     )
 
 
+def test__modify_before_fit__inversion_no_positions_likelihood__raises_exception(
+    masked_imaging_7x7
+):
+
+    lens = al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal())
+    source = al.Galaxy(
+        redshift=1.0, pixelization=al.pix.Rectangular, regularization=al.reg.Constant()
+    )
+
+    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+
+    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+
+    with pytest.raises(exc.AnalysisException):
+        analysis.modify_before_fit(paths=af.DirectoryPaths(), model=model)
+
+    positions_likelihood = al.PositionsLHOverwrite(
+        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01
+    )
+
+    analysis = al.AnalysisImaging(
+        dataset=masked_imaging_7x7, positions_likelihood=positions_likelihood
+    )
+    analysis.modify_before_fit(paths=af.DirectoryPaths(), model=model)
+
+
 def test__check_preloads(masked_imaging_7x7):
 
     conf.instance["general"]["test"]["check_preloads"] = True

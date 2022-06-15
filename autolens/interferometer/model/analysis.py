@@ -10,7 +10,7 @@ from autoarray.exc import PixelizationException
 
 from autolens.analysis.analysis import AnalysisDataset
 from autolens.analysis.preloads import Preloads
-from autolens.analysis.positions import PositionsResample
+from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHOverwrite
 from autolens.lens.ray_tracing import Tracer
 from autolens.interferometer.model.result import ResultInterferometer
@@ -29,12 +29,15 @@ class AnalysisInterferometer(AnalysisDataset):
     def __init__(
         self,
         dataset,
-        positions_thresholder: Optional[Union[PositionsResample, PositionsLHOverwrite]] = None,
+        positions_likelihood: Optional[
+            Union[PositionsLHResample, PositionsLHOverwrite]
+        ] = None,
         hyper_dataset_result=None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_pixelization: aa.SettingsPixelization = None,
         settings_inversion: aa.SettingsInversion = None,
         settings_lens: SettingsLens = None,
+        raise_inversion_positions_likelihood_exception: bool = True,
     ):
         """
         Analysis classes are used by PyAutoFit to fit a model to a dataset via a non-linear search.
@@ -55,6 +58,10 @@ class AnalysisInterferometer(AnalysisDataset):
         ----------
         dataset
             The interferometer dataset that the model is fitted too.
+        positions_likelihood
+            An object which alters the likelihood function to include a term which accounts for whether
+            image-pixel coordinates in arc-seconds corresponding to the multiple images of the lensed source galaxy
+            trace close to one another in the source-plane.
         hyper_dataset_result
             The hyper-model image and hyper galaxies images of a previous result in a model-fitting pipeline, which are
             used by certain classes for adapting the analysis to the properties of the dataset.
@@ -68,15 +75,21 @@ class AnalysisInterferometer(AnalysisDataset):
         settings_lens
             Settings controlling the lens calculation, for example how close the lensed source's multiple images have
             to trace within one another in the source plane for the model to not be discarded.
+        raise_inversion_positions_likelihood_exception
+            If an inversion is used without the `positions_likelihood` it is likely a systematic solution will
+            be inferred, in which case an Exception is raised before the model-fit begins to inform the user
+            of this. This exception is not raised if this input is False, allowing the user to perform the model-fit
+            anyway.
         """
         super().__init__(
             dataset=dataset,
-            positions_thresholder=positions_thresholder,
+            positions_likelihood=positions_likelihood,
             hyper_dataset_result=hyper_dataset_result,
             cosmology=cosmology,
             settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,
             settings_lens=settings_lens,
+            raise_inversion_positions_likelihood_exception=raise_inversion_positions_likelihood_exception,
         )
 
         if self.hyper_dataset_result is not None:
@@ -110,7 +123,7 @@ class AnalysisInterferometer(AnalysisDataset):
             The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
             the imaging data.
         """
-        self.check_and_replace_hyper_images(paths=paths)
+        super().modify_before_fit(paths=paths, model=model)
 
         if not paths.is_complete:
 
@@ -118,10 +131,10 @@ class AnalysisInterferometer(AnalysisDataset):
 
             visualizer.visualize_interferometer(interferometer=self.interferometer)
 
-            if self.positions is not None:
+            if self.positions_likelihood is not None:
                 visualizer.visualize_image_with_positions(
                     image=self.interferometer.dirty_image,
-                    positions=self.positions.positions,
+                    positions=self.positions_likelihood.positions,
                 )
 
             visualizer.visualize_hyper_images(
@@ -242,9 +255,9 @@ class AnalysisInterferometer(AnalysisDataset):
             The log likelihood indicating how well this model instance fitted the interferometer data.
         """
 
-        if self.positions is not None:
+        if self.positions_likelihood is not None:
 
-            log_likelihood_positions_overwrite = self.positions.log_likelihood_function_positions_overwrite(
+            log_likelihood_positions_overwrite = self.positions_likelihood.log_likelihood_function_positions_overwrite(
                 instance=instance, analysis=self
             )
 
@@ -469,6 +482,11 @@ class AnalysisInterferometer(AnalysisDataset):
 
         fit = self.fit_interferometer_via_instance_from(instance=instance)
 
+        if self.positions_likelihood is not None:
+            self.positions_likelihood.output_positions_info(
+                output_path=paths.output_path, tracer=fit.tracer
+            )
+
         try:
             fit.inversion.reconstruction
         except exc.InversionException:
@@ -584,7 +602,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
         paths.save_object("uv_wavelengths", self.dataset.uv_wavelengths)
         paths.save_object("real_space_mask", self.dataset.real_space_mask)
-        paths.save_object("positions_thresholder", self.positions)
+        paths.save_object("positions_likelihood", self.positions_likelihood)
         if self.preloads.sparse_image_plane_grid_pg_list is not None:
             paths.save_object(
                 "preload_sparse_grids_of_planes",
