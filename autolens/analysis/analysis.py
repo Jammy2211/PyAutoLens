@@ -227,8 +227,10 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
                     "However, you have not input a `positions_likelihood` object.\n\n"
                     "It is likely your model-fit will infer an inaccurate solution.\n\n "
                     ""
-                    "Please read the following GitHub issue for a description of why this is, and how to set up"
-                    "a positions likelihood object."
+                    "Please read the following readthedocs page for a description of why this is, and how to set up"
+                    "a positions likelihood object:\n\n"
+                    ""
+                    "https://pyautolens.readthedocs.io/en/latest/general/demagnified_solutions.html"
                 )
 
     @property
