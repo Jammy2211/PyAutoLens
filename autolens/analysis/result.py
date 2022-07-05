@@ -1,7 +1,7 @@
 from os import path
 import numpy as np
 import json
-from typing import Dict, Union
+from typing import Dict, Optional, Union
 
 from autoconf import conf
 
@@ -78,7 +78,12 @@ class Result(AgResult):
 
         return aa.Grid2DIrregular(grid=multiple_images)
 
-    def positions_threshold_from(self, factor=1.0, minimum_threshold=None) -> float:
+    def positions_threshold_from(
+        self,
+        factor=1.0,
+        minimum_threshold=None,
+        positions: Optional[aa.Grid2DIrregular] = None,
+    ) -> float:
         """
         Compute a new position threshold from these results corresponding to the image-plane multiple image positions of
          the maximum log likelihood `Tracer` ray-traced to the source-plane.
@@ -107,7 +112,11 @@ class Result(AgResult):
             by `factor` and rounded up to the `threshold`.
         """
 
-        positions = self.image_plane_multiple_image_positions
+        positions = (
+            self.image_plane_multiple_image_positions
+            if positions is None
+            else positions
+        )
 
         positions_fits = FitPositionsSourceMaxSeparation(
             positions=positions, noise_map=None, tracer=self.max_log_likelihood_tracer

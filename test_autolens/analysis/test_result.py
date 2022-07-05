@@ -235,6 +235,9 @@ def test__positions_threshold_from(analysis_imaging_7x7):
     assert result.positions_threshold_from(minimum_threshold=0.2) == pytest.approx(
         0.2, 1.0e-4
     )
+    assert result.positions_threshold_from(
+        positions=al.Grid2DIrregular([(0.0, 0.0)])
+    ) == pytest.approx(0.0, 1.0e-4)
 
 
 def test__positions_likelihood_from(analysis_imaging_7x7):
