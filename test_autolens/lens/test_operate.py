@@ -24,20 +24,20 @@ def test__operate_image__blurred_images_2d_via_psf_from__for_tracer_gives_list_o
     plane_0 = al.Plane(redshift=0.5, galaxies=[g0])
     plane_1 = al.Plane(redshift=1.0, galaxies=[g1])
 
-    blurred_image_0 = plane_0.blurred_image_2d_via_psf_from(
+    blurred_image_0 = plane_0.blurred_image_2d_from(
         grid=sub_grid_2d_7x7, psf=psf_3x3, blurring_grid=blurring_grid_2d_7x7
     )
 
     source_grid_2d_7x7 = plane_0.traced_grid_from(grid=sub_grid_2d_7x7)
     source_blurring_grid_2d_7x7 = plane_0.traced_grid_from(grid=blurring_grid_2d_7x7)
 
-    blurred_image_1 = plane_1.blurred_image_2d_via_psf_from(
+    blurred_image_1 = plane_1.blurred_image_2d_from(
         grid=source_grid_2d_7x7, psf=psf_3x3, blurring_grid=source_blurring_grid_2d_7x7
     )
 
     tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=al.cosmo.Planck15())
 
-    blurred_image = tracer.blurred_image_2d_via_psf_from(
+    blurred_image = tracer.blurred_image_2d_from(
         grid=sub_grid_2d_7x7, psf=psf_3x3, blurring_grid=blurring_grid_2d_7x7
     )
 
@@ -45,7 +45,7 @@ def test__operate_image__blurred_images_2d_via_psf_from__for_tracer_gives_list_o
         blurred_image_0.native + blurred_image_1.native, 1.0e-4
     )
 
-    blurred_image_list = tracer.blurred_image_2d_list_via_psf_from(
+    blurred_image_list = tracer.blurred_image_2d_list_from(
         grid=sub_grid_2d_7x7, psf=psf_3x3, blurring_grid=blurring_grid_2d_7x7
     )
 
@@ -69,7 +69,7 @@ def test__operate_image__blurred_images_2d_via_convolver_from__for_tracer_gives_
     plane_0 = al.Plane(redshift=0.5, galaxies=[g0])
     plane_1 = al.Plane(redshift=1.0, galaxies=[g1])
 
-    blurred_image_0 = plane_0.blurred_image_2d_via_convolver_from(
+    blurred_image_0 = plane_0.blurred_image_2d_from(
         grid=sub_grid_2d_7x7,
         convolver=convolver_7x7,
         blurring_grid=blurring_grid_2d_7x7,
@@ -78,7 +78,7 @@ def test__operate_image__blurred_images_2d_via_convolver_from__for_tracer_gives_
     source_grid_2d_7x7 = plane_0.traced_grid_from(grid=sub_grid_2d_7x7)
     source_blurring_grid_2d_7x7 = plane_0.traced_grid_from(grid=blurring_grid_2d_7x7)
 
-    blurred_image_1 = plane_1.blurred_image_2d_via_convolver_from(
+    blurred_image_1 = plane_1.blurred_image_2d_from(
         grid=source_grid_2d_7x7,
         convolver=convolver_7x7,
         blurring_grid=source_blurring_grid_2d_7x7,
@@ -86,7 +86,7 @@ def test__operate_image__blurred_images_2d_via_convolver_from__for_tracer_gives_
 
     tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=al.cosmo.Planck15())
 
-    blurred_image = tracer.blurred_image_2d_via_convolver_from(
+    blurred_image = tracer.blurred_image_2d_from(
         grid=sub_grid_2d_7x7,
         convolver=convolver_7x7,
         blurring_grid=blurring_grid_2d_7x7,
@@ -96,7 +96,7 @@ def test__operate_image__blurred_images_2d_via_convolver_from__for_tracer_gives_
         blurred_image_0.native + blurred_image_1.native, 1.0e-4
     )
 
-    blurred_image_list = tracer.blurred_image_2d_list_via_convolver_from(
+    blurred_image_list = tracer.blurred_image_2d_list_from(
         grid=sub_grid_2d_7x7,
         convolver=convolver_7x7,
         blurring_grid=blurring_grid_2d_7x7,
@@ -120,11 +120,11 @@ def test__operate_image__visibilities_of_planes_from_grid_and_transformer(
     plane_1 = al.Plane(redshift=0.5, galaxies=[g1])
     plane_2 = al.Plane(redshift=1.0, galaxies=[al.Galaxy(redshift=1.0)])
 
-    visibilities_0 = plane_0.visibilities_via_transformer_from(
+    visibilities_0 = plane_0.visibilities_from(
         grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
     )
 
-    visibilities_1 = plane_1.visibilities_via_transformer_from(
+    visibilities_1 = plane_1.visibilities_from(
         grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
     )
 
@@ -132,7 +132,7 @@ def test__operate_image__visibilities_of_planes_from_grid_and_transformer(
         planes=[plane_0, plane_1, plane_2], cosmology=al.cosmo.Planck15()
     )
 
-    visibilities = tracer.visibilities_list_via_transformer_from(
+    visibilities = tracer.visibilities_list_from(
         grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
     )
 
@@ -140,7 +140,7 @@ def test__operate_image__visibilities_of_planes_from_grid_and_transformer(
     assert (visibilities[1] == visibilities_1).all()
 
 
-def test__operate_image__galaxy_blurred_image_2d_dict_via_convolver_from(
+def test__operate_image__galaxy_blurred_image_2d_dict_from(
     sub_grid_2d_7x7, blurring_grid_2d_7x7, convolver_7x7
 ):
 
@@ -155,19 +155,19 @@ def test__operate_image__galaxy_blurred_image_2d_dict_via_convolver_from(
 
     g3 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=5.0))
 
-    g0_blurred_image = g0.blurred_image_2d_via_convolver_from(
+    g0_blurred_image = g0.blurred_image_2d_from(
         grid=sub_grid_2d_7x7,
         convolver=convolver_7x7,
         blurring_grid=blurring_grid_2d_7x7,
     )
 
-    g1_blurred_image = g1.blurred_image_2d_via_convolver_from(
+    g1_blurred_image = g1.blurred_image_2d_from(
         grid=sub_grid_2d_7x7,
         convolver=convolver_7x7,
         blurring_grid=blurring_grid_2d_7x7,
     )
 
-    g2_blurred_image = g2.blurred_image_2d_via_convolver_from(
+    g2_blurred_image = g2.blurred_image_2d_from(
         grid=sub_grid_2d_7x7,
         convolver=convolver_7x7,
         blurring_grid=blurring_grid_2d_7x7,
@@ -181,7 +181,7 @@ def test__operate_image__galaxy_blurred_image_2d_dict_via_convolver_from(
 
     source_blurring_grid_2d_7x7 = blurring_grid_2d_7x7 - g1_blurring_deflections
 
-    g3_blurred_image = g3.blurred_image_2d_via_convolver_from(
+    g3_blurred_image = g3.blurred_image_2d_from(
         grid=source_grid_2d_7x7,
         convolver=convolver_7x7,
         blurring_grid=source_blurring_grid_2d_7x7,
@@ -191,7 +191,7 @@ def test__operate_image__galaxy_blurred_image_2d_dict_via_convolver_from(
         galaxies=[g3, g1, g0, g2], cosmology=al.cosmo.Planck15()
     )
 
-    blurred_image_dict = tracer.galaxy_blurred_image_2d_dict_via_convolver_from(
+    blurred_image_dict = tracer.galaxy_blurred_image_2d_dict_from(
         grid=sub_grid_2d_7x7,
         convolver=convolver_7x7,
         blurring_grid=blurring_grid_2d_7x7,
@@ -216,14 +216,14 @@ def test__operate_image__galaxy_visibilities_dict_from_grid_and_transformer(
     g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=3.0))
     g3 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=5.0))
 
-    g0_visibilities = g0.visibilities_via_transformer_from(
+    g0_visibilities = g0.visibilities_from(
         grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
     )
-    g1_visibilities = g1.visibilities_via_transformer_from(
+    g1_visibilities = g1.visibilities_from(
         grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
     )
 
-    g2_visibilities = g2.visibilities_via_transformer_from(
+    g2_visibilities = g2.visibilities_from(
         grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
     )
 
@@ -231,7 +231,7 @@ def test__operate_image__galaxy_visibilities_dict_from_grid_and_transformer(
 
     source_grid_2d_7x7 = sub_grid_2d_7x7 - g1_deflections
 
-    g3_visibilities = g3.visibilities_via_transformer_from(
+    g3_visibilities = g3.visibilities_from(
         grid=source_grid_2d_7x7, transformer=transformer_7x7_7
     )
 
@@ -239,7 +239,7 @@ def test__operate_image__galaxy_visibilities_dict_from_grid_and_transformer(
         galaxies=[g3, g1, g0, g2], cosmology=al.cosmo.Planck15()
     )
 
-    visibilities_dict = tracer.galaxy_visibilities_dict_via_transformer_from(
+    visibilities_dict = tracer.galaxy_visibilities_dict_from(
         grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
     )
 

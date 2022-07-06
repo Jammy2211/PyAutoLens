@@ -596,7 +596,9 @@ def test__galaxy_image_2d_dict_from(sub_grid_2d_7x7):
 
     g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=3.0))
 
-    g3 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=5.0))
+    g3 = al.Galaxy(
+        redshift=1.0, light_profile=al.lp_operated.EllGaussian(intensity=5.0)
+    )
 
     g0_image = g0.image_2d_from(grid=sub_grid_2d_7x7)
     g1_image = g1.image_2d_from(grid=sub_grid_2d_7x7)
@@ -612,19 +614,30 @@ def test__galaxy_image_2d_dict_from(sub_grid_2d_7x7):
         galaxies=[g3, g1, g0, g2], cosmology=al.cosmo.Planck15()
     )
 
-    image_1d_dict = tracer.galaxy_image_2d_dict_from(grid=sub_grid_2d_7x7)
+    galaxy_image_2d_dict = tracer.galaxy_image_2d_dict_from(grid=sub_grid_2d_7x7)
 
-    assert (image_1d_dict[g0].slim == g0_image).all()
-    assert (image_1d_dict[g1].slim == g1_image).all()
-    assert (image_1d_dict[g2].slim == g2_image).all()
-    assert (image_1d_dict[g3].slim == g3_image).all()
+    assert (galaxy_image_2d_dict[g0] == g0_image).all()
+    assert (galaxy_image_2d_dict[g1] == g1_image).all()
+    assert (galaxy_image_2d_dict[g2] == g2_image).all()
+    assert (galaxy_image_2d_dict[g3] == g3_image).all()
 
-    image_dict = tracer.galaxy_image_2d_dict_from(grid=sub_grid_2d_7x7)
+    galaxy_image_2d_dict = tracer.galaxy_image_2d_dict_from(
+        grid=sub_grid_2d_7x7, operated_only=True
+    )
 
-    assert (image_dict[g0].native == g0_image.native).all()
-    assert (image_dict[g1].native == g1_image.native).all()
-    assert (image_dict[g2].native == g2_image.native).all()
-    assert (image_dict[g3].native == g3_image.native).all()
+    assert (galaxy_image_2d_dict[g0] == np.zeros(shape=(36,))).all()
+    assert (galaxy_image_2d_dict[g1] == np.zeros(shape=(36,))).all()
+    assert (galaxy_image_2d_dict[g2] == np.zeros(shape=(36,))).all()
+    assert (galaxy_image_2d_dict[g3] == g3_image).all()
+
+    galaxy_image_2d_dict = tracer.galaxy_image_2d_dict_from(
+        grid=sub_grid_2d_7x7, operated_only=False
+    )
+
+    assert (galaxy_image_2d_dict[g0] == g0_image).all()
+    assert (galaxy_image_2d_dict[g1] == g1_image).all()
+    assert (galaxy_image_2d_dict[g2] == g2_image).all()
+    assert (galaxy_image_2d_dict[g3] == np.zeros(shape=(36,))).all()
 
 
 def test__light_profile_snr__signal_to_noise_via_simulator_correct():

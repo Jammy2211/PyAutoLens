@@ -265,7 +265,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         return image_2d_list
 
     def galaxy_image_2d_dict_from(
-        self, grid: aa.type.Grid2DLike
+        self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
     ) -> {ag.Galaxy: np.ndarray}:
         """
         Returns a dictionary associating every `Galaxy` object in the `Tracer` with its corresponding 2D image, using
@@ -289,20 +289,20 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         A dictionary associated every galaxy in the tracer with its corresponding 2D image.
         """
 
-        galaxy_image_dict = dict()
+        galaxy_image_2d_dict = dict()
 
         traced_grid_list = self.traced_grid_2d_list_from(grid=grid)
 
         for (plane_index, plane) in enumerate(self.planes):
-            images_of_galaxies = plane.image_2d_list_from(
-                grid=traced_grid_list[plane_index]
+            image_2d_list = plane.image_2d_list_from(
+                grid=traced_grid_list[plane_index], operated_only=operated_only
             )
 
             for (galaxy_index, galaxy) in enumerate(plane.galaxies):
 
-                galaxy_image_dict[galaxy] = images_of_galaxies[galaxy_index]
+                galaxy_image_2d_dict[galaxy] = image_2d_list[galaxy_index]
 
-        return galaxy_image_dict
+        return galaxy_image_2d_dict
 
     @property
     def has_mass_profile(self) -> bool:

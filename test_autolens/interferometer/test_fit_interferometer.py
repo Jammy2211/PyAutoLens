@@ -341,11 +341,11 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
         grid=interferometer_7_grid.grid
     )
 
-    g0_profile_visibilities = g0.visibilities_via_transformer_from(
+    g0_profile_visibilities = g0.visibilities_from(
         grid=traced_grid_2d_list_from[0], transformer=interferometer_7_grid.transformer
     )
 
-    g1_profile_visibilities = g1.visibilities_via_transformer_from(
+    g1_profile_visibilities = g1.visibilities_from(
         grid=traced_grid_2d_list_from[1], transformer=interferometer_7_grid.transformer
     )
 

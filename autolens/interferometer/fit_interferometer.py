@@ -69,7 +69,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         Returns the visibilities of every light profile in the plane, which are computed by performing a Fourier
         transform to the sum of light profile images.
         """
-        return self.tracer.visibilities_via_transformer_from(
+        return self.tracer.visibilities_from(
             grid=self.dataset.grid, transformer=self.dataset.transformer
         )
 
@@ -143,7 +143,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
     @property
     def galaxy_model_visibilities_dict(self) -> {ag.Galaxy: np.ndarray}:
 
-        galaxy_model_visibilities_dict = self.tracer.galaxy_visibilities_dict_via_transformer_from(
+        galaxy_model_visibilities_dict = self.tracer.galaxy_visibilities_dict_from(
             grid=self.interferometer.grid, transformer=self.interferometer.transformer
         )
 
