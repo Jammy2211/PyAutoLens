@@ -59,6 +59,7 @@ from autogalaxy.profiles import (
 from autogalaxy.profiles.light_profiles import light_profiles_init as lp_init
 from autogalaxy.profiles.light_profiles import light_profiles_snr as lp_snr
 from autogalaxy.profiles.light_profiles import light_profiles_linear as lp_linear
+from autogalaxy.profiles.light_profiles import light_profiles_operated as lp_operated
 from autogalaxy.operate.image import OperateImage
 from autogalaxy.operate.deflections import OperateDeflections
 from autogalaxy.quantity.dataset_quantity import DatasetQuantity

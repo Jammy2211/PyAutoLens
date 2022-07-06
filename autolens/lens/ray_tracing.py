@@ -235,18 +235,24 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
     @aa.grid_dec.grid_2d_to_structure
     @aa.profile_func
-    def image_2d_from(self, grid: aa.type.Grid2DLike) -> aa.Array2D:
-        return sum(self.image_2d_list_from(grid=grid))
+    def image_2d_from(
+        self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
+    ) -> aa.Array2D:
+        return sum(self.image_2d_list_from(grid=grid, operated_only=operated_only))
 
     @aa.grid_dec.grid_2d_to_structure_list
-    def image_2d_list_from(self, grid: aa.type.Grid2DLike) -> List[aa.Array2D]:
+    def image_2d_list_from(
+        self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
+    ) -> List[aa.Array2D]:
 
         traced_grid_list = self.traced_grid_2d_list_from(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
         )
 
         image_2d_list = [
-            self.planes[plane_index].image_2d_from(grid=traced_grid_list[plane_index])
+            self.planes[plane_index].image_2d_from(
+                grid=traced_grid_list[plane_index], operated_only=operated_only
+            )
             for plane_index in range(len(traced_grid_list))
         ]
 
