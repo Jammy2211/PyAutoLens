@@ -225,6 +225,23 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
     assert fit.log_evidence == pytest.approx(-22.79906, 1e-4)
     assert fit.figure_of_merit == pytest.approx(-22.79906, 1.0e-4)
 
+    g0_operated = al.Galaxy(
+        redshift=0.5,
+        light_profile=al.lp.EllSersic(intensity=1.0),
+        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+    )
+
+    g1_operated = al.Galaxy(
+        redshift=1.0, light_profile=al.lp_operated.EllSersic(intensity=1.0)
+    )
+
+    tracer = al.Tracer.from_galaxies(galaxies=[g0_operated, g1_operated])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert fit.log_likelihood == pytest.approx(-2657889.4489, 1e-4)
+    assert fit.figure_of_merit == pytest.approx(-2657889.4489, 1.0e-4)
+
 
 def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):
 

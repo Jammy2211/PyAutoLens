@@ -233,11 +233,18 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def has_light_profile_linear(self) -> bool:
         return any(list(map(lambda plane: plane.has_light_profile_linear, self.planes)))
 
+    @property
+    def has_light_profile_operated(self) -> bool:
+        return any(
+            list(map(lambda plane: plane.has_light_profile_operated, self.planes))
+        )
+
     @aa.grid_dec.grid_2d_to_structure
     @aa.profile_func
     def image_2d_from(
         self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
     ) -> aa.Array2D:
+
         return sum(self.image_2d_list_from(grid=grid, operated_only=operated_only))
 
     @aa.grid_dec.grid_2d_to_structure_list
