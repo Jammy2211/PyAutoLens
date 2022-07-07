@@ -257,9 +257,12 @@ class AnalysisInterferometer(AnalysisDataset):
 
         if self.positions_likelihood is not None:
 
-            log_likelihood_positions_overwrite = self.positions_likelihood.log_likelihood_function_positions_overwrite(
-                instance=instance, analysis=self
-            )
+            try:
+                log_likelihood_positions_overwrite = self.positions_likelihood.log_likelihood_function_positions_overwrite(
+                    instance=instance, analysis=self
+                )
+            except np.linalg.LinAlgError as e:
+                raise exc.FitException from e
 
             if log_likelihood_positions_overwrite is not None:
                 return log_likelihood_positions_overwrite
