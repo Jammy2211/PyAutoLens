@@ -615,7 +615,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         for plane_index, plane in enumerate(self.planes):
             for galaxy in plane.galaxies:
-                for light_profile in galaxy.light_profile_list:
+                for light_profile in galaxy.cls_list_from(cls=ag.lp.LightProfile):
                     if isinstance(light_profile, LightProfileSNR):
                         light_profile.set_intensity_from(
                             grid=traced_grids_of_planes_list[plane_index],
