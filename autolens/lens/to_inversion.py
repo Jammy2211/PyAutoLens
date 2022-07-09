@@ -33,7 +33,7 @@ class TracerToInversion:
         preloads=Preloads(),
     ) -> Dict[ag.LightProfileLinearObjFunc, ag.Galaxy]:
 
-        if not self.tracer.has_light_profile_linear:
+        if not self.tracer.has(cls=ag.lp_linear.LightProfileLinear):
             return {}
 
         lp_linear_galaxy_dict_list = {}

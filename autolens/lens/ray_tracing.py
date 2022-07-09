@@ -1,6 +1,6 @@
 from abc import ABC
 import numpy as np
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Type, Union
 
 import autoarray as aa
 import autogalaxy as ag
@@ -149,7 +149,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def galaxies(self) -> List[ag.Galaxy]:
         return list([galaxy for plane in self.planes for galaxy in plane.galaxies])
 
-    def has(self, cls) -> bool:
+    def has(self, cls: Type) -> bool:
         return any(map(lambda plane: plane.has(cls=cls), self.planes))
 
     @property
@@ -227,14 +227,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
             grid=grid,
             cosmology=self.cosmology,
         )
-
-    @property
-    def has_light_profile_linear(self) -> bool:
-        return any(map(lambda plane: plane.has_light_profile_linear, self.planes))
-
-    @property
-    def has_light_profile_operated(self) -> bool:
-        return any(map(lambda plane: plane.has_light_profile_operated, self.planes))
 
     @aa.grid_dec.grid_2d_to_structure
     @aa.profile_func
@@ -358,7 +350,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     @property
     def mass_profile_list(self):
         return [
-            plane.mass_profile_list for plane in self.planes if plane(cls=ag.mp.MassProfile)
+            plane.mass_profile_list
+            for plane in self.planes
+            if plane(cls=ag.mp.MassProfile)
         ]
 
     @property
@@ -376,7 +370,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     @property
     def pixelization_list(self) -> List:
         return [
-            galaxy.pixelization for galaxy in self.galaxies if galaxy.has(cls=aa.pix.Pixelization)
+            galaxy.pixelization
+            for galaxy in self.galaxies
+            if galaxy.has(cls=aa.pix.Pixelization)
         ]
 
     @property

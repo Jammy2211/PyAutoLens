@@ -113,7 +113,9 @@ class FitImaging(aa.FitImaging, AbstractFit):
 
         The image passed to this function is the dataset's image with all light profile images of the tracer subtracted.
         """
-        if self.tracer.has(cls=aa.pix.Pixelization) or self.tracer.has_light_profile_linear:
+        if self.tracer.has(cls=aa.pix.Pixelization) or self.tracer.has(
+            cls=ag.lp_linear.LightProfileLinear
+        ):
 
             return self.tracer.to_inversion.inversion_imaging_from(
                 dataset=self.dataset,
@@ -136,7 +138,9 @@ class FitImaging(aa.FitImaging, AbstractFit):
         If a inversion is included it is the sum of this sum and the inversion's reconstruction of the image.
         """
 
-        if self.tracer.has(cls=aa.pix.Pixelization) or self.tracer.has_light_profile_linear:
+        if self.tracer.has(cls=aa.pix.Pixelization) or self.tracer.has(
+            cls=ag.lp_linear.LightProfileLinear
+        ):
 
             return self.blurred_image + self.inversion.mapped_reconstructed_data
 
