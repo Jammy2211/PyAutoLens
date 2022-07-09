@@ -128,7 +128,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         return self.interferometer.grid
 
     @property
-    def galaxy_model_image_dict(self) -> {ag.Galaxy: np.ndarray}:
+    def galaxy_model_image_dict(self) -> Dict[ag.Galaxy : np.ndarray]:
         """
         A dictionary associating galaxies with their corresponding model images
         """
@@ -141,7 +141,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         return {**galaxy_model_image_dict, **galaxy_linear_obj_image_dict}
 
     @property
-    def galaxy_model_visibilities_dict(self) -> {ag.Galaxy: np.ndarray}:
+    def galaxy_model_visibilities_dict(self) -> Dict[ag.Galaxy : np.ndarray]:
 
         galaxy_model_visibilities_dict = self.tracer.galaxy_visibilities_dict_from(
             grid=self.interferometer.grid, transformer=self.interferometer.transformer
