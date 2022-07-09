@@ -116,17 +116,17 @@ class AnalysisImaging(AnalysisDataset):
             The log likelihood indicating how well this model instance fitted the imaging data.
         """
 
-        if self.positions_likelihood is not None:
-
-            try:
-                log_likelihood_positions_overwrite = self.positions_likelihood.log_likelihood_function_positions_overwrite(
-                    instance=instance, analysis=self
-                )
-            except np.linalg.LinAlgError as e:
-                raise exc.FitException from e
-
+        try:
+            log_likelihood_positions_overwrite = self.log_likelihood_positions_overwrite_from(
+                instance=instance
+            )
             if log_likelihood_positions_overwrite is not None:
                 return log_likelihood_positions_overwrite
+        except Exception as e:
+            raise e
+
+        if log_likelihood_positions_overwrite is not None:
+            return log_likelihood_positions_overwrite
 
         try:
             return self.fit_imaging_via_instance_from(instance=instance).figure_of_merit

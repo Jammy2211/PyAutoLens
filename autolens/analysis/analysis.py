@@ -35,6 +35,9 @@ logger.setLevel(level="INFO")
 class AnalysisLensing:
     def __init__(
         self,
+        positions_likelihood: Optional[
+            Union[PositionsLHResample, PositionsLHPenalty]
+        ] = None,
         settings_lens: SettingsLens = SettingsLens(),
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):
@@ -58,6 +61,7 @@ class AnalysisLensing:
         """
         self.cosmology = cosmology
         self.settings_lens = settings_lens or SettingsLens()
+        self.positions_likelihood = positions_likelihood
 
     def tracer_via_instance_from(
         self, instance: af.ModelInstance, profiling_dict: Optional[Dict] = None
@@ -114,6 +118,37 @@ class AnalysisLensing:
             cosmology=cosmology,
             profiling_dict=profiling_dict,
         )
+
+    def log_likelihood_positions_overwrite_from(
+        self, instance: af.ModelInstance
+    ) -> Optional[float]:
+        """
+        Call the positions overwrite log likelihood function, which add a penalty term to the likelihood if the
+        positions of the multiple images of the lensed source do not trace close to one another in the
+        source plane.
+
+        This function handles a number of exceptions which may occur when calling the overwrite function via the
+        `PositionsLikelihood` class, so that they do not need to be handled individually for each `Analysis` class.
+
+        Parameters
+        ----------
+        instance
+            An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
+            via a non-linear search).
+
+        Returns
+        -------
+        The penalty value of the positions log likelihood, if the positions do not trace close in the source plane,
+        else a None is returned to indicate there is no penalty.
+        """
+        if self.positions_likelihood is not None:
+
+            try:
+                return self.positions_likelihood.log_likelihood_function_positions_overwrite(
+                    instance=instance, analysis=self
+                )
+            except (ValueError, np.linalg.LinAlgError) as e:
+                raise exc.FitException from e
 
 
 class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
@@ -174,10 +209,11 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         )
 
         AnalysisLensing.__init__(
-            self=self, settings_lens=settings_lens, cosmology=cosmology
+            self=self,
+            positions_likelihood=positions_likelihood,
+            settings_lens=settings_lens,
+            cosmology=cosmology,
         )
-
-        self.positions_likelihood = positions_likelihood
 
         self.settings_lens = settings_lens or SettingsLens()
 
