@@ -60,22 +60,22 @@ def caustics_via_magnification_via_tracer_from(tracer, grid):
 ### Has Attributes ###
 
 
-def test__has_light_profile():
+def test__has():
 
     gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
     gal_mp = al.Galaxy(redshift=0.5, mass_profile=al.mp.SphIsothermal())
 
     tracer = al.Tracer.from_galaxies(galaxies=[gal_mp, gal_mp])
 
-    assert tracer.has_light_profile is False
+    assert tracer.has(cls=al.lp.LightProfile) is False
 
     tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_lp])
 
-    assert tracer.has_light_profile is True
+    assert tracer.has(cls=al.lp.LightProfile) is True
 
     tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_mp])
 
-    assert tracer.has_light_profile is True
+    assert tracer.has(cls=al.lp.LightProfile) is True
 
 
 def test__has_light_profile_linear():

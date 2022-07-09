@@ -149,6 +149,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def galaxies(self) -> List[ag.Galaxy]:
         return list([galaxy for plane in self.planes for galaxy in plane.galaxies])
 
+    def has(self, cls) -> bool:
+        return any(map(lambda plane: plane.has(cls=cls), self.planes))
+
     @property
     def total_planes(self) -> int:
         return len(self.plane_redshifts)
@@ -224,10 +227,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
             grid=grid,
             cosmology=self.cosmology,
         )
-
-    @property
-    def has_light_profile(self) -> bool:
-        return any(map(lambda plane: plane.has_light_profile, self.planes))
 
     @property
     def has_light_profile_linear(self) -> bool:
@@ -363,7 +362,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def upper_plane_index_with_light_profile(self) -> int:
         return max(
             [
-                plane_index if plane.has_light_profile else 0
+                plane_index if plane.has(ag.lp.LightProfile) else 0
                 for (plane_index, plane) in enumerate(self.planes)
             ]
         )
