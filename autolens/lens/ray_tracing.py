@@ -343,14 +343,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         return sum([plane.potential_2d_from(grid=grid) for plane in self.planes])
 
     @property
-    def has_pixelization(self) -> bool:
-        return any(list(map(lambda plane: plane.has_pixelization, self.planes)))
-
-    @property
-    def has_regularization(self) -> bool:
-        return any(list(map(lambda plane: plane.has_regularization, self.planes)))
-
-    @property
     def has_hyper_galaxy(self) -> bool:
         return any(list(map(lambda plane: plane.has_hyper_galaxy, self.planes)))
 
@@ -372,7 +364,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     @property
     def plane_indexes_with_pixelizations(self):
         plane_indexes_with_inversions = [
-            plane_index if plane.has_pixelization else None
+            plane_index if plane.has(cls=aa.pix.Pixelization) else None
             for (plane_index, plane) in enumerate(self.planes)
         ]
         return [
@@ -384,7 +376,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     @property
     def pixelization_list(self) -> List:
         return [
-            galaxy.pixelization for galaxy in self.galaxies if galaxy.has_pixelization
+            galaxy.pixelization for galaxy in self.galaxies if galaxy.has(cls=aa.pix.Pixelization)
         ]
 
     @property
@@ -392,7 +384,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         return [
             galaxy.regularization
             for galaxy in self.galaxies
-            if galaxy.has_regularization
+            if galaxy.has(cls=aa.reg.Regularization)
         ]
 
     def hyper_noise_map_from(self, noise_map: aa.Array2D) -> aa.Array2D:

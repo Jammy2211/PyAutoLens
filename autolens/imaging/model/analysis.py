@@ -356,7 +356,7 @@ class AnalysisImaging(AnalysisDataset):
         instance = self.instance_with_associated_hyper_images_from(instance=instance)
         tracer = self.tracer_via_instance_from(instance=instance)
 
-        if not tracer.has_pixelization:
+        if not tracer.has(cls=ag.pix.Pixelization):
             return
 
         if not any([pix.is_stochastic for pix in tracer.pixelization_list]):

@@ -118,67 +118,6 @@ def test__has_light_profile_operated():
     assert tracer.has_light_profile_operated is True
 
 
-
-def test__has_galaxy_with_pixelization(sub_grid_2d_7x7):
-    gal = al.Galaxy(redshift=0.5)
-    gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
-    gal_pix = al.Galaxy(
-        redshift=0.5,
-        pixelization=al.m.MockPixelization(),
-        regularization=al.m.MockRegularization(),
-    )
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
-
-    assert tracer.has_pixelization is False
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_lp])
-
-    assert tracer.has_pixelization is False
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal_pix])
-
-    assert tracer.has_pixelization is True
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal])
-
-    assert tracer.has_pixelization is True
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal_lp])
-
-    assert tracer.has_pixelization is True
-
-
-def test__has_galaxy_with_regularization(sub_grid_2d_7x7):
-    gal = al.Galaxy(redshift=0.5)
-    gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
-    gal_reg = al.Galaxy(
-        redshift=0.5,
-        pixelization=al.m.MockPixelization(),
-        regularization=al.m.MockRegularization(),
-    )
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
-
-    assert tracer.has_regularization is False
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_lp])
-
-    assert tracer.has_regularization is False
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal_reg, gal_reg])
-
-    assert tracer.has_regularization is True
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal_reg, gal])
-
-    assert tracer.has_regularization is True
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal_reg, gal_lp])
-
-    assert tracer.has_regularization is True
-
-
 def test__has_galaxy_with_hyper_galaxy(sub_grid_2d_7x7):
 
     gal = al.Galaxy(redshift=0.5)

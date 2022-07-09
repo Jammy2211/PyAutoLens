@@ -182,7 +182,7 @@ class TracerToInversion:
 
         for (plane_index, plane) in enumerate(self.planes):
 
-            if plane.has_pixelization:
+            if plane.has(cls=aa.pix.Pixelization):
 
                 galaxies_with_pixelization_list = plane.galaxies_with_pixelization
 
