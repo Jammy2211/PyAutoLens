@@ -118,31 +118,6 @@ def test__has_light_profile_operated():
     assert tracer.has_light_profile_operated is True
 
 
-def test__has_galaxy_with_mass_profile(sub_grid_2d_7x7):
-    gal = al.Galaxy(redshift=0.5)
-    gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
-    gal_mp = al.Galaxy(redshift=0.5, mass_profile=al.mp.SphIsothermal())
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
-
-    assert tracer.has_mass_profile is False
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal_mp, gal_mp])
-
-    assert tracer.has_mass_profile is True
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_lp])
-
-    assert tracer.has_mass_profile is False
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal])
-
-    assert tracer.has_mass_profile is False
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_mp])
-
-    assert tracer.has_mass_profile is True
-
 
 def test__has_galaxy_with_pixelization(sub_grid_2d_7x7):
     gal = al.Galaxy(redshift=0.5)

@@ -308,10 +308,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         return galaxy_image_2d_dict
 
-    @property
-    def has_mass_profile(self) -> bool:
-        return any(list(map(lambda plane: plane.has_mass_profile, self.planes)))
-
     @aa.grid_dec.grid_2d_to_vector_yx
     @aa.grid_dec.grid_2d_to_structure
     def deflections_yx_2d_from(
@@ -362,7 +358,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def upper_plane_index_with_light_profile(self) -> int:
         return max(
             [
-                plane_index if plane.has(ag.lp.LightProfile) else 0
+                plane_index if plane.has(cls=ag.lp.LightProfile) else 0
                 for (plane_index, plane) in enumerate(self.planes)
             ]
         )
@@ -370,7 +366,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     @property
     def mass_profile_list(self):
         return [
-            plane.mass_profile_list for plane in self.planes if plane.has_mass_profile
+            plane.mass_profile_list for plane in self.planes if plane(cls=ag.mp.MassProfile)
         ]
 
     @property

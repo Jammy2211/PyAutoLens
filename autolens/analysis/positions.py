@@ -8,13 +8,12 @@ from autofit.tools.util import open_
 
 from autoconf import conf
 
+import autogalaxy as ag
+
 from autolens.lens.ray_tracing import Tracer
 from autolens.point.fit_point.max_separation import FitPositionsSourceMaxSeparation
 
 from autolens import exc
-
-
-# TODO : max sure `if not tracer.has_mass_profile or len(tracer.planes) == 1:` is used correct for all resamplers.
 
 
 class AbstractPositionsLH:
@@ -135,7 +134,7 @@ class PositionsLHResample(AbstractPositionsLH):
         """
         tracer = analysis.tracer_via_instance_from(instance=instance)
 
-        if not tracer.has_mass_profile or len(tracer.planes) == 1:
+        if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
             return
 
         positions_fit = FitPositionsSourceMaxSeparation(
@@ -261,7 +260,7 @@ class PositionsLHPenalty(AbstractPositionsLH):
         dataset
             The imaging or interferometer dataset from which the penalty base is computed.
         """
-        if not tracer.has_mass_profile or len(tracer.planes) == 1:
+        if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
             return
 
         positions_fit = FitPositionsSourceMaxSeparation(
@@ -291,7 +290,7 @@ class PositionsLHPenalty(AbstractPositionsLH):
         """
         tracer = analysis.tracer_via_instance_from(instance=instance)
 
-        if not tracer.has_mass_profile or len(tracer.planes) == 1:
+        if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
             return
 
         log_likelihood_positions_penalty = self.log_likelihood_penalty_from(

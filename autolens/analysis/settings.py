@@ -3,6 +3,7 @@ import numpy as np
 from typing import Optional, Union
 
 import autoarray as aa
+import autogalaxy as ag
 
 from autoconf import conf
 
@@ -85,7 +86,7 @@ class SettingsLens:
         dataset
             The imaging or interferometer dataset from which the penalty base is computed.
         """
-        if not tracer.has_mass_profile or len(tracer.planes) == 1:
+        if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
             return
 
         positions_fit = FitPositionsSourceMaxSeparation(
@@ -100,7 +101,7 @@ class SettingsLens:
 
     def resample_if_not_within_threshold(self, positions, tracer):
 
-        if not tracer.has_mass_profile or len(tracer.planes) == 1:
+        if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
             return
 
         positions_fit = FitPositionsSourceMaxSeparation(

@@ -53,10 +53,6 @@ class MockTracerPoint(MockTracer):
     def deflections_yx_2d_from(self):
         pass
 
-    @property
-    def has_mass_profile(self):
-        return True
-
     def extract_attribute(self, cls, attr_name):
         return [self.attribute]
 
