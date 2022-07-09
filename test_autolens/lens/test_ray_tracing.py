@@ -78,33 +78,6 @@ def test__has():
     assert tracer.has(cls=al.lp.LightProfile) is True
 
 
-def test__has_galaxy_with_hyper_galaxy(sub_grid_2d_7x7):
-
-    gal = al.Galaxy(redshift=0.5)
-    gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
-    gal_hyper = al.Galaxy(redshift=0.5, hyper_galaxy=al.HyperGalaxy())
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
-
-    assert tracer.has_hyper_galaxy is False
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_lp])
-
-    assert tracer.has_hyper_galaxy is False
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal_hyper, gal_hyper])
-
-    assert tracer.has_hyper_galaxy is True
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal_hyper, gal])
-
-    assert tracer.has_hyper_galaxy is True
-
-    tracer = al.Tracer.from_galaxies(galaxies=[gal_hyper, gal_lp])
-
-    assert tracer.has_hyper_galaxy is True
-
-
 ### Specific Galaxy / Plane Calculations ###
 
 

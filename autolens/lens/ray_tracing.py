@@ -335,10 +335,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         return sum([plane.potential_2d_from(grid=grid) for plane in self.planes])
 
     @property
-    def has_hyper_galaxy(self) -> bool:
-        return any(list(map(lambda plane: plane.has_hyper_galaxy, self.planes)))
-
-    @property
     def upper_plane_index_with_light_profile(self) -> int:
         return max(
             [
