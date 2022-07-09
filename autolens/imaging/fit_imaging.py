@@ -91,7 +91,7 @@ class FitImaging(aa.FitImaging, AbstractFit):
 
         if self.preloads.blurred_image is None:
 
-            return self.tracer.blurred_image_2d_via_convolver_from(
+            return self.tracer.blurred_image_2d_from(
                 grid=self.dataset.grid,
                 convolver=self.dataset.convolver,
                 blurring_grid=self.dataset.blurring_grid,
@@ -147,11 +147,11 @@ class FitImaging(aa.FitImaging, AbstractFit):
         return self.imaging.grid
 
     @property
-    def galaxy_model_image_dict(self) -> {ag.Galaxy: np.ndarray}:
+    def galaxy_model_image_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
         """
         A dictionary associating galaxies with their corresponding model images
         """
-        galaxy_blurred_image_2d_dict = self.tracer.galaxy_blurred_image_2d_dict_via_convolver_from(
+        galaxy_blurred_image_2d_dict = self.tracer.galaxy_blurred_image_2d_dict_from(
             grid=self.grid,
             convolver=self.imaging.convolver,
             blurring_grid=self.imaging.blurring_grid,
@@ -206,13 +206,13 @@ class FitImaging(aa.FitImaging, AbstractFit):
 
     @property
     def unmasked_blurred_image(self):
-        return self.tracer.unmasked_blurred_image_2d_via_psf_from(
+        return self.tracer.unmasked_blurred_image_2d_from(
             grid=self.grid, psf=self.imaging.psf
         )
 
     @property
     def unmasked_blurred_image_of_planes_list(self):
-        return self.tracer.unmasked_blurred_image_2d_list_via_psf_from(
+        return self.tracer.unmasked_blurred_image_2d_list_from(
             grid=self.grid, psf=self.imaging.psf
         )
 

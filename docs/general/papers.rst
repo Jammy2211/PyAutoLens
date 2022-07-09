@@ -57,6 +57,8 @@ The following papers use **PyAutoLens**:
 
 `Modelling high-resolution ALMA observations of strongly lensed dusty star forming galaxies detected by Herschel <https://arxiv.org/abs/2111.09680>`_
 
+`ALMA resolves the first strongly-lensed Optical/NIR-dark galaxy <https://arxiv.org/abs/2207.00466>`_
+
 **Surveys**
 
 `MNELLS: The MUSE Nearby Early-Type Galaxy Lens Locator Survey <https://arxiv.org/abs/2002.07191>`_

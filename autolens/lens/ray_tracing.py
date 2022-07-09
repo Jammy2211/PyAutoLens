@@ -227,26 +227,37 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
     @property
     def has_light_profile(self) -> bool:
-        return any(list(map(lambda plane: plane.has_light_profile, self.planes)))
+        return any(map(lambda plane: plane.has_light_profile, self.planes))
 
     @property
     def has_light_profile_linear(self) -> bool:
-        return any(list(map(lambda plane: plane.has_light_profile_linear, self.planes)))
+        return any(map(lambda plane: plane.has_light_profile_linear, self.planes))
+
+    @property
+    def has_light_profile_operated(self) -> bool:
+        return any(map(lambda plane: plane.has_light_profile_operated, self.planes))
 
     @aa.grid_dec.grid_2d_to_structure
     @aa.profile_func
-    def image_2d_from(self, grid: aa.type.Grid2DLike) -> aa.Array2D:
-        return sum(self.image_2d_list_from(grid=grid))
+    def image_2d_from(
+        self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
+    ) -> aa.Array2D:
+
+        return sum(self.image_2d_list_from(grid=grid, operated_only=operated_only))
 
     @aa.grid_dec.grid_2d_to_structure_list
-    def image_2d_list_from(self, grid: aa.type.Grid2DLike) -> List[aa.Array2D]:
+    def image_2d_list_from(
+        self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
+    ) -> List[aa.Array2D]:
 
         traced_grid_list = self.traced_grid_2d_list_from(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
         )
 
         image_2d_list = [
-            self.planes[plane_index].image_2d_from(grid=traced_grid_list[plane_index])
+            self.planes[plane_index].image_2d_from(
+                grid=traced_grid_list[plane_index], operated_only=operated_only
+            )
             for plane_index in range(len(traced_grid_list))
         ]
 
@@ -259,8 +270,8 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         return image_2d_list
 
     def galaxy_image_2d_dict_from(
-        self, grid: aa.type.Grid2DLike
-    ) -> {ag.Galaxy: np.ndarray}:
+        self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
+    ) -> Dict[ag.Galaxy, np.ndarray]:
         """
         Returns a dictionary associating every `Galaxy` object in the `Tracer` with its corresponding 2D image, using
         the instance of each galaxy as the dictionary keys.
@@ -283,20 +294,20 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         A dictionary associated every galaxy in the tracer with its corresponding 2D image.
         """
 
-        galaxy_image_dict = dict()
+        galaxy_image_2d_dict = dict()
 
         traced_grid_list = self.traced_grid_2d_list_from(grid=grid)
 
         for (plane_index, plane) in enumerate(self.planes):
-            images_of_galaxies = plane.image_2d_list_from(
-                grid=traced_grid_list[plane_index]
+            image_2d_list = plane.image_2d_list_from(
+                grid=traced_grid_list[plane_index], operated_only=operated_only
             )
 
             for (galaxy_index, galaxy) in enumerate(plane.galaxies):
 
-                galaxy_image_dict[galaxy] = images_of_galaxies[galaxy_index]
+                galaxy_image_2d_dict[galaxy] = image_2d_list[galaxy_index]
 
-        return galaxy_image_dict
+        return galaxy_image_2d_dict
 
     @property
     def has_mass_profile(self) -> bool:

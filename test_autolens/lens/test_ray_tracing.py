@@ -97,6 +97,27 @@ def test__has_light_profile_linear():
     assert tracer.has_light_profile_linear is True
 
 
+def test__has_light_profile_operated():
+
+    gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
+    gal_lp_operated = al.Galaxy(
+        redshift=0.5, light_profile=al.lp_operated.EllGaussian()
+    )
+    gal_mp = al.Galaxy(redshift=0.5, mass_profile=al.mp.SphIsothermal())
+
+    tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_mp])
+
+    assert tracer.has_light_profile_operated is False
+
+    tracer = al.Tracer.from_galaxies(galaxies=[gal_lp_operated, gal_lp_operated])
+
+    assert tracer.has_light_profile_operated is True
+
+    tracer = al.Tracer.from_galaxies(galaxies=[gal_lp_operated, gal_mp])
+
+    assert tracer.has_light_profile_operated is True
+
+
 def test__has_galaxy_with_mass_profile(sub_grid_2d_7x7):
     gal = al.Galaxy(redshift=0.5)
     gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
@@ -376,7 +397,7 @@ def test__galaxies__comes_in_plane_redshift_order(sub_grid_2d_7x7):
 ### Light Profiles ###
 
 
-def test__x1_plane__single_plane_tracer(sub_grid_2d_7x7):
+def test__image_2d_from__x1_plane__single_plane_tracer(sub_grid_2d_7x7):
     g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
     g1 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=2.0))
     g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=3.0))
@@ -447,6 +468,84 @@ def test__x1_plane__single_plane_tracer(sub_grid_2d_7x7):
     tracer_image = tracer.image_2d_from(grid=sub_grid_2d_7x7)
 
     assert tracer_image == pytest.approx(g0_image + g1_image + g2_image, 1.0e-4)
+
+
+def test__image_2d_from__operated_only_input(
+    sub_grid_2d_7x7, lp_0, lp_operated_0, mp_0
+):
+
+    image_2d_not_operated = lp_0.image_2d_from(grid=sub_grid_2d_7x7)
+    image_2d_operated = lp_operated_0.image_2d_from(grid=sub_grid_2d_7x7)
+
+    galaxy_0 = al.Galaxy(
+        redshift=0.5, light=lp_0, light_operated=lp_operated_0, mass=mp_0
+    )
+
+    galaxy_1 = al.Galaxy(
+        redshift=1.0, light_operated_0=lp_operated_0, light_operated_1=lp_operated_0
+    )
+    galaxy_2 = al.Galaxy(redshift=2.0)
+
+    tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1, galaxy_2])
+
+    source_plane_grid_2d = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)[1]
+
+    source_image_2d_not_operated = lp_0.image_2d_from(grid=source_plane_grid_2d)
+    source_image_2d_operated = lp_operated_0.image_2d_from(grid=source_plane_grid_2d)
+
+    image_2d = tracer.image_2d_from(grid=sub_grid_2d_7x7, operated_only=False)
+    assert image_2d == pytest.approx(image_2d_not_operated, 1.0e-4)
+
+    image_2d = tracer.image_2d_from(grid=sub_grid_2d_7x7, operated_only=True)
+    assert image_2d == pytest.approx(
+        image_2d_operated + 2.0 * source_image_2d_operated, 1.0e-4
+    )
+
+    image_2d = tracer.image_2d_from(grid=sub_grid_2d_7x7, operated_only=None)
+    assert image_2d == pytest.approx(
+        image_2d_not_operated + image_2d_operated + 2.0 * source_image_2d_operated,
+        1.0e-4,
+    )
+
+
+def test__image_2d_list_from__operated_only_input(
+    sub_grid_2d_7x7, lp_0, lp_operated_0, mp_0
+):
+
+    image_2d_not_operated = lp_0.image_2d_from(grid=sub_grid_2d_7x7)
+    image_2d_operated = lp_operated_0.image_2d_from(grid=sub_grid_2d_7x7)
+
+    galaxy_0 = al.Galaxy(
+        redshift=0.5, light=lp_0, light_operated=lp_operated_0, mass=mp_0
+    )
+
+    galaxy_1 = al.Galaxy(
+        redshift=1.0, light_operated_0=lp_operated_0, light_operated_1=lp_operated_0
+    )
+    galaxy_2 = al.Galaxy(redshift=2.0)
+
+    tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1, galaxy_2])
+
+    source_plane_grid_2d = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)[1]
+
+    source_image_2d_not_operated = lp_0.image_2d_from(grid=source_plane_grid_2d)
+    source_image_2d_operated = lp_operated_0.image_2d_from(grid=source_plane_grid_2d)
+
+    image_2d_list = tracer.image_2d_list_from(grid=sub_grid_2d_7x7, operated_only=False)
+    assert image_2d_list[0] == pytest.approx(image_2d_not_operated, 1.0e-4)
+    assert image_2d_list[1] == pytest.approx(np.zeros((36)), 1.0e-4)
+    assert image_2d_list[2] == pytest.approx(np.zeros((36)), 1.0e-4)
+
+    image_2d_list = tracer.image_2d_list_from(grid=sub_grid_2d_7x7, operated_only=True)
+    assert image_2d_list[0] == pytest.approx(image_2d_operated, 1.0e-4)
+    assert image_2d_list[1] == pytest.approx(2.0 * source_image_2d_operated, 1.0e-4)
+    assert image_2d_list[2] == pytest.approx(np.zeros((36)), 1.0e-4)
+
+    image_2d_list = tracer.image_2d_list_from(grid=sub_grid_2d_7x7, operated_only=None)
+    assert image_2d_list[0] + image_2d_list[1] == pytest.approx(
+        image_2d_not_operated + image_2d_operated + 2.0 * source_image_2d_operated,
+        1.0e-4,
+    )
 
 
 def test__padded_image_2d_from(sub_grid_2d_7x7, grid_2d_iterate_7x7):
@@ -537,7 +636,9 @@ def test__galaxy_image_2d_dict_from(sub_grid_2d_7x7):
 
     g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=3.0))
 
-    g3 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=5.0))
+    g3 = al.Galaxy(
+        redshift=1.0, light_profile=al.lp_operated.EllGaussian(intensity=5.0)
+    )
 
     g0_image = g0.image_2d_from(grid=sub_grid_2d_7x7)
     g1_image = g1.image_2d_from(grid=sub_grid_2d_7x7)
@@ -553,19 +654,30 @@ def test__galaxy_image_2d_dict_from(sub_grid_2d_7x7):
         galaxies=[g3, g1, g0, g2], cosmology=al.cosmo.Planck15()
     )
 
-    image_1d_dict = tracer.galaxy_image_2d_dict_from(grid=sub_grid_2d_7x7)
+    galaxy_image_2d_dict = tracer.galaxy_image_2d_dict_from(grid=sub_grid_2d_7x7)
 
-    assert (image_1d_dict[g0].slim == g0_image).all()
-    assert (image_1d_dict[g1].slim == g1_image).all()
-    assert (image_1d_dict[g2].slim == g2_image).all()
-    assert (image_1d_dict[g3].slim == g3_image).all()
+    assert (galaxy_image_2d_dict[g0] == g0_image).all()
+    assert (galaxy_image_2d_dict[g1] == g1_image).all()
+    assert (galaxy_image_2d_dict[g2] == g2_image).all()
+    assert (galaxy_image_2d_dict[g3] == g3_image).all()
 
-    image_dict = tracer.galaxy_image_2d_dict_from(grid=sub_grid_2d_7x7)
+    galaxy_image_2d_dict = tracer.galaxy_image_2d_dict_from(
+        grid=sub_grid_2d_7x7, operated_only=True
+    )
 
-    assert (image_dict[g0].native == g0_image.native).all()
-    assert (image_dict[g1].native == g1_image.native).all()
-    assert (image_dict[g2].native == g2_image.native).all()
-    assert (image_dict[g3].native == g3_image.native).all()
+    assert (galaxy_image_2d_dict[g0] == np.zeros(shape=(36,))).all()
+    assert (galaxy_image_2d_dict[g1] == np.zeros(shape=(36,))).all()
+    assert (galaxy_image_2d_dict[g2] == np.zeros(shape=(36,))).all()
+    assert (galaxy_image_2d_dict[g3] == g3_image).all()
+
+    galaxy_image_2d_dict = tracer.galaxy_image_2d_dict_from(
+        grid=sub_grid_2d_7x7, operated_only=False
+    )
+
+    assert (galaxy_image_2d_dict[g0] == g0_image).all()
+    assert (galaxy_image_2d_dict[g1] == g1_image).all()
+    assert (galaxy_image_2d_dict[g2] == g2_image).all()
+    assert (galaxy_image_2d_dict[g3] == np.zeros(shape=(36,))).all()
 
 
 def test__light_profile_snr__signal_to_noise_via_simulator_correct():

@@ -254,7 +254,7 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
         source_galaxy_image, 1.0e-4
     )
 
-    lens_galaxy_visibilities = lens_galaxy.visibilities_via_transformer_from(
+    lens_galaxy_visibilities = lens_galaxy.visibilities_from(
         grid=interferometer.grid, transformer=interferometer.transformer
     )
 
@@ -262,7 +262,7 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
         lens_galaxy_linear
     ] == pytest.approx(lens_galaxy_visibilities, 1.0e-4)
 
-    source_galaxy_visibilities = source_galaxy.visibilities_via_transformer_from(
+    source_galaxy_visibilities = source_galaxy.visibilities_from(
         grid=traced_grid_2d_list[1], transformer=interferometer.transformer
     )
 
