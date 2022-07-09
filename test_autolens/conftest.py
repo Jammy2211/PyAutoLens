@@ -229,6 +229,16 @@ def make_lp_0():
     return fixtures.make_lp_0()
 
 
+@pytest.fixture(name="lp_operated_0")
+def make_lp_operated_0():
+    return fixtures.make_lp_operated_0()
+
+
+@pytest.fixture(name="mp_0")
+def make_mp_0():
+    return fixtures.make_mp_0()
+
+
 @pytest.fixture(name="gal_x1_mp")
 def make_gal_x1_mp():
     return fixtures.make_gal_x1_mp()

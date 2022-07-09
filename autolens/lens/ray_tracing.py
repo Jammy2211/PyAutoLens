@@ -227,17 +227,15 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
     @property
     def has_light_profile(self) -> bool:
-        return any(list(map(lambda plane: plane.has_light_profile, self.planes)))
+        return any(map(lambda plane: plane.has_light_profile, self.planes))
 
     @property
     def has_light_profile_linear(self) -> bool:
-        return any(list(map(lambda plane: plane.has_light_profile_linear, self.planes)))
+        return any(map(lambda plane: plane.has_light_profile_linear, self.planes))
 
     @property
     def has_light_profile_operated(self) -> bool:
-        return any(
-            list(map(lambda plane: plane.has_light_profile_operated, self.planes))
-        )
+        return any(map(lambda plane: plane.has_light_profile_operated, self.planes))
 
     @aa.grid_dec.grid_2d_to_structure
     @aa.profile_func
@@ -273,7 +271,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
     def galaxy_image_2d_dict_from(
         self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
-    ) -> Dict[ag.Galaxy : np.ndarray]:
+    ) -> Dict[ag.Galaxy, np.ndarray]:
         """
         Returns a dictionary associating every `Galaxy` object in the `Tracer` with its corresponding 2D image, using
         the instance of each galaxy as the dictionary keys.

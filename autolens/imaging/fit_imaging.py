@@ -147,7 +147,7 @@ class FitImaging(aa.FitImaging, AbstractFit):
         return self.imaging.grid
 
     @property
-    def galaxy_model_image_dict(self) -> Dict[ag.Galaxy : np.ndarray]:
+    def galaxy_model_image_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
         """
         A dictionary associating galaxies with their corresponding model images
         """

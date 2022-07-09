@@ -470,22 +470,19 @@ def test__image_2d_from__x1_plane__single_plane_tracer(sub_grid_2d_7x7):
     assert tracer_image == pytest.approx(g0_image + g1_image + g2_image, 1.0e-4)
 
 
-def test__image_2d_from__operated_only_input(sub_grid_2d_7x7):
+def test__image_2d_from__operated_only_input(
+    sub_grid_2d_7x7, lp_0, lp_operated_0, mp_0
+):
 
-    light_not_operated = al.lp.EllSersic(intensity=1.0)
-    light_operated = al.lp_operated.EllGaussian(intensity=1.0)
-
-    image_2d_not_operated = light_not_operated.image_2d_from(grid=sub_grid_2d_7x7)
-    image_2d_operated = light_operated.image_2d_from(grid=sub_grid_2d_7x7)
-
-    mass = al.mp.SphIsothermal(einstein_radius=1.0)
+    image_2d_not_operated = lp_0.image_2d_from(grid=sub_grid_2d_7x7)
+    image_2d_operated = lp_operated_0.image_2d_from(grid=sub_grid_2d_7x7)
 
     galaxy_0 = al.Galaxy(
-        redshift=0.5, light=light_not_operated, light_operated=light_operated, mass=mass
+        redshift=0.5, light=lp_0, light_operated=lp_operated_0, mass=mp_0
     )
 
     galaxy_1 = al.Galaxy(
-        redshift=1.0, light_operated_0=light_operated, light_operated_1=light_operated
+        redshift=1.0, light_operated_0=lp_operated_0, light_operated_1=lp_operated_0
     )
     galaxy_2 = al.Galaxy(redshift=2.0)
 
@@ -493,10 +490,8 @@ def test__image_2d_from__operated_only_input(sub_grid_2d_7x7):
 
     source_plane_grid_2d = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)[1]
 
-    source_image_2d_not_operated = light_not_operated.image_2d_from(
-        grid=source_plane_grid_2d
-    )
-    source_image_2d_operated = light_operated.image_2d_from(grid=source_plane_grid_2d)
+    source_image_2d_not_operated = lp_0.image_2d_from(grid=source_plane_grid_2d)
+    source_image_2d_operated = lp_operated_0.image_2d_from(grid=source_plane_grid_2d)
 
     image_2d = tracer.image_2d_from(grid=sub_grid_2d_7x7, operated_only=False)
     assert image_2d == pytest.approx(image_2d_not_operated, 1.0e-4)
@@ -511,6 +506,30 @@ def test__image_2d_from__operated_only_input(sub_grid_2d_7x7):
         image_2d_not_operated + image_2d_operated + 2.0 * source_image_2d_operated,
         1.0e-4,
     )
+
+
+def test__image_2d_list_from__operated_only_input(
+    sub_grid_2d_7x7, lp_0, lp_operated_0, mp_0
+):
+
+    image_2d_not_operated = lp_0.image_2d_from(grid=sub_grid_2d_7x7)
+    image_2d_operated = lp_operated_0.image_2d_from(grid=sub_grid_2d_7x7)
+
+    galaxy_0 = al.Galaxy(
+        redshift=0.5, light=lp_0, light_operated=lp_operated_0, mass=mp_0
+    )
+
+    galaxy_1 = al.Galaxy(
+        redshift=1.0, light_operated_0=lp_operated_0, light_operated_1=lp_operated_0
+    )
+    galaxy_2 = al.Galaxy(redshift=2.0)
+
+    tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1, galaxy_2])
+
+    source_plane_grid_2d = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)[1]
+
+    source_image_2d_not_operated = lp_0.image_2d_from(grid=source_plane_grid_2d)
+    source_image_2d_operated = lp_operated_0.image_2d_from(grid=source_plane_grid_2d)
 
     image_2d_list = tracer.image_2d_list_from(grid=sub_grid_2d_7x7, operated_only=False)
     assert image_2d_list[0] == pytest.approx(image_2d_not_operated, 1.0e-4)
