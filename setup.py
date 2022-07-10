@@ -11,7 +11,7 @@ with open(join(this_dir, "README.rst"), encoding="utf-8") as file:
 with open(join(this_dir, "requirements.txt")) as f:
     requirements = f.read().split("\n")
 
-version = environ.get("VERSION", "2022.07.10.1")
+version = environ.get("VERSION", "1.0.dev0")
 requirements.extend(
     [
         f"autoarray=={version}",
