@@ -37,7 +37,9 @@ class FitImaging(aa.FitImaging, AbstractFit):
         """
 
         super().__init__(dataset=dataset, profiling_dict=profiling_dict)
-        super(AbstractFit).__init__()
+        AbstractFit.__init__(
+            self=self, model_obj=tracer, settings_inversion=settings_inversion
+        )
 
         self.tracer = tracer
 
@@ -113,15 +115,13 @@ class FitImaging(aa.FitImaging, AbstractFit):
 
         The image passed to this function is the dataset's image with all light profile images of the tracer subtracted.
         """
-        if self.tracer.has(cls=aa.pix.Pixelization) or self.tracer.has(
-            cls=ag.lp_linear.LightProfileLinear
-        ):
+        if self.perform_inversion:
 
             return self.tracer.to_inversion.inversion_imaging_from(
                 dataset=self.dataset,
                 image=self.profile_subtracted_image,
                 noise_map=self.noise_map,
-                w_tilde=self.dataset.w_tilde,
+                w_tilde=self.w_tilde,
                 settings_pixelization=self.settings_pixelization,
                 settings_inversion=self.settings_inversion,
                 preloads=self.preloads,
@@ -218,12 +218,6 @@ class FitImaging(aa.FitImaging, AbstractFit):
     def unmasked_blurred_image_of_planes_list(self):
         return self.tracer.unmasked_blurred_image_2d_list_from(
             grid=self.grid, psf=self.imaging.psf
-        )
-
-    @property
-    def total_mappers(self):
-        return len(
-            list(filter(None, self.tracer.cls_list_from(cls=aa.reg.Regularization)))
         )
 
     def refit_with_new_preloads(self, preloads, settings_inversion=None):
