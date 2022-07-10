@@ -153,7 +153,17 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         return any(map(lambda plane: plane.has(cls=cls), self.planes))
 
     def cls_list_from(self, cls: Type) -> List:
+        """
+        Returns a list of objects in the tracer which are an instance of the input `cls`.
 
+        For example:
+
+        - If the input is `cls=ag.lp.LightProfile`, a list containing all light profiles in the tracer is returned.
+
+        Returns
+        -------
+            The list of objects in the tracer that inherit from input `cls`.
+        """
         cls_list = []
 
         for galaxy in self.galaxies:
