@@ -177,7 +177,9 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
 
     @property
     def total_mappers(self):
-        return len(list(filter(None, self.tracer.regularization_list)))
+        return len(
+            list(filter(None, self.tracer.cls_list_from(cls=aa.reg.Regularization)))
+        )
 
     def refit_with_new_preloads(self, preloads, settings_inversion=None):
 

@@ -152,6 +152,17 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def has(self, cls: Type) -> bool:
         return any(map(lambda plane: plane.has(cls=cls), self.planes))
 
+    def cls_list_from(self, cls: Type) -> List:
+
+        cls_list = []
+
+        for galaxy in self.galaxies:
+            if galaxy.has(cls=cls):
+                for cls_galaxy in galaxy.cls_list_from(cls=cls):
+                    cls_list.append(cls_galaxy)
+
+        return cls_list
+
     @property
     def total_planes(self) -> int:
         return len(self.plane_redshifts)
@@ -344,14 +355,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         )
 
     @property
-    def mass_profile_list(self):
-        return [
-            plane.mass_profile_list
-            for plane in self.planes
-            if plane(cls=ag.mp.MassProfile)
-        ]
-
-    @property
     def plane_indexes_with_pixelizations(self):
         plane_indexes_with_inversions = [
             plane_index if plane.has(cls=aa.pix.Pixelization) else None
@@ -361,22 +364,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
             plane_index
             for plane_index in plane_indexes_with_inversions
             if plane_index is not None
-        ]
-
-    @property
-    def pixelization_list(self) -> List:
-        return [
-            galaxy.pixelization
-            for galaxy in self.galaxies
-            if galaxy.has(cls=aa.pix.Pixelization)
-        ]
-
-    @property
-    def regularization_list(self) -> List:
-        return [
-            galaxy.regularization
-            for galaxy in self.galaxies
-            if galaxy.has(cls=aa.reg.Regularization)
         ]
 
     def hyper_noise_map_from(self, noise_map: aa.Array2D) -> aa.Array2D:

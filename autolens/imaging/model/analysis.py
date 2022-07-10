@@ -359,7 +359,9 @@ class AnalysisImaging(AnalysisDataset):
         if not tracer.has(cls=ag.pix.Pixelization):
             return
 
-        if not any([pix.is_stochastic for pix in tracer.pixelization_list]):
+        if not any(
+            [pix.is_stochastic for pix in tracer.cls_list_from(cls=ag.pix.Pixelization)]
+        ):
             return
 
         hyper_image_sky = self.hyper_image_sky_via_instance_from(instance=instance)

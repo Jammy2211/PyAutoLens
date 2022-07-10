@@ -75,7 +75,9 @@ def test__cls_pg_list_from(sub_grid_2d_7x7):
     tracer_to_inversion = al.TracerToInversion(tracer=tracer)
 
     assert tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[0] == []
-    assert tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[1][0].mapper == 1
+    assert (
+        tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[1][0].mapper == 1
+    )
 
     galaxy_pix_0 = al.Galaxy(
         redshift=0.5,
@@ -101,9 +103,15 @@ def test__cls_pg_list_from(sub_grid_2d_7x7):
 
     tracer_to_inversion = al.TracerToInversion(tracer=tracer)
 
-    assert tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[0][0].mapper == 1
-    assert tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[1][0].mapper == 2
-    assert tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[1][1].mapper == 3
+    assert (
+        tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[0][0].mapper == 1
+    )
+    assert (
+        tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[1][0].mapper == 2
+    )
+    assert (
+        tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[1][1].mapper == 3
+    )
 
     galaxy_no_pix = al.Galaxy(redshift=0.5)
 

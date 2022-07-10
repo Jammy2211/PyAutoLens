@@ -407,7 +407,9 @@ class AnalysisInterferometer(AnalysisDataset):
         if not tracer.has(cls=aa.pix.Pixelization):
             return None
 
-        if not any([pix.is_stochastic for pix in tracer.pixelization_list]):
+        if not any(
+            [pix.is_stochastic for pix in tracer.cls_list_from(cls=ag.pix.Pixelization)]
+        ):
             return
 
         hyper_background_noise = self.hyper_background_noise_via_instance_from(
