@@ -223,6 +223,7 @@ strong gravitational lensing with **PyAutoLens**.
    general/workspace
    general/configs
    general/likelihood_function
+   general/demagnified_solutions
    general/citations
    general/papers
    general/credits
