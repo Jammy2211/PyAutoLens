@@ -19,6 +19,7 @@ try:
 except ModuleNotFoundError:
     NumbaException = ValueError
 
+
 class AnalysisPoint(af.Analysis, AnalysisLensing):
     def __init__(
         self,

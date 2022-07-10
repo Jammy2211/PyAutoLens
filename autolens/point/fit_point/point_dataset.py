@@ -16,6 +16,7 @@ try:
 except ModuleNotFoundError:
     NumbaException = AttributeError
 
+
 class FitPointDataset:
     def __init__(
         self, point_dataset: PointDataset, tracer: Tracer, point_solver: PointSolver
