@@ -1,5 +1,3 @@
-import numba
-
 import autofit as af
 import autogalaxy as ag
 
@@ -14,6 +12,12 @@ from autolens.analysis.settings import SettingsLens
 
 from autolens import exc
 
+try:
+    import numba
+
+    NumbaException = numba.errors.TypingError
+except ModuleNotFoundError:
+    NumbaException = ValueError
 
 class AnalysisPoint(af.Analysis, AnalysisLensing):
     def __init__(
@@ -72,11 +76,10 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
         fit : Fit
             A fractional value indicating how well this model fit and the model masked_imaging itself
         """
-
         try:
             fit = self.fit_positions_for(instance=instance)
             return fit.log_likelihood
-        except (AttributeError, ValueError, TypeError, numba.TypingError) as e:
+        except (AttributeError, ValueError, TypeError, NumbaException) as e:
             raise exc.FitException from e
 
     def fit_positions_for(self, instance):

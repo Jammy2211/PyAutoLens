@@ -22,7 +22,7 @@ with **PyAutoFit** via pip:
 
 .. code-block:: bash
 
-    conda create -n autolens numba astropy scikit-image scikit-learn scipy
+    conda create -n autolens astropy scikit-image scikit-learn scipy
 
 Activate the conda environment (you will have to do this every time you want to run **PyAutoLens**):
 
@@ -56,6 +56,26 @@ identify clearly if the installation is a success.
 If there are no errors (but only the warnings above) **PyAutoLens** is installed! 
 
 If there is an error check out the `troubleshooting section <https://pyautolens.readthedocs.io/en/latest/installation/troubleshooting.html>`_.
+
+Numba
+-----
+
+Numba (https://numba.pydata.org)  is an optional library which makes **PyAutoLens** run a lot faster, which we
+strongly recommend users have installed.
+
+You can install numba via the following command:
+
+.. code-block:: bash
+
+    pip install numba
+
+Some users have experienced difficulties installing numba, which is why it is an optional library. If your
+installation is not successful, you can use **PyAutoLens** without it installed for now, to familiarize yourself
+with the software and determine if it is the right software for you.
+
+If you decide that **PyAutoLens** is the right software, then I recommend you commit the time to getting a
+successful numba install working, with more information provided `at this readthedocs page <https://pyautolens.readthedocs.io/en/latest/installation/numba.html>`_
+
 
 Workspace
 ---------

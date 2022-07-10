@@ -1,5 +1,3 @@
-import numba
-
 import autogalaxy as ag
 
 from autolens.point.point_dataset import PointDataset
@@ -11,6 +9,12 @@ from autolens.lens.ray_tracing import Tracer
 
 from autolens import exc
 
+try:
+    import numba
+
+    NumbaException = numba.errors.TypingError
+except ModuleNotFoundError:
+    NumbaException = AttributeError
 
 class FitPointDataset:
     def __init__(
@@ -46,7 +50,7 @@ class FitPointDataset:
 
         except exc.PointExtractionException:
             self.positions = None
-        except (AttributeError, numba.errors.TypingError) as e:
+        except (AttributeError, NumbaException) as e:
             raise exc.FitException from e
 
         try:

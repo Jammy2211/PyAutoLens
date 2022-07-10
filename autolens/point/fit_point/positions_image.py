@@ -1,5 +1,4 @@
 from functools import partial
-import numba
 from typing import Optional
 
 import autoarray as aa

@@ -211,6 +211,7 @@ strong gravitational lensing with **PyAutoLens**.
    installation/overview
    installation/conda
    installation/pip
+   installation/numba
    installation/source
    installation/troubleshooting
 

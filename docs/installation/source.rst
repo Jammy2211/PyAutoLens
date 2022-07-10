@@ -111,6 +111,12 @@ Next, install the source build dependencies of each project via pip:
    pip install -r PyAutoGalaxy/requirements.txt
    pip install -r PyAutoLens/requirements.txt
 
+Next, install the optional dependency numba via pip:
+
+.. code-block:: bash
+
+    pip install numba
+
 For unit tests to pass you will also need the following optional requirements:
 
 .. code-block:: bash

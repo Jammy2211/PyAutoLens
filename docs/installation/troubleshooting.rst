@@ -3,6 +3,11 @@
 Troubleshooting
 ===============
 
+Numba
+-----
+
+Help for troubleshooting specifically numba is provided at `at this readthedocs page <https://pyautolens.readthedocs.io/en/latest/installation/numba.html>`_
+
 Pip Version
 -----------
 
@@ -13,42 +18,6 @@ the latest version of pip.
 
     pip install --upgrade pip
     pip3 install --upgrade pip
-
-NumPy / numba
--------------
-
-The libraries ``numpy`` and ``numba`` can be installed with incompatible versions.
-
-An error message like the one below occurs when importing **PyAutoGalaxy**:
-
-.. code-block:: bash
-
-    Traceback (most recent call last):
-      File "<stdin>", line 1, in <module>
-      File "/home/jammy/venvs/PyAutoMay2/lib/python3.8/site-packages/autolens/__init__.py", line 1, in <module>
-        from autoarray import preprocess
-      File "/home/jammy/venvs/PyAutoMay2/lib/python3.8/site-packages/autoarray/__init__.py", line 2, in <module>
-        from . import type
-      File "/home/jammy/venvs/PyAutoMay2/lib/python3.8/site-packages/autoarray/type.py", line 7, in <module>
-        from autoarray.mask.mask_1d import Mask1D
-      File "/home/jammy/venvs/PyAutoMay2/lib/python3.8/site-packages/autoarray/mask/mask_1d.py", line 8, in <module>
-        from autoarray.structures.arrays import array_1d_util
-      File "/home/jammy/venvs/PyAutoMay2/lib/python3.8/site-packages/autoarray/structures/arrays/array_1d_util.py", line 5, in <module>
-        from autoarray import numba_util
-      File "/home/jammy/venvs/PyAutoMay2/lib/python3.8/site-packages/autoarray/numba_util.py", line 2, in <module>
-        import numba
-      File "/home/jammy/venvs/PyAutoMay2/lib/python3.8/site-packages/numba/__init__.py", line 200, in <module>
-        _ensure_critical_deps()
-      File "/home/jammy/venvs/PyAutoMay2/lib/python3.8/site-packages/numba/__init__.py", line 140, in _ensure_critical_deps
-        raise ImportError("Numba needs NumPy 1.21 or less")
-    ImportError: Numba needs NumPy 1.21 or less
-
-This can be fixed by reinstalling numpy with the version requested by the error message, in the example
-numpy 1.21 (you should replace the ``==1.21.0`` with a different version if requested).
-
-.. code-block:: bash
-
-    pip install numpy==1.21.0
 
 Pip / Conda
 -----------
