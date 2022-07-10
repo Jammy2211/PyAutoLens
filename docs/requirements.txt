@@ -1,4 +1,4 @@
-autoconf==2022.05.02.1
+autoconf==2022.07.10.1
 autofit==2022.07.10.1
 autoarray==2022.07.10.1
 autogalaxy==2022.07.10.1
