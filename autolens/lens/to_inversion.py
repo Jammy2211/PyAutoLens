@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Type, Union
 
 import autoarray as aa
 import autogalaxy as ag
@@ -66,13 +66,8 @@ class TracerToInversion:
 
         return lp_linear_galaxy_dict_list
 
-    @property
-    def pixelization_pg_list(self) -> List[List]:
-        return [plane.pixelization_list for plane in self.planes]
-
-    @property
-    def regularization_pg_list(self) -> List[List]:
-        return [plane.regularization_list for plane in self.planes]
+    def cls_pg_list_from(self, cls:Type) -> List[List]:
+        return [plane.cls_list_from(cls=cls) for plane in self.planes]
 
     @property
     def hyper_galaxy_image_pg_list(self) -> List[List]:
@@ -184,7 +179,7 @@ class TracerToInversion:
 
             if plane.has(cls=aa.pix.Pixelization):
 
-                galaxies_with_pixelization_list = plane.galaxies_with_pixelization
+                galaxies_with_pixelization_list = plane.galaxies_with_cls_list_from(cls=aa.pix.Pixelization)
 
                 for mapper_index in range(
                     len(traced_sparse_grids_list_of_planes[plane_index])
@@ -198,7 +193,7 @@ class TracerToInversion:
                         data_pixelization_grid=sparse_image_plane_grid_list[
                             plane_index
                         ][mapper_index],
-                        pixelization=self.pixelization_pg_list[plane_index][
+                        pixelization=self.cls_pg_list_from(cls=aa.pix.Pixelization)[plane_index][
                             mapper_index
                         ],
                         hyper_galaxy_image=self.hyper_galaxy_image_pg_list[plane_index][

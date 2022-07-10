@@ -62,7 +62,7 @@ def test__lp_linear_func_galaxy_dict_from(sub_grid_2d_7x7, blurring_grid_2d_7x7)
     assert lp_linear_func_list[2].grid == pytest.approx(traced_grid_list[2], 1.0e-4)
 
 
-def test__pixelization_pg_list(sub_grid_2d_7x7):
+def test__cls_pg_list_from(sub_grid_2d_7x7):
     galaxy_pix = al.Galaxy(
         redshift=1.0,
         pixelization=al.m.MockPixelization(mapper=1),
@@ -74,8 +74,8 @@ def test__pixelization_pg_list(sub_grid_2d_7x7):
 
     tracer_to_inversion = al.TracerToInversion(tracer=tracer)
 
-    assert tracer_to_inversion.pixelization_pg_list[0] == []
-    assert tracer_to_inversion.pixelization_pg_list[1][0].mapper == 1
+    assert tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[0] == []
+    assert tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[1][0].mapper == 1
 
     galaxy_pix_0 = al.Galaxy(
         redshift=0.5,
@@ -101,9 +101,9 @@ def test__pixelization_pg_list(sub_grid_2d_7x7):
 
     tracer_to_inversion = al.TracerToInversion(tracer=tracer)
 
-    assert tracer_to_inversion.pixelization_pg_list[0][0].mapper == 1
-    assert tracer_to_inversion.pixelization_pg_list[1][0].mapper == 2
-    assert tracer_to_inversion.pixelization_pg_list[1][1].mapper == 3
+    assert tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[0][0].mapper == 1
+    assert tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[1][0].mapper == 2
+    assert tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[1][1].mapper == 3
 
     galaxy_no_pix = al.Galaxy(redshift=0.5)
 
@@ -111,64 +111,7 @@ def test__pixelization_pg_list(sub_grid_2d_7x7):
 
     tracer_to_inversion = al.TracerToInversion(tracer=tracer)
 
-    assert tracer_to_inversion.pixelization_pg_list == [[]]
-
-
-def test__regularization_pg_list(sub_grid_2d_7x7):
-
-    galaxy_reg = al.Galaxy(
-        redshift=1.0,
-        pixelization=al.m.MockPixelization(),
-        regularization=al.m.MockRegularization(regularization_matrix=1),
-    )
-    galaxy_no_reg = al.Galaxy(redshift=0.5)
-
-    tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_reg, galaxy_reg])
-
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
-
-    assert tracer_to_inversion.regularization_pg_list[0] == []
-    assert tracer_to_inversion.regularization_pg_list[1][0].regularization_matrix == 1
-    assert tracer.regularization_list[0].regularization_matrix == 1
-
-    galaxy_reg_0 = al.Galaxy(
-        redshift=0.5,
-        pixelization=al.m.MockPixelization(),
-        regularization=al.m.MockRegularization(regularization_matrix=1),
-    )
-
-    galaxy_reg_1 = al.Galaxy(
-        redshift=1.0,
-        pixelization=al.m.MockPixelization(),
-        regularization=al.m.MockRegularization(regularization_matrix=2),
-    )
-
-    galaxy_reg_2 = al.Galaxy(
-        redshift=1.0,
-        pixelization=al.m.MockPixelization(),
-        regularization=al.m.MockRegularization(regularization_matrix=3),
-    )
-
-    tracer = al.Tracer.from_galaxies(
-        galaxies=[galaxy_reg_0, galaxy_reg_1, galaxy_reg_2]
-    )
-
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
-
-    assert tracer_to_inversion.regularization_pg_list[0][0].regularization_matrix == 1
-    assert tracer_to_inversion.regularization_pg_list[1][0].regularization_matrix == 2
-    assert tracer_to_inversion.regularization_pg_list[1][1].regularization_matrix == 3
-    assert tracer.regularization_list[0].regularization_matrix == 1
-    assert tracer.regularization_list[1].regularization_matrix == 2
-    assert tracer.regularization_list[2].regularization_matrix == 3
-
-    galaxy_no_reg = al.Galaxy(redshift=0.5)
-
-    tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_reg, galaxy_no_reg])
-
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
-
-    assert tracer_to_inversion.regularization_pg_list == [[]]
+    assert tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization) == [[]]
 
 
 def test__hyper_galaxy_image_pg_list(sub_grid_2d_7x7):
