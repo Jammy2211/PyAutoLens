@@ -313,10 +313,10 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
     )
 
     assert fit.galaxy_model_image_dict[galaxy_pix_0][4] == pytest.approx(
-        0.0473537322, 1.0e-4
+        0.0473537322, 1.0e-3
     )
     assert fit.galaxy_model_image_dict[galaxy_pix_1][4] == pytest.approx(
-        0.0473505541, 1.0e-4
+        0.0473505541, 1.0e-3
     )
     assert (fit.galaxy_model_image_dict[g2] == np.zeros(9)).all()
 
