@@ -1,13 +1,12 @@
 import os
+import shutil
 from os import path
+from pathlib import Path
 
 import pytest
 from matplotlib import pyplot
 
 from autofit import conf
-
-import autogalaxy as ag
-
 from autolens import fixtures
 
 directory = path.dirname(path.realpath(__file__))
@@ -44,6 +43,15 @@ def remove_logs():
         for file in files:
             if file.endswith(".log"):
                 os.remove(path.join(d, file))
+
+
+@pytest.fixture(autouse=True, scope="session")
+def remove_output():
+    yield
+    shutil.rmtree(
+        Path(directory) / "output",
+        ignore_errors=True,
+    )
 
 
 ############
