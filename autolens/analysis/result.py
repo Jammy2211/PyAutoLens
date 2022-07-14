@@ -139,7 +139,7 @@ class Result(AgResult):
         self, factor=1.0, minimum_threshold=None, use_resample=False, positions: Optional[aa.Grid2DIrregular] = None,
     ) -> Union[PositionsLHPenalty, PositionsLHResample]:
 
-        positions = self.image_plane_multiple_image_positions if positions is not else positions
+        positions = self.image_plane_multiple_image_positions if positions is not None else positions
         threshold = self.positions_threshold_from(
             factor=factor, minimum_threshold=minimum_threshold
         )
