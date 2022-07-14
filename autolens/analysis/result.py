@@ -104,6 +104,9 @@ class Result(AgResult):
         minimum_threshold
             The output threshold is rounded up to this value if it is below it, to avoid extremely small threshold
             values.
+        positions
+            If input, these positions are used instead of the computed multiple image positions from the lens mass
+            model.
 
         Returns
         -------
@@ -133,10 +136,10 @@ class Result(AgResult):
         return threshold
 
     def positions_likelihood_from(
-        self, factor=1.0, minimum_threshold=None, use_resample=False
+        self, factor=1.0, minimum_threshold=None, use_resample=False, positions: Optional[aa.Grid2DIrregular] = None,
     ) -> Union[PositionsLHPenalty, PositionsLHResample]:
 
-        positions = self.image_plane_multiple_image_positions
+        positions = self.image_plane_multiple_image_positions if positions is not else positions
         threshold = self.positions_threshold_from(
             factor=factor, minimum_threshold=minimum_threshold
         )
