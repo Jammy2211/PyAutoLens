@@ -21,7 +21,7 @@ def make_tracer():
     source_galaxy = al.Galaxy(redshift=1.0, disk=disk)
 
     return al.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy], cosmology=al.cosmo.Planck15()
+        galaxies=[lens_galaxy, source_galaxy], cosmology=al.cosmo.wrap.Planck15
     )
 
 
@@ -81,5 +81,5 @@ def test_to_dict(tracer, tracer_dict):
     assert tracer.dict() == tracer_dict
 
 
-# def test_from_dict(tracer, tracer_dict):
-#     assert tracer.from_dict(tracer_dict) == tracer
+def test_from_dict(tracer, tracer_dict):
+    assert tracer.from_dict(tracer_dict) == tracer
