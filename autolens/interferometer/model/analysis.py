@@ -497,9 +497,12 @@ class AnalysisInterferometer(AnalysisDataset):
 
         visualizer = VisualizerInterferometer(visualize_path=paths.image_path)
 
-        visualizer.visualize_fit_interferometer(
-            fit=fit, during_analysis=during_analysis
-        )
+        try:
+            visualizer.visualize_fit_interferometer(
+                fit=fit, during_analysis=during_analysis
+            )
+        except exc.InversionException:
+            pass
 
         tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
@@ -527,9 +530,12 @@ class AnalysisInterferometer(AnalysisDataset):
                 preload_overwrite=Preloads(use_w_tilde=False),
             )
 
-            visualizer.visualize_fit_interferometer(
-                fit=fit, during_analysis=during_analysis, subfolders="fit_no_hyper"
-            )
+            try:
+                visualizer.visualize_fit_interferometer(
+                    fit=fit, during_analysis=during_analysis, subfolders="fit_no_hyper"
+                )
+            except exc.InversionException:
+                pass
 
     def make_result(
         self,
