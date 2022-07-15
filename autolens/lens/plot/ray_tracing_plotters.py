@@ -9,6 +9,7 @@ from autogalaxy.plot.mass_plotter import MassPlotter
 from autolens.plot.abstract_plotters import Plotter
 from autolens.lens.ray_tracing import Tracer
 
+from autolens import exc
 
 class TracerPlotter(Plotter):
     def __init__(
@@ -54,6 +55,16 @@ class TracerPlotter(Plotter):
         include_2d
             Specifies which attributes of the `MassProfile` are extracted and plotted as visuals for 2D plots.
         """
+
+        from autogalaxy.profiles.light_profiles.light_profiles_linear import LightProfileLinear
+
+        if tracer.has(cls=LightProfileLinear):
+
+            raise exc.raise_linear_light_profile_in_plot(
+                plotter_type=self.__class__.__name__,
+                model_obj="Plane"
+            )
+
         super().__init__(
             mat_plot_1d=mat_plot_1d,
             visuals_1d=visuals_1d,
