@@ -1,5 +1,6 @@
 import autoarray as aa
 
+from autolens.lens.ray_tracing import Tracer
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.analysis.result import ResultDataset
 from autolens.analysis.preloads import Preloads
@@ -46,6 +47,18 @@ class ResultImaging(ResultDataset):
         """
         return self.analysis.fit_imaging_via_instance_from(
             instance=self.instance, preload_overwrite=Preloads(use_w_tilde=False)
+        )
+
+    @property
+    def max_log_likelihood_tracer(self) -> Tracer:
+        """
+        An instance of a `Tracer` corresponding to the maximum log likelihood model inferred by the non-linear search.
+
+        The `Tracer` is computed from the `max_log_likelihood_fit`, as this ensures that all linear light profiles
+        are converted to normal light profiles with their `intensity` values updated.
+        """
+        return (
+            self.max_log_likelihood_fit.model_obj_linear_light_profiles_to_light_profiles
         )
 
     @property

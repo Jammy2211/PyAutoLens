@@ -3,6 +3,7 @@ import numpy as np
 import autoarray as aa
 import autogalaxy as ag
 
+from autolens.lens.ray_tracing import Tracer
 from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.analysis.result import ResultDataset
 
@@ -48,6 +49,18 @@ class ResultInterferometer(ResultDataset):
         """
         return self.analysis.fit_interferometer_via_instance_from(
             instance=self.instance
+        )
+
+    @property
+    def max_log_likelihood_tracer(self) -> Tracer:
+        """
+        An instance of a `Tracer` corresponding to the maximum log likelihood model inferred by the non-linear search.
+
+        The `Tracer` is computed from the `max_log_likelihood_fit`, as this ensures that all linear light profiles
+        are converted to normal light profiles with their `intensity` values updated.
+        """
+        return (
+            self.max_log_likelihood_fit.model_obj_linear_light_profiles_to_light_profiles
         )
 
     @property
