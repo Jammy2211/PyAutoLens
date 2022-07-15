@@ -292,8 +292,6 @@ class TracerToInversion:
 
         linear_obj_list = list(linear_obj_galaxy_dict.keys())
 
-        print(self.tracer.cls_list_from(cls=aa.reg.Regularization))
-
         inversion = inversion_interferometer_unpacked_from(
             visibilities=visibilities,
             noise_map=noise_map,
