@@ -566,6 +566,37 @@ def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur):
     assert fit.subtracted_images_of_planes_list[1].slim[0] == -0.0 or np.nan
 
 
+def test__tracer_linear_light_profiles_to_light_profiles(masked_imaging_7x7):
+
+    g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
+
+    g0_linear = al.Galaxy(
+        redshift=0.5,
+        light_profile=al.lp_linear.EllSersic(sersic_index=1.0),
+        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+    )
+
+    g1_linear = al.Galaxy(
+        redshift=1.0, light_profile=al.lp_linear.EllSersic(sersic_index=4.0)
+    )
+
+    tracer = al.Tracer.from_galaxies(galaxies=[g0, g0_linear, g1_linear])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert fit.tracer.galaxies[0].light_profile.intensity == pytest.approx(1.0, 1.0e-4)
+
+    tracer = fit.tracer_linear_light_profiles_to_light_profiles
+
+    assert tracer.galaxies[0].light_profile.intensity == pytest.approx(1.0, 1.0e-4)
+    assert tracer.galaxies[1].light_profile.intensity == pytest.approx(
+        -371.061130, 1.0e-4
+    )
+    assert tracer.galaxies[2].light_profile.intensity == pytest.approx(
+        0.08393533428, 1.0e-4
+    )
+
+
 def test___stochastic_mode__gives_different_log_likelihoods(masked_imaging_7x7):
 
     pix = al.pix.VoronoiBrightnessImage(pixels=5)

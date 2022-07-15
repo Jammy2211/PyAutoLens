@@ -48,10 +48,7 @@ def remove_logs():
 @pytest.fixture(autouse=True, scope="session")
 def remove_output():
     yield
-    shutil.rmtree(
-        Path(directory) / "output",
-        ignore_errors=True,
-    )
+    shutil.rmtree(Path(directory) / "output", ignore_errors=True)
 
 
 ############

@@ -170,6 +170,10 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
 
         return model_visibilities_of_planes_list
 
+    @property
+    def tracer_linear_light_profiles_to_light_profiles(self):
+        return self.model_obj_linear_light_profiles_to_light_profiles
+
     def refit_with_new_preloads(self, preloads, settings_inversion=None):
 
         if self.profiling_dict is not None:

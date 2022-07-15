@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 from typing import Dict, Optional
 
@@ -219,6 +220,10 @@ class FitImaging(aa.FitImaging, AbstractFit):
         return self.tracer.unmasked_blurred_image_2d_list_from(
             grid=self.grid, psf=self.imaging.psf
         )
+
+    @property
+    def tracer_linear_light_profiles_to_light_profiles(self):
+        return self.model_obj_linear_light_profiles_to_light_profiles
 
     def refit_with_new_preloads(self, preloads, settings_inversion=None):
 

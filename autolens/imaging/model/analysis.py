@@ -459,11 +459,14 @@ class AnalysisImaging(AnalysisDataset):
         visualizer = VisualizerImaging(visualize_path=paths.image_path)
 
         visualizer.visualize_fit_imaging(fit=fit, during_analysis=during_analysis)
+
+        tracer = fit.tracer_linear_light_profiles_to_light_profiles
+
         visualizer.visualize_tracer(
-            tracer=fit.tracer, grid=fit.grid, during_analysis=during_analysis
+            tracer=tracer, grid=fit.grid, during_analysis=during_analysis
         )
         visualizer.visualize_galaxies(
-            galaxies=fit.tracer.galaxies, grid=fit.grid, during_analysis=during_analysis
+            galaxies=tracer.galaxies, grid=fit.grid, during_analysis=during_analysis
         )
         if fit.inversion is not None:
             visualizer.visualize_inversion(
