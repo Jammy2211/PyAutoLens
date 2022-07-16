@@ -602,8 +602,33 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         grid: aa.type.Grid2DLike,
         exposure_time: float,
         background_sky_level: float = 0.0,
+        psf: Optional[aa.Kernel2D] = None,
     ):
+        """
+        Iterate over every `LightProfileSNR` in the tracer and set their `intensity` values to values which give
+        their input `signal_to_noise_ratio` value, which is performed as follows:
 
+        - Evaluate the image of each light profile on the input grid.
+        - Blur this image with a PSF, if included.
+        - Take the value of the brightest pixel.
+        - Use an input `exposure_time` and `background_sky` (e.g. from the `SimulatorImaging` object) to determine
+        what value of `intensity` gives the desired signal to noise ratio for the image.
+
+        The intensity is set using an input grid, meaning that for strong lensing calculations the ray-traced grid
+        can be used such that the S/N accounts for the magnification of a source galaxy.
+
+        Parameters
+        ----------
+        grid
+            The (y, x) coordinates in the original reference frame of the grid.
+        exposure_time
+            The exposure time of the simulated imaging.
+        background_sky_level
+            The level of the background sky of the simulated imaging.
+        psf
+            The psf of the simulated imaging which can change the S/N of the light profile due to spreading out
+            the emission.
+        """
         grid = aa.Grid2D.uniform(
             shape_native=grid.shape_native, pixel_scales=grid.pixel_scales, sub_size=1
         )
@@ -618,6 +643,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
                             grid=traced_grids_of_planes_list[plane_index],
                             exposure_time=exposure_time,
                             background_sky_level=background_sky_level,
+                            psf=psf,
                         )
 
     @aa.profile_func

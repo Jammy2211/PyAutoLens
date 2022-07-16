@@ -8,7 +8,7 @@ from autolens.imaging.model.result import ResultImaging
 
 
 def test___linear_light_profiles_in_result(analysis_imaging_7x7):
-    
+
     galaxies = af.ModelInstance()
     galaxies.galaxy = al.Galaxy(redshift=0.5, bulge=al.lp_linear.EllSersic())
 
@@ -17,9 +17,12 @@ def test___linear_light_profiles_in_result(analysis_imaging_7x7):
 
     samples = al.m.MockSamples(max_log_likelihood_instance=instance)
 
-    result = ResultImaging(
-        samples=samples, analysis=analysis_imaging_7x7, model=None
-    )
+    result = ResultImaging(samples=samples, analysis=analysis_imaging_7x7, model=None)
 
-    assert not isinstance(result.max_log_likelihood_tracer.galaxies[0].bulge, al.lp_linear.LightProfileLinear)
-    assert result.max_log_likelihood_tracer.galaxies[0].bulge.intensity == pytest.approx(0.002310735, 1.0e-4)
+    assert not isinstance(
+        result.max_log_likelihood_tracer.galaxies[0].bulge,
+        al.lp_linear.LightProfileLinear,
+    )
+    assert result.max_log_likelihood_tracer.galaxies[
+        0
+    ].bulge.intensity == pytest.approx(0.002310735, 1.0e-4)

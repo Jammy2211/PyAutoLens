@@ -65,7 +65,7 @@ class FitImagingPlotter(Plotter):
 
     @property
     def tracer(self):
-        return self.fit.tracer
+        return self.fit.tracer_linear_light_profiles_to_light_profiles
 
     @property
     def tracer_plotter(self) -> TracerPlotter:
