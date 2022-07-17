@@ -324,7 +324,9 @@ class FitImaging(aa.FitImaging, AbstractFit):
         return self.model_obj_linear_light_profiles_to_light_profiles
 
     def refit_with_new_preloads(
-        self, preloads: Preloads, settings_inversion: aa.SettingsInversion = None
+        self,
+        preloads: Preloads,
+        settings_inversion: Optional[aa.SettingsInversion] = None,
     ) -> "FitImaging":
         """
         Returns a new fit which uses the dataset, tracer and other objects of this fit, but uses a different set of

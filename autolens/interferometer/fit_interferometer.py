@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from autoconf import cached_property
 
@@ -25,18 +25,18 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         profiling_dict: Optional[Dict] = None,
     ):
         """
-        Fits an interferometer dataset using a `Plane` object.
+        Fits an interferometer dataset using a `Tracer` object.
 
         The fit performs the following steps:
 
-        1) Compute the sum of all images of galaxy light profiles in the `Plane`.
+        1) Compute the sum of all images of galaxy light profiles in the `Tracer`.
 
         2) Fourier transform this image with the transformer object and `uv_wavelengths` to create
         the `profile_visibilities`.
 
         3) Subtract these visibilities from the `data` to create the `profile_subtracted_visibilities`.
 
-        4) If the `Plane` has any linear algebra objects (e.g. linear light profiles, a pixelization / regulariation)
+        4) If the `Tracer` has any linear algebra objects (e.g. linear light profiles, a pixelization / regulariation)
         fit the `profile_subtracted_visibilities` with these objects via an inversion.
 
         5) Compute the `model_data` as the sum of the `profile_visibilities` and `reconstructed_data` of the inversion
@@ -52,9 +52,9 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         Parameters
         -----------
         dataset
-            The interfometer dataset which is fitted by the galaxies in the plane.
-        plane
-            The plane of galaxies whose light profile images are used to fit the interferometer data.
+            The interforometer dataset which is fitted by the galaxies in the tracer.
+        tracer
+            The tracer of galaxies whose light profile images are used to fit the interferometer data.
         hyper_background_noise
             If included, adds a noise-scaling term to the background noise.
         use_hyper_scaling
@@ -112,7 +112,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
     @property
     def profile_visibilities(self) -> aa.Visibilities:
         """
-        Returns the visibilities of every light profile in the plane, which are computed by performing a Fourier
+        Returns the visibilities of every light profile in the tracer, which are computed by performing a Fourier
         transform to the sum of light profile images.
         """
         return self.tracer.visibilities_from(
@@ -123,7 +123,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
     def profile_subtracted_visibilities(self) -> aa.Visibilities:
         """
         Returns the interferometer dataset's visibilities with all transformed light profile images in the fit's
-        plane subtracted.
+        tracer subtracted.
         """
         return self.visibilities - self.profile_visibilities
 
@@ -154,7 +154,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         """
         Returns the model data that is used to fit the data.
 
-        If the plane does not have any linear objects and therefore omits an inversion, the model data is the
+        If the tracer does not have any linear objects and therefore omits an inversion, the model data is the
         sum of all light profile images Fourier transformed to visibilities.
 
         If a inversion is included it is the sum of these visibilities and the inversion's reconstructed visibilities.
@@ -175,11 +175,11 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
     @property
     def galaxy_model_image_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
         """
-        A dictionary which associates every galaxy in the plane with its `image`.
+        A dictionary which associates every galaxy in the tracer with its `image`.
 
         This image is the image of the sum of:
 
-        - The images of all ordinary light profiles in that plane summed.
+        - The images of all ordinary light profiles in that tracer summed.
         - The images of all linear objects (e.g. linear light profiles / pixelizations), where the images are solved
         for first via the inversion.
 
@@ -196,7 +196,19 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
 
     @property
     def galaxy_model_visibilities_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
+        """
+        A dictionary which associates every galaxy in the tracer with its model visibilities.
 
+        These visibilities are the sum of:
+
+        - The visibilities of all ordinary light profiles in that tracer summed and Fourier transformed to visibilities
+        space.
+        - The visibilities of all linear objects (e.g. linear light profiles / pixelizations), where the visibilities
+        are solved for first via the inversion.
+
+        For modeling, this dictionary is used to set up the `hyper_visibilities` that adapt certain pixelizations to the
+        data being fitted.
+        """
         galaxy_model_visibilities_dict = self.tracer.galaxy_visibilities_dict_from(
             grid=self.interferometer.grid, transformer=self.interferometer.transformer
         )
@@ -208,8 +220,19 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         return {**galaxy_model_visibilities_dict, **galaxy_linear_obj_visibilities_dict}
 
     @property
-    def model_visibilities_of_planes_list(self):
+    def model_visibilities_of_planes_list(self) -> List[aa.Visibilities]:
+        """
+        A list of every model image of every plane in the tracer.
 
+        This image is the image of the sum of:
+
+        - The images of all ordinary light profiles in that plane summed and convolved with the imaging data's PSF.
+        - The images of all linear objects (e.g. linear light profiles / pixelizations), where the images are solved
+        for first via the inversion.
+
+        This is used to visualize the different contibutions of light from the image-plane, source-plane and other
+        planes in a fit.
+        """
         galaxy_model_visibilities_dict = self.galaxy_model_visibilities_dict
 
         model_visibilities_of_planes_list = [
@@ -226,11 +249,39 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         return model_visibilities_of_planes_list
 
     @property
-    def tracer_linear_light_profiles_to_light_profiles(self):
+    def tracer_linear_light_profiles_to_light_profiles(self) -> Tracer:
+        """
+        The `Tracer` where all linear light profiles have been converted to ordinary light profiles, where their
+        `intensity` values are set to the values inferred by this fit.
+
+        This is typically used for visualization, because linear light profiles cannot be used in `LightProfilePlotter`
+        or `GalaxyPlotter` objects.
+        """
         return self.model_obj_linear_light_profiles_to_light_profiles
 
-    def refit_with_new_preloads(self, preloads, settings_inversion=None):
+    def refit_with_new_preloads(
+        self,
+        preloads: Preloads,
+        settings_inversion: Optional[aa.SettingsInversion] = None,
+    ) -> "FitInterferometer":
+        """
+        Returns a new fit which uses the dataset, tracer and other objects of this fit, but uses a different set of
+        preloads input into this function.
 
+        This is used when setting up the preloads objects, to concisely test how using different preloads objects
+        changes the attributes of the fit.
+
+        Parameters
+        ----------
+        preloads
+            The new preloads which are used to refit the data using the
+        settings_inversion
+            Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
+
+        Returns
+        -------
+        A new fit which has used new preloads input into this function but the same dataset, tracer and other settings.
+        """
         if self.profiling_dict is not None:
             profiling_dict = {}
         else:
