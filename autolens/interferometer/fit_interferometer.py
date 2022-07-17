@@ -34,6 +34,11 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
             The tracer, which describes the ray-tracing and strong lens configuration.
         """
 
+        try:
+            from autoarray.inversion.inversion import inversion_util_secret
+        except ImportError:
+            settings_inversion.use_w_tilde = False
+
         self.tracer = tracer
 
         self.hyper_background_noise = hyper_background_noise

@@ -108,7 +108,7 @@ different CPU.
 
 .. code-block:: python
 
-    analysis.n_cores = 2
+    analysis.n_cores = 1
 
 
 Model
