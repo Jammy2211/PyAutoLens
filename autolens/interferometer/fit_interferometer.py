@@ -25,13 +25,52 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         profiling_dict: Optional[Dict] = None,
     ):
         """
-        An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
-        the lens dataset's hyper_galaxies.
+        Fits an interferometer dataset using a `Plane` object.
+
+        The fit performs the following steps:
+
+        1) Compute the sum of all images of galaxy light profiles in the `Plane`.
+
+        2) Fourier transform this image with the transformer object and `uv_wavelengths` to create
+        the `profile_visibilities`.
+
+        3) Subtract these visibilities from the `data` to create the `profile_subtracted_visibilities`.
+
+        4) If the `Plane` has any linear algebra objects (e.g. linear light profiles, a pixelization / regulariation)
+        fit the `profile_subtracted_visibilities` with these objects via an inversion.
+
+        5) Compute the `model_data` as the sum of the `profile_visibilities` and `reconstructed_data` of the inversion
+        (if an inversion is not performed the `model_data` is only the `profile_visibilities`.
+
+        6) Subtract the `model_data` from the data and compute the residuals, chi-squared and likelihood via the
+        noise-map (if an inversion is performed the `log_evidence`, including addition terms describing the linear
+        algebra solution, is computed).
+
+        When performing a model-fit` via ` AnalysisInterferometer` object the `figure_of_merit` of
+        this `FitInterferometer` object is called and returned in the `log_likelihood_function`.
 
         Parameters
         -----------
-        tracer : Tracer
-            The tracer, which describes the ray-tracing and strong lens configuration.
+        dataset
+            The interfometer dataset which is fitted by the galaxies in the plane.
+        plane
+            The plane of galaxies whose light profile images are used to fit the interferometer data.
+        hyper_background_noise
+            If included, adds a noise-scaling term to the background noise.
+        use_hyper_scaling
+            If set to False, the hyper scaling functions (e.g. the `hyper_background_noise`) are
+            omitted irrespective of their inputs.
+        settings_pixelization
+            Settings controlling how a pixelization is fitted for example if a border is used when creating the
+            pixelization.
+        settings_inversion
+            Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
+        preloads
+            Contains preloaded calculations (e.g. linear algebra matrices) which can skip certain calculations in
+            the fit.
+        profiling_dict
+            A dictionary which if passed to the fit records how long fucntion calls which have the `profile_func`
+            decorator take to run.
         """
 
         try:
@@ -57,7 +96,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         )
 
     @property
-    def noise_map(self):
+    def noise_map(self) -> aa.Visibilities:
         """
         Returns the interferometer's noise-map, which may have a hyper scaling performed which increase the noise in
         regions of the data that are poorly fitted in order to avoid overfitting.
@@ -71,7 +110,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         return self.dataset.noise_map
 
     @property
-    def profile_visibilities(self):
+    def profile_visibilities(self) -> aa.Visibilities:
         """
         Returns the visibilities of every light profile in the plane, which are computed by performing a Fourier
         transform to the sum of light profile images.
@@ -81,20 +120,22 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         )
 
     @property
-    def profile_subtracted_visibilities(self):
+    def profile_subtracted_visibilities(self) -> aa.Visibilities:
         """
-        Returns the interferomter dataset's visibilities with all transformed light profile images in the fit's
+        Returns the interferometer dataset's visibilities with all transformed light profile images in the fit's
         plane subtracted.
         """
         return self.visibilities - self.profile_visibilities
 
     @cached_property
-    def inversion(self):
+    def inversion(self) -> aa.Inversion:
         """
-        If the plane has linear objects which are used to fit the data (e.g. a pixelization) this function returns
-        the linear inversion.
+        If the tracer has linear objects which are used to fit the data (e.g. a linear light profile / pixelization)
+        this function returns a linear inversion, where the flux values of these objects (e.g. the `intensity`
+        of linear light profiles) are computed via linear matrix algebra.
 
-        The image passed to this function is the dataset's image with all light profile images of the plane subtracted.
+        The data passed to this function is the dataset's image with all light profile images of the tracer subtracted,
+        ensuring that the inversion only fits the data with ordinary light profiles subtracted.
         """
         if self.perform_inversion:
 
@@ -109,14 +150,14 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
             )
 
     @property
-    def model_data(self):
+    def model_data(self) -> aa.Visibilities:
         """
-        Returns the model-image that is used to fit the data.
+        Returns the model data that is used to fit the data.
 
-        If the plane does not have any linear objects and therefore omits an inversion, the model image is the
-        sum of all light profile images.
+        If the plane does not have any linear objects and therefore omits an inversion, the model data is the
+        sum of all light profile images Fourier transformed to visibilities.
 
-        If a inversion is included it is the sum of this sum and the inversion's reconstruction of the image.
+        If a inversion is included it is the sum of these visibilities and the inversion's reconstructed visibilities.
         """
 
         if self.tracer.has(cls=aa.pix.Pixelization) or self.tracer.has(
@@ -128,13 +169,22 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         return self.profile_visibilities
 
     @property
-    def grid(self):
+    def grid(self) -> aa.type.Grid2DLike:
         return self.interferometer.grid
 
     @property
     def galaxy_model_image_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
         """
-        A dictionary associating galaxies with their corresponding model images
+        A dictionary which associates every galaxy in the plane with its `image`.
+
+        This image is the image of the sum of:
+
+        - The images of all ordinary light profiles in that plane summed.
+        - The images of all linear objects (e.g. linear light profiles / pixelizations), where the images are solved
+        for first via the inversion.
+
+        For modeling, this dictionary is used to set up the `hyper_images` that adapt certain pixelizations to the
+        data being fitted.
         """
         galaxy_model_image_dict = self.tracer.galaxy_image_2d_dict_from(grid=self.grid)
 
