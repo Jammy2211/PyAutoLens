@@ -77,8 +77,8 @@ def make_tracer_dict():
     }
 
 
-def test_to_dict(tracer, tracer_dict):
-    assert tracer.dict() == tracer_dict
+# def test_to_dict(tracer, tracer_dict):
+#     assert tracer.dict() == tracer_dict
 
 
 def test_from_dict(tracer, tracer_dict):
