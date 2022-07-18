@@ -38,7 +38,7 @@ To install (or update) numba in conda use the following command:
 
     conda install numba
 
-When you create the conda enviroment run the following command:
+When you create the conda environment run the following command:
 
 .. code-block:: bash
 

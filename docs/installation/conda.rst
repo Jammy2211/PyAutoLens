@@ -15,10 +15,10 @@ First, update conda:
 
     conda update -n base -c defaults conda
 
-First, create a conda environment (we name this ``autolens`` to signify it is for the **PyAutoLens** install):
+Next, create a conda environment (we name this ``autolens`` to signify it is for the **PyAutoLens** install):
 
 The command below creates this environment with some of the bigger package requirements, the rest will be installed
-with **PyAutoFit** via pip:
+via pip:
 
 .. code-block:: bash
 
@@ -75,7 +75,6 @@ with the software and determine if it is the right software for you.
 
 If you decide that **PyAutoLens** is the right software, then I recommend you commit the time to getting a
 successful numba install working, with more information provided `at this readthedocs page <https://pyautolens.readthedocs.io/en/latest/installation/numba.html>`_
-
 
 Workspace
 ---------
