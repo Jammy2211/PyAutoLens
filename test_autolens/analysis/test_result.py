@@ -37,7 +37,6 @@ def test__max_log_likelihood_positions_threshold(masked_imaging_7x7):
     analysis = al.AnalysisImaging(
         dataset=masked_imaging_7x7,
         positions_likelihood=positions_likelihood,
-        settings_lens=al.SettingsLens(threshold=1.0),
     )
 
     tracer = al.Tracer.from_galaxies(
@@ -326,7 +325,6 @@ def test__results_include_positions__available_as_property(
     analysis = al.AnalysisImaging(
         dataset=masked_imaging_7x7,
         positions_likelihood=positions_likelihood,
-        settings_lens=al.SettingsLens(threshold=1.0),
     )
 
     result = res.ResultDataset(
