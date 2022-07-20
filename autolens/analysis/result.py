@@ -27,6 +27,17 @@ class Result(AgResult):
         return self.analysis.tracer_via_instance_from(instance=self.instance)
 
     @property
+    def max_log_likelihood_positions_threshold(self) -> float:
+
+        positions_fits = FitPositionsSourceMaxSeparation(
+            positions=self.analysis.positions_likelihood.positions,
+            noise_map=None,
+            tracer=self.max_log_likelihood_tracer
+        )
+
+        return positions_fits.max_separation_of_source_plane_positions
+
+    @property
     def source_plane_light_profile_centre(self) -> aa.Grid2DIrregular:
         """
         Return a light profile centre of one of the a galaxies in the maximum log likelihood `Tracer`'s source-plane.
@@ -63,8 +74,6 @@ class Result(AgResult):
         These image-plane positions are used by the next search in a pipeline if automatic position updating is turned
         on."""
 
-        # TODO : In the future, the multiple image positions functioon wil use an in-built adaptive grid.
-
         grid = self.analysis.dataset.mask.unmasked_grid_sub_1
 
         solver = PointSolver(
@@ -86,7 +95,7 @@ class Result(AgResult):
     ) -> float:
         """
         Compute a new position threshold from these results corresponding to the image-plane multiple image positions of
-         the maximum log likelihood `Tracer` ray-traced to the source-plane.
+        the maximum log likelihood `Tracer` ray-traced to the source-plane.
 
         First, we ray-trace forward the multiple-image's to the source-plane via the mass model to determine how far
         apart they are separated. We take the maximum source-plane separation of these points and multiple this by

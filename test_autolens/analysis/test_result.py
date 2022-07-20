@@ -11,7 +11,7 @@ from autolens.imaging.model.result import ResultImaging
 directory = os.path.dirname(os.path.realpath(__file__))
 
 
-def test__max_log_likelihood_tracer_available_as_result(
+def test__max_log_likelihood_tracer(
     analysis_imaging_7x7, samples_with_result
 ):
 
@@ -30,7 +30,36 @@ def test__max_log_likelihood_tracer_available_as_result(
     assert result.max_log_likelihood_tracer.galaxies[1].light.intensity == 2.0
 
 
-def test__max_log_likelihood_tracer_source_light_profile_centres_correct(
+def test__max_log_likelihood_positions_threshold(masked_imaging_7x7):
+
+    positions_likelihood = al.PositionsLHResample(positions=al.Grid2DIrregular(grid=[(1.0, 1.0), [-1.0, -1.0]]), threshold=100.0)
+
+    analysis = al.AnalysisImaging(
+        dataset=masked_imaging_7x7,
+        positions_likelihood=positions_likelihood,
+        settings_lens=al.SettingsLens(threshold=1.0),
+    )
+
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[
+            al.Galaxy(
+                redshift=0.5,
+                mass=al.mp.EllIsothermal(
+                    centre=(0.1, 0.0), einstein_radius=1.0, elliptical_comps=(0.0, 0.0)
+                ),
+            ),
+            al.Galaxy(redshift=1.0, bulge=al.lp.SphSersic(centre=(0.0, 0.0))),
+        ]
+    )
+
+    samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
+
+    result = res.Result(samples=samples, model=None, analysis=analysis)
+
+    assert result.max_log_likelihood_positions_threshold == pytest.approx(0.8309561230, 1.0e-4)
+
+
+def test__source_plane_light_profile_centre(
     analysis_imaging_7x7
 ):
 
@@ -91,7 +120,7 @@ def test__max_log_likelihood_tracer_source_light_profile_centres_correct(
     assert result.source_plane_light_profile_centre == None
 
 
-def test__max_log_likelihood_tracer_source_inversion_centres_correct(
+def test__source_plane_inversion_centre(
     analysis_imaging_7x7
 ):
 
@@ -130,7 +159,7 @@ def test__max_log_likelihood_tracer_source_inversion_centres_correct(
     assert result.source_plane_inversion_centre == None
 
 
-def test__max_log_likelihood_tracer_source_centres_correct(analysis_imaging_7x7):
+def test__source_plane_centre(analysis_imaging_7x7):
 
     lens = al.Galaxy(redshift=0.5, light=al.lp.SphSersic(intensity=1.0))
     source = al.Galaxy(
@@ -150,8 +179,7 @@ def test__max_log_likelihood_tracer_source_centres_correct(analysis_imaging_7x7)
         (-0.916666, -0.916666), 1.0e-4
     )
 
-
-def test__max_log_likelihood_tracer__multiple_image_positions_of_source_plane_centres_and_separations(
+def test__image_plane_multiple_image_positions(
     analysis_imaging_7x7
 ):
 
@@ -182,9 +210,6 @@ def test__max_log_likelihood_tracer__multiple_image_positions_of_source_plane_ce
     assert multiple_images.in_list[0][1] == pytest.approx(-1.10205078, 1.0e-4)
     assert multiple_images.in_list[1][0] == pytest.approx(-0.19287109, 1.0e-4)
     assert multiple_images.in_list[1][1] == pytest.approx(0.27978516, 1.0e-4)
-
-
-def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
 
     tracer = al.Tracer.from_galaxies(
         galaxies=[

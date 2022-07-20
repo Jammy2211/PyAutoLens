@@ -263,6 +263,9 @@ class FitImaging(aa.FitImaging, AbstractFit):
 
         This is used to visualize the contribution of each plane in the data.
         """
+
+        # TODO: Check why this gives weird results via aggregator.
+
         subtracted_images_of_planes_list = []
 
         model_images_of_planes_list = self.model_images_of_planes_list

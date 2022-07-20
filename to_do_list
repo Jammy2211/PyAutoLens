@@ -24,6 +24,9 @@ Mapping image arrays (e.g. the data) to the source plane so we can compare how t
 - Do for simple rectangular grid, then add subgrid, interpolation.
 - Make magnification equivalent.
 
+__VIsualize__
+
+Dont put critical curve on all FitImaging plots, it can cover up the cresidails in the centre (e.g. the red cricle of the radial critical curve gets in the way)/.
 
 __Clump API__
 
@@ -52,6 +55,7 @@ __Refactor__
 
 __Bugs__
 
+- Fix fractional accuracy bug where one can end up with dodgy lens light subs if done simultaneously with source.
 - Raise exception if mask not applied to imaging and it is passed to analysis.
 - No positions analysis bug, need to remove copy or something.
 - Point source raises exception if solver grid smaller than data in analysi class.
