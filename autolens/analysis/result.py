@@ -28,7 +28,24 @@ class Result(AgResult):
 
     @property
     def max_log_likelihood_positions_threshold(self) -> float:
+        """
+        If the `Analysis` has a `PositionsLH` object this add a penalty term to the likelihood of the
+        `log_likelihood_function`.
 
+        This term is computed by ray-tracing a set of multiple image positions (E.g. corresponding to the lensed
+        sources brightest pixels) to the source-plane and computing their maximum separation. This separation is
+        then combined with a threshold to compute the likelihood term.
+
+        This property returns the maximum separation of this `Analysis` object's multiple image positions for the
+        maximum log likelihood tracer.
+
+        It therefore provides information on how closely the lens model was able to ray trace the multiple images to
+        one another in the source plane, and can be used for setting up the `PositionsLH` object in subsequent fits.
+
+        Returns
+        -------
+
+        """
         positions_fits = FitPositionsSourceMaxSeparation(
             positions=self.analysis.positions_likelihood.positions,
             noise_map=None,
@@ -94,8 +111,8 @@ class Result(AgResult):
         positions: Optional[aa.Grid2DIrregular] = None,
     ) -> float:
         """
-        Compute a new position threshold from these results corresponding to the image-plane multiple image positions of
-        the maximum log likelihood `Tracer` ray-traced to the source-plane.
+        Compute a new position threshold from these results corresponding to the image-plane multiple image positions
+        of the maximum log likelihood `Tracer` ray-traced to the source-plane.
 
         First, we ray-trace forward the multiple-image's to the source-plane via the mass model to determine how far
         apart they are separated. We take the maximum source-plane separation of these points and multiple this by
@@ -158,7 +175,7 @@ class Result(AgResult):
             else positions
         )
         threshold = self.positions_threshold_from(
-            factor=factor, minimum_threshold=minimum_threshold
+            factor=factor, minimum_threshold=minimum_threshold, positions=positions
         )
 
         if not use_resample:
