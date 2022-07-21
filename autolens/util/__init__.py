@@ -10,8 +10,13 @@ from autoarray.fit import fit_util as fit
 from autoarray.inversion.pixelizations import pixelization_util as pixelization
 from autoarray.inversion.mappers import mapper_util as mapper
 from autoarray.inversion.regularization import regularization_util as regularization
-from autoarray.inversion.linear_eqn import leq_util as leq
 from autoarray.inversion.inversion import inversion_util as inversion
+from autoarray.inversion.inversion.imaging import (
+    inversion_imaging_util as inversion_imaging,
+)
+from autoarray.inversion.inversion.interferometer import (
+    inversion_interferometer_util as inversion_interferometer,
+)
 from autoarray.operators import transformer_util as transformer
 from autogalaxy.analysis import model_util as model
 

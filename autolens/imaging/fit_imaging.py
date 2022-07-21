@@ -152,7 +152,7 @@ class FitImaging(aa.FitImaging, AbstractFit):
         return self.image - self.blurred_image
 
     @cached_property
-    def inversion(self) -> aa.Inversion:
+    def inversion(self) -> Optional[aa.AbstractInversion]:
         """
         If the tracer has linear objects which are used to fit the data (e.g. a linear light profile / pixelization)
         this function returns a linear inversion, where the flux values of these objects (e.g. the `intensity`
