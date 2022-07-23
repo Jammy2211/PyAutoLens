@@ -51,9 +51,9 @@ def test__lp_linear_func_galaxy_dict_from(sub_grid_2d_7x7, blurring_grid_2d_7x7)
     assert lp_linear_func_galaxy_dict[lp_linear_func_list[1]] == galaxy_linear_1
     assert lp_linear_func_galaxy_dict[lp_linear_func_list[2]] == galaxy_linear_2
 
-    assert lp_linear_func_list[0].light_profile == lp_linear_0
-    assert lp_linear_func_list[1].light_profile == lp_linear_1
-    assert lp_linear_func_list[2].light_profile == lp_linear_2
+    assert lp_linear_func_list[0].light_profile_list[0] == lp_linear_0
+    assert lp_linear_func_list[1].light_profile_list[0] == lp_linear_1
+    assert lp_linear_func_list[2].light_profile_list[0] == lp_linear_2
 
     traced_grid_list = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)
 

@@ -1,15 +1,4 @@
-import copy
-import numpy as np
-from typing import Optional, Union
-
-import autoarray as aa
-import autogalaxy as ag
-
-from autoconf import conf
-
-from autolens.point.fit_point.max_separation import FitPositionsSourceMaxSeparation
-
-from autolens import exc
+from typing import Optional
 
 
 class SettingsLens:
