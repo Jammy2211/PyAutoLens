@@ -238,6 +238,25 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
     assert fit.perform_inversion is True
     assert fit.figure_of_merit == pytest.approx(-6741.83381, 1.0e-4)
 
+    basis = al.lp_basis.Basis(
+        light_profile_list=[
+            al.lp_linear.EllSersic(sersic_index=1.0),
+            al.lp_linear.EllSersic(sersic_index=4.0),
+        ],
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
+
+    g0_basis = al.Galaxy(
+        redshift=0.5, bulge=basis, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+    )
+
+    tracer = al.Tracer.from_galaxies(galaxies=[g0_basis, g1])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert fit.perform_inversion is True
+    assert fit.figure_of_merit == pytest.approx(-208205.2074336, 1.0e-4)
+
     tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, galaxy_pix])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
