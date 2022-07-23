@@ -61,6 +61,48 @@ def test__lp_linear_func_galaxy_dict_from(sub_grid_2d_7x7, blurring_grid_2d_7x7)
     assert lp_linear_func_list[1].grid == pytest.approx(traced_grid_list[1], 1.0e-4)
     assert lp_linear_func_list[2].grid == pytest.approx(traced_grid_list[2], 1.0e-4)
 
+    lp_linear_3 = al.lp_linear.LightProfileLinear()
+    lp_linear_4 = al.lp_linear.LightProfileLinear()
+
+    basis_0 = al.lp_basis.Basis(light_profile_list=[lp_linear_0, lp_linear_1])
+
+    galaxy_linear_0 = al.Galaxy(redshift=0.5, bulge=basis_0, mass=al.mp.SphIsothermal())
+
+    galaxy_linear_1 = al.Galaxy(redshift=1.0, mass=al.mp.SphIsothermal())
+
+    galaxy_linear_2 = al.Galaxy(redshift=2.0, lp_linear=lp_linear_2)
+
+    basis_1 = al.lp_basis.Basis(light_profile_list=[lp_linear_3, lp_linear_4])
+
+    galaxy_linear_3 = al.Galaxy(redshift=2.0, bulge=basis_1)
+
+    tracer = al.Tracer.from_galaxies(
+        galaxies=[
+            galaxy_no_linear,
+            galaxy_linear_0,
+            galaxy_linear_1,
+            galaxy_linear_2,
+            galaxy_linear_3,
+        ]
+    )
+
+    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+
+    lp_linear_func_galaxy_dict = tracer_to_inversion.lp_linear_func_list_galaxy_dict_from(
+        grid=sub_grid_2d_7x7, blurring_grid=blurring_grid_2d_7x7
+    )
+
+    lp_linear_func_list = list(lp_linear_func_galaxy_dict.keys())
+
+    assert lp_linear_func_galaxy_dict[lp_linear_func_list[0]] == galaxy_linear_0
+    assert lp_linear_func_galaxy_dict[lp_linear_func_list[1]] == galaxy_linear_2
+    assert lp_linear_func_galaxy_dict[lp_linear_func_list[2]] == galaxy_linear_3
+
+    assert lp_linear_func_list[0].light_profile_list[0] == lp_linear_0
+    assert lp_linear_func_list[0].light_profile_list[1] == lp_linear_1
+    assert lp_linear_func_list[1].light_profile_list[0] == lp_linear_3
+    assert lp_linear_func_list[2].light_profile_list[0] == lp_linear_4
+
 
 def test__cls_pg_list_from(sub_grid_2d_7x7):
     galaxy_pix = al.Galaxy(
