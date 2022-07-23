@@ -191,9 +191,7 @@ class FitImaging(aa.FitImaging, AbstractFit):
         If a inversion is included it is the sum of this image and the inversion's reconstruction of the image.
         """
 
-        if self.tracer.has(cls=aa.pix.Pixelization) or self.tracer.has(
-            cls=ag.lp_linear.LightProfileLinear
-        ):
+        if self.perform_inversion:
 
             return self.blurred_image + self.inversion.mapped_reconstructed_data
 

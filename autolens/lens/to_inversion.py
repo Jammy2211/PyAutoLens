@@ -51,7 +51,7 @@ class TracerToInversion(ag.AbstractToInversion):
         self,
     ) -> Dict[ag.LightProfileLinearObjFuncList, ag.Galaxy]:
 
-        if not self.tracer.has(cls=ag.lp_linear.LightProfileLinear):
+        if not self.tracer.perform_inversion:
             return {}
 
         lp_linear_galaxy_dict_list = {}

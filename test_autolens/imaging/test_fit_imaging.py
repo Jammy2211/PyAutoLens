@@ -209,22 +209,40 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
     g0_linear = al.Galaxy(
         redshift=0.5,
         bulge=al.lp_linear.EllSersic(sersic_index=1.0),
+        disk=al.lp_linear.EllSersic(sersic_index=4.0),
         mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
     )
 
-    g1_linear = al.Galaxy(redshift=1.0, bulge=al.lp_linear.EllSersic(sersic_index=4.0))
-
-    tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1_linear])
+    tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
     assert fit.perform_inversion is True
-    assert fit.figure_of_merit == pytest.approx(-14.573607, 1.0e-4)
+    assert fit.figure_of_merit == pytest.approx(-6741.83381, 1.0e-4)
+
+    basis = al.lp_basis.Basis(
+        light_profile_list=[
+            al.lp_linear.EllSersic(sersic_index=1.0),
+            al.lp_linear.EllSersic(sersic_index=4.0),
+        ]
+    )
+
+    g0_linear = al.Galaxy(
+        redshift=0.5, bulge=basis, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+    )
+
+    tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert fit.perform_inversion is True
+    assert fit.figure_of_merit == pytest.approx(-6741.83381, 1.0e-4)
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, galaxy_pix])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
+    assert fit.perform_inversion is True
     assert fit.figure_of_merit == pytest.approx(-22.79906, 1.0e-4)
 
     g0_operated = al.Galaxy(
@@ -239,6 +257,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
+    assert fit.perform_inversion is False
     assert fit.figure_of_merit == pytest.approx(-2657889.4489, 1.0e-4)
 
     g0_linear_operated = al.Galaxy(
@@ -255,6 +274,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
+    assert fit.perform_inversion is True
     assert fit.figure_of_merit == pytest.approx(-14.9881985, 1.0e-4)
 
 

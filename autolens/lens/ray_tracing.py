@@ -409,6 +409,20 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         return contribution_map_list
 
+    @property
+    def perform_inversion(self) -> bool:
+        """
+        Returns a bool specifying whether this fit object performs an inversion.
+
+        This is based on whether any of the galaxies in the `model_obj` have a `Pixelization` or `LightProfileLinear`
+        object, in which case an inversion is performed.
+
+        Returns
+        -------
+            A bool which is True if an inversion is performed.
+        """
+        return any([plane.perform_inversion for plane in self.planes])
+
     def extract_attribute(self, cls, attr_name):
         """
         Returns an attribute of a class in the tracer as a `ValueIrregular` or `Grid2DIrregular` object.

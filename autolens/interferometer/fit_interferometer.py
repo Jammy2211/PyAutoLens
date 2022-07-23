@@ -167,9 +167,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         If a inversion is included it is the sum of these visibilities and the inversion's reconstructed visibilities.
         """
 
-        if self.tracer.has(cls=aa.pix.Pixelization) or self.tracer.has(
-            cls=ag.lp_linear.LightProfileLinear
-        ):
+        if self.perform_inversion:
 
             return self.profile_visibilities + self.inversion.mapped_reconstructed_data
 
