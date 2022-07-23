@@ -15,7 +15,7 @@ def test__lp_linear_func_galaxy_dict_from(sub_grid_2d_7x7, blurring_grid_2d_7x7)
 
     tracer_to_inversion = al.TracerToInversion(tracer=tracer)
 
-    lp_linear_func_galaxy_dict = tracer_to_inversion.lp_linear_func_galaxy_dict_from(
+    lp_linear_func_galaxy_dict = tracer_to_inversion.lp_linear_func_list_galaxy_dict_from(
         grid=sub_grid_2d_7x7, blurring_grid=blurring_grid_2d_7x7
     )
 
@@ -41,7 +41,7 @@ def test__lp_linear_func_galaxy_dict_from(sub_grid_2d_7x7, blurring_grid_2d_7x7)
 
     tracer_to_inversion = al.TracerToInversion(tracer=tracer)
 
-    lp_linear_func_galaxy_dict = tracer_to_inversion.lp_linear_func_galaxy_dict_from(
+    lp_linear_func_galaxy_dict = tracer_to_inversion.lp_linear_func_list_galaxy_dict_from(
         grid=sub_grid_2d_7x7, blurring_grid=blurring_grid_2d_7x7
     )
 

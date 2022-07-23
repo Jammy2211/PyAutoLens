@@ -25,13 +25,13 @@ class TracerToInversion:
     ) -> List[aa.type.Grid2DLike]:
         return self.tracer.traced_grid_2d_list_from(grid=grid)
 
-    def lp_linear_func_galaxy_dict_from(
+    def lp_linear_func_list_galaxy_dict_from(
         self,
         grid: aa.type.Grid2DLike,
         blurring_grid: aa.type.Grid1D2DLike,
         convolver: Optional[aa.Convolver] = None,
         preloads=Preloads(),
-    ) -> Dict[ag.LightProfileLinearObjFunc, ag.Galaxy]:
+    ) -> Dict[ag.LightProfileLinearObjFuncList, ag.Galaxy]:
 
         if not self.tracer.has(cls=ag.lp_linear.LightProfileLinear):
             return {}
@@ -51,7 +51,7 @@ class TracerToInversion:
 
         for (plane_index, plane) in enumerate(self.planes):
 
-            lp_linear_galaxy_dict_of_plane = plane.to_inversion.lp_linear_func_galaxy_dict_from(
+            lp_linear_galaxy_dict_of_plane = plane.to_inversion.lp_linear_func_list_galaxy_dict_from(
                 source_grid_slim=traced_grids_of_planes_list[plane_index],
                 source_blurring_grid_slim=traced_blurring_grids_of_planes_list[
                     plane_index
@@ -216,9 +216,9 @@ class TracerToInversion:
         dataset: Union[aa.Imaging, aa.Interferometer],
         settings_pixelization: aa.SettingsPixelization = aa.SettingsPixelization(),
         preloads: Preloads = Preloads(),
-    ) -> Dict[Union[ag.LightProfileLinearObjFunc, aa.AbstractMapper], ag.Galaxy]:
+    ) -> Dict[Union[ag.LightProfileLinearObjFuncList, aa.AbstractMapper], ag.Galaxy]:
 
-        lp_linear_func_galaxy_dict = self.lp_linear_func_galaxy_dict_from(
+        lp_linear_func_galaxy_dict = self.lp_linear_func_list_galaxy_dict_from(
             grid=dataset.grid,
             blurring_grid=dataset.blurring_grid,
             convolver=dataset.convolver,
