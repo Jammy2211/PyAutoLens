@@ -94,8 +94,7 @@ def test__positions__resample__raises_exception(interferometer_7, mask_2d_7x7):
     )
 
     analysis = al.AnalysisInterferometer(
-        dataset=interferometer_7,
-        positions_likelihood=positions_likelihood,
+        dataset=interferometer_7, positions_likelihood=positions_likelihood
     )
 
     instance = model.instance_from_unit_vector([])

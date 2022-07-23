@@ -11,9 +11,7 @@ from autolens.imaging.model.result import ResultImaging
 directory = os.path.dirname(os.path.realpath(__file__))
 
 
-def test__max_log_likelihood_tracer(
-    analysis_imaging_7x7, samples_with_result
-):
+def test__max_log_likelihood_tracer(analysis_imaging_7x7, samples_with_result):
 
     model = af.Collection(
         galaxies=af.Collection(
@@ -32,11 +30,12 @@ def test__max_log_likelihood_tracer(
 
 def test__max_log_likelihood_positions_threshold(masked_imaging_7x7):
 
-    positions_likelihood = al.PositionsLHResample(positions=al.Grid2DIrregular(grid=[(1.0, 1.0), [-1.0, -1.0]]), threshold=100.0)
+    positions_likelihood = al.PositionsLHResample(
+        positions=al.Grid2DIrregular(grid=[(1.0, 1.0), [-1.0, -1.0]]), threshold=100.0
+    )
 
     analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7,
-        positions_likelihood=positions_likelihood,
+        dataset=masked_imaging_7x7, positions_likelihood=positions_likelihood
     )
 
     tracer = al.Tracer.from_galaxies(
@@ -55,12 +54,12 @@ def test__max_log_likelihood_positions_threshold(masked_imaging_7x7):
 
     result = res.Result(samples=samples, model=None, analysis=analysis)
 
-    assert result.max_log_likelihood_positions_threshold == pytest.approx(0.8309561230, 1.0e-4)
+    assert result.max_log_likelihood_positions_threshold == pytest.approx(
+        0.8309561230, 1.0e-4
+    )
 
 
-def test__source_plane_light_profile_centre(
-    analysis_imaging_7x7
-):
+def test__source_plane_light_profile_centre(analysis_imaging_7x7):
 
     lens = al.Galaxy(redshift=0.5, light=al.lp.SphSersic(intensity=1.0))
 
@@ -119,9 +118,7 @@ def test__source_plane_light_profile_centre(
     assert result.source_plane_light_profile_centre == None
 
 
-def test__source_plane_inversion_centre(
-    analysis_imaging_7x7
-):
+def test__source_plane_inversion_centre(analysis_imaging_7x7):
 
     lens = al.Galaxy(redshift=0.5, light=al.lp.SphSersic(intensity=1.0))
 
@@ -178,9 +175,8 @@ def test__source_plane_centre(analysis_imaging_7x7):
         (-0.916666, -0.916666), 1.0e-4
     )
 
-def test__image_plane_multiple_image_positions(
-    analysis_imaging_7x7
-):
+
+def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
 
     lens = al.Galaxy(
         redshift=0.5,
@@ -323,8 +319,7 @@ def test__results_include_positions__available_as_property(
     )
 
     analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7,
-        positions_likelihood=positions_likelihood,
+        dataset=masked_imaging_7x7, positions_likelihood=positions_likelihood
     )
 
     result = res.ResultDataset(
