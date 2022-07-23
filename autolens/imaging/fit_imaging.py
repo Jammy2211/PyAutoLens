@@ -13,6 +13,7 @@ from autogalaxy.imaging.fit_imaging import hyper_noise_map_from
 
 from autolens.analysis.preloads import Preloads
 from autolens.lens.ray_tracing import Tracer
+from autolens.lens.to_inversion import TracerToInversion
 
 from autolens import exc
 
@@ -151,6 +152,17 @@ class FitImaging(aa.FitImaging, AbstractFit):
         """
         return self.image - self.blurred_image
 
+    @property
+    def tracer_to_inversion(self) -> TracerToInversion:
+
+        return TracerToInversion(
+            tracer=self.tracer,
+            grid=self.dataset.grid,
+            blurring_grid=self.dataset.blurring_grid,
+            grid_pixelized=self.dataset.grid_pixelized,
+            convolver=self.dataset.convolver,
+        )
+
     @cached_property
     def inversion(self) -> Optional[aa.AbstractInversion]:
         """
@@ -163,7 +175,7 @@ class FitImaging(aa.FitImaging, AbstractFit):
         """
         if self.perform_inversion:
 
-            return self.tracer.to_inversion.inversion_imaging_from(
+            return self.tracer_to_inversion.inversion_imaging_from(
                 dataset=self.dataset,
                 image=self.profile_subtracted_image,
                 noise_map=self.noise_map,

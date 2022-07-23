@@ -15,6 +15,6 @@ class MockTracerToInversion:
 
         self.profiling_dict = profiling_dict
 
-    def sparse_image_plane_grid_pg_list_from(self, grid):
+    def sparse_image_plane_grid_pg_list_from(self):
 
         return self.sparse_image_plane_grid_pg_list

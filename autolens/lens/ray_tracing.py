@@ -10,8 +10,6 @@ from autoconf.dictable import Dictable
 from autogalaxy.plane.plane import Plane
 from autogalaxy.profiles.light_profiles.light_profiles_snr import LightProfileSNR
 
-from autolens.lens.to_inversion import TracerToInversion
-
 from autolens.lens import ray_tracing_util
 
 
@@ -410,10 +408,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
                 contribution_map_list.append(None)
 
         return contribution_map_list
-
-    @property
-    def to_inversion(self):
-        return TracerToInversion(tracer=self)
 
     def extract_attribute(self, cls, attr_name):
         """

@@ -13,10 +13,12 @@ def test__lp_linear_func_galaxy_dict_from(sub_grid_2d_7x7, blurring_grid_2d_7x7)
 
     tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_no_pix])
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+    tracer_to_inversion = al.TracerToInversion(
+        tracer=tracer, grid=sub_grid_2d_7x7, blurring_grid=blurring_grid_2d_7x7
+    )
 
-    lp_linear_func_galaxy_dict = tracer_to_inversion.lp_linear_func_list_galaxy_dict_from(
-        grid=sub_grid_2d_7x7, blurring_grid=blurring_grid_2d_7x7
+    lp_linear_func_galaxy_dict = (
+        tracer_to_inversion.lp_linear_func_list_galaxy_dict_from()
     )
 
     assert lp_linear_func_galaxy_dict == {}
@@ -39,10 +41,12 @@ def test__lp_linear_func_galaxy_dict_from(sub_grid_2d_7x7, blurring_grid_2d_7x7)
         galaxies=[galaxy_no_linear, galaxy_linear_0, galaxy_linear_1, galaxy_linear_2]
     )
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+    tracer_to_inversion = al.TracerToInversion(
+        tracer=tracer, grid=sub_grid_2d_7x7, blurring_grid=blurring_grid_2d_7x7
+    )
 
-    lp_linear_func_galaxy_dict = tracer_to_inversion.lp_linear_func_list_galaxy_dict_from(
-        grid=sub_grid_2d_7x7, blurring_grid=blurring_grid_2d_7x7
+    lp_linear_func_galaxy_dict = (
+        tracer_to_inversion.lp_linear_func_list_galaxy_dict_from()
     )
 
     lp_linear_func_list = list(lp_linear_func_galaxy_dict.keys())
@@ -86,10 +90,12 @@ def test__lp_linear_func_galaxy_dict_from(sub_grid_2d_7x7, blurring_grid_2d_7x7)
         ]
     )
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+    tracer_to_inversion = al.TracerToInversion(
+        tracer=tracer, grid=sub_grid_2d_7x7, blurring_grid=blurring_grid_2d_7x7
+    )
 
-    lp_linear_func_galaxy_dict = tracer_to_inversion.lp_linear_func_list_galaxy_dict_from(
-        grid=sub_grid_2d_7x7, blurring_grid=blurring_grid_2d_7x7
+    lp_linear_func_galaxy_dict = (
+        tracer_to_inversion.lp_linear_func_list_galaxy_dict_from()
     )
 
     lp_linear_func_list = list(lp_linear_func_galaxy_dict.keys())
@@ -247,11 +253,9 @@ def test__sparse_image_plane_grid_pg_list_from(sub_grid_2d_7x7):
 
     tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_pix])
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+    tracer_to_inversion = al.TracerToInversion(tracer=tracer, grid=sub_grid_2d_7x7)
 
-    pixelization_grids = tracer_to_inversion.sparse_image_plane_grid_pg_list_from(
-        grid=sub_grid_2d_7x7
-    )
+    pixelization_grids = tracer_to_inversion.sparse_image_plane_grid_pg_list_from()
 
     assert pixelization_grids[0] == None
     assert (pixelization_grids[1] == np.array([[1.0, 1.0]])).all()
@@ -288,11 +292,9 @@ def test__sparse_image_plane_grid_pg_list_from(sub_grid_2d_7x7):
         ]
     )
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+    tracer_to_inversion = al.TracerToInversion(tracer=tracer, grid=sub_grid_2d_7x7)
 
-    pixelization_grids = tracer_to_inversion.sparse_image_plane_grid_pg_list_from(
-        grid=sub_grid_2d_7x7
-    )
+    pixelization_grids = tracer_to_inversion.sparse_image_plane_grid_pg_list_from()
 
     assert pixelization_grids[0] == None
     assert pixelization_grids[1] == None
@@ -334,10 +336,10 @@ def test__traced_sparse_grid_pg_list_from(sub_grid_2d_7x7):
         galaxies=[galaxy_no_pix, galaxy_pix_0, galaxy_pix_1]
     )
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+    tracer_to_inversion = al.TracerToInversion(tracer=tracer, grid=sub_grid_2d_7x7)
 
-    traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = tracer_to_inversion.traced_sparse_grid_pg_list_from(
-        grid=sub_grid_2d_7x7
+    traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = (
+        tracer_to_inversion.traced_sparse_grid_pg_list_from()
     )
 
     assert traced_sparse_grids_list_of_planes[0] == None
@@ -387,10 +389,10 @@ def test__traced_sparse_grid_pg_list_from(sub_grid_2d_7x7):
         ]
     )
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+    tracer_to_inversion = al.TracerToInversion(tracer=tracer, grid=sub_grid_2d_7x7)
 
-    traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = tracer_to_inversion.traced_sparse_grid_pg_list_from(
-        grid=sub_grid_2d_7x7
+    traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = (
+        tracer_to_inversion.traced_sparse_grid_pg_list_from()
     )
 
     traced_grid_pix_0 = tracer.traced_grid_2d_list_from(grid=np.array([[1.0, 1.0]]))[2]
@@ -409,11 +411,11 @@ def test__mapper_galaxy_dict_from(sub_grid_2d_7x7):
 
     tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_no_pix])
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
-
-    mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict_from(
-        grid=sub_grid_2d_7x7
+    tracer_to_inversion = al.TracerToInversion(
+        tracer=tracer, grid_pixelized=sub_grid_2d_7x7
     )
+
+    mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict_from()
     assert mapper_galaxy_dict == {}
 
     galaxy_no_pix = al.Galaxy(redshift=0.5)
@@ -444,11 +446,11 @@ def test__mapper_galaxy_dict_from(sub_grid_2d_7x7):
         galaxies=[galaxy_no_pix, galaxy_pix_0, galaxy_pix_1, galaxy_pix_2]
     )
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
-
-    mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict_from(
-        grid=sub_grid_2d_7x7
+    tracer_to_inversion = al.TracerToInversion(
+        tracer=tracer, grid_pixelized=sub_grid_2d_7x7
     )
+
+    mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict_from()
 
     mapper_list = list(mapper_galaxy_dict.keys())
 
@@ -490,11 +492,11 @@ def test__mapper_galaxy_dict_from(sub_grid_2d_7x7):
         ]
     )
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
-
-    mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict_from(
-        grid=sub_grid_2d_7x7
+    tracer_to_inversion = al.TracerToInversion(
+        tracer=tracer, grid_pixelized=sub_grid_2d_7x7
     )
+
+    mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict_from()
 
     mapper_list = list(mapper_galaxy_dict.keys())
 
@@ -510,7 +512,13 @@ def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
 
     tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g_linear])
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+    tracer_to_inversion = al.TracerToInversion(
+        tracer=tracer,
+        grid=masked_imaging_7x7.grid,
+        blurring_grid=masked_imaging_7x7.blurring_grid,
+        convolver=masked_imaging_7x7.convolver,
+        grid_pixelized=masked_imaging_7x7.grid_pixelized,
+    )
 
     inversion = tracer_to_inversion.inversion_imaging_from(
         dataset=masked_imaging_7x7,
@@ -530,7 +538,13 @@ def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
 
     tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+    tracer_to_inversion = al.TracerToInversion(
+        tracer=tracer,
+        grid=masked_imaging_7x7.grid,
+        blurring_grid=masked_imaging_7x7.blurring_grid,
+        convolver=masked_imaging_7x7.convolver,
+        grid_pixelized=masked_imaging_7x7.grid_pixelized,
+    )
 
     inversion = tracer_to_inversion.inversion_imaging_from(
         dataset=masked_imaging_7x7,
@@ -554,7 +568,11 @@ def test__inversion_interferometer_from(sub_grid_2d_7x7, interferometer_7):
 
     tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g_linear])
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+    tracer_to_inversion = al.TracerToInversion(
+        tracer=tracer,
+        grid=interferometer_7.grid,
+        grid_pixelized=interferometer_7.grid_pixelized,
+    )
 
     inversion = tracer_to_inversion.inversion_interferometer_from(
         dataset=interferometer_7,
@@ -574,7 +592,11 @@ def test__inversion_interferometer_from(sub_grid_2d_7x7, interferometer_7):
 
     tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+    tracer_to_inversion = al.TracerToInversion(
+        tracer=tracer,
+        grid=interferometer_7.grid,
+        grid_pixelized=interferometer_7.grid_pixelized,
+    )
 
     inversion = tracer_to_inversion.inversion_interferometer_from(
         dataset=interferometer_7,

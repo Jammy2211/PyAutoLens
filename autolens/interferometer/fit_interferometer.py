@@ -10,6 +10,7 @@ from autogalaxy.abstract_fit import AbstractFit
 
 from autolens.analysis.preloads import Preloads
 from autolens.lens.ray_tracing import Tracer
+from autolens.lens.to_inversion import TracerToInversion
 
 
 class FitInterferometer(aa.FitInterferometer, AbstractFit):
@@ -127,6 +128,17 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         """
         return self.visibilities - self.profile_visibilities
 
+    @property
+    def tracer_to_inversion(self) -> TracerToInversion:
+
+        return TracerToInversion(
+            tracer=self.tracer,
+            grid=self.dataset.grid,
+            blurring_grid=self.dataset.blurring_grid,
+            grid_pixelized=self.dataset.grid_pixelized,
+            convolver=self.dataset.convolver,
+        )
+
     @cached_property
     def inversion(self) -> Optional[aa.AbstractInversion]:
         """
@@ -139,7 +151,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         """
         if self.perform_inversion:
 
-            return self.tracer.to_inversion.inversion_interferometer_from(
+            return self.tracer_to_inversion.inversion_interferometer_from(
                 dataset=self.dataset,
                 visibilities=self.profile_subtracted_visibilities,
                 noise_map=self.noise_map,

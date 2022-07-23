@@ -10,9 +10,21 @@ from autolens.analysis.preloads import Preloads
 
 
 class TracerToInversion:
-    def __init__(self, tracer, profiling_dict: Optional[Dict] = None):
+    def __init__(
+        self,
+        tracer,
+        grid: Optional[aa.type.Grid2DLike] = None,
+        blurring_grid: Optional[aa.type.Grid2DLike] = None,
+        convolver: Optional[aa.Convolver] = None,
+        grid_pixelized: Optional[aa.type.Grid2DLike] = None,
+        profiling_dict: Optional[Dict] = None,
+    ):
 
         self.tracer = tracer
+        self.grid = grid
+        self.blurring_grid = blurring_grid
+        self.convolver = convolver
+        self.grid_pixelized = grid_pixelized
         self.profiling_dict = profiling_dict
 
     @property
@@ -20,17 +32,11 @@ class TracerToInversion:
         return self.tracer.planes
 
     @aa.profile_func
-    def traced_grid_2d_list_of_inversion_from(
-        self, grid: aa.type.Grid2DLike
-    ) -> List[aa.type.Grid2DLike]:
-        return self.tracer.traced_grid_2d_list_from(grid=grid)
+    def traced_grid_2d_list_of_inversion_from(self,) -> List[aa.type.Grid2DLike]:
+        return self.tracer.traced_grid_2d_list_from(grid=self.grid_pixelized)
 
     def lp_linear_func_list_galaxy_dict_from(
-        self,
-        grid: aa.type.Grid2DLike,
-        blurring_grid: aa.type.Grid1D2DLike,
-        convolver: Optional[aa.Convolver] = None,
-        preloads=Preloads(),
+        self, preloads=Preloads()
     ) -> Dict[ag.LightProfileLinearObjFuncList, ag.Galaxy]:
 
         if not self.tracer.has(cls=ag.lp_linear.LightProfileLinear):
@@ -38,11 +44,13 @@ class TracerToInversion:
 
         lp_linear_galaxy_dict_list = {}
 
-        traced_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(grid=grid)
+        traced_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
+            grid=self.grid
+        )
 
-        if blurring_grid is not None:
+        if self.blurring_grid is not None:
             traced_blurring_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
-                grid=blurring_grid
+                grid=self.blurring_grid
             )
         else:
             traced_blurring_grids_of_planes_list = [None] * len(
@@ -53,11 +61,9 @@ class TracerToInversion:
 
             plane_to_inversion = ag.PlaneToInversion(
                 plane=plane,
-                source_grid_slim=traced_grids_of_planes_list[plane_index],
-                source_blurring_grid_slim=traced_blurring_grids_of_planes_list[
-                    plane_index
-                ],
-                convolver=convolver,
+                grid=traced_grids_of_planes_list[plane_index],
+                blurring_grid=traced_blurring_grids_of_planes_list[plane_index],
+                convolver=self.convolver,
             )
 
             lp_linear_galaxy_dict_of_plane = (
@@ -82,7 +88,7 @@ class TracerToInversion:
 
     @aa.profile_func
     def sparse_image_plane_grid_pg_list_from(
-        self, grid: aa.type.Grid2DLike, settings_pixelization=aa.SettingsPixelization()
+        self, settings_pixelization=aa.SettingsPixelization()
     ) -> List[List]:
         """
         Specific pixelizations, like the `VoronoiMagnification`, begin by determining what will become its the
@@ -95,7 +101,7 @@ class TracerToInversion:
         for plane in self.planes:
 
             plane_to_inversion = ag.PlaneToInversion(
-                plane=plane, source_grid_pixelized_slim=grid
+                plane=plane, grid_pixelized=self.grid
             )
 
             sparse_image_plane_grid_list = plane_to_inversion.sparse_image_plane_grid_list_from(
@@ -107,10 +113,7 @@ class TracerToInversion:
 
     @aa.profile_func
     def traced_sparse_grid_pg_list_from(
-        self,
-        grid: aa.type.Grid2DLike,
-        settings_pixelization=aa.SettingsPixelization(),
-        preloads=Preloads(),
+        self, settings_pixelization=aa.SettingsPixelization(), preloads=Preloads()
     ) -> Tuple[List[List], List[List]]:
         """
         Ray-trace the sparse image plane grid used to define the source-pixel centres by calculating the deflection
@@ -123,7 +126,7 @@ class TracerToInversion:
         ):
 
             sparse_image_plane_grid_pg_list = self.sparse_image_plane_grid_pg_list_from(
-                grid=grid, settings_pixelization=settings_pixelization
+                settings_pixelization=settings_pixelization
             )
 
         else:
@@ -158,26 +161,19 @@ class TracerToInversion:
         return traced_sparse_grid_pg_list, sparse_image_plane_grid_pg_list
 
     def mapper_galaxy_dict_from(
-        self,
-        grid: aa.type.Grid2DLike,
-        settings_pixelization=aa.SettingsPixelization(),
-        preloads=Preloads(),
+        self, settings_pixelization=aa.SettingsPixelization(), preloads=Preloads()
     ) -> Dict[aa.AbstractMapper, ag.Galaxy]:
 
         mapper_galaxy_dict = {}
 
         if preloads.traced_grids_of_planes_for_inversion is None:
-            traced_grids_of_planes_list = self.traced_grid_2d_list_of_inversion_from(
-                grid=grid
-            )
+            traced_grids_of_planes_list = self.traced_grid_2d_list_of_inversion_from()
         else:
             traced_grids_of_planes_list = preloads.traced_grids_of_planes_for_inversion
 
         if preloads.traced_sparse_grids_list_of_planes is None:
             traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = self.traced_sparse_grid_pg_list_from(
-                grid=grid,
-                settings_pixelization=settings_pixelization,
-                preloads=preloads,
+                settings_pixelization=settings_pixelization, preloads=preloads
             )
         else:
             traced_sparse_grids_list_of_planes = (
@@ -190,8 +186,7 @@ class TracerToInversion:
             if plane.has(cls=aa.pix.Pixelization):
 
                 plane_to_inversion = ag.PlaneToInversion(
-                    plane=plane,
-                    source_grid_pixelized_slim=traced_grids_of_planes_list[plane_index],
+                    plane=plane, grid_pixelized=traced_grids_of_planes_list[plane_index]
                 )
 
                 galaxies_with_pixelization_list = plane.galaxies_with_cls_list_from(
@@ -227,23 +222,16 @@ class TracerToInversion:
 
     def linear_obj_galaxy_dict_from(
         self,
-        dataset: Union[aa.Imaging, aa.Interferometer],
         settings_pixelization: aa.SettingsPixelization = aa.SettingsPixelization(),
         preloads: Preloads = Preloads(),
     ) -> Dict[Union[ag.LightProfileLinearObjFuncList, aa.AbstractMapper], ag.Galaxy]:
 
-        lp_linear_func_galaxy_dict = self.lp_linear_func_list_galaxy_dict_from(
-            grid=dataset.grid,
-            blurring_grid=dataset.blurring_grid,
-            convolver=dataset.convolver,
-        )
+        lp_linear_func_galaxy_dict = self.lp_linear_func_list_galaxy_dict_from()
 
         if preloads.mapper_galaxy_dict is None:
 
             mapper_galaxy_dict = self.mapper_galaxy_dict_from(
-                grid=dataset.grid_pixelized,
-                settings_pixelization=settings_pixelization,
-                preloads=preloads,
+                settings_pixelization=settings_pixelization, preloads=preloads
             )
 
         else:
@@ -281,9 +269,7 @@ class TracerToInversion:
     ):
 
         linear_obj_galaxy_dict = self.linear_obj_galaxy_dict_from(
-            dataset=dataset,
-            settings_pixelization=settings_pixelization,
-            preloads=preloads,
+            settings_pixelization=settings_pixelization, preloads=preloads
         )
 
         linear_obj_list = list(linear_obj_galaxy_dict.keys())
@@ -321,9 +307,7 @@ class TracerToInversion:
     ):
 
         linear_obj_galaxy_dict = self.linear_obj_galaxy_dict_from(
-            dataset=dataset,
-            settings_pixelization=settings_pixelization,
-            preloads=preloads,
+            settings_pixelization=settings_pixelization, preloads=preloads
         )
 
         linear_obj_list = list(linear_obj_galaxy_dict.keys())
