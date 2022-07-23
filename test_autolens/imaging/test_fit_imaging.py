@@ -10,9 +10,7 @@ def test__model_image__with_and_without_psf_blurring(
 
     g0 = al.Galaxy(
         redshift=0.5,
-        light_profile=al.m.MockLightProfile(
-            image_2d_value=1.0, image_2d_first_value=2.0
-        ),
+        bulge=al.m.MockLightProfile(image_2d_value=1.0, image_2d_first_value=2.0),
     )
     tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
@@ -33,9 +31,7 @@ def test__model_image__with_and_without_psf_blurring(
 
 def test__noise_map__with_and_without_hyper_galaxy(masked_imaging_7x7_no_blur):
 
-    g0 = al.Galaxy(
-        redshift=0.5, light_profile=al.m.MockLightProfile(image_2d_value=1.0)
-    )
+    g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d_value=1.0))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
@@ -49,7 +45,7 @@ def test__noise_map__with_and_without_hyper_galaxy(masked_imaging_7x7_no_blur):
 
     g0 = al.Galaxy(
         redshift=0.5,
-        light_profile=al.m.MockLightProfile(image_2d_value=1.0),
+        bulge=al.m.MockLightProfile(image_2d_value=1.0),
         hyper_galaxy=al.HyperGalaxy(
             contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
         ),
@@ -74,7 +70,7 @@ def test__noise_map__with_hyper_galaxy_reaches_upper_limit(masked_imaging_7x7_no
 
     g0 = al.Galaxy(
         redshift=0.5,
-        light_profile=al.m.MockLightProfile(image_2d_value=1.0),
+        bulge=al.m.MockLightProfile(image_2d_value=1.0),
         hyper_galaxy=al.HyperGalaxy(
             contribution_factor=1.0, noise_factor=1.0e9, noise_power=1.0
         ),
@@ -95,18 +91,14 @@ def test__noise_map__with_hyper_galaxy_reaches_upper_limit(masked_imaging_7x7_no
 
 def test__image__with_and_without_hyper_background_sky(masked_imaging_7x7_no_blur):
 
-    g0 = al.Galaxy(
-        redshift=0.5, light_profile=al.m.MockLightProfile(image_2d_value=1.0)
-    )
+    g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d_value=1.0))
     tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
     assert fit.image.slim == pytest.approx(np.full(fill_value=1.0, shape=(9,)), 1.0e-1)
 
-    g0 = al.Galaxy(
-        redshift=0.5, light_profile=al.m.MockLightProfile(image_2d_value=1.0)
-    )
+    g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d_value=1.0))
     tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
     hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
@@ -123,9 +115,7 @@ def test__image__with_and_without_hyper_background_sky(masked_imaging_7x7_no_blu
 
 def test__noise_map__with_and_without_hyper_background(masked_imaging_7x7_no_blur):
 
-    g0 = al.Galaxy(
-        redshift=0.5, light_profile=al.m.MockLightProfile(image_2d_value=1.0)
-    )
+    g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d_value=1.0))
     tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
     fit = al.FitImaging(
@@ -162,12 +152,13 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
         mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
     )
 
-    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.EllSersic(intensity=1.0))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
+    assert fit.perform_inversion is False
     assert fit.figure_of_merit == pytest.approx(-2859741.44762, 1.0e-4)
 
     basis = al.lp_basis.Basis(
@@ -181,12 +172,13 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
         redshift=0.5, bulge=basis, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
     )
 
-    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.EllSersic(intensity=1.0))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
+    assert fit.perform_inversion is False
     assert fit.figure_of_merit == pytest.approx(-2859741.44762, 1.0e-4)
 
     pix = al.pix.Rectangular(shape=(3, 3))
@@ -198,9 +190,10 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
+    assert fit.perform_inversion is True
     assert fit.figure_of_merit == pytest.approx(-22.90055, 1.0e-4)
 
-    galaxy_light = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
+    galaxy_light = al.Galaxy(redshift=0.5, bulge=al.lp.EllSersic(intensity=1.0))
 
     pix = al.pix.Rectangular(shape=(3, 3))
     reg = al.reg.Constant(coefficient=1.0)
@@ -210,22 +203,22 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
+    assert fit.perform_inversion is True
     assert fit.figure_of_merit == pytest.approx(-37667.0303, 1.0e-4)
 
     g0_linear = al.Galaxy(
         redshift=0.5,
-        light_profile=al.lp_linear.EllSersic(sersic_index=1.0),
+        bulge=al.lp_linear.EllSersic(sersic_index=1.0),
         mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
     )
 
-    g1_linear = al.Galaxy(
-        redshift=1.0, light_profile=al.lp_linear.EllSersic(sersic_index=4.0)
-    )
+    g1_linear = al.Galaxy(redshift=1.0, bulge=al.lp_linear.EllSersic(sersic_index=4.0))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1_linear])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
+    assert fit.perform_inversion is True
     assert fit.figure_of_merit == pytest.approx(-14.573607, 1.0e-4)
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, galaxy_pix])
@@ -236,13 +229,11 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
 
     g0_operated = al.Galaxy(
         redshift=0.5,
-        light_profile=al.lp.EllSersic(intensity=1.0),
+        bulge=al.lp.EllSersic(intensity=1.0),
         mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
     )
 
-    g1_operated = al.Galaxy(
-        redshift=1.0, light_profile=al.lp_operated.EllSersic(intensity=1.0)
-    )
+    g1_operated = al.Galaxy(redshift=1.0, bulge=al.lp_operated.EllSersic(intensity=1.0))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_operated, g1_operated])
 
@@ -252,12 +243,12 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
 
     g0_linear_operated = al.Galaxy(
         redshift=0.5,
-        light_profile=al.lp_linear_operated.EllSersic(sersic_index=1.0),
+        bulge=al.lp_linear_operated.EllSersic(sersic_index=1.0),
         mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
     )
 
     g1_linear_operated = al.Galaxy(
-        redshift=1.0, light_profile=al.lp_linear_operated.EllSersic(sersic_index=4.0)
+        redshift=1.0, bulge=al.lp_linear_operated.EllSersic(sersic_index=4.0)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_linear_operated, g1_linear_operated])
@@ -278,14 +269,14 @@ def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):
 
     g0 = al.Galaxy(
         redshift=0.5,
-        light_profile=al.lp.EllSersic(intensity=1.0),
+        bulge=al.lp.EllSersic(intensity=1.0),
         mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
         hyper_galaxy=hyper_galaxy,
         hyper_model_image=np.ones(9),
         hyper_galaxy_image=np.ones(9),
         hyper_minimum_value=0.0,
     )
-    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.EllSersic(intensity=1.0))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
@@ -333,7 +324,7 @@ def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):
 
     galaxy_light = al.Galaxy(
         redshift=0.5,
-        light_profile=al.lp.EllSersic(intensity=1.0),
+        bulge=al.lp.EllSersic(intensity=1.0),
         hyper_galaxy=hyper_galaxy,
         hyper_model_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
         hyper_galaxy_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
@@ -364,10 +355,10 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
 
     g0 = al.Galaxy(
         redshift=0.5,
-        light_profile=al.lp.EllSersic(intensity=1.0),
+        bulge=al.lp.EllSersic(intensity=1.0),
         mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
     )
-    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.EllSersic(intensity=1.0))
     g2 = al.Galaxy(redshift=1.0)
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
@@ -397,10 +388,10 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
 
     g0_linear = al.Galaxy(
         redshift=0.5,
-        light_profile=al.lp_linear.EllSersic(),
+        bulge=al.lp_linear.EllSersic(),
         mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
     )
-    g1_linear = al.Galaxy(redshift=1.0, light_profile=al.lp_linear.EllSersic())
+    g1_linear = al.Galaxy(redshift=1.0, bulge=al.lp_linear.EllSersic())
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1_linear, g2])
 
@@ -475,11 +466,11 @@ def test__model_images_of_planes_list(masked_imaging_7x7):
 
     g0 = al.Galaxy(
         redshift=0.5,
-        light_profile=al.lp.EllSersic(intensity=1.0),
+        bulge=al.lp.EllSersic(intensity=1.0),
         mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
     )
 
-    g1_linear = al.Galaxy(redshift=0.75, light_profile=al.lp_linear.EllSersic())
+    g1_linear = al.Galaxy(redshift=0.75, bulge=al.lp_linear.EllSersic())
 
     pix = al.pix.Rectangular(shape=(3, 3))
     reg = al.reg.Constant(coefficient=1.0)
@@ -510,11 +501,11 @@ def test___unmasked_blurred_images(masked_imaging_7x7):
 
     g0 = al.Galaxy(
         redshift=0.5,
-        light_profile=al.lp.EllSersic(intensity=1.0),
+        bulge=al.lp.EllSersic(intensity=1.0),
         mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
     )
 
-    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.EllSersic(intensity=1.0))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
@@ -548,17 +539,13 @@ def test___unmasked_blurred_images(masked_imaging_7x7):
 
 def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur):
 
-    g0 = al.Galaxy(
-        redshift=0.5, light_profile=al.m.MockLightProfile(image_2d=np.ones(1))
-    )
+    g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d=np.ones(1)))
 
     g1 = al.Galaxy(
-        redshift=0.75, light_profile=al.m.MockLightProfile(image_2d=2.0 * np.ones(1))
+        redshift=0.75, bulge=al.m.MockLightProfile(image_2d=2.0 * np.ones(1))
     )
 
-    g2 = al.Galaxy(
-        redshift=1.0, light_profile=al.m.MockLightProfile(image_2d=3.0 * np.ones(1))
-    )
+    g2 = al.Galaxy(redshift=1.0, bulge=al.m.MockLightProfile(image_2d=3.0 * np.ones(1)))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
@@ -570,17 +557,11 @@ def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur):
     assert fit.subtracted_images_of_planes_list[1].slim[0] == -3.0 or np.nan
     assert fit.subtracted_images_of_planes_list[2].slim[0] == -2.0 or np.nan
 
-    g0 = al.Galaxy(
-        redshift=0.5, light_profile=al.m.MockLightProfile(image_2d=np.ones(1))
-    )
+    g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d=np.ones(1)))
 
-    g1 = al.Galaxy(
-        redshift=1.0, light_profile=al.m.MockLightProfile(image_2d=2.0 * np.ones(1))
-    )
+    g1 = al.Galaxy(redshift=1.0, bulge=al.m.MockLightProfile(image_2d=2.0 * np.ones(1)))
 
-    g2 = al.Galaxy(
-        redshift=1.0, light_profile=al.m.MockLightProfile(image_2d=3.0 * np.ones(1))
-    )
+    g2 = al.Galaxy(redshift=1.0, bulge=al.m.MockLightProfile(image_2d=3.0 * np.ones(1)))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
@@ -592,33 +573,27 @@ def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur):
 
 def test__tracer_linear_light_profiles_to_light_profiles(masked_imaging_7x7):
 
-    g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
+    g0 = al.Galaxy(redshift=0.5, bulge=al.lp.EllSersic(intensity=1.0))
 
     g0_linear = al.Galaxy(
         redshift=0.5,
-        light_profile=al.lp_linear.EllSersic(sersic_index=1.0),
+        bulge=al.lp_linear.EllSersic(sersic_index=1.0),
         mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
     )
 
-    g1_linear = al.Galaxy(
-        redshift=1.0, light_profile=al.lp_linear.EllSersic(sersic_index=4.0)
-    )
+    g1_linear = al.Galaxy(redshift=1.0, bulge=al.lp_linear.EllSersic(sersic_index=4.0))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g0_linear, g1_linear])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
-    assert fit.tracer.galaxies[0].light_profile.intensity == pytest.approx(1.0, 1.0e-4)
+    assert fit.tracer.galaxies[0].bulge.intensity == pytest.approx(1.0, 1.0e-4)
 
     tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
-    assert tracer.galaxies[0].light_profile.intensity == pytest.approx(1.0, 1.0e-4)
-    assert tracer.galaxies[1].light_profile.intensity == pytest.approx(
-        -371.061130, 1.0e-4
-    )
-    assert tracer.galaxies[2].light_profile.intensity == pytest.approx(
-        0.08393533428, 1.0e-4
-    )
+    assert tracer.galaxies[0].bulge.intensity == pytest.approx(1.0, 1.0e-4)
+    assert tracer.galaxies[1].bulge.intensity == pytest.approx(-371.061130, 1.0e-4)
+    assert tracer.galaxies[2].bulge.intensity == pytest.approx(0.08393533428, 1.0e-4)
 
 
 def test___stochastic_mode__gives_different_log_likelihoods(masked_imaging_7x7):
@@ -667,11 +642,11 @@ def test__preloads__refit_with_new_preloads(masked_imaging_7x7):
 
     g0 = al.Galaxy(
         redshift=0.5,
-        light_profile=al.lp.EllSersic(intensity=1.0),
+        bulge=al.lp.EllSersic(intensity=1.0),
         mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
     )
 
-    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.EllSersic(intensity=1.0))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
@@ -690,9 +665,7 @@ def test__preloads__refit_with_new_preloads(masked_imaging_7x7):
 
 def test__preloads__blurred_image_uses_preload_when_passed(masked_imaging_7x7_no_blur):
 
-    g0 = al.Galaxy(
-        redshift=0.5, light_profile=al.m.MockLightProfile(image_2d=np.ones(1))
-    )
+    g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d=np.ones(1)))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
