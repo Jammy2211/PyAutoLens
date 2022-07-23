@@ -51,12 +51,17 @@ class TracerToInversion:
 
         for (plane_index, plane) in enumerate(self.planes):
 
-            lp_linear_galaxy_dict_of_plane = plane.to_inversion.lp_linear_func_list_galaxy_dict_from(
+            plane_to_inversion = ag.PlaneToInversion(
+                plane=plane,
                 source_grid_slim=traced_grids_of_planes_list[plane_index],
                 source_blurring_grid_slim=traced_blurring_grids_of_planes_list[
                     plane_index
                 ],
                 convolver=convolver,
+            )
+
+            lp_linear_galaxy_dict_of_plane = (
+                plane_to_inversion.lp_linear_func_list_galaxy_dict_from()
             )
 
             lp_linear_galaxy_dict_list = {
@@ -66,11 +71,11 @@ class TracerToInversion:
 
         return lp_linear_galaxy_dict_list
 
-    def cls_pg_list_from(self, cls: Type) -> List[List]:
+    def cls_pg_list_from(self, cls: Type) -> List:
         return [plane.cls_list_from(cls=cls) for plane in self.planes]
 
     @property
-    def hyper_galaxy_image_pg_list(self) -> List[List]:
+    def hyper_galaxy_image_pg_list(self) -> List:
         return [
             plane.hyper_galaxies_with_pixelization_image_list for plane in self.planes
         ]
@@ -88,8 +93,13 @@ class TracerToInversion:
         sparse_image_plane_grid_list_of_planes = []
 
         for plane in self.planes:
-            sparse_image_plane_grid_list = plane.to_inversion.sparse_image_plane_grid_list_from(
-                grid=grid, settings_pixelization=settings_pixelization
+
+            plane_to_inversion = ag.PlaneToInversion(
+                plane=plane, source_grid_pixelized_slim=grid
+            )
+
+            sparse_image_plane_grid_list = plane_to_inversion.sparse_image_plane_grid_list_from(
+                settings_pixelization=settings_pixelization
             )
             sparse_image_plane_grid_list_of_planes.append(sparse_image_plane_grid_list)
 
@@ -179,6 +189,11 @@ class TracerToInversion:
 
             if plane.has(cls=aa.pix.Pixelization):
 
+                plane_to_inversion = ag.PlaneToInversion(
+                    plane=plane,
+                    source_grid_pixelized_slim=traced_grids_of_planes_list[plane_index],
+                )
+
                 galaxies_with_pixelization_list = plane.galaxies_with_cls_list_from(
                     cls=aa.pix.Pixelization
                 )
@@ -187,8 +202,7 @@ class TracerToInversion:
                     len(traced_sparse_grids_list_of_planes[plane_index])
                 ):
 
-                    mapper = plane.to_inversion.mapper_from(
-                        source_grid_slim=traced_grids_of_planes_list[plane_index],
+                    mapper = plane_to_inversion.mapper_from(
                         source_pixelization_grid=traced_sparse_grids_list_of_planes[
                             plane_index
                         ][mapper_index],
