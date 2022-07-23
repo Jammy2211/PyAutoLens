@@ -178,7 +178,7 @@ class FitImaging(aa.FitImaging, AbstractFit):
         """
         if self.perform_inversion:
 
-            return self.tracer_to_inversion.inversion_from()
+            return self.tracer_to_inversion.inversion
 
     @property
     def model_data(self) -> aa.Array2D:

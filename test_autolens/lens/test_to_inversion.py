@@ -17,9 +17,7 @@ def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
         tracer=tracer, dataset=masked_imaging_7x7
     )
 
-    lp_linear_func_galaxy_dict = (
-        tracer_to_inversion.lp_linear_func_list_galaxy_dict_from()
-    )
+    lp_linear_func_galaxy_dict = tracer_to_inversion.lp_linear_func_list_galaxy_dict
 
     assert lp_linear_func_galaxy_dict == {}
 
@@ -45,9 +43,7 @@ def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
         tracer=tracer, dataset=masked_imaging_7x7
     )
 
-    lp_linear_func_galaxy_dict = (
-        tracer_to_inversion.lp_linear_func_list_galaxy_dict_from()
-    )
+    lp_linear_func_galaxy_dict = tracer_to_inversion.lp_linear_func_list_galaxy_dict
 
     lp_linear_func_list = list(lp_linear_func_galaxy_dict.keys())
 
@@ -94,9 +90,7 @@ def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
         tracer=tracer, dataset=masked_imaging_7x7
     )
 
-    lp_linear_func_galaxy_dict = (
-        tracer_to_inversion.lp_linear_func_list_galaxy_dict_from()
-    )
+    lp_linear_func_galaxy_dict = tracer_to_inversion.lp_linear_func_list_galaxy_dict
 
     lp_linear_func_list = list(lp_linear_func_galaxy_dict.keys())
 
@@ -238,7 +232,7 @@ def test__hyper_galaxy_image_pg_list(sub_grid_2d_7x7):
     assert tracer_to_inversion.hyper_galaxy_image_pg_list == [[], [1], [], [], [2, 3]]
 
 
-def test__sparse_image_plane_grid_pg_list_from(masked_imaging_7x7):
+def test__sparse_image_plane_grid_pg_list(masked_imaging_7x7):
 
     # Test Correct Grid
 
@@ -257,7 +251,7 @@ def test__sparse_image_plane_grid_pg_list_from(masked_imaging_7x7):
         tracer=tracer, dataset=masked_imaging_7x7
     )
 
-    pixelization_grids = tracer_to_inversion.sparse_image_plane_grid_pg_list_from()
+    pixelization_grids = tracer_to_inversion.sparse_image_plane_grid_pg_list
 
     assert pixelization_grids[0] == None
     assert (pixelization_grids[1] == np.array([[1.0, 1.0]])).all()
@@ -298,7 +292,7 @@ def test__sparse_image_plane_grid_pg_list_from(masked_imaging_7x7):
         tracer=tracer, dataset=masked_imaging_7x7
     )
 
-    pixelization_grids = tracer_to_inversion.sparse_image_plane_grid_pg_list_from()
+    pixelization_grids = tracer_to_inversion.sparse_image_plane_grid_pg_list
 
     assert pixelization_grids[0] == None
     assert pixelization_grids[1] == None
@@ -307,7 +301,7 @@ def test__sparse_image_plane_grid_pg_list_from(masked_imaging_7x7):
     assert (pixelization_grids[4] == np.array([[2.0, 2.0]])).all()
 
 
-def test__traced_sparse_grid_pg_list_from(masked_imaging_7x7):
+def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
 
     # Test Multi plane
 
@@ -345,7 +339,7 @@ def test__traced_sparse_grid_pg_list_from(masked_imaging_7x7):
     )
 
     traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = (
-        tracer_to_inversion.traced_sparse_grid_pg_list_from()
+        tracer_to_inversion.traced_sparse_grid_pg_list
     )
 
     assert traced_sparse_grids_list_of_planes[0] == None
@@ -400,7 +394,7 @@ def test__traced_sparse_grid_pg_list_from(masked_imaging_7x7):
     )
 
     traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = (
-        tracer_to_inversion.traced_sparse_grid_pg_list_from()
+        tracer_to_inversion.traced_sparse_grid_pg_list
     )
 
     traced_grid_pix_0 = tracer.traced_grid_2d_list_from(grid=np.array([[1.0, 1.0]]))[2]
@@ -413,7 +407,7 @@ def test__traced_sparse_grid_pg_list_from(masked_imaging_7x7):
     assert (traced_sparse_grids_list_of_planes[4][0] == traced_grid_pix_1).all()
 
 
-def test__mapper_galaxy_dict_from(masked_imaging_7x7):
+def test__mapper_galaxy_dict(masked_imaging_7x7):
 
     galaxy_no_pix = al.Galaxy(redshift=0.5)
 
@@ -423,7 +417,7 @@ def test__mapper_galaxy_dict_from(masked_imaging_7x7):
         tracer=tracer, dataset=masked_imaging_7x7
     )
 
-    mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict_from()
+    mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict
     assert mapper_galaxy_dict == {}
 
     galaxy_no_pix = al.Galaxy(redshift=0.5)
@@ -458,7 +452,7 @@ def test__mapper_galaxy_dict_from(masked_imaging_7x7):
         tracer=tracer, dataset=masked_imaging_7x7
     )
 
-    mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict_from()
+    mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict
 
     mapper_list = list(mapper_galaxy_dict.keys())
 
@@ -504,7 +498,7 @@ def test__mapper_galaxy_dict_from(masked_imaging_7x7):
         tracer=tracer, dataset=masked_imaging_7x7
     )
 
-    mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict_from()
+    mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict
 
     mapper_list = list(mapper_galaxy_dict.keys())
 
@@ -530,7 +524,7 @@ def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
-    inversion = tracer_to_inversion.inversion_from()
+    inversion = tracer_to_inversion.inversion
 
     assert inversion.reconstruction[0] == pytest.approx(0.002310, 1.0e-2)
 
@@ -551,7 +545,7 @@ def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
-    inversion = tracer_to_inversion.inversion_from()
+    inversion = tracer_to_inversion.inversion
 
     assert inversion.mapped_reconstructed_image == pytest.approx(
         masked_imaging_7x7.image, 1.0e-2
@@ -576,7 +570,7 @@ def test__inversion_interferometer_from(sub_grid_2d_7x7, interferometer_7):
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
-    inversion = tracer_to_inversion.inversion_from()
+    inversion = tracer_to_inversion.inversion
 
     assert inversion.reconstruction[0] == pytest.approx(0.000513447, 1.0e-5)
 
@@ -597,6 +591,6 @@ def test__inversion_interferometer_from(sub_grid_2d_7x7, interferometer_7):
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
-    inversion = tracer_to_inversion.inversion_from()
+    inversion = tracer_to_inversion.inversion
 
     assert inversion.reconstruction[0] == pytest.approx(-0.2662, 1.0e-4)

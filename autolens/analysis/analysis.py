@@ -351,7 +351,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             )
 
             sparse_image_plane_grid_pg_list = (
-                tracer_to_inversion.sparse_image_plane_grid_pg_list_from()
+                tracer_to_inversion.sparse_image_plane_grid_pg_list()
             )
 
             paths.save_object(
