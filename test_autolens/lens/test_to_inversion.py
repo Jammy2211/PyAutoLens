@@ -7,14 +7,14 @@ import autolens as al
 test_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
 
-def test__lp_linear_func_galaxy_dict_from(sub_grid_2d_7x7, blurring_grid_2d_7x7):
+def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
 
     galaxy_no_pix = al.Galaxy(redshift=0.5)
 
     tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_no_pix])
 
     tracer_to_inversion = al.TracerToInversion(
-        tracer=tracer, grid=sub_grid_2d_7x7, blurring_grid=blurring_grid_2d_7x7
+        tracer=tracer, dataset=masked_imaging_7x7
     )
 
     lp_linear_func_galaxy_dict = (
@@ -42,7 +42,7 @@ def test__lp_linear_func_galaxy_dict_from(sub_grid_2d_7x7, blurring_grid_2d_7x7)
     )
 
     tracer_to_inversion = al.TracerToInversion(
-        tracer=tracer, grid=sub_grid_2d_7x7, blurring_grid=blurring_grid_2d_7x7
+        tracer=tracer, dataset=masked_imaging_7x7
     )
 
     lp_linear_func_galaxy_dict = (
@@ -59,9 +59,9 @@ def test__lp_linear_func_galaxy_dict_from(sub_grid_2d_7x7, blurring_grid_2d_7x7)
     assert lp_linear_func_list[1].light_profile_list[0] == lp_linear_1
     assert lp_linear_func_list[2].light_profile_list[0] == lp_linear_2
 
-    traced_grid_list = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)
+    traced_grid_list = tracer.traced_grid_2d_list_from(grid=masked_imaging_7x7.grid)
 
-    assert lp_linear_func_list[0].grid == pytest.approx(sub_grid_2d_7x7, 1.0e-4)
+    assert lp_linear_func_list[0].grid == pytest.approx(masked_imaging_7x7.grid, 1.0e-4)
     assert lp_linear_func_list[1].grid == pytest.approx(traced_grid_list[1], 1.0e-4)
     assert lp_linear_func_list[2].grid == pytest.approx(traced_grid_list[2], 1.0e-4)
 
@@ -91,7 +91,7 @@ def test__lp_linear_func_galaxy_dict_from(sub_grid_2d_7x7, blurring_grid_2d_7x7)
     )
 
     tracer_to_inversion = al.TracerToInversion(
-        tracer=tracer, grid=sub_grid_2d_7x7, blurring_grid=blurring_grid_2d_7x7
+        tracer=tracer, dataset=masked_imaging_7x7
     )
 
     lp_linear_func_galaxy_dict = (
@@ -238,7 +238,7 @@ def test__hyper_galaxy_image_pg_list(sub_grid_2d_7x7):
     assert tracer_to_inversion.hyper_galaxy_image_pg_list == [[], [1], [], [], [2, 3]]
 
 
-def test__sparse_image_plane_grid_pg_list_from(sub_grid_2d_7x7):
+def test__sparse_image_plane_grid_pg_list_from(masked_imaging_7x7):
 
     # Test Correct Grid
 
@@ -253,7 +253,9 @@ def test__sparse_image_plane_grid_pg_list_from(sub_grid_2d_7x7):
 
     tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_pix])
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer, grid=sub_grid_2d_7x7)
+    tracer_to_inversion = al.TracerToInversion(
+        tracer=tracer, dataset=masked_imaging_7x7
+    )
 
     pixelization_grids = tracer_to_inversion.sparse_image_plane_grid_pg_list_from()
 
@@ -292,7 +294,9 @@ def test__sparse_image_plane_grid_pg_list_from(sub_grid_2d_7x7):
         ]
     )
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer, grid=sub_grid_2d_7x7)
+    tracer_to_inversion = al.TracerToInversion(
+        tracer=tracer, dataset=masked_imaging_7x7
+    )
 
     pixelization_grids = tracer_to_inversion.sparse_image_plane_grid_pg_list_from()
 
@@ -303,7 +307,7 @@ def test__sparse_image_plane_grid_pg_list_from(sub_grid_2d_7x7):
     assert (pixelization_grids[4] == np.array([[2.0, 2.0]])).all()
 
 
-def test__traced_sparse_grid_pg_list_from(sub_grid_2d_7x7):
+def test__traced_sparse_grid_pg_list_from(masked_imaging_7x7):
 
     # Test Multi plane
 
@@ -336,7 +340,9 @@ def test__traced_sparse_grid_pg_list_from(sub_grid_2d_7x7):
         galaxies=[galaxy_no_pix, galaxy_pix_0, galaxy_pix_1]
     )
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer, grid=sub_grid_2d_7x7)
+    tracer_to_inversion = al.TracerToInversion(
+        tracer=tracer, dataset=masked_imaging_7x7
+    )
 
     traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = (
         tracer_to_inversion.traced_sparse_grid_pg_list_from()
@@ -389,7 +395,9 @@ def test__traced_sparse_grid_pg_list_from(sub_grid_2d_7x7):
         ]
     )
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer, grid=sub_grid_2d_7x7)
+    tracer_to_inversion = al.TracerToInversion(
+        tracer=tracer, dataset=masked_imaging_7x7
+    )
 
     traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = (
         tracer_to_inversion.traced_sparse_grid_pg_list_from()
@@ -405,14 +413,14 @@ def test__traced_sparse_grid_pg_list_from(sub_grid_2d_7x7):
     assert (traced_sparse_grids_list_of_planes[4][0] == traced_grid_pix_1).all()
 
 
-def test__mapper_galaxy_dict_from(sub_grid_2d_7x7):
+def test__mapper_galaxy_dict_from(masked_imaging_7x7):
 
     galaxy_no_pix = al.Galaxy(redshift=0.5)
 
     tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_no_pix])
 
     tracer_to_inversion = al.TracerToInversion(
-        tracer=tracer, grid_pixelized=sub_grid_2d_7x7
+        tracer=tracer, dataset=masked_imaging_7x7
     )
 
     mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict_from()
@@ -422,7 +430,7 @@ def test__mapper_galaxy_dict_from(sub_grid_2d_7x7):
     galaxy_pix_0 = al.Galaxy(
         redshift=0.5,
         pixelization=al.m.MockPixelization(
-            mapper=1, data_pixelization_grid=sub_grid_2d_7x7
+            mapper=1, data_pixelization_grid=masked_imaging_7x7.grid_pixelized
         ),
         regularization=al.m.MockRegularization(),
     )
@@ -430,14 +438,14 @@ def test__mapper_galaxy_dict_from(sub_grid_2d_7x7):
     galaxy_pix_1 = al.Galaxy(
         redshift=1.0,
         pixelization=al.m.MockPixelization(
-            mapper=2, data_pixelization_grid=sub_grid_2d_7x7
+            mapper=2, data_pixelization_grid=masked_imaging_7x7.grid_pixelized
         ),
         regularization=al.m.MockRegularization(),
     )
     galaxy_pix_2 = al.Galaxy(
         redshift=1.0,
         pixelization=al.m.MockPixelization(
-            mapper=3, data_pixelization_grid=sub_grid_2d_7x7
+            mapper=3, data_pixelization_grid=masked_imaging_7x7.grid_pixelized
         ),
         regularization=al.m.MockRegularization(),
     )
@@ -447,7 +455,7 @@ def test__mapper_galaxy_dict_from(sub_grid_2d_7x7):
     )
 
     tracer_to_inversion = al.TracerToInversion(
-        tracer=tracer, grid_pixelized=sub_grid_2d_7x7
+        tracer=tracer, dataset=masked_imaging_7x7
     )
 
     mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict_from()
@@ -470,14 +478,14 @@ def test__mapper_galaxy_dict_from(sub_grid_2d_7x7):
     galaxy_pix_0 = al.Galaxy(
         redshift=0.75,
         pixelization=al.m.MockPixelization(
-            mapper=1, data_pixelization_grid=sub_grid_2d_7x7
+            mapper=1, data_pixelization_grid=masked_imaging_7x7.grid_pixelized
         ),
         regularization=al.m.MockRegularization(),
     )
     galaxy_pix_1 = al.Galaxy(
         redshift=2.0,
         pixelization=al.m.MockPixelization(
-            mapper=2, data_pixelization_grid=sub_grid_2d_7x7
+            mapper=2, data_pixelization_grid=masked_imaging_7x7.grid_pixelized
         ),
         regularization=al.m.MockRegularization(),
     )
@@ -493,7 +501,7 @@ def test__mapper_galaxy_dict_from(sub_grid_2d_7x7):
     )
 
     tracer_to_inversion = al.TracerToInversion(
-        tracer=tracer, grid_pixelized=sub_grid_2d_7x7
+        tracer=tracer, dataset=masked_imaging_7x7
     )
 
     mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict_from()
@@ -514,20 +522,15 @@ def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
 
     tracer_to_inversion = al.TracerToInversion(
         tracer=tracer,
-        grid=masked_imaging_7x7.grid,
-        blurring_grid=masked_imaging_7x7.blurring_grid,
-        convolver=masked_imaging_7x7.convolver,
-        grid_pixelized=masked_imaging_7x7.grid_pixelized,
-    )
-
-    inversion = tracer_to_inversion.inversion_imaging_from(
         dataset=masked_imaging_7x7,
-        image=masked_imaging_7x7.image,
+        data=masked_imaging_7x7.image,
         noise_map=masked_imaging_7x7.noise_map,
         w_tilde=masked_imaging_7x7.w_tilde,
         settings_pixelization=al.SettingsPixelization(use_border=False),
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
+
+    inversion = tracer_to_inversion.inversion_from()
 
     assert inversion.reconstruction[0] == pytest.approx(0.002310, 1.0e-2)
 
@@ -540,20 +543,15 @@ def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
 
     tracer_to_inversion = al.TracerToInversion(
         tracer=tracer,
-        grid=masked_imaging_7x7.grid,
-        blurring_grid=masked_imaging_7x7.blurring_grid,
-        convolver=masked_imaging_7x7.convolver,
-        grid_pixelized=masked_imaging_7x7.grid_pixelized,
-    )
-
-    inversion = tracer_to_inversion.inversion_imaging_from(
         dataset=masked_imaging_7x7,
-        image=masked_imaging_7x7.image,
+        data=masked_imaging_7x7.image,
         noise_map=masked_imaging_7x7.noise_map,
         w_tilde=masked_imaging_7x7.w_tilde,
         settings_pixelization=al.SettingsPixelization(use_border=False),
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
+
+    inversion = tracer_to_inversion.inversion_from()
 
     assert inversion.mapped_reconstructed_image == pytest.approx(
         masked_imaging_7x7.image, 1.0e-2
@@ -570,18 +568,15 @@ def test__inversion_interferometer_from(sub_grid_2d_7x7, interferometer_7):
 
     tracer_to_inversion = al.TracerToInversion(
         tracer=tracer,
-        grid=interferometer_7.grid,
-        grid_pixelized=interferometer_7.grid_pixelized,
-    )
-
-    inversion = tracer_to_inversion.inversion_interferometer_from(
         dataset=interferometer_7,
-        visibilities=interferometer_7.visibilities,
+        data=interferometer_7.visibilities,
         noise_map=interferometer_7.noise_map,
         w_tilde=None,
         settings_pixelization=al.SettingsPixelization(use_border=False),
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
+
+    inversion = tracer_to_inversion.inversion_from()
 
     assert inversion.reconstruction[0] == pytest.approx(0.000513447, 1.0e-5)
 
@@ -594,17 +589,14 @@ def test__inversion_interferometer_from(sub_grid_2d_7x7, interferometer_7):
 
     tracer_to_inversion = al.TracerToInversion(
         tracer=tracer,
-        grid=interferometer_7.grid,
-        grid_pixelized=interferometer_7.grid_pixelized,
-    )
-
-    inversion = tracer_to_inversion.inversion_interferometer_from(
         dataset=interferometer_7,
-        visibilities=interferometer_7.visibilities,
+        data=interferometer_7.visibilities,
         noise_map=interferometer_7.noise_map,
         w_tilde=None,
         settings_pixelization=al.SettingsPixelization(use_border=False),
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
+
+    inversion = tracer_to_inversion.inversion_from()
 
     assert inversion.reconstruction[0] == pytest.approx(-0.2662, 1.0e-4)
