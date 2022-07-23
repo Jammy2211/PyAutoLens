@@ -46,7 +46,8 @@ def test__fit_figure_of_merit(interferometer_7):
 
     g0 = al.Galaxy(
         redshift=0.5,
-        light_profile=al.lp.EllSersic(intensity=1.0),
+        bulge=al.lp.EllSersic(intensity=1.0),
+        disk=al.lp.EllSersic(intensity=2.0),
         mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
     )
 
@@ -56,9 +57,26 @@ def test__fit_figure_of_merit(interferometer_7):
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
-    assert (fit.noise_map.slim == np.full(fill_value=2.0 + 2.0j, shape=(7,))).all()
-    assert fit.log_likelihood == pytest.approx(-21709493.32, 1e-4)
-    assert fit.figure_of_merit == pytest.approx(-21709493.32, 1.0e-4)
+    assert fit.figure_of_merit == pytest.approx(-59413306.47762, 1.0e-4)
+
+    basis = al.lp_basis.Basis(
+        light_profile_list=[
+            al.lp.EllSersic(intensity=1.0),
+            al.lp.EllSersic(intensity=2.0),
+        ]
+    )
+
+    g0 = al.Galaxy(
+        redshift=0.5, bulge=basis, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+    )
+
+    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=1.0))
+
+    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+    fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
+
+    assert fit.figure_of_merit == pytest.approx(-59413306.47762, 1.0e-4)
 
     pix = al.pix.Rectangular(shape=(3, 3))
     reg = al.reg.Constant(coefficient=0.01)
@@ -73,8 +91,6 @@ def test__fit_figure_of_merit(interferometer_7):
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
-    assert (fit.noise_map.slim == np.full(fill_value=2.0 + 2.0j, shape=(7,))).all()
-    assert fit.log_evidence == pytest.approx(-66.90612, 1e-4)
     assert fit.figure_of_merit == pytest.approx(-66.90612, 1.0e-4)
 
     galaxy_light = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
@@ -91,8 +107,6 @@ def test__fit_figure_of_merit(interferometer_7):
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
-    assert (fit.noise_map.slim == np.full(fill_value=2.0 + 2.0j, shape=(7,))).all()
-    assert fit.log_evidence == pytest.approx(-1570173.14216, 1e-4)
     assert fit.figure_of_merit == pytest.approx(-1570173.14216, 1.0e-4)
 
     g0_linear = al.Galaxy(
@@ -109,14 +123,12 @@ def test__fit_figure_of_merit(interferometer_7):
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
-    assert fit.log_likelihood == pytest.approx(-23.44419, 1e-4)
     assert fit.figure_of_merit == pytest.approx(-23.44419, 1.0e-4)
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, galaxy_pix])
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
-    assert fit.log_evidence == pytest.approx(-34.393456, 1e-4)
     assert fit.figure_of_merit == pytest.approx(-34.393456, 1.0e-4)
 
 
