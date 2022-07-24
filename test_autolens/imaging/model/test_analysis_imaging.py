@@ -264,7 +264,7 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
     )
     galaxies.source = al.Galaxy(
         redshift=1.0,
-        pixelization=al.pix.VoronoiMagnification(shape=(3, 3)),
+        pixelization=al.mesh.VoronoiMagnification(shape=(3, 3)),
         regularization=al.reg.Constant(),
     )
 
@@ -283,7 +283,7 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
 
     galaxies.source = al.Galaxy(
         redshift=1.0,
-        pixelization=al.pix.VoronoiBrightnessImage(pixels=5),
+        pixelization=al.mesh.VoronoiBrightnessImage(pixels=5),
         regularization=al.reg.Constant(),
     )
 
@@ -298,7 +298,7 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
 
     galaxies.source = al.Galaxy(
         redshift=1.0,
-        pixelization=al.pix.DelaunayBrightnessImage(pixels=5),
+        pixelization=al.mesh.DelaunayBrightnessImage(pixels=5),
         regularization=al.reg.Constant(),
     )
 
@@ -318,7 +318,7 @@ def test__profile_log_likelihood_function(masked_imaging_7x7):
     source = al.Galaxy(
         redshift=1.0,
         regularization=al.reg.Constant(coefficient=1.0),
-        pixelization=al.pix.Rectangular(shape=(3, 3)),
+        pixelization=al.mesh.Rectangular(shape=(3, 3)),
     )
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))

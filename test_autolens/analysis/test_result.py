@@ -124,7 +124,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
 
     source = al.Galaxy(
         redshift=1.0,
-        pixelization=al.pix.Rectangular((3, 3)),
+        pixelization=al.mesh.Rectangular((3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
@@ -161,7 +161,7 @@ def test__source_plane_centre(analysis_imaging_7x7):
     source = al.Galaxy(
         redshift=1.0,
         light=al.lp.SphSersic(centre=(9.0, 8.0), intensity=2.0),
-        pixelization=al.pix.Rectangular((3, 3)),
+        pixelization=al.mesh.Rectangular((3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
@@ -189,7 +189,7 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
         redshift=1.0,
         light=al.lp.SphSersic(centre=(0.0, 0.0), intensity=2.0),
         light1=al.lp.SphSersic(centre=(0.0, 0.1), intensity=2.0),
-        pixelization=al.pix.Rectangular((3, 3)),
+        pixelization=al.mesh.Rectangular((3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 

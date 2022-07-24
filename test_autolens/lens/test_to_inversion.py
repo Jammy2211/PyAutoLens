@@ -116,9 +116,9 @@ def test__cls_pg_list_from(sub_grid_2d_7x7):
 
     tracer_to_inversion = al.TracerToInversion(tracer=tracer)
 
-    assert tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[0] == []
+    assert tracer_to_inversion.cls_pg_list_from(cls=al.mesh.Mesh)[0] == []
     assert (
-        tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[1][0].mapper == 1
+        tracer_to_inversion.cls_pg_list_from(cls=al.mesh.Mesh)[1][0].mapper == 1
     )
 
     galaxy_pix_0 = al.Galaxy(
@@ -146,13 +146,13 @@ def test__cls_pg_list_from(sub_grid_2d_7x7):
     tracer_to_inversion = al.TracerToInversion(tracer=tracer)
 
     assert (
-        tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[0][0].mapper == 1
+        tracer_to_inversion.cls_pg_list_from(cls=al.mesh.Mesh)[0][0].mapper == 1
     )
     assert (
-        tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[1][0].mapper == 2
+        tracer_to_inversion.cls_pg_list_from(cls=al.mesh.Mesh)[1][0].mapper == 2
     )
     assert (
-        tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization)[1][1].mapper == 3
+        tracer_to_inversion.cls_pg_list_from(cls=al.mesh.Mesh)[1][1].mapper == 3
     )
 
     galaxy_no_pix = al.Galaxy(redshift=0.5)
@@ -161,7 +161,7 @@ def test__cls_pg_list_from(sub_grid_2d_7x7):
 
     tracer_to_inversion = al.TracerToInversion(tracer=tracer)
 
-    assert tracer_to_inversion.cls_pg_list_from(cls=al.pix.Pixelization) == [[]]
+    assert tracer_to_inversion.cls_pg_list_from(cls=al.mesh.Mesh) == [[]]
 
 
 def test__hyper_galaxy_image_pg_list(sub_grid_2d_7x7):
@@ -239,7 +239,7 @@ def test__sparse_image_plane_grid_pg_list(masked_imaging_7x7):
     galaxy_pix = al.Galaxy(
         redshift=1.0,
         pixelization=al.m.MockPixelization(
-            data_pixelization_grid=np.array([[1.0, 1.0]])
+            data_mesh_grid=np.array([[1.0, 1.0]])
         ),
         regularization=al.m.MockRegularization(),
     )
@@ -261,7 +261,7 @@ def test__sparse_image_plane_grid_pg_list(masked_imaging_7x7):
     galaxy_pix0 = al.Galaxy(
         redshift=1.0,
         pixelization=al.m.MockPixelization(
-            data_pixelization_grid=np.array([[1.0, 1.0]])
+            data_mesh_grid=np.array([[1.0, 1.0]])
         ),
         regularization=al.m.MockRegularization(),
     )
@@ -269,7 +269,7 @@ def test__sparse_image_plane_grid_pg_list(masked_imaging_7x7):
     galaxy_pix1 = al.Galaxy(
         redshift=2.0,
         pixelization=al.m.MockPixelization(
-            data_pixelization_grid=np.array([[2.0, 2.0]])
+            data_mesh_grid=np.array([[2.0, 2.0]])
         ),
         regularization=al.m.MockRegularization(),
     )
@@ -313,7 +313,7 @@ def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
     galaxy_pix_0 = al.Galaxy(
         redshift=1.0,
         pixelization=al.m.MockPixelization(
-            data_pixelization_grid=al.Grid2D.manual_native(
+            data_mesh_grid=al.Grid2D.manual_native(
                 grid=[[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)
             )
         ),
@@ -323,7 +323,7 @@ def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
     galaxy_pix_1 = al.Galaxy(
         redshift=1.0,
         pixelization=al.m.MockPixelization(
-            data_pixelization_grid=al.Grid2D.manual_native(
+            data_mesh_grid=al.Grid2D.manual_native(
                 grid=[[[2.0, 0.0]]], pixel_scales=(1.0, 1.0)
             )
         ),
@@ -355,7 +355,7 @@ def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
     galaxy_pix_0 = al.Galaxy(
         redshift=1.0,
         pixelization=al.m.MockPixelization(
-            data_pixelization_grid=al.Grid2D.manual_native(
+            data_mesh_grid=al.Grid2D.manual_native(
                 grid=[[[1.0, 1.0]]], pixel_scales=(1.0, 1.0)
             )
         ),
@@ -365,7 +365,7 @@ def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
     galaxy_pix_1 = al.Galaxy(
         redshift=2.0,
         pixelization=al.m.MockPixelization(
-            data_pixelization_grid=al.Grid2D.manual_native(
+            data_mesh_grid=al.Grid2D.manual_native(
                 grid=[[[2.0, 2.0]]], pixel_scales=(1.0, 1.0)
             )
         ),
@@ -424,7 +424,7 @@ def test__mapper_galaxy_dict(masked_imaging_7x7):
     galaxy_pix_0 = al.Galaxy(
         redshift=0.5,
         pixelization=al.m.MockPixelization(
-            mapper=1, data_pixelization_grid=masked_imaging_7x7.grid_pixelized
+            mapper=1, data_mesh_grid=masked_imaging_7x7.grid_pixelized
         ),
         regularization=al.m.MockRegularization(),
     )
@@ -432,14 +432,14 @@ def test__mapper_galaxy_dict(masked_imaging_7x7):
     galaxy_pix_1 = al.Galaxy(
         redshift=1.0,
         pixelization=al.m.MockPixelization(
-            mapper=2, data_pixelization_grid=masked_imaging_7x7.grid_pixelized
+            mapper=2, data_mesh_grid=masked_imaging_7x7.grid_pixelized
         ),
         regularization=al.m.MockRegularization(),
     )
     galaxy_pix_2 = al.Galaxy(
         redshift=1.0,
         pixelization=al.m.MockPixelization(
-            mapper=3, data_pixelization_grid=masked_imaging_7x7.grid_pixelized
+            mapper=3, data_mesh_grid=masked_imaging_7x7.grid_pixelized
         ),
         regularization=al.m.MockRegularization(),
     )
@@ -472,14 +472,14 @@ def test__mapper_galaxy_dict(masked_imaging_7x7):
     galaxy_pix_0 = al.Galaxy(
         redshift=0.75,
         pixelization=al.m.MockPixelization(
-            mapper=1, data_pixelization_grid=masked_imaging_7x7.grid_pixelized
+            mapper=1, data_mesh_grid=masked_imaging_7x7.grid_pixelized
         ),
         regularization=al.m.MockRegularization(),
     )
     galaxy_pix_1 = al.Galaxy(
         redshift=2.0,
         pixelization=al.m.MockPixelization(
-            mapper=2, data_pixelization_grid=masked_imaging_7x7.grid_pixelized
+            mapper=2, data_mesh_grid=masked_imaging_7x7.grid_pixelized
         ),
         regularization=al.m.MockRegularization(),
     )
@@ -528,7 +528,7 @@ def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
 
     assert inversion.reconstruction[0] == pytest.approx(0.002310, 1.0e-2)
 
-    pix = al.pix.Rectangular(shape=(3, 3))
+    pix = al.mesh.Rectangular(shape=(3, 3))
     reg = al.reg.Constant(coefficient=0.0)
 
     g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
@@ -574,7 +574,7 @@ def test__inversion_interferometer_from(sub_grid_2d_7x7, interferometer_7):
 
     assert inversion.reconstruction[0] == pytest.approx(0.000513447, 1.0e-5)
 
-    pix = al.pix.Rectangular(shape=(7, 7))
+    pix = al.mesh.Rectangular(shape=(7, 7))
     reg = al.reg.Constant(coefficient=0.0)
 
     g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)

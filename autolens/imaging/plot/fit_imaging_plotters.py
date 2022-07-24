@@ -196,7 +196,7 @@ class FitImagingPlotter(Plotter):
 
             if model_image:
 
-                if (not self.tracer.has(cls=aa.pix.Pixelization)) or plane_index == 0:
+                if (not self.tracer.has(cls=aa.mesh.Mesh)) or plane_index == 0:
 
                     self.mat_plot_2d.plot_array(
                         array=self.fit.model_images_of_planes_list[plane_index],
@@ -214,13 +214,13 @@ class FitImagingPlotter(Plotter):
 
             if plane_image:
 
-                if not self.tracer.planes[plane_index].has(cls=aa.pix.Pixelization):
+                if not self.tracer.planes[plane_index].has(cls=aa.mesh.Mesh):
 
                     self.tracer_plotter.figures_2d_of_planes(
                         plane_image=True, plane_index=plane_index
                     )
 
-                elif self.tracer.planes[plane_index].has(cls=aa.pix.Pixelization):
+                elif self.tracer.planes[plane_index].has(cls=aa.mesh.Mesh):
 
                     inversion_plotter = self.inversion_plotter_of_plane(plane_index=1)
                     inversion_plotter.figures_2d_of_mapper(

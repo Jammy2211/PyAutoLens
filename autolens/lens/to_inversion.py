@@ -196,7 +196,7 @@ class TracerToInversion(ag.AbstractToInversion):
 
         for (plane_index, plane) in enumerate(self.planes):
 
-            if plane.has(cls=aa.pix.Pixelization):
+            if plane.has(cls=aa.mesh.Mesh):
 
                 plane_to_inversion = ag.PlaneToInversion(
                     plane=plane,
@@ -206,7 +206,7 @@ class TracerToInversion(ag.AbstractToInversion):
                 )
 
                 galaxies_with_pixelization_list = plane.galaxies_with_cls_list_from(
-                    cls=aa.pix.Pixelization
+                    cls=aa.mesh.Mesh
                 )
 
                 for mapper_index in range(
@@ -214,13 +214,13 @@ class TracerToInversion(ag.AbstractToInversion):
                 ):
 
                     mapper = plane_to_inversion.mapper_from(
-                        source_pixelization_grid=traced_sparse_grids_list_of_planes[
+                        source_mesh_grid=traced_sparse_grids_list_of_planes[
                             plane_index
                         ][mapper_index],
-                        data_pixelization_grid=sparse_image_plane_grid_list[
+                        data_mesh_grid=sparse_image_plane_grid_list[
                             plane_index
                         ][mapper_index],
-                        pixelization=self.cls_pg_list_from(cls=aa.pix.Pixelization)[
+                        pixelization=self.cls_pg_list_from(cls=aa.mesh.Mesh)[
                             plane_index
                         ][mapper_index],
                         hyper_galaxy_image=self.hyper_galaxy_image_pg_list[plane_index][

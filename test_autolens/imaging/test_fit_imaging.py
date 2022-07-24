@@ -181,7 +181,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
     assert fit.perform_inversion is False
     assert fit.figure_of_merit == pytest.approx(-2859741.44762, 1.0e-4)
 
-    pix = al.pix.Rectangular(shape=(3, 3))
+    pix = al.mesh.Rectangular(shape=(3, 3))
     reg = al.reg.Constant(coefficient=1.0)
 
     g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
@@ -195,7 +195,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
 
     galaxy_light = al.Galaxy(redshift=0.5, bulge=al.lp.EllSersic(intensity=1.0))
 
-    pix = al.pix.Rectangular(shape=(3, 3))
+    pix = al.mesh.Rectangular(shape=(3, 3))
     reg = al.reg.Constant(coefficient=1.0)
     galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
 
@@ -333,7 +333,7 @@ def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):
     assert fit.log_likelihood == pytest.approx(-186617.89365, 1e-4)
     assert fit.figure_of_merit == pytest.approx(-186617.89365, 1.0e-4)
 
-    pix = al.pix.Rectangular(shape=(3, 3))
+    pix = al.mesh.Rectangular(shape=(3, 3))
     reg = al.reg.Constant(coefficient=1.0)
 
     g0 = al.Galaxy(
@@ -451,7 +451,7 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
 
     # Pixelization + Regularizaiton only
 
-    pix = al.pix.Rectangular(shape=(3, 3))
+    pix = al.mesh.Rectangular(shape=(3, 3))
     reg = al.reg.Constant(coefficient=1.0)
 
     g0_no_light = al.Galaxy(
@@ -511,7 +511,7 @@ def test__model_images_of_planes_list(masked_imaging_7x7):
 
     g1_linear = al.Galaxy(redshift=0.75, bulge=al.lp_linear.EllSersic())
 
-    pix = al.pix.Rectangular(shape=(3, 3))
+    pix = al.mesh.Rectangular(shape=(3, 3))
     reg = al.reg.Constant(coefficient=1.0)
 
     galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
@@ -637,7 +637,7 @@ def test__tracer_linear_light_profiles_to_light_profiles(masked_imaging_7x7):
 
 def test___stochastic_mode__gives_different_log_likelihoods(masked_imaging_7x7):
 
-    pix = al.pix.VoronoiBrightnessImage(pixels=5)
+    pix = al.mesh.VoronoiBrightnessImage(pixels=5)
     reg = al.reg.Constant(coefficient=1.0)
 
     g0 = al.Galaxy(
@@ -738,7 +738,7 @@ def test__total_mappers(masked_imaging_7x7):
 
     g2 = al.Galaxy(
         redshift=2.0,
-        pixelization=al.pix.Rectangular(),
+        pixelization=al.mesh.Rectangular(),
         regularization=al.reg.Constant(),
     )
 
@@ -750,19 +750,19 @@ def test__total_mappers(masked_imaging_7x7):
 
     g0 = al.Galaxy(
         redshift=0.5,
-        pixelization=al.pix.Rectangular(),
+        pixelization=al.mesh.Rectangular(),
         regularization=al.reg.Constant(),
     )
 
     g1 = al.Galaxy(
         redshift=1.0,
-        pixelization=al.pix.Rectangular(),
+        pixelization=al.mesh.Rectangular(),
         regularization=al.reg.Constant(),
     )
 
     g2 = al.Galaxy(
         redshift=2.0,
-        pixelization=al.pix.Rectangular(),
+        pixelization=al.mesh.Rectangular(),
         regularization=al.reg.Constant(),
     )
 

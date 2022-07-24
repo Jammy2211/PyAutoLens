@@ -78,7 +78,7 @@ def test__perfect_fit__chi_squared_0():
 
     assert fit.chi_squared == pytest.approx(0.0)
 
-    pix = al.pix.Rectangular(shape=(7, 7))
+    pix = al.mesh.Rectangular(shape=(7, 7))
 
     reg = al.reg.Constant(coefficient=0.0001)
 
@@ -123,12 +123,12 @@ def test__simulate_interferometer_data_and_fit__known_likelihood():
     )
     source_galaxy_0 = al.Galaxy(
         redshift=1.0,
-        pixelization=al.pix.Rectangular(shape=(16, 16)),
+        pixelization=al.mesh.Rectangular(shape=(16, 16)),
         regularization=al.reg.Constant(coefficient=(1.0)),
     )
     source_galaxy_1 = al.Galaxy(
         redshift=2.0,
-        pixelization=al.pix.Rectangular(shape=(16, 16)),
+        pixelization=al.mesh.Rectangular(shape=(16, 16)),
         regularization=al.reg.Constant(coefficient=(1.0)),
     )
     tracer = al.Tracer.from_galaxies(
@@ -318,7 +318,7 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixeli
 
     source_galaxy_pix = al.Galaxy(
         redshift=1.0,
-        pixelization=al.pix.Rectangular(shape=(3, 3)),
+        pixelization=al.mesh.Rectangular(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=0.01),
     )
 

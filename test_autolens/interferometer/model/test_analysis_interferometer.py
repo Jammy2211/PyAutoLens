@@ -230,7 +230,7 @@ def test__stochastic_log_likelihoods_for_instance(interferometer_7):
     galaxies = af.ModelInstance()
     galaxies.source = al.Galaxy(
         redshift=1.0,
-        pixelization=al.pix.VoronoiBrightnessImage(pixels=5),
+        pixelization=al.mesh.VoronoiBrightnessImage(pixels=5),
         regularization=al.reg.Constant(),
     )
 
@@ -246,7 +246,7 @@ def test__stochastic_log_likelihoods_for_instance(interferometer_7):
 
     galaxies.source = al.Galaxy(
         redshift=1.0,
-        pixelization=al.pix.DelaunayBrightnessImage(pixels=5),
+        pixelization=al.mesh.DelaunayBrightnessImage(pixels=5),
         regularization=al.reg.Constant(),
     )
 

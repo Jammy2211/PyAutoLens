@@ -55,7 +55,7 @@ def make_tracer_x2_plane_inversion_7x7():
 
     source_gal_inversion = al.Galaxy(
         redshift=1.0,
-        pixelization=al.pix.Rectangular(),
+        pixelization=al.mesh.Rectangular(),
         regularization=al.reg.Constant(),
     )
 
@@ -68,7 +68,7 @@ def make_tracer_x2_plane_voronoi_7x7():
 
     source_gal_inversion = al.Galaxy(
         redshift=1.0,
-        pixelization=al.pix.VoronoiMagnification(),
+        pixelization=al.mesh.VoronoiMagnification(),
         regularization=al.reg.Constant(),
     )
 

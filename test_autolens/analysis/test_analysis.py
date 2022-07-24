@@ -86,7 +86,7 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(masked_imagi
             ),
             source=al.Galaxy(
                 redshift=1.0,
-                pixelization=al.pix.Rectangular(shape=(3, 3)),
+                pixelization=al.mesh.Rectangular(shape=(3, 3)),
                 regularization=al.reg.Constant(coefficient=1.0),
             ),
         )
@@ -140,7 +140,7 @@ def test__modify_before_fit__inversion_no_positions_likelihood__raises_exception
 
     lens = al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal())
     source = al.Galaxy(
-        redshift=1.0, pixelization=al.pix.Rectangular, regularization=al.reg.Constant()
+        redshift=1.0, pixelization=al.mesh.Rectangular, regularization=al.reg.Constant()
     )
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
