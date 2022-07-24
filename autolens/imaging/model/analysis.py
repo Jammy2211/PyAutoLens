@@ -379,6 +379,7 @@ class AnalysisImaging(AnalysisDataset):
         for i in range(self.settings_lens.stochastic_samples):
 
             try:
+
                 log_evidence = FitImaging(
                     dataset=self.dataset,
                     tracer=tracer,
