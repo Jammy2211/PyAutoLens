@@ -248,9 +248,9 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             the imaging data.
         """
 
-        self.raise_exceptions(model=model)
+        super().modify_before_fit(paths=paths, model=model)
 
-        self.check_and_replace_hyper_images(paths=paths)
+        self.raise_exceptions(model=model)
 
     def raise_exceptions(self, model):
 
