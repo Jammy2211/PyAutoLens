@@ -181,10 +181,12 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
     assert fit.perform_inversion is False
     assert fit.figure_of_merit == pytest.approx(-2859741.44762, 1.0e-4)
 
-    pix = al.mesh.Rectangular(shape=(3, 3))
-    reg = al.reg.Constant(coefficient=1.0)
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
 
-    g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+    g0 = al.Galaxy(redshift=0.5, pixelization=pixelization)
 
     tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
@@ -195,9 +197,12 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
 
     galaxy_light = al.Galaxy(redshift=0.5, bulge=al.lp.EllSersic(intensity=1.0))
 
-    pix = al.mesh.Rectangular(shape=(3, 3))
-    reg = al.reg.Constant(coefficient=1.0)
-    galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
+
+    galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
@@ -333,13 +338,14 @@ def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):
     assert fit.log_likelihood == pytest.approx(-186617.89365, 1e-4)
     assert fit.figure_of_merit == pytest.approx(-186617.89365, 1.0e-4)
 
-    pix = al.mesh.Rectangular(shape=(3, 3))
-    reg = al.reg.Constant(coefficient=1.0)
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
 
     g0 = al.Galaxy(
         redshift=0.5,
-        pixelization=pix,
-        regularization=reg,
+        pixelization=pixelization,
         hyper_galaxy=hyper_galaxy,
         hyper_model_image=np.ones(9),
         hyper_galaxy_image=np.ones(9),
@@ -370,7 +376,7 @@ def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):
         hyper_minimum_value=0.0,
     )
 
-    galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+    galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
@@ -451,13 +457,16 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
 
     # Pixelization + Regularizaiton only
 
-    pix = al.mesh.Rectangular(shape=(3, 3))
-    reg = al.reg.Constant(coefficient=1.0)
-
     g0_no_light = al.Galaxy(
         redshift=0.5, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
     )
-    galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
+
+    galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_no_light, galaxy_pix_0])
 
@@ -474,7 +483,7 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
 
     # Normal light + Linear Light PRofiles + Pixelization + Regularizaiton
 
-    galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+    galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     tracer = al.Tracer.from_galaxies(
         galaxies=[g0, g0_linear, g2, galaxy_pix_0, galaxy_pix_1]
@@ -511,11 +520,13 @@ def test__model_images_of_planes_list(masked_imaging_7x7):
 
     g1_linear = al.Galaxy(redshift=0.75, bulge=al.lp_linear.EllSersic())
 
-    pix = al.mesh.Rectangular(shape=(3, 3))
-    reg = al.reg.Constant(coefficient=1.0)
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
 
-    galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
-    galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+    galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
+    galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     tracer = al.Tracer.from_galaxies(
         galaxies=[g0, g1_linear, galaxy_pix_0, galaxy_pix_1]
@@ -637,13 +648,14 @@ def test__tracer_linear_light_profiles_to_light_profiles(masked_imaging_7x7):
 
 def test___stochastic_mode__gives_different_log_likelihoods(masked_imaging_7x7):
 
-    pix = al.mesh.VoronoiBrightnessImage(pixels=5)
-    reg = al.reg.Constant(coefficient=1.0)
+    pixelization = al.Pixelization(
+        mesh=al.mesh.VoronoiBrightnessImage(pixels=5),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
 
     g0 = al.Galaxy(
         redshift=0.5,
-        pixelization=pix,
-        regularization=reg,
+        pixelization=pixelization,
         hyper_model_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
         hyper_galaxy_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
     )
@@ -736,11 +748,9 @@ def test__total_mappers(masked_imaging_7x7):
 
     assert fit.total_mappers == 0
 
-    g2 = al.Galaxy(
-        redshift=2.0,
-        pixelization=al.mesh.Rectangular(),
-        regularization=al.reg.Constant(),
-    )
+    pixelization = al.Pixelization(mesh=al.mesh.Rectangular())
+
+    g2 = al.Galaxy(redshift=2.0, pixelization=pixelization)
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
@@ -748,23 +758,11 @@ def test__total_mappers(masked_imaging_7x7):
 
     assert fit.total_mappers == 1
 
-    g0 = al.Galaxy(
-        redshift=0.5,
-        pixelization=al.mesh.Rectangular(),
-        regularization=al.reg.Constant(),
-    )
+    g0 = al.Galaxy(redshift=0.5, pixelization=pixelization)
 
-    g1 = al.Galaxy(
-        redshift=1.0,
-        pixelization=al.mesh.Rectangular(),
-        regularization=al.reg.Constant(),
-    )
+    g1 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    g2 = al.Galaxy(
-        redshift=2.0,
-        pixelization=al.mesh.Rectangular(),
-        regularization=al.reg.Constant(),
-    )
+    g2 = al.Galaxy(redshift=2.0, pixelization=pixelization)
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
