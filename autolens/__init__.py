@@ -7,9 +7,9 @@ from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.convolver import Convolver
 from autoarray.inversion import mesh
 from autoarray.inversion import regularization as reg
-from autoarray.inversion.mesh.abstract import AbstractMesh
+from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.regularization.abstract import AbstractRegularization
-from autoarray.inversion.mesh.settings import SettingsPixelization
+from autoarray.inversion.pixelization.settings import SettingsPixelization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.inversion.factory import inversion_from as Inversion
 from autoarray.inversion.inversion.factory import (
@@ -18,7 +18,7 @@ from autoarray.inversion.inversion.factory import (
 from autoarray.inversion.inversion.factory import (
     inversion_interferometer_unpacked_from as InversionInterferometer,
 )
-from autoarray.inversion.mappers.factory import mapper_from as Mapper
+from autoarray.inversion.pixelization.mappers.factory import mapper_from as Mapper
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.arrays.uniform_1d import Array1D
