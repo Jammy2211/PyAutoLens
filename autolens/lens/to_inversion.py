@@ -196,7 +196,7 @@ class TracerToInversion(ag.AbstractToInversion):
 
         for (plane_index, plane) in enumerate(self.planes):
 
-            if plane.has(cls=aa.mesh.Mesh):
+            if plane.has(cls=aa.Pixelization):
 
                 plane_to_inversion = ag.PlaneToInversion(
                     plane=plane,
@@ -206,23 +206,26 @@ class TracerToInversion(ag.AbstractToInversion):
                 )
 
                 galaxies_with_pixelization_list = plane.galaxies_with_cls_list_from(
-                    cls=aa.mesh.Mesh
+                    cls=aa.Pixelization
                 )
 
                 for mapper_index in range(
                     len(traced_sparse_grids_list_of_planes[plane_index])
                 ):
 
+                    pixelization_list = self.cls_pg_list_from(cls=aa.Pixelization)
+
                     mapper = plane_to_inversion.mapper_from(
+                        mesh=pixelization_list[plane_index][mapper_index].mesh,
+                        regularization=pixelization_list[plane_index][
+                            mapper_index
+                        ].regularization,
                         source_mesh_grid=traced_sparse_grids_list_of_planes[
                             plane_index
                         ][mapper_index],
-                        data_mesh_grid=sparse_image_plane_grid_list[
-                            plane_index
-                        ][mapper_index],
-                        pixelization=self.cls_pg_list_from(cls=aa.mesh.Mesh)[
-                            plane_index
-                        ][mapper_index],
+                        data_mesh_grid=sparse_image_plane_grid_list[plane_index][
+                            mapper_index
+                        ],
                         hyper_galaxy_image=self.hyper_galaxy_image_pg_list[plane_index][
                             mapper_index
                         ],
@@ -243,7 +246,6 @@ class TracerToInversion(ag.AbstractToInversion):
             noise_map=self.noise_map,
             w_tilde=self.w_tilde,
             linear_obj_list=self.linear_obj_list,
-            regularization_list=self.regularization_list,
             settings=self.settings_inversion,
             preloads=self.preloads,
             profiling_dict=self.tracer.profiling_dict,

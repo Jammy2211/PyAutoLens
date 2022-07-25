@@ -365,7 +365,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     @property
     def plane_indexes_with_pixelizations(self):
         plane_indexes_with_inversions = [
-            plane_index if plane.has(cls=aa.mesh.Mesh) else None
+            plane_index if plane.has(cls=aa.Pixelization) else None
             for (plane_index, plane) in enumerate(self.planes)
         ]
         return [

@@ -243,13 +243,13 @@ class FitInterferometerPlotter(Plotter):
         """
         if plane_image:
 
-            if not self.tracer.planes[plane_index].has(cls=aa.mesh.Mesh):
+            if not self.tracer.planes[plane_index].has(cls=aa.Pixelization):
 
                 self.tracer_plotter.figures_2d_of_planes(
                     plane_image=True, plane_index=plane_index
                 )
 
-            elif self.tracer.planes[plane_index].has(cls=aa.mesh.Mesh):
+            elif self.tracer.planes[plane_index].has(cls=aa.Pixelization):
 
                 inversion_plotter = self.inversion_plotter_of_plane(plane_index=1)
                 inversion_plotter.figures_2d_of_mapper(

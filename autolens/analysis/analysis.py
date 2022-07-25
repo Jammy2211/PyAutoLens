@@ -341,7 +341,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         result
             The result of a lens model fit, including the non-linear search, samples and maximum likelihood tracer.
         """
-        pixelization = ag.util.model.pixelization_from(model=result.model)
+        pixelization = ag.util.model.mesh_list_from(model=result.model)
 
         if pixelization is not None:
 

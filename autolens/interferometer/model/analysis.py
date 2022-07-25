@@ -404,7 +404,7 @@ class AnalysisInterferometer(AnalysisDataset):
         instance = self.instance_with_associated_hyper_images_from(instance=instance)
         tracer = self.tracer_via_instance_from(instance=instance)
 
-        if not tracer.has(cls=aa.mesh.Mesh):
+        if not tracer.has(cls=aa.Pixelization):
             return None
 
         if not any(
