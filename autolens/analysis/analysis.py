@@ -346,12 +346,11 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         if pixelization is not None:
 
             tracer_to_inversion = TracerToInversion(
-                tracer=result.max_log_likelihood_tracer,
-                dataset=self.dataset,
+                tracer=result.max_log_likelihood_tracer, dataset=self.dataset
             )
 
             sparse_image_plane_grid_pg_list = (
-                tracer_to_inversion.sparse_image_plane_grid_pg_list()
+                tracer_to_inversion.sparse_image_plane_grid_pg_list
             )
 
             paths.save_object(
