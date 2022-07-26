@@ -174,9 +174,7 @@ def test__planes_indexes_with_inversion():
 
     gal = al.Galaxy(redshift=0.5)
     gal_pix = al.Galaxy(
-        redshift=0.5,
-        pixelization=al.m.MockMesh(),
-        regularization=al.m.MockRegularization(),
+        redshift=0.5, pixelization=al.Pixelization(mesh=al.m.MockMesh())
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[gal, gal])
@@ -188,9 +186,7 @@ def test__planes_indexes_with_inversion():
     assert tracer.plane_indexes_with_pixelizations == [0]
 
     gal_pix = al.Galaxy(
-        redshift=1.0,
-        pixelization=al.m.MockMesh(),
-        regularization=al.m.MockRegularization(),
+        redshift=1.0, pixelization=al.Pixelization(mesh=al.m.MockMesh())
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal])
@@ -198,15 +194,11 @@ def test__planes_indexes_with_inversion():
     assert tracer.plane_indexes_with_pixelizations == [1]
 
     gal_pix_0 = al.Galaxy(
-        redshift=0.6,
-        pixelization=al.m.MockMesh(),
-        regularization=al.m.MockRegularization(),
+        redshift=0.6, pixelization=al.Pixelization(mesh=al.m.MockMesh())
     )
 
     gal_pix_1 = al.Galaxy(
-        redshift=2.0,
-        pixelization=al.m.MockMesh(),
-        regularization=al.m.MockRegularization(),
+        redshift=2.0, pixelization=al.Pixelization(mesh=al.m.MockMesh())
     )
 
     gal0 = al.Galaxy(redshift=0.25)
