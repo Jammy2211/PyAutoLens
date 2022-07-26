@@ -7,6 +7,7 @@ from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.convolver import Convolver
 from autoarray.inversion import pixelizations as pix
 from autoarray.inversion import regularization as reg
+from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelizations.abstract import AbstractPixelization
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.pixelizations.settings import SettingsPixelization
