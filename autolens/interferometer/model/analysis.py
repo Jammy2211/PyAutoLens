@@ -408,7 +408,10 @@ class AnalysisInterferometer(AnalysisDataset):
             return None
 
         if not any(
-            [pix.is_stochastic for pix in tracer.cls_list_from(cls=ag.mesh.Mesh)]
+            [
+                pix.mesh.is_stochastic
+                for pix in tracer.cls_list_from(cls=ag.Pixelization)
+            ]
         ):
             return
 

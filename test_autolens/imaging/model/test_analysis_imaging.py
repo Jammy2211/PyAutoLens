@@ -258,15 +258,13 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
         hyper_model_image=hyper_model_image,
     )
 
+    pixelization = al.Pixelization(mesh=al.mesh.VoronoiMagnification(shape=(3, 3)))
+
     galaxies = af.ModelInstance()
     galaxies.lens = al.Galaxy(
         redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=1.0)
     )
-    galaxies.source = al.Galaxy(
-        redshift=1.0,
-        pixelization=al.mesh.VoronoiMagnification(shape=(3, 3)),
-        regularization=al.reg.Constant(),
-    )
+    galaxies.source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     instance = af.ModelInstance()
     instance.galaxies = galaxies
@@ -283,11 +281,9 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
 
     assert stochastic_log_likelihoods is None
 
-    galaxies.source = al.Galaxy(
-        redshift=1.0,
-        pixelization=al.mesh.VoronoiBrightnessImage(pixels=5),
-        regularization=al.reg.Constant(),
-    )
+    pixelization = al.Pixelization(mesh=al.mesh.VoronoiBrightnessImage(pixels=7))
+
+    galaxies.source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     instance = af.ModelInstance()
     instance.galaxies = galaxies
@@ -300,11 +296,9 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
         sum(stochastic_log_likelihoods[5:10], 1.0e-4)
     )
 
-    galaxies.source = al.Galaxy(
-        redshift=1.0,
-        pixelization=al.mesh.DelaunayBrightnessImage(pixels=5),
-        regularization=al.reg.Constant(),
-    )
+    pixelization = al.Pixelization(mesh=al.mesh.DelaunayBrightnessImage(pixels=5))
+
+    galaxies.source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     instance = af.ModelInstance()
     instance.galaxies = galaxies
@@ -320,12 +314,13 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
 
 def test__profile_log_likelihood_function(masked_imaging_7x7):
 
-    lens = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
-    source = al.Galaxy(
-        redshift=1.0,
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
-        pixelization=al.mesh.Rectangular(shape=(3, 3)),
     )
+
+    lens = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
+    source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

@@ -227,12 +227,10 @@ def test__stochastic_log_likelihoods_for_instance(interferometer_7):
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
+    pixelization = al.Pixelization(mesh=al.mesh.VoronoiBrightnessImage(pixels=5))
+
     galaxies = af.ModelInstance()
-    galaxies.source = al.Galaxy(
-        redshift=1.0,
-        pixelization=al.mesh.VoronoiBrightnessImage(pixels=5),
-        regularization=al.reg.Constant(),
-    )
+    galaxies.source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     instance = af.ModelInstance()
     instance.galaxies = galaxies
@@ -244,11 +242,7 @@ def test__stochastic_log_likelihoods_for_instance(interferometer_7):
     assert len(log_evidences) == 2
     assert log_evidences[0] != log_evidences[1]
 
-    galaxies.source = al.Galaxy(
-        redshift=1.0,
-        pixelization=al.mesh.DelaunayBrightnessImage(pixels=5),
-        regularization=al.reg.Constant(),
-    )
+    galaxies.source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     instance = af.ModelInstance()
     instance.galaxies = galaxies
