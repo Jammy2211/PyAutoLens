@@ -649,7 +649,7 @@ def test__tracer_linear_light_profiles_to_light_profiles(masked_imaging_7x7):
 def test___stochastic_mode__gives_different_log_likelihoods(masked_imaging_7x7):
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.VoronoiBrightnessImage(pixels=5),
+        mesh=al.mesh.VoronoiBrightnessImage(pixels=7),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
@@ -686,7 +686,13 @@ def test___stochastic_mode__gives_different_log_likelihoods(masked_imaging_7x7):
         settings_pixelization=al.SettingsPixelization(is_stochastic=True),
     )
 
-    assert fit_0.log_evidence != fit_1.log_evidence
+    # Sum 5 stochastic likelihoods to avoid random chance of identical
+    # pixelizations and therefore likelihoods.
+
+    log_evidence_x5_0 = sum([fit_0.log_evidence for i in range(5)])
+    log_evidence_x5_1 = sum([fit_1.log_evidence for i in range(5)])
+
+    assert log_evidence_x5_0 != pytest.approx(log_evidence_x5_1, 1.0e-4)
 
 
 def test__preloads__refit_with_new_preloads(masked_imaging_7x7):
