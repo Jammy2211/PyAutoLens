@@ -209,7 +209,9 @@ class FitImagingPlotter(Plotter):
 
                 else:
 
-                    inversion_plotter = self.inversion_plotter_of_plane(plane_index=plane_index)
+                    inversion_plotter = self.inversion_plotter_of_plane(
+                        plane_index=plane_index
+                    )
                     inversion_plotter.figures_2d(reconstructed_image=True)
 
             if plane_image:
@@ -222,7 +224,9 @@ class FitImagingPlotter(Plotter):
 
                 elif self.tracer.planes[plane_index].has(cls=aa.Pixelization):
 
-                    inversion_plotter = self.inversion_plotter_of_plane(plane_index=plane_index)
+                    inversion_plotter = self.inversion_plotter_of_plane(
+                        plane_index=plane_index
+                    )
                     inversion_plotter.figures_2d_of_mapper(
                         mapper_index=0, reconstruction=True
                     )

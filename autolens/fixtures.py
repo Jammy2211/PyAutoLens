@@ -54,14 +54,10 @@ def make_tracer_x2_plane_7x7():
 def make_tracer_x2_plane_inversion_7x7():
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(),
-        regularization=al.reg.Constant(),
+        mesh=al.mesh.Rectangular(), regularization=al.reg.Constant()
     )
 
-    source_gal_inversion = al.Galaxy(
-        redshift=1.0,
-        pixelization=pixelization
-    )
+    source_gal_inversion = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     return al.Tracer.from_galaxies(
         galaxies=[make_gal_x1_mp(), make_gal_x1_lp(), source_gal_inversion]
@@ -71,14 +67,10 @@ def make_tracer_x2_plane_inversion_7x7():
 def make_tracer_x2_plane_voronoi_7x7():
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.VoronoiMagnification(),
-        regularization=al.reg.Constant(),
+        mesh=al.mesh.VoronoiMagnification(), regularization=al.reg.Constant()
     )
 
-    source_gal_inversion = al.Galaxy(
-        redshift=1.0,
-        pixelization=pixelization
-    )
+    source_gal_inversion = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     return al.Tracer.from_galaxies(
         galaxies=[make_gal_x1_mp(), make_gal_x1_lp(), source_gal_inversion]
