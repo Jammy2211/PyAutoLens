@@ -94,7 +94,7 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(masked_imagi
     )
 
     masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
-        settings=al.SettingsImaging(sub_size_pixelized=2)
+        settings=al.SettingsImaging(sub_size_pixelization=2)
     )
 
     analysis = al.AnalysisImaging(
@@ -102,7 +102,7 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(masked_imagi
         settings_pixelization=al.SettingsPixelization(use_border=True),
     )
 
-    analysis.dataset.grid_pixelized[4] = np.array([[500.0, 0.0]])
+    analysis.dataset.grid_pixelizaiton[4] = np.array([[500.0, 0.0]])
 
     instance = model.instance_from_unit_vector([])
     tracer = analysis.tracer_via_instance_from(instance=instance)
@@ -122,7 +122,7 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(masked_imagi
         settings_pixelization=al.SettingsPixelization(use_border=False),
     )
 
-    analysis.dataset.grid_pixelized[4] = np.array([300.0, 0.0])
+    analysis.dataset.grid_pixelizaiton[4] = np.array([300.0, 0.0])
 
     instance = model.instance_from_unit_vector([])
     tracer = analysis.tracer_via_instance_from(instance=instance)

@@ -44,7 +44,7 @@ class TracerToInversion(ag.AbstractToInversion):
     @cached_property
     @aa.profile_func
     def traced_grid_2d_list_of_inversion(self) -> List[aa.type.Grid2DLike]:
-        return self.tracer.traced_grid_2d_list_from(grid=self.dataset.grid_pixelized)
+        return self.tracer.traced_grid_2d_list_from(grid=self.dataset.grid_pixelizaiton)
 
     @cached_property
     def lp_linear_func_list_galaxy_dict(
@@ -113,7 +113,7 @@ class TracerToInversion(ag.AbstractToInversion):
 
             plane_to_inversion = ag.PlaneToInversion(
                 plane=plane,
-                grid_pixelized=self.dataset.grid,
+                grid_pixelizaiton=self.dataset.grid,
                 settings_pixelization=self.settings_pixelization,
             )
 
@@ -200,7 +200,7 @@ class TracerToInversion(ag.AbstractToInversion):
 
                 plane_to_inversion = ag.PlaneToInversion(
                     plane=plane,
-                    grid_pixelized=traced_grids_of_planes_list[plane_index],
+                    grid_pixelizaiton=traced_grids_of_planes_list[plane_index],
                     settings_pixelization=self.settings_pixelization,
                     preloads=self.preloads,
                 )

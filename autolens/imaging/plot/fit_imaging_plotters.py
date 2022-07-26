@@ -227,8 +227,8 @@ class FitImagingPlotter(Plotter):
                     inversion_plotter = self.inversion_plotter_of_plane(
                         plane_index=plane_index
                     )
-                    inversion_plotter.figures_2d_of_mapper(
-                        mapper_index=0, reconstruction=True
+                    inversion_plotter.figures_2d_of_pixelization(
+                        pixelization_index=0, reconstruction=True
                     )
 
     def subplot_of_planes(self, plane_index: Optional[int] = None):
