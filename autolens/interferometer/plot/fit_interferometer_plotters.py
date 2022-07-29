@@ -278,7 +278,9 @@ class FitInterferometerPlotter(Plotter):
             inversion_plotter.figures_2d_of_pixelization(
                 pixelization_index=0, reconstructed_image=True
             )
-            inversion_plotter.figures_2d_of_pixelization(pixelization_index=0, reconstruction=True)
+            inversion_plotter.figures_2d_of_pixelization(
+                pixelization_index=0, reconstruction=True
+            )
 
             self.mat_plot_2d.output.subplot_to_figure(
                 auto_filename="subplot_fit_real_space"

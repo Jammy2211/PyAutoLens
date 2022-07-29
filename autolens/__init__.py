@@ -19,6 +19,7 @@ from autoarray.inversion.inversion.factory import (
 from autoarray.inversion.inversion.factory import (
     inversion_interferometer_unpacked_from as InversionInterferometer,
 )
+from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.mappers.factory import mapper_from as Mapper
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT

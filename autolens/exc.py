@@ -35,7 +35,7 @@ class PixelizationException(af.exc.FitException):
     """
     Raises exceptions associated with the `inversion/pixelization` modules and `Pixelization` classes.
 
-    For example if a `Rectangular` pixelization has dimensions below 3x3.
+    For example if a `Rectangular` meshhas dimensions below 3x3.
 
     This exception overwrites `autoarray.exc.PixelizationException` in order to add a `FitException`. This means that
     if this exception is raised during a model-fit in the analysis class's `log_likelihood_function` that model
