@@ -9,6 +9,8 @@ test_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files
 
 def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
 
+    # TODO : use pytest.parameterize
+
     galaxy_no_pix = al.Galaxy(redshift=0.5)
 
     tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_no_pix])

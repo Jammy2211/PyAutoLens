@@ -421,7 +421,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         -------
             A bool which is True if an inversion is performed.
         """
-        return any([plane.perform_inversion for plane in self.planes])
+        return any(plane.perform_inversion for plane in self.planes)
 
     def extract_attribute(self, cls, attr_name):
         """
