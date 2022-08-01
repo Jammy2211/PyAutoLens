@@ -341,17 +341,16 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         result
             The result of a lens model fit, including the non-linear search, samples and maximum likelihood tracer.
         """
-        pixelization = ag.util.model.pixelization_from(model=result.model)
+        pixelization = ag.util.model.mesh_list_from(model=result.model)
 
         if pixelization is not None:
 
             tracer_to_inversion = TracerToInversion(
-                tracer=result.max_log_likelihood_tracer,
-                grid_pixelized=self.dataset.grid_pixelized,
+                tracer=result.max_log_likelihood_tracer, dataset=self.dataset
             )
 
             sparse_image_plane_grid_pg_list = (
-                tracer_to_inversion.sparse_image_plane_grid_pg_list()
+                tracer_to_inversion.sparse_image_plane_grid_pg_list
             )
 
             paths.save_object(

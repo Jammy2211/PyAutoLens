@@ -40,6 +40,8 @@ def test__noise_map__with_and_without_hyper_background(interferometer_7):
 
 def test__fit_figure_of_merit(interferometer_7):
 
+    # TODO : Use pytest.parameterize
+
     g0 = al.Galaxy(
         redshift=0.5,
         bulge=al.lp.EllSersic(intensity=1.0),
@@ -76,10 +78,12 @@ def test__fit_figure_of_merit(interferometer_7):
     assert fit.perform_inversion is False
     assert fit.figure_of_merit == pytest.approx(-59413306.47762, 1.0e-4)
 
-    pix = al.pix.Rectangular(shape=(3, 3))
-    reg = al.reg.Constant(coefficient=0.01)
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=0.01),
+    )
 
-    g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+    g0 = al.Galaxy(redshift=0.5, pixelization=pixelization)
 
     tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
@@ -94,9 +98,12 @@ def test__fit_figure_of_merit(interferometer_7):
 
     galaxy_light = al.Galaxy(redshift=0.5, bulge=al.lp.EllSersic(intensity=1.0))
 
-    pix = al.pix.Rectangular(shape=(3, 3))
-    reg = al.reg.Constant(coefficient=1.0)
-    galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
+
+    galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
@@ -184,10 +191,12 @@ def test__fit_figure_of_merit__include_hyper_methods(interferometer_7):
 
     assert fit.noise_map == pytest.approx(interferometer_7.noise_map, 1.0e-4)
 
-    pix = al.pix.Rectangular(shape=(3, 3))
-    reg = al.reg.Constant(coefficient=0.01)
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=0.01),
+    )
 
-    g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+    g0 = al.Galaxy(redshift=0.5, pixelization=pixelization)
 
     tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
@@ -204,9 +213,12 @@ def test__fit_figure_of_merit__include_hyper_methods(interferometer_7):
 
     galaxy_light = al.Galaxy(redshift=0.5, bulge=al.lp.EllSersic(intensity=1.0))
 
-    pix = al.pix.Rectangular(shape=(3, 3))
-    reg = al.reg.Constant(coefficient=1.0)
-    galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
+
+    galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
@@ -226,10 +238,12 @@ def test___fit_figure_of_merit__different_settings(
     interferometer_7, interferometer_7_lop
 ):
 
-    pix = al.pix.Rectangular(shape=(3, 3))
-    reg = al.reg.Constant(coefficient=0.01)
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=0.01),
+    )
 
-    g0 = al.Galaxy(redshift=0.5, pixelization=pix, regularization=reg)
+    g0 = al.Galaxy(redshift=0.5, pixelization=pixelization)
 
     tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
@@ -300,13 +314,15 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
         -3.89387356e-04, 1.0e-2
     )
 
-    pix = al.pix.Rectangular(shape=(3, 3))
-    reg = al.reg.Constant(coefficient=1.0)
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
 
     g0_no_light = al.Galaxy(
         redshift=0.5, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
     )
-    galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+    galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_no_light, galaxy_pix_0])
 
@@ -324,7 +340,7 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
 
     # Normal light + Linear Light PRofiles + Pixelization + Regularizaiton
 
-    galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+    galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization)
     tracer = al.Tracer.from_galaxies(
         galaxies=[g0, g0_linear, g2, galaxy_pix_0, galaxy_pix_1]
     )
@@ -423,13 +439,15 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
 
     # Pixelization + Regularizaiton only
 
-    pix = al.pix.Rectangular(shape=(3, 3))
-    reg = al.reg.Constant(coefficient=1.0)
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
 
     g0_no_light = al.Galaxy(
         redshift=0.5, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
     )
-    galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+    galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_no_light, galaxy_pix_0])
 
@@ -446,7 +464,7 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
 
     # Normal light + Linear Light PRofiles + Pixelization + Regularizaiton
 
-    galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+    galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     tracer = al.Tracer.from_galaxies(
         galaxies=[g0, g0_linear, g2, galaxy_pix_0, galaxy_pix_1]
@@ -481,11 +499,13 @@ def test__model_visibilities_of_planes_list(interferometer_7):
 
     g1_linear = al.Galaxy(redshift=0.75, bulge=al.lp_linear.EllSersic())
 
-    pix = al.pix.Rectangular(shape=(3, 3))
-    reg = al.reg.Constant(coefficient=1.0)
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
 
-    galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
-    galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pix, regularization=reg)
+    galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
+    galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     tracer = al.Tracer.from_galaxies(
         galaxies=[g0, g1_linear, galaxy_pix_0, galaxy_pix_1]
@@ -508,13 +528,14 @@ def test__model_visibilities_of_planes_list(interferometer_7):
 
 def test___stochastic_mode__gives_different_log_likelihood_list(interferometer_7):
 
-    pix = al.pix.VoronoiBrightnessImage(pixels=5)
-    reg = al.reg.Constant(coefficient=1.0)
+    pixelization = al.Pixelization(
+        mesh=al.mesh.VoronoiBrightnessImage(pixels=5),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
 
     g0 = al.Galaxy(
         redshift=0.5,
-        pixelization=pix,
-        regularization=reg,
+        pixelization=pixelization,
         hyper_model_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
         hyper_galaxy_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
     )
@@ -550,37 +571,3 @@ def test___stochastic_mode__gives_different_log_likelihood_list(interferometer_7
     )
 
     assert fit_0.log_evidence != fit_1.log_evidence
-
-
-def test__total_mappers(interferometer_7):
-    g0 = al.Galaxy(redshift=0.5)
-
-    g1 = al.Galaxy(redshift=1.0)
-
-    g2 = al.Galaxy(redshift=2.0)
-
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
-
-    fit = al.FitInterferometer(
-        dataset=interferometer_7,
-        tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
-    )
-
-    assert fit.total_mappers == 0
-
-    g2 = al.Galaxy(
-        redshift=2.0,
-        pixelization=al.pix.Rectangular(),
-        regularization=al.reg.Constant(),
-    )
-
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
-
-    fit = al.FitInterferometer(
-        dataset=interferometer_7,
-        tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
-    )
-
-    assert fit.total_mappers == 1

@@ -17,11 +17,14 @@ The chapter contains the following tutorials:
 `Tutorial 4: Dealing with Failure <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_2_lens_modeling/tutorial_4_dealing_with_failure.ipynb>`_
 - What to do when PyAutoLens finds an inaccurate lens model.
 
-`Tutorial 5: Masking and Positions <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_2_lens_modeling/tutorial_5_masking_and_positions.ipynb>`_
+`Tutorial 5: Linear Profiles <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_2_lens_modeling/tutorial_5_linear_profiles.ipynb>`_
+- Light profiles which capture complex morphologies in a reduced number of non-linear parameters.
+
+`Tutorial 6: Masking and Positions <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_2_lens_modeling/tutorial_6_masking_and_positions.ipynb>`_
 - How to mask and mark positions on your data to improve the lens model.
 
-`Tutorial 6: Results <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_2_lens_modeling/tutorial_6_results.ipynb>`_
+`Tutorial 7: Results <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_2_lens_modeling/tutorial_7_results.ipynb>`_
 - Overview of the results available after successfully fitting a lens model.
 
-`Tutorial 7: Need for Speed <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_2_lens_modeling/tutorial_7_need_for_speed.ipynb>`_
+`Tutorial 8: Need for Speed <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_2_lens_modeling/tutorial_8_need_for_speed.ipynb>`_
 - How to fit complex models whilst balancing efficiency and run-time.

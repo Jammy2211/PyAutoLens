@@ -5,11 +5,12 @@ from autoarray.dataset.interferometer import Interferometer, SettingsInterferome
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.convolver import Convolver
-from autoarray.inversion import pixelizations as pix
+from autoarray.inversion.pixelization import mesh
 from autoarray.inversion import regularization as reg
-from autoarray.inversion.pixelizations.abstract import AbstractPixelization
+from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.regularization.abstract import AbstractRegularization
-from autoarray.inversion.pixelizations.settings import SettingsPixelization
+from autoarray.inversion.pixelization.pixelization import Pixelization
+from autoarray.inversion.pixelization.settings import SettingsPixelization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.inversion.factory import inversion_from as Inversion
 from autoarray.inversion.inversion.factory import (
@@ -18,7 +19,8 @@ from autoarray.inversion.inversion.factory import (
 from autoarray.inversion.inversion.factory import (
     inversion_interferometer_unpacked_from as InversionInterferometer,
 )
-from autoarray.inversion.mappers.factory import mapper_from as Mapper
+from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
+from autoarray.inversion.pixelization.mappers.factory import mapper_from as Mapper
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.arrays.uniform_1d import Array1D
@@ -30,8 +32,9 @@ from autoarray.structures.grids.sparse_2d import Grid2DSparse
 from autoarray.structures.grids.iterate_2d import Grid2DIterate
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.irregular_2d import Grid2DIrregularUniform
-from autoarray.structures.grids.grid_2d_pixelization import Grid2DRectangular
-from autoarray.structures.grids.grid_2d_pixelization import Grid2DVoronoi
+from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
+from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
+from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
 from autoarray.structures.vectors.uniform import VectorYX2D
 from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 from autoarray.structures.arrays.kernel_2d import Kernel2D

@@ -302,7 +302,7 @@ class AnalysisImaging(AnalysisDataset):
 
         info_dict["image_pixels"] = self.imaging.grid.sub_shape_slim
         info_dict["sub_size_light_profiles"] = self.imaging.grid.sub_size
-        info_dict["sub_size_pixelized"] = self.imaging.grid_pixelized.sub_size
+        info_dict["sub_size_pixelization"] = self.imaging.grid_pixelization.sub_size
         info_dict["psf_shape_2d"] = self.imaging.psf.shape_native
 
         if fit.inversion is not None:
@@ -356,11 +356,11 @@ class AnalysisImaging(AnalysisDataset):
         instance = self.instance_with_associated_hyper_images_from(instance=instance)
         tracer = self.tracer_via_instance_from(instance=instance)
 
-        if not tracer.has(cls=ag.pix.Pixelization):
+        if not tracer.has(cls=ag.Pixelization):
             return
 
-        if not any(
-            [pix.is_stochastic for pix in tracer.cls_list_from(cls=ag.pix.Pixelization)]
+        if not any(pix.mesh.is_stochastic
+                for pix in tracer.cls_list_from(cls=ag.Pixelization)
         ):
             return
 

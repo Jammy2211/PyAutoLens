@@ -365,7 +365,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     @property
     def plane_indexes_with_pixelizations(self):
         plane_indexes_with_inversions = [
-            plane_index if plane.has(cls=aa.pix.Pixelization) else None
+            plane_index if plane.has(cls=aa.Pixelization) else None
             for (plane_index, plane) in enumerate(self.planes)
         ]
         return [
@@ -421,7 +421,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         -------
             A bool which is True if an inversion is performed.
         """
-        return any([plane.perform_inversion for plane in self.planes])
+        return any(plane.perform_inversion for plane in self.planes)
 
     def extract_attribute(self, cls, attr_name):
         """

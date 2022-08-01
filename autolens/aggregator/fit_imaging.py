@@ -118,6 +118,7 @@ class FitImagingAgg(AbstractAgg):
         FitImaging
             A fit to imaging data whose galaxies are a sample of a PyAutoFit non-linear search.
         """
+
         return _fit_imaging_from(
             fit=fit,
             galaxies=galaxies,

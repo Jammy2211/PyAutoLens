@@ -44,7 +44,7 @@ class TracerToInversion(ag.AbstractToInversion):
     @cached_property
     @aa.profile_func
     def traced_grid_2d_list_of_inversion(self) -> List[aa.type.Grid2DLike]:
-        return self.tracer.traced_grid_2d_list_from(grid=self.dataset.grid_pixelized)
+        return self.tracer.traced_grid_2d_list_from(grid=self.dataset.grid_pixelization)
 
     @cached_property
     def lp_linear_func_list_galaxy_dict(
@@ -113,7 +113,7 @@ class TracerToInversion(ag.AbstractToInversion):
 
             plane_to_inversion = ag.PlaneToInversion(
                 plane=plane,
-                grid_pixelized=self.dataset.grid,
+                grid_pixelization=self.dataset.grid,
                 settings_pixelization=self.settings_pixelization,
             )
 
@@ -196,33 +196,36 @@ class TracerToInversion(ag.AbstractToInversion):
 
         for (plane_index, plane) in enumerate(self.planes):
 
-            if plane.has(cls=aa.pix.Pixelization):
+            if plane.has(cls=aa.Pixelization):
 
                 plane_to_inversion = ag.PlaneToInversion(
                     plane=plane,
-                    grid_pixelized=traced_grids_of_planes_list[plane_index],
+                    grid_pixelization=traced_grids_of_planes_list[plane_index],
                     settings_pixelization=self.settings_pixelization,
                     preloads=self.preloads,
                 )
 
                 galaxies_with_pixelization_list = plane.galaxies_with_cls_list_from(
-                    cls=aa.pix.Pixelization
+                    cls=aa.Pixelization
                 )
 
                 for mapper_index in range(
                     len(traced_sparse_grids_list_of_planes[plane_index])
                 ):
 
+                    pixelization_list = self.cls_pg_list_from(cls=aa.Pixelization)
+
                     mapper = plane_to_inversion.mapper_from(
-                        source_pixelization_grid=traced_sparse_grids_list_of_planes[
+                        mesh=pixelization_list[plane_index][mapper_index].mesh,
+                        regularization=pixelization_list[plane_index][
+                            mapper_index
+                        ].regularization,
+                        source_mesh_grid=traced_sparse_grids_list_of_planes[
                             plane_index
                         ][mapper_index],
-                        data_pixelization_grid=sparse_image_plane_grid_list[
-                            plane_index
-                        ][mapper_index],
-                        pixelization=self.cls_pg_list_from(cls=aa.pix.Pixelization)[
-                            plane_index
-                        ][mapper_index],
+                        data_mesh_grid=sparse_image_plane_grid_list[plane_index][
+                            mapper_index
+                        ],
                         hyper_galaxy_image=self.hyper_galaxy_image_pg_list[plane_index][
                             mapper_index
                         ],
@@ -243,7 +246,6 @@ class TracerToInversion(ag.AbstractToInversion):
             noise_map=self.noise_map,
             w_tilde=self.w_tilde,
             linear_obj_list=self.linear_obj_list,
-            regularization_list=self.regularization_list,
             settings=self.settings_inversion,
             preloads=self.preloads,
             profiling_dict=self.tracer.profiling_dict,

@@ -35,7 +35,7 @@ from autoarray.plot.wrap.wrap_2d import (
     BorderScatter,
     PositionsScatter,
     IndexScatter,
-    PixelizationGridScatter,
+    MeshGridScatter,
     ParallelOverscanPlot,
     SerialPrescanPlot,
     SerialOverscanPlot,
