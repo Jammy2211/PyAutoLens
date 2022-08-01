@@ -94,8 +94,7 @@ def test__positions__resample__raises_exception(interferometer_7, mask_2d_7x7):
     )
 
     analysis = al.AnalysisInterferometer(
-        dataset=interferometer_7,
-        positions_likelihood=positions_likelihood,
+        dataset=interferometer_7, positions_likelihood=positions_likelihood
     )
 
     instance = model.instance_from_unit_vector([])
@@ -228,12 +227,10 @@ def test__stochastic_log_likelihoods_for_instance(interferometer_7):
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
+    pixelization = al.Pixelization(mesh=al.mesh.VoronoiBrightnessImage(pixels=5))
+
     galaxies = af.ModelInstance()
-    galaxies.source = al.Galaxy(
-        redshift=1.0,
-        pixelization=al.pix.VoronoiBrightnessImage(pixels=5),
-        regularization=al.reg.Constant(),
-    )
+    galaxies.source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     instance = af.ModelInstance()
     instance.galaxies = galaxies
@@ -245,11 +242,7 @@ def test__stochastic_log_likelihoods_for_instance(interferometer_7):
     assert len(log_evidences) == 2
     assert log_evidences[0] != log_evidences[1]
 
-    galaxies.source = al.Galaxy(
-        redshift=1.0,
-        pixelization=al.pix.DelaunayBrightnessImage(pixels=5),
-        regularization=al.reg.Constant(),
-    )
+    galaxies.source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     instance = af.ModelInstance()
     instance.galaxies = galaxies

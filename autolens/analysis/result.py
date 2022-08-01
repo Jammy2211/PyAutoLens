@@ -49,7 +49,7 @@ class Result(AgResult):
         positions_fits = FitPositionsSourceMaxSeparation(
             positions=self.analysis.positions_likelihood.positions,
             noise_map=None,
-            tracer=self.max_log_likelihood_tracer
+            tracer=self.max_log_likelihood_tracer,
         )
 
         return positions_fits.max_separation_of_source_plane_positions

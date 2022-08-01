@@ -351,7 +351,7 @@ Plots
     BorderScatter
     PositionsScatter
     IndexScatter
-    PixelizationGridScatter
+    MeshGridScatter
     ParallelOverscanPlot
     SerialPrescanPlot
     SerialOverscanPlot

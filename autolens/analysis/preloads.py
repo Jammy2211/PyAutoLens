@@ -1,9 +1,7 @@
 import logging
 import numpy as np
-from os import path
 from typing import Dict, Optional, List
 
-import autofit as af
 import autoarray as aa
 import autogalaxy as ag
 
@@ -135,9 +133,7 @@ class Preloads(ag.Preloads):
 
         if preloads.mapper_list is not None:
 
-            preloads.mapper_galaxy_dict = fit_0.tracer.to_inversion.mapper_galaxy_dict_from(
-                grid=fit_0.dataset.grid_pixelized
-            )
+            preloads.mapper_galaxy_dict = fit_0.tracer_to_inversion.mapper_galaxy_dict
 
         preloads.set_operated_mapping_matrix_with_preloads(fit_0=fit_0, fit_1=fit_1)
         preloads.set_regularization_matrix_and_term(fit_0=fit_0, fit_1=fit_1)
@@ -167,11 +163,11 @@ class Preloads(ag.Preloads):
         self.traced_grids_of_planes_for_inversion = None
 
         traced_grids_of_planes_0 = fit_0.tracer.traced_grid_2d_list_from(
-            grid=fit_0.dataset.grid_pixelized
+            grid=fit_0.dataset.grid_pixelization
         )
 
         traced_grids_of_planes_1 = fit_1.tracer.traced_grid_2d_list_from(
-            grid=fit_1.dataset.grid_pixelized
+            grid=fit_1.dataset.grid_pixelization
         )
 
         if traced_grids_of_planes_0[-1] is not None:
@@ -216,12 +212,12 @@ class Preloads(ag.Preloads):
 
         self.sparse_image_plane_grid_pg_list = None
 
-        sparse_image_plane_grid_pg_list_0 = fit_0.tracer.to_inversion.sparse_image_plane_grid_pg_list_from(
-            grid=fit_0.dataset.grid_pixelized
+        sparse_image_plane_grid_pg_list_0 = (
+            fit_0.tracer_to_inversion.sparse_image_plane_grid_pg_list
         )
 
-        sparse_image_plane_grid_pg_list_1 = fit_1.tracer.to_inversion.sparse_image_plane_grid_pg_list_from(
-            grid=fit_1.dataset.grid_pixelized
+        sparse_image_plane_grid_pg_list_1 = (
+            fit_1.tracer_to_inversion.sparse_image_plane_grid_pg_list
         )
 
         if sparse_image_plane_grid_pg_list_0[-1] is not None:

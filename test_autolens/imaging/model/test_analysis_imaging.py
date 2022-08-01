@@ -258,21 +258,21 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
         hyper_model_image=hyper_model_image,
     )
 
+    pixelization = al.Pixelization(mesh=al.mesh.VoronoiMagnification(shape=(3, 3)))
+
     galaxies = af.ModelInstance()
     galaxies.lens = al.Galaxy(
         redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=1.0)
     )
-    galaxies.source = al.Galaxy(
-        redshift=1.0,
-        pixelization=al.pix.VoronoiMagnification(shape=(3, 3)),
-        regularization=al.reg.Constant(),
-    )
+    galaxies.source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     instance = af.ModelInstance()
     instance.galaxies = galaxies
 
     analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7, hyper_dataset_result=result
+        dataset=masked_imaging_7x7,
+        hyper_dataset_result=result,
+        settings_lens=al.SettingsLens(stochastic_samples=10),
     )
 
     stochastic_log_likelihoods = analysis.stochastic_log_likelihoods_via_instance_from(
@@ -281,11 +281,9 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
 
     assert stochastic_log_likelihoods is None
 
-    galaxies.source = al.Galaxy(
-        redshift=1.0,
-        pixelization=al.pix.VoronoiBrightnessImage(pixels=9),
-        regularization=al.reg.Constant(),
-    )
+    pixelization = al.Pixelization(mesh=al.mesh.VoronoiBrightnessImage(pixels=7))
+
+    galaxies.source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     instance = af.ModelInstance()
     instance.galaxies = galaxies
@@ -294,13 +292,13 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
         instance=instance
     )
 
-    assert stochastic_log_likelihoods[0] != stochastic_log_likelihoods[1]
-
-    galaxies.source = al.Galaxy(
-        redshift=1.0,
-        pixelization=al.pix.DelaunayBrightnessImage(pixels=9),
-        regularization=al.reg.Constant(),
+    assert sum(stochastic_log_likelihoods[0:5]) != pytest.approx(
+        sum(stochastic_log_likelihoods[5:10], 1.0e-4)
     )
+
+    pixelization = al.Pixelization(mesh=al.mesh.DelaunayBrightnessImage(pixels=5))
+
+    galaxies.source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     instance = af.ModelInstance()
     instance.galaxies = galaxies
@@ -309,17 +307,20 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
         instance=instance
     )
 
-    assert stochastic_log_likelihoods[0] != stochastic_log_likelihoods[1]
+    assert sum(stochastic_log_likelihoods[0:5]) != pytest.approx(
+        sum(stochastic_log_likelihoods[5:10], 1.0e-4)
+    )
 
 
 def test__profile_log_likelihood_function(masked_imaging_7x7):
 
-    lens = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
-    source = al.Galaxy(
-        redshift=1.0,
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
-        pixelization=al.pix.Rectangular(shape=(3, 3)),
     )
+
+    lens = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
+    source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

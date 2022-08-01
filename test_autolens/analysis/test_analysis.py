@@ -79,21 +79,22 @@ def test__tracer_for_instance__subhalo_redshift_rescale_used(analysis_imaging_7x
 
 def test__use_border__determines_if_border_pixel_relocation_is_used(masked_imaging_7x7):
 
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
+
     model = af.Collection(
         galaxies=af.Collection(
             lens=al.Galaxy(
                 redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=100.0)
             ),
-            source=al.Galaxy(
-                redshift=1.0,
-                pixelization=al.pix.Rectangular(shape=(3, 3)),
-                regularization=al.reg.Constant(coefficient=1.0),
-            ),
+            source=al.Galaxy(redshift=1.0, pixelization=pixelization),
         )
     )
 
     masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
-        settings=al.SettingsImaging(sub_size_pixelized=2)
+        settings=al.SettingsImaging(sub_size_pixelization=2)
     )
 
     analysis = al.AnalysisImaging(
@@ -101,7 +102,7 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(masked_imagi
         settings_pixelization=al.SettingsPixelization(use_border=True),
     )
 
-    analysis.dataset.grid_pixelized[4] = np.array([[500.0, 0.0]])
+    analysis.dataset.grid_pixelization[4] = np.array([[500.0, 0.0]])
 
     instance = model.instance_from_unit_vector([])
     tracer = analysis.tracer_via_instance_from(instance=instance)
@@ -121,7 +122,7 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(masked_imagi
         settings_pixelization=al.SettingsPixelization(use_border=False),
     )
 
-    analysis.dataset.grid_pixelized[4] = np.array([300.0, 0.0])
+    analysis.dataset.grid_pixelization[4] = np.array([300.0, 0.0])
 
     instance = model.instance_from_unit_vector([])
     tracer = analysis.tracer_via_instance_from(instance=instance)
@@ -139,9 +140,12 @@ def test__modify_before_fit__inversion_no_positions_likelihood__raises_exception
 ):
 
     lens = al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal())
-    source = al.Galaxy(
-        redshift=1.0, pixelization=al.pix.Rectangular, regularization=al.reg.Constant()
+
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(), regularization=al.reg.Constant()
     )
+
+    source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

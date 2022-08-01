@@ -26,19 +26,23 @@ To fit this image with an ``Inversion``, we first mask the ``Imaging`` object:
 
    imaging = imaging.apply_mask(mask=mask_2d)
 
-To reconstruct the source using a pixel-grid, we simply pass it the ``Pixelization`` class we want to reconstruct its
-light using.
+To reconstruct the source on a pixel-grid, called a mesh, we simply pass it the ``Mesh`` class we want to reconstruct its
+light on.
 
 We also pass a ``Regularization`` scheme which applies a smoothness prior on the source reconstruction.
 
-Below, we use a ``Rectangular`` pixelization with resolution 40 x 40 and a ``Constant`` regularization scheme:
+Below, we use a ``Rectangular`` mesh with resolution 40 x 40 and a ``Constant`` regularization scheme:
 
 .. code-block:: python
 
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(40, 40)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
+
     source_galaxy = al.Galaxy(
         redshift=1.0,
-        pixelization=al.pix.Rectangular(shape=(40, 40)),
-        regularization=al.reg.Constant(coefficient=1.0),
+        pixelization=pixelization
     )
 
 To fit the data, we simply pass this source-galaxy into a ``Tracer`` (complete with lens galaxy mass model). The
