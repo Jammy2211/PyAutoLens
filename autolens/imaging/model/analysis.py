@@ -359,11 +359,8 @@ class AnalysisImaging(AnalysisDataset):
         if not tracer.has(cls=ag.Pixelization):
             return
 
-        if not any(
-            [
-                pix.mesh.is_stochastic
+        if not any(pix.mesh.is_stochastic
                 for pix in tracer.cls_list_from(cls=ag.Pixelization)
-            ]
         ):
             return
 

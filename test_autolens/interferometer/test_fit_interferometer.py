@@ -40,6 +40,8 @@ def test__noise_map__with_and_without_hyper_background(interferometer_7):
 
 def test__fit_figure_of_merit(interferometer_7):
 
+    # TODO : Use pytest.parameterize
+
     g0 = al.Galaxy(
         redshift=0.5,
         bulge=al.lp.EllSersic(intensity=1.0),

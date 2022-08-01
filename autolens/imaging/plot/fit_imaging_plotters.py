@@ -196,7 +196,7 @@ class FitImagingPlotter(Plotter):
 
             if model_image:
 
-                if (not self.tracer.has(cls=aa.Pixelization)) or plane_index == 0:
+                if not self.tracer.has(cls=aa.Pixelization) or plane_index == 0:
 
                     self.mat_plot_2d.plot_array(
                         array=self.fit.model_images_of_planes_list[plane_index],
