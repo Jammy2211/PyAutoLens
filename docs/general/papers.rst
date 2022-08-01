@@ -33,6 +33,8 @@ The following papers use **PyAutoLens**:
 
 **Statistics / Machine Learning**
 
+`A machine learning based approach to gravitational lens identification with the International LOFAR Telescope <https://arxiv.org/abs/2207.10698>`_
+
 `Auto-identification of unphysical source reconstructions in strong gravitational lens modelling <https://arxiv.org/abs/2012.04665>`_
 
 `Decoding Dark Matter Substructure without Supervision <https://arxiv.org/abs/2008.12731>`_

@@ -13,6 +13,7 @@ from autogalaxy.imaging.fit_imaging import hyper_noise_map_from
 
 from autolens.analysis.preloads import Preloads
 from autolens.lens.ray_tracing import Tracer
+from autolens.lens.to_inversion import TracerToInversion
 
 from autolens import exc
 
@@ -151,8 +152,22 @@ class FitImaging(aa.FitImaging, AbstractFit):
         """
         return self.image - self.blurred_image
 
+    @property
+    def tracer_to_inversion(self) -> TracerToInversion:
+
+        return TracerToInversion(
+            tracer=self.tracer,
+            dataset=self.dataset,
+            data=self.profile_subtracted_image,
+            noise_map=self.noise_map,
+            w_tilde=self.w_tilde,
+            settings_pixelization=self.settings_pixelization,
+            settings_inversion=self.settings_inversion,
+            preloads=self.preloads,
+        )
+
     @cached_property
-    def inversion(self) -> aa.Inversion:
+    def inversion(self) -> Optional[aa.AbstractInversion]:
         """
         If the tracer has linear objects which are used to fit the data (e.g. a linear light profile / pixelization)
         this function returns a linear inversion, where the flux values of these objects (e.g. the `intensity`
@@ -163,15 +178,7 @@ class FitImaging(aa.FitImaging, AbstractFit):
         """
         if self.perform_inversion:
 
-            return self.tracer.to_inversion.inversion_imaging_from(
-                dataset=self.dataset,
-                image=self.profile_subtracted_image,
-                noise_map=self.noise_map,
-                w_tilde=self.w_tilde,
-                settings_pixelization=self.settings_pixelization,
-                settings_inversion=self.settings_inversion,
-                preloads=self.preloads,
-            )
+            return self.tracer_to_inversion.inversion
 
     @property
     def model_data(self) -> aa.Array2D:
@@ -184,9 +191,7 @@ class FitImaging(aa.FitImaging, AbstractFit):
         If a inversion is included it is the sum of this image and the inversion's reconstruction of the image.
         """
 
-        if self.tracer.has(cls=aa.pix.Pixelization) or self.tracer.has(
-            cls=ag.lp_linear.LightProfileLinear
-        ):
+        if self.perform_inversion:
 
             return self.blurred_image + self.inversion.mapped_reconstructed_data
 
