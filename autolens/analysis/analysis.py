@@ -258,6 +258,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             if (
                 self.positions_likelihood is None
                 and self.raise_inversion_positions_likelihood_exception
+                and not conf.instance["general"]["test"]["disable_positions_lh_inversion_check"]
             ):
                 raise exc.AnalysisException(
                     "You have begun a model-fit which reconstructs the source using a pixelization.\n\n"
@@ -341,9 +342,9 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         result
             The result of a lens model fit, including the non-linear search, samples and maximum likelihood tracer.
         """
-        pixelization = ag.util.model.mesh_list_from(model=result.model)
+        mesh_list = ag.util.model.mesh_list_from(model=result.model)
 
-        if pixelization is not None:
+        if mesh_list is not None:
 
             tracer_to_inversion = TracerToInversion(
                 tracer=result.max_log_likelihood_tracer, dataset=self.dataset
@@ -358,9 +359,10 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             )
 
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
-            if pixelization is not None:
-                if pixelization.is_stochastic:
-                    self.save_stochastic_outputs(paths=paths, samples=result.samples)
+            if mesh_list is not None:
+                for mesh in mesh_list:
+                    if mesh.is_stochastic:
+                        self.save_stochastic_outputs(paths=paths, samples=result.samples)
 
     def save_stochastic_outputs(self, paths: af.DirectoryPaths, samples: af.Samples):
         """
