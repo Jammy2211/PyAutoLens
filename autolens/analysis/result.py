@@ -256,9 +256,10 @@ class ResultDataset(Result):
         multiple-image positions.
         """
         if self.max_log_likelihood_fit.inversion is not None:
-            return self.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre_list[
-                0
-            ]
+            if self.max_log_likelihood_fit.inversion.has(cls=aa.AbstractMapper):
+                return self.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre_list[
+                    0
+                ]
 
     def image_for_galaxy(self, galaxy: ag.Galaxy) -> np.ndarray:
         """

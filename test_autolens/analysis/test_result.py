@@ -155,6 +155,16 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
 
     assert result.source_plane_inversion_centre == None
 
+    lens = al.Galaxy(redshift=0.5, light=al.lp_linear.EllSersic())
+    source = al.Galaxy(redshift=1.0)
+
+    tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
+
+    samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
+
+    result = ResultImaging(samples=samples, analysis=analysis_imaging_7x7, model=None)
+
+    assert result.source_plane_inversion_centre == None
 
 def test__source_plane_centre(analysis_imaging_7x7):
 
