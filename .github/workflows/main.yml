@@ -82,3 +82,15 @@ jobs:
         export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoLens
         pushd PyAutoLens
         pytest
+    - name: Slack send
+      if: ${{ failure() }}
+      id: slack
+      uses: slackapi/slack-github-action@v1.21.0
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      with:
+        channel-id: C03S98FEDK2
+        payload: |
+                {
+                  "text": "${{ github.repository }}/${{ github.ref_name }} (Python ${{ matrix.python-version }}) build result: ${{ job.status }}\n${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                }
