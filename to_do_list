@@ -28,6 +28,9 @@ __VIsualize__
 
 Dont put critical curve on all FitImaging plots, it can cover up the cresidails in the centre (e.g. the red cricle of the radial critical curve gets in the way)/.
 
+- Mask zoom, always keep the data square (dont make rectangle) and always keep the centre (0.0, 0.0), as otherwise
+one may incorrect thing a critical curve is far offset from (0.0, 0.0).
+
 __Clump API__
 
 - Scripts describing what a clump is.
