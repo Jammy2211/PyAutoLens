@@ -646,7 +646,7 @@ def test__tracer_linear_light_profiles_to_light_profiles(masked_imaging_7x7):
     assert tracer.galaxies[2].bulge.intensity == pytest.approx(0.08393533428, 1.0e-4)
 
 
-def test___stochastic_mode__gives_different_log_likelihoods(masked_imaging_7x7):
+def _test___stochastic_mode__gives_different_log_likelihoods(masked_imaging_7x7):
 
     pixelization = al.Pixelization(
         mesh=al.mesh.VoronoiBrightnessImage(pixels=7),
