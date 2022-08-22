@@ -692,7 +692,7 @@ def test___stochastic_mode__gives_different_log_likelihoods(masked_imaging_7x7):
     log_evidence_x5_0 = sum([fit_0.log_evidence for i in range(5)])
     log_evidence_x5_1 = sum([fit_1.log_evidence for i in range(5)])
 
-    assert log_evidence_x5_0 != pytest.approx(log_evidence_x5_1, 1.0e-4)
+    assert log_evidence_x5_0 != log_evidence_x5_1
 
 
 def test__preloads__refit_with_new_preloads(masked_imaging_7x7):

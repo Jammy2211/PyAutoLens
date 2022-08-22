@@ -53,7 +53,7 @@ def _fit_interferometer_from(
     )
     settings_inversion = settings_inversion or fit.value(name="settings_inversion")
 
-    preloads = None
+    preloads = Preloads(use_w_tilde=settings_inversion.use_w_tilde)
 
     if use_preloaded_grid:
 
