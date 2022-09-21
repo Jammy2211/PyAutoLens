@@ -153,7 +153,6 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         ensuring that the inversion only fits the data with ordinary light profiles subtracted.
         """
         if self.perform_inversion:
-
             return self.tracer_to_inversion.inversion
 
     @property

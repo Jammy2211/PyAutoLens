@@ -1,32 +1,47 @@
 __Tasks__
 
-- Build Server: Sort Authentification issues.
 - Logging: DISPLAY EVERYTHING (PSF SIZE, IMAGER SIZE, MASK STUFF, IT WILL STOP BUGS).
-- GUI code is horrific, clean up, CHECK IF INUT IS SCALED OR PIXELS.
 - Simulating lenses is slow because the iterate grid is used for all visualization. Make a "sub_size_1" grid property.
+
+
+
+__MGE__
+
+- PyAutoArray details but this is priority for PyAutoLens.
+
+
+__Stochastic LH Built in__
+
+- Summary stats based on Gaussian.
+- 1D plot of slope vs LH, split into different LH terms (Also support for other parameters).
+
+
 
 __HowToLens__
 
 - Add equations to lectures from likelihood function noteobok.
 
+
 __Features__
 
 - Mass visualization for large runs in single folder, which works for database runs.
-- Automated check of deflection angles against integration during lens modeling.
+- Database tutorial for big datasets with efficient / fast visuals.
 - DM many subhalo sims.
 - Automatically blurring grid padding and extraction.
 
 
-__Image To Source Mapping__
+__Source__
 
-Mapping image arrays (e.g. the data) to the source plane so we can compare how the source-plane appears.
-
-- Do for simple rectangular grid, then add subgrid, interpolation.
+- Magnification tools for source models.
+- Mapping image arrays (e.g. the data) to the source plane so we can compare how the source-plane appears.
+  Do for simple rectangular grid, then add subgrid, interpolation.
 - Make magnification equivalent.
+
 
 __VIsualize__
 
 Dont put critical curve on all FitImaging plots, it can cover up the cresidails in the centre (e.g. the red cricle of the radial critical curve gets in the way)/.
+
 
 __Clump API__
 
@@ -38,6 +53,7 @@ hierarchical models, prior passing).
 - Rich: API for fitting model sub components one by one, built into clump API.
 - Multiwavelength 0_0.
 
+
 __Point Source__
 
 - Point source visusliazation, RMS of point source.
@@ -46,12 +62,6 @@ __Point Source__
 __Documentation__
 
 - Search chaining readthedocs.
-- add https://arxiv.org/abs/2012.04665 where applicable.
-- FAQ My reconstruction is a demagnified solution.
-
-__Refactor__
-
-
 
 __Bugs__
 
