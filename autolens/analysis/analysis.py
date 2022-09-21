@@ -258,7 +258,9 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             if (
                 self.positions_likelihood is None
                 and self.raise_inversion_positions_likelihood_exception
-                and not conf.instance["general"]["test"]["disable_positions_lh_inversion_check"]
+                and not conf.instance["general"]["test"][
+                    "disable_positions_lh_inversion_check"
+                ]
             ):
                 raise exc.AnalysisException(
                     "You have begun a model-fit which reconstructs the source using a pixelization.\n\n"
@@ -362,7 +364,9 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             if mesh_list is not None:
                 for mesh in mesh_list:
                     if mesh.is_stochastic:
-                        self.save_stochastic_outputs(paths=paths, samples=result.samples)
+                        self.save_stochastic_outputs(
+                            paths=paths, samples=result.samples
+                        )
 
     def save_stochastic_outputs(self, paths: af.DirectoryPaths, samples: af.Samples):
         """

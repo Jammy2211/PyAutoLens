@@ -166,6 +166,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
 
     assert result.source_plane_inversion_centre == None
 
+
 def test__source_plane_centre(analysis_imaging_7x7):
 
     lens = al.Galaxy(redshift=0.5, light=al.lp.SphSersic(intensity=1.0))
