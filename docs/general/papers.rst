@@ -61,6 +61,8 @@ The following papers use **PyAutoLens**:
 
 `ALMA resolves the first strongly-lensed Optical/NIR-dark galaxy <https://arxiv.org/abs/2207.00466>`_
 
+`The Two 𝑧 ∼ 13 Galaxy Candidates HD1 and HD2 Are Likely Not Lensed <https://arxiv.org/abs/2209.06830>`_
+
 **Surveys**
 
 `MNELLS: The MUSE Nearby Early-Type Galaxy Lens Locator Survey <https://arxiv.org/abs/2002.07191>`_
