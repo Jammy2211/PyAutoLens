@@ -1,3 +1,5 @@
+from os import path
+
 from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.interferometer.plot.fit_interferometer_plotters import (
     FitInterferometerPlotter,
