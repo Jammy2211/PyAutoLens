@@ -1,12 +1,11 @@
 import numpy as np
 from typing import Optional, Union
 from os import path
+import os
 
 import autoarray as aa
 import autofit as af
 from autofit.tools.util import open_
-
-from autoconf import conf
 
 import autogalaxy as ag
 
@@ -143,7 +142,7 @@ class PositionsLHResample(AbstractPositionsLH):
 
         if not positions_fit.max_separation_within_threshold(self.threshold):
 
-            if conf.instance["general"]["test"]["test_mode"]:
+            if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
                 return
 
             raise exc.RayTracingException
