@@ -19,18 +19,44 @@ from pyprojroot import here
 
 workspace_path = str(here())
 
-print(workspace_path)
-
 import os
 import sys
+
+clone = "git clone https://github.com/Jammy2211/PyAutoFit"
+os.system(clone)
+os.system("pip install -r PyAutoFit/requirements.txt")
+
+clone = "git clone https://github.com/Jammy2211/PyAutoArray"
+os.system(clone)
+os.system("pip install -r PyAutoArray/requirements.txt")
+
+clone = "git clone https://github.com/Jammy2211/PyAutoGalaxy"
+os.system(clone)
+os.system("pip install -r PyAutoGalaxy/requirements.txt")
 
 sys.path.insert(0, os.path.abspath("."))
 
 clone_path = os.path.split(workspace_path)[0]
 
-print(clone_path)
+sys.path.insert(
+    0,
+    os.path.abspath(clone_path),
+)
 
-sys.path.insert(0, os.path.abspath(os.path.join(".", clone_path)))
+sys.path.insert(
+    0,
+    os.path.abspath(f"{clone_path}/PyAutoFit"),
+)
+
+sys.path.insert(
+    0,
+    os.path.abspath(f"{clone_path}/PyAutoArray"),
+)
+
+sys.path.insert(
+    0,
+    os.path.abspath(f"{clone_path}/PyAutoGalaxy"),
+)
 
 print(list(os.walk(clone_path)))
 # print(os.environ["PYTHONPATH"])

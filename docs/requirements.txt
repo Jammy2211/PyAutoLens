@@ -1,7 +1,4 @@
 autoconf==2022.07.11.1
-autofit==2022.07.11.1
-autoarray==2022.07.11.1
-autogalaxy==2022.07.11.1
 numba
 sphinx==4.0.0
 furo
