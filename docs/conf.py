@@ -17,7 +17,7 @@ from pyprojroot import here
 
 # /home/docs/checkouts/readthedocs.org/user_builds/pyautolens/checkouts/latest/docs
 
-workspace_path = str(here())
+clone_path = str(here())
 
 import os
 import sys
@@ -36,13 +36,6 @@ os.system("pip install -r PyAutoGalaxy/requirements.txt")
 
 sys.path.insert(0, os.path.abspath("."))
 
-clone_path = os.path.split(workspace_path)[0]
-
-sys.path.insert(
-    0,
-    os.path.abspath(clone_path),
-)
-
 sys.path.insert(
     0,
     os.path.abspath(f"{clone_path}/PyAutoFit"),
@@ -58,7 +51,15 @@ sys.path.insert(
     os.path.abspath(f"{clone_path}/PyAutoGalaxy"),
 )
 
-print(list(os.walk(clone_path)))
+clone_path = os.path.split(clone_path)[0]
+
+sys.path.insert(
+    0,
+    os.path.abspath(clone_path),
+)
+
+
+print(list(os.walk(f"{clone_path}/PyAutoArray")))
 # print(os.environ["PYTHONPATH"])
 
 import autolens
