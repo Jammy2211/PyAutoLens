@@ -26,7 +26,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath("."))
 
-clone_path = os.path.join("..", workspace_path)
+clone_path = os.path.split(workspace_path)[0]
 
 print(clone_path)
 
