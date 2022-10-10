@@ -26,7 +26,7 @@ clone_path = "/home/docs/checkouts/readthedocs.org/user_builds/pyautolens/checko
 
 sys.path.insert(0, os.path.abspath(os.path.join(".", clone_path)))
 
-print(list(os.walk(os.path.abspath(clone_path))))
+print(list(os.walk(clone_path)))
 # print(os.environ["PYTHONPATH"])
 
 import autolens
