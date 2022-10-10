@@ -22,34 +22,22 @@ clone_path = str(here())
 import os
 import sys
 
-clone = "git clone https://github.com/rhayes777/PyAutoFit"
-os.system(clone)
-os.system("pip install -r PyAutoFit/requirements.txt")
-
-clone = "git clone https://github.com/Jammy2211/PyAutoArray"
-os.system(clone)
-os.system("pip install -r PyAutoArray/requirements.txt")
-
-clone = "git clone https://github.com/Jammy2211/PyAutoGalaxy"
-os.system(clone)
-os.system("pip install -r PyAutoGalaxy/requirements.txt")
-
 sys.path.insert(0, os.path.abspath("."))
 
-sys.path.insert(
-    0,
-    os.path.abspath(f"{clone_path}/PyAutoFit"),
-)
 
-sys.path.insert(
-    0,
-    os.path.abspath(f"{clone_path}/PyAutoArray"),
-)
+def clone_repo(name:str, url:str):
 
-sys.path.insert(
-    0,
-    os.path.abspath(f"{clone_path}/PyAutoGalaxy"),
-)
+    clone = f"git clone {url}/{name}"
+    os.system(clone)
+    os.system(f"pip install -r {name}/requirements.txt")
+    sys.path.insert(
+        0,
+        os.path.abspath(f"{clone_path}/{name}"),
+    )
+
+clone_repo(name="PyAutoFit", url="https://github.com/rhayes777")
+clone_repo(name="PyAutoArray", url="https://github.com/Jammy2211")
+clone_repo(name="PyAutoGalaxy", url="https://github.com/Jammy2211")
 
 clone_path = os.path.split(clone_path)[0]
 
@@ -57,10 +45,6 @@ sys.path.insert(
     0,
     os.path.abspath(clone_path),
 )
-
-
-print(list(os.walk(f"{clone_path}/PyAutoArray")))
-# print(os.environ["PYTHONPATH"])
 
 import autolens
 
