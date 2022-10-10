@@ -208,7 +208,7 @@ Lensing
 Inversions
 ----------
 
-.. currentmodule:: autoarray.inversion.pixelizations
+.. currentmodule:: autoarray.inversion.pixelization.mesh
 
 **Pixelizations:**
 
