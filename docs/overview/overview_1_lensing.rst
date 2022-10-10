@@ -138,7 +138,7 @@ For anyone not familiar with gravitational lensing, don't worry about what the c
 The key thing to note is that the deflection angles describe how a given mass distribution deflects light-rays as they
 travel towards the Earth through the Universe.
 
-galaxies
+Galaxies
 --------
 
 A ``Galaxy`` object is a collection of ``LightProfile`` and ``MassProfile`` objects at a given redshift. The code below
@@ -161,7 +161,7 @@ model to create the appropriate strong lens system.
 .. code-block:: python
 
     tracer = al.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy], cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15()
+        galaxies=[lens_galaxy, source_galaxy], cosmology=al.cosmo.Planck15()
     )
 
 Ray Tracing
@@ -205,8 +205,7 @@ dark matter, where the stellar mass using a ``LightMassProfile`` representing bo
         redshift=0.5,
         bulge=al.lmp.EllSersic(
             centre=(0.0, 0.0),
-            axis_ratio=0.9,
-            angle=45.0,
+            elliptical_comps=(0.0, 0.05),
             intensity=0.5,
             effective_radius=0.3,
             sersic_index=2.5,
@@ -214,8 +213,7 @@ dark matter, where the stellar mass using a ``LightMassProfile`` representing bo
         ),
         disk=al.lmp.EllExponential(
             centre=(0.0, 0.0),
-            axis_ratio=0.6,
-            angle=45.0,
+            elliptical_comps=(0.0, 0.1),
             intensity=1.0,
             effective_radius=2.0,
             mass_to_light_ratio=0.2,
@@ -237,8 +235,7 @@ dark matter, where the stellar mass using a ``LightMassProfile`` representing bo
         redshift=2.0,
         light=al.lp.EllSersic(
             centre=(0.2, 0.2),
-            e1=-0.055555,
-            e2=0.096225,
+            elliptical_comps=(0.05, -0.1),
             intensity=2.0,
             effective_radius=0.1,
             sersic_index=1.5,
