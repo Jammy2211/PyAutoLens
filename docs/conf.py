@@ -22,7 +22,9 @@ import sys
 
 sys.path.insert(0, os.path.abspath("."))
 
-import autogalaxy
+os.walk(os.path.abspath())
+print(os.environ["PYTHONPATH"])
+
 import autolens
 
 # -- Project information -----------------------------------------------------
