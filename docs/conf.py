@@ -17,6 +17,8 @@ from pyprojroot import here
 
 workspace_path = str(here())
 
+print(workspace_path)
+
 import os
 import sys
 
