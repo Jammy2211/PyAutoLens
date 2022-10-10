@@ -57,7 +57,7 @@ copyright = "2022, James Nightingale, Richard Hayes"
 author = "James Nightingale, Richard Hayes"
 
 # The full version, including alpha/beta/rc tags
-release = "2022.07.11.1"
+release = autolens.__version__
 master_doc = "index"
 
 
