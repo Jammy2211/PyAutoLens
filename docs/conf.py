@@ -30,6 +30,7 @@ def clone_repo(name:str, url:str):
     clone = f"git clone {url}/{name}"
     os.system(clone)
     os.system(f"pip install -r {name}/requirements.txt")
+    os.system(f"rm -rf {name}/docs")
     sys.path.insert(
         0,
         os.path.abspath(f"{clone_path}/{name}"),

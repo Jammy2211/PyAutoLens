@@ -256,6 +256,10 @@ Inversions
 Plots
 -----
 
+Example scripts illustrating all plotting objects are provided in the `plot` module of the `autolens_workspace`:
+
+https://github.com/Jammy2211/autolens_workspace/tree/release/notebooks/plot
+
 .. currentmodule:: autolens.plot
 
 **Plotters:**
