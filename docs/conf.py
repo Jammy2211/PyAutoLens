@@ -15,6 +15,8 @@ import datetime
 
 from pyprojroot import here
 
+# /home/docs/checkouts/readthedocs.org/user_builds/pyautolens/checkouts/latest/docs
+
 workspace_path = str(here())
 
 print(workspace_path)
@@ -24,7 +26,9 @@ import sys
 
 sys.path.insert(0, os.path.abspath("."))
 
-clone_path = "/home/docs/checkouts/readthedocs.org/user_builds/pyautolens/checkouts/master"
+clone_path = os.path.join("..", workspace_path)
+
+print(clone_path)
 
 sys.path.insert(0, os.path.abspath(os.path.join(".", clone_path)))
 
