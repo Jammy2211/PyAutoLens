@@ -21,8 +21,9 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath("."))
+sys.path.insert(0, os.path.abspath(os.path.join(".", "PyAutoLens")))
 
-print(os.walk(os.path.abspath(".")))
+print(list(os.walk(os.path.abspath("."))))
 print(os.environ["PYTHONPATH"])
 
 import autolens
