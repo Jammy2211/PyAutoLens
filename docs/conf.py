@@ -22,7 +22,7 @@ clone_path = str(here())
 import os
 import sys
 
-clone = "git clone https://github.com/Jammy2211/PyAutoFit"
+clone = "git clone https://github.com/rhayes777/PyAutoFit"
 os.system(clone)
 os.system("pip install -r PyAutoFit/requirements.txt")
 
