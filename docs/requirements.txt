@@ -1,5 +1,6 @@
 autoconf==2022.07.11.1
 numba
+pyprojroot==0.2.0
 sphinx==4.0.0
 furo
 myst-parser
