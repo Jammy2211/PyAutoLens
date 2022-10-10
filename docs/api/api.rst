@@ -210,7 +210,7 @@ Inversions
 
 .. currentmodule:: autoarray.inversion.pixelization.mesh
 
-**Pixelizations:**
+**Mesh:**
 
 .. autosummary::
    :toctree: generated/
@@ -225,7 +225,7 @@ Inversions
 
 .. currentmodule:: autoarray.inversion.regularization
 
-**Regularizations:**
+**Regularization**
 
 .. autosummary::
    :toctree: generated/
@@ -237,7 +237,7 @@ Inversions
 
 .. currentmodule:: autolens
 
-**LEqs:**
+**Mapper:**
 
 .. autosummary::
    :toctree: generated/
