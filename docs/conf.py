@@ -1,5 +1,4 @@
 import datetime
-from typing import Any, Dict
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -23,6 +22,9 @@ import sys
 
 sys.path.insert(0, os.path.abspath("."))
 
+import autogalaxy
+import autolens
+
 # -- Project information -----------------------------------------------------
 
 year = datetime.date.today().year
@@ -31,7 +33,7 @@ copyright = "2022, James Nightingale, Richard Hayes"
 author = "James Nightingale, Richard Hayes"
 
 # The full version, including alpha/beta/rc tags
-release = "2022.05.02.1"
+release = "2022.07.11.1"
 master_doc = "index"
 
 
