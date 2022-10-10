@@ -22,7 +22,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath("."))
 
-os.walk(os.path.abspath())
+print(os.walk(os.path.abspath(".")))
 print(os.environ["PYTHONPATH"])
 
 import autolens
