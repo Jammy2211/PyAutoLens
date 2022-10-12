@@ -2,6 +2,7 @@ __Tasks__
 
 - Logging: DISPLAY EVERYTHING (PSF SIZE, IMAGER SIZE, MASK STUFF, IT WILL STOP BUGS).
 - Simulating lenses is slow because the iterate grid is used for all visualization. Make a "sub_size_1" grid property.
+- Estimating the PSF preprocess example by fitting Gaussians
 
 
 

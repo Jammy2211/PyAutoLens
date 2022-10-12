@@ -3,5 +3,6 @@ llvmlite
 pylops>=1.10.0
 pynufft==2020.2.7
 ultranest==3.2.0
+zeus-mcmc==2.4.1
 jax==0.3.1
 jaxlib==0.3.0
