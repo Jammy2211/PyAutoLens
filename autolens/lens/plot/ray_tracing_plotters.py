@@ -25,16 +25,16 @@ class TracerPlotter(Plotter):
         include_2d: aplt.Include2D = aplt.Include2D(),
     ):
         """
-        Plots the attributes of `Tracer` objects using the matplotlib methods `plot()` and `imshow()` and many 
+        Plots the attributes of `Tracer` objects using the matplotlib methods `plot()` and `imshow()` and many
         other matplotlib functions which customize the plot's appearance.
 
-        The `mat_plot_1d` and `mat_plot_2d` attributes wrap matplotlib function calls to make the figure. By default, 
-        the settings passed to every matplotlib function called are those specified in 
-        the `config/visualize/mat_wrap/*.ini` files, but a user can manually input values into `MatPlot2D` to 
+        The `mat_plot_1d` and `mat_plot_2d` attributes wrap matplotlib function calls to make the figure. By default,
+        the settings passed to every matplotlib function called are those specified in
+        the `config/visualize/mat_wrap/*.ini` files, but a user can manually input values into `MatPlot2D` to
         customize the figure's appearance.
 
-        Overlaid on the figure are visuals, contained in the `Visuals1D` and `Visuals2D` objects. Attributes may be 
-        extracted from the `MassProfile` and plotted via the visuals object, if the corresponding entry is `True` in 
+        Overlaid on the figure are visuals, contained in the `Visuals1D` and `Visuals2D` objects. Attributes may be
+        extracted from the `MassProfile` and plotted via the visuals object, if the corresponding entry is `True` in
         the `Include1D` or `Include2D` object or the `config/visualize/include.ini` file.
 
         Parameters
@@ -212,7 +212,7 @@ class TracerPlotter(Plotter):
         plane_index: Optional[int] = None,
     ):
         """
-        Plots source-plane images (e.g. the unlensed light) each individual `Plane` in the plotter's `Tracer` in 2D, 
+        Plots source-plane images (e.g. the unlensed light) each individual `Plane` in the plotter's `Tracer` in 2D,
         which are computed via the plotter's 2D grid object.
 
         The API is such that every plottable attribute of the `Plane` object is an input parameter of type bool of
@@ -224,7 +224,7 @@ class TracerPlotter(Plotter):
             Whether or not to make a 2D plot (via `imshow`) of the image of the plane in the soure-plane (e.g. its
             unlensed light).
         plane_grid
-            Whether or not to make a 2D plot (via `scatter`) of the lensed (y,x) coordinates of the plane in the 
+            Whether or not to make a 2D plot (via `scatter`) of the lensed (y,x) coordinates of the plane in the
             source-plane.
         plane_index
             If input, plots for only a single plane based on its index in the tracer are created.
@@ -264,7 +264,7 @@ class TracerPlotter(Plotter):
         auto_filename: str = "subplot_tracer",
     ):
         """
-        Plots the individual attributes of the plotter's `Tracer` object in 2D on a subplot, which are computed via 
+        Plots the individual attributes of the plotter's `Tracer` object in 2D on a subplot, which are computed via
         the plotter's 2D grid object.
 
         The API is such that every plottable attribute of the `Tracer` object is an input parameter of type bool of

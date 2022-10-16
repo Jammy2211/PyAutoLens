@@ -270,4 +270,4 @@ def test__operate_lens__sums_individual_quantities():
 
     einstein_mass = tracer.einstein_mass_angular_from(grid=grid)
 
-    assert einstein_mass == pytest.approx(np.pi * 2.0 ** 2.0, 1.0e-1)
+    assert einstein_mass == pytest.approx(np.pi * 2.0**2.0, 1.0e-1)

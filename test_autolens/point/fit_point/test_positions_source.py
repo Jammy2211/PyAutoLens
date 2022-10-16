@@ -22,7 +22,7 @@ def test__two_sets_of_positions__residuals_likelihood_correct():
     assert fit.noise_map.in_list == [0.5, 1.0]
     assert fit.residual_map.in_list == [1.0, 2.0]
     assert fit.normalized_residual_map.in_list == [1.0 / 0.5, 2.0 / 1.0]
-    assert fit.chi_squared_map.in_list == [(1.0 / 0.5) ** 2.0, 2.0 ** 2.0]
+    assert fit.chi_squared_map.in_list == [(1.0 / 0.5) ** 2.0, 2.0**2.0]
     assert fit.chi_squared == pytest.approx(8.0, 1.0e-4)
     assert fit.noise_normalization == pytest.approx(2.28945, 1.0e-4)
     assert fit.log_likelihood == pytest.approx(-5.14472988, 1.0e-4)

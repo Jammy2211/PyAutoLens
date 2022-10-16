@@ -10,7 +10,7 @@ class FitQuantity(ag.FitQuantity):
         """
         Fits a `DatasetQuantity` object with model data.
 
-        This is used to fit a quantity (e.g. a convergence, deflection angles), from a `Tracer`, to the same quantity 
+        This is used to fit a quantity (e.g. a convergence, deflection angles), from a `Tracer`, to the same quantity
         derived from another of that object.
 
         For example, we may have the 2D convergence of a power-law mass profile and wish to determine how closely the
@@ -27,10 +27,10 @@ class FitQuantity(ag.FitQuantity):
             The quantity that is to be fitted, which has a noise-map associated it with for computing goodness-of-fit
             metrics.
         tracer
-            The tracer of galaxies whose model quantities are used to fit the imaging data.  
+            The tracer of galaxies whose model quantities are used to fit the imaging data.
         func_str
             A string giving the name of the method of the input `Plane` used to compute the quantity that fits
-            the dataset.          
+            the dataset.
         """
 
         super().__init__(dataset=dataset, light_mass_obj=tracer, func_str=func_str)

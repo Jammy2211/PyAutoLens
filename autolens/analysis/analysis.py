@@ -399,8 +399,8 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
                 stochastic_log_likelihoods = np.asarray(json.load(f))
         except FileNotFoundError:
             instance = samples.max_log_likelihood_instance
-            stochastic_log_likelihoods = self.stochastic_log_likelihoods_via_instance_from(
-                instance=instance
+            stochastic_log_likelihoods = (
+                self.stochastic_log_likelihoods_via_instance_from(instance=instance)
             )
 
         if stochastic_log_likelihoods is None:

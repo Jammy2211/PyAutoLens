@@ -350,8 +350,10 @@ class PointSolver(AbstractPointSolver):
             deflections_func=deflections_func,
         )
 
-        coordinates_list = self.grid_with_coordinates_to_mass_profile_centre_removed_from(
-            lensing_obj=lensing_obj, grid=coordinates_list
+        coordinates_list = (
+            self.grid_with_coordinates_to_mass_profile_centre_removed_from(
+                lensing_obj=lensing_obj, grid=coordinates_list
+            )
         )
 
         coordinates_list = self.grid_with_points_below_magnification_threshold_removed(

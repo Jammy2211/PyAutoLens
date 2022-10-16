@@ -53,7 +53,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(interferome
 
 
 def test__figure_of_merit__includes_hyper_image_and_noise__matches_fit(
-    interferometer_7
+    interferometer_7,
 ):
     hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 

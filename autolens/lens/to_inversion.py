@@ -185,9 +185,10 @@ class TracerToInversion(ag.AbstractToInversion):
             )
 
         if self.preloads.traced_sparse_grids_list_of_planes is None:
-            traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = (
-                self.traced_sparse_grid_pg_list
-            )
+            (
+                traced_sparse_grids_list_of_planes,
+                sparse_image_plane_grid_list,
+            ) = self.traced_sparse_grid_pg_list
         else:
             traced_sparse_grids_list_of_planes = (
                 self.preloads.traced_sparse_grids_list_of_planes

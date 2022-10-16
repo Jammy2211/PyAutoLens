@@ -136,7 +136,7 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(masked_imagi
 
 
 def test__modify_before_fit__inversion_no_positions_likelihood__raises_exception(
-    masked_imaging_7x7
+    masked_imaging_7x7,
 ):
 
     lens = al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal())

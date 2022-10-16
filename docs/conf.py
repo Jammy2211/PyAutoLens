@@ -25,7 +25,7 @@ import sys
 sys.path.insert(0, os.path.abspath("."))
 
 
-def clone_repo(name:str, url:str):
+def clone_repo(name: str, url: str):
 
     clone = f"git clone {url}/{name}"
     os.system(clone)
@@ -35,6 +35,7 @@ def clone_repo(name:str, url:str):
         0,
         os.path.abspath(f"{clone_path}/{name}"),
     )
+
 
 clone_repo(name="PyAutoFit", url="https://github.com/rhayes777")
 clone_repo(name="PyAutoArray", url="https://github.com/Jammy2211")

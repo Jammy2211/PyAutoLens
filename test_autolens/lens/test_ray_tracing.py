@@ -1597,7 +1597,7 @@ def test__grid_iterate_in__iterates_array_result_correctly(gal_x1_lp):
 
 
 def test__grid_iterate_in__method_returns_array_list__uses_highest_sub_size_of_iterate(
-    gal_x1_lp
+    gal_x1_lp,
 ):
 
     mask = al.Mask2D.manual(

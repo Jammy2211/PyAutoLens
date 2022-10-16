@@ -306,9 +306,10 @@ def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
         tracer=tracer, dataset=masked_imaging_7x7
     )
 
-    traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = (
-        tracer_to_inversion.traced_sparse_grid_pg_list
-    )
+    (
+        traced_sparse_grids_list_of_planes,
+        sparse_image_plane_grid_list,
+    ) = tracer_to_inversion.traced_sparse_grid_pg_list
 
     assert traced_sparse_grids_list_of_planes[0] == None
     assert traced_sparse_grids_list_of_planes[1][0] == pytest.approx(
@@ -345,9 +346,10 @@ def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
         tracer=tracer, dataset=masked_imaging_7x7
     )
 
-    traced_sparse_grids_list_of_planes, sparse_image_plane_grid_list = (
-        tracer_to_inversion.traced_sparse_grid_pg_list
-    )
+    (
+        traced_sparse_grids_list_of_planes,
+        sparse_image_plane_grid_list,
+    ) = tracer_to_inversion.traced_sparse_grid_pg_list
 
     traced_grid_pix_0 = tracer.traced_grid_2d_list_from(grid=np.array([[1.0, 0.0]]))[2]
     traced_grid_pix_1 = tracer.traced_grid_2d_list_from(grid=np.array([[2.0, 0.0]]))[4]

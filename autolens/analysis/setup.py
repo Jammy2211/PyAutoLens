@@ -33,7 +33,7 @@ class SetupHyper(ag.SetupHyper):
         hyper_galaxies
             If a hyper-pipeline is being used, this determines if hyper-galaxy functionality is used to scale the
             noise-map of the dataset throughout the fitting.
-        hyper_image_sky 
+        hyper_image_sky
             If a hyper-pipeline is being used, this determines if hyper-galaxy functionality is used include the
             image's background sky component in the model.
         hyper_background_noise

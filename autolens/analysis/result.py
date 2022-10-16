@@ -324,10 +324,10 @@ class ResultDataset(Result):
     @property
     def hyper_model_image(self) -> aa.Array2D:
         """
-         The hyper model image used by Analysis objects to adapt aspects of a model to the dataset being fitted.
+        The hyper model image used by Analysis objects to adapt aspects of a model to the dataset being fitted.
 
-         The hyper model image is the sum of the hyper galaxy image of every individual galaxy.
-         """
+        The hyper model image is the sum of the hyper galaxy image of every individual galaxy.
+        """
         hyper_model_image = aa.Array2D.manual_mask(
             array=np.zeros(self.mask.mask_sub_1.pixels_in_mask),
             mask=self.mask.mask_sub_1,

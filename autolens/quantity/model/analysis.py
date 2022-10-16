@@ -35,7 +35,7 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
         objects that is called to create the model quantity. For example, if `func_str="convergence_2d_from"`, the
         convergence is computed from each model `Plane`.
 
-        This class stores the settings used to perform the model-fit for certain components of the model (e.g. the 
+        This class stores the settings used to perform the model-fit for certain components of the model (e.g. the
         Cosmology used for the analysis).
 
         Parameters

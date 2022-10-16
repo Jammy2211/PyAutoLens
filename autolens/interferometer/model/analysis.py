@@ -210,9 +210,9 @@ class AnalysisInterferometer(AnalysisDataset):
             ):
                 if galaxy_path in self.hyper_galaxy_visibilities_path_dict:
                     galaxy.hyper_model_visibilities = self.hyper_model_visibilities
-                    galaxy.hyper_galaxy_visibilities = self.hyper_galaxy_visibilities_path_dict[
-                        galaxy_path
-                    ]
+                    galaxy.hyper_galaxy_visibilities = (
+                        self.hyper_galaxy_visibilities_path_dict[galaxy_path]
+                    )
 
         return instance
 
@@ -256,8 +256,8 @@ class AnalysisInterferometer(AnalysisDataset):
         """
 
         try:
-            log_likelihood_positions_overwrite = self.log_likelihood_positions_overwrite_from(
-                instance=instance
+            log_likelihood_positions_overwrite = (
+                self.log_likelihood_positions_overwrite_from(instance=instance)
             )
             if log_likelihood_positions_overwrite is not None:
                 return log_likelihood_positions_overwrite
@@ -378,28 +378,28 @@ class AnalysisInterferometer(AnalysisDataset):
 
     def stochastic_log_likelihoods_via_instance_from(self, instance):
         """
-        Certain `Inversion`'s have stochasticity in their log likelihood estimate.
+         Certain `Inversion`'s have stochasticity in their log likelihood estimate.
 
-        For example, the `VoronoiBrightnessImage` pixelization, which changes the likelihood depending on how different
-        KMeans seeds change the pixel-grid.
+         For example, the `VoronoiBrightnessImage` pixelization, which changes the likelihood depending on how different
+         KMeans seeds change the pixel-grid.
 
-        A log likelihood cap can be applied to model-fits performed using these `Inversion`'s to improve error and
-        posterior estimates. This log likelihood cap is estimated from a list of stochastic log likelihoods, where
-        these log likelihoods are computed using the same model but with different KMeans seeds.
+         A log likelihood cap can be applied to model-fits performed using these `Inversion`'s to improve error and
+         posterior estimates. This log likelihood cap is estimated from a list of stochastic log likelihoods, where
+         these log likelihoods are computed using the same model but with different KMeans seeds.
 
-        This function computes these stochastic log likelihoods by iterating over many model-fits using different
-        KMeans seeds.
+         This function computes these stochastic log likelihoods by iterating over many model-fits using different
+         KMeans seeds.
 
-        Parameters
-        ----------
-       instance
-            The maximum log likelihood instance of a model that is has finished being fitted to the dataset.
+         Parameters
+         ----------
+        instance
+             The maximum log likelihood instance of a model that is has finished being fitted to the dataset.
 
-        Returns
-        -------
-        float
-            A log likelihood cap which is applied in a stochastic model-fit to give improved error and posterior
-            estimates.
+         Returns
+         -------
+         float
+             A log likelihood cap which is applied in a stochastic model-fit to give improved error and posterior
+             estimates.
         """
         instance = self.instance_with_associated_hyper_images_from(instance=instance)
         tracer = self.tracer_via_instance_from(instance=instance)
@@ -580,38 +580,38 @@ class AnalysisInterferometer(AnalysisDataset):
 
     def save_attributes_for_aggregator(self, paths: af.DirectoryPaths):
         """
-        Before the non-linear search begins, this routine saves attributes of the `Analysis` object to the `pickles`
-        folder such that they can be load after the analysis using PyAutoFit's database and aggregator tools.
+         Before the non-linear search begins, this routine saves attributes of the `Analysis` object to the `pickles`
+         folder such that they can be load after the analysis using PyAutoFit's database and aggregator tools.
 
-        For this analysis, it uses the `AnalysisDataset` object's method to output the following:
+         For this analysis, it uses the `AnalysisDataset` object's method to output the following:
 
-        - The dataset's data.
-        - The dataset's noise-map.
-        - The settings associated with the dataset.
-        - The settings associated with the inversion.
-        - The settings associated with the pixelization.
-        - The Cosmology.
-        - The hyper dataset's model image and galaxy images, if used.
+         - The dataset's data.
+         - The dataset's noise-map.
+         - The settings associated with the dataset.
+         - The settings associated with the inversion.
+         - The settings associated with the pixelization.
+         - The Cosmology.
+         - The hyper dataset's model image and galaxy images, if used.
 
-        This function also outputs attributes specific to an imaging dataset:
+         This function also outputs attributes specific to an imaging dataset:
 
-       - Its uv-wavelengths
-       - Its real space mask.
-       - The positions of the brightest pixels in the lensed source which are used to discard mass models.
-       - The preloaded image-plane source plane pixelization if used by the analysis. This ensures that differences in
-       the scikit-learn library do not lead to different pixelizations being computed if results are transferred from
-       a HPC to laptop.
+        - Its uv-wavelengths
+        - Its real space mask.
+        - The positions of the brightest pixels in the lensed source which are used to discard mass models.
+        - The preloaded image-plane source plane pixelization if used by the analysis. This ensures that differences in
+        the scikit-learn library do not lead to different pixelizations being computed if results are transferred from
+        a HPC to laptop.
 
-        It is common for these attributes to be loaded by many of the template aggregator functions given in the
-        `aggregator` modules. For example, when using the database tools to perform a fit, the default behaviour is for
-        the dataset, settings and other attributes necessary to perform the fit to be loaded via the pickle files
-        output by this function.
+         It is common for these attributes to be loaded by many of the template aggregator functions given in the
+         `aggregator` modules. For example, when using the database tools to perform a fit, the default behaviour is for
+         the dataset, settings and other attributes necessary to perform the fit to be loaded via the pickle files
+         output by this function.
 
-        Parameters
-        ----------
-        paths
-            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
-            visualization, and the pickled objects used by the aggregator output by this function.
+         Parameters
+         ----------
+         paths
+             The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+             visualization, and the pickled objects used by the aggregator output by this function.
         """
         super().save_attributes_for_aggregator(paths=paths)
 
