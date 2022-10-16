@@ -346,7 +346,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         """
         mesh_list = ag.util.model.mesh_list_from(model=result.model)
 
-        if mesh_list is not None:
+        if len(mesh_list) > 0:
 
             tracer_to_inversion = TracerToInversion(
                 tracer=result.max_log_likelihood_tracer, dataset=self.dataset
@@ -361,7 +361,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             )
 
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
-            if mesh_list is not None:
+            if len(mesh_list) > 0:
                 for mesh in mesh_list:
                     if mesh.is_stochastic:
                         self.save_stochastic_outputs(

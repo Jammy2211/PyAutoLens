@@ -1,3 +1,4 @@
+import os
 from os import path
 import numpy as np
 import json
@@ -168,6 +169,9 @@ class Result(AgResult):
         use_resample=False,
         positions: Optional[aa.Grid2DIrregular] = None,
     ) -> Union[PositionsLHPenalty, PositionsLHResample]:
+
+        if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
+            return None
 
         positions = (
             self.image_plane_multiple_image_positions
