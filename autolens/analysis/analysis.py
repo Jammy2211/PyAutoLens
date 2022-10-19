@@ -1,4 +1,4 @@
-import copy
+import os
 import json
 import logging
 import numpy as np
@@ -223,6 +223,10 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         self.raise_inversion_positions_likelihood_exception = (
             raise_inversion_positions_likelihood_exception
         )
+
+        if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
+
+            self.raise_inversion_positions_likelihood_exception = False
 
     def modify_before_fit(self, paths: af.DirectoryPaths, model: af.Collection):
         """
