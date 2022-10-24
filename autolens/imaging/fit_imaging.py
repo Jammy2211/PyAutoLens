@@ -6,10 +6,10 @@ from autoconf import cached_property
 import autoarray as aa
 import autogalaxy as ag
 
-from autogalaxy.abstract_fit import AbstractFit
+from autogalaxy.abstract_fit import AbstractFitInversion
 
-from autogalaxy.imaging.fit_imaging import hyper_image_from
-from autogalaxy.imaging.fit_imaging import hyper_noise_map_from
+from autogalaxy.imaging.fit.fit_imaging import hyper_image_from
+from autogalaxy.imaging.fit.fit_imaging import hyper_noise_map_from
 
 from autolens.analysis.preloads import Preloads
 from autolens.lens.ray_tracing import Tracer
@@ -18,7 +18,7 @@ from autolens.lens.to_inversion import TracerToInversion
 from autolens import exc
 
 
-class FitImaging(aa.FitImaging, AbstractFit):
+class FitImaging(aa.FitImaging, AbstractFitInversion):
     def __init__(
         self,
         dataset: aa.Imaging,
@@ -82,7 +82,7 @@ class FitImaging(aa.FitImaging, AbstractFit):
         """
 
         super().__init__(dataset=dataset, profiling_dict=profiling_dict)
-        AbstractFit.__init__(
+        AbstractFitInversion.__init__(
             self=self, model_obj=tracer, settings_inversion=settings_inversion
         )
 

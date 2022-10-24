@@ -38,13 +38,12 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
             noise_seed=noise_seed,
         )
 
-    def via_tracer_from(self, tracer, grid, name=None):
+    def via_tracer_from(self, tracer, grid):
         """
         Returns a realistic simulated image by applying effects to a plain simulated image.
 
         Parameters
         ----------
-        name
         image
             The image before simulating (e.g. the lens and source galaxies before optics blurring and Imaging read-out).
         pixel_scales
@@ -62,9 +61,9 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
 
         image = tracer.image_2d_from(grid=grid)
 
-        return self.via_image_from(image=image.binned, name=name)
+        return self.via_image_from(image=image.binned)
 
-    def via_galaxies_from(self, galaxies, grid, name=None):
+    def via_galaxies_from(self, galaxies, grid):
         """Simulate imaging data for this data, as follows:
 
         1)  Setup the image-plane grid of the Imaging arrays, which defines the coordinates used for the ray-tracing.
@@ -82,9 +81,9 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
 
         tracer = Tracer.from_galaxies(galaxies=galaxies)
 
-        return self.via_tracer_from(tracer=tracer, grid=grid, name=name)
+        return self.via_tracer_from(tracer=tracer, grid=grid)
 
-    def via_deflections_and_galaxies_from(self, deflections, galaxies, name=None):
+    def via_deflections_and_galaxies_from(self, deflections, galaxies):
 
         grid = aa.Grid2D.uniform(
             shape_native=deflections.shape_native,
@@ -96,4 +95,4 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
 
         image = sum(map(lambda g: g.image_2d_from(grid=deflected_grid), galaxies))
 
-        return self.via_image_from(image=image, name=name)
+        return self.via_image_from(image=image)
