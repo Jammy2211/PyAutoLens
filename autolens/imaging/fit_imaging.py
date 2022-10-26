@@ -8,8 +8,8 @@ import autogalaxy as ag
 
 from autogalaxy.abstract_fit import AbstractFitInversion
 
-from autogalaxy.imaging.fit.fit_imaging import hyper_image_from
-from autogalaxy.imaging.fit.fit_imaging import hyper_noise_map_from
+from autogalaxy.imaging.fit_imaging import hyper_image_from
+from autogalaxy.imaging.fit_imaging import hyper_noise_map_from
 
 from autolens.analysis.preloads import Preloads
 from autolens.lens.ray_tracing import Tracer

@@ -26,16 +26,16 @@ class TracerToInversion(ag.AbstractToInversion):
 
         self.tracer = tracer
 
-        self.dataset = dataset
-        self.data = data
-        self.noise_map = noise_map
-        self.w_tilde = w_tilde
-
-        self.settings_pixelization = settings_pixelization
-        self.settings_inversion = settings_inversion
-
-        self.preloads = preloads
-        self.profiling_dict = profiling_dict
+        super().__init__(
+            dataset=dataset,
+            data=data,
+            noise_map=noise_map,
+            w_tilde=w_tilde,
+            settings_pixelization=settings_pixelization,
+            settings_inversion=settings_inversion,
+            preloads=preloads,
+            profiling_dict=profiling_dict,
+        )
 
     @property
     def planes(self):

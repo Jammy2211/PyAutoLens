@@ -62,6 +62,11 @@ __Point Source__
 - Point source visusliazation, RMS of point source.
 
 
+__Groups__
+
+- Auto fit and subtract of lens light via input centres.
+
+
 __Documentation__
 
 - Search chaining readthedocs.

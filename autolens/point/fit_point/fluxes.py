@@ -124,3 +124,12 @@ class FitFluxes(aa.FitDataset):
         residual_map = super().residual_map
 
         return aa.ValuesIrregular(values=residual_map)
+
+    @property
+    def chi_squared(self) -> float:
+        """
+        Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
+        """
+        return ag.util.fit.chi_squared_from(
+            chi_squared_map=self.chi_squared_map,
+        )
