@@ -570,6 +570,6 @@ class AnalysisImaging(AnalysisDataset):
         """
         super().save_attributes_for_aggregator(paths=paths)
 
-        paths.save_object("psf", self.dataset.psf_unormalized)
+        paths.save_object("psf", self.dataset.psf)
         paths.save_object("mask", self.dataset.mask)
         paths.save_object("positions_likelihood", self.positions_likelihood)
