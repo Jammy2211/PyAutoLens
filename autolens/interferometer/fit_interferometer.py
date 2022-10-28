@@ -6,14 +6,14 @@ from autoconf import cached_property
 import autoarray as aa
 import autogalaxy as ag
 
-from autogalaxy.abstract_fit import AbstractFit
+from autogalaxy.abstract_fit import AbstractFitInversion
 
 from autolens.analysis.preloads import Preloads
 from autolens.lens.ray_tracing import Tracer
 from autolens.lens.to_inversion import TracerToInversion
 
 
-class FitInterferometer(aa.FitInterferometer, AbstractFit):
+class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
     def __init__(
         self,
         dataset: aa.Interferometer,
@@ -92,7 +92,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFit):
         self.profiling_dict = profiling_dict
 
         super().__init__(dataset=dataset, profiling_dict=profiling_dict)
-        AbstractFit.__init__(
+        AbstractFitInversion.__init__(
             self=self, model_obj=tracer, settings_inversion=settings_inversion
         )
 

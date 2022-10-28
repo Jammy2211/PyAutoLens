@@ -97,3 +97,12 @@ class FitPositionsSource(aa.FitDataset):
         return self.model_positions.distances_to_coordinate_from(
             coordinate=self.source_plane_coordinate
         )
+
+    @property
+    def chi_squared(self) -> float:
+        """
+        Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
+        """
+        return ag.util.fit.chi_squared_from(
+            chi_squared_map=self.chi_squared_map,
+        )

@@ -101,3 +101,12 @@ class FitPositionsImage(aa.FitDataset):
         residual_positions = self.positions - self.model_positions
 
         return residual_positions.distances_to_coordinate_from(coordinate=(0.0, 0.0))
+
+    @property
+    def chi_squared(self) -> float:
+        """
+        Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
+        """
+        return ag.util.fit.chi_squared_from(
+            chi_squared_map=self.chi_squared_map,
+        )

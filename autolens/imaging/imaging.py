@@ -52,7 +52,7 @@ class SimulatorImaging(aa.SimulatorImaging):
             noise_seed=noise_seed,
         )
 
-    def via_tracer_from(self, tracer, grid, name=None):
+    def via_tracer_from(self, tracer, grid):
         """
         Returns a realistic simulated image by applying effects to a plain simulated image.
 
@@ -86,13 +86,13 @@ class SimulatorImaging(aa.SimulatorImaging):
             grid=grid, psf_shape_2d=self.psf.shape_native
         )
 
-        imaging = self.via_image_from(image=image.binned, name=name)
+        imaging = self.via_image_from(image=image.binned)
 
         return imaging.trimmed_after_convolution_from(
             kernel_shape=self.psf.shape_native
         )
 
-    def via_galaxies_from(self, galaxies, grid, name=None):
+    def via_galaxies_from(self, galaxies, grid):
         """
         Simulate imaging data for this data, as follows:
 
@@ -112,9 +112,9 @@ class SimulatorImaging(aa.SimulatorImaging):
 
         tracer = Tracer.from_galaxies(galaxies=galaxies)
 
-        return self.via_tracer_from(tracer=tracer, grid=grid, name=name)
+        return self.via_tracer_from(tracer=tracer, grid=grid)
 
-    def via_deflections_and_galaxies_from(self, deflections, galaxies, name=None):
+    def via_deflections_and_galaxies_from(self, deflections, galaxies):
 
         grid = aa.Grid2D.uniform(
             shape_native=deflections.shape_native,
@@ -126,4 +126,4 @@ class SimulatorImaging(aa.SimulatorImaging):
 
         image = sum(map(lambda g: g.image_2d_from(grid=deflected_grid), galaxies))
 
-        return self.via_image_from(image=image, name=name)
+        return self.via_image_from(image=image)

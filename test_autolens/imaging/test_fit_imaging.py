@@ -143,7 +143,7 @@ def test__noise_map__with_and_without_hyper_background(masked_imaging_7x7_no_blu
     assert fit.log_likelihood == pytest.approx(-18.1579, 1.0e-4)
 
 
-def test__fit_figure_of_merit(masked_imaging_7x7):
+def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7):
 
     g0 = al.Galaxy(
         redshift=0.5,
@@ -300,6 +300,22 @@ def test__fit_figure_of_merit(masked_imaging_7x7):
 
     assert fit.perform_inversion is True
     assert fit.figure_of_merit == pytest.approx(-14.9881985, 1.0e-4)
+
+    g0 = al.Galaxy(
+        redshift=0.5,
+        bulge=al.lp.EllSersic(intensity=1.0),
+        disk=al.lp.EllSersic(intensity=2.0),
+        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+    )
+
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.EllSersic(intensity=1.0))
+
+    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+    fit = al.FitImaging(dataset=masked_imaging_covariance_7x7, tracer=tracer)
+
+    assert fit.perform_inversion is False
+    assert fit.figure_of_merit == pytest.approx(-3688191.0841, 1.0e-4)
 
 
 def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):
