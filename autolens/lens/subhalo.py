@@ -313,7 +313,7 @@ class SubhaloPlotter(AbstractPlotter):
 
         self.set_title("Source Reconstruction (No Subhalo)")
         self.fit_imaging_before_plotter.figures_2d_of_planes(
-            plane_image=True, plane_index=1
+            plane_index=1, plane_image=True
         )
 
         self.set_title("Normailzed Residuals (With Subhalo)")
@@ -324,7 +324,7 @@ class SubhaloPlotter(AbstractPlotter):
 
         self.set_title("Source Reconstruction (With Subhalo)")
         self.fit_imaging_detect_plotter.figures_2d_of_planes(
-            plane_image=True, plane_index=1
+            plane_index=1, plane_image=True
         )
 
         self.mat_plot_2d.output.subplot_to_figure(

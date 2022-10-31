@@ -108,7 +108,7 @@ def test__figures_of_plane(
 
     plot_patch.paths = []
 
-    tracer_plotter.figures_2d_of_planes(plane_image=True, plane_index=0)
+    tracer_plotter.figures_2d_of_planes(plane_index=0, plane_image=True)
 
     assert path.join(plot_path, "plane_image_of_plane_0.png") in plot_patch.paths
     assert path.join(plot_path, "plane_image_of_plane_1.png") not in plot_patch.paths

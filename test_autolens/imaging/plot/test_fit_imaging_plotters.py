@@ -85,7 +85,7 @@ def test__figures_of_plane(
     plot_patch.paths = []
 
     fit_imaging_plotter.figures_2d_of_planes(
-        subtracted_image=True, model_image=True, plane_image=True, plane_index=0
+        subtracted_image=True, model_image=True, plane_index=0, plane_image=True
     )
 
     assert path.join(plot_path, "subtracted_image_of_plane_0.png") in plot_patch.paths

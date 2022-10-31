@@ -121,6 +121,7 @@ class GetVisuals2D(gv.GetVisuals2D):
                 "critical_curves",
             )
         else:
+
             critical_curves = None
 
         if plane_index == 1:
