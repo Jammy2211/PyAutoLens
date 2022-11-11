@@ -1,4 +1,4 @@
-from autoarray.plot.wrap.wrap_base import set_backend
+from autoarray.plot.wrap.base.abstract import set_backend
 
 set_backend()
 
