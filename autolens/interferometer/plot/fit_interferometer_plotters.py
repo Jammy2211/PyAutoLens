@@ -22,7 +22,7 @@ class FitInterferometerPlotter(Plotter):
         mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
         visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
         include_2d: aplt.Include2D = aplt.Include2D(),
-        residuals_symmetric_cmap: bool = True
+        residuals_symmetric_cmap: bool = True,
     ):
         """
         Plots the attributes of `FitInterferometer` objects using the matplotlib method `imshow()` and many
@@ -77,7 +77,7 @@ class FitInterferometerPlotter(Plotter):
             mat_plot_2d=self.mat_plot_2d,
             include_2d=self.include_2d,
             visuals_2d=self.visuals_2d,
-            residuals_symmetric_cmap=residuals_symmetric_cmap
+            residuals_symmetric_cmap=residuals_symmetric_cmap,
         )
 
         self.subplot = self._fit_interferometer_meta_plotter.subplot

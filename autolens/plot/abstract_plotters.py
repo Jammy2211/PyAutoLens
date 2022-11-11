@@ -1,11 +1,11 @@
-from autoarray.plot.wrap.wrap_base import set_backend
+from autoarray.plot.wrap.base.abstract import set_backend
 
 set_backend()
 
 from autoarray.plot.abstract_plotters import AbstractPlotter
 
-from autolens.plot.get_visuals import GetVisuals1D
-from autolens.plot.get_visuals import GetVisuals2D
+from autolens.plot.get_visuals.one_d import GetVisuals1D
+from autolens.plot.get_visuals.two_d import GetVisuals2D
 
 
 class Plotter(AbstractPlotter):

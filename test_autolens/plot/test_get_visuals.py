@@ -3,7 +3,7 @@ import pytest
 
 import autolens.plot as aplt
 
-from autolens.plot.get_visuals import GetVisuals2D
+from autolens.plot.get_visuals.two_d import GetVisuals2D
 
 directory = path.dirname(path.realpath(__file__))
 
