@@ -1,7 +1,10 @@
 from autoarray import preprocess
 from autoarray.dataset.imaging.w_tilde import WTildeImaging
 from autoarray.dataset.imaging.imaging import Imaging, SettingsImaging
-from autoarray.dataset.interferometer.interferometer import Interferometer, SettingsInterferometer
+from autoarray.dataset.interferometer.interferometer import (
+    Interferometer,
+    SettingsInterferometer,
+)
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.convolver import Convolver

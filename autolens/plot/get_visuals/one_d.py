@@ -2,6 +2,7 @@ import autogalaxy.plot as aplt
 
 from autogalaxy.plot.get_visuals import one_d as gv1d
 
+
 class GetVisuals1D(gv1d.GetVisuals1D):
     def __init__(self, include: aplt.Include1D, visuals: aplt.Visuals1D):
         """
