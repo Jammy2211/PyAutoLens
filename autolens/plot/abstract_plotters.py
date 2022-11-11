@@ -4,8 +4,8 @@ set_backend()
 
 from autoarray.plot.abstract_plotters import AbstractPlotter
 
-from autolens.plot.get_visuals import GetVisuals1D
-from autolens.plot.get_visuals import GetVisuals2D
+from autolens.plot.get_visuals.one_d import GetVisuals1D
+from autolens.plot.get_visuals.two_d import GetVisuals2D
 
 
 class Plotter(AbstractPlotter):
