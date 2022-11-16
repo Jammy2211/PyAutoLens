@@ -156,7 +156,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         For example:
 
-        - If the input is `cls=ag.lp.LightProfile`, a list containing all light profiles in the tracer is returned.
+        - If the input is `cls=ag.LightProfile`, a list containing all light profiles in the tracer is returned.
 
         Returns
         -------
@@ -357,7 +357,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def upper_plane_index_with_light_profile(self) -> int:
         return max(
             [
-                plane_index if plane.has(cls=ag.lp.LightProfile) else 0
+                plane_index if plane.has(cls=ag.LightProfile) else 0
                 for (plane_index, plane) in enumerate(self.planes)
             ]
         )
@@ -645,7 +645,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         for plane_index, plane in enumerate(self.planes):
             for galaxy in plane.galaxies:
-                for light_profile in galaxy.cls_list_from(cls=ag.lp.LightProfile):
+                for light_profile in galaxy.cls_list_from(cls=ag.LightProfile):
                     if isinstance(light_profile, LightProfileSNR):
                         light_profile.set_intensity_from(
                             grid=traced_grids_of_planes_list[plane_index],

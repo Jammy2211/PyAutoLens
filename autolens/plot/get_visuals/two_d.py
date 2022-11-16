@@ -79,7 +79,7 @@ class GetVisuals2D(gv2d.GetVisuals2D):
         light_profile_centres = self.get(
             "light_profile_centres",
             tracer.planes[plane_index].extract_attribute(
-                cls=ag.lp.LightProfile, attr_name="centre"
+                cls=ag.LightProfile, attr_name="centre"
             ),
         )
 

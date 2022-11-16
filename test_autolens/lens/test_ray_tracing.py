@@ -62,20 +62,20 @@ def caustics_via_magnification_via_tracer_from(tracer, grid):
 
 def test__has():
 
-    gal_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
+    gal_lp = al.Galaxy(redshift=0.5, light_profile=al.LightProfile())
     gal_mp = al.Galaxy(redshift=0.5, mass_profile=al.mp.SphIsothermal())
 
     tracer = al.Tracer.from_galaxies(galaxies=[gal_mp, gal_mp])
 
-    assert tracer.has(cls=al.lp.LightProfile) is False
+    assert tracer.has(cls=al.LightProfile) is False
 
     tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_lp])
 
-    assert tracer.has(cls=al.lp.LightProfile) is True
+    assert tracer.has(cls=al.LightProfile) is True
 
     tracer = al.Tracer.from_galaxies(galaxies=[gal_lp, gal_mp])
 
-    assert tracer.has(cls=al.lp.LightProfile) is True
+    assert tracer.has(cls=al.LightProfile) is True
 
 
 ### Specific Galaxy / Plane Calculations ###
@@ -132,10 +132,10 @@ def test__upper_plane_index_with_light_profile():
     g2 = al.Galaxy(redshift=2.0)
     g3 = al.Galaxy(redshift=3.0)
 
-    g0_lp = al.Galaxy(redshift=0.5, light_profile=al.lp.LightProfile())
-    g1_lp = al.Galaxy(redshift=1.0, light_profile=al.lp.LightProfile())
-    g2_lp = al.Galaxy(redshift=2.0, light_profile=al.lp.LightProfile())
-    g3_lp = al.Galaxy(redshift=3.0, light_profile=al.lp.LightProfile())
+    g0_lp = al.Galaxy(redshift=0.5, light_profile=al.LightProfile())
+    g1_lp = al.Galaxy(redshift=1.0, light_profile=al.LightProfile())
+    g2_lp = al.Galaxy(redshift=2.0, light_profile=al.LightProfile())
+    g3_lp = al.Galaxy(redshift=3.0, light_profile=al.LightProfile())
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_lp])
 
