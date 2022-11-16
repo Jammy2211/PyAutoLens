@@ -164,7 +164,7 @@
             }
         }
     },
-    "IsothermalCoredSph": {
+    "IsothermalCoreSph": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -222,7 +222,7 @@
             }
         }
     },
-    "IsothermalCored": {
+    "IsothermalCore": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -456,7 +456,7 @@
             }
         }
     },
-    "PowerLawCoredSph": {
+    "PowerLawCoreSph": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -527,7 +527,7 @@
             }
         }
     },
-    "PowerLawCored": {
+    "PowerLawCore": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
