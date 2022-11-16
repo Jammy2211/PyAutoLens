@@ -16,10 +16,10 @@ def test__operate_image__blurred_images_2d_via_psf_from__for_tracer_gives_list_o
 ):
     g0 = al.Galaxy(
         redshift=0.5,
-        light_profile=al.lp.EllSersic(intensity=1.0),
-        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+        light_profile=al.lp.Sersic(intensity=1.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
     )
-    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=2.0))
+    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=2.0))
 
     plane_0 = al.Plane(redshift=0.5, galaxies=[g0])
     plane_1 = al.Plane(redshift=1.0, galaxies=[g1])
@@ -61,10 +61,10 @@ def test__operate_image__blurred_images_2d_via_convolver_from__for_tracer_gives_
 ):
     g0 = al.Galaxy(
         redshift=0.5,
-        light_profile=al.lp.EllSersic(intensity=1.0),
-        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+        light_profile=al.lp.Sersic(intensity=1.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
     )
-    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=2.0))
+    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=2.0))
 
     plane_0 = al.Plane(redshift=0.5, galaxies=[g0])
     plane_1 = al.Plane(redshift=1.0, galaxies=[g1])
@@ -113,8 +113,8 @@ def test__operate_image__visibilities_of_planes_from_grid_and_transformer(
     sub_grid_2d_7x7, transformer_7x7_7
 ):
 
-    g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
-    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=2.0))
+    g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=1.0))
+    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=2.0))
 
     plane_0 = al.Plane(redshift=0.5, galaxies=[g0])
     plane_1 = al.Plane(redshift=0.5, galaxies=[g1])
@@ -144,16 +144,16 @@ def test__operate_image__galaxy_blurred_image_2d_dict_from(
     sub_grid_2d_7x7, blurring_grid_2d_7x7, convolver_7x7
 ):
 
-    g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
+    g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=1.0))
     g1 = al.Galaxy(
         redshift=0.5,
-        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
-        light_profile=al.lp.EllSersic(intensity=2.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
+        light_profile=al.lp.Sersic(intensity=2.0),
     )
 
-    g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=3.0))
+    g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=3.0))
 
-    g3 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=5.0))
+    g3 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=5.0))
 
     g0_blurred_image = g0.blurred_image_2d_from(
         grid=sub_grid_2d_7x7,
@@ -207,14 +207,14 @@ def test__operate_image__galaxy_visibilities_dict_from_grid_and_transformer(
     sub_grid_2d_7x7, transformer_7x7_7
 ):
 
-    g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=1.0))
+    g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=1.0))
     g1 = al.Galaxy(
         redshift=0.5,
-        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
-        light_profile=al.lp.EllSersic(intensity=2.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
+        light_profile=al.lp.Sersic(intensity=2.0),
     )
-    g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.EllSersic(intensity=3.0))
-    g3 = al.Galaxy(redshift=1.0, light_profile=al.lp.EllSersic(intensity=5.0))
+    g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=3.0))
+    g3 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=5.0))
 
     g0_visibilities = g0.visibilities_from(
         grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
@@ -253,10 +253,10 @@ def test__operate_lens__sums_individual_quantities():
 
     grid = al.Grid2D.uniform(shape_native=(50, 50), pixel_scales=0.15)
 
-    sis_0 = al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=0.2)
-    sis_1 = al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=0.4)
-    sis_2 = al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=0.6)
-    sis_3 = al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=0.8)
+    sis_0 = al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=0.2)
+    sis_1 = al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=0.4)
+    sis_2 = al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=0.6)
+    sis_3 = al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=0.8)
 
     galaxy_0 = al.Galaxy(mass_profile_0=sis_0, mass_profile_1=sis_1, redshift=0.5)
     galaxy_1 = al.Galaxy(mass_profile_0=sis_2, mass_profile_1=sis_3, redshift=0.5)

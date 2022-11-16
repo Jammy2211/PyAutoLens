@@ -44,7 +44,7 @@
             }
         }
     },
-    "SphIsothermal": {
+    "IsothermalSph": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -89,140 +89,7 @@
             }
         }
     },
-    "EllIsothermal": {
-        "centre_0": {
-            "type": "Gaussian",
-            "mean": 0.0,
-            "sigma": 0.3,
-            "lower_limit": "-inf",
-            "upper_limit": "inf",
-            "width_modifier": {
-                "type": "Absolute",
-                "value": 0.05
-            },
-            "gaussian_limits": {
-                "lower": "-inf",
-                "upper": "inf"
-            }
-        },
-        "centre_1": {
-            "type": "Gaussian",
-            "mean": 0.0,
-            "sigma": 0.3,
-            "lower_limit": "-inf",
-            "upper_limit": "inf",
-            "width_modifier": {
-                "type": "Absolute",
-                "value": 0.05
-            },
-            "gaussian_limits": {
-                "lower": "-inf",
-                "upper": "inf"
-            }
-        },
-         "elliptical_comps_0": {
-            "type": "Gaussian",
-            "lower_limit": -1.0,
-            "upper_limit": 1.0,
-            "width_modifier": {
-                "type": "Absolute",
-                "value": 0.2
-            },
-            "mean": 0.0,
-            "sigma": 0.3,
-            "gaussian_limits": {
-                "lower": -1.0,
-                "upper": 1.0
-            }
-        },
-        "elliptical_comps_1": {
-            "type": "Gaussian",
-            "lower_limit": -1.0,
-            "upper_limit": 1.0,
-            "width_modifier": {
-                "type": "Absolute",
-                "value": 0.2
-            },
-            "mean": 0.0,
-            "sigma": 0.3,
-            "gaussian_limits": {
-                "lower": "-1.0",
-                "upper": "1.0"
-            }
-        },
-        "einstein_radius": {
-            "type": "Uniform",
-            "lower_limit": 0.0,
-            "upper_limit": 4.0,
-            "width_modifier": {
-                "type": "Relative",
-                "value": 0.05
-            },
-            "gaussian_limits": {
-                "lower": 0.0,
-                "upper": "inf"
-            }
-        }
-    },
-    "SphIsothermalCored": {
-        "centre_0": {
-            "type": "Gaussian",
-            "mean": 0.0,
-            "sigma": 0.3,
-            "lower_limit": "-inf",
-            "upper_limit": "inf",
-            "width_modifier": {
-                "type": "Absolute",
-                "value": 0.05
-            },
-            "gaussian_limits": {
-                "lower": "-inf",
-                "upper": "inf"
-            }
-        },
-        "centre_1": {
-            "type": "Gaussian",
-            "mean": 0.0,
-            "sigma": 0.3,
-            "lower_limit": "-inf",
-            "upper_limit": "inf",
-            "width_modifier": {
-                "type": "Absolute",
-                "value": 0.05
-            },
-            "gaussian_limits": {
-                "lower": "-inf",
-                "upper": "inf"
-            }
-        },
-        "einstein_radius": {
-            "type": "Uniform",
-            "lower_limit": 0.0,
-            "upper_limit": 4.0,
-            "width_modifier": {
-                "type": "Relative",
-                "value": 0.05
-            },
-            "gaussian_limits": {
-                "lower": 0.0,
-                "upper": "inf"
-            }
-        },
-        "core_radius": {
-            "type": "Uniform",
-            "lower_limit": 0.0,
-            "upper_limit": 0.2,
-            "width_modifier": {
-                "type": "Absolute",
-                "value": 0.1
-            },
-            "gaussian_limits": {
-                "lower": 0.0,
-                "upper": "inf"
-            }
-        }
-    },
-    "EllIsothermalCored": {
+    "Isothermal": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -295,22 +162,9 @@
                 "lower": 0.0,
                 "upper": "inf"
             }
-        },
-        "core_radius": {
-            "type": "Uniform",
-            "lower_limit": 0.0,
-            "upper_limit": 0.2,
-            "width_modifier": {
-                "type": "Absolute",
-                "value": 0.1
-            },
-            "gaussian_limits": {
-                "lower": 0.0,
-                "upper": "inf"
-            }
         }
     },
-    "SphPowerLaw": {
+    "IsothermalCoredSph": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -354,21 +208,21 @@
                 "upper": "inf"
             }
         },
-        "slope": {
+        "core_radius": {
             "type": "Uniform",
-            "lower_limit": 1.5,
-            "upper_limit": 3.0,
+            "lower_limit": 0.0,
+            "upper_limit": 0.2,
             "width_modifier": {
                 "type": "Absolute",
-                "value": 0.2
+                "value": 0.1
             },
             "gaussian_limits": {
-                "lower": 1.0,
-                "upper": 3.0
+                "lower": 0.0,
+                "upper": "inf"
             }
         }
     },
-    "EllPowerLaw": {
+    "IsothermalCored": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -442,6 +296,64 @@
                 "upper": "inf"
             }
         },
+        "core_radius": {
+            "type": "Uniform",
+            "lower_limit": 0.0,
+            "upper_limit": 0.2,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.1
+            },
+            "gaussian_limits": {
+                "lower": 0.0,
+                "upper": "inf"
+            }
+        }
+    },
+    "PowerLawSph": {
+        "centre_0": {
+            "type": "Gaussian",
+            "mean": 0.0,
+            "sigma": 0.3,
+            "lower_limit": "-inf",
+            "upper_limit": "inf",
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.05
+            },
+            "gaussian_limits": {
+                "lower": "-inf",
+                "upper": "inf"
+            }
+        },
+        "centre_1": {
+            "type": "Gaussian",
+            "mean": 0.0,
+            "sigma": 0.3,
+            "lower_limit": "-inf",
+            "upper_limit": "inf",
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.05
+            },
+            "gaussian_limits": {
+                "lower": "-inf",
+                "upper": "inf"
+            }
+        },
+        "einstein_radius": {
+            "type": "Uniform",
+            "lower_limit": 0.0,
+            "upper_limit": 4.0,
+            "width_modifier": {
+                "type": "Relative",
+                "value": 0.05
+            },
+            "gaussian_limits": {
+                "lower": 0.0,
+                "upper": "inf"
+            }
+        },
         "slope": {
             "type": "Uniform",
             "lower_limit": 1.5,
@@ -456,7 +368,95 @@
             }
         }
     },
-    "SphPowerLawCored": {
+    "PowerLaw": {
+        "centre_0": {
+            "type": "Gaussian",
+            "mean": 0.0,
+            "sigma": 0.3,
+            "lower_limit": "-inf",
+            "upper_limit": "inf",
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.05
+            },
+            "gaussian_limits": {
+                "lower": "-inf",
+                "upper": "inf"
+            }
+        },
+        "centre_1": {
+            "type": "Gaussian",
+            "mean": 0.0,
+            "sigma": 0.3,
+            "lower_limit": "-inf",
+            "upper_limit": "inf",
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.05
+            },
+            "gaussian_limits": {
+                "lower": "-inf",
+                "upper": "inf"
+            }
+        },
+         "elliptical_comps_0": {
+            "type": "Gaussian",
+            "lower_limit": -1.0,
+            "upper_limit": 1.0,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.2
+            },
+            "mean": 0.0,
+            "sigma": 0.3,
+            "gaussian_limits": {
+                "lower": -1.0,
+                "upper": 1.0
+            }
+        },
+        "elliptical_comps_1": {
+            "type": "Gaussian",
+            "lower_limit": -1.0,
+            "upper_limit": 1.0,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.2
+            },
+            "mean": 0.0,
+            "sigma": 0.3,
+            "gaussian_limits": {
+                "lower": "-1.0",
+                "upper": "1.0"
+            }
+        },
+        "einstein_radius": {
+            "type": "Uniform",
+            "lower_limit": 0.0,
+            "upper_limit": 4.0,
+            "width_modifier": {
+                "type": "Relative",
+                "value": 0.05
+            },
+            "gaussian_limits": {
+                "lower": 0.0,
+                "upper": "inf"
+            }
+        },
+        "slope": {
+            "type": "Uniform",
+            "lower_limit": 1.5,
+            "upper_limit": 3.0,
+            "width_modifier": {
+                "type": "Absolute",
+                "value": 0.2
+            },
+            "gaussian_limits": {
+                "lower": 1.0,
+                "upper": 3.0
+            }
+        }
+    },
+    "PowerLawCoredSph": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -527,7 +527,7 @@
             }
         }
     },
-    "EllPowerLawCored": {
+    "PowerLawCored": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,

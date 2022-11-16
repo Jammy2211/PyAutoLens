@@ -225,7 +225,7 @@ variables for every light profile and mass profile when it is used as a model. T
 
 .. code-block:: bash
 
-    "SphIsothermal": {
+    "IsothermalSph": {
         "einstein_radius": {
             "type": "Uniform",
             "lower_limit": 0.0,
@@ -271,9 +271,9 @@ Two examples using the 1D data fitting example for the config file **label.ini**
         For example, if centre_1=x, the plot axis will be labeled 'x'.
 
 [superscript]
-    EllIsothermal
+    Isothermal
         The superscript used on certain plots that show the results of different model-components. For example, if
-        EllIsothermal=mass, plots where the EllIsothermal are plotted will have a superscript `mass`.
+        Isothermal=mass, plots where the Isothermal are plotted will have a superscript `mass`.
 
 The **label_format.ini** config file specifies the format certain parameters are output as in output files like the
 *model.results* file. This uses standard Python formatting strings.

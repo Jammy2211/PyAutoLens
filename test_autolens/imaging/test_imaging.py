@@ -12,11 +12,11 @@ class TestSimulatorImaging:
 
         lens_galaxy = al.Galaxy(
             redshift=0.5,
-            light=al.lp.EllSersic(intensity=1.0),
-            mass=al.mp.EllIsothermal(einstein_radius=1.6),
+            light=al.lp.Sersic(intensity=1.0),
+            mass=al.mp.Isothermal(einstein_radius=1.6),
         )
 
-        source_galaxy = al.Galaxy(redshift=1.0, light=al.lp.EllSersic(intensity=0.3))
+        source_galaxy = al.Galaxy(redshift=1.0, light=al.lp.Sersic(intensity=0.3))
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
@@ -46,10 +46,10 @@ class TestSimulatorImaging:
         grid = al.Grid2D.uniform(shape_native=(20, 20), pixel_scales=0.05, sub_size=1)
 
         lens_galaxy = al.Galaxy(
-            redshift=0.5, mass=al.mp.EllIsothermal(einstein_radius=1.6)
+            redshift=0.5, mass=al.mp.Isothermal(einstein_radius=1.6)
         )
 
-        source_galaxy = al.Galaxy(redshift=1.0, light=al.lp.EllSersic(intensity=0.3))
+        source_galaxy = al.Galaxy(redshift=1.0, light=al.lp.Sersic(intensity=0.3))
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
@@ -78,14 +78,14 @@ class TestSimulatorImaging:
 
         lens_galaxy = al.Galaxy(
             redshift=0.5,
-            mass=al.mp.EllIsothermal(
+            mass=al.mp.Isothermal(
                 centre=(0.0, 0.0), einstein_radius=1.6, elliptical_comps=(0.17647, 0.0)
             ),
         )
 
         source_galaxy = al.Galaxy(
             redshift=0.5,
-            light=al.lp.EllSersic(
+            light=al.lp.Sersic(
                 centre=(0.1, 0.1),
                 elliptical_comps=(0.096225, -0.055555),
                 intensity=0.3,

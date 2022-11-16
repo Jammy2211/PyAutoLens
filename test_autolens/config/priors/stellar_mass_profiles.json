@@ -1,5 +1,5 @@
 {
-    "SphSersic": {
+    "SersicSph": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -83,7 +83,7 @@
             }
         }
     },
-    "EllSersic": {
+    "Sersic": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -197,7 +197,7 @@
             }
         }
     },
-    "SphExponential": {
+    "ExponentialSph": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -268,7 +268,7 @@
             }
         }
     },
-    "EllExponential": {
+    "Exponential": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -369,7 +369,7 @@
             }
         }
     },
-    "SphDevVaucouleurs": {
+    "DevVaucouleursSph": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -440,7 +440,7 @@
             }
         }
     },
-    "EllDevVaucouleurs": {
+    "DevVaucouleurs": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -638,7 +638,7 @@
             }
         }
     },
-    "EllSersicRadialGradient": {
+    "SersicRadialGradient": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,

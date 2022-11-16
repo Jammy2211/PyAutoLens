@@ -20,16 +20,16 @@ def make_path():
 def make_model():
     return af.Collection(
         galaxies=af.Collection(
-            lens=af.Model(al.Galaxy, redshift=0.5, light=al.lp.EllSersic),
-            source=af.Model(al.Galaxy, redshift=1.0, light=al.lp.EllSersic),
+            lens=af.Model(al.Galaxy, redshift=0.5, light=al.lp.Sersic),
+            source=af.Model(al.Galaxy, redshift=1.0, light=al.lp.Sersic),
         )
     )
 
 
 @pytest.fixture(name="samples")
 def make_samples(model):
-    galaxy_0 = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(centre=(0.0, 1.0)))
-    galaxy_1 = al.Galaxy(redshift=1.0, light=al.lp.EllSersic())
+    galaxy_0 = al.Galaxy(redshift=0.5, light=al.lp.Sersic(centre=(0.0, 1.0)))
+    galaxy_1 = al.Galaxy(redshift=1.0, light=al.lp.Sersic())
 
     tracer = al.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1])
 

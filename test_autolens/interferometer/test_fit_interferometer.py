@@ -44,12 +44,12 @@ def test__fit_figure_of_merit(interferometer_7):
 
     g0 = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp.EllSersic(intensity=1.0),
-        disk=al.lp.EllSersic(intensity=2.0),
-        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+        bulge=al.lp.Sersic(intensity=1.0),
+        disk=al.lp.Sersic(intensity=2.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
     )
 
-    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.EllSersic(intensity=1.0))
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
@@ -60,16 +60,16 @@ def test__fit_figure_of_merit(interferometer_7):
 
     basis = al.lp_basis.Basis(
         light_profile_list=[
-            al.lp.EllSersic(intensity=1.0),
-            al.lp.EllSersic(intensity=2.0),
+            al.lp.Sersic(intensity=1.0),
+            al.lp.Sersic(intensity=2.0),
         ]
     )
 
     g0 = al.Galaxy(
-        redshift=0.5, bulge=basis, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+        redshift=0.5, bulge=basis, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
     )
 
-    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.EllSersic(intensity=1.0))
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
@@ -96,7 +96,7 @@ def test__fit_figure_of_merit(interferometer_7):
     assert fit.perform_inversion is True
     assert fit.figure_of_merit == pytest.approx(-66.90612, 1.0e-4)
 
-    galaxy_light = al.Galaxy(redshift=0.5, bulge=al.lp.EllSersic(intensity=1.0))
+    galaxy_light = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
 
     pixelization = al.Pixelization(
         mesh=al.mesh.Rectangular(shape=(3, 3)),
@@ -118,9 +118,9 @@ def test__fit_figure_of_merit(interferometer_7):
 
     g0_linear = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp_linear.EllSersic(sersic_index=1.0),
-        disk=al.lp_linear.EllSersic(sersic_index=4.0),
-        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+        bulge=al.lp_linear.Sersic(sersic_index=1.0),
+        disk=al.lp_linear.Sersic(sersic_index=4.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1])
@@ -132,13 +132,13 @@ def test__fit_figure_of_merit(interferometer_7):
 
     basis = al.lp_basis.Basis(
         light_profile_list=[
-            al.lp_linear.EllSersic(sersic_index=1.0),
-            al.lp_linear.EllSersic(sersic_index=4.0),
+            al.lp_linear.Sersic(sersic_index=1.0),
+            al.lp_linear.Sersic(sersic_index=4.0),
         ]
     )
 
     g0_linear = al.Galaxy(
-        redshift=0.5, bulge=basis, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+        redshift=0.5, bulge=basis, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1])
@@ -162,11 +162,11 @@ def test__fit_figure_of_merit__include_hyper_methods(interferometer_7):
 
     g0 = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp.EllSersic(intensity=1.0),
-        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+        bulge=al.lp.Sersic(intensity=1.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
     )
 
-    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.EllSersic(intensity=1.0))
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
@@ -211,7 +211,7 @@ def test__fit_figure_of_merit__include_hyper_methods(interferometer_7):
     assert fit.log_evidence == pytest.approx(-68.63380, 1e-4)
     assert fit.figure_of_merit == pytest.approx(-68.63380, 1.0e-4)
 
-    galaxy_light = al.Galaxy(redshift=0.5, bulge=al.lp.EllSersic(intensity=1.0))
+    galaxy_light = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
 
     pixelization = al.Pixelization(
         mesh=al.mesh.Rectangular(shape=(3, 3)),
@@ -266,10 +266,10 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
 
     g0 = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp.EllSersic(intensity=1.0),
-        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+        bulge=al.lp.Sersic(intensity=1.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
     )
-    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.EllSersic(intensity=1.0))
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
     g2 = al.Galaxy(redshift=1.0)
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
@@ -294,10 +294,10 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
 
     g0_linear = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp_linear.EllSersic(),
-        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+        bulge=al.lp_linear.Sersic(),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
     )
-    g1_linear = al.Galaxy(redshift=1.0, bulge=al.lp_linear.EllSersic())
+    g1_linear = al.Galaxy(redshift=1.0, bulge=al.lp_linear.Sersic())
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1_linear, g2])
 
@@ -320,7 +320,7 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
     )
 
     g0_no_light = al.Galaxy(
-        redshift=0.5, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+        redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
     )
     galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
@@ -372,10 +372,10 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
 
     g0 = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp.EllSersic(intensity=1.0),
-        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+        bulge=al.lp.Sersic(intensity=1.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
     )
-    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.EllSersic(intensity=1.0))
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
     g2 = al.Galaxy(redshift=1.0)
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
@@ -414,10 +414,10 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
 
     g0_linear = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp_linear.EllSersic(),
-        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+        bulge=al.lp_linear.Sersic(),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
     )
-    g1_linear = al.Galaxy(redshift=1.0, bulge=al.lp_linear.EllSersic())
+    g1_linear = al.Galaxy(redshift=1.0, bulge=al.lp_linear.Sersic())
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1_linear, g2])
 
@@ -445,7 +445,7 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
     )
 
     g0_no_light = al.Galaxy(
-        redshift=0.5, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+        redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
     )
     galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
@@ -493,11 +493,11 @@ def test__model_visibilities_of_planes_list(interferometer_7):
 
     g0 = al.Galaxy(
         redshift=0.5,
-        bulge=al.lp.EllSersic(intensity=1.0),
-        mass_profile=al.mp.SphIsothermal(einstein_radius=1.0),
+        bulge=al.lp.Sersic(intensity=1.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
     )
 
-    g1_linear = al.Galaxy(redshift=0.75, bulge=al.lp_linear.EllSersic())
+    g1_linear = al.Galaxy(redshift=0.75, bulge=al.lp_linear.Sersic())
 
     pixelization = al.Pixelization(
         mesh=al.mesh.Rectangular(shape=(3, 3)),

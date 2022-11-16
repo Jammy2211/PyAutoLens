@@ -29,11 +29,11 @@ def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
 
     galaxy_no_linear = al.Galaxy(redshift=0.5)
     galaxy_linear_0 = al.Galaxy(
-        redshift=0.5, lp_linear=lp_linear_0, mass=al.mp.SphIsothermal()
+        redshift=0.5, lp_linear=lp_linear_0, mass=al.mp.IsothermalSph()
     )
 
     galaxy_linear_1 = al.Galaxy(
-        redshift=1.0, lp_linear=lp_linear_1, mass=al.mp.SphIsothermal()
+        redshift=1.0, lp_linear=lp_linear_1, mass=al.mp.IsothermalSph()
     )
     galaxy_linear_2 = al.Galaxy(redshift=2.0, lp_linear=lp_linear_2)
 
@@ -68,9 +68,9 @@ def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
 
     basis_0 = al.lp_basis.Basis(light_profile_list=[lp_linear_0, lp_linear_1])
 
-    galaxy_linear_0 = al.Galaxy(redshift=0.5, bulge=basis_0, mass=al.mp.SphIsothermal())
+    galaxy_linear_0 = al.Galaxy(redshift=0.5, bulge=basis_0, mass=al.mp.IsothermalSph())
 
-    galaxy_linear_1 = al.Galaxy(redshift=1.0, mass=al.mp.SphIsothermal())
+    galaxy_linear_1 = al.Galaxy(redshift=1.0, mass=al.mp.IsothermalSph())
 
     galaxy_linear_2 = al.Galaxy(redshift=2.0, lp_linear=lp_linear_2)
 
@@ -275,7 +275,7 @@ def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
 
     galaxy_no_pix = al.Galaxy(
         redshift=0.5,
-        mass_profile=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=0.5),
+        mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=0.5),
     )
 
     data_mesh_grid_0 = al.Grid2D.manual_native(
@@ -327,7 +327,7 @@ def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
 
     galaxy_no_pix_0 = al.Galaxy(
         redshift=0.25,
-        mass_profile=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=0.5),
+        mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=0.5),
     )
     galaxy_no_pix_1 = al.Galaxy(redshift=0.5)
     galaxy_no_pix_2 = al.Galaxy(redshift=1.5)
@@ -410,7 +410,7 @@ def test__mapper_galaxy_dict(masked_imaging_7x7):
 
     galaxy_no_pix_0 = al.Galaxy(
         redshift=0.25,
-        mass_profile=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=0.5),
+        mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=0.5),
     )
     galaxy_no_pix_1 = al.Galaxy(redshift=0.5)
     galaxy_no_pix_2 = al.Galaxy(redshift=1.5)
@@ -445,7 +445,7 @@ def test__mapper_galaxy_dict(masked_imaging_7x7):
 
 def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
 
-    g_linear = al.Galaxy(redshift=0.5, light_linear=al.lp_linear.EllSersic())
+    g_linear = al.Galaxy(redshift=0.5, light_linear=al.lp_linear.Sersic())
 
     tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g_linear])
 
@@ -493,7 +493,7 @@ def test__inversion_interferometer_from(sub_grid_2d_7x7, interferometer_7):
 
     interferometer_7.data = al.Visibilities.ones(shape_slim=(7,))
 
-    g_linear = al.Galaxy(redshift=0.5, light_linear=al.lp_linear.EllSersic())
+    g_linear = al.Galaxy(redshift=0.5, light_linear=al.lp_linear.Sersic())
 
     tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g_linear])
 

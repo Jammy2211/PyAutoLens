@@ -79,22 +79,22 @@ class TestTracedGridListFrom:
         self, sub_grid_2d_7x7_simple
     ):
         g0 = al.Galaxy(
-            redshift=2.0, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+            redshift=2.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
         )
         g1 = al.Galaxy(
-            redshift=2.0, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+            redshift=2.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
         )
         g2 = al.Galaxy(
-            redshift=0.1, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+            redshift=0.1, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
         )
         g3 = al.Galaxy(
-            redshift=3.0, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+            redshift=3.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
         )
         g4 = al.Galaxy(
-            redshift=1.0, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+            redshift=1.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
         )
         g5 = al.Galaxy(
-            redshift=3.0, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+            redshift=3.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
         )
 
         galaxies = [g0, g1, g2, g3, g4, g5]
@@ -166,22 +166,22 @@ class TestTracedGridListFrom:
         assert len(traced_grid_list) == 1
 
         g0 = al.Galaxy(
-            redshift=2.0, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+            redshift=2.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
         )
         g1 = al.Galaxy(
-            redshift=2.0, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+            redshift=2.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
         )
         g2 = al.Galaxy(
-            redshift=0.1, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+            redshift=0.1, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
         )
         g3 = al.Galaxy(
-            redshift=3.0, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+            redshift=3.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
         )
         g4 = al.Galaxy(
-            redshift=1.0, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+            redshift=1.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
         )
         g5 = al.Galaxy(
-            redshift=3.0, mass_profile=al.mp.SphIsothermal(einstein_radius=1.0)
+            redshift=3.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
         )
 
         galaxies = [g0, g1, g2, g3, g4, g5]
@@ -219,7 +219,7 @@ class TestGridAtRedshift:
     ):
         g0 = al.Galaxy(
             redshift=0.5,
-            mass_profile=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0),
+            mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
         )
         g1 = al.Galaxy(redshift=1.0)
 
@@ -245,19 +245,19 @@ class TestGridAtRedshift:
     def test__same_as_above_but_for_multi_tracing(self, sub_grid_2d_7x7):
         g0 = al.Galaxy(
             redshift=0.5,
-            mass_profile=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0),
+            mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
         )
         g1 = al.Galaxy(
             redshift=0.75,
-            mass_profile=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=2.0),
+            mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=2.0),
         )
         g2 = al.Galaxy(
             redshift=1.5,
-            mass_profile=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=3.0),
+            mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=3.0),
         )
         g3 = al.Galaxy(
             redshift=1.0,
-            mass_profile=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=4.0),
+            mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=4.0),
         )
         g4 = al.Galaxy(redshift=2.0)
 
@@ -307,11 +307,11 @@ class TestGridAtRedshift:
 
         g0 = al.Galaxy(
             redshift=0.5,
-            mass_profile=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0),
+            mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
         )
         g1 = al.Galaxy(
             redshift=0.75,
-            mass_profile=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=2.0),
+            mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=2.0),
         )
         g2 = al.Galaxy(redshift=2.0)
 
@@ -331,11 +331,11 @@ class TestGridAtRedshift:
     ):
         g0 = al.Galaxy(
             redshift=0.5,
-            mass_profile=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0),
+            mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
         )
         g1 = al.Galaxy(
             redshift=0.75,
-            mass_profile=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=2.0),
+            mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=2.0),
         )
 
         galaxies = [g0, g1]

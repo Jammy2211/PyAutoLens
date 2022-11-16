@@ -41,7 +41,7 @@ def test__make_result__result_imaging_is_returned(masked_imaging_7x7):
 def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
     masked_imaging_7x7
 ):
-    lens = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
+    lens = al.Galaxy(redshift=0.5, light=al.lp.Sersic(intensity=0.1))
 
     model = af.Collection(galaxies=af.Collection(lens=lens))
 
@@ -63,7 +63,7 @@ def test__figure_of_merit__includes_hyper_image_and_noise__matches_fit(
     hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
     hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
-    lens = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
+    lens = al.Galaxy(redshift=0.5, light=al.lp.Sersic(intensity=0.1))
 
     model = af.Collection(
         hyper_image_sky=hyper_image_sky,
@@ -90,7 +90,7 @@ def test__positions__resample__raises_exception(masked_imaging_7x7):
 
     model = af.Collection(
         galaxies=af.Collection(
-            lens=al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal()),
+            lens=al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph()),
             source=al.Galaxy(redshift=1.0),
         )
     )
@@ -111,8 +111,8 @@ def test__positions__resample__raises_exception(masked_imaging_7x7):
 
 def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x7):
 
-    lens = al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal())
-    source = al.Galaxy(redshift=1.0, light=al.lp.SphSersic())
+    lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph())
+    source = al.Galaxy(redshift=1.0, light=al.lp.SersicSph())
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -154,9 +154,9 @@ def test__uses_hyper_fit_correctly(masked_imaging_7x7):
 
     galaxies = af.ModelInstance()
     galaxies.lens = al.Galaxy(
-        redshift=0.5, light=al.lp.EllSersic(intensity=1.0), mass=al.mp.SphIsothermal
+        redshift=0.5, light=al.lp.Sersic(intensity=1.0), mass=al.mp.IsothermalSph
     )
-    galaxies.source = al.Galaxy(redshift=1.0, light=al.lp.EllSersic())
+    galaxies.source = al.Galaxy(redshift=1.0, light=al.lp.Sersic())
 
     instance = af.ModelInstance()
     instance.galaxies = galaxies
@@ -262,7 +262,7 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
 
     galaxies = af.ModelInstance()
     galaxies.lens = al.Galaxy(
-        redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=1.0)
+        redshift=0.5, mass=al.mp.IsothermalSph(einstein_radius=1.0)
     )
     galaxies.source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
@@ -319,7 +319,7 @@ def test__profile_log_likelihood_function(masked_imaging_7x7):
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
-    lens = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
+    lens = al.Galaxy(redshift=0.5, light=al.lp.Sersic(intensity=0.1))
     source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))

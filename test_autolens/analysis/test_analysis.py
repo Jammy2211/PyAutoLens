@@ -16,16 +16,16 @@ def test__tracer_for_instance(analysis_imaging_7x7):
         galaxies=af.Collection(
             lens=al.Galaxy(
                 redshift=0.5,
-                light=al.lp.SphSersic(intensity=2.0),
-                mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0),
+                light=al.lp.SersicSph(intensity=2.0),
+                mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
             ),
             source=al.Galaxy(redshift=1.0),
         ),
         clumps=af.Collection(
             clump=al.Galaxy(
                 redshift=0.5,
-                light=al.lp.SphSersic(intensity=0.1),
-                mass=al.mp.SphIsothermal(einstein_radius=0.2),
+                light=al.lp.SersicSph(intensity=0.1),
+                mass=al.mp.IsothermalSph(einstein_radius=0.2),
             )
         ),
     )
@@ -48,9 +48,9 @@ def test__tracer_for_instance__subhalo_redshift_rescale_used(analysis_imaging_7x
         galaxies=af.Collection(
             lens=al.Galaxy(
                 redshift=0.5,
-                mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0),
+                mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
             ),
-            subhalo=al.Galaxy(redshift=0.25, mass=al.mp.SphNFW(centre=(0.1, 0.2))),
+            subhalo=al.Galaxy(redshift=0.25, mass=al.mp.NFWSph(centre=(0.1, 0.2))),
             source=al.Galaxy(redshift=1.0),
         )
     )
@@ -64,9 +64,9 @@ def test__tracer_for_instance__subhalo_redshift_rescale_used(analysis_imaging_7x
         galaxies=af.Collection(
             lens=al.Galaxy(
                 redshift=0.5,
-                mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0),
+                mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
             ),
-            subhalo=al.Galaxy(redshift=0.75, mass=al.mp.SphNFW(centre=(0.1, 0.2))),
+            subhalo=al.Galaxy(redshift=0.75, mass=al.mp.NFWSph(centre=(0.1, 0.2))),
             source=al.Galaxy(redshift=1.0),
         )
     )
@@ -87,7 +87,7 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(masked_imagi
     model = af.Collection(
         galaxies=af.Collection(
             lens=al.Galaxy(
-                redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=100.0)
+                redshift=0.5, mass=al.mp.IsothermalSph(einstein_radius=100.0)
             ),
             source=al.Galaxy(redshift=1.0, pixelization=pixelization),
         )
@@ -139,7 +139,7 @@ def test__modify_before_fit__inversion_no_positions_likelihood__raises_exception
     masked_imaging_7x7,
 ):
 
-    lens = al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal())
+    lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph())
 
     pixelization = al.Pixelization(
         mesh=al.mesh.Rectangular(), regularization=al.reg.Constant()
@@ -168,7 +168,7 @@ def test__check_preloads(masked_imaging_7x7):
 
     conf.instance["general"]["test"]["check_preloads"] = True
 
-    lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
+    lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.Sersic(intensity=0.1))
 
     model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
 

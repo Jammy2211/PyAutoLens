@@ -28,7 +28,7 @@ def test__two_sets_of_positions__residuals_likelihood_correct():
     assert fit.log_likelihood == pytest.approx(-5.14472988, 1.0e-4)
 
     galaxy_mass = al.Galaxy(
-        redshift=0.5, mass=al.mp.SphIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+        redshift=0.5, mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[galaxy_mass, galaxy_point_source])
@@ -43,7 +43,7 @@ def test__two_sets_of_positions__residuals_likelihood_correct():
 
 def test__multi_plane_position_solving():
 
-    g0 = al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal(einstein_radius=1.0))
+    g0 = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph(einstein_radius=1.0))
     g1 = al.Galaxy(redshift=1.0, point_0=al.ps.Point(centre=(0.1, 0.1)))
     g2 = al.Galaxy(redshift=2.0, point_1=al.ps.Point(centre=(0.1, 0.1)))
 

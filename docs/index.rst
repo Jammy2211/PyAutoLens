@@ -70,7 +70,7 @@ below shows this in action:
     The lens galaxy has an elliptical isothermal mass profile and is at redshift 0.5.
     """
 
-    sie = al.mp.EllIsothermal(
+    sie = al.mp.Isothermal(
         centre=(0.0, 0.0), elliptical_comps=(0.1, 0.05), einstein_radius=1.6
     )
 
@@ -78,7 +78,7 @@ below shows this in action:
 
     """The source galaxy has an elliptical exponential light profile and is at redshift 1.0."""
 
-    exponential = al.lp.EllExponential(
+    exponential = al.lp.Exponential(
         centre=(0.3, 0.2),
         elliptical_comps=(0.05, 0.25),
         intensity=0.05,
@@ -139,8 +139,8 @@ code below shows how to setup and fit a lens model to a dataset:
     We model the lens galaxy using an elliptical isothermal mass profile and
     the source galaxy using an elliptical sersic light profile.
     """
-    lens_mass_profile = al.mp.EllIsothermal
-    source_light_profile = al.lp.EllSersic
+    lens_mass_profile = al.mp.Isothermal
+    source_light_profile = al.lp.Sersic
 
     """
     To setup these profiles as model components whose parameters are free & fitted for

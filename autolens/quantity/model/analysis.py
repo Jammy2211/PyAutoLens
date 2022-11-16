@@ -29,7 +29,7 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
 
         This Analysis class is used for model-fits which fit derived quantity of galaxies, for example their
         convergence, potential or deflection angles, to another model for that quantity. For example, one could find
-        the `EllPowerLaw` mass profile model that best fits the deflection angles of an `EllNFW` mass profile.
+        the `PowerLaw` mass profile model that best fits the deflection angles of an `NFW` mass profile.
 
         The `func_str` input defines what quantity is fitted, it corresponds to the function of the model `Plane`
         objects that is called to create the model quantity. For example, if `func_str="convergence_2d_from"`, the

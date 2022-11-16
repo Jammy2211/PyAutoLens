@@ -13,12 +13,12 @@ def test__perfect_fit__chi_squared_0():
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        light=al.lp.EllSersic(centre=(0.1, 0.1), intensity=0.1),
-        mass=al.mp.EllIsothermal(centre=(0.1, 0.1), einstein_radius=1.0),
+        light=al.lp.Sersic(centre=(0.1, 0.1), intensity=0.1),
+        mass=al.mp.Isothermal(centre=(0.1, 0.1), einstein_radius=1.0),
     )
 
     source_galaxy = al.Galaxy(
-        redshift=1.0, light=al.lp.EllExponential(centre=(0.1, 0.1), intensity=0.5)
+        redshift=1.0, light=al.lp.Exponential(centre=(0.1, 0.1), intensity=0.5)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
@@ -85,8 +85,8 @@ def test__perfect_fit__chi_squared_0():
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        light=al.lp.EllSersic(centre=(0.1, 0.1), intensity=0.1),
-        mass=al.mp.EllIsothermal(centre=(0.1, 0.1), einstein_radius=1.0),
+        light=al.lp.Sersic(centre=(0.1, 0.1), intensity=0.1),
+        mass=al.mp.Isothermal(centre=(0.1, 0.1), einstein_radius=1.0),
     )
 
     source_galaxy = al.Galaxy(redshift=1.0, pixelization=pixelization)
@@ -124,8 +124,8 @@ def test__simulate_interferometer_data_and_fit__known_likelihood():
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        light=al.lp.EllSersic(centre=(0.1, 0.1), intensity=0.1),
-        mass=al.mp.EllIsothermal(centre=(0.1, 0.1), einstein_radius=1.8),
+        light=al.lp.Sersic(centre=(0.1, 0.1), intensity=0.1),
+        mass=al.mp.Isothermal(centre=(0.1, 0.1), einstein_radius=1.8),
     )
     source_galaxy_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
     source_galaxy_1 = al.Galaxy(redshift=2.0, pixelization=pixelization)
@@ -161,14 +161,14 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        light=al.lp.EllSersic(centre=(0.1, 0.1), intensity=0.1),
-        mass=al.mp.EllIsothermal(centre=(0.1, 0.1), einstein_radius=1.0),
+        light=al.lp.Sersic(centre=(0.1, 0.1), intensity=0.1),
+        mass=al.mp.Isothermal(centre=(0.1, 0.1), einstein_radius=1.0),
     )
 
     source_galaxy = al.Galaxy(
         redshift=1.0,
-        bulge=al.lp.EllSersic(intensity=0.1, sersic_index=1.0),
-        disk=al.lp.EllSersic(intensity=0.2, sersic_index=4.0),
+        bulge=al.lp.Sersic(intensity=0.1, sersic_index=1.0),
+        disk=al.lp.Sersic(intensity=0.2, sersic_index=4.0),
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
@@ -203,14 +203,14 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
 
     lens_galaxy_linear = al.Galaxy(
         redshift=0.5,
-        light=al.lp_linear.EllSersic(centre=(0.1, 0.1)),
-        mass=al.mp.EllIsothermal(centre=(0.1, 0.1), einstein_radius=1.0),
+        light=al.lp_linear.Sersic(centre=(0.1, 0.1)),
+        mass=al.mp.Isothermal(centre=(0.1, 0.1), einstein_radius=1.0),
     )
 
     source_galaxy_linear = al.Galaxy(
         redshift=1.0,
-        bulge=al.lp_linear.EllSersic(sersic_index=1.0),
-        disk=al.lp_linear.EllSersic(sersic_index=4.0),
+        bulge=al.lp_linear.Sersic(sersic_index=1.0),
+        disk=al.lp_linear.Sersic(sersic_index=4.0),
     )
 
     tracer_linear = al.Tracer.from_galaxies(
@@ -275,14 +275,14 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixeli
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        light=al.lp.EllSersic(centre=(0.1, 0.1), intensity=100.0),
-        mass=al.mp.EllIsothermal(centre=(0.1, 0.1), einstein_radius=1.0),
+        light=al.lp.Sersic(centre=(0.1, 0.1), intensity=100.0),
+        mass=al.mp.Isothermal(centre=(0.1, 0.1), einstein_radius=1.0),
     )
 
     source_galaxy = al.Galaxy(
         redshift=1.0,
-        bulge=al.lp.EllSersic(intensity=0.1, sersic_index=1.0),
-        disk=al.lp.EllSersic(intensity=0.2, sersic_index=4.0),
+        bulge=al.lp.Sersic(intensity=0.1, sersic_index=1.0),
+        disk=al.lp.Sersic(intensity=0.2, sersic_index=4.0),
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
@@ -310,8 +310,8 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixeli
 
     lens_galaxy_linear = al.Galaxy(
         redshift=0.5,
-        light=al.lp_linear.EllSersic(centre=(0.1, 0.1)),
-        mass=al.mp.EllIsothermal(centre=(0.1, 0.1), einstein_radius=1.0),
+        light=al.lp_linear.Sersic(centre=(0.1, 0.1)),
+        mass=al.mp.Isothermal(centre=(0.1, 0.1), einstein_radius=1.0),
     )
 
     pixelization = al.Pixelization(
