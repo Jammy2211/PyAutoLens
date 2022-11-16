@@ -59,17 +59,17 @@ from autogalaxy.plane.plane import Plane
 from autogalaxy.profiles.geometry_profiles import EllProfile
 from autogalaxy.profiles import (
     point_sources as ps,
-    light_profiles as lp,
-    mass_profiles as mp,
+    mass as mp,
     light_and_mass_profiles as lmp,
     scaling_relations as sr,
 )
-from autogalaxy.profiles.light_profiles import light_profiles_init as lp_init
-from autogalaxy.profiles.light_profiles import light_profiles_snr as lp_snr
-from autogalaxy.profiles.light_profiles import linear as lp_linear
-from autogalaxy.profiles.light_profiles import operated as lp_operated
-from autogalaxy.profiles.light_profiles import basis as lp_basis
-from autogalaxy.profiles.light_profiles import (
+
+from autogalaxy.profiles.light import standard as lp
+from autogalaxy.profiles.light import snr as lp_snr
+from autogalaxy.profiles.light import linear as lp_linear
+from autogalaxy.profiles.light import operated as lp_operated
+from autogalaxy.profiles.light import basis as lp_basis
+from autogalaxy.profiles.light import (
     linear_operated as lp_linear_operated,
 )
 from autogalaxy.operate.image import OperateImage

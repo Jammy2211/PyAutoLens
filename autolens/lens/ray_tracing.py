@@ -8,7 +8,7 @@ import autogalaxy as ag
 from autoconf.dictable import Dictable
 
 from autogalaxy.plane.plane import Plane
-from autogalaxy.profiles.light_profiles.snr.abstract import LightProfileSNR
+from autogalaxy.profiles.light.snr import LightProfileSNR
 
 from autolens.lens import ray_tracing_util
 
