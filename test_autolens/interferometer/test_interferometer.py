@@ -82,7 +82,7 @@ class TestSimulatorInterferometer:
         lens_galaxy = al.Galaxy(
             redshift=0.5,
             mass=al.mp.Isothermal(
-                centre=(0.0, 0.0), einstein_radius=1.6, elliptical_comps=(0.17647, 0.0)
+                centre=(0.0, 0.0), einstein_radius=1.6, ell_comps=(0.17647, 0.0)
             ),
         )
 
@@ -90,7 +90,7 @@ class TestSimulatorInterferometer:
             redshift=0.5,
             light=al.lp.Sersic(
                 centre=(0.1, 0.1),
-                elliptical_comps=(0.096225, -0.055555),
+                ell_comps=(0.096225, -0.055555),
                 intensity=0.3,
                 effective_radius=1.0,
                 sersic_index=2.5,

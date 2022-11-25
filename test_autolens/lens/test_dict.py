@@ -6,14 +6,14 @@ import autolens as al
 @pytest.fixture(name="tracer")
 def make_tracer():
     mass = al.mp.Isothermal(
-        centre=(0.0, 0.0), elliptical_comps=(0.1, 0.05), einstein_radius=1.6
+        centre=(0.0, 0.0), ell_comps=(0.1, 0.05), einstein_radius=1.6
     )
 
     lens_galaxy = al.Galaxy(redshift=0.5, mass=mass)
 
     disk = al.lp.Exponential(
         centre=(0.3, 0.2),
-        elliptical_comps=(0.05, 0.25),
+        ell_comps=(0.05, 0.25),
         intensity=0.05,
         effective_radius=0.5,
     )
@@ -37,7 +37,7 @@ def make_tracer_dict():
                         "mass": {
                             "centre": (0.0, 0.0),
                             "einstein_radius": 1.6,
-                            "elliptical_comps": (0.1, 0.05),
+                            "ell_comps": (0.1, 0.05),
                             "type": "autogalaxy.profiles.mass.total.Isothermal",
                         },
                         "pixelization": None,
@@ -56,7 +56,7 @@ def make_tracer_dict():
                         "disk": {
                             "centre": (0.3, 0.2),
                             "effective_radius": 0.5,
-                            "elliptical_comps": (0.05, 0.25),
+                            "ell_comps": (0.05, 0.25),
                             "intensity": 0.05,
                             "type": "autogalaxy.profiles.light.standard.Exponential",
                         },

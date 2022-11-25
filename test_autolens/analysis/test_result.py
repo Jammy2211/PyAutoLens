@@ -43,7 +43,7 @@ def test__max_log_likelihood_positions_threshold(masked_imaging_7x7):
             al.Galaxy(
                 redshift=0.5,
                 mass=al.mp.Isothermal(
-                    centre=(0.1, 0.0), einstein_radius=1.0, elliptical_comps=(0.0, 0.0)
+                    centre=(0.1, 0.0), einstein_radius=1.0, ell_comps=(0.0, 0.0)
                 ),
             ),
             al.Galaxy(redshift=1.0, bulge=al.lp.SersicSph(centre=(0.0, 0.0))),
@@ -198,7 +198,7 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
     lens = al.Galaxy(
         redshift=0.5,
         mass=al.mp.Isothermal(
-            centre=(0.001, 0.001), einstein_radius=1.0, elliptical_comps=(0.0, 0.111111)
+            centre=(0.001, 0.001), einstein_radius=1.0, ell_comps=(0.0, 0.111111)
         ),
     )
 
@@ -232,7 +232,7 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
             al.Galaxy(
                 redshift=0.5,
                 mass=al.mp.Isothermal(
-                    centre=(0.1, 0.0), einstein_radius=1.0, elliptical_comps=(0.0, 0.0)
+                    centre=(0.1, 0.0), einstein_radius=1.0, ell_comps=(0.0, 0.0)
                 ),
             ),
             al.Galaxy(redshift=1.0, bulge=al.lp.SersicSph(centre=(0.0, 0.0))),
@@ -258,7 +258,7 @@ def test__positions_threshold_from(analysis_imaging_7x7):
             al.Galaxy(
                 redshift=0.5,
                 mass=al.mp.Isothermal(
-                    centre=(0.1, 0.0), einstein_radius=1.0, elliptical_comps=(0.0, 0.0)
+                    centre=(0.1, 0.0), einstein_radius=1.0, ell_comps=(0.0, 0.0)
                 ),
             ),
             al.Galaxy(redshift=1.0, bulge=al.lp.SersicSph(centre=(0.0, 0.0))),
@@ -288,7 +288,7 @@ def test__positions_likelihood_from(analysis_imaging_7x7):
             al.Galaxy(
                 redshift=0.5,
                 mass=al.mp.Isothermal(
-                    centre=(0.1, 0.0), einstein_radius=1.0, elliptical_comps=(0.0, 0.0)
+                    centre=(0.1, 0.0), einstein_radius=1.0, ell_comps=(0.0, 0.0)
                 ),
             ),
             al.Galaxy(redshift=1.0, bulge=al.lp.SersicSph(centre=(0.0, 0.0))),

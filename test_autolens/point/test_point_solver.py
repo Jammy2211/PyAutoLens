@@ -730,7 +730,7 @@ class TestPositionSolver:
             mass=al.mp.Isothermal(
                 centre=(0.001, 0.001),
                 einstein_radius=1.0,
-                elliptical_comps=(0.0, 0.111111),
+                ell_comps=(0.0, 0.111111),
             ),
         )
 
@@ -758,7 +758,7 @@ class TestPositionSolver:
             mass=al.mp.Isothermal(
                 centre=(0.001, 0.001),
                 einstein_radius=1.0,
-                elliptical_comps=(0.0, 0.111111),
+                ell_comps=(0.0, 0.111111),
             ),
         )
 

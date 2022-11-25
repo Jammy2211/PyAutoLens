@@ -71,7 +71,7 @@ below shows this in action:
     """
 
     sie = al.mp.Isothermal(
-        centre=(0.0, 0.0), elliptical_comps=(0.1, 0.05), einstein_radius=1.6
+        centre=(0.0, 0.0), ell_comps=(0.1, 0.05), einstein_radius=1.6
     )
 
     lens_galaxy = al.Galaxy(redshift=0.5, mass=sie)
@@ -80,7 +80,7 @@ below shows this in action:
 
     exponential = al.lp.Exponential(
         centre=(0.3, 0.2),
-        elliptical_comps=(0.05, 0.25),
+        ell_comps=(0.05, 0.25),
         intensity=0.05,
         effective_radius=0.5,
     )

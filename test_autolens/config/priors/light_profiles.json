@@ -26,7 +26,7 @@
                 "upper": "inf"
             }
         },
-         "elliptical_comps_0": {
+         "ell_comps_0": {
             "type": "Gaussian",
             "lower_limit": -1.0,
             "upper_limit": 1.0,
@@ -41,7 +41,7 @@
                 "upper": 1.0
             }
         },
-        "elliptical_comps_1": {
+        "ell_comps_1": {
             "type": "Gaussian",
             "lower_limit": -1.0,
             "upper_limit": 1.0,
@@ -99,7 +99,7 @@
                 "upper": "inf"
             }
         },
-         "elliptical_comps_0": {
+         "ell_comps_0": {
             "type": "Gaussian",
             "lower_limit": -1.0,
             "upper_limit": 1.0,
@@ -114,7 +114,7 @@
                 "upper": 1.0
             }
         },
-        "elliptical_comps_1": {
+        "ell_comps_1": {
             "type": "Gaussian",
             "lower_limit": -1.0,
             "upper_limit": 1.0,
@@ -196,7 +196,7 @@
                 "upper": "inf"
             }
         },
-         "elliptical_comps_0": {
+         "ell_comps_0": {
             "type": "Gaussian",
             "lower_limit": -1.0,
             "upper_limit": 1.0,
@@ -211,7 +211,7 @@
                 "upper": 1.0
             }
         },
-        "elliptical_comps_1": {
+        "ell_comps_1": {
             "type": "Gaussian",
             "lower_limit": -1.0,
             "upper_limit": 1.0,
@@ -282,7 +282,7 @@
                 "upper": "inf"
             }
         },
-         "elliptical_comps_0": {
+         "ell_comps_0": {
             "type": "Gaussian",
             "lower_limit": -1.0,
             "upper_limit": 1.0,
@@ -297,7 +297,7 @@
                 "upper": 1.0
             }
         },
-        "elliptical_comps_1": {
+        "ell_comps_1": {
             "type": "Gaussian",
             "lower_limit": -1.0,
             "upper_limit": 1.0,

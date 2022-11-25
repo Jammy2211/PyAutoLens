@@ -67,7 +67,7 @@ lens ``Galaxy`` with an ``Isothermal`` ``MassProfile`` lenses a background sourc
     The lens galaxy has an elliptical isothermal mass profile and is at redshift 0.5.
     """
     mass = al.mp.Isothermal(
-        centre=(0.0, 0.0), elliptical_comps=(0.1, 0.05), einstein_radius=1.6
+        centre=(0.0, 0.0), ell_comps=(0.1, 0.05), einstein_radius=1.6
     )
 
     lens_galaxy = al.Galaxy(redshift=0.5, mass=mass)
@@ -77,7 +77,7 @@ lens ``Galaxy`` with an ``Isothermal`` ``MassProfile`` lenses a background sourc
     """
     disk = al.lp.Exponential(
         centre=(0.3, 0.2),
-        elliptical_comps=(0.05, 0.25),
+        ell_comps=(0.05, 0.25),
         intensity=0.05,
         effective_radius=0.5,
     )

@@ -33,7 +33,7 @@ To treat a source as a point source, we create it as a galaxy using ``Point`` ob
     lens_galaxy = al.Galaxy(
         redshift=0.5,
         mass=al.mp.Isothermal(
-            centre=(0.001, 0.001), einstein_radius=1.0, elliptical_comps=(0.0, 0.111111)
+            centre=(0.001, 0.001), einstein_radius=1.0, ell_comps=(0.0, 0.111111)
         )
     )
 

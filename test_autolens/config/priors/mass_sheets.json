@@ -1,6 +1,6 @@
 {
     "ExternalShear": {
-        "elliptical_comps_0": {
+        "ell_comps_0": {
             "type": "Uniform",
             "lower_limit": -0.2,
             "upper_limit": 0.2,
@@ -13,7 +13,7 @@
                 "upper": "inf"
             }
         },
-        "elliptical_comps_1": {
+        "ell_comps_1": {
             "type": "Uniform",
             "lower_limit": -0.2,
             "upper_limit": 0.2,
