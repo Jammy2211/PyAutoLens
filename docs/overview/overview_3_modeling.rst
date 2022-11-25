@@ -297,12 +297,19 @@ This gives the following output:
         source
             redshift                               1.0
 
-Below we print the maximum log likelihood model inferred.
+This is contained in the ``Samples`` object. Below, we show how to print the median PDF parameter estimates, but
+many different results are available and illustrated in the `results package of the workspace <https://github.com/Jammy2211/autolens_workspace/tree/release/notebooks/results>`_.
 
 .. code-block:: python
 
-    print(result.max_log_likelihood_instance.galaxies.lens)
-    print(result.max_log_likelihood_instance.galaxies.source)
+    samples = result.samples
+
+    median_pdf_instance = samples.median_pdf()
+
+    print("Median PDF Model Instances: \n")
+    print(median_pdf_instance, "\n")
+    print(median_pdf_instance.galaxies.galaxy.bulge)
+    print()
 
 This result contains the full posterior information of our non-linear search, including all
 parameter samples, log likelihood values and tools to compute the errors on the lens model.

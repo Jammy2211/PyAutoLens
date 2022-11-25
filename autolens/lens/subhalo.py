@@ -90,8 +90,8 @@ class SubhaloResult:
     def instance_list_via_results_from(self, results):
         return [
             None
-            if result.samples.median_pdf_instance is None
-            else result.samples.median_pdf_instance
+            if result.samples.median_pdf() is None
+            else result.samples.median_pdf()
             for result in results
         ]
 
