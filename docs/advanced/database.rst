@@ -72,7 +72,7 @@ We can iterate over the samples to print the maximum log likelihood lens model o
 
     for samps in agg.values("samples"):
 
-        instance = samps.max_log_likelihood_instance
+        instance = samps.max_log_likelihood()
 
         print("Maximum Likelihood Model-fit \n")
         print(instance)
@@ -81,19 +81,19 @@ We can iterate over the samples to print the maximum log likelihood lens model o
 The ``Aggregator`` contains tools for querying the database for certain results, for example to load subsets of
 model-fits. This can be done in many different ways, depending on what information you want.
 
-Below, we query based on the model fitted. For example, we can load all results which fitted an ``EllIsothermal``
+Below, we query based on the model fitted. For example, we can load all results which fitted an ``Isothermal``
 mass model (note that when we performed the model fit, we composed the lens model using a lens galaxy name ``lens``
 and mass component named ``mass``):
 
 .. code-block:: python
 
     lens = agg.model.galaxies.lens
-    agg_query = agg.query(lens.mass == al.EllIsothermal)
+    agg_query = agg.query(lens.mass == al.Isothermal)
 
     samples_gen = agg_query.values("samples")
 
 Queries using the results of model-fitting are also supported. Below, we query the database to find all fits where the
-inferred value of the ``einstein_radius`` for the ``EllIsothermal`` is above 1.0:
+inferred value of the ``einstein_radius`` for the ``Isothermal`` is above 1.0:
 
 .. code-block:: python
 
@@ -101,13 +101,13 @@ inferred value of the ``einstein_radius`` for the ``EllIsothermal`` is above 1.0
     agg_query = agg.query(lens.mass.einstein_radius > 1.0)
 
 Advanced queries can be constructed using logic, for example we below we combine the two queries above to find all
-results which fitted an ``EllIsothermal`` AND (using the & symbol) inferred a value of sigma less than 3.0.
+results which fitted an ``Isothermal`` AND (using the & symbol) inferred a value of sigma less than 3.0.
 
 The OR logical clause is also supported via the symbol |.
 
 .. code-block:: python
 
-    agg_query = agg.query((lens.mass == al.EllIsothermal) & (lens.mass.einstein_radius > 1.0))
+    agg_query = agg.query((lens.mass == al.Isothermal) & (lens.mass.einstein_radius > 1.0))
 
 We can query using the ``unique_tag`` to load the model-fit to a specific dataset:
 

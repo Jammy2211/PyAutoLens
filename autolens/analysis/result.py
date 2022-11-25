@@ -65,7 +65,7 @@ class Result(AgResult):
         multiple-image positions.
         """
         centre = self.max_log_likelihood_tracer.source_plane.extract_attribute(
-            cls=ag.lp.LightProfile, attr_name="centre"
+            cls=ag.LightProfile, attr_name="centre"
         )
         if centre is not None:
             return aa.Grid2DIrregular(grid=[np.asarray(centre[0])])

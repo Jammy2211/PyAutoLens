@@ -45,8 +45,8 @@ API Overview
 
 Lensing calculations are performed in **PyAutoLens** by building a ``Tracer`` object from ``LightProfile``,
 ``MassProfile`` and ``Galaxy`` objects. Below, we create a simple strong lens system where a redshift 0.5
-lens ``Galaxy`` with an ``EllIsothermal`` ``MassProfile`` lenses a background source at redshift 1.0 with an
-``EllExponential`` ``LightProfile`` representing a disk.
+lens ``Galaxy`` with an ``Isothermal`` ``MassProfile`` lenses a background source at redshift 1.0 with an
+``Exponential`` ``LightProfile`` representing a disk.
 
 .. code-block:: python
 
@@ -66,7 +66,7 @@ lens ``Galaxy`` with an ``EllIsothermal`` ``MassProfile`` lenses a background so
     """
     The lens galaxy has an elliptical isothermal mass profile and is at redshift 0.5.
     """
-    mass = al.mp.EllIsothermal(
+    mass = al.mp.Isothermal(
         centre=(0.0, 0.0), elliptical_comps=(0.1, 0.05), einstein_radius=1.6
     )
 
@@ -75,7 +75,7 @@ lens ``Galaxy`` with an ``EllIsothermal`` ``MassProfile`` lenses a background so
     """
     The source galaxy has an elliptical exponential light profile and is at redshift 1.0.
     """
-    disk = al.lp.EllExponential(
+    disk = al.lp.Exponential(
         centre=(0.3, 0.2),
         elliptical_comps=(0.05, 0.25),
         intensity=0.05,
@@ -100,7 +100,7 @@ lens ``Galaxy`` with an ``EllIsothermal`` ``MassProfile`` lenses a background so
     tracer_plotter.figures_2d(image=True)
 
 With **PyAutoLens**, you can begin modeling a lens in minutes. The example below demonstrates a simple analysis which
-fits the lens galaxy's mass with an ``EllIsothermal`` and the source galaxy's light with an ``EllSersic``.
+fits the lens galaxy's mass with an ``Isothermal`` and the source galaxy's light with an ``Sersic``.
 
 .. code-block:: python
 
@@ -130,8 +130,8 @@ fits the lens galaxy's mass with an ``EllIsothermal`` and the source galaxy's li
     We model the lens galaxy using an elliptical isothermal mass profile and
     the source galaxy using an elliptical sersic light profile.
     """
-    lens_mass_profile = al.mp.EllIsothermal
-    source_light_profile = al.lp.EllSersic
+    lens_mass_profile = al.mp.Isothermal
+    source_light_profile = al.lp.Sersic
 
     """
     To setup these profiles as model components whose parameters are free & fitted for
@@ -162,7 +162,7 @@ fits the lens galaxy's mass with an ``EllIsothermal`` and the source galaxy's li
     The results contain information on the fit, for example the maximum likelihood
     model from the Dynesty parameter space search.
     """
-    print(result.samples.max_log_likelihood_instance)
+    print(result.samples.max_log_likelihood())
 
 Support
 -------

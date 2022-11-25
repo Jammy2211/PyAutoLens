@@ -174,8 +174,8 @@ to the uv-plane via the Fourier transform discussed above:
 
 .. code-block:: python
 
-    lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal)
-    source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=al.lp.EllExponential)
+    lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
+    source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=al.lp.Exponential)
 
     model = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
 

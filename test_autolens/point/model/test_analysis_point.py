@@ -102,7 +102,7 @@ class TestAnalysisPoint:
             galaxies=af.Collection(
                 lens=al.Galaxy(
                     redshift=0.5,
-                    sis=al.mp.SphIsothermal(einstein_radius=1.0),
+                    sis=al.mp.IsothermalSph(einstein_radius=1.0),
                     point_0=al.ps.PointFlux(flux=1.0),
                 )
             )

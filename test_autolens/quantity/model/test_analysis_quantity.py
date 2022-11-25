@@ -28,7 +28,7 @@ class TestAnalysisQuantity:
     def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         self, dataset_quantity_7x7_array_2d
     ):
-        galaxy = al.Galaxy(redshift=0.5, light=al.mp.EllIsothermal(einstein_radius=1.0))
+        galaxy = al.Galaxy(redshift=0.5, light=al.mp.Isothermal(einstein_radius=1.0))
 
         model = af.Collection(galaxies=af.Collection(galaxy=galaxy))
 

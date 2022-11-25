@@ -32,7 +32,7 @@ To treat a source as a point source, we create it as a galaxy using ``Point`` ob
 
     lens_galaxy = al.Galaxy(
         redshift=0.5,
-        mass=al.mp.EllIsothermal(
+        mass=al.mp.Isothermal(
             centre=(0.001, 0.001), einstein_radius=1.0, elliptical_comps=(0.0, 0.111111)
         )
     )
@@ -77,7 +77,7 @@ strongly lensed quasars or supernovae, which are so compact we do not observe th
 To perform point-source analysing, we first create a ``PointDataset`` containing the image-plane (y,x) positions
 of each multiple image and their noise values (which would be the resolution of the imaging data they are observed).
 
-The positions below correspond to those of an ``EllIsothermal`` mass model.
+The positions below correspond to those of an ``Isothermal`` mass model.
 
 .. code-block:: python
 
@@ -151,7 +151,7 @@ the lens model.
 
 .. code-block:: python
 
-    lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.EllIsothermal)
+    lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
     source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, point_0=al.ps.Point)
 
     galaxies = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)

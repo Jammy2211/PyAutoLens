@@ -58,7 +58,7 @@ uses ``Profile`` objects for this, such as the elliptical sersic ``LightProfile`
 
 .. code-block:: python
 
-    sersic_light_profile = al.lp.EllSersic(
+    sersic_light_profile = al.lp.Sersic(
         centre=(0.0, 0.0),
         elliptical_comps=(0.1, 0.1),
         intensity=0.05,
@@ -99,7 +99,7 @@ potential and deflection angles using the Cartesian grid:
 
 .. code-block:: python
 
-    isothermal_mass_profile = al.mp.EllIsothermal(
+    isothermal_mass_profile = al.mp.Isothermal(
         centre=(0.0, 0.0),
         elliptical_comps=(0.1, 0.1),
         einstein_radius=1.6,
@@ -203,7 +203,7 @@ dark matter, where the stellar mass using a ``LightMassProfile`` representing bo
 
     lens_galaxy_0 = al.Galaxy(
         redshift=0.5,
-        bulge=al.lmp.EllSersic(
+        bulge=al.lmp.Sersic(
             centre=(0.0, 0.0),
             elliptical_comps=(0.0, 0.05),
             intensity=0.5,
@@ -211,29 +211,29 @@ dark matter, where the stellar mass using a ``LightMassProfile`` representing bo
             sersic_index=2.5,
             mass_to_light_ratio=0.3,
         ),
-        disk=al.lmp.EllExponential(
+        disk=al.lmp.Exponential(
             centre=(0.0, 0.0),
             elliptical_comps=(0.0, 0.1),
             intensity=1.0,
             effective_radius=2.0,
             mass_to_light_ratio=0.2,
         ),
-        dark=al.mp.SphNFW(centre=(0.0, 0.0), kappa_s=0.08, scale_radius=30.0),
+        dark=al.mp.NFWSph(centre=(0.0, 0.0), kappa_s=0.08, scale_radius=30.0),
     )
 
     lens_galaxy_1 = al.Galaxy(
         redshift=1.0,
-        light=al.lp.EllExponential(
+        light=al.lp.Exponential(
             centre=(0.1, 0.1), , elliptical_comps=(0.1, 0.1), intensity=3.0, effective_radius=0.1
         ),
-        mass=al.mp.EllIsothermal(
+        mass=al.mp.Isothermal(
             centre=(0.1, 0.1), , elliptical_comps=(0.1, 0.1), einstein_radius=0.4
         ),
     )
 
     source_galaxy = al.Galaxy(
         redshift=2.0,
-        light=al.lp.EllSersic(
+        light=al.lp.Sersic(
             centre=(0.2, 0.2),
             elliptical_comps=(0.05, -0.1),
             intensity=2.0,

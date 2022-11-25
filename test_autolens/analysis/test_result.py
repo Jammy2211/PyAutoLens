@@ -42,11 +42,11 @@ def test__max_log_likelihood_positions_threshold(masked_imaging_7x7):
         galaxies=[
             al.Galaxy(
                 redshift=0.5,
-                mass=al.mp.EllIsothermal(
+                mass=al.mp.Isothermal(
                     centre=(0.1, 0.0), einstein_radius=1.0, elliptical_comps=(0.0, 0.0)
                 ),
             ),
-            al.Galaxy(redshift=1.0, bulge=al.lp.SphSersic(centre=(0.0, 0.0))),
+            al.Galaxy(redshift=1.0, bulge=al.lp.SersicSph(centre=(0.0, 0.0))),
         ]
     )
 
@@ -61,10 +61,10 @@ def test__max_log_likelihood_positions_threshold(masked_imaging_7x7):
 
 def test__source_plane_light_profile_centre(analysis_imaging_7x7):
 
-    lens = al.Galaxy(redshift=0.5, light=al.lp.SphSersic(intensity=1.0))
+    lens = al.Galaxy(redshift=0.5, light=al.lp.SersicSph(intensity=1.0))
 
     source = al.Galaxy(
-        redshift=1.0, light=al.lp.SphSersic(centre=(1.0, 2.0), intensity=2.0)
+        redshift=1.0, light=al.lp.SersicSph(centre=(1.0, 2.0), intensity=2.0)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
@@ -77,12 +77,12 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
 
     source_0 = al.Galaxy(
         redshift=1.0,
-        light=al.lp.SphSersic(centre=(1.0, 2.0), intensity=2.0),
-        light1=al.lp.SphSersic(centre=(3.0, 4.0), intensity=2.0),
+        light=al.lp.SersicSph(centre=(1.0, 2.0), intensity=2.0),
+        light1=al.lp.SersicSph(centre=(3.0, 4.0), intensity=2.0),
     )
 
     source_1 = al.Galaxy(
-        redshift=1.0, light=al.lp.SphSersic(centre=(5.0, 6.0), intensity=2.0)
+        redshift=1.0, light=al.lp.SersicSph(centre=(5.0, 6.0), intensity=2.0)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens, source_0, source_1])
@@ -94,11 +94,11 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
     assert result.source_plane_light_profile_centre.in_list == [(1.0, 2.0)]
 
     source_0 = al.Galaxy(
-        redshift=1.0, light=al.lp.SphSersic(centre=(1.0, 2.0), intensity=2.0)
+        redshift=1.0, light=al.lp.SersicSph(centre=(1.0, 2.0), intensity=2.0)
     )
 
     source_1 = al.Galaxy(
-        redshift=2.0, light=al.lp.SphSersic(centre=(5.0, 6.0), intensity=2.0)
+        redshift=2.0, light=al.lp.SersicSph(centre=(5.0, 6.0), intensity=2.0)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens, source_0, source_1])
@@ -120,7 +120,7 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
 
 def test__source_plane_inversion_centre(analysis_imaging_7x7):
 
-    lens = al.Galaxy(redshift=0.5, light=al.lp.SphSersic(intensity=1.0))
+    lens = al.Galaxy(redshift=0.5, light=al.lp.SersicSph(intensity=1.0))
 
     pixelization = al.Pixelization(
         mesh=al.mesh.Rectangular((3, 3)),
@@ -144,7 +144,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
         ]
     )
 
-    lens = al.Galaxy(redshift=0.5, light=al.lp.SphSersic(intensity=1.0))
+    lens = al.Galaxy(redshift=0.5, light=al.lp.SersicSph(intensity=1.0))
     source = al.Galaxy(redshift=1.0)
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
@@ -155,7 +155,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
 
     assert result.source_plane_inversion_centre == None
 
-    lens = al.Galaxy(redshift=0.5, light=al.lp_linear.EllSersic())
+    lens = al.Galaxy(redshift=0.5, light=al.lp_linear.Sersic())
     source = al.Galaxy(redshift=1.0)
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
@@ -169,7 +169,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
 
 def test__source_plane_centre(analysis_imaging_7x7):
 
-    lens = al.Galaxy(redshift=0.5, light=al.lp.SphSersic(intensity=1.0))
+    lens = al.Galaxy(redshift=0.5, light=al.lp.SersicSph(intensity=1.0))
 
     pixelization = al.Pixelization(
         mesh=al.mesh.Rectangular((3, 3)),
@@ -178,7 +178,7 @@ def test__source_plane_centre(analysis_imaging_7x7):
 
     source = al.Galaxy(
         redshift=1.0,
-        light=al.lp.SphSersic(centre=(9.0, 8.0), intensity=2.0),
+        light=al.lp.SersicSph(centre=(9.0, 8.0), intensity=2.0),
         pixelization=pixelization,
     )
 
@@ -197,7 +197,7 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
 
     lens = al.Galaxy(
         redshift=0.5,
-        mass=al.mp.EllIsothermal(
+        mass=al.mp.Isothermal(
             centre=(0.001, 0.001), einstein_radius=1.0, elliptical_comps=(0.0, 0.111111)
         ),
     )
@@ -209,8 +209,8 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
 
     source = al.Galaxy(
         redshift=1.0,
-        light=al.lp.SphSersic(centre=(0.0, 0.0), intensity=2.0),
-        light1=al.lp.SphSersic(centre=(0.0, 0.1), intensity=2.0),
+        light=al.lp.SersicSph(centre=(0.0, 0.0), intensity=2.0),
+        light1=al.lp.SersicSph(centre=(0.0, 0.1), intensity=2.0),
         pixelization=pixelization,
     )
 
@@ -231,11 +231,11 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
         galaxies=[
             al.Galaxy(
                 redshift=0.5,
-                mass=al.mp.EllIsothermal(
+                mass=al.mp.Isothermal(
                     centre=(0.1, 0.0), einstein_radius=1.0, elliptical_comps=(0.0, 0.0)
                 ),
             ),
-            al.Galaxy(redshift=1.0, bulge=al.lp.SphSersic(centre=(0.0, 0.0))),
+            al.Galaxy(redshift=1.0, bulge=al.lp.SersicSph(centre=(0.0, 0.0))),
         ]
     )
 
@@ -257,11 +257,11 @@ def test__positions_threshold_from(analysis_imaging_7x7):
         galaxies=[
             al.Galaxy(
                 redshift=0.5,
-                mass=al.mp.EllIsothermal(
+                mass=al.mp.Isothermal(
                     centre=(0.1, 0.0), einstein_radius=1.0, elliptical_comps=(0.0, 0.0)
                 ),
             ),
-            al.Galaxy(redshift=1.0, bulge=al.lp.SphSersic(centre=(0.0, 0.0))),
+            al.Galaxy(redshift=1.0, bulge=al.lp.SersicSph(centre=(0.0, 0.0))),
         ]
     )
 
@@ -287,11 +287,11 @@ def test__positions_likelihood_from(analysis_imaging_7x7):
         galaxies=[
             al.Galaxy(
                 redshift=0.5,
-                mass=al.mp.EllIsothermal(
+                mass=al.mp.Isothermal(
                     centre=(0.1, 0.0), einstein_radius=1.0, elliptical_comps=(0.0, 0.0)
                 ),
             ),
-            al.Galaxy(redshift=1.0, bulge=al.lp.SphSersic(centre=(0.0, 0.0))),
+            al.Galaxy(redshift=1.0, bulge=al.lp.SersicSph(centre=(0.0, 0.0))),
         ]
     )
 

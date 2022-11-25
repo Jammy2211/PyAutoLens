@@ -36,7 +36,7 @@ def test__make_result__result_interferometer_is_returned(interferometer_7):
 
 
 def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(interferometer_7):
-    lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
+    lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.Sersic(intensity=0.1))
 
     model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
 
@@ -57,7 +57,7 @@ def test__figure_of_merit__includes_hyper_image_and_noise__matches_fit(
 ):
     hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
-    lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.EllSersic(intensity=0.1))
+    lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.Sersic(intensity=0.1))
 
     model = af.Collection(
         galaxies=af.Collection(lens=lens_galaxy),
@@ -84,7 +84,7 @@ def test__positions__resample__raises_exception(interferometer_7, mask_2d_7x7):
 
     model = af.Collection(
         galaxies=af.Collection(
-            lens=al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal()),
+            lens=al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph()),
             source=al.Galaxy(redshift=1.0),
         )
     )
@@ -107,8 +107,8 @@ def test__positions__likelihood_overwrite__changes_likelihood(
     interferometer_7, mask_2d_7x7
 ):
 
-    lens = al.Galaxy(redshift=0.5, mass=al.mp.SphIsothermal())
-    source = al.Galaxy(redshift=1.0, light=al.lp.SphSersic())
+    lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph())
+    source = al.Galaxy(redshift=1.0, light=al.lp.SersicSph())
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

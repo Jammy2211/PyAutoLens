@@ -1,5 +1,5 @@
 {
-    "SphNFW": {
+    "NFWSph": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -57,7 +57,7 @@
             }
         }
     },
-    "EllNFW": {
+    "NFW": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -145,7 +145,7 @@
             }
         }
     },
-    "SphNFWTruncated": {
+    "NFWTruncatedSph": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -261,7 +261,7 @@
             }
         }
     },
-    "SphNFWGeneralized": {
+    "gNFWSph": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,
@@ -332,7 +332,7 @@
             }
         }
     },
-    "EllNFWGeneralized": {
+    "gNFW": {
         "centre_0": {
             "type": "Gaussian",
             "mean": 0.0,

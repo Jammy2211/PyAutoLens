@@ -10,7 +10,7 @@ from autolens.imaging.model.result import ResultImaging
 def test___linear_light_profiles_in_result(analysis_imaging_7x7):
 
     galaxies = af.ModelInstance()
-    galaxies.galaxy = al.Galaxy(redshift=0.5, bulge=al.lp_linear.EllSersic())
+    galaxies.galaxy = al.Galaxy(redshift=0.5, bulge=al.lp_linear.Sersic())
 
     instance = af.ModelInstance()
     instance.galaxies = galaxies

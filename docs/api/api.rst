@@ -105,22 +105,22 @@ Light Profiles
 .. autosummary::
    :toctree: generated/
 
-   EllGaussian
-   SphGaussian
-   EllSersic
-   SphSersic
-   EllExponential
-   SphExponential
-   EllDevVaucouleurs
-   SphDevVaucouleurs
-   EllSersicCore
-   SphSersicCore
-   EllExponentialCore
-   SphExponentialCore
-   EllChameleon
-   SphChameleon
-   EllEff
-   SphEff
+   Gaussian
+   GaussianSph
+   Sersic
+   SersicSph
+   Exponential
+   ExponentialSph
+   DevVaucouleurs
+   DevVaucouleursSph
+   SersicCore
+   SersicCoreSph
+   ExponentialCore
+   ExponentialCoreSph
+   Chameleon
+   ChameleonSph
+   ElsonFreeFall
+   ElsonFreeFallSph
 
 -------------
 Mass Profiles
@@ -134,53 +134,53 @@ Mass Profiles
    :toctree: generated/
 
     PointMass
-    EllPowerLawCored
-    SphPowerLawCored
-    EllPowerLawBroken
-    SphPowerLawBroken
-    EllIsothermalCored
-    SphIsothermalCored
-    EllPowerLaw
-    SphPowerLaw
-    EllIsothermal
-    SphIsothermal
+    PowerLawCore
+    PowerLawCoreSph
+    PowerLawBroken
+    PowerLawBrokenSph
+    IsothermalCore
+    IsothermalCoreSph
+    PowerLaw
+    PowerLawSph
+    Isothermal
+    IsothermalSph
 
 **Dark Mass Profiles:**
 
 .. autosummary::
    :toctree: generated/
 
-    EllNFWGeneralized
-    SphNFWGeneralized
-    SphNFWTruncated
-    SphNFWTruncatedMCRDuffy
-    SphNFWTruncatedMCRLudlow
-    SphNFWTruncatedMCRScatterLudlow
-    EllNFW
-    SphNFW
-    SphNFWMCRDuffy
-    SphNFWMCRLudlow
-    EllNFWMCRScatterLudlow
-    SphNFWMCRScatterLudlow
-    EllNFWMCRLudlow
-    EllNFWGeneralizedMCRLudlow
+    gNFW
+    gNFWSph
+    NFWTruncatedSph
+    NFWTruncatedMCRDuffySph
+    NFWTruncatedMCRLudlowSph
+    NFWTruncatedMCRScatterLudlowSph
+    NFW
+    NFWSph
+    NFWMCRDuffySph
+    NFWMCRLudlowSph
+    NFWMCRScatterLudlow
+    NFWMCRScatterLudlowSph
+    NFWMCRLudlow
+    gNFWMCRLudlow
 
 **Stellar Mass Profiles:**
 
 .. autosummary::
    :toctree: generated/
 
-    EllGaussian
-    EllSersic
-    SphSersic
-    EllExponential
-    SphExponential
-    EllDevVaucouleurs
-    SphDevVaucouleurs
-    EllSersicRadialGradient
+    Gaussian
+    Sersic
+    SersicSph
+    Exponential
+    ExponentialSph
+    DevVaucouleurs
+    DevVaucouleursSph
+    SersicRadialGradient
     SphSersicRadialGradient
-    EllChameleon
-    SphChameleon
+    Chameleon
+    ChameleonSph
 
 **Mass-sheets:**
 

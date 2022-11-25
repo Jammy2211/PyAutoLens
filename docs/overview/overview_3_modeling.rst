@@ -41,10 +41,10 @@ determined by a fitting procedure.
     lens_galaxy_model = af.Model(
         al.Galaxy,
         redshift=0.5,
-        bulge=al.lp.EllDevVaucouleurs,
-        mass=al.mp.EllIsothermal
+        bulge=al.lp.DevVaucouleurs,
+        mass=al.mp.Isothermal
     )
-    source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=al.lp.EllExponential)
+    source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=al.lp.Exponential)
 
 We combine the lens and source model galaxies above into a ``Collection``, which is the model we will fit. Note how
 we could easily extend this object to compose highly complex models containing many galaxies.
@@ -183,10 +183,10 @@ This gives the following output:
     model                                          CollectionPriorModel (N=18)
         galaxies                                   CollectionPriorModel (N=18)
             lens                                   Galaxy (N=12)
-                bulge                              EllSersic (N=7)
-                mass                               EllIsothermal (N=5)
+                bulge                              Sersic (N=7)
+                mass                               Isothermal (N=5)
             source                                 Galaxy (N=6)
-                disk                               EllExponential (N=6)
+                disk                               Exponential (N=6)
     
     Maximum Log Likelihood Model:
     
@@ -297,12 +297,19 @@ This gives the following output:
         source
             redshift                               1.0
 
-Below we print the maximum log likelihood model inferred.
+This is contained in the ``Samples`` object. Below, we show how to print the median PDF parameter estimates, but
+many different results are available and illustrated in the `results package of the workspace <https://github.com/Jammy2211/autolens_workspace/tree/release/notebooks/results>`_.
 
 .. code-block:: python
 
-    print(result.max_log_likelihood_instance.galaxies.lens)
-    print(result.max_log_likelihood_instance.galaxies.source)
+    samples = result.samples
+
+    median_pdf_instance = samples.median_pdf()
+
+    print("Median PDF Model Instances: \n")
+    print(median_pdf_instance, "\n")
+    print(median_pdf_instance.galaxies.galaxy.bulge)
+    print()
 
 This result contains the full posterior information of our non-linear search, including all
 parameter samples, log likelihood values and tools to compute the errors on the lens model.
@@ -353,8 +360,8 @@ using any combination of ``LightProfile``'s and ``MassProfile``'s:
     lens_galaxy_model = af.Model(
         al.Galaxy,
         redshift=0.5,
-        bulge=al.lp.EllDevVaucouleurs,
-        mass=al.mp.EllIsothermal
+        bulge=al.lp.DevVaucouleurs,
+        mass=al.mp.Isothermal
     )
 
     """
@@ -395,16 +402,16 @@ model is inferred.
 
 .. code-block:: python
 
-    sersic_linear = al.lp_linear.EllSersic()
+    sersic_linear = al.lp_linear.Sersic()
     
     lens_model_linear = af.Model(
         al.Galaxy,
         redshift=0.5,
-        bulge=ag.lp_linear.EllDevVaucouleurs,
-        disk=ag.lp_linear.EllSersic,
+        bulge=ag.lp_linear.DevVaucouleurs,
+        disk=ag.lp_linear.Sersic,
     )
     
-    source_model_linear = af.Model(al.Galaxy, redshift=1.0, disk=al.lp_linear.EllExponential)
+    source_model_linear = af.Model(al.Galaxy, redshift=1.0, disk=al.lp_linear.Exponential)
 
 Basis Functions
 ---------------
@@ -428,7 +435,7 @@ parameters!
     bulge_a = af.UniformPrior(lower_limit=0.0, upper_limit=0.2)
     bulge_b = af.UniformPrior(lower_limit=0.0, upper_limit=10.0)
 
-    gaussians_lens = af.Collection(af.Model(al.lp_linear.EllGaussian) for _ in range(10))
+    gaussians_lens = af.Collection(af.Model(al.lp_linear.Gaussian) for _ in range(10))
 
     for i, gaussian in enumerate(gaussians_lens):
 
@@ -452,13 +459,13 @@ Below is a snippet of the model, showing that different Gaussians are in the mod
 
     model                                                                           Basis (N=6)
         light_profile_list                                                          CollectionPriorModel (N=6)
-            0                                                                       EllGaussian (N=6)
+            0                                                                       Gaussian (N=6)
                 sigma                                                               SumPrior (N=2)
                     other                                                           MultiplePrior (N=1)
-            1                                                                       EllGaussian (N=6)
+            1                                                                       Gaussian (N=6)
                 sigma                                                               SumPrior (N=2)
                     other                                                           MultiplePrior (N=1)
-            2                                                                       EllGaussian (N=6)
+            2                                                                       Gaussian (N=6)
             ...
             trimmed for conciseness
             ...
