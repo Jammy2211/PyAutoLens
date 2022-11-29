@@ -100,7 +100,7 @@ Lens Modeling
 Light Profiles
 --------------
 
-.. currentmodule:: autogalaxy.profiles.light_profiles
+.. currentmodule:: autogalaxy.profiles.light.standard
 
 .. autosummary::
    :toctree: generated/
@@ -126,7 +126,7 @@ Light Profiles
 Mass Profiles
 -------------
 
-.. currentmodule:: autogalaxy.profiles.mass_profiles
+.. currentmodule:: autogalaxy.profiles.mass
 
 **Total Mass Profiles:**
 

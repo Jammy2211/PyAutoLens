@@ -21,7 +21,7 @@ the installation has clean dependencies):
 
 .. code-block:: bash
 
-    pip install autolens==2022.11.26.11
+    pip install autolens
 
 You may get warnings which state something like:
 

@@ -1,19 +1,22 @@
 # MANIFEST.in
 exclude .gitignore
-exclude .coverage
-exclude .travis.yml
-exclude docs
 include README.rst
 include setup.cfg
+include CITATIONS.rst
+include LICENSE
+include requirements.txt
+include optional_requirements.txt
+
 prune .cache
 prune .git
 prune build
 prune dist
-recursive-include autolens/config *
+
 recursive-exclude *.egg-info *
-recursive-include tests *
-include requirements.txt
-recursive-include data *
+
+recursive-include autolens/config *
+
+exclude docs
 
 global-exclude test_autolens
 recursive-exclude test_autolens *
