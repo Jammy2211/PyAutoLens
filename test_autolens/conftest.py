@@ -9,18 +9,6 @@ from matplotlib import pyplot
 from autofit import conf
 from autolens import fixtures
 
-directory = path.dirname(path.realpath(__file__))
-
-
-@pytest.fixture(name="config", autouse=True)
-def set_config_path():
-    conf.instance = conf.Config(
-        path.join(directory, "config"),
-        output_path=path.join(directory, "pipeline", "output"),
-    )
-    return conf.instance
-
-
 class PlotPatch:
     def __init__(self):
         self.paths = []
@@ -34,6 +22,17 @@ def make_plot_patch(monkeypatch):
     plot_patch = PlotPatch()
     monkeypatch.setattr(pyplot, "savefig", plot_patch)
     return plot_patch
+
+
+directory = path.dirname(path.realpath(__file__))
+
+
+@pytest.fixture(autouse=True)
+def set_config_path(request):
+    conf.instance.push(
+        new_path=path.join(directory, "config"),
+        output_path=path.join(directory, "output"),
+    )
 
 
 @pytest.fixture(autouse=True, scope="session")

@@ -60,7 +60,7 @@ Matplotlib uses the default backend on your computer, as set in the config file:
 
 .. code-block:: bash
 
-    autolens_workspace/config/visualize/general.ini
+    autolens_workspace/config/visualize/general.yaml
 
 If unchanged, the backend is set to 'default', meaning it will use the backend automatically set up for Python on
 your system.

@@ -41,7 +41,7 @@ Here, you'll find the configuration files used by **PyAutoLens** which customize
     - Visualization, including the backend used by *matplotlib*.
     - The priors and notation configs associated with the light and mass profiles used for lens modeling.
     - The behaviour of different (y,x) Cartesian grids used to perform lens calculations.
-    - The general.ini config which customizes other aspects of **PyAutoLens**.
+    - The general.yaml config which customizes other aspects of **PyAutoLens**.
 
 Checkout the `configuration <https://pyautolens.readthedocs.io/en/latest/general/installation.html#installation-with-pip>`_
 section of the readthedocs for a complete description of every configuration file.
