@@ -1,0 +1,125 @@
+delaunay.DelaunayBrightnessImage:
+  pixels:
+    gaussian_limits:
+      lower: 50.0
+      upper: inf
+    lower_limit: 50.0
+    type: Uniform
+    upper_limit: 2500.0
+    width_modifier:
+      type: Absolute
+      value: 100.0
+  weight_floor:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 1.0
+    width_modifier:
+      type: Absolute
+      value: 0.1
+  weight_power:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 20.0
+    width_modifier:
+      type: Absolute
+      value: 5.0
+delaunay.DelaunayMagnification:
+  shape_0:
+    gaussian_limits:
+      lower: 3.0
+      upper: inf
+    lower_limit: 20.0
+    type: Uniform
+    upper_limit: 45.0
+    width_modifier:
+      type: Absolute
+      value: 8.0
+  shape_1:
+    gaussian_limits:
+      lower: 3.0
+      upper: inf
+    lower_limit: 20.0
+    type: Uniform
+    upper_limit: 45.0
+    width_modifier:
+      type: Absolute
+      value: 8.0
+rectangular.Rectangular:
+  shape_0:
+    gaussian_limits:
+      lower: 3.0
+      upper: inf
+    lower_limit: 20.0
+    type: Uniform
+    upper_limit: 45.0
+    width_modifier:
+      type: Absolute
+      value: 8.0
+  shape_1:
+    gaussian_limits:
+      lower: 3.0
+      upper: inf
+    lower_limit: 20.0
+    type: Uniform
+    upper_limit: 45.0
+    width_modifier:
+      type: Absolute
+      value: 8.0
+voronoi.VoronoiBrightnessImage:
+  pixels:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 50.0
+    type: Uniform
+    upper_limit: 1500.0
+    width_modifier:
+      type: Absolute
+      value: 400.0
+  weight_floor:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 1.0
+    width_modifier:
+      type: Absolute
+      value: 0.1
+  weight_power:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 20.0
+    width_modifier:
+      type: Absolute
+      value: 5.0
+voronoi.VoronoiMagnification:
+  shape_0:
+    gaussian_limits:
+      lower: 3.0
+      upper: inf
+    lower_limit: 20.0
+    type: Uniform
+    upper_limit: 45.0
+    width_modifier:
+      type: Absolute
+      value: 8.0
+  shape_1:
+    gaussian_limits:
+      lower: 3.0
+      upper: inf
+    lower_limit: 20.0
+    type: Uniform
+    upper_limit: 45.0
+    width_modifier:
+      type: Absolute
+      value: 8.0

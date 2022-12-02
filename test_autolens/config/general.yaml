@@ -1,0 +1,40 @@
+analysis:
+  n_cores: 1
+  preload_attempts: 250
+fits:
+  flip_for_ds9: true
+grid:
+  remove_projected_centre: false
+  stochastic_histogram_bins: 2
+  stochastic_histogram_samples: 2
+hpc:
+  hpc_mode: false
+  iterations_per_update: 5000
+hyper:
+  hyper_minimum_percent: 0.01
+  hyper_noise_limit: 100000000.0
+  stochastic_outputs: false
+model:
+  ignore_prior_limits: true
+numba:
+  cache: true
+  nopython: true
+  parallel: false
+  use_numba: true
+output:
+  force_pickle_overwrite: false
+  identifier_version: 4
+  info_whitespace_length: 80
+  log_file: output.log
+  log_level: INFO
+  log_to_file: false
+  model_results_decimal_places: 3
+  remove_files: false
+  samples_to_csv: false
+profiling:
+  perform: true
+  repeats: 1
+test:
+  check_figure_of_merit_sanity: false
+  check_preloads: false
+  disable_positions_lh_inversion_check: false

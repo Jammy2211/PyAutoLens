@@ -1,0 +1,73 @@
+label:
+  label:
+    alpha: \alpha
+    beta: \beta
+    break_radius: \theta_{\rm B}
+    centre_0: y
+    centre_1: x
+    coefficient: \lambda
+    contribution_factor: \omega_{\rm 0}
+    core_radius: C_{\rm r}
+    core_radius_0: C_{rm r0}
+    core_radius_1: C_{\rm r1}
+    effective_radius: R_{\rm eff}
+    einstein_radius: \theta_{\rm Ein}
+    ell_comps_0: \epsilon_{\rm 1}
+    ell_comps_1: \epsilon_{\rm 2}
+    flux: F
+    gamma: \gamma
+    inner_coefficient: \lambda_{\rm 1}
+    inner_slope: t_{\rm 1}
+    intensity: I_{\rm b}
+    kappa: \kappa
+    kappa_s: \kappa_{\rm s}
+    mass_at_200: M_{\rm 200}
+    mass_to_light_gradient: \Gamma
+    mass_to_light_ratio: \Psi
+    noise_factor: \omega_{\rm 1}
+    noise_power: \omega{\rm 2}
+    noise_scale: \sigma_{\rm 1}
+    normalization_scale: n
+    outer_coefficient: \lambda_{\rm 2}
+    outer_slope: t_{\rm 2}
+    pixels: N_{\rm pix}
+    radius_break: R_{\rm b}
+    redshift: z
+    redshift_object: z_{\rm obj}
+    redshift_source: z_{\rm src}
+    scale_radius: R_{\rm s}
+    scatter: \sigma
+    sersic_index: n
+    shape_0: y_{\rm pix}
+    shape_1: x_{\rm pix}
+    sigma: \sigma
+    signal_scale: V
+    sky_scale: \sigma_{\rm 0}
+    slope: \gamma
+    truncation_radius: R_{\rm t}
+    weight_floor: W_{\rm f}
+    weight_power: W_{\rm p}
+  superscript:
+    ExternalShear: ext
+    HyperBackgroundNoise: hyper
+    HyperGalaxy: hyper
+    HyperImageSky: hyper
+    InputDeflections: defl
+    Pixelization: pix
+    Point: point
+    Redshift: ''
+    Regularization: reg
+label_format:
+  format:
+    angular_diameter_distance_to_earth: '{:.2f}'
+    concentration: '{:.2f}'
+    einstein_mass: '{:.4e}'
+    einstein_radius: '{:.2f}'
+    kpc_per_arcsec: '{:.2f}'
+    luminosity: '{:.4e}'
+    mass: '{:.4e}'
+    mass_at_truncation_radius: '{:.4e}'
+    radius: '{:.2f}'
+    redshift: '{:.2f}'
+    rho: '{:.2f}'
+    sersic_luminosity: '{:.4e}'

@@ -1,0 +1,491 @@
+Isothermal:
+  centre_0:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  centre_1:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  einstein_radius:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 4.0
+    width_modifier:
+      type: Relative
+      value: 0.05
+  ell_comps_0:
+    gaussian_limits:
+      lower: -1.0
+      upper: 1.0
+    lower_limit: -1.0
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: 1.0
+    width_modifier:
+      type: Absolute
+      value: 0.2
+  ell_comps_1:
+    gaussian_limits:
+      lower: '-1.0'
+      upper: '1.0'
+    lower_limit: -1.0
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: 1.0
+    width_modifier:
+      type: Absolute
+      value: 0.2
+IsothermalCore:
+  centre_0:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  centre_1:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  core_radius:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 0.2
+    width_modifier:
+      type: Absolute
+      value: 0.1
+  einstein_radius:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 4.0
+    width_modifier:
+      type: Relative
+      value: 0.05
+  ell_comps_0:
+    gaussian_limits:
+      lower: -1.0
+      upper: 1.0
+    lower_limit: -1.0
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: 1.0
+    width_modifier:
+      type: Absolute
+      value: 0.2
+  ell_comps_1:
+    gaussian_limits:
+      lower: '-1.0'
+      upper: '1.0'
+    lower_limit: -1.0
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: 1.0
+    width_modifier:
+      type: Absolute
+      value: 0.2
+IsothermalCoreSph:
+  centre_0:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  centre_1:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  core_radius:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 0.2
+    width_modifier:
+      type: Absolute
+      value: 0.1
+  einstein_radius:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 4.0
+    width_modifier:
+      type: Relative
+      value: 0.05
+IsothermalSph:
+  centre_0:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  centre_1:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  einstein_radius:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 4.0
+    width_modifier:
+      type: Relative
+      value: 0.05
+PointMass:
+  centre_0:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  centre_1:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  einstein_radius:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 8.0
+    width_modifier:
+      type: Relative
+      value: 0.25
+PowerLaw:
+  centre_0:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  centre_1:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  einstein_radius:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 4.0
+    width_modifier:
+      type: Relative
+      value: 0.05
+  ell_comps_0:
+    gaussian_limits:
+      lower: -1.0
+      upper: 1.0
+    lower_limit: -1.0
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: 1.0
+    width_modifier:
+      type: Absolute
+      value: 0.2
+  ell_comps_1:
+    gaussian_limits:
+      lower: '-1.0'
+      upper: '1.0'
+    lower_limit: -1.0
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: 1.0
+    width_modifier:
+      type: Absolute
+      value: 0.2
+  slope:
+    gaussian_limits:
+      lower: 1.0
+      upper: 3.0
+    lower_limit: 1.5
+    type: Uniform
+    upper_limit: 3.0
+    width_modifier:
+      type: Absolute
+      value: 0.2
+PowerLawCore:
+  centre_0:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  centre_1:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  core_radius:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 0.2
+    width_modifier:
+      type: Absolute
+      value: 0.1
+  einstein_radius:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 4.0
+    width_modifier:
+      type: Relative
+      value: 0.05
+  ell_comps_0:
+    gaussian_limits:
+      lower: -1.0
+      upper: 1.0
+    lower_limit: -1.0
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: 1.0
+    width_modifier:
+      type: Absolute
+      value: 0.2
+  ell_comps_1:
+    gaussian_limits:
+      lower: '-1.0'
+      upper: '1.0'
+    lower_limit: -1.0
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: 1.0
+    width_modifier:
+      type: Absolute
+      value: 0.2
+  slope:
+    gaussian_limits:
+      lower: 1.0
+      upper: 3.0
+    lower_limit: 1.5
+    type: Uniform
+    upper_limit: 3.0
+    width_modifier:
+      type: Absolute
+      value: 0.2
+PowerLawCoreSph:
+  centre_0:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  centre_1:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  core_radius:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 0.2
+    width_modifier:
+      type: Absolute
+      value: 0.1
+  einstein_radius:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 4.0
+    width_modifier:
+      type: Relative
+      value: 0.05
+  slope:
+    gaussian_limits:
+      lower: 1.0
+      upper: 3.0
+    lower_limit: 1.5
+    type: Uniform
+    upper_limit: 3.0
+    width_modifier:
+      type: Absolute
+      value: 0.2
+PowerLawSph:
+  centre_0:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  centre_1:
+    gaussian_limits:
+      lower: -inf
+      upper: inf
+    lower_limit: -inf
+    mean: 0.0
+    sigma: 0.3
+    type: Gaussian
+    upper_limit: inf
+    width_modifier:
+      type: Absolute
+      value: 0.05
+  einstein_radius:
+    gaussian_limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 4.0
+    width_modifier:
+      type: Relative
+      value: 0.05
+  slope:
+    gaussian_limits:
+      lower: 1.0
+      upper: 3.0
+    lower_limit: 1.5
+    type: Uniform
+    upper_limit: 3.0
+    width_modifier:
+      type: Absolute
+      value: 0.2
