@@ -1,0 +1,48 @@
+AbstractSersic:
+  angle:
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 180.0
+  axis_ratio:
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 1.0
+  centre_0:
+    lower_limit: -1.0
+    type: Uniform
+    upper_limit: 1.0
+  centre_1:
+    lower_limit: -1.0
+    type: Uniform
+    upper_limit: 1.0
+  effective_radius:
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 3.0
+  intensity:
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 1.0
+  sersic_index:
+    lower_limit: 0.6
+    type: Uniform
+    upper_limit: 8.0
+EllProfile:
+  angle:
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 2.0
+  axis_ratio:
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 2.0
+GeometryProfile:
+  centre_0:
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 1.0
+  centre_1:
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 1.0
+SphlProfile: {}

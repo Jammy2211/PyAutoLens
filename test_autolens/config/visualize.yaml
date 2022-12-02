@@ -1,0 +1,161 @@
+general:
+  general:
+    backend: default
+    imshow_origin: upper
+    zoom_around_mask: true
+  units:
+    in_kpc: true
+include:
+  include_2d:
+    border: true
+    caustics: false
+    critical_curves: false
+    grid: true
+    inversion_grid: true
+    light_profile_centres: true
+    mapper_data_mesh_grid: true
+    mapper_source_mesh_grid: true
+    mask: true
+    mass_profile_centres: true
+    multiple_images: false
+    origin: true
+    parallel_overscan: true
+    positions: true
+    serial_overscan: true
+    serial_prescan: true
+mat_wrap_2d:
+  CausticsLine:
+    figure:
+      c: w,g
+      linestyle: --
+      linewidth: 5
+    subplot:
+      c: g
+      linestyle: --
+      linewidth: 7
+  CriticalCurvesLine:
+    figure:
+      c: w,k
+      linestyle: '-'
+      linewidth: 4
+    subplot:
+      c: b
+      linestyle: '-'
+      linewidth: 6
+  LightProfileCentreScatter:
+    figure:
+      c: k,r
+      marker: +
+      s: 1
+    subplot:
+      c: b
+      marker: .
+      s: 15
+  MassProfileCentreScatter:
+    figure:
+      c: r,k
+      marker: x
+      s: 2
+    subplot:
+      c: k
+      marker: o
+      s: 16
+  MultipleImagesScatter:
+    figure:
+      c: k,w
+      marker: o
+      s: 3
+    subplot:
+      c: g
+      marker: .
+      s: 17
+plots:
+  dataset:
+    absolute_signal_to_noise_map: false
+    data: true
+    inverse_noise_map: true
+    noise_map: false
+    potential_chi_squared_map: true
+    signal_to_noise_map: false
+    subplot_dataset: true
+    uv_wavelengths: false
+  fit:
+    all_at_end_fits: true
+    all_at_end_png: false
+    chi_squared_map: true
+    data: true
+    model_data: true
+    model_images_of_planes: false
+    noise_map: false
+    normalized_residual_map: true
+    plane_images_of_planes: true
+    residual_map: false
+    signal_to_noise_map: false
+    subplot_fit: true
+    subplots_of_planes_fits: false
+    subtracted_images_of_planes: true
+  fit_imaging: {}
+  fit_interferometer:
+    amplitudes_vs_uv_distances: false
+    dirty_chi_squared_map: false
+    dirty_image: false
+    dirty_inverse_noise_map: false
+    dirty_noise_map: false
+    dirty_normalized_residual_map: false
+    dirty_residual_map: false
+    dirty_signal_to_noise_map: false
+    phases_vs_uv_distances: false
+    uv_wavelengths: false
+  fit_quantity:
+    all_at_end_fits: true
+    all_at_end_png: true
+    chi_squared_map: false
+    image: true
+    model_image: false
+    noise_map: false
+    residual_map: false
+    subplot_fit: true
+  galaxies:
+    convergence: false
+    image: false
+    potential: false
+  hyper:
+    contribution_map_list: true
+    fit_no_hyper: true
+    images_of_galaxies: true
+    model_image: true
+  imaging:
+    psf: true
+  interferometer:
+    amplitudes_vs_uv_distances: false
+    dirty_image: false
+    dirty_inverse_noise_map: false
+    dirty_noise_map: false
+    dirty_signal_to_noise_map: false
+    phases_vs_uv_distances: false
+    uv_wavelengths: false
+  inversion:
+    all_at_end_png: false
+    chi_squared_map: true
+    errors: false
+    normalized_residual_map: false
+    reconstructed_image: true
+    reconstruction: true
+    regularization_weights: false
+    residual_map: false
+    subplot_inversion: true
+  other:
+    stochastic_histogram: true
+  positions:
+    image_with_positions: true
+  ray_tracing:
+    all_at_end_fits: true
+    all_at_end_png: false
+    convergence: true
+    deflections: false
+    image: true
+    magnification: true
+    potential: false
+    source_plane_image: true
+    subplot_plane_images: true
+    subplot_ray_tracing: true

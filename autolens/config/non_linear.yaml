@@ -1,0 +1,77 @@
+nest:
+  DynestyDynamic:
+    initialize:
+      method: prior
+    parallel:
+      force_x1_cpu: false
+      number_of_cores: 1
+    printing:
+      silence: false
+    prior_passer:
+      sigma: 3.0
+      use_errors: true
+      use_widths: true
+    run:
+      dlogz_init: 0.01
+      logl_max_init: .inf
+      maxcall: null
+      maxcall_init: null
+      maxiter: null
+      maxiter_init: null
+      n_effective: .inf
+      n_effective_init: .inf
+      nlive_init: 500
+    search:
+      bootstrap: null
+      bound: multi
+      enlarge: null
+      facc: 0.2
+      first_update: null
+      fmove: 0.9
+      max_move: 100
+      sample: rwalk
+      slices: 5
+      update_interval: null
+      walks: 5
+    updates:
+      iterations_per_update: 2500
+      log_every_update: 1
+      model_results_every_update: 1
+      remove_state_files_at_end: true
+      visualize_every_update: 1
+  DynestyStatic:
+    initialize:
+      method: prior
+    parallel:
+      number_of_cores: 1
+    printing:
+      silence: false
+    prior_passer:
+      sigma: 3.0
+      use_errors: true
+      use_widths: true
+    run:
+      dlogz: null
+      logl_max: .inf
+      maxcall: null
+      maxiter: null
+      n_effective: null
+    search:
+      bootstrap: null
+      bound: multi
+      enlarge: null
+      facc: 0.2
+      first_update: null
+      fmove: 0.9
+      max_move: 100
+      nlive: 50
+      sample: rwalk
+      slices: 5
+      update_interval: null
+      walks: 5
+    updates:
+      iterations_per_update: 5000
+      log_every_update: 1
+      model_results_every_update: 1
+      remove_state_files_at_end: true
+      visualize_every_update: 1
