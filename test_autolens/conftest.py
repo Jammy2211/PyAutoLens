@@ -9,6 +9,7 @@ from matplotlib import pyplot
 from autofit import conf
 from autolens import fixtures
 
+
 class PlotPatch:
     def __init__(self):
         self.paths = []

@@ -10,10 +10,7 @@ mock:
       use_widths: true
     updates:
       iterations_per_update: 2500
-      log_every_update: 1
-      model_results_every_update: 1
       remove_state_files_at_end: true
-      visualize_every_update: 1
   MockSearch:
     initialize:
       method: prior
@@ -26,10 +23,7 @@ mock:
     search: {}
     updates:
       iterations_per_update: 2500
-      log_every_update: 1
-      model_results_every_update: 1
       remove_state_files_at_end: true
-      visualize_every_update: 1
 nest:
   DynestyDynamic:
     general:
@@ -59,10 +53,7 @@ nest:
       use_widths: true
     updates:
       iterations_per_update: 2500
-      log_every_update: 1
-      model_results_every_update: 1
       remove_state_files_at_end: true
-      visualize_every_update: 1
   DynestyStatic:
     initialize:
       method: prior
@@ -94,10 +85,7 @@ nest:
       walks: 5
     updates:
       iterations_per_update: 2500
-      log_every_update: 1
-      model_results_every_update: 1
       remove_state_files_at_end: true
-      visualize_every_update: 1
     hyper_galaxy:
       const_efficiency_mode: false
       evidence_tolerance: 0.1
@@ -143,7 +131,4 @@ nest:
       write_output: true
     updates:
       iterations_per_update: 2500
-      log_every_update: 1
-      model_results_every_update: 1
       remove_state_files_at_end: true
-      visualize_every_update: 1
