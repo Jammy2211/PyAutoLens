@@ -1,4 +1,4 @@
-autoconf==2022.11.26.11
+autoconf
 numba
 pyprojroot==0.2.0
 sphinx==5.2.3

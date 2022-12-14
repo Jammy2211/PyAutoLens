@@ -27,7 +27,7 @@ class FitPositionsImage(aa.FitDataset):
         their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
 
         Parameters
-        -----------
+        ----------
         positions : Grid2DIrregular
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
         noise_value

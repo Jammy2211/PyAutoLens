@@ -246,7 +246,16 @@ strong gravitational lensing with **PyAutoLens**.
    :maxdepth: 1
    :hidden:
 
-   api/api
+   api/data
+   api/light
+   api/mass
+   api/galaxy
+   api/fitting
+   api/modeling
+   api/pixelization
+   api/point
+   api/plot
+   api/source
 
 .. toctree::
    :caption: Advanced:

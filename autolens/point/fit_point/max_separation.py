@@ -20,7 +20,7 @@ class AbstractFitPositionsSourcePlane:
         value in different ways.
 
         Parameters
-        -----------
+        ----------
         positions : Grid2DIrregular
             The (y,x) arc-second coordinates of named positions which the log_likelihood is computed using. Positions
             are paired to galaxies in the `Tracer` using their names.
@@ -76,7 +76,7 @@ class FitPositionsSourceMaxSeparation(AbstractFitPositionsSourcePlane):
         their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
 
         Parameters
-        -----------
+        ----------
         positions : Grid2DIrregular
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
         noise_value

@@ -56,7 +56,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         is called and returned in the `log_likelihood_function`.
 
         Parameters
-        -----------
+        ----------
         dataset
             The imaging dataset which is fitted by the galaxies in the tracer.
         tracer
