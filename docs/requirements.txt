@@ -7,3 +7,4 @@ myst-parser
 sphinx_copybutton
 sphinx_design
 sphinx_inline_tabs
+sphinx_autodoc_typehints
