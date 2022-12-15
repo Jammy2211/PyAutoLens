@@ -58,7 +58,7 @@ For unit tests to pass you will also need the following optional requirements:
 
 .. code-block:: bash
 
-    pip install pynufft==2020.2.7
+    pip install pynufft
     pip install pylops==1.11.1
 
 If you are using a ``conda`` environment, add the source repository as follows:

@@ -1,6 +1,6 @@
 numba
 pylops>=1.10.0,<=1.18.3
-pynufft==2020.2.7
+pynufft
 ultranest==3.2.0
 zeus-mcmc==2.4.1
 getdist==1.4

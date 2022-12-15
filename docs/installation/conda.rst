@@ -105,7 +105,7 @@ For interferometer analysis there are two optional dependencies that must be ins
 
 .. code-block:: bash
 
-    pip install pynufft==2020.2.7
+    pip install pynufft
     pip install pylops==1.11.1
 
 **PyAutoLens** will run without these libraries and it is recommended that you only install them if you intend to
