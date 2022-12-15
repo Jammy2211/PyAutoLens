@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+import os
 from typing import Optional, Union
 
 import autofit as af
@@ -127,20 +128,22 @@ class AnalysisInterferometer(AnalysisDataset):
 
         if not paths.is_complete:
 
-            visualizer = VisualizerInterferometer(visualize_path=paths.image_path)
+            if not os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
 
-            visualizer.visualize_interferometer(interferometer=self.interferometer)
+                visualizer = VisualizerInterferometer(visualize_path=paths.image_path)
 
-            if self.positions_likelihood is not None:
-                visualizer.visualize_image_with_positions(
-                    image=self.interferometer.dirty_image,
-                    positions=self.positions_likelihood.positions,
+                visualizer.visualize_interferometer(interferometer=self.interferometer)
+
+                if self.positions_likelihood is not None:
+                    visualizer.visualize_image_with_positions(
+                        image=self.interferometer.dirty_image,
+                        positions=self.positions_likelihood.positions,
+                    )
+
+                visualizer.visualize_hyper_images(
+                    hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
+                    hyper_model_image=self.hyper_model_image,
                 )
-
-            visualizer.visualize_hyper_images(
-                hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
-                hyper_model_image=self.hyper_model_image,
-            )
 
             logger.info(
                 "PRELOADS - Setting up preloads, may take a few minutes for fits using an inversion."
@@ -483,6 +486,10 @@ class AnalysisInterferometer(AnalysisDataset):
             If True the visualization is being performed midway through the non-linear search before it is finished,
             which may change which images are output.
         """
+
+        if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
+            return
+
         instance = self.instance_with_associated_hyper_images_from(instance=instance)
 
         fit = self.fit_interferometer_via_instance_from(instance=instance)
