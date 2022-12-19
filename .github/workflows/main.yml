@@ -1,4 +1,4 @@
-name: Run unittests
+name: Tests
 
 on: [push, pull_request]
 

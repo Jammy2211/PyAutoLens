@@ -11,6 +11,12 @@ PyAutoLens: Open-Source Strong Lensing
     :target: https://pyautolens.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. |Tests| image:: https://github.com/Jammy2211/PyAutoLens/actions/workflows/main.yml/badge.svg
+   :target: https://github.com/Jammy2211/PyAutoLens/actions
+
+.. |Build| image:: https://github.com/Jammy2211/PyAutoBuild/actions/workflows/release.yml/badge.svg
+   :target: https://github.com/Jammy2211/PyAutoBuild/actions
+
 .. |code-style| image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
 
@@ -20,7 +26,7 @@ PyAutoLens: Open-Source Strong Lensing
 .. |arXiv| image:: https://img.shields.io/badge/arXiv-1708.07377-blue
     :target: https://arxiv.org/abs/1708.07377
 
-|binder| |RTD| |code-style| |JOSS| |arXiv|
+|binder| |RTD| |Tests| |Build| |code-style| |JOSS| |arXiv|
 
 `Installation Guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ |
 `readthedocs <https://pyautolens.readthedocs.io/en/latest/index.html>`_ |
