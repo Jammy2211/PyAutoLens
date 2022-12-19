@@ -36,15 +36,15 @@ Point Spread Function (PSF) by passing it a tracer and grid:
 
 Here is what our dataset looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/simulating/image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/simulating/image.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/simulating/noise_map.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/simulating/noise_map.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/simulating/psf.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/simulating/psf.png
   :width: 400
   :alt: Alternative text
 
@@ -56,19 +56,19 @@ physical properties and for creating imaging datasets for a variety of telescope
 
 Below, we show what a strong lens looks like for different instruments.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/simulating/vro_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/simulating/vro_image.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/simulating/euclid_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/simulating/euclid_image.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/simulating/hst_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/simulating/hst_image.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/simulating/ao_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/simulating/ao_image.png
   :width: 400
   :alt: Alternative text
 

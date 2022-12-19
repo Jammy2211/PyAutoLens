@@ -57,11 +57,11 @@ Now how in the r-band, the lens outshines the source, whereas in the g-band the 
 The different variation of the colors of the lens and source across wavelength is a powerful tool for lensing modeling,
 as it helps deblend the two objects.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/multiwavelength/r_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/r_image.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/multiwavelength/g_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/g_image.png
   :width: 400
   :alt: Alternative text
 
@@ -182,11 +182,11 @@ different intensities.
         )
         tracer_plotter.subplot_tracer()
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/multiwavelength/r_tracer.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/r_tracer.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/multiwavelength/g_tracer.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/g_tracer.png
   :width: 400
   :alt: Alternative text
 
@@ -263,11 +263,11 @@ A number of benefits are apparently if we combine the analysis of both datasets 
 
  - The source galaxy appears completely different in the g-band and at sub-millimeter wavelengths, providing a lot more information with which to constrain the lens galaxy mass model.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/multiwavelength/dirty_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/dirty_image.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/multiwavelength/g_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/g_image.png
   :width: 400
   :alt: Alternative text
 

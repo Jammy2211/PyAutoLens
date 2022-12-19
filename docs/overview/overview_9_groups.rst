@@ -7,7 +7,7 @@ The strong lenses we've discussed so far have just a single lens galaxy responsi
 source galaxy observed to be lensed. A strong lensing group is a system where there are multiple lens galaxies,
 deflecting the one or more background sources:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/groups/image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/groups/image.png
   :width: 400
   :alt: Alternative text
 
@@ -92,11 +92,11 @@ of a pixelized source reconstruction.
 This will extract a lot more information from the data than the point-source model and the source reconstruction means
 that you can study the properties of the highly magnified source galaxy. Here is what the fit looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/groups/fit_group.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/groups/fit_group.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/groups/source_group.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/groups/source_group.png
   :width: 400
   :alt: Alternative text
 

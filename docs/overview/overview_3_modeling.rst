@@ -9,7 +9,7 @@ We can use a ``Tracer`` to fit data of a strong lens and quantify its goodness-o
 Of course, when observe an image of a strong lens, we have no idea what combination of
 ``LightProfile``'s and ``MassProfiles``'s will produce a model-image that looks like the strong lens we observed:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/fitting/image.png
   :width: 400
   :alt: Alternative text
 
@@ -324,7 +324,7 @@ make a corner plot of the probability density function (PDF):
 
 Here is an example of how a PDF estimated for a lens model appears:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/modeling/cornerplot.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/modeling/cornerplot.png
   :width: 600
   :alt: Alternative text
 
@@ -342,7 +342,7 @@ plotted.
 Here's what the model-fit of the model which maximizes the log likelihood looks like, providing good residuals and
 low chi-squared values:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/fitting/subplot_fit.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/fitting/subplot_fit.png
   :width: 600
   :alt: Alternative text
 

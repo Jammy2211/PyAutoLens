@@ -12,11 +12,11 @@ models to be estimated.
 This is due to demagnified source reconstructions, where the source is reconstructed as the lensed source galaxy
 (without any lensing):
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/general/images/data.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/general/images/data.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/general/images/model_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/general/images/model_image.png
   :width: 400
   :alt: Alternative text
 
@@ -30,13 +30,13 @@ models with **too much mass**, such that the ray-tracing inverts in on itself.
 The following schematic is from the paper Maresca et al 2021 (https://arxiv.org/abs/2012.04665) and illustrates
 this beautifully:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/general/images/maresca_fig1.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/general/images/maresca_fig1.png
   :width: 400
   :alt: Alternative text
 
 The source reconstructions and model-fits of these solutions are also illustrated by Maresca et al 2021:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/general/images/maresca_fig2.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/general/images/maresca_fig2.png
   :width: 400
   :alt: Alternative text
 
@@ -63,7 +63,7 @@ First, we specify the locations of the lensed source's multiple images, which th
 Here is where the multiple images appear for an example strong lens, where multiple images are drawn on with black
 stars:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/general/images/lensed_source.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/general/images/lensed_source.png
   :width: 400
   :alt: Alternative text
 

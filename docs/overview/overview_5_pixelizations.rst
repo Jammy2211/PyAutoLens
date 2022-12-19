@@ -9,7 +9,7 @@ called an ``Inversion``.
 Lets use a ``Pixelization`` to reconstruct the source-galaxy of the image below, noting how complex the lensed source
 appears, with multiple rings and clumps of light:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/pixelizations/image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/pixelizations/image.png
   :width: 400
   :alt: Alternative text
 
@@ -57,7 +57,7 @@ the lensed source's light using the ``Inversion``:
 
 Here is what our reconstructed source galaxy looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/pixelizations/rectangular.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/pixelizations/rectangular.png
   :width: 400
   :alt: Alternative text
 
@@ -66,7 +66,7 @@ to represent using analytic light profiles!
 
 The source reconstruction can be mapped back to the image-plane, to produce a reconstructed image:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/pixelizations/reconstructed_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/pixelizations/reconstructed_image.png
   :width: 400
   :alt: Alternative text
 
@@ -79,14 +79,14 @@ defines the source-pixel centres in the image-plane and ray traces them to the s
 The source pixel-grid is therefore adapted to the mass-model magnification pattern, placing more source-pixel in the
 highly magnified regions of the source-plane.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/pixelizations/voronoi.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/pixelizations/voronoi.png
   :width: 400
   :alt: Alternative text
 
 By inspecting the residual-map, normalized residual-map and chi-squared-map of the ``FitImaging`` object, we can see
 how the source reconstruction accurately fits the image of the strong lens:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/pixelizations/voronoi_fit.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/pixelizations/voronoi_fit.png
   :width: 600
   :alt: Alternative text
 

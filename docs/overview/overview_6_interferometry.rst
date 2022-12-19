@@ -44,11 +44,11 @@ for an ``Imaging`` object.
 
 Here is what the interferometer visibilities and uv wavelength (which represent the interferometer's baselines):
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/visibilities.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/visibilities.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/uv_wavelengths.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/uv_wavelengths.png
   :width: 400
   :alt: Alternative text
 
@@ -66,11 +66,11 @@ This can also plot the dataset in real-space, using the fast Fourier transforms 
 
 Here is what the image and signal-to-noise map look like in real space:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/dirty_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/dirty_image.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/dirty_signal_to_noise_map.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/dirty_signal_to_noise_map.png
   :width: 400
   :alt: Alternative text
 
@@ -124,19 +124,19 @@ The interferometer can now be passed to a ``FitInterferometer`` object to fit it
 
 Here is what the image of the tracer looks like before it is Fourier transformed to the uv-plane:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/image_pre_ft.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/image_pre_ft.png
   :width: 400
   :alt: Alternative text
 
 And here is what the Fourier transformed model visibilities look like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/model_visibilities.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/model_visibilities.png
   :width: 400
   :alt: Alternative text
 
 Here is what the fit of the galaxy looks like in real space (which is computed via a FFT from the uv-plane):
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/fit_dirty_images.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/fit_dirty_images.png
   :width: 400
   :alt: Alternative text
 
@@ -148,7 +148,7 @@ directly fitting the visibilities in the uv-plane.
 
 The source reconstruction is visualized in real space:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/interferometry/reconstruction.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/reconstruction.png
   :width: 400
   :alt: Alternative text
 

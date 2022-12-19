@@ -15,7 +15,7 @@ now find the locations the point-source's multiple images appear in the image-pl
 Here is an example of a compact source that has been simulated in **PyAutoLens**, with the positions of its four
 multiple images marked using stars:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/docs/overview/images/point_sources/image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/point_sources/image.png
   :width: 400
   :alt: Alternative text
 
