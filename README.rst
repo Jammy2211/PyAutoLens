@@ -27,7 +27,7 @@ When two or more galaxies are aligned perfectly down our line-of-sight, the back
 This is called strong gravitational lensing and **PyAutoLens** makes it simple to model strong gravitational lenses,
 like this one:
 
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/files/imageaxis.png
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/files/imageaxis.png?raw=true
 
 Getting Started
 ---------------
