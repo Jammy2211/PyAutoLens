@@ -53,7 +53,7 @@ which is loaded as follows:
 
 This .json file contains all the information on this particular lens's model, including priors which adjust their
 centre to the centre of light of each lens galaxy. The script used to make the model can be viewed at
-the `following link <https://github.com/Jammy2211/autolens_workspace/blob/master/scripts/group/model_maker/lens_x3__source_x1.py>`_.
+the `following link <https://github.com/Jammy2211/autolens_workspace/blob/main/scripts/group/model_maker/lens_x3__source_x1.py>`_.
 
 Lens Modeling
 -------------
@@ -102,7 +102,7 @@ that you can study the properties of the highly magnified source galaxy. Here is
 
 This type of modeling uses a lot of **PyAutoLens**'s advanced model-fitting features which are described in chapters 3
 and 4 of the **HowToLens** tutorials. An example performing this analysis to the lens above can be found
-at `this link. <https://github.com/Jammy2211/autolens_workspace/blob/master/notebooks/group/chaining/point_source_to_imaging.ipynb>`_
+at `this link. <https://github.com/Jammy2211/autolens_workspace/blob/main/notebooks/group/chaining/point_source_to_imaging.ipynb>`_
 
 Wrap-Up
 -------

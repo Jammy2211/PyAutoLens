@@ -25,7 +25,7 @@ imaged source galaxy whose light has been distorted into an 'Einstein ring'. The
 reconstructions of the source's lensed and unlensed light distributions, which are created using a model of the lens
 galaxy's mass to trace backwards how the source's light is gravitationally lensed.
 
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/master/files/imageaxis.png?raw=true
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/files/imageaxis.png?raw=true
 
 Strong lensing provides astronomers with an invaluable tool to study a diverse range of topics, including the
 `structure of galaxies <https://academic.oup.com/mnras/article-abstract/489/2/2049/5550746>`_,

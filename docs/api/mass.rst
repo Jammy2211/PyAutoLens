@@ -37,6 +37,18 @@ Mass Sheets [ag.mp]
    ExternalShear
    MassSheet
 
+Multipoles [ag.mp]
+------------------
+
+.. currentmodule:: autogalaxy.profiles.mass
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-class-template.rst
+   :recursive:
+
+   MultipolePowerLawM4
+
 Stellar [ag.mp]
 ---------------
 

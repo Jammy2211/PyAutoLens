@@ -14,6 +14,8 @@ label:
     einstein_radius: \theta_{\rm Ein}
     ell_comps_0: \epsilon_{\rm 1}
     ell_comps_1: \epsilon_{\rm 2}
+    ell_comps_multipole_0: M_{\rm 1}
+    ell_comps_multipole_1: M_{\rm 2}
     flux: F
     gamma: \gamma
     inner_coefficient: \lambda_{\rm 1}

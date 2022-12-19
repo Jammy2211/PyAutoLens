@@ -36,7 +36,7 @@ setup(
     version=version,
     description="Open-Source Strong Lensing",
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/x-rst",
     url="https://github.com/Jammy2211/PyAutoLens",
     author="James Nightingale and Richard Hayes",
     author_email="james.w.nightingale@durham.ac.uk",

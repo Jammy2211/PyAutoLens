@@ -2,6 +2,11 @@
 Source Code
 ===========
 
+This page provided API docs for functionality which is typically not used by users, but is used internally in the
+**PyAutoGalaxy** source code.
+
+These docs are intended for developers, or users doing non-standard computations using internal **PyAutoFit** objects.
+
 Geometry Profiles
 -----------------
 

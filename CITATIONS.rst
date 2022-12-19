@@ -4,9 +4,9 @@ Citations & References
 ======================
 
 The bibtex entries for **PyAutoLens** and its affiliated software packages can be found
-`here <https://github.com/Jammy2211/PyAutoLens/blob/master/files/citations.bib>`_, with example text for citing **PyAutoLens**
-in `.tex format here <https://github.com/Jammy2211/PyAutoLens/blob/master/files/citations.tex>`_ format here and
-`.md format here <https://github.com/Jammy2211/PyAutoLens/blob/master/files/citations.md>`_. As shown in the examples, we
+`here <https://github.com/Jammy2211/PyAutoLens/blob/main/files/citations.bib>`_, with example text for citing **PyAutoLens**
+in `.tex format here <https://github.com/Jammy2211/PyAutoLens/blob/main/files/citations.tex>`_ format here and
+`.md format here <https://github.com/Jammy2211/PyAutoLens/blob/main/files/citations.md>`_. As shown in the examples, we
 would greatly appreciate it if you mention **PyAutoLens** by name and include a link to our GitHub page!
 
 **PyAutoLens** is published in the `Journal of Open Source Software <https://joss.theoj.org/papers/10.21105/joss.02825#>`_ and its

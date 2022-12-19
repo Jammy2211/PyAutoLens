@@ -83,8 +83,8 @@ For this cluster, we therefore composed the the model by interfacing with Source
 (https://sextract.readthedocs.io/) catalogue files. A full illustration of how to make the lens and source models
 from catalogue files is given at the following links:
 
- `lenses <https://github.com/Jammy2211/autolens_workspace/blob/master/scripts/cluster/model_maker/example__lenses.py>`_
- `sources <https://github.com/Jammy2211/autolens_workspace/blob/master/scripts/cluster/model_maker/example__sources.py>`_
+ `lenses <https://github.com/Jammy2211/autolens_workspace/blob/main/scripts/cluster/model_maker/example__lenses.py>`_
+ `sources <https://github.com/Jammy2211/autolens_workspace/blob/main/scripts/cluster/model_maker/example__sources.py>`_
 
 These files can be easily altered to compose a cluster model suited to your lens
 dataset!
