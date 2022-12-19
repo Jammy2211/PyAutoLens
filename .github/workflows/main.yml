@@ -66,7 +66,7 @@ jobs:
         pip3 install --upgrade pip
         pip3 install setuptools
         pip3 install wheel
-        pip3 install pytest
+        pip3 install pytest coverage pytest-cov
         pip3 install -r PyAutoConf/requirements.txt
         pip3 install -r PyAutoFit/requirements.txt
         pip3 install -r PyAutoArray/requirements.txt
@@ -82,7 +82,7 @@ jobs:
         export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoGalaxy
         export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoLens
         pushd PyAutoLens
-        pytest
+        pytest --cov autolens --cov-report xml:coverage.xml
     - name: Slack send
       if: ${{ failure() }}
       id: slack
