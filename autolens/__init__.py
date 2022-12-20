@@ -48,7 +48,9 @@ from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autogalaxy import cosmology as cosmo
 from autogalaxy.gui.clicker import Clicker
 from autogalaxy.gui.scribbler import Scribbler
-from autogalaxy.galaxy.galaxy import Galaxy, HyperGalaxy, Redshift
+from autogalaxy.galaxy.galaxy import Galaxy
+from autogalaxy.galaxy.hyper import HyperGalaxy
+from autogalaxy.galaxy.redshift import Redshift
 from autogalaxy.analysis.clump_model import ClumpModel
 from autogalaxy.analysis.clump_model import ClumpModelDisabled
 
