@@ -9,6 +9,8 @@ from autofit.tools.util import open_
 
 import autogalaxy as ag
 
+from autogalaxy.analysis.analysis import AnalysisDataset
+
 from autolens.lens.ray_tracing import Tracer
 from autolens.point.fit_point.max_separation import FitPositionsSourceMaxSeparation
 
@@ -50,7 +52,7 @@ class AbstractPositionsLH:
         self.threshold = threshold
 
     def log_likelihood_function_positions_overwrite(
-        self, instance: af.ModelInstance, analysis: "AnalysisDataset"
+        self, instance: af.ModelInstance, analysis: AnalysisDataset
     ) -> Optional[float]:
         raise NotImplementedError
 
@@ -117,7 +119,7 @@ class PositionsLHResample(AbstractPositionsLH):
     """
 
     def log_likelihood_function_positions_overwrite(
-        self, instance: af.ModelInstance, analysis: "AnalysisDataset"
+        self, instance: af.ModelInstance, analysis: AnalysisDataset
     ) -> Optional[float]:
         """
         This is called in the `log_likelihood_function` of certain `Analysis` classes to add the penalty term of
@@ -273,7 +275,7 @@ class PositionsLHPenalty(AbstractPositionsLH):
             )
 
     def log_likelihood_function_positions_overwrite(
-        self, instance: af.ModelInstance, analysis: "AnalysisDataset"
+        self, instance: af.ModelInstance, analysis: AnalysisDataset
     ) -> Optional[float]:
         """
         This is called in the `log_likelihood_function` of certain `Analysis` classes to add the penalty term of
