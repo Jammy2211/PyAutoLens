@@ -12,10 +12,10 @@ class ResultImaging(ResultDataset):
     which includes:
 
     - The samples of the non-linear search (E.g. MCMC chains, nested sampling samples) which are used to compute
-    the maximum likelihood model, posteriors and other properties.
+      the maximum likelihood model, posteriors and other properties.
 
     - The model used to fit the data, which uses the samples to create specific instances of the model (e.g.
-    an instance of the maximum log likelihood model).
+      an instance of the maximum log likelihood model).
 
     - The non-linear search used to perform the model fit.
 

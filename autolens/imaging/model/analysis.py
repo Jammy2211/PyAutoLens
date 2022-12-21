@@ -39,7 +39,7 @@ class AnalysisImaging(AnalysisDataset):
         This function:
 
         - Checks that the hyper-dataset is consistent with previous hyper-datasets if the model-fit is being
-        resumed from a previous run.
+          resumed from a previous run.
 
         - Checks the model and raises exceptions if certain critieria are not met.
 
@@ -89,17 +89,17 @@ class AnalysisImaging(AnalysisDataset):
         For this analysis class, this function performs the following steps:
 
         1) If the analysis has a hyper dataset, associated the model galaxy images of this dataset to the galaxies in
-        the model instance.
+           the model instance.
 
         2) Extract attributes which model aspects of the data reductions, like the scaling the background sky
-        and background noise.
+           and background noise.
 
         3) Extracts all galaxies from the model instance and set up a `Tracer`, which includes ordering the galaxies
-        by redshift to set up each `Plane`.
+           by redshift to set up each `Plane`.
 
         4) Use the `Tracer` and other attributes to create a `FitImaging` object, which performs steps such as creating
-        model images of every galaxy in the tracer, blurring them with the imaging dataset's PSF and computing
-        residuals, a chi-squared statistic and the log likelihood.
+           model images of every galaxy in the tracer, blurring them with the imaging dataset's PSF and computing
+           residuals, a chi-squared statistic and the log likelihood.
 
         Certain models will fail to fit the dataset and raise an exception. For example if an `Inversion` is used, the
         linear algebra calculation may be invalid and raise an Exception. In such circumstances the model is discarded
@@ -421,13 +421,13 @@ class AnalysisImaging(AnalysisDataset):
         - Images of the best-fit `Tracer`, including the images of each of its galaxies.
 
         - Images of the best-fit `FitImaging`, including the model-image, residuals and chi-squared of its fit to
-        the imaging data.
+          the imaging data.
 
         - The hyper-images of the model-fit showing how the hyper galaxies are used to represent different galaxies in
-        the dataset.
+          the dataset.
 
         - If hyper features are used to scale the noise or background sky, a `FitImaging` with these features turned
-        off may be output, to indicate how much these features are altering the dataset.
+          off may be output, to indicate how much these features are altering the dataset.
 
         The images output by this function are customized using the file `config/visualize/plots.ini`.
 
@@ -512,10 +512,10 @@ class AnalysisImaging(AnalysisDataset):
         After the non-linear search is complete create its `Result`, which includes:
 
         - The samples of the non-linear search (E.g. MCMC chains, nested sampling samples) which are used to compute
-        the maximum likelihood model, posteriors and other properties.
+          the maximum likelihood model, posteriors and other properties.
 
         - The model used to fit the data, which uses the samples to create specific instances of the model (e.g.
-        an instance of the maximum log likelihood model).
+          an instance of the maximum log likelihood model).
 
         - The non-linear search used to perform the model fit.
 
@@ -559,8 +559,8 @@ class AnalysisImaging(AnalysisDataset):
         - Its mask.
         - The positions of the brightest pixels in the lensed source which are used to discard mass models.
         - The preloaded image-plane source plane pixelization if used by the analysis. This ensures that differences in
-        the scikit-learn library do not lead to different pixelizations being computed if results are transferred from
-        a HPC to laptop.
+          the scikit-learn library do not lead to different pixelizations being computed if results are transferred from
+          a HPC to laptop.
 
         It is common for these attributes to be loaded by many of the template aggregator functions given in the
         `aggregator` modules. For example, when using the database tools to perform a fit, the default behaviour is for

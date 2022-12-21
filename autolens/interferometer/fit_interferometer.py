@@ -33,19 +33,19 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         1) Compute the sum of all images of galaxy light profiles in the `Tracer`.
 
         2) Fourier transform this image with the transformer object and `uv_wavelengths` to create
-        the `profile_visibilities`.
+           the `profile_visibilities`.
 
         3) Subtract these visibilities from the `data` to create the `profile_subtracted_visibilities`.
 
         4) If the `Tracer` has any linear algebra objects (e.g. linear light profiles, a pixelization / regulariation)
-        fit the `profile_subtracted_visibilities` with these objects via an inversion.
+           fit the `profile_subtracted_visibilities` with these objects via an inversion.
 
         5) Compute the `model_data` as the sum of the `profile_visibilities` and `reconstructed_data` of the inversion
-        (if an inversion is not performed the `model_data` is only the `profile_visibilities`.
+           (if an inversion is not performed the `model_data` is only the `profile_visibilities`.
 
         6) Subtract the `model_data` from the data and compute the residuals, chi-squared and likelihood via the
-        noise-map (if an inversion is performed the `log_evidence`, including addition terms describing the linear
-        algebra solution, is computed).
+           noise-map (if an inversion is performed the `log_evidence`, including addition terms describing the linear
+           algebra solution, is computed).
 
         When performing a model-fit` via ` AnalysisInterferometer` object the `figure_of_merit` of
         this `FitInterferometer` object is called and returned in the `log_likelihood_function`.
@@ -185,7 +185,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
 
         - The images of all ordinary light profiles in that tracer summed.
         - The images of all linear objects (e.g. linear light profiles / pixelizations), where the images are solved
-        for first via the inversion.
+          for first via the inversion.
 
         For modeling, this dictionary is used to set up the `hyper_images` that adapt certain pixelizations to the
         data being fitted.
@@ -206,9 +206,9 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         These visibilities are the sum of:
 
         - The visibilities of all ordinary light profiles in that tracer summed and Fourier transformed to visibilities
-        space.
+          space.
         - The visibilities of all linear objects (e.g. linear light profiles / pixelizations), where the visibilities
-        are solved for first via the inversion.
+          are solved for first via the inversion.
 
         For modeling, this dictionary is used to set up the `hyper_visibilities` that adapt certain pixelizations to the
         data being fitted.
@@ -232,7 +232,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
 
         - The images of all ordinary light profiles in that plane summed and convolved with the imaging data's PSF.
         - The images of all linear objects (e.g. linear light profiles / pixelizations), where the images are solved
-        for first via the inversion.
+          for first via the inversion.
 
         This is used to visualize the different contibutions of light from the image-plane, source-plane and other
         planes in a fit.

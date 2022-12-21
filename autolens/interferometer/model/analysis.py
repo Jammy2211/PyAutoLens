@@ -229,17 +229,17 @@ class AnalysisInterferometer(AnalysisDataset):
         For this analysis class, this function performs the following steps:
 
         1) If the analysis has a hyper dataset, associated the model galaxy images of this dataset to the galaxies in
-        the model instance.
+           the model instance.
 
         2) Extract attributes which model aspects of the data reductions, like the scaling the background sky
-        and background noise.
+           and background noise.
 
         3) Extracts all galaxies from the model instance and set up a `Tracer`, which includes ordering the galaxies
-        by redshift to set up each `Plane`.
+           by redshift to set up each `Plane`.
 
         4) Use the `Tracer` and other attributes to create a `FitInterferometer` object, which performs steps such as
-        creating model images of every galaxy in the plane, transforming them to the uv-plane via a Fourier transform
-        and computing residuals, a chi-squared statistic and the log likelihood.
+           creating model images of every galaxy in the plane, transforming them to the uv-plane via a Fourier transform
+           and computing residuals, a chi-squared statistic and the log likelihood.
 
         Certain models will fail to fit the dataset and raise an exception. For example if an `Inversion` is used, the
         linear algebra calculation may be invalid and raise an Exception. In such circumstances the model is discarded
@@ -464,13 +464,13 @@ class AnalysisInterferometer(AnalysisDataset):
         - Images of the best-fit `Tracer`, including the images of each of its galaxies.
 
         - Images of the best-fit `FitInterferometer`, including the model-image, residuals and chi-squared of its fit
-        to the imaging data.
+          to the imaging data.
 
         - The hyper-images of the model-fit showing how the hyper galaxies are used to represent different galaxies in
-        the dataset.
+          the dataset.
 
         - If hyper features are used to scale the noise, a `FitInterferometer` with these features turned off may be
-        output, to indicate how much these features are altering the dataset.
+          output, to indicate how much these features are altering the dataset.
 
         The images output by this function are customized using the file `config/visualize/plots.ini`.
 
@@ -559,10 +559,10 @@ class AnalysisInterferometer(AnalysisDataset):
         After the non-linear search is complete create its `Result`, which includes:
 
         - The samples of the non-linear search (E.g. MCMC chains, nested sampling samples) which are used to compute
-        the maximum likelihood model, posteriors and other properties.
+          the maximum likelihood model, posteriors and other properties.
 
         - The model used to fit the data, which uses the samples to create specific instances of the model (e.g.
-        an instance of the maximum log likelihood model).
+          an instance of the maximum log likelihood model).
 
         - The non-linear search used to perform the model fit.
 

@@ -43,14 +43,14 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         3) Subtract this image from the `data` to create the `profile_subtracted_image`.
 
         4) If the `Tracer` has any linear algebra objects (e.g. linear light profiles, a pixelization / regulariation)
-        fit the `profile_subtracted_image` with these objects via an inversion.
+           fit the `profile_subtracted_image` with these objects via an inversion.
 
         5) Compute the `model_data` as the sum of the `blurred_image` and `reconstructed_data` of the inversion (if
-        an inversion is not performed the `model_data` is only the `blurred_image`.
+           an inversion is not performed the `model_data` is only the `blurred_image`.
 
         6) Subtract the `model_data` from the data and compute the residuals, chi-squared and likelihood via the
-        noise-map (if an inversion is performed the `log_evidence`, including additional terms describing the linear
-        algebra solution, is computed).
+           noise-map (if an inversion is performed the `log_evidence`, including additional terms describing the linear
+           algebra solution, is computed).
 
         When performing a `model-fit`via an `AnalysisImaging` object the `figure_of_merit` of this `FitImaging` object
         is called and returned in the `log_likelihood_function`.
@@ -210,7 +210,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         - The images of all ordinary light profiles in that plane summed and convolved with the imaging data's PSF.
         - The images of all linear objects (e.g. linear light profiles / pixelizations), where the images are solved
-        for first via the inversion.
+          for first via the inversion.
 
         For modeling, this dictionary is used to set up the `hyper_images` that adapt certain pixelizations to the
         data being fitted.
@@ -236,7 +236,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         - The images of all ordinary light profiles in that plane summed and convolved with the imaging data's PSF.
         - The images of all linear objects (e.g. linear light profiles / pixelizations), where the images are solved
-        for first via the inversion.
+          for first via the inversion.
 
         This is used to visualize the different contibutions of light from the image-plane, source-plane and other
         planes in a fit.

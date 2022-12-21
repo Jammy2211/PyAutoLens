@@ -236,7 +236,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         This function:
 
         - Checks that the hyper-dataset is consistent with previous hyper-datasets if the model-fit is being
-        resumed from a previous run.
+          resumed from a previous run.
 
         - Checks the model and raises exceptions if certain critieria are not met.
 
@@ -338,7 +338,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         For this analysis it outputs the following:
 
         - The stochastic log likelihoods of a pixelization, provided the pixelization has functionality that can
-        compute likelihoods for different KMeans seeds and grids (e.g. `VoronoiBrightnessImage).
+          compute likelihoods for different KMeans seeds and grids (e.g. `VoronoiBrightnessImage).
 
         Parameters
         ----------

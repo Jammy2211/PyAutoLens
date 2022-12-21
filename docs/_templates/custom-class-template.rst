@@ -5,7 +5,7 @@
 .. autoclass:: {{ objname }}
    :members:
    :show-inheritance:
-   :exclude-members: ndarray, __init__
+   :exclude-members: ndarray, __init__, __new__
    :special-members: __call__, __add__, __mul__
 
    {% block methods %}
@@ -14,7 +14,6 @@
 
    .. autosummary::
       :nosignatures:
-      :exclude-members: __init__
    {% for item in methods %}
       {%- if not item.startswith('_') %}
       ~{{ name }}.{{ item }}

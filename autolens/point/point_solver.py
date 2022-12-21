@@ -146,10 +146,10 @@ class AbstractPointSolver:
         traces closer to the input (y,x) source-plane coordinate than any of its 8 adjacent neighbors. This is
         performed by:
 
-         1) Computing the deflection angle of every (y,x) coordinate on the grid using the input lensing object.
-         2) Ray tracing these coordinates to the source-plane.
-         3) Computing their distance to the centre of the source in the source-plane.
-         4) Finding pixels whose source-plane distance is lower than all 8 neighboring pixels.
+        1) Computing the deflection angle of every (y,x) coordinate on the grid using the input lensing object.
+        2) Ray tracing these coordinates to the source-plane.
+        3) Computing their distance to the centre of the source in the source-plane.
+        4) Finding pixels whose source-plane distance is lower than all 8 neighboring pixels.
 
         The `PositionFinder` works by locating pixels that trace closer to the source galaxy than neighboring pixels
         and iteratively refining the grid to find pixels that trace close at higher and higher resolutions. This
@@ -197,30 +197,30 @@ class AbstractPointSolver:
     ):
         """
         For an input grid of (y,x) coordinates, remove all coordinates that do not trace within a threshold distance
-            of the source-plane centre. This is performed by:
+        of the source-plane centre. This is performed by:
 
-             1) Computing the deflection angle of every (y,x) coordinate on the grid using the input lensing object.
-             2) Ray tracing these coordinates to the source-plane.
-             3) Computing their distance to the centre of the source in the source-plane.
-             4) Removing all coordinates that are not within the input distance of the centre.
+        1) Computing the deflection angle of every (y,x) coordinate on the grid using the input lensing object.
+        2) Ray tracing these coordinates to the source-plane.
+        3) Computing their distance to the centre of the source in the source-plane.
+        4) Removing all coordinates that are not within the input distance of the centre.
 
-            This algorithm is optionally used in the _PositionFiner_. It may be required to remove solutions that are
-            genuine 'peaks' that tracer closer to a source than their 8 neighboring pixels, but which do not truly
-            trace to the centre of the source-centre.
+        This algorithm is optionally used in the _PositionFiner_. It may be required to remove solutions that are
+        genuine 'peaks' that tracer closer to a source than their 8 neighboring pixels, but which do not truly
+        trace to the centre of the source-centre.
 
-            Parameters
-            ----------
-            lensing_obj
-                An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
-                `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
-            grid : autoarray.Grid2DIrregularUniform or ndarray
-                A grid of (y,x) Cartesian coordinates for which the 'peak' values that trace closer to the source than
-                their neighbors are found.
-            source_plane_coordinate : (y,x)
-                The (y,x) coordinate in the source-plane pixels that the distance of traced grid coordinates are computed
-                for.
-            distance
-                The distance within which a grid coordinate must trace to the source-plane centre to be retained.
+        Parameters
+        ----------
+        lensing_obj
+            An object which has a `deflection_2d_from` method for performing lensing calculations, for example a
+            `MassProfile`, _Galaxy_, `Plane` or `Tracer`.
+        grid
+           A grid of (y,x) Cartesian coordinates for which the 'peak' values that trace closer to the source than
+           their neighbors are found.
+        source_plane_coordinate
+           The (y,x) coordinate in the source-plane pixels that the distance of traced grid coordinates are computed
+           for.
+        distance
+           The distance within which a grid coordinate must trace to the source-plane centre to be retained.
         """
         if distance is None:
             return grid

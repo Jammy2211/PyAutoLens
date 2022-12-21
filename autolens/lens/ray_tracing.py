@@ -620,7 +620,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         - Blur this image with a PSF, if included.
         - Take the value of the brightest pixel.
         - Use an input `exposure_time` and `background_sky` (e.g. from the `SimulatorImaging` object) to determine
-        what value of `intensity` gives the desired signal to noise ratio for the image.
+          what value of `intensity` gives the desired signal to noise ratio for the image.
 
         The intensity is set using an input grid, meaning that for strong lensing calculations the ray-traced grid
         can be used such that the S/N accounts for the magnification of a source galaxy.
