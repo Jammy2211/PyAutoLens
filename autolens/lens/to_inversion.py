@@ -221,10 +221,10 @@ class TracerToInversion(ag.AbstractToInversion):
                         regularization=pixelization_list[plane_index][
                             mapper_index
                         ].regularization,
-                        source_mesh_grid=traced_sparse_grids_list_of_planes[
+                        source_plane_mesh_grid=traced_sparse_grids_list_of_planes[
                             plane_index
                         ][mapper_index],
-                        data_mesh_grid=sparse_image_plane_grid_list[plane_index][
+                        image_plane_mesh_grid=sparse_image_plane_grid_list[plane_index][
                             mapper_index
                         ],
                         hyper_galaxy_image=self.hyper_galaxy_image_pg_list[plane_index][

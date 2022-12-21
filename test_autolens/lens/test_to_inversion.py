@@ -215,7 +215,7 @@ def test__sparse_image_plane_grid_pg_list(masked_imaging_7x7):
     # Test Correct
 
     pixelization = al.m.MockPixelization(
-        mesh=al.m.MockMesh(data_mesh_grid=np.array([[1.0, 1.0]]))
+        mesh=al.m.MockMesh(image_plane_mesh_grid=np.array([[1.0, 1.0]]))
     )
 
     galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
@@ -237,7 +237,7 @@ def test__sparse_image_plane_grid_pg_list(masked_imaging_7x7):
     galaxy_pix0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     pixelization = al.m.MockPixelization(
-        mesh=al.m.MockMesh(data_mesh_grid=np.array([[2.0, 2.0]]))
+        mesh=al.m.MockMesh(image_plane_mesh_grid=np.array([[2.0, 2.0]]))
     )
 
     galaxy_pix1 = al.Galaxy(redshift=2.0, pixelization=pixelization)
@@ -278,22 +278,22 @@ def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
         mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=0.5),
     )
 
-    data_mesh_grid_0 = al.Grid2D.manual_native(
+    image_plane_mesh_grid_0 = al.Grid2D.manual_native(
         grid=[[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)
     )
 
     pixelization_0 = al.m.MockPixelization(
-        mesh=al.m.MockMesh(data_mesh_grid=data_mesh_grid_0)
+        mesh=al.m.MockMesh(image_plane_mesh_grid=image_plane_mesh_grid_0)
     )
 
     galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization_0)
 
-    data_mesh_grid_1 = al.Grid2D.manual_native(
+    image_plane_mesh_grid_1 = al.Grid2D.manual_native(
         grid=[[[2.0, 0.0]]], pixel_scales=(1.0, 1.0)
     )
 
     pixelization_1 = al.m.MockPixelization(
-        mesh=al.m.MockMesh(data_mesh_grid=data_mesh_grid_1)
+        mesh=al.m.MockMesh(image_plane_mesh_grid=image_plane_mesh_grid_1)
     )
 
     galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization_1)

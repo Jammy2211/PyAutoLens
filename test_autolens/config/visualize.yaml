@@ -13,8 +13,8 @@ include:
     grid: true
     inversion_grid: true
     light_profile_centres: true
-    mapper_data_mesh_grid: true
-    mapper_source_mesh_grid: true
+    mapper_image_plane_mesh_grid: true
+    mapper_source_plane_mesh_grid: true
     mask: true
     mass_profile_centres: true
     multiple_images: false
