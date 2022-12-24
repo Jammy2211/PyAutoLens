@@ -73,7 +73,7 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
-    'sphinx_autodoc_typehints',  # Automatically document param types (less noise in class signature)
+    "sphinx_autodoc_typehints",  # Automatically document param types (less noise in class signature)
     "numpydoc",
     # External stuff
     "myst_parser",
@@ -83,7 +83,7 @@ extensions = [
 ]
 
 set_type_checking_flag = True  # Enable 'expensive' imports for sphinx_autodoc_typehints
-add_module_names = False # Remove namespaces from class/method signatures
+add_module_names = False  # Remove namespaces from class/method signatures
 
 templates_path = ["_templates"]
 
