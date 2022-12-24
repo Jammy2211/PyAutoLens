@@ -550,7 +550,7 @@ def grid_square_neighbors_1d_from(shape_slim):
          x x x  x x x x x x x
          x x x  x x x x x x x
 
-    On the grid above, the grid cells in 1D indxes 5 and 6 have 8 neighboring pixels and their entries in the
+    On the grid above, the grid cells in 1D indexes 5 and 6 have 8 neighboring pixels and their entries in the
     grid_neighbors_1d array will be:
 
     grid_neighbors_1d[0,:] = [0, 1, 2, 4, 6, 8, 9, 10]
