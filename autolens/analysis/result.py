@@ -92,7 +92,7 @@ class Result(AgResult):
         These image-plane positions are used by the next search in a pipeline if automatic position updating is turned
         on."""
 
-        grid = self.analysis.dataset.mask.derived_grids.unmasked_sub_1
+        grid = self.analysis.dataset.mask.derive_grid.unmasked_sub_1
 
         solver = PointSolver(
             grid=grid, pixel_scale_precision=0.001, distance_to_mass_profile_centre=0.05
@@ -329,8 +329,8 @@ class ResultDataset(Result):
         The hyper model image is the sum of the hyper galaxy image of every individual galaxy.
         """
         hyper_model_image = aa.Array2D.manual_mask(
-            array=np.zeros(self.mask.derived_masks.sub_1.pixels_in_mask),
-            mask=self.mask.derived_masks.sub_1,
+            array=np.zeros(self.mask.derive_mask.sub_1.pixels_in_mask),
+            mask=self.mask.derive_mask.sub_1,
         )
 
         for path, galaxy in self.path_galaxy_tuples:

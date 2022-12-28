@@ -333,7 +333,7 @@ plotted.
 
 .. code-block:: python
 
-    tracer_plotter = aplt.TracerPlotter(tracer=result.max_log_likelihood_tracer, grid=mask.derived_grids.masked_grid)
+    tracer_plotter = aplt.TracerPlotter(tracer=result.max_log_likelihood_tracer, grid=mask.derive_grid.masked)
     tracer_plotter.subplot_tracer()
 
     fit_imaging_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
