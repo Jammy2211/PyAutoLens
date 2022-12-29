@@ -92,7 +92,7 @@ class Result(AgResult):
         These image-plane positions are used by the next search in a pipeline if automatic position updating is turned
         on."""
 
-        grid = self.analysis.dataset.mask.derive_grid.unmasked_sub_1
+        grid = self.analysis.dataset.mask.derive_grid.all_false_sub_1
 
         solver = PointSolver(
             grid=grid, pixel_scale_precision=0.001, distance_to_mass_profile_centre=0.05

@@ -1545,7 +1545,7 @@ def test__centre_of_profile_in_right_place():
 
 def test__grid_iterate_in__iterates_array_result_correctly(gal_x1_lp):
 
-    mask = al.Mask2D.manual(
+    mask = al.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
@@ -1598,7 +1598,7 @@ def test__grid_iterate_in__method_returns_array_list__uses_highest_sub_size_of_i
     gal_x1_lp,
 ):
 
-    mask = al.Mask2D.manual(
+    mask = al.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
@@ -1643,7 +1643,7 @@ def test__grid_iterate_in__method_returns_array_list__uses_highest_sub_size_of_i
 
 def test__grid_iterate_in__iterates_grid_result_correctly(gal_x1_mp):
 
-    mask = al.Mask2D.manual(
+    mask = al.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
