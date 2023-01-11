@@ -15,7 +15,7 @@ class TestAbstractPointSolver:
         self,
     ):
 
-        grid = al.Grid2D.manual_slim(
+        grid = al.Grid2D.without_mask(
             grid=[[0.0, -0.1], [0.0, 0.0], [0.0, 0.1]],
             shape_native=(1, 3),
             pixel_scales=0.1,

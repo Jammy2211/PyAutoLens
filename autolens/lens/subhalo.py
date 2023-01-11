@@ -132,7 +132,7 @@ class SubhaloResult:
             ]
         )
 
-        return aa.Grid2D.manual_native(
+        return aa.Grid2D(
             grid=centres_native,
             pixel_scales=self.grid_search_result.physical_step_sizes,
         )

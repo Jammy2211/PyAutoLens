@@ -244,7 +244,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         galaxy_model_image_dict = self.galaxy_model_image_dict
 
         model_images_of_planes_list = [
-            aa.Array2D.manual_mask(
+            aa.Array2D(
                 array=np.zeros(self.dataset.grid.shape_slim), mask=self.dataset.mask
             )
             for i in range(self.tracer.total_planes)

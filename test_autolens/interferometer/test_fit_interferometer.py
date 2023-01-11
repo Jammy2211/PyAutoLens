@@ -6,20 +6,20 @@ import autolens as al
 
 def test__model_visibilities(interferometer_7):
 
-    g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d=np.ones(2)))
+    g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d=np.ones(9)))
     tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
     assert fit.model_visibilities.slim[0] == pytest.approx(
-        np.array([1.2933 + 0.2829j]), 1.0e-4
+        np.array([1.48496 + 0.0]), 1.0e-4
     )
-    assert fit.log_likelihood == pytest.approx(-27.06284, 1.0e-4)
+    assert fit.log_likelihood == pytest.approx(-34.1685958, 1.0e-4)
 
 
 def test__noise_map__with_and_without_hyper_background(interferometer_7):
 
-    g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d=np.ones(2)))
+    g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d=np.ones(9)))
     tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
@@ -35,7 +35,7 @@ def test__noise_map__with_and_without_hyper_background(interferometer_7):
     )
 
     assert (fit.noise_map.slim == np.full(fill_value=3.0 + 3.0j, shape=(7,))).all()
-    assert fit.log_likelihood == pytest.approx(-30.24288, 1.0e-4)
+    assert fit.log_likelihood == pytest.approx(-33.400998, 1.0e-4)
 
 
 def test__fit_figure_of_merit(interferometer_7):
