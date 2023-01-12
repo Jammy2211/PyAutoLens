@@ -605,36 +605,32 @@ def test___unmasked_blurred_images(masked_imaging_7x7):
 
 def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur):
 
-    g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d=np.ones(1)))
+    g0 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
 
-    g1 = al.Galaxy(
-        redshift=0.75, bulge=al.m.MockLightProfile(image_2d=2.0 * np.ones(1))
-    )
+    g1 = al.Galaxy(redshift=0.75, bulge=al.lp.Sersic(intensity=2.0))
 
-    g2 = al.Galaxy(redshift=1.0, bulge=al.m.MockLightProfile(image_2d=3.0 * np.ones(1)))
+    g2 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=3.0))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
-    fit.subtracted_images_of_planes_list  # Fixes error where nan appears, weird.
+    assert fit.subtracted_images_of_planes_list[0].slim[0] == pytest.approx(0.200638, 1.0e-4)
+    assert fit.subtracted_images_of_planes_list[1].slim[0] == pytest.approx(0.360511, 1.0e-4)
+    assert fit.subtracted_images_of_planes_list[2].slim[0] == pytest.approx(0.520383, 1.0e-4)
 
-    assert fit.subtracted_images_of_planes_list[0].slim[0] == -4.0 or np.nan
-    assert fit.subtracted_images_of_planes_list[1].slim[0] == -3.0 or np.nan
-    assert fit.subtracted_images_of_planes_list[2].slim[0] == -2.0 or np.nan
+    g0 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
 
-    g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d=np.ones(1)))
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=2.0))
 
-    g1 = al.Galaxy(redshift=1.0, bulge=al.m.MockLightProfile(image_2d=2.0 * np.ones(1)))
-
-    g2 = al.Galaxy(redshift=1.0, bulge=al.m.MockLightProfile(image_2d=3.0 * np.ones(1)))
+    g2 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=3.0))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
-    assert fit.subtracted_images_of_planes_list[0].slim[0] == -4.0 or np.nan
-    assert fit.subtracted_images_of_planes_list[1].slim[0] == -0.0 or np.nan
+    assert fit.subtracted_images_of_planes_list[0].slim[0] == pytest.approx(0.200638, 1.0e-4)
+    assert fit.subtracted_images_of_planes_list[1].slim[0] == pytest.approx(0.840127, 1.0e-4)
 
 
 def test__tracer_linear_light_profiles_to_light_profiles(masked_imaging_7x7):
@@ -738,13 +734,13 @@ def test__preloads__refit_with_new_preloads(masked_imaging_7x7):
 
 def test__preloads__blurred_image_uses_preload_when_passed(masked_imaging_7x7_no_blur):
 
-    g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d=np.ones(1)))
+    g0 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
-    assert (fit.blurred_image == np.array([1.0])).all()
+    assert fit.blurred_image[0] == pytest.approx(0.15987, 1.0e-4)
 
     blurred_image = np.array([2.0])
     preloads = al.Preloads(blurred_image=blurred_image)

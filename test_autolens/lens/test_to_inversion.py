@@ -279,7 +279,7 @@ def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
     )
 
     image_plane_mesh_grid_0 = al.Grid2D.without_mask(
-            grid=[[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)
+        grid=[[[1.0, 0.0]]], pixel_scales=(1.0, 1.0)
     )
 
     pixelization_0 = al.m.MockPixelization(
@@ -289,7 +289,7 @@ def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
     galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization_0)
 
     image_plane_mesh_grid_1 = al.Grid2D.without_mask(
-            grid=[[[2.0, 0.0]]], pixel_scales=(1.0, 1.0)
+        grid=[[[2.0, 0.0]]], pixel_scales=(1.0, 1.0)
     )
 
     pixelization_1 = al.m.MockPixelization(
