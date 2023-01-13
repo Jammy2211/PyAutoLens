@@ -13,8 +13,8 @@ class FitFluxes(aa.FitDataset):
     def __init__(
         self,
         name: str,
-        fluxes: aa.ValuesIrregular,
-        noise_map: aa.ValuesIrregular,
+        fluxes: aa.ArrayIrregular,
+        noise_map: aa.ArrayIrregular,
         positions: aa.Grid2DIrregular,
         tracer: Tracer,
         point_profile: Optional[ag.ps.Point] = None,
@@ -57,7 +57,7 @@ class FitFluxes(aa.FitDataset):
         return self._noise_map
 
     @property
-    def fluxes(self) -> aa.ValuesIrregular:
+    def fluxes(self) -> aa.ArrayIrregular:
         return self.dataset
 
     @property
@@ -104,7 +104,7 @@ class FitFluxes(aa.FitDataset):
         Only point sources which are a `PointFlux` type, and therefore which include a model parameter for its flux,
         are used.
         """
-        return aa.ValuesIrregular(
+        return aa.ArrayIrregular(
             values=[
                 magnification * self.point_profile.flux
                 for magnification in self.magnifications
@@ -112,18 +112,18 @@ class FitFluxes(aa.FitDataset):
         )
 
     @property
-    def model_fluxes(self) -> aa.ValuesIrregular:
+    def model_fluxes(self) -> aa.ArrayIrregular:
         return self.model_data
 
     @property
-    def residual_map(self) -> aa.ValuesIrregular:
+    def residual_map(self) -> aa.ArrayIrregular:
         """
         Returns the residual map, over riding the parent method so that the result is converted to a
-        `ValuesIrregular` object.
+        `ArrayIrregular` object.
         """
         residual_map = super().residual_map
 
-        return aa.ValuesIrregular(values=residual_map)
+        return aa.ArrayIrregular(values=residual_map)
 
     @property
     def chi_squared(self) -> float:

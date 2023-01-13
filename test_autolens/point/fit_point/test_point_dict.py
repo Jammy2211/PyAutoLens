@@ -13,7 +13,7 @@ def test__fits_dataset__positions_only():
     )
 
     positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
-    noise_map = al.ValuesIrregular([0.5, 1.0])
+    noise_map = al.ArrayIrregular([0.5, 1.0])
     model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
 
     point_solver = al.m.MockPointSolver(model_positions=model_positions)
@@ -59,11 +59,11 @@ def test__fits_dataset__positions_and_flux():
     )
 
     positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
-    noise_map = al.ValuesIrregular([0.5, 1.0])
+    noise_map = al.ArrayIrregular([0.5, 1.0])
     model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
 
-    fluxes = al.ValuesIrregular([1.0, 2.0])
-    flux_noise_map = al.ValuesIrregular([3.0, 1.0])
+    fluxes = al.ArrayIrregular([1.0, 2.0])
+    flux_noise_map = al.ArrayIrregular([3.0, 1.0])
 
     point_solver = al.m.MockPointSolver(model_positions=model_positions)
 
@@ -125,7 +125,7 @@ def test__model_has_image_and_source_chi_squared__fits_both_correctly():
     )
 
     positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
-    noise_map = al.ValuesIrregular([0.5, 1.0])
+    noise_map = al.ArrayIrregular([0.5, 1.0])
     model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
 
     point_solver = al.m.MockPointSolver(model_positions=model_positions)

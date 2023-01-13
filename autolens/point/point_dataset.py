@@ -12,9 +12,9 @@ class PointDataset:
         self,
         name: str,
         positions: Union[aa.Grid2DIrregular, List[List], List[Tuple]],
-        positions_noise_map: Union[aa.ValuesIrregular, List[float]],
-        fluxes: Optional[Union[aa.ValuesIrregular, List[float]]] = None,
-        fluxes_noise_map: Optional[Union[aa.ValuesIrregular, List[float]]] = None,
+        positions_noise_map: Union[aa.ArrayIrregular, List[float]],
+        fluxes: Optional[Union[aa.ArrayIrregular, List[float]]] = None,
+        fluxes_noise_map: Optional[Union[aa.ArrayIrregular, List[float]]] = None,
     ):
         """
         A collection of the data component that can be used for point-source model-fitting, for example fitting the
@@ -43,24 +43,24 @@ class PointDataset:
         self.name = name
 
         if not isinstance(positions, aa.Grid2DIrregular):
-            positions = aa.Grid2DIrregular(grid=positions)
+            positions = aa.Grid2DIrregular(values=positions)
 
         self.positions = positions
 
-        if not isinstance(positions_noise_map, aa.ValuesIrregular):
-            positions_noise_map = aa.ValuesIrregular(values=positions_noise_map)
+        if not isinstance(positions_noise_map, aa.ArrayIrregular):
+            positions_noise_map = aa.ArrayIrregular(values=positions_noise_map)
 
         self.positions_noise_map = positions_noise_map
 
         if fluxes is not None:
-            if not isinstance(fluxes, aa.ValuesIrregular):
-                fluxes = aa.ValuesIrregular(values=fluxes)
+            if not isinstance(fluxes, aa.ArrayIrregular):
+                fluxes = aa.ArrayIrregular(values=fluxes)
 
         self.fluxes = fluxes
 
         if fluxes_noise_map is not None:
-            if not isinstance(fluxes_noise_map, aa.ValuesIrregular):
-                fluxes_noise_map = aa.ValuesIrregular(values=fluxes_noise_map)
+            if not isinstance(fluxes_noise_map, aa.ArrayIrregular):
+                fluxes_noise_map = aa.ArrayIrregular(values=fluxes_noise_map)
 
         self.fluxes_noise_map = fluxes_noise_map
 
@@ -100,11 +100,11 @@ class PointDataset:
         return cls(
             name=dict_["name"],
             positions=aa.Grid2DIrregular(dict_["positions"]),
-            positions_noise_map=aa.ValuesIrregular(dict_["positions_noise_map"]),
-            fluxes=aa.ValuesIrregular(dict_["fluxes"])
+            positions_noise_map=aa.ArrayIrregular(dict_["positions_noise_map"]),
+            fluxes=aa.ArrayIrregular(dict_["fluxes"])
             if dict_["fluxes"] is not None
             else None,
-            fluxes_noise_map=aa.ValuesIrregular(dict_["fluxes_noise_map"])
+            fluxes_noise_map=aa.ArrayIrregular(dict_["fluxes_noise_map"])
             if dict_["fluxes_noise_map"] is not None
             else None,
         )

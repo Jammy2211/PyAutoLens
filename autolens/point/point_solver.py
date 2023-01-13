@@ -37,7 +37,9 @@ class AbstractPointSolver:
             if magnification > self.magnification_threshold:
                 grid_mag.append(grid[index, :])
 
-        return aa.Grid2DIrregularUniform(grid=grid_mag, pixel_scales=grid.pixel_scales)
+        return aa.Grid2DIrregularUniform(
+            values=grid_mag, pixel_scales=grid.pixel_scales
+        )
 
     def grid_with_coordinates_to_mass_profile_centre_removed_from(
         self, lensing_obj, grid
@@ -82,7 +84,7 @@ class AbstractPointSolver:
                     outside_distance=self.distance_to_mass_profile_centre,
                 )
 
-            return aa.Grid2DIrregularUniform(grid=grid, pixel_scales=pixel_scales)
+            return aa.Grid2DIrregularUniform(values=grid, pixel_scales=pixel_scales)
 
         return grid
 
@@ -133,7 +135,7 @@ class AbstractPointSolver:
         )
 
         return aa.Grid2DIrregularUniform(
-            grid=grid_buffed,
+            values=grid_buffed,
             pixel_scales=(
                 pixel_scales[0] / upscale_factor,
                 pixel_scales[1] / upscale_factor,
@@ -189,7 +191,7 @@ class AbstractPointSolver:
         )
 
         return aa.Grid2DIrregularUniform(
-            grid=grid_peaks, pixel_scales=grid.pixel_scales
+            values=grid_peaks, pixel_scales=grid.pixel_scales
         )
 
     def grid_within_distance_of_source_plane_centre(
@@ -240,7 +242,7 @@ class AbstractPointSolver:
         )
 
         return aa.Grid2DIrregularUniform(
-            grid=grid_within_distance_of_centre, pixel_scales=grid.pixel_scales
+            values=grid_within_distance_of_centre, pixel_scales=grid.pixel_scales
         )
 
 
@@ -367,13 +369,13 @@ class PointSolver(AbstractPointSolver):
             coordinates_list = self.grid_within_distance_of_source_plane_centre(
                 deflection_func=deflections_func,
                 grid=aa.Grid2DIrregularUniform(
-                    grid=coordinates_list, pixel_scales=self.grid.pixel_scales
+                    values=coordinates_list, pixel_scales=self.grid.pixel_scales
                 ),
                 source_plane_coordinate=source_plane_coordinate,
                 distance=self.distance_to_source_centre,
             )
 
-            return aa.Grid2DIrregular(grid=coordinates_list)
+            return aa.Grid2DIrregular(values=coordinates_list)
 
         pixel_scale = self.grid.pixel_scale
 
@@ -404,7 +406,7 @@ class PointSolver(AbstractPointSolver):
         coordinates_list = self.grid_within_distance_of_source_plane_centre(
             deflection_func=deflections_func,
             grid=aa.Grid2DIrregularUniform(
-                grid=coordinates_list, pixel_scales=(pixel_scale, pixel_scale)
+                values=coordinates_list, pixel_scales=(pixel_scale, pixel_scale)
             ),
             source_plane_coordinate=source_plane_coordinate,
             distance=self.distance_to_source_centre,
@@ -416,7 +418,7 @@ class PointSolver(AbstractPointSolver):
             grid=coordinates_list,
         )
 
-        return aa.Grid2DIrregular(grid=coordinates_list)
+        return aa.Grid2DIrregular(values=coordinates_list)
 
 
 @aa.util.numba.jit()
@@ -550,7 +552,7 @@ def grid_square_neighbors_1d_from(shape_slim):
          x x x  x x x x x x x
          x x x  x x x x x x x
 
-    On the grid above, the grid cells in 1D indxes 5 and 6 have 8 neighboring pixels and their entries in the
+    On the grid above, the grid cells in 1D indexes 5 and 6 have 8 neighboring pixels and their entries in the
     grid_neighbors_1d array will be:
 
     grid_neighbors_1d[0,:] = [0, 1, 2, 4, 6, 8, 9, 10]

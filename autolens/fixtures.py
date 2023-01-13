@@ -4,19 +4,19 @@ from autogalaxy.fixtures import *
 
 
 def make_positions_x2():
-    return al.Grid2DIrregular(grid=[(1.0, 1.0), (2.0, 2.0)])
+    return al.Grid2DIrregular(values=[(1.0, 1.0), (2.0, 2.0)])
 
 
 def make_positions_noise_map_x2():
-    return al.ValuesIrregular(values=[1.0, 1.0])
+    return al.ArrayIrregular(values=[1.0, 1.0])
 
 
 def make_fluxes_x2():
-    return al.ValuesIrregular(values=[1.0, 2.0])
+    return al.ArrayIrregular(values=[1.0, 2.0])
 
 
 def make_fluxes_noise_map_x2():
-    return al.ValuesIrregular(values=[1.0, 1.0])
+    return al.ArrayIrregular(values=[1.0, 1.0])
 
 
 def make_point_dataset():

@@ -433,7 +433,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         would return:
 
-        ValuesIrregular(values=[axis_ratio_0, axis_ratio_1])
+        ArrayIrregular(values=[axis_ratio_0, axis_ratio_1])
 
         If the image plane has has two galaxies with two mass profiles and the source plane another galaxy with a
         mass profile, the following:
@@ -464,9 +464,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         if attributes == []:
             return None
         elif isinstance(attributes[0], float):
-            return aa.ValuesIrregular(values=attributes)
+            return aa.ArrayIrregular(values=attributes)
         elif isinstance(attributes[0], tuple):
-            return aa.Grid2DIrregular(grid=attributes)
+            return aa.Grid2DIrregular(values=attributes)
 
     def extract_attributes_of_planes(self, cls, attr_name, filter_nones=False):
         """
@@ -480,7 +480,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         would return:
 
-        [ValuesIrregular(values=[axis_ratio_0]), ValuesIrregular(values=[axis_ratio_1])]
+        [ArrayIrregular(values=[axis_ratio_0]), ArrayIrregular(values=[axis_ratio_1])]
 
         If the image plane has two galaxies with a mass profile each and the source plane another galaxy with a
         mass profile, the following:
@@ -490,8 +490,8 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         would return:
 
         [
-            Grid2DIrregular(grid=[(centre_y_0, centre_x_0)]),
-            Grid2DIrregular(grid=[(centre_y_0, centre_x_0), (centre_y_1, centre_x_1)])
+            Grid2DIrregular(values=[(centre_y_0, centre_x_0)]),
+            Grid2DIrregular(values=[(centre_y_0, centre_x_0), (centre_y_1, centre_x_1)])
         ]
 
         If a Profile does not have a certain entry, it is replaced with a None, although the nones can be removed
@@ -527,7 +527,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         would return:
 
-        [ValuesIrregular(values=[axis_ratio_0]), ValuesIrregular(values=[axis_ratio_1])]
+        [ArrayIrregular(values=[axis_ratio_0]), ArrayIrregular(values=[axis_ratio_1])]
 
         If the image plane has two galaxies with a mass profile each and the source plane another galaxy with a
         mass profile, the following:
@@ -537,18 +537,18 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         would return:
 
         [
-            Grid2DIrregular(grid=[(centre_y_0, centre_x_0)]),
-            Grid2DIrregular(grid=[(centre_y_0, centre_x_0)])
-            Grid2DIrregular(grid=[(centre_y_0, centre_x_0)])
+            Grid2DIrregular(values=[(centre_y_0, centre_x_0)]),
+            Grid2DIrregular(values=[(centre_y_0, centre_x_0)])
+            Grid2DIrregular(values=[(centre_y_0, centre_x_0)])
         ]
 
         If the first galaxy in the image plane in the example above had two mass profiles as well as the galaxy in the
         source plane it would return:
 
                 [
-            Grid2DIrregular(grid=[(centre_y_0, centre_x_0), (centre_y_1, centre_x_1)]),
-            Grid2DIrregular(grid=[(centre_y_0, centre_x_0)])
-            Grid2DIrregular(grid=[(centre_y_0, centre_x_0, (centre_y_1, centre_x_1))])
+            Grid2DIrregular(values=[(centre_y_0, centre_x_0), (centre_y_1, centre_x_1)]),
+            Grid2DIrregular(values=[(centre_y_0, centre_x_0)])
+            Grid2DIrregular(values=[(centre_y_0, centre_x_0, (centre_y_1, centre_x_1))])
         ]
 
         If a Profile does not have a certain entry, it is replaced with a None, although the nones can be removed

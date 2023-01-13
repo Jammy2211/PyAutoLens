@@ -7,11 +7,11 @@ import autolens as al
 def test__one_set_of_fluxes__residuals_likelihood_correct():
 
     tracer = al.m.MockTracerPoint(
-        profile=al.ps.PointFlux(flux=2.0), magnification=al.ValuesIrregular([2.0, 2.0])
+        profile=al.ps.PointFlux(flux=2.0), magnification=al.ArrayIrregular([2.0, 2.0])
     )
 
-    fluxes = al.ValuesIrregular([1.0, 2.0])
-    noise_map = al.ValuesIrregular([3.0, 1.0])
+    fluxes = al.ArrayIrregular([1.0, 2.0])
+    noise_map = al.ArrayIrregular([3.0, 1.0])
     positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
 
     fit = al.FitFluxes(
@@ -39,8 +39,8 @@ def test__use_real_tracer(gal_x1_mp):
     galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
     tracer = al.Tracer.from_galaxies(galaxies=[gal_x1_mp, galaxy_point_source])
 
-    fluxes = al.ValuesIrregular([1.0, 2.0])
-    noise_map = al.ValuesIrregular([3.0, 1.0])
+    fluxes = al.ArrayIrregular([1.0, 2.0])
+    noise_map = al.ArrayIrregular([3.0, 1.0])
     positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
 
     fit = al.FitFluxes(
@@ -63,8 +63,8 @@ def test__multi_plane_calculation(gal_x1_mp):
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
-    fluxes = al.ValuesIrregular([1.0])
-    noise_map = al.ValuesIrregular([3.0])
+    fluxes = al.ArrayIrregular([1.0])
+    noise_map = al.ArrayIrregular([3.0])
     positions = al.Grid2DIrregular([(2.0, 0.0)])
 
     fit_0 = al.FitFluxes(

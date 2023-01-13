@@ -110,12 +110,12 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(masked_imagi
         tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
     )
 
-    assert fit.inversion.linear_obj_list[0].source_plane_data_grid[4][0] == pytest.approx(
-        97.19584, 1.0e-2
-    )
-    assert fit.inversion.linear_obj_list[0].source_plane_data_grid[4][1] == pytest.approx(
-        -3.699999, 1.0e-2
-    )
+    assert fit.inversion.linear_obj_list[0].source_plane_data_grid[4][
+        0
+    ] == pytest.approx(97.19584, 1.0e-2)
+    assert fit.inversion.linear_obj_list[0].source_plane_data_grid[4][
+        1
+    ] == pytest.approx(-3.699999, 1.0e-2)
 
     analysis = al.AnalysisImaging(
         dataset=masked_imaging_7x7,
@@ -130,9 +130,9 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(masked_imagi
         tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
     )
 
-    assert fit.inversion.linear_obj_list[0].source_plane_data_grid[4][0] == pytest.approx(
-        200.0, 1.0e-4
-    )
+    assert fit.inversion.linear_obj_list[0].source_plane_data_grid[4][
+        0
+    ] == pytest.approx(200.0, 1.0e-4)
 
 
 def test__modify_before_fit__inversion_no_positions_likelihood__raises_exception(

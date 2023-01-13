@@ -34,7 +34,7 @@ def test__output_positions_info():
     )
 
     tracer = al.m.MockTracer(
-        traced_grid_2d_list_from=al.Grid2DIrregular(grid=[[(0.5, 1.5), (2.5, 3.5)]])
+        traced_grid_2d_list_from=al.Grid2DIrregular(values=[[(0.5, 1.5), (2.5, 3.5)]])
     )
 
     positions_likelihood.output_positions_info(output_path=output_path, tracer=tracer)
