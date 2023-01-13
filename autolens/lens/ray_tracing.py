@@ -433,7 +433,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         would return:
 
-        ValuesIrregular(values=[axis_ratio_0, axis_ratio_1])
+        ArrayIrregular(values=[axis_ratio_0, axis_ratio_1])
 
         If the image plane has has two galaxies with two mass profiles and the source plane another galaxy with a
         mass profile, the following:
@@ -464,7 +464,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         if attributes == []:
             return None
         elif isinstance(attributes[0], float):
-            return aa.ValuesIrregular(values=attributes)
+            return aa.ArrayIrregular(values=attributes)
         elif isinstance(attributes[0], tuple):
             return aa.Grid2DIrregular(values=attributes)
 
@@ -480,7 +480,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         would return:
 
-        [ValuesIrregular(values=[axis_ratio_0]), ValuesIrregular(values=[axis_ratio_1])]
+        [ArrayIrregular(values=[axis_ratio_0]), ArrayIrregular(values=[axis_ratio_1])]
 
         If the image plane has two galaxies with a mass profile each and the source plane another galaxy with a
         mass profile, the following:
@@ -527,7 +527,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         would return:
 
-        [ValuesIrregular(values=[axis_ratio_0]), ValuesIrregular(values=[axis_ratio_1])]
+        [ArrayIrregular(values=[axis_ratio_0]), ArrayIrregular(values=[axis_ratio_1])]
 
         If the image plane has two galaxies with a mass profile each and the source plane another galaxy with a
         mass profile, the following:

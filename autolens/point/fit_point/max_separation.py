@@ -9,7 +9,7 @@ class AbstractFitPositionsSourcePlane:
     def __init__(
         self,
         positions: aa.Grid2DIrregular,
-        noise_map: aa.ValuesIrregular,
+        noise_map: aa.ArrayIrregular,
         tracer: Tracer,
     ):
         """
@@ -36,7 +36,7 @@ class AbstractFitPositionsSourcePlane:
         ]
 
     @property
-    def furthest_separations_of_source_plane_positions(self) -> aa.ValuesIrregular:
+    def furthest_separations_of_source_plane_positions(self) -> aa.ArrayIrregular:
         """
         Returns the furthest distance of every source-plane (y,x) coordinate to the other source-plane (y,x)
         coordinates.
@@ -51,7 +51,7 @@ class AbstractFitPositionsSourcePlane:
 
         Returns
         -------
-        aa.ValuesIrregular
+        aa.ArrayIrregular
             The further distances of every set of grouped source-plane coordinates the other source-plane coordinates
             that it is grouped with.
         """
@@ -69,7 +69,7 @@ class FitPositionsSourceMaxSeparation(AbstractFitPositionsSourcePlane):
     def __init__(
         self,
         positions: aa.Grid2DIrregular,
-        noise_map: Optional[aa.ValuesIrregular],
+        noise_map: Optional[aa.ArrayIrregular],
         tracer: Tracer,
     ):
         """A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \

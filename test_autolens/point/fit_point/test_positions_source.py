@@ -12,7 +12,7 @@ def test__two_sets_of_positions__residuals_likelihood_correct():
     )
 
     positions = al.Grid2DIrregular([(0.0, 1.0), (0.0, 2.0)])
-    noise_map = al.ValuesIrregular([0.5, 1.0])
+    noise_map = al.ArrayIrregular([0.5, 1.0])
 
     fit = al.FitPositionsSource(
         name="point_0", positions=positions, noise_map=noise_map, tracer=tracer
@@ -50,7 +50,7 @@ def test__multi_plane_position_solving():
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
     positions = al.Grid2DIrregular([(0.0, 1.0), (0.0, 2.0)])
-    noise_map = al.ValuesIrregular([0.5, 1.0])
+    noise_map = al.ArrayIrregular([0.5, 1.0])
 
     traced_grids = tracer.traced_grid_2d_list_from(grid=positions)
 

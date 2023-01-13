@@ -13,7 +13,7 @@ def test__two_sets_of_positions__residuals_likelihood_correct():
     )
 
     positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
-    noise_map = al.ValuesIrregular([0.5, 1.0])
+    noise_map = al.ArrayIrregular([0.5, 1.0])
     model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
 
     point_solver = al.m.MockPointSolver(model_positions=model_positions)
@@ -52,7 +52,7 @@ def test__more_model_positions_than_data_positions__pairs_closest_positions():
     tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
     positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
-    noise_map = al.ValuesIrregular([0.5, 1.0])
+    noise_map = al.ArrayIrregular([0.5, 1.0])
     model_positions = al.Grid2DIrregular(
         [(3.0, 1.0), (2.0, 3.0), (1.0, 0.0), (0.0, 1.0)]
     )
@@ -88,7 +88,7 @@ def test__multi_plane_position_solving():
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
 
     positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
-    noise_map = al.ValuesIrregular([0.5, 1.0])
+    noise_map = al.ArrayIrregular([0.5, 1.0])
 
     point_solver = al.PointSolver(grid=grid, pixel_scale_precision=0.01)
 

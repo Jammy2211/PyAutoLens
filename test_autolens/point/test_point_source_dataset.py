@@ -18,9 +18,9 @@ def make_dataset():
     return al.PointDataset(
         "name",
         positions=al.Grid2DIrregular([(1, 2)]),
-        positions_noise_map=al.ValuesIrregular([1]),
-        fluxes=al.ValuesIrregular([2]),
-        fluxes_noise_map=al.ValuesIrregular([3]),
+        positions_noise_map=al.ArrayIrregular([1]),
+        fluxes=al.ArrayIrregular([2]),
+        fluxes_noise_map=al.ArrayIrregular([3]),
     )
 
 

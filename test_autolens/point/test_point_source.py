@@ -11,7 +11,7 @@ def test__point_dataset_structures_as_dict():
     point_dataset_0 = al.PointDataset(
         name="source_1",
         positions=al.Grid2DIrregular([[1.0, 1.0]]),
-        positions_noise_map=al.ValuesIrregular([1.0]),
+        positions_noise_map=al.ArrayIrregular([1.0]),
     )
 
     point_dict = al.PointDict(point_dataset_list=[point_dataset_0])
@@ -25,9 +25,9 @@ def test__point_dataset_structures_as_dict():
     point_dataset_1 = al.PointDataset(
         name="source_2",
         positions=al.Grid2DIrregular([[1.0, 1.0]]),
-        positions_noise_map=al.ValuesIrregular([1.0]),
-        fluxes=al.ValuesIrregular([2.0, 3.0]),
-        fluxes_noise_map=al.ValuesIrregular([4.0, 5.0]),
+        positions_noise_map=al.ArrayIrregular([1.0]),
+        fluxes=al.ArrayIrregular([2.0, 3.0]),
+        fluxes_noise_map=al.ArrayIrregular([4.0, 5.0]),
     )
 
     point_dict = al.PointDict(point_dataset_list=[point_dataset_0, point_dataset_1])
@@ -84,15 +84,15 @@ def test__from_json_and_output_to_json():
     point_dataset_0 = al.PointDataset(
         name="source_1",
         positions=al.Grid2DIrregular([[1.0, 1.0]]),
-        positions_noise_map=al.ValuesIrregular([1.0]),
+        positions_noise_map=al.ArrayIrregular([1.0]),
     )
 
     point_dataset_1 = al.PointDataset(
         name="source_2",
         positions=al.Grid2DIrregular([[1.0, 1.0]]),
-        positions_noise_map=al.ValuesIrregular([1.0]),
-        fluxes=al.ValuesIrregular([2.0, 3.0]),
-        fluxes_noise_map=al.ValuesIrregular([4.0, 5.0]),
+        positions_noise_map=al.ArrayIrregular([1.0]),
+        fluxes=al.ArrayIrregular([2.0, 3.0]),
+        fluxes_noise_map=al.ArrayIrregular([4.0, 5.0]),
     )
 
     point_dict = al.PointDict(point_dataset_list=[point_dataset_0, point_dataset_1])

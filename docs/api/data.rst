@@ -72,5 +72,5 @@ profile (e.g. computing the intensity versus radius in 1D, or convergene vs radi
 
    Mask1D
    Array1D
-   ValuesIrregular
+   ArrayIrregular
    Grid1D

@@ -13,7 +13,7 @@ class FitPositionsSource(aa.FitDataset):
         self,
         name: str,
         positions: aa.Grid2DIrregular,
-        noise_map: aa.ValuesIrregular,
+        noise_map: aa.ArrayIrregular,
         tracer: Tracer,
         point_profile: Optional[ag.ps.Point] = None,
     ):
@@ -92,7 +92,7 @@ class FitPositionsSource(aa.FitDataset):
         return self.model_data
 
     @property
-    def residual_map(self) -> aa.ValuesIrregular:
+    def residual_map(self) -> aa.ArrayIrregular:
 
         return self.model_positions.distances_to_coordinate_from(
             coordinate=self.source_plane_coordinate

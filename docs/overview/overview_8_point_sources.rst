@@ -86,7 +86,7 @@ The positions below correspond to those of an ``Isothermal`` mass model.
         positions=al.Grid2DIrregular(
             [[1.1488, -1.1488], [1.109, 1.109], [-1.109, -1.109], [-1.1488, 1.1488]]
         ),
-        positions_noise_map=al.ValuesIrregular([0.05, 0.05, 0.05, 0.05]),
+        positions_noise_map=al.ArrayIrregular([0.05, 0.05, 0.05, 0.05]),
     )
 
 In this simple example we model a single point source, which might correspond to one lensed quasar or supernovae.
