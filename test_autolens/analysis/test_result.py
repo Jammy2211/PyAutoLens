@@ -31,7 +31,7 @@ def test__max_log_likelihood_tracer(analysis_imaging_7x7, samples_with_result):
 def test__max_log_likelihood_positions_threshold(masked_imaging_7x7):
 
     positions_likelihood = al.PositionsLHResample(
-        positions=al.Grid2DIrregular(grid=[(1.0, 1.0), [-1.0, -1.0]]), threshold=100.0
+        positions=al.Grid2DIrregular(values=[(1.0, 1.0), [-1.0, -1.0]]), threshold=100.0
     )
 
     analysis = al.AnalysisImaging(

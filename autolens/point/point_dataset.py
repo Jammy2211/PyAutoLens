@@ -43,7 +43,7 @@ class PointDataset:
         self.name = name
 
         if not isinstance(positions, aa.Grid2DIrregular):
-            positions = aa.Grid2DIrregular(grid=positions)
+            positions = aa.Grid2DIrregular(values=positions)
 
         self.positions = positions
 

@@ -69,7 +69,7 @@ class GetVisuals2D(gv2d.GetVisuals2D):
         vis.Visuals2D
             A collection of attributes that can be plotted by a `Plotter` object.
         """
-        origin = self.get("origin", value=aa.Grid2DIrregular(grid=[grid.origin]))
+        origin = self.get("origin", value=aa.Grid2DIrregular(values=[grid.origin]))
 
         border = self.get("border", value=grid.mask.derive_grid.border_sub_1.binned)
 

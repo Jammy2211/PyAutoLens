@@ -245,7 +245,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         model_images_of_planes_list = [
             aa.Array2D(
-                array=np.zeros(self.dataset.grid.shape_slim), mask=self.dataset.mask
+            values=np.zeros(self.dataset.grid.shape_slim), mask=self.dataset.mask
             )
             for i in range(self.tracer.total_planes)
         ]

@@ -68,7 +68,7 @@ class Result(AgResult):
             cls=ag.LightProfile, attr_name="centre"
         )
         if centre is not None:
-            return aa.Grid2DIrregular(grid=[np.asarray(centre[0])])
+            return aa.Grid2DIrregular(values=[np.asarray(centre[0])])
 
     @property
     def source_plane_centre(self) -> aa.Grid2DIrregular:
@@ -103,7 +103,7 @@ class Result(AgResult):
             source_plane_coordinate=self.source_plane_centre.in_list[0],
         )
 
-        return aa.Grid2DIrregular(grid=multiple_images)
+        return aa.Grid2DIrregular(values=multiple_images)
 
     def positions_threshold_from(
         self,
@@ -329,7 +329,7 @@ class ResultDataset(Result):
         The hyper model image is the sum of the hyper galaxy image of every individual galaxy.
         """
         hyper_model_image = aa.Array2D(
-            array=np.zeros(self.mask.derive_mask.sub_1.pixels_in_mask),
+            values=np.zeros(self.mask.derive_mask.sub_1.pixels_in_mask),
             mask=self.mask.derive_mask.sub_1,
         )
 

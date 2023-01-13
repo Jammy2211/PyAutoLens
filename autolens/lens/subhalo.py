@@ -32,7 +32,7 @@ class SubhaloResult:
 
         values_reshaped = [value for values in values_native for value in values]
 
-        return aa.Array2D.manual_yx_and_values(
+        return aa.Array2D.from_yx_and_values(
             y=[centre[0] for centre in self.grid_search_result.physical_centres_lists],
             x=[centre[1] for centre in self.grid_search_result.physical_centres_lists],
             values=values_reshaped,
@@ -133,7 +133,7 @@ class SubhaloResult:
         )
 
         return aa.Grid2D(
-            grid=centres_native,
+            values=centres_native,
             pixel_scales=self.grid_search_result.physical_step_sizes,
         )
 

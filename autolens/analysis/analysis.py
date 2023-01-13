@@ -95,7 +95,7 @@ class AnalysisLensing:
             subhalo_centre = ray_tracing_util.grid_2d_at_redshift_from(
                 galaxies=instance.galaxies,
                 redshift=instance.galaxies.subhalo.redshift,
-                grid=aa.Grid2DIrregular(grid=[instance.galaxies.subhalo.mass.centre]),
+                grid=aa.Grid2DIrregular(values=[instance.galaxies.subhalo.mass.centre]),
                 cosmology=self.cosmology,
             )
 

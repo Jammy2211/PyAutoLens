@@ -22,7 +22,7 @@ def make_fit_imaging_plotter_setup():
 #     plot_path,
 #     plot_patch,
 # ):
-#     arr = al.Array2D.without_mask(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
+#     arr = al.Array2D.no_mask(values=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
 #
 #     subhalo_plotter = aplt.SubhaloPlotter(
 #         include_2d=include_2d_all,
