@@ -14,12 +14,10 @@ class SetupHyper(ag.SetupHyper):
             type(ag.hyper_data.HyperBackgroundNoise)
         ] = None,
         hyper_fixed_after_source: bool = False,
-        search_inversion_cls: Optional[af.NonLinearSearch] = None,
+        search_pix_cls: Optional[af.NonLinearSearch] = None,
         search_noise_cls: Optional[af.NonLinearSearch] = None,
-        search_bc_cls: Optional[af.NonLinearSearch] = None,
-        search_pixelization_dict: Optional[dict] = None,
+        search_pix_dict: Optional[dict] = None,
         search_noise_dict: Optional[dict] = None,
-        search_bc_dict: Optional[dict] = None,
     ):
         """
         The hyper setup of a pipeline, which controls how hyper-features in PyAutoLens template pipelines run,
@@ -43,9 +41,9 @@ class SetupHyper(ag.SetupHyper):
             If `True`, the hyper parameters are fixed and not updated after a desnated pipeline in the analysis. For
             the `SLaM` pipelines this is after the `SourcePipeline`. This allow Bayesian model comparison to be
             performed objected between later searchs in a pipeline.
-        search_inversion_cls
+        search_pix_cls
             The non-linear search used by every hyper model-fit search.
-        search_pixelization_dict
+        search_pix_dict
             The dictionary of search options for the hyper model-fit searches.
         """
         hyper_galaxies = hyper_galaxies_lens or hyper_galaxies_source
@@ -54,12 +52,10 @@ class SetupHyper(ag.SetupHyper):
             hyper_galaxies=hyper_galaxies,
             hyper_image_sky=hyper_image_sky,
             hyper_background_noise=hyper_background_noise,
-            search_inversion_cls=search_inversion_cls,
+            search_pix_cls=search_pix_cls,
             search_noise_cls=search_noise_cls,
-            search_bc_cls=search_bc_cls,
-            search_pixelization_dict=search_pixelization_dict,
+            search_pix_dict=search_pix_dict,
             search_noise_dict=search_noise_dict,
-            search_bc_dict=search_bc_dict,
         )
 
         self.hyper_galaxies_lens = hyper_galaxies_lens
