@@ -61,7 +61,9 @@ class SubhaloResult:
             values_native[values_native == None] = np.nan
 
             if relative_to_no_subhalo:
-                values_native -= samples_no_subhalo.max_log_likelihood_sample.log_likelihood
+                values_native -= (
+                    samples_no_subhalo.max_log_likelihood_sample.log_likelihood
+                )
 
         elif use_log_evidences and not use_stochastic_log_likelihoods:
 
