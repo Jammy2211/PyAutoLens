@@ -23,10 +23,13 @@ class SubhaloResult:
 
     @property
     def fit_imaging_before(self):
-        return _fit_imaging_from(
-            fit=self.result_no_subhalo,
-            galaxies=self.result_no_subhalo.instance.galaxies,
-        )
+        try:
+            return _fit_imaging_from(
+                fit=self.result_no_subhalo,
+                galaxies=self.result_no_subhalo.instance.galaxies,
+            )
+        except AttributeError:
+            return self.result_no_subhalo.max_log_likelihood_fit
 
     def _subhalo_array_from(self, values_native) -> aa.Array2D:
 
@@ -47,15 +50,18 @@ class SubhaloResult:
         relative_to_no_subhalo: bool = True,
     ) -> aa.Array2D:
 
+        try:
+            samples_no_subhalo = self.result_no_subhalo["samples"]
+        except TypeError:
+            samples_no_subhalo = self.result_no_subhalo.samples
+
         if (not use_log_evidences) and (not use_stochastic_log_likelihoods):
 
             values_native = self.grid_search_result.log_likelihoods_native
             values_native[values_native == None] = np.nan
 
             if relative_to_no_subhalo:
-                values_native -= self.result_no_subhalo[
-                    "samples"
-                ].max_log_likelihood_sample.log_likelihood
+                values_native -= samples_no_subhalo.max_log_likelihood_sample.log_likelihood
 
         elif use_log_evidences and not use_stochastic_log_likelihoods:
 
@@ -63,7 +69,7 @@ class SubhaloResult:
             values_native[values_native == None] = np.nan
 
             if relative_to_no_subhalo:
-                values_native -= self.result_no_subhalo["samples"].log_evidence
+                values_native -= samples_no_subhalo.log_evidence
 
         else:
 
@@ -108,7 +114,7 @@ class SubhaloResult:
         )
 
     @property
-    def centres_native(self) -> List[Tuple[float]]:
+    def centres_native(self) -> aa.Grid2D:
 
         instance_list = self.instance_list_via_results_from(
             results=self.grid_search_result.results
@@ -132,7 +138,7 @@ class SubhaloResult:
             ]
         )
 
-        return aa.Grid2D(
+        return aa.Grid2D.no_mask(
             values=centres_native,
             pixel_scales=self.grid_search_result.physical_step_sizes,
         )
