@@ -115,4 +115,4 @@ from autoconf import conf
 
 conf.instance.register(__file__)
 
-__version__ = "2022.11.26.11"
+__version__ = "2023.1.15.1"
