@@ -136,23 +136,23 @@ class TracerPlotter(Plotter):
         Parameters
         ----------
         image
-            Whether or not to make a 2D plot (via `imshow`) of the image of tracer in its image-plane (e.g. after
+            Whether to make a 2D plot (via `imshow`) of the image of tracer in its image-plane (e.g. after
             lensing).
         source_plane
-            Whether or not to make a 2D plot (via `imshow`) of the image of the tracer in the source-plane (e.g. its
+            Whether to make a 2D plot (via `imshow`) of the image of the tracer in the source-plane (e.g. its
             unlensed light).
         convergence
-            Whether or not to make a 2D plot (via `imshow`) of the convergence.
+            Whether to make a 2D plot (via `imshow`) of the convergence.
         potential
-            Whether or not to make a 2D plot (via `imshow`) of the potential.
+            Whether to make a 2D plot (via `imshow`) of the potential.
         deflections_y
-            Whether or not to make a 2D plot (via `imshow`) of the y component of the deflection angles.
+            Whether to make a 2D plot (via `imshow`) of the y component of the deflection angles.
         deflections_x
-            Whether or not to make a 2D plot (via `imshow`) of the x component of the deflection angles.
+            Whether to make a 2D plot (via `imshow`) of the x component of the deflection angles.
         magnification
-            Whether or not to make a 2D plot (via `imshow`) of the magnification.
+            Whether to make a 2D plot (via `imshow`) of the magnification.
         contribution_map
-            Whether or not to make a 2D plot (via `imshow`) of the contribution map.
+            Whether to make a 2D plot (via `imshow`) of the contribution map.
         """
 
         if image:
@@ -221,10 +221,10 @@ class TracerPlotter(Plotter):
         Parameters
         ----------
         plane_image
-            Whether or not to make a 2D plot (via `imshow`) of the image of the plane in the soure-plane (e.g. its
+            Whether to make a 2D plot (via `imshow`) of the image of the plane in the soure-plane (e.g. its
             unlensed light).
         plane_grid
-            Whether or not to make a 2D plot (via `scatter`) of the lensed (y,x) coordinates of the plane in the
+            Whether to make a 2D plot (via `scatter`) of the lensed (y,x) coordinates of the plane in the
             source-plane.
         plane_index
             If input, plots for only a single plane based on its index in the tracer are created.

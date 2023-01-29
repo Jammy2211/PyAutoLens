@@ -23,7 +23,6 @@ numba:
   use_numba: true
 output:
   force_pickle_overwrite: false
-  identifier_version: 4
   info_whitespace_length: 80
   log_file: output.log
   log_level: INFO

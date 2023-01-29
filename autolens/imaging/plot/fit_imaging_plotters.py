@@ -152,14 +152,14 @@ class FitImagingPlotter(Plotter):
         plane_index
             The index of the plane which figures are plotted for.
         subtracted_image
-            Whether or not to make a 2D plot (via `imshow`) of the subtracted image of a plane, where this image is
+            Whether to make a 2D plot (via `imshow`) of the subtracted image of a plane, where this image is
             the fit's `data` minus the model images of all other planes, thereby showing an individual plane in the
             data.
         model_image
-            Whether or not to make a 2D plot (via `imshow`) of the model image of a plane, where this image is the
+            Whether to make a 2D plot (via `imshow`) of the model image of a plane, where this image is the
             model image of one plane, thereby showing how much it contributes to the overall model image.
         plane_image
-            Whether or not to make a 2D plot (via `imshow`) of the image of a plane in its source-plane (e.g. unlensed).
+            Whether to make a 2D plot (via `imshow`) of the image of a plane in its source-plane (e.g. unlensed).
             Depending on how the fit is performed, this could either be an image of light profiles of the reconstruction
             of an `Inversion`.
         """

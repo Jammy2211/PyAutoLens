@@ -18,6 +18,8 @@ label:
     ell_comps_multipole_1: M_{\rm 2}
     flux: F
     gamma: \gamma
+    gamma_1: \gamma
+    gamma_2: \gamma
     inner_coefficient: \lambda_{\rm 1}
     inner_slope: t_{\rm 1}
     intensity: I_{\rm b}

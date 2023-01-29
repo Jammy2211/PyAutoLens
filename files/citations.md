@@ -17,6 +17,7 @@ This work uses the following software packages:
 - `numba` https://github.com/numba/numba [@numba]
 - `NumPy` https://github.com/numpy/numpy [@numpy]
 - `PyAutoFit` https://github.com/rhayes777/PyAutoFit [@pyautofit]
+- `PyAutoGalaxy` https://github.com/Jammy2211/PyAutoGalaxy [@Nightingale2018] [@pyautogalaxy]
 - `PyAutoLens` https://github.com/Jammy2211/PyAutoLens [@Nightingale2015] [@Nightingale2018] [@pyautolens]
 - `PyLops` https://github.com/equinor/pylops [@pylops]
 - `PyNUFFT` https://github.com/jyhmiinlin/pynufft [@pynufft]
