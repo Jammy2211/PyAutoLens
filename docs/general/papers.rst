@@ -17,13 +17,23 @@ The following papers use **PyAutoLens**:
 
 `Novel Substructure & Superfluid Dark Matter <https://arxiv.org/abs/1901.03694>`_
 
+**Cosmology**
+
+`Probing General Relativity in galactic scales at z ∼0.3 <https://arxiv.org/abs/2212.08463>`_
+
+`Why weak lensing cluster shapes are insensitive to self-interacting dark matter <https://arxiv.org/abs/2210.13474>`_
+
 **Galaxy Formation & Evolution**
+
+`Beyond the bulge-halo conspiracy? Density profiles of Early-type galaxies from extended-source strong lensing <https://arxiv.org/abs/2207.04070>`_
 
 `Galaxy structure with strong gravitational lensing: decomposing the internal mass distribution of massive elliptical galaxies <https://arxiv.org/abs/1901.07801>`_
 
 `Microlensing and the type Ia supernova iPTF16geu <https://arxiv.org/abs/2112.04524>`_
 
 **Lens Modeling / Theory**
+
+`Strong gravitational lensing's `external shear' is not shear <https://arxiv.org/abs/2301.05244>`_
 
 `Automated galaxy-galaxy strong lens modelling: no lens left behind <https://arxiv.org/abs/2202.09201>`_
 
@@ -51,6 +61,10 @@ The following papers use **PyAutoLens**:
 
 **Source Science**
 
+`A Glimpse of the Stellar Populations and Elemental Abundances of Gravitationally Lensed, Quiescent Galaxies at z≳1 with Keck Deep Spectroscopy <https://arxiv.org/abs/2212.04731>`_
+
+`Discovery of a radio lobe in the Cloverleaf Quasar at z = 2.56 <https://arxiv.org/abs/2212.07027>`_
+
 `ALMA [{N} {II}] 205 μm Imaging Spectroscopy of the Lensed Submillimeter Galaxy ID 141 at Redshift 4.24 <https://arxiv.org/abs/2006.01147>`_
 
 `CO, H2O, H2O+ line & dust emission in a z = 3.63 strongly lensed starburst merger at sub-kiloparsec scales <https://arxiv.org/abs/1903.00273>`_
@@ -64,6 +78,10 @@ The following papers use **PyAutoLens**:
 `The Two 𝑧 ∼ 13 Galaxy Candidates HD1 and HD2 Are Likely Not Lensed <https://arxiv.org/abs/2209.06830>`_
 
 **Surveys**
+
+`When Spectral Modeling Meets Convolutional Networks: A Method for Discovering Reionization-era Lensed Quasars in Multi-band Imaging Data <https://arxiv.org/abs/2211.14543>`_
+
+`Modeling Strong Lenses from Wide-Field Ground-Based Observations in KiDS and GAMA <https://arxiv.org/abs/2301.05320>`_
 
 `MNELLS: The MUSE Nearby Early-Type Galaxy Lens Locator Survey <https://arxiv.org/abs/2002.07191>`_
 

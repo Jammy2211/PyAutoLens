@@ -507,7 +507,7 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
 
     masked_imaging_7x7.image[0] = 3.0
 
-    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer, settings_inversion=al.SettingsInversion(use_w_tilde=False))
 
     assert fit.galaxy_model_image_dict[g0] == pytest.approx(
         blurred_image_2d_list[0], 1.0e-4
@@ -548,7 +548,7 @@ def test__model_images_of_planes_list(masked_imaging_7x7):
         galaxies=[g0, g1_linear, galaxy_pix_0, galaxy_pix_1]
     )
 
-    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer, settings_inversion=al.SettingsInversion(use_w_tilde=False))
 
     assert fit.model_images_of_planes_list[0] == pytest.approx(
         fit.galaxy_model_image_dict[g0], 1.0e-4
