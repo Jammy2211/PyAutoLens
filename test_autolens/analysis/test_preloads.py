@@ -145,7 +145,13 @@ def test__info():
     i += 1
     assert lines[i] == f"Blurred Mapping Matrix = False\n"
     i += 1
+    assert lines[i] == f"Inversion Linear Func (Linear Light Profile) Dicts = False\n"
+    i += 1
     assert lines[i] == f"Curvature Matrix Sparse = False\n"
+    i += 1
+    assert lines[i] == f"Curvature Matrix = False\n"
+    i += 1
+    assert lines[i] == f"Curvature Matrix Mapper Diag = False\n"
     i += 1
     assert lines[i] == f"Regularization Matrix = False\n"
     i += 1
@@ -175,6 +181,8 @@ def test__info():
 
     i = 0
 
+    print(lines)
+
     assert lines[i] == f"W Tilde = True\n"
     i += 1
     assert lines[i] == f"Use W Tilde = True\n"
@@ -193,7 +201,13 @@ def test__info():
     i += 1
     assert lines[i] == f"Blurred Mapping Matrix = True\n"
     i += 1
+    assert lines[i] == f"Inversion Linear Func (Linear Light Profile) Dicts = False\n"
+    i += 1
     assert lines[i] == f"Curvature Matrix Sparse = True\n"
+    i += 1
+    assert lines[i] == f"Curvature Matrix = False\n"
+    i += 1
+    assert lines[i] == f"Curvature Matrix Mapper Diag = False\n"
     i += 1
     assert lines[i] == f"Regularization Matrix = True\n"
     i += 1

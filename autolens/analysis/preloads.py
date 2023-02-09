@@ -22,6 +22,9 @@ class Preloads(ag.Preloads):
         mapper_list: Optional[aa.AbstractMapper] = None,
         mapper_galaxy_dict: Optional[Dict[aa.AbstractMapper, ag.Galaxy]] = None,
         operated_mapping_matrix: Optional[np.ndarray] = None,
+        linear_func_operated_mapping_matrix_dict=None,
+        linear_func_weighted_mapping_vectors_dict=None,
+        linear_func_curvature_vectors_dict=None,
         curvature_matrix_preload: Optional[np.ndarray] = None,
         curvature_matrix_counts: Optional[np.ndarray] = None,
         regularization_matrix: Optional[np.ndarray] = None,
@@ -90,6 +93,9 @@ class Preloads(ag.Preloads):
             mapper_list=mapper_list,
             mapper_galaxy_dict=mapper_galaxy_dict,
             operated_mapping_matrix=operated_mapping_matrix,
+            linear_func_operated_mapping_matrix_dict=linear_func_operated_mapping_matrix_dict,
+            linear_func_weighted_mapping_vectors_dict=linear_func_weighted_mapping_vectors_dict,
+            linear_func_curvature_vectors_dict=linear_func_curvature_vectors_dict,
             curvature_matrix_preload=curvature_matrix_preload,
             curvature_matrix_counts=curvature_matrix_counts,
             regularization_matrix=regularization_matrix,
@@ -136,6 +142,7 @@ class Preloads(ag.Preloads):
             preloads.mapper_galaxy_dict = fit_0.tracer_to_inversion.mapper_galaxy_dict
 
         preloads.set_operated_mapping_matrix_with_preloads(fit_0=fit_0, fit_1=fit_1)
+        preloads.set_linear_func_inversion_dicts(fit_0=fit_0, fit_1=fit_1)
         preloads.set_curvature_matrix(fit_0=fit_0, fit_1=fit_1)
         preloads.set_regularization_matrix_and_term(fit_0=fit_0, fit_1=fit_1)
 
@@ -260,6 +267,10 @@ class Preloads(ag.Preloads):
         self.relocated_grid = None
         self.mapper = None
         self.blurred_mapping_matrix = None
+        self.curvature_matrix = None
+        self.linear_func_operated_mapping_matrix_dict = None
+        self.linear_func_weighted_mapping_vectors_dict = None
+        self.linear_func_curvature_vectors_dict = None
         self.curvature_matrix_preload = None
         self.curvature_matrix_counts = None
         self.regularization_matrix = None
@@ -287,6 +298,9 @@ class Preloads(ag.Preloads):
         line += [f"Mapper = {self.mapper_list is not None}\n"]
         line += [
             f"Blurred Mapping Matrix = {self.operated_mapping_matrix is not None}\n"
+        ]
+        line += [
+            f"Inversion Linear Func (Linear Light Profile) Dicts = {self.linear_func_weighted_mapping_vectors_dict is not None}\n"
         ]
         line += [
             f"Curvature Matrix Sparse = {self.curvature_matrix_preload is not None}\n"
