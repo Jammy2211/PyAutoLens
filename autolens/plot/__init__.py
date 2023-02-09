@@ -20,6 +20,7 @@ from autoarray.plot.wrap.base import (
     XLabel,
     Legend,
     Text,
+    Annotate,
     Output,
 )
 from autoarray.plot.wrap.one_d import YXPlot, FillBetween

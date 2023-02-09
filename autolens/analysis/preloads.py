@@ -136,6 +136,7 @@ class Preloads(ag.Preloads):
             preloads.mapper_galaxy_dict = fit_0.tracer_to_inversion.mapper_galaxy_dict
 
         preloads.set_operated_mapping_matrix_with_preloads(fit_0=fit_0, fit_1=fit_1)
+        preloads.set_curvature_matrix(fit_0=fit_0, fit_1=fit_1)
         preloads.set_regularization_matrix_and_term(fit_0=fit_0, fit_1=fit_1)
 
         return preloads
@@ -289,6 +290,10 @@ class Preloads(ag.Preloads):
         ]
         line += [
             f"Curvature Matrix Sparse = {self.curvature_matrix_preload is not None}\n"
+        ]
+        line += [f"Curvature Matrix = {self.curvature_matrix is not None}\n"]
+        line += [
+            f"Curvature Matrix Mapper Diag = {self.curvature_matrix_mapper_diag is not None}\n"
         ]
         line += [f"Regularization Matrix = {self.regularization_matrix is not None}\n"]
         line += [
