@@ -25,7 +25,7 @@ class Result(AgResult):
         """
         An instance of a `Tracer` corresponding to the maximum log likelihood model inferred by the non-linear search.
         """
-        return self.analysis.tracer_via_instance_from(instance=self.instance)
+        return self.analysis.tracer_via_instance_from(instance=self.instance_copy)
 
     @property
     def max_log_likelihood_positions_threshold(self) -> float:
@@ -191,7 +191,7 @@ class Result(AgResult):
         """
         Tuples associating the names of galaxies with instances from the best fit
         """
-        return self.instance.path_instance_tuples_for_class(cls=ag.Galaxy)
+        return self.instance_copy.path_instance_tuples_for_class(cls=ag.Galaxy)
 
 
 class ResultDataset(Result):
@@ -203,7 +203,7 @@ class ResultDataset(Result):
         If a dataset is fitted the hyper images of the hyper dataset must first be associated with each galaxy.
         """
         instance = self.analysis.instance_with_associated_hyper_images_from(
-            instance=self.instance
+            instance=self.instance_copy
         )
 
         return self.analysis.tracer_via_instance_from(instance=instance)

@@ -48,7 +48,7 @@ class ResultInterferometer(ResultDataset):
         non-linear search.
         """
         return self.analysis.fit_interferometer_via_instance_from(
-            instance=self.instance
+            instance=self.instance_copy
         )
 
     @property

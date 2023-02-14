@@ -444,8 +444,6 @@ class AnalysisImaging(AnalysisDataset):
             which may change which images are output.
         """
 
-        return
-
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
             return
 
@@ -575,7 +573,6 @@ class AnalysisImaging(AnalysisDataset):
             The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
             visualization, and the pickled objects used by the aggregator output by this function.
         """
-
         super().save_attributes_for_aggregator(paths=paths)
 
         paths.save_object("psf", self.dataset.psf)

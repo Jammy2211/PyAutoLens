@@ -348,9 +348,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         result
             The result of a lens model fit, including the non-linear search, samples and maximum likelihood tracer.
         """
-
-        return
-
         mesh_list = ag.util.model.mesh_list_from(model=result.model)
 
         if len(mesh_list) > 0:

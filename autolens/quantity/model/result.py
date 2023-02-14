@@ -52,7 +52,7 @@ class ResultQuantity(Result):
 
         If a dataset is fitted the hyper images of the hyper dataset must first be associated with each galaxy.
         """
-        return self.analysis.tracer_via_instance_from(instance=self.instance)
+        return self.analysis.tracer_via_instance_from(instance=self.instance_copy)
 
     @property
     def max_log_likelihood_fit(self) -> ag.FitQuantity:
@@ -61,4 +61,4 @@ class ResultQuantity(Result):
         search.
         """
 
-        return self.analysis.fit_quantity_for_instance(instance=self.instance)
+        return self.analysis.fit_quantity_for_instance(instance=self.instance_copy)
