@@ -348,22 +348,15 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         result
             The result of a lens model fit, including the non-linear search, samples and maximum likelihood tracer.
         """
-        return
+
         mesh_list = ag.util.model.mesh_list_from(model=result.model)
 
         if len(mesh_list) > 0:
 
-            tracer_to_inversion = TracerToInversion(
-                tracer=result.max_log_likelihood_tracer, dataset=self.dataset
-            )
-
-            sparse_image_plane_grid_pg_list = (
-                tracer_to_inversion.sparse_image_plane_grid_pg_list
-            )
-
             paths.save_object(
-                "preload_sparse_grids_of_planes", sparse_image_plane_grid_pg_list
+                "preload_sparse_grids_of_planes", result.max_log_likelihood_fit.tracer_to_inversion.sparse_image_plane_grid_pg_list
             )
+
 
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
             if len(mesh_list) > 0:
