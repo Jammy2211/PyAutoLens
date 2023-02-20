@@ -10,6 +10,8 @@ grid:
 hpc:
   hpc_mode: false
   iterations_per_update: 5000
+inversion:
+  check_solution_default: false        # When an Inversion checks solutions in case they are numerically unstable by default or not (e.g. InversionSettings.check_solution).
 hyper:
   hyper_minimum_percent: 0.01
   hyper_noise_limit: 100000000.0
@@ -35,5 +37,6 @@ profiling:
   repeats: 1
 test:
   check_figure_of_merit_sanity: false
+  bypass_figure_of_merit_sanity: false
   check_preloads: false
   disable_positions_lh_inversion_check: false

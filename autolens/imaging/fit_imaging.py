@@ -212,7 +212,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         - The images of all linear objects (e.g. linear light profiles / pixelizations), where the images are solved
           for first via the inversion.
 
-        For modeling, this dictionary is used to set up the `hyper_images` that adapt certain pixelizations to the
+        For modeling, this dictionary is used to set up the `hyper_images` that adaptmodel_images_of_planes_list certain pixelizations to the
         data being fitted.
         """
         galaxy_blurred_image_2d_dict = self.tracer.galaxy_blurred_image_2d_dict_from(
