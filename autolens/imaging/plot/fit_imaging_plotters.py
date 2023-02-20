@@ -4,6 +4,7 @@ from typing import Optional
 import autoarray as aa
 import autogalaxy.plot as aplt
 
+from autoarray.plot.auto_labels import AutoLabels
 from autoarray.fit.plot.fit_imaging_plotters import FitImagingPlotterMeta
 
 from autolens.plot.abstract_plotters import Plotter
@@ -61,9 +62,11 @@ class FitImagingPlotter(Plotter):
             residuals_symmetric_cmap=residuals_symmetric_cmap
         )
 
-        self.figures_2d = self._fit_imaging_meta_plotter.figures_2d
-        self.subplot = self._fit_imaging_meta_plotter.subplot
-        self.subplot_fit_imaging = self._fit_imaging_meta_plotter.subplot_fit_imaging
+        self.residuals_symmetric_cmap = residuals_symmetric_cmap
+
+        # self.figures_2d = self._fit_imaging_meta_plotter.figures_2d
+        # self.subplot = self._fit_imaging_meta_plotter.subplot
+        # self.subplot_fit_imaging = self._fit_imaging_meta_plotter.subplot_fit_imaging
 
     def get_visuals_2d(self) -> aplt.Visuals2D:
         return self.get_2d.via_fit_imaging_from(fit=self.fit)
@@ -164,6 +167,12 @@ class FitImagingPlotter(Plotter):
             of an `Inversion`.
         """
 
+        visuals_2d = self.get_visuals_2d()
+
+        visuals_2d_no_critical_caustic = self.get_visuals_2d()
+        visuals_2d_no_critical_caustic.critical_curves = None
+        visuals_2d_no_critical_caustic.caustics = None
+
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
         for plane_index in plane_indexes:
@@ -186,7 +195,7 @@ class FitImagingPlotter(Plotter):
 
                 self.mat_plot_2d.plot_array(
                     array=self.fit.subtracted_images_of_planes_list[plane_index],
-                    visuals_2d=self.get_visuals_2d(),
+                    visuals_2d=visuals_2d_no_critical_caustic,
                     auto_labels=aplt.AutoLabels(
                         title=f"Subtracted Image of Plane {plane_index}",
                         filename=f"subtracted_image_of_plane_{plane_index}",
@@ -203,7 +212,7 @@ class FitImagingPlotter(Plotter):
 
                 self.mat_plot_2d.plot_array(
                     array=self.fit.model_images_of_planes_list[plane_index],
-                    visuals_2d=self.get_visuals_2d(),
+                    visuals_2d=visuals_2d,
                     auto_labels=aplt.AutoLabels(
                         title=f"Model Image of Plane {plane_index}",
                         filename=f"model_image_of_plane_{plane_index}",
@@ -259,3 +268,183 @@ class FitImagingPlotter(Plotter):
                 auto_filename=f"subplot_of_plane_{plane_index}"
             )
             self.close_subplot_figure()
+
+    def subplot(
+        self,
+        image: bool = False,
+        noise_map: bool = False,
+        signal_to_noise_map: bool = False,
+        model_image: bool = False,
+        residual_map: bool = False,
+        normalized_residual_map: bool = False,
+        chi_squared_map: bool = False,
+        auto_filename: str = "subplot_fit_imaging",
+    ):
+        """
+        Plots the individual attributes of the plotter's `FitImaging` object in 2D on a subplot.
+
+        The API is such that every plottable attribute of the `FitImaging` object is an input parameter of type bool of
+        the function, which if switched to `True` means that it is included on the subplot.
+
+        Parameters
+        ----------
+        image
+            Whether or not to include a 2D plot (via `imshow`) of the image data.
+        noise_map
+            Whether or not to include a 2D plot (via `imshow`) of the noise map.
+        psf
+            Whether or not to include a 2D plot (via `imshow`) of the psf.
+        signal_to_noise_map
+            Whether or not to include a 2D plot (via `imshow`) of the signal-to-noise map.
+        model_image
+            Whether or not to include a 2D plot (via `imshow`) of the model image.
+        residual_map
+            Whether or not to include a 2D plot (via `imshow`) of the residual map.
+        normalized_residual_map
+            Whether or not to include a 2D plot (via `imshow`) of the normalized residual map.
+        chi_squared_map
+            Whether or not to include a 2D plot (via `imshow`) of the chi-squared map.
+        auto_filename
+            The default filename of the output subplot if written to hard-disk.
+        """
+        self._subplot_custom_plot(
+            image=image,
+            noise_map=noise_map,
+            signal_to_noise_map=signal_to_noise_map,
+            model_image=model_image,
+            residual_map=residual_map,
+            normalized_residual_map=normalized_residual_map,
+            chi_squared_map=chi_squared_map,
+            auto_labels=AutoLabels(filename=auto_filename),
+        )
+
+    def subplot_fit_imaging(self):
+        """
+        Standard subplot of the attributes of the plotter's `FitImaging` object.
+        """
+        return self.subplot(
+            image=True,
+            signal_to_noise_map=True,
+            model_image=True,
+            residual_map=True,
+            normalized_residual_map=True,
+            chi_squared_map=True,
+        )
+
+    def figures_2d(
+        self,
+        image: bool = False,
+        noise_map: bool = False,
+        signal_to_noise_map: bool = False,
+        model_image: bool = False,
+        residual_map: bool = False,
+        normalized_residual_map: bool = False,
+        chi_squared_map: bool = False,
+        suffix: str = "",
+    ):
+        """
+        Plots the individual attributes of the plotter's `FitImaging` object in 2D.
+
+        The API is such that every plottable attribute of the `FitImaging` object is an input parameter of type bool of
+        the function, which if switched to `True` means that it is plotted.
+
+        Parameters
+        ----------
+        image
+            Whether to make a 2D plot (via `imshow`) of the image data.
+        noise_map
+            Whether to make a 2D plot (via `imshow`) of the noise map.
+        signal_to_noise_map
+            Whether to make a 2D plot (via `imshow`) of the signal-to-noise map.
+        model_image
+            Whether to make a 2D plot (via `imshow`) of the model image.
+        residual_map
+            Whether to make a 2D plot (via `imshow`) of the residual map.
+        normalized_residual_map
+            Whether to make a 2D plot (via `imshow`) of the normalized residual map.
+        chi_squared_map
+            Whether to make a 2D plot (via `imshow`) of the chi-squared map.
+        """
+
+        visuals_2d = self.get_visuals_2d()
+
+        visuals_2d_no_critical_caustic = self.get_visuals_2d()
+        visuals_2d_no_critical_caustic.critical_curves = None
+        visuals_2d_no_critical_caustic.caustics = None
+
+        if image:
+
+            self.mat_plot_2d.plot_array(
+                array=self.fit.data,
+                visuals_2d=visuals_2d_no_critical_caustic,
+                auto_labels=AutoLabels(title="Image", filename=f"image_2d{suffix}"),
+            )
+
+        if noise_map:
+
+            self.mat_plot_2d.plot_array(
+                array=self.fit.noise_map,
+                visuals_2d=visuals_2d_no_critical_caustic,
+                auto_labels=AutoLabels(
+                    title="Noise-Map", filename=f"noise_map{suffix}"
+                ),
+            )
+
+        if signal_to_noise_map:
+
+            self.mat_plot_2d.plot_array(
+                array=self.fit.signal_to_noise_map,
+                visuals_2d=visuals_2d_no_critical_caustic,
+                auto_labels=AutoLabels(
+                    title="Signal-To-Noise Map", filename=f"signal_to_noise_map{suffix}"
+                ),
+            )
+
+        if model_image:
+
+            self.mat_plot_2d.plot_array(
+                array=self.fit.model_data,
+                visuals_2d=visuals_2d,
+                auto_labels=AutoLabels(
+                    title="Model Image", filename=f"model_image{suffix}"
+                ),
+            )
+
+        cmap_original = self.mat_plot_2d.cmap
+
+        if self.residuals_symmetric_cmap:
+
+            self.mat_plot_2d.cmap = self.mat_plot_2d.cmap.symmetric
+
+        if residual_map:
+
+            self.mat_plot_2d.plot_array(
+                array=self.fit.residual_map,
+                visuals_2d=visuals_2d_no_critical_caustic,
+                auto_labels=AutoLabels(
+                    title="Residual Map", filename=f"residual_map{suffix}"
+                ),
+            )
+
+        if normalized_residual_map:
+
+            self.mat_plot_2d.plot_array(
+                array=self.fit.normalized_residual_map,
+                visuals_2d=visuals_2d_no_critical_caustic,
+                auto_labels=AutoLabels(
+                    title="Normalized Residual Map",
+                    filename=f"normalized_residual_map{suffix}",
+                ),
+            )
+
+        self.mat_plot_2d.cmap = cmap_original
+
+        if chi_squared_map:
+
+            self.mat_plot_2d.plot_array(
+                array=self.fit.chi_squared_map,
+                visuals_2d=visuals_2d_no_critical_caustic,
+                auto_labels=AutoLabels(
+                    title="Chi-Squared Map", filename=f"chi_squared_map{suffix}"
+                ),
+            )

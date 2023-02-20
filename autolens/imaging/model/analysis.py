@@ -131,7 +131,6 @@ class AnalysisImaging(AnalysisDataset):
             return log_likelihood_positions_overwrite
 
         try:
-            print(self.fit_imaging_via_instance_from(instance=instance).figure_of_merit)
             return self.fit_imaging_via_instance_from(instance=instance).figure_of_merit
         except (
             PixelizationException,
