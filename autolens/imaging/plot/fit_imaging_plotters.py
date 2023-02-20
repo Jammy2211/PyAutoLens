@@ -210,9 +210,17 @@ class FitImagingPlotter(Plotter):
 
             if model_image:
 
+                if self.tracer.planes[plane_index].has(cls=aa.Pixelization):
+
+                    visuals_2d_model_image = self.inversion_plotter_of_plane(plane_index=plane_index).get_visuals_2d_for_data()
+
+                else:
+
+                    visuals_2d_model_image = visuals_2d
+
                 self.mat_plot_2d.plot_array(
                     array=self.fit.model_images_of_planes_list[plane_index],
-                    visuals_2d=visuals_2d,
+                    visuals_2d=visuals_2d_model_image,
                     auto_labels=aplt.AutoLabels(
                         title=f"Model Image of Plane {plane_index}",
                         filename=f"model_image_of_plane_{plane_index}",
