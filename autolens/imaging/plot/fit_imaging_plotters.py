@@ -211,8 +211,10 @@ class FitImagingPlotter(Plotter):
             if model_image:
 
                 if self.tracer.planes[plane_index].has(cls=aa.Pixelization):
+                    
+                    # Overwrite plane_index=0 so that model image uses critical curves -- improve via config cutomization
 
-                    visuals_2d_model_image = self.inversion_plotter_of_plane(plane_index=plane_index).get_visuals_2d_for_data()
+                    visuals_2d_model_image = self.inversion_plotter_of_plane(plane_index=0).get_visuals_2d_for_data()
 
                 else:
 
