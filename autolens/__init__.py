@@ -69,6 +69,7 @@ from autogalaxy.profiles.light.abstract import LightProfile
 from autogalaxy.profiles.light import standard as lp
 from autogalaxy.profiles.light import snr as lp_snr
 from autogalaxy.profiles.light import linear as lp_linear
+from autogalaxy.profiles.light import shapelets as lp_shapelets
 from autogalaxy.profiles.light import operated as lp_operated
 from autogalaxy.profiles.light import basis as lp_basis
 from autogalaxy.profiles.light import (

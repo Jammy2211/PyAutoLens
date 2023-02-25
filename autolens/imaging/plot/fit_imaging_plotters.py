@@ -211,7 +211,7 @@ class FitImagingPlotter(Plotter):
             if model_image:
 
                 if self.tracer.planes[plane_index].has(cls=aa.Pixelization):
-                    
+
                     # Overwrite plane_index=0 so that model image uses critical curves -- improve via config cutomization
 
                     visuals_2d_model_image = self.inversion_plotter_of_plane(plane_index=0).get_visuals_2d_for_data()
@@ -381,6 +381,9 @@ class FitImagingPlotter(Plotter):
         visuals_2d_no_critical_caustic = self.get_visuals_2d()
         visuals_2d_no_critical_caustic.critical_curves = None
         visuals_2d_no_critical_caustic.caustics = None
+        visuals_2d_no_critical_caustic.origin = None
+        visuals_2d_no_critical_caustic.light_profile_centres = None
+        visuals_2d_no_critical_caustic.mass_profile_centres = None
 
         if image:
 
