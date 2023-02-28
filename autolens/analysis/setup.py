@@ -18,6 +18,7 @@ class SetupHyper(ag.SetupHyper):
         search_noise_cls: Optional[af.NonLinearSearch] = None,
         search_pix_dict: Optional[dict] = None,
         search_noise_dict: Optional[dict] = None,
+        mesh_pixels_fixed: Optional[int] = None
     ):
         """
         The hyper setup of a pipeline, which controls how hyper-features in PyAutoLens template pipelines run,
@@ -71,6 +72,8 @@ class SetupHyper(ag.SetupHyper):
             self.hyper_galaxy_names.append("source")
 
         self.hyper_fixed_after_source = hyper_fixed_after_source
+
+        self.mesh_pixels_fixed = mesh_pixels_fixed
 
     def hyper_galaxy_lens_from(self, result: af.Result, noise_factor_is_model=False):
         """
