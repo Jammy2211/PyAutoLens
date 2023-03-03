@@ -501,6 +501,12 @@ Below is a snippet of the model, showing that different Gaussians are in the mod
         trimmed for conciseness
         ...
 
+**PyAutoLens** also supports Shapelet basis functions, which are appropriate for capturing exponential / disk-like
+features in a galaxy, and therefore may make a good model for most lensed source galaxies.
+
+This is illustrated in full on the ``autogalaxy_workspace`` in the example
+script autolens_workspace/scripts/imaging/modeling/advanced/shapelets.py .
+
 **PyAutoLens** can also apply Bayesian regularization to Basis functions, which smooths the linear light profiles
 (e.g. the Gaussians) in order to prevent over-fitting noise.
 
