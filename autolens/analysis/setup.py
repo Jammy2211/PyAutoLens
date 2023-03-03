@@ -57,6 +57,7 @@ class SetupHyper(ag.SetupHyper):
             search_noise_cls=search_noise_cls,
             search_pix_dict=search_pix_dict,
             search_noise_dict=search_noise_dict,
+            mesh_pixels_fixed=mesh_pixels_fixed
         )
 
         self.hyper_galaxies_lens = hyper_galaxies_lens
@@ -72,8 +73,6 @@ class SetupHyper(ag.SetupHyper):
             self.hyper_galaxy_names.append("source")
 
         self.hyper_fixed_after_source = hyper_fixed_after_source
-
-        self.mesh_pixels_fixed = mesh_pixels_fixed
 
     def hyper_galaxy_lens_from(self, result: af.Result, noise_factor_is_model=False):
         """
