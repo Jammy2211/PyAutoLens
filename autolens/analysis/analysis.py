@@ -354,9 +354,9 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         if len(mesh_list) > 0:
 
             paths.save_object(
-                "preload_sparse_grids_of_planes", result.max_log_likelihood_fit.tracer_to_inversion.sparse_image_plane_grid_pg_list
+                "preload_sparse_grids_of_planes",
+                result.max_log_likelihood_fit.tracer_to_inversion.sparse_image_plane_grid_pg_list,
             )
-
 
         if conf.instance["general"]["hyper"]["stochastic_outputs"]:
             if len(mesh_list) > 0:
