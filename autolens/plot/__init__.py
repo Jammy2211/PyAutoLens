@@ -58,8 +58,10 @@ from autogalaxy.plot.wrap import (
     EinsteinRadiusAXVLine,
     LightProfileCentresScatter,
     MassProfileCentresScatter,
-    CriticalCurvesPlot,
-    CausticsPlot,
+    TangentialCriticalCurvesPlot,
+    TangentialCausticsPlot,
+    RadialCriticalCurvesPlot,
+    RadialCausticsPlot,
     MultipleImagesScatter,
 )
 

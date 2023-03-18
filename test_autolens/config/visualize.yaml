@@ -8,8 +8,10 @@ general:
 include:
   include_2d:
     border: true
-    caustics: false
-    critical_curves: false
+    tangential_caustics: false
+    radial_caustics: false
+    tangential_critical_curves: false
+    radial_critical_curves: false
     grid: true
     inversion_grid: true
     light_profile_centres: true

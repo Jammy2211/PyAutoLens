@@ -47,8 +47,10 @@ class GetVisuals2D(gv2d.GetVisuals2D):
         - border: the border of the mask of the grid used to plot the light object's quantities in 2D.
         - light profile centres: the (y,x) centre of every `LightProfile` in the object.
         - mass profile centres: the (y,x) centre of every `MassProfile` in the object.
-        - critical curves: the critical curves of all of the tracer's mass profiles combined.
-        - caustics: the caustics of all of the tracer's mass profiles combined.
+        - tangential_critical curves: the tangential critical curves of all of the tracer's mass profiles combined.
+        - tangential_caustics: the tangential caustics of all of the tracer's mass profiles combined.
+        - radial_critical curves: the radial critical curves of all of the tracer's mass profiles combined.
+        - radial_caustics: the radial caustics of all of the tracer's mass profiles combined.
 
         When plotting a `Tracer` it is common for plots to only display quantities corresponding to one plane at a time
         (e.g. the convergence in the image plane, the source in the source plane). Therefore, quantities are only
@@ -90,29 +92,47 @@ class GetVisuals2D(gv2d.GetVisuals2D):
             ),
         )
 
+        tangential_critical_curves = None
+        radial_critical_curves = None
+        tangential_caustics = None
+        radial_caustics = None
+
         if plane_index == 0:
 
-            critical_curves = self.get(
-                "critical_curves",
-                tracer.critical_curves_from(grid=grid),
-                "critical_curves",
+            tangential_critical_curves = self.get(
+                "tangential_critical_curves",
+                tracer.tangential_critical_curve_list_from(grid=grid),
+                "tangential_critical_curves",
             )
-        else:
 
-            critical_curves = None
+            radial_critical_curves = self.get(
+                "radial_critical_curves",
+                tracer.radial_critical_curve_list_from(grid=grid),
+                "radial_critical_curves",
+            )
 
         if plane_index == 1:
-            caustics = self.get("caustics", tracer.caustics_from(grid=grid), "caustics")
-        else:
-            caustics = None
+            tangential_caustics = self.get(
+                "tangential_caustics",
+                tracer.tangential_caustic_list_from(grid=grid),
+                "tangential_caustics",
+            )
+
+            radial_caustics = self.get(
+                "radial_caustics",
+                tracer.radial_caustic_list_from(grid=grid),
+                "radial_caustics",
+            )
 
         return self.visuals + self.visuals.__class__(
             origin=origin,
             border=border,
             light_profile_centres=light_profile_centres,
             mass_profile_centres=mass_profile_centres,
-            critical_curves=critical_curves,
-            caustics=caustics,
+            tangential_critical_curves=tangential_critical_curves,
+            tangential_caustics=tangential_caustics,
+            radial_critical_curves=radial_critical_curves,
+            radial_caustics=radial_caustics,
         )
 
     def via_fit_imaging_from(self, fit: FitImaging) -> aplt.Visuals2D:
