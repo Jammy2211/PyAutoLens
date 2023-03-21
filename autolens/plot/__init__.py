@@ -19,6 +19,7 @@ from autoarray.plot.wrap.base import (
     YLabel,
     XLabel,
     Legend,
+    Annotate,
     Text,
     Output,
 )

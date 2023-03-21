@@ -330,6 +330,34 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
         0.063911, 1.0e-4
     )
 
+    fit_linear = al.FitImaging(
+        dataset=masked_imaging,
+        tracer=tracer_linear,
+        settings_inversion=al.SettingsInversion(
+            use_w_tilde=False,
+            use_positive_only_solver=True,
+            force_edge_pixels_to_zeros=True
+        ),
+    )
+
+    assert fit_linear.inversion.reconstruction == pytest.approx(
+        np.array(
+            [
+                100.01548,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+            ]
+        ),
+        1.0e-4,
+    )
+    assert fit_linear.figure_of_merit == pytest.approx(-84.11166, 1.0e-4)
 
 def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_tilde():
 

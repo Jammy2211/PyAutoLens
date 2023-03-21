@@ -24,7 +24,7 @@ The chapter contains the following tutorials:
 - How to use inversions to fit a lens model.
 
 `Tutorial 7: Adaptive Pixelization <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_4_pixelizations/tutorial_7_adaptive_pixelization.ipynb>`_
-- A Voronoi pixelization which adapts to the mass model's magnification.
+- A Voronoi mesh which adapts to the mass model's magnification.
 
 `Tutorial 8: Model Fit <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_4_pixelizations/tutorial_8_model_fit.ipynb>`_
 - An example lens modeling pipeline which uses an inversion.
