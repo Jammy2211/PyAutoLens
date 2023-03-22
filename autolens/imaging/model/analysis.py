@@ -289,10 +289,10 @@ class AnalysisImaging(AnalysisDataset):
 
             try:
                 fit = self.fit_imaging_via_instance_from(instance=instance)
-            except exc.RayTracingException:
+                fit.figure_of_merit
+            except Exception:
+                logger.info("Profiling failed. Returning without outputting information.")
                 return
-
-            fit.figure_of_merit
 
         fit_time = (time.time() - start) / repeats
 
