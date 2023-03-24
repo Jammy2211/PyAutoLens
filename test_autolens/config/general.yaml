@@ -14,6 +14,8 @@ hyper:
   hyper_minimum_percent: 0.01
   hyper_noise_limit: 100000000.0
   stochastic_outputs: false
+inversion:
+  check_reconstruction: false       # If True, the inversion's reconstruction is checked to ensure the solution of a meshs's mapper is not an invalid solution where the values are all the same.
 model:
   ignore_prior_limits: true
 numba:
