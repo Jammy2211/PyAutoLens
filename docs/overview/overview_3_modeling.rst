@@ -85,8 +85,8 @@ galaxies
                 centre_0                         GaussianPrior, mean = 0.0, sigma = 0.3
                 centre_1                         GaussianPrior, mean = 0.0, sigma = 0.3
             ell_comps
-                ell_comps_0               GaussianPrior, mean = 0.0, sigma = 0.5
-                ell_comps_1               GaussianPrior, mean = 0.0, sigma = 0.5
+                ell_comps_0                      GaussianPrior, mean = 0.0, sigma = 0.5
+                ell_comps_1                      GaussianPrior, mean = 0.0, sigma = 0.5
             intensity                            LogUniformPrior, lower_limit = 1e-06, upper_limit = 1000000.0
             effective_radius                     UniformPrior, lower_limit = 0.0, upper_limit = 30.0
         mass
@@ -94,8 +94,8 @@ galaxies
                 centre_0                         GaussianPrior, mean = 0.0, sigma = 0.1
                 centre_1                         GaussianPrior, mean = 0.0, sigma = 0.1
             ell_comps
-                ell_comps_0               GaussianPrior, mean = 0.0, sigma = 0.3
-                ell_comps_1               GaussianPrior, mean = 0.0, sigma = 0.3
+                ell_comps_0                      GaussianPrior, mean = 0.0, sigma = 0.3
+                ell_comps_1                      GaussianPrior, mean = 0.0, sigma = 0.3
             einstein_radius                      UniformPrior, lower_limit = 0.0, upper_limit = 8.0
     source
         redshift                                 1.0
@@ -104,8 +104,8 @@ galaxies
                 centre_0                         GaussianPrior, mean = 0.0, sigma = 0.3
                 centre_1                         GaussianPrior, mean = 0.0, sigma = 0.3
             ell_comps
-                ell_comps_0               GaussianPrior, mean = 0.0, sigma = 0.5
-                ell_comps_1               GaussianPrior, mean = 0.0, sigma = 0.5
+                ell_comps_0                      GaussianPrior, mean = 0.0, sigma = 0.5
+                ell_comps_1                      GaussianPrior, mean = 0.0, sigma = 0.5
             intensity                            LogUniformPrior, lower_limit = 1e-06, upper_limit = 1000000.0
             effective_radius                     UniformPrior, lower_limit = 0.0, upper_limit = 30.0
 

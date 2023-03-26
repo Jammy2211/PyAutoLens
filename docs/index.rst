@@ -76,7 +76,9 @@ below shows this in action:
 
     lens_galaxy = al.Galaxy(redshift=0.5, mass=sie)
 
-    """The source galaxy has an elliptical exponential light profile and is at redshift 1.0."""
+    """
+    The source galaxy has an elliptical exponential light profile and is at redshift 1.0.
+    """
 
     exponential = al.lp.Exponential(
         centre=(0.3, 0.2),
@@ -222,6 +224,7 @@ strong gravitational lensing with **PyAutoLens**.
 
    general/workspace
    general/configs
+   general/model_cookbook
    general/likelihood_function
    general/demagnified_solutions
    general/citations
