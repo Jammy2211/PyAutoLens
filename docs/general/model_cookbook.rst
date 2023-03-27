@@ -51,38 +51,38 @@ If we print the ``info`` attribute of the model we get information on all of the
 This gives the following output:
 
 .. code-block:: bash
-
-galaxies
-    lens
-        redshift                                 0.5
-        bulge
-            centre
-                centre_0                         GaussianPrior, mean = 0.0, sigma = 0.3
-                centre_1                         GaussianPrior, mean = 0.0, sigma = 0.3
-            ell_comps
-                ell_comps_0                      GaussianPrior, mean = 0.0, sigma = 0.5
-                ell_comps_1                      GaussianPrior, mean = 0.0, sigma = 0.5
-            intensity                            LogUniformPrior, lower_limit = 1e-06, upper_limit = 1000000.0
-            effective_radius                     UniformPrior, lower_limit = 0.0, upper_limit = 30.0
-        mass
-            centre
-                centre_0                         GaussianPrior, mean = 0.0, sigma = 0.1
-                centre_1                         GaussianPrior, mean = 0.0, sigma = 0.1
-            ell_comps
-                ell_comps_0                      GaussianPrior, mean = 0.0, sigma = 0.3
-                ell_comps_1                      GaussianPrior, mean = 0.0, sigma = 0.3
-            einstein_radius                      UniformPrior, lower_limit = 0.0, upper_limit = 8.0
-    source
-        redshift                                 1.0
-        disk
-            centre
-                centre_0                         GaussianPrior, mean = 0.0, sigma = 0.3
-                centre_1                         GaussianPrior, mean = 0.0, sigma = 0.3
-            ell_comps
-                ell_comps_0                      GaussianPrior, mean = 0.0, sigma = 0.5
-                ell_comps_1                      GaussianPrior, mean = 0.0, sigma = 0.5
-            intensity                            LogUniformPrior, lower_limit = 1e-06, upper_limit = 1000000.0
-            effective_radius                     UniformPrior, lower_limit = 0.0, upper_limit = 30.0
+    
+    galaxies
+        lens
+            redshift                                 0.5
+            bulge
+                centre
+                    centre_0                         GaussianPrior, mean = 0.0, sigma = 0.3
+                    centre_1                         GaussianPrior, mean = 0.0, sigma = 0.3
+                ell_comps
+                    ell_comps_0                      GaussianPrior, mean = 0.0, sigma = 0.5
+                    ell_comps_1                      GaussianPrior, mean = 0.0, sigma = 0.5
+                intensity                            LogUniformPrior, lower_limit = 1e-06, upper_limit = 1000000.0
+                effective_radius                     UniformPrior, lower_limit = 0.0, upper_limit = 30.0
+            mass
+                centre
+                    centre_0                         GaussianPrior, mean = 0.0, sigma = 0.1
+                    centre_1                         GaussianPrior, mean = 0.0, sigma = 0.1
+                ell_comps
+                    ell_comps_0                      GaussianPrior, mean = 0.0, sigma = 0.3
+                    ell_comps_1                      GaussianPrior, mean = 0.0, sigma = 0.3
+                einstein_radius                      UniformPrior, lower_limit = 0.0, upper_limit = 8.0
+        source
+            redshift                                 1.0
+            disk
+                centre
+                    centre_0                         GaussianPrior, mean = 0.0, sigma = 0.3
+                    centre_1                         GaussianPrior, mean = 0.0, sigma = 0.3
+                ell_comps
+                    ell_comps_0                      GaussianPrior, mean = 0.0, sigma = 0.5
+                    ell_comps_1                      GaussianPrior, mean = 0.0, sigma = 0.5
+                intensity                            LogUniformPrior, lower_limit = 1e-06, upper_limit = 1000000.0
+                effective_radius                     UniformPrior, lower_limit = 0.0, upper_limit = 30.0
 
 More Complex Lens Models
 ------------------------
@@ -151,8 +151,8 @@ The API can also be extended to compose lens models where there are multiple gal
     model = af.Collection(
         galaxies=af.Collection(
             lens_0=lens_0,
-            lens_1=lens_1, s
-            ource_0=source_0,
+            lens_1=lens_1, 
+            source_0=source_0,
             source_1=source_1
         )
     )
@@ -224,7 +224,7 @@ We can customize the priors of the lens model component individual parameters as
 Model Customization
 -------------------
 
-We can customize the lens model components parameters in a number of different ways, as shown below:
+We can customize the lens model parameters in a number of different ways, as shown below:
 
 .. code-block:: python
 
@@ -270,7 +270,7 @@ We can customize the lens model components parameters in a number of different w
     # Assert that the effective radius of the bulge is larger than that of the disk.
     # (Assertions can only be added at the end of model composition, after all components
     # have been bright together in a `Collection`.
-    model.add_assertion(model.galaxies.bulge.effective_radius > model.galaxies.bulge.disk)
+    model.add_assertion(model.galaxies.bulge.effective_radius > model.galaxies.disk.effective_radius)
 
     # Assert that the Einstein Radius is below 3.0":
     model.add_assertion(model.galaxies.mass.einstein_radius < 3.0)
@@ -310,12 +310,17 @@ profiles.
 
 The following example notebooks show how to compose and fit these models:
 
+https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/modeling/features/multi_gaussian_expansion.ipynb
+https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/modeling/features/shapelets.ipynb
+
 Model Linking (Advanced)
 ------------------------
 
 When performing non-linear search chaining, the inferred model of one phase can be linked to the model.
 
 The following example notebooks show how to compose and fit these models:
+
+https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/advanced/chaining/start_here.ipynb
 
 Across Datasets (Advanced)
 --------------------------
@@ -325,10 +330,12 @@ but certain parameters are free to vary across the datasets.
 
 The following example notebooks show how to compose and fit these models:
 
+https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/multi/modeling/start_here.ipynb
+
 Relations (Advanced)
 --------------------
 
-In the model above, an extra free parameter `intensity` was added for every dataset.
+In the model above, an extra free parameter ``intensity`` was added for every dataset.
 
 With 2 datasets this did not produce a complex model, but if there are 5+ datasets one will quickly find that the
 model complexity increases dramatically.
@@ -337,6 +344,8 @@ We can therefore compose models where the free parameter(s) vary according to a 
 datasets.
 
 The following example notebooks show how to compose and fit these models:
+
+https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/multi/modeling/features/wavelength_dependence.ipynb
 
 PyAutoFit API
 -------------
