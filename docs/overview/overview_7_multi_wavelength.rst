@@ -118,14 +118,27 @@ We compose an initial lens model as per usual.
 
 .. code-block:: python
 
+    # Lens:
+
+    bulge = af.Model(al.lp.Sersic)
+    mass = af.Model(al.mp.Isothermal)
+    shear = af.Model(al.mp.ExternalShear)
+
     lens = af.Model(
         al.Galaxy,
         redshift=0.5,
-        bulge=al.lp.Sersic,
-        mass=al.mp.Isothermal,
-        shear=al.mp.ExternalShear,
+        bulge=bulge,
+        mass=mass,
+        shear=shear,
     )
-    source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
+
+    # Source:
+
+    bulge = af.Model(al.lp.Sersic)
+
+    source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+
+    # Overall Lens Model:
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

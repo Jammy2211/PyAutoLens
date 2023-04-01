@@ -359,6 +359,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     )
     assert fit_linear.figure_of_merit == pytest.approx(-84.11166, 1.0e-4)
 
+
 def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_tilde():
 
     grid = al.Grid2D.uniform(shape_native=(21, 21), pixel_scales=0.1, sub_size=1)

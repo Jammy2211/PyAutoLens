@@ -38,13 +38,23 @@ determined by a fitting procedure.
 
 .. code-block:: python
 
-    lens_galaxy_model = af.Model(
+    # Lens:
+
+    bulge = af.Model(al.lp.DevVaucouleurs)
+    mass = af.Model(al.mp.Isothermal)
+
+    lens = af.Model(
         al.Galaxy,
         redshift=0.5,
-        bulge=al.lp.DevVaucouleurs,
-        mass=al.mp.Isothermal
+        bulge=bulge,
+        mass=mass
     )
-    source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=al.lp.Exponential)
+
+    # Source:
+
+    disk = af.Model(al.lp.Exponential)
+
+    source = af.Model(al.Galaxy, redshift=1.0, disk=disk)
 
 We combine the lens and source model galaxies above into a ``Collection``, which is the model we will fit. Note how
 we could easily extend this object to compose highly complex models containing many galaxies.
@@ -55,7 +65,7 @@ can be extended to include other components than just galaxies.
 
 In this example, we therefore fit our strong lens data with two galaxies:
 
-    - A lens galaxy with a elliptisl Dev Vaucouleurs ``LightProfile`` representing a bulge and
+    - A lens galaxy with a elliptical Dev Vaucouleurs ``LightProfile`` representing a bulge and
       elliptical isothermal ``MassProfile`` representing its mass.
     - A source galaxy with an elliptical exponential ``LightProfile`` representing a disk.
 
@@ -66,7 +76,9 @@ their priors:
 
 .. code-block:: python
 
-    galaxies = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
+    # Overall Lens Model:
+
+    galaxies = af.Collection(lens=lens, source=source)
     model = af.Collection(galaxies=galaxies)
 
 .. code-block:: python
@@ -357,29 +369,36 @@ using any combination of ``LightProfile``'s and ``MassProfile``'s:
 
 .. code-block:: python
 
-    lens_galaxy_model = af.Model(
-        al.Galaxy,
-        redshift=0.5,
-        bulge=al.lp.DevVaucouleurs,
-        mass=al.mp.Isothermal
-    )
+    # Lens:
+
+    bulge = af.Model(al.lp.DevVaucouleurs)
+    mass = af.Model(al.mp.Isothermal)
 
     """
     This aligns the light and mass profile centres in the model, reducing the
     number of free parameter fitted for by Dynesty by 2.
     """
-    lens_galaxy_model.bulge.centre = lens_galaxy_model.mass.centre
+    bulge.centre = mass.centre
 
     """
     This fixes the lens galaxy light profile's effective radius to a value of
     0.8 arc-seconds, removing another free parameter.
     """
-    lens_galaxy_model.bulge.effective_radius = 0.8
+    bulge.effective_radius = 0.8
 
     """
     This forces the mass profile's einstein radius to be above 1.0 arc-seconds.
     """
-    lens_galaxy_model.mass.add_assertion(lens_galaxy_model.mass.einstein_radius > 1.0)
+    mass.add_assertion(lens.mass.einstein_radius > 1.0)
+
+    lens = af.Model(
+        al.Galaxy,
+        redshift=0.5,
+        bulge=bulge,
+        mass=mass
+    )
+
+
 
 The above fit used the non-linear search ``dynesty``, but **PyAutoLens** supports many other methods and their
 setting can be easily customized:
@@ -402,19 +421,26 @@ model is inferred.
 
 .. code-block:: python
 
-    sersic_linear = al.lp_linear.Sersic()
+    # Lens:
+
+    bulge = af.Model(al.lp_linear.DevVaucouleurs)
+    disk = af.Model(al.lp_linear.Sersic)
     
-    lens_model_linear = af.Model(
+    lens = af.Model(
         al.Galaxy,
         redshift=0.5,
-        bulge=ag.lp_linear.DevVaucouleurs,
-        disk=ag.lp_linear.Sersic,
+        bulge=bulge,
+        disk=disk
     )
-    
-    source_model_linear = af.Model(al.Galaxy, redshift=1.0, disk=al.lp_linear.Exponential)
 
-Basis Functions
----------------
+    # Source:
+
+    disk = af.Model(al.lp_linear.Exponential)
+
+    source = af.Model(al.Galaxy, redshift=1.0, disk=disk)
+
+Multi Gaussian Expansion
+------------------------
 
 A natural extension of linear light profiles are basis functions, which group many linear light profiles together in
 order to capture complex and irregular structures in a galaxy's emission.
@@ -422,28 +448,52 @@ order to capture complex and irregular structures in a galaxy's emission.
 Using a clever model parameterization a basis can be composed which corresponds to just N = 5-10 parameters, making
 model-fitting efficient and robust.
 
-Below, we compose a basis of 10 Gaussians which all share the same `centre` and `ell_comps`. Their `sigma`
-values are set via the relation `y = a + (log10(i+1) + b)`, where `i` is the  Gaussian index and `a` and `b` are free
-parameters. This basis is could be used to represent the lens galaxy's light.
+Below, we compose a basis of 30 Gaussians which all share the same `centre` and `ell_comps`. Their `sigma`
+values are set in growing log10 bins in steps from 0.01 to 3.0 arc-seconds, which is the radius of the mask.
 
-Because `a` and `b` are free parameters (as opposed to `sigma` which can assume many values), we are able to
-compose and fit `Basis` objects which can capture very complex light distributions with just N = 5-10 non-linear
-parameters!
+The `Basis` objects below can capture very complex light distributions with just N = 4 non-linear parameters!
 
 .. code-block:: python
 
-    bulge_a = af.UniformPrior(lower_limit=0.0, upper_limit=0.2)
-    bulge_b = af.UniformPrior(lower_limit=0.0, upper_limit=10.0)
+    total_gaussians = 30
 
-    gaussians_lens = af.Collection(af.Model(al.lp_linear.Gaussian) for _ in range(10))
+    # The sigma values of the Gaussians will be fixed to values spanning 0.01 to the mask radius, 3.0".
+    log10_sigma_list = np.linspace(-2, np.log10(3.0), total_gaussians)
 
-    for i, gaussian in enumerate(gaussians_lens):
+    # By defining the centre here, it creates two free parameters that are assigned below to all Gaussians.
 
-        gaussian.centre = gaussians_lens[0].centre
-        gaussian.ell_comps = gaussians_lens[0].ell_comps
-        gaussian.sigma = bulge_a + (bulge_b * np.log10(i+1))
+    centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+    centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 
-    bulge = af.Model(al.lp_basis.Basis, light_profile_list=gaussians_lens)
+    # A list of Gaussian model components whose parameters are customized belows.
+
+    gaussian_list = af.Collection(
+        af.Model(al.lp_linear.Gaussian) for _ in range(total_gaussians)
+    )
+
+    # Iterate over every Gaussian and customize its parameters.
+
+    for i, gaussian in enumerate(gaussian_list):
+
+        # All Gaussians have same y and x centre.
+
+        gaussian.centre.centre_0 = centre_0
+        gaussian.centre.centre_1 = centre_1
+
+        # All Gaussians have same elliptical components.
+
+        gaussian.ell_comps = gaussian_list[0].ell_comps
+
+        # All Gaussian sigmas are fixed to values above.
+
+        gaussian.sigma = 10 ** log10_sigma_list[i]
+
+    # The Basis object groups many light profiles together into a single model component.
+
+    bulge = af.Model(
+        al.lp_basis.Basis,
+        light_profile_list=gaussian_list,
+    )
 
 The bulge's ``info`` attribute describes the basis model composition:
 
@@ -501,11 +551,17 @@ Below is a snippet of the model, showing that different Gaussians are in the mod
         trimmed for conciseness
         ...
 
+Shapelets
+---------
+
 **PyAutoLens** also supports Shapelet basis functions, which are appropriate for capturing exponential / disk-like
 features in a galaxy, and therefore may make a good model for most lensed source galaxies.
 
 This is illustrated in full on the ``autogalaxy_workspace`` in the example
 script autolens_workspace/scripts/imaging/modeling/advanced/shapelets.py .
+
+Regularization
+--------------
 
 **PyAutoLens** can also apply Bayesian regularization to Basis functions, which smooths the linear light profiles
 (e.g. the Gaussians) in order to prevent over-fitting noise.

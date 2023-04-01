@@ -17,6 +17,8 @@ source galaxy with a Sersic light profile:
 
 .. code-block:: python
 
+    # Lens:
+
     bulge = af.Model(al.lp.Sersic)
     mass = af.Model(al.mp.Isothermal)
 
@@ -27,9 +29,13 @@ source galaxy with a Sersic light profile:
         mass=mass,
     )
 
+    # Source:
+
     bulge = af.Model(al.lp.Sersic)
 
     source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+
+    # Overall Lens Model:
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -91,6 +97,8 @@ The API above can be easily extended to compose lens models where each galaxy ha
 
 .. code-block:: python
 
+    # Lens:
+
     bulge = af.Model(al.lp.Sersic)
     disk = af.Model(al.lp.Exponential)
 
@@ -106,10 +114,14 @@ The API above can be easily extended to compose lens models where each galaxy ha
         shear=shear,
     )
 
+    # Source:
+
     bulge = af.Model(al.lp.Sersic)
     disk = af.Model(al.lp.Exponential)
 
     source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=disk)
+
+    # Overall Lens Model:
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -140,13 +152,19 @@ The API can also be extended to compose lens models where there are multiple gal
         mass=mass,
     )
 
+    # Source 0:
+
     bulge = af.Model(al.lp.Sersic)
 
     source_0 = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
+    # Source 1 :
+
     bulge = af.Model(al.lp.Sersic)
 
     source_1 = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+
+    # Overall Lens Model:
 
     model = af.Collection(
         galaxies=af.Collection(
@@ -169,7 +187,8 @@ Concise API
 If a light or mass profile is passed directly to the `af.Model` of a galaxy, it is automatically assigned to be a
 `af.Model` component of the galaxy.
 
-This means we can write the model above comprising multiple light and mass profiles more concisely as follows:
+This means we can write the model above comprising multiple light and mass profiles more concisely as follows (also
+removing the comments reading Lens / Source / Overall Lens Model to make the code more readable):
 
 .. code-block:: python
 
@@ -191,12 +210,15 @@ This means we can write the model above comprising multiple light and mass profi
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
+
 Prior Customization
 -------------------
 
 We can customize the priors of the lens model component individual parameters as follows:
 
 .. code-block:: python
+
+    # Lens:
 
     bulge = af.Model(al.lp.Sersic)
     bulge.intensity = af.LogUniformPrior(lower_limit=1e-4, upper_limit=1e4)
@@ -216,8 +238,12 @@ We can customize the priors of the lens model component individual parameters as
 
     bulge = af.Model(al.lp.Sersic)
 
+    # Source
+
     source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
     source.effective_radius = af.GaussianPrior(mean=0.1, sigma=0.05, lower_limit=0.0, upper_limit=1.0)
+
+    # Overall Lens Model:
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -227,6 +253,8 @@ Model Customization
 We can customize the lens model parameters in a number of different ways, as shown below:
 
 .. code-block:: python
+
+    # Lens:
 
     bulge = af.Model(al.lp.Sersic)
     disk = af.Model(al.lp.Exponential)
@@ -260,10 +288,14 @@ We can customize the lens model parameters in a number of different ways, as sho
         shear=shear,
     )
 
+    # Source:
+
     bulge = af.Model(al.lp.Sersic)
     disk = af.Model(al.lp.Exponential)
 
     source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=disk)
+
+    # Overall Lens Model:
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -274,6 +306,16 @@ We can customize the lens model parameters in a number of different ways, as sho
 
     # Assert that the Einstein Radius is below 3.0":
     model.add_assertion(model.galaxies.mass.einstein_radius < 3.0)
+
+Available Model Components
+--------------------------
+
+The light profiles, mass profiles and other components that can be used for lens modeling are given at the following
+API documentation pages:
+
+ - https://pyautolens.readthedocs.io/en/latest/api/light.html
+ - https://pyautolens.readthedocs.io/en/latest/api/mass.html
+ - https://pyautolens.readthedocs.io/en/latest/api/pixelization.html
 
 JSon Outputs
 ------------

@@ -19,4 +19,4 @@ model.
 An example of such a model might be determining the parent distribution from which the density slope of strong lens
 galaxies are drawn.
 
-A full description of graphical and hierarchical models can be found `in the graphical package of the autolens_workspace <https://github.com/Jammy2211/autolens_workspace/tree/release/notebooks/imaging/graphical>`_.
+A full description of graphical and hierarchical models can be found `in the graphical package of the autolens_workspace <https://github.com/Jammy2211/autolens_workspace/tree/release/notebooks/imaging/advanced/graphical>`_.

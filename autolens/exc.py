@@ -47,7 +47,7 @@ class PixelizationException(af.exc.FitException):
 
 class PointExtractionException(Exception):
     """
-    Raises exceptions associated with the extraction of quantites in the  `point` module, where the name of a
+    Raises exceptions associated with the extraction of quantities in the  `point` module, where the name of a
     `PointSource` profile often relates to a model-component.
 
     For example if one tries to extract a profile `point_1` but there is no corresponding `PointSource` profile

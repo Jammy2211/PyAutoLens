@@ -99,7 +99,8 @@ lens ``Galaxy`` with an ``Isothermal`` ``MassProfile`` lenses a background sourc
     and an input cosmology to determine how light is deflected on its path to Earth.
     """
     tracer = al.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy], cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15()
+        galaxies=[lens_galaxy, source_galaxy], 
+        cosmology: al.cosmo.Planck15()
     )
 
     """
@@ -139,17 +140,22 @@ fits the lens galaxy's mass with an ``Isothermal`` and the source galaxy's light
     """
     We model the lens galaxy using an elliptical isothermal mass profile and
     the source galaxy using an elliptical sersic light profile.
-    """
-    lens_mass_profile = al.mp.Isothermal
-    source_light_profile = al.lp.Sersic
 
-    """
     To setup these profiles as model components whose parameters are free & fitted for
-    we set up each Galaxy as a Model and define the model as a Collection of all galaxies.
+    we set up each Galaxy as a `Model` and define the model as a `Collection` of all galaxies.
     """
-    lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=lens_mass_profile)
-    source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=source_light_profile)
-    model = af.Collection(galaxies=af.Collection(lens=lens_galaxy_model, source=source_galaxy_model))
+    # Lens:
+
+    mass = af.Model(al.mp.Isothermal)
+    lens = af.Model(al.Galaxy, redshift=0.5, mass=lens_mass_profile)
+
+    # Source:
+
+    disk = af.Model(al.lp.Sersic)
+    source = af.Model(al.Galaxy, redshift=1.0, disk=disk)
+
+    # Overall Lens Model:
+    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
     """
     We define the non-linear search used to fit the model to the data (in this case, Dynesty).

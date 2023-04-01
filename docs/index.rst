@@ -55,13 +55,13 @@ below shows this in action:
 
     import autolens as al
     import autolens.plot as aplt
+    from astropy import cosmology as cosmo
 
     """
     To describe the deflection of light by mass, two-dimensional grids of (y,x) Cartesian
     coordinates are used.
     """
-
-    grid_2d = al.Grid2D.uniform(
+    grid = al.Grid2D.uniform(
         shape_native=(50, 50),
         pixel_scales=0.05,  # <- Conversion from pixel units to arc-seconds.
     )
@@ -69,41 +69,39 @@ below shows this in action:
     """
     The lens galaxy has an elliptical isothermal mass profile and is at redshift 0.5.
     """
-
-    sie = al.mp.Isothermal(
+    mass = al.mp.Isothermal(
         centre=(0.0, 0.0), ell_comps=(0.1, 0.05), einstein_radius=1.6
     )
 
-    lens_galaxy = al.Galaxy(redshift=0.5, mass=sie)
+    lens_galaxy = al.Galaxy(redshift=0.5, mass=mass)
 
     """
     The source galaxy has an elliptical exponential light profile and is at redshift 1.0.
     """
-
-    exponential = al.lp.Exponential(
+    disk = al.lp.Exponential(
         centre=(0.3, 0.2),
         ell_comps=(0.05, 0.25),
         intensity=0.05,
         effective_radius=0.5,
     )
 
-    source_galaxy = al.Galaxy(redshift=1.0, light=exponential)
+    source_galaxy = al.Galaxy(redshift=1.0, disk=disk)
 
     """
     We create the strong lens using a Tracer, which uses the galaxies, their redshifts
     and an input cosmology to determine how light is deflected on its path to Earth.
     """
-
     tracer = al.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy], cosmology=al.cosmo.Planck15()
+        galaxies=[lens_galaxy, source_galaxy],
+        cosmology: al.cosmo.Planck15()
     )
 
     """
     We can use the Grid2D and Tracer to perform many lensing calculations, for example
     plotting the image of the lensed source.
     """
-
-    aplt.Tracer.image(tracer=tracer, grid=grid_2d)
+    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
+    tracer_plotter.figures_2d(image=True)
 
 To perform lens modeling, **PyAutoLens** adopts the probabilistic programming
 language `PyAutoFit <https://github.com/rhayes777/PyAutoFit>`_. **PyAutoFit** allows users to compose a
@@ -130,32 +128,37 @@ code below shows how to setup and fit a lens model to a dataset:
     )
 
     """
-    Create a mask for the data, which we setup as a 3.0" circle.
+    Create a mask for the imaging data, which we setup as a 3.0" circle, and apply it.
     """
     mask = al.Mask2D.circular(
         shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
     )
-    imaging = imaging.apply_mask(mask=mask_2d)
+    imaging = imaging.apply_mask(mask=mask)
 
     """
     We model the lens galaxy using an elliptical isothermal mass profile and
     the source galaxy using an elliptical sersic light profile.
-    """
-    lens_mass_profile = al.mp.Isothermal
-    source_light_profile = al.lp.Sersic
 
-    """
     To setup these profiles as model components whose parameters are free & fitted for
-    we set up each Galaxy as a Model and define the model as a Collection of all galaxies.
+    we set up each Galaxy as a `Model` and define the model as a `Collection` of all galaxies.
     """
-    lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=lens_mass_profile)
-    source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, disk=source_light_profile)
-    model = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
+    # Lens:
+
+    mass = af.Model(al.mp.Isothermal)
+    lens = af.Model(al.Galaxy, redshift=0.5, mass=lens_mass_profile)
+
+    # Source:
+
+    disk = af.Model(al.lp.Sersic)
+    source = af.Model(al.Galaxy, redshift=1.0, disk=disk)
+
+    # Overall Lens Model:
+    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
     """
     We define the non-linear search used to fit the model to the data (in this case, Dynesty).
     """
-    search = af.DynestyStatic(name="search[example]", n_live_points=50)
+    search = af.DynestyStatic(name="search[example]", nlive=50)
 
     """
     We next set up the `Analysis`, which contains the `log likelihood function` that the

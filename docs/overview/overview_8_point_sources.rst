@@ -151,11 +151,27 @@ the lens model.
 
 .. code-block:: python
 
-    lens_galaxy_model = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
-    source_galaxy_model = af.Model(al.Galaxy, redshift=1.0, point_0=al.ps.Point)
+    # Lens:
 
-    galaxies = af.Collection(lens=lens_galaxy_model, source=source_galaxy_model)
+    bulge = af.Model(al.lp.Sersic)
+    mass = af.Model(al.mp.Isothermal)
+
+    lens = af.Model(
+        al.Galaxy, redshift=0.5, bulge=bulge, mass=mass
+    )
+
+    # Source:
+
+    point_0 = af.Model(al.ps.Point)
+
+    source = af.Model(al.Galaxy, redshift=1.0, point_0=point_0)
+
+    # Overall Lens Model:
+
+    galaxies = af.Collection(lens=lens, source=source)
     model = af.Collection(galaxies=galaxies)
+
+    # Search + Analysis + Model-Fit
 
     search = af.DynestyStatic(name="overview_point_source")
 
