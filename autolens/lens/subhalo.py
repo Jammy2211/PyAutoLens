@@ -264,7 +264,7 @@ class SubhaloPlotter(AbstractPlotter):
         self.open_subplot_figure(number_subplots=4)
 
         self.set_title("Image")
-        self.fit_imaging_detect_plotter.figures_2d(image=True)
+        self.fit_imaging_detect_plotter.figures_2d(data=True)
 
         self.set_title("Signal-To-Noise Map")
         self.fit_imaging_detect_plotter.figures_2d(signal_to_noise_map=True)

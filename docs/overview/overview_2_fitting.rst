@@ -17,7 +17,7 @@ from .fits files as an ``Imaging`` object:
     dataset_path = "/path/to/dataset/folder"
 
     imaging = al.Imaging.from_fits(
-        image_path=path.join(dataset_path, "image.fits"),
+        data_path=path.join(dataset_path, "image.fits"),
         psf_path=path.join(dataset_path, "psf.fits"),
         noise_map_path=path.join(dataset_path, "noise_map.fits"),
         pixel_scales=0.1,

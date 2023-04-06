@@ -269,7 +269,7 @@ class FitImagingPlotter(Plotter):
 
             self.open_subplot_figure(number_subplots=4)
 
-            self.figures_2d(image=True)
+            self.figures_2d(data=True)
             self.figures_2d_of_planes(subtracted_image=True, plane_index=plane_index)
             self.figures_2d_of_planes(model_image=True, plane_index=plane_index)
             self.figures_2d_of_planes(plane_image=True, plane_index=plane_index)
@@ -281,7 +281,7 @@ class FitImagingPlotter(Plotter):
 
     def subplot(
         self,
-        image: bool = False,
+        data: bool = False,
         noise_map: bool = False,
         signal_to_noise_map: bool = False,
         model_image: bool = False,
@@ -298,7 +298,7 @@ class FitImagingPlotter(Plotter):
 
         Parameters
         ----------
-        image
+        data
             Whether or not to include a 2D plot (via `imshow`) of the image data.
         noise_map
             Whether or not to include a 2D plot (via `imshow`) of the noise map.
@@ -318,7 +318,7 @@ class FitImagingPlotter(Plotter):
             The default filename of the output subplot if written to hard-disk.
         """
         self._subplot_custom_plot(
-            image=image,
+            data=data,
             noise_map=noise_map,
             signal_to_noise_map=signal_to_noise_map,
             model_image=model_image,
@@ -333,7 +333,7 @@ class FitImagingPlotter(Plotter):
         Standard subplot of the attributes of the plotter's `FitImaging` object.
         """
         return self.subplot(
-            image=True,
+            data=True,
             signal_to_noise_map=True,
             model_image=True,
             residual_map=True,
@@ -343,7 +343,7 @@ class FitImagingPlotter(Plotter):
 
     def figures_2d(
         self,
-        image: bool = False,
+        data: bool = False,
         noise_map: bool = False,
         signal_to_noise_map: bool = False,
         model_image: bool = False,
@@ -360,7 +360,7 @@ class FitImagingPlotter(Plotter):
 
         Parameters
         ----------
-        image
+        data
             Whether to make a 2D plot (via `imshow`) of the image data.
         noise_map
             Whether to make a 2D plot (via `imshow`) of the noise map.
@@ -385,7 +385,7 @@ class FitImagingPlotter(Plotter):
         visuals_2d_no_critical_caustic.light_profile_centres = None
         visuals_2d_no_critical_caustic.mass_profile_centres = None
 
-        if image:
+        if data:
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,

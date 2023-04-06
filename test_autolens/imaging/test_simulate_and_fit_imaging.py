@@ -47,13 +47,13 @@ def test__perfect_fit__chi_squared_0():
         os.makedirs(file_path)
 
     imaging.output_to_fits(
-        image_path=path.join(file_path, "image.fits"),
+        data_path=path.join(file_path, "image.fits"),
         noise_map_path=path.join(file_path, "noise_map.fits"),
         psf_path=path.join(file_path, "psf.fits"),
     )
 
     imaging = al.Imaging.from_fits(
-        image_path=path.join(file_path, "image.fits"),
+        data_path=path.join(file_path, "image.fits"),
         noise_map_path=path.join(file_path, "noise_map.fits"),
         psf_path=path.join(file_path, "psf.fits"),
         pixel_scales=0.2,

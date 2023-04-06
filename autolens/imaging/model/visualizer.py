@@ -45,7 +45,7 @@ class VisualizerImaging(Visualizer):
         )
 
         fit_imaging_plotter.figures_2d(
-            image=should_plot("data"),
+            data=should_plot("data"),
             noise_map=should_plot("noise_map"),
             signal_to_noise_map=should_plot("signal_to_noise_map"),
             model_image=should_plot("model_data"),
@@ -71,7 +71,7 @@ class VisualizerImaging(Visualizer):
             if should_plot("all_at_end_png"):
 
                 fit_imaging_plotter.figures_2d(
-                    image=True,
+                    data=True,
                     noise_map=True,
                     signal_to_noise_map=True,
                     model_image=True,
@@ -95,7 +95,7 @@ class VisualizerImaging(Visualizer):
                 )
 
                 fit_imaging_plotter.figures_2d(
-                    image=True,
+                    data=True,
                     noise_map=True,
                     signal_to_noise_map=True,
                     model_image=True,

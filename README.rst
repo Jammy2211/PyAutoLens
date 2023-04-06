@@ -123,7 +123,7 @@ fits the lens galaxy's mass with an ``Isothermal`` and the source galaxy's light
     Load Imaging data of the strong lens from the dataset folder of the workspace.
     """
     imaging = al.Imaging.from_fits(
-        image_path="/path/to/dataset/image.fits",
+        data_path="/path/to/dataset/image.fits",
         noise_map_path="/path/to/dataset/noise_map.fits",
         psf_path="/path/to/dataset/psf.fits",
         pixel_scales=0.1,

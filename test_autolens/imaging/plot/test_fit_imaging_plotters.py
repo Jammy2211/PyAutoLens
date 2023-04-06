@@ -25,7 +25,7 @@ def test__fit_quantities_are_output(
     )
 
     fit_imaging_plotter.figures_2d(
-        image=True,
+        data=True,
         noise_map=True,
         signal_to_noise_map=True,
         model_image=True,
@@ -45,7 +45,7 @@ def test__fit_quantities_are_output(
     plot_patch.paths = []
 
     fit_imaging_plotter.figures_2d(
-        image=True,
+        data=True,
         noise_map=False,
         signal_to_noise_map=False,
         model_image=True,
