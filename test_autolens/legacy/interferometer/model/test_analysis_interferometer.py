@@ -32,4 +32,3 @@ def test__figure_of_merit__includes_hyper_image_and_noise__matches_fit(
     )
 
     assert fit.log_likelihood == analysis_log_likelihood
-

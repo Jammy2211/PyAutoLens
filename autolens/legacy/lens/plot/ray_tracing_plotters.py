@@ -4,7 +4,6 @@ from autolens.lens.plot.ray_tracing_plotters import TracerPlotter as TracerPlott
 
 
 class TracerPlotter(TracerPlotterBase):
-
     def figures_2d(
         self,
         image: bool = False,

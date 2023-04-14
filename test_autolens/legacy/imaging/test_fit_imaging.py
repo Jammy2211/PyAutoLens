@@ -8,7 +8,7 @@ def test__noise_map__with_and_without_hyper_galaxy(masked_imaging_7x7_no_blur):
 
     g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d_value=1.0))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0])
+    tracer = al.legacy.Tracer.from_galaxies(galaxies=[g0])
 
     fit = al.legacy.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
@@ -21,7 +21,7 @@ def test__noise_map__with_and_without_hyper_galaxy(masked_imaging_7x7_no_blur):
     g0 = al.Galaxy(
         redshift=0.5,
         bulge=al.m.MockLightProfile(image_2d_value=1.0),
-        hyper_galaxy=al.HyperGalaxy(
+        hyper_galaxy=al.legacy.HyperGalaxy(
             contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
         ),
         hyper_model_image=hyper_image,
@@ -29,7 +29,7 @@ def test__noise_map__with_and_without_hyper_galaxy(masked_imaging_7x7_no_blur):
         hyper_minimum_value=0.0,
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0])
+    tracer = al.legacy.Tracer.from_galaxies(galaxies=[g0])
 
     fit = al.legacy.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
@@ -46,7 +46,7 @@ def test__noise_map__with_hyper_galaxy_reaches_upper_limit(masked_imaging_7x7_no
     g0 = al.Galaxy(
         redshift=0.5,
         bulge=al.m.MockLightProfile(image_2d_value=1.0),
-        hyper_galaxy=al.HyperGalaxy(
+        hyper_galaxy=al.legacy.HyperGalaxy(
             contribution_factor=1.0, noise_factor=1.0e9, noise_power=1.0
         ),
         hyper_model_image=hyper_image,
@@ -54,7 +54,7 @@ def test__noise_map__with_hyper_galaxy_reaches_upper_limit(masked_imaging_7x7_no
         hyper_minimum_value=0.0,
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0])
+    tracer = al.legacy.Tracer.from_galaxies(galaxies=[g0])
 
     fit = al.legacy.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
@@ -67,16 +67,16 @@ def test__noise_map__with_hyper_galaxy_reaches_upper_limit(masked_imaging_7x7_no
 def test__image__with_and_without_hyper_background_sky(masked_imaging_7x7_no_blur):
 
     g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d_value=1.0))
-    tracer = al.Tracer.from_galaxies(galaxies=[g0])
+    tracer = al.legacy.Tracer.from_galaxies(galaxies=[g0])
 
     fit = al.legacy.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
     assert fit.image.slim == pytest.approx(np.full(fill_value=1.0, shape=(9,)), 1.0e-1)
 
     g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d_value=1.0))
-    tracer = al.Tracer.from_galaxies(galaxies=[g0])
+    tracer = al.legacy.Tracer.from_galaxies(galaxies=[g0])
 
-    hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
+    hyper_image_sky = al.legacy.hyper_data.HyperImageSky(sky_scale=1.0)
 
     fit = al.legacy.FitImaging(
         dataset=masked_imaging_7x7_no_blur,
@@ -91,7 +91,7 @@ def test__image__with_and_without_hyper_background_sky(masked_imaging_7x7_no_blu
 def test__noise_map__with_and_without_hyper_background(masked_imaging_7x7_no_blur):
 
     g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d_value=1.0))
-    tracer = al.Tracer.from_galaxies(galaxies=[g0])
+    tracer = al.legacy.Tracer.from_galaxies(galaxies=[g0])
 
     fit = al.legacy.FitImaging(
         dataset=masked_imaging_7x7_no_blur,
@@ -103,7 +103,7 @@ def test__noise_map__with_and_without_hyper_background(masked_imaging_7x7_no_blu
         np.full(fill_value=2.0, shape=(9,)), 1.0e-1
     )
 
-    hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
+    hyper_background_noise = al.legacy.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
     fit = al.legacy.FitImaging(
         dataset=masked_imaging_7x7_no_blur,
@@ -120,12 +120,12 @@ def test__noise_map__with_and_without_hyper_background(masked_imaging_7x7_no_blu
 
 def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):
 
-    hyper_galaxy = al.HyperGalaxy(
+    hyper_galaxy = al.legacy.HyperGalaxy(
         contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
     )
 
-    hyper_image_sky = al.hyper_data.HyperImageSky(sky_scale=1.0)
-    hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
+    hyper_image_sky = al.legacy.hyper_data.HyperImageSky(sky_scale=1.0)
+    hyper_background_noise = al.legacy.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
     g0 = al.Galaxy(
         redshift=0.5,
@@ -138,7 +138,7 @@ def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):
     )
     g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+    tracer = al.legacy.Tracer.from_galaxies(galaxies=[g0, g1])
 
     fit = al.legacy.FitImaging(
         dataset=masked_imaging_7x7,
@@ -168,7 +168,7 @@ def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):
         hyper_minimum_value=0.0,
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
+    tracer = al.legacy.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
 
     fit = al.legacy.FitImaging(
         dataset=masked_imaging_7x7,
@@ -194,7 +194,7 @@ def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):
 
     galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
+    tracer = al.legacy.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
 
     fit = al.legacy.FitImaging(
         dataset=masked_imaging_7x7,

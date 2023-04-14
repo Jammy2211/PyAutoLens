@@ -11,7 +11,9 @@ from autolens.interferometer.model.result import ResultInterferometer
 from autolens.interferometer.model.visualizer import VisualizerInterferometer
 from autolens.legacy.interferometer.fit_interferometer import FitInterferometer
 
-from autolens.interferometer.model.analysis import AnalysisInterferometer as AnalysisInterferometerBase
+from autolens.interferometer.model.analysis import (
+    AnalysisInterferometer as AnalysisInterferometerBase,
+)
 
 from autolens import exc
 
@@ -21,11 +23,15 @@ logger.setLevel(level="INFO")
 
 
 class AnalysisInterferometer(AnalysisInterferometerBase):
-
     def tracer_via_instance_from(
-        self, instance: af.ModelInstance, profiling_dict: Optional[Dict] = None, tracer_cls=Tracer
+        self,
+        instance: af.ModelInstance,
+        profiling_dict: Optional[Dict] = None,
+        tracer_cls=Tracer,
     ) -> Tracer:
-        return super().tracer_via_instance_from(instance=instance, profiling_dict=profiling_dict, tracer_cls=tracer_cls)
+        return super().tracer_via_instance_from(
+            instance=instance, profiling_dict=profiling_dict, tracer_cls=tracer_cls
+        )
 
     def fit_interferometer_via_instance_from(
         self,
