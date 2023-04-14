@@ -165,7 +165,7 @@ class Visualizer(AgVisualizer):
             if should_plot("image_with_positions"):
                 image_plotter.figure_2d()
 
-    def visualize_hyper_images(
+    def visualize_adapt_images(
         self,
         hyper_galaxy_image_path_dict: {str, aa.Array2D},
         hyper_model_image: aa.Array2D,
@@ -195,7 +195,7 @@ class Visualizer(AgVisualizer):
 
         mat_plot_2d = self.mat_plot_2d_from(subfolders="hyper")
 
-        hyper_plotter = aplt.HyperPlotter(
+        hyper_plotter = aplt.AdaptPlotter(
             mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
         )
 
@@ -234,7 +234,7 @@ class Visualizer(AgVisualizer):
 
         mat_plot_2d = self.mat_plot_2d_from(subfolders="hyper")
 
-        hyper_plotter = aplt.HyperPlotter(
+        hyper_plotter = aplt.AdaptPlotter(
             mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
         )
 

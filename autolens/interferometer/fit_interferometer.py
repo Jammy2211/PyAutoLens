@@ -18,7 +18,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         self,
         dataset: aa.Interferometer,
         tracer: Tracer,
-        hyper_background_noise: ag.hyper_data.HyperBackgroundNoise = None,
+        hyper_background_noise: ag.legacy.hyper_data.HyperBackgroundNoise = None,
         use_hyper_scaling: bool = True,
         settings_pixelization: aa.SettingsPixelization = aa.SettingsPixelization(),
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),

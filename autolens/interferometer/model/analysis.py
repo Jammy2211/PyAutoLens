@@ -140,7 +140,7 @@ class AnalysisInterferometer(AnalysisDataset):
                         positions=self.positions_likelihood.positions,
                     )
 
-                visualizer.visualize_hyper_images(
+                visualizer.visualize_adapt_images(
                     hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
                     hyper_model_image=self.hyper_model_image,
                 )
@@ -332,7 +332,7 @@ class AnalysisInterferometer(AnalysisDataset):
     def fit_interferometer_via_tracer_from(
         self,
         tracer: Tracer,
-        hyper_background_noise: Optional[ag.hyper_data.HyperBackgroundNoise],
+        hyper_background_noise: Optional[ag.legacy.hyper_data.HyperBackgroundNoise],
         use_hyper_scaling: bool = True,
         preload_overwrite: Optional[Preloads] = None,
     ):

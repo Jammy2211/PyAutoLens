@@ -70,7 +70,7 @@ class AnalysisImaging(AnalysisDataset):
                         positions=self.positions_likelihood.positions,
                     )
 
-                visualizer.visualize_hyper_images(
+                visualizer.visualize_adapt_images(
                     hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
                     hyper_model_image=self.hyper_model_image,
                 )
@@ -202,8 +202,8 @@ class AnalysisImaging(AnalysisDataset):
     def fit_imaging_via_tracer_from(
         self,
         tracer: Tracer,
-        hyper_image_sky: Optional[ag.hyper_data.HyperImageSky],
-        hyper_background_noise: Optional[ag.hyper_data.HyperBackgroundNoise],
+        hyper_image_sky: Optional[ag.legacy.hyper_data.HyperImageSky],
+        hyper_background_noise: Optional[ag.legacy.hyper_data.HyperBackgroundNoise],
         use_hyper_scaling: bool = True,
         preload_overwrite: Optional[Preloads] = None,
         profiling_dict: Optional[Dict] = None,

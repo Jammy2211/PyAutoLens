@@ -16,6 +16,8 @@ hyper:
   stochastic_outputs: false
 inversion:
   check_reconstruction: false       # If True, the inversion's reconstruction is checked to ensure the solution of a meshs's mapper is not an invalid solution where the values are all the same.
+  use_positive_only_solver: false    # If True, inversion's use a positive-only linear algebra solver by default, which is slower but prevents unphysical negative values in the reconstructed solutuion.
+  positive_only_uses_p_initial: false  # If True, the positive-only solver of an inversion's uses an initial guess of the reconstructed data's values as which values should be positive, speeding up the solver.
 model:
   ignore_prior_limits: true
 numba:

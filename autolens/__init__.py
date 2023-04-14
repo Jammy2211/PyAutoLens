@@ -49,14 +49,12 @@ from autogalaxy import cosmology as cosmo
 from autogalaxy.gui.clicker import Clicker
 from autogalaxy.gui.scribbler import Scribbler
 from autogalaxy.galaxy.galaxy import Galaxy
-from autogalaxy.galaxy.hyper import HyperGalaxy
 from autogalaxy.galaxy.redshift import Redshift
 from autogalaxy.analysis.clump_model import ClumpModel
 from autogalaxy.analysis.clump_model import ClumpModelDisabled
 
 from autogalaxy.quantity.dataset_quantity import DatasetQuantity
 from autogalaxy.quantity.dataset_quantity import SettingsQuantity
-from autogalaxy.hyper import hyper_data
 from autogalaxy.plane.plane import Plane
 from autogalaxy.profiles.geometry_profiles import EllProfile
 from autogalaxy.profiles import (
@@ -109,6 +107,7 @@ from .point.point_solver import PointSolver
 from .quantity.fit_quantity import FitQuantity
 from .quantity.model.analysis import AnalysisQuantity
 from . import exc
+from . import legacy
 from . import mock as m
 from . import util
 
