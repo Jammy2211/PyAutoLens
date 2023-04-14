@@ -18,8 +18,6 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         self,
         dataset: aa.Interferometer,
         tracer: Tracer,
-        hyper_background_noise: ag.legacy.hyper_data.HyperBackgroundNoise = None,
-        use_hyper_scaling: bool = True,
         settings_pixelization: aa.SettingsPixelization = aa.SettingsPixelization(),
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads: Preloads = Preloads(),
@@ -56,11 +54,6 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
             The interforometer dataset which is fitted by the galaxies in the tracer.
         tracer
             The tracer of galaxies whose light profile images are used to fit the interferometer data.
-        hyper_background_noise
-            If included, adds a noise-scaling term to the background noise.
-        use_hyper_scaling
-            If set to False, the hyper scaling functions (e.g. the `hyper_background_noise`) are
-            omitted irrespective of their inputs.
         settings_pixelization
             Settings controlling how a pixelization is fitted for example if a border is used when creating the
             pixelization.
@@ -81,9 +74,6 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
 
         self.tracer = tracer
 
-        self.hyper_background_noise = hyper_background_noise
-        self.use_hyper_scaling = use_hyper_scaling
-
         self.settings_pixelization = settings_pixelization
         self.settings_inversion = settings_inversion
 
@@ -95,20 +85,6 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         AbstractFitInversion.__init__(
             self=self, model_obj=tracer, settings_inversion=settings_inversion
         )
-
-    @property
-    def noise_map(self) -> aa.Visibilities:
-        """
-        Returns the interferometer's noise-map, which may have a hyper scaling performed which increase the noise in
-        regions of the data that are poorly fitted in order to avoid overfitting.
-        """
-        if self.use_hyper_scaling and self.hyper_background_noise is not None:
-
-            return self.hyper_background_noise.hyper_noise_map_complex_from(
-                noise_map=self.dataset.noise_map
-            )
-
-        return self.dataset.noise_map
 
     @property
     def profile_visibilities(self) -> aa.Visibilities:
@@ -297,8 +273,6 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         return FitInterferometer(
             dataset=self.interferometer,
             tracer=self.tracer,
-            hyper_background_noise=self.hyper_background_noise,
-            use_hyper_scaling=self.use_hyper_scaling,
             settings_pixelization=self.settings_pixelization,
             settings_inversion=settings_inversion,
             preloads=preloads,
