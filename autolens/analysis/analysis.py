@@ -65,7 +65,10 @@ class AnalysisLensing:
         self.positions_likelihood = positions_likelihood
 
     def tracer_via_instance_from(
-        self, instance: af.ModelInstance, profiling_dict: Optional[Dict] = None
+        self,
+        instance: af.ModelInstance,
+        profiling_dict: Optional[Dict] = None,
+        tracer_cls=Tracer,
     ) -> Tracer:
         """
         Create a `Tracer` from the galaxies contained in a model instance.
@@ -114,7 +117,7 @@ class AnalysisLensing:
         else:
             cosmology = self.cosmology
 
-        return Tracer.from_galaxies(
+        return tracer_cls.from_galaxies(
             galaxies=instance.galaxies,
             cosmology=cosmology,
             profiling_dict=profiling_dict,
