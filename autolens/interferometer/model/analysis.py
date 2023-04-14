@@ -286,7 +286,6 @@ class AnalysisInterferometer(AnalysisDataset):
     def fit_interferometer_via_instance_from(
         self,
         instance: af.ModelInstance,
-        use_hyper_scaling: bool = True,
         preload_overwrite: Optional[Preloads] = None,
     ) -> FitInterferometer:
         """
@@ -300,9 +299,6 @@ class AnalysisInterferometer(AnalysisDataset):
         instance
             An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
             via a non-linear search).
-        use_hyper_scaling
-            If false, the scaling of the background sky and noise are not performed irrespective of the model components
-            themselves.
         preload_overwrite
             If a `Preload` object is input this is used instead of the preloads stored as an attribute in the analysis.
         check_positions
@@ -319,21 +315,13 @@ class AnalysisInterferometer(AnalysisDataset):
         self.instance_with_associated_hyper_images_from(instance=instance)
         tracer = self.tracer_via_instance_from(instance=instance)
 
-        hyper_background_noise = self.hyper_background_noise_via_instance_from(
-            instance=instance
-        )
-
         return self.fit_interferometer_via_tracer_from(
             tracer=tracer,
-            hyper_background_noise=hyper_background_noise,
-            use_hyper_scaling=use_hyper_scaling,
         )
 
     def fit_interferometer_via_tracer_from(
         self,
         tracer: Tracer,
-        hyper_background_noise: Optional[ag.legacy.hyper_data.HyperBackgroundNoise],
-        use_hyper_scaling: bool = True,
         preload_overwrite: Optional[Preloads] = None,
     ):
         """
@@ -346,13 +334,6 @@ class AnalysisInterferometer(AnalysisDataset):
         ----------
         tracer
             The tracer of galaxies whose ray-traced model images are used to fit the imaging data.
-        hyper_image_sky
-            A model component which scales the background sky level of the data before computing the log likelihood.
-        hyper_background_noise
-            A model component which scales the background noise level of the data before computing the log likelihood.
-        use_hyper_scaling
-            If false, the scaling of the background sky and noise are not performed irrespective of the model components
-            themselves.
         preload_overwrite
             If a `Preload` object is input this is used instead of the preloads stored as an attribute in the analysis.
         profiling_dict
@@ -368,8 +349,6 @@ class AnalysisInterferometer(AnalysisDataset):
         return FitInterferometer(
             dataset=self.dataset,
             tracer=tracer,
-            hyper_background_noise=hyper_background_noise,
-            use_hyper_scaling=use_hyper_scaling,
             settings_pixelization=self.settings_pixelization,
             settings_inversion=self.settings_inversion,
             preloads=preloads,
@@ -418,10 +397,6 @@ class AnalysisInterferometer(AnalysisDataset):
         ):
             return
 
-        hyper_background_noise = self.hyper_background_noise_via_instance_from(
-            instance=instance
-        )
-
         settings_pixelization = (
             self.settings_pixelization.settings_with_is_stochastic_true()
         )
@@ -434,7 +409,6 @@ class AnalysisInterferometer(AnalysisDataset):
                 log_evidence = FitInterferometer(
                     dataset=self.dataset,
                     tracer=tracer,
-                    hyper_background_noise=hyper_background_noise,
                     settings_pixelization=settings_pixelization,
                     settings_inversion=self.settings_inversion,
                     preloads=self.preloads,
@@ -535,8 +509,6 @@ class AnalysisInterferometer(AnalysisDataset):
         if visualizer.plot_fit_no_hyper:
             fit = self.fit_interferometer_via_tracer_from(
                 tracer=fit.tracer,
-                hyper_background_noise=None,
-                use_hyper_scaling=False,
                 preload_overwrite=Preloads(use_w_tilde=False),
             )
 
