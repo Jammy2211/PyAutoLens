@@ -167,8 +167,8 @@ class Visualizer(AgVisualizer):
 
     def visualize_adapt_images(
         self,
-        hyper_galaxy_image_path_dict: {str, aa.Array2D},
-        hyper_model_image: aa.Array2D,
+        adapt_galaxy_image_path_dict: {str, aa.Array2D},
+        adapt_model_image: aa.Array2D,
     ):
         """
         Visualizes the hyper-images and hyper dataset inferred by a model-fit.
@@ -176,36 +176,36 @@ class Visualizer(AgVisualizer):
         Images are output to the `image` folder of the `visualize_path` in a subfolder called `hyper`. When
         used with a non-linear search the `visualize_path` points to the search's results folder.
 
-        Visualization includes individual images of attributes of the hyper dataset (e.g. the hyper model image) and
-        a subplot of all hyper galaxy images on the same figure.
+        Visualization includes individual images of attributes of the hyper dataset (e.g. the adapt image) and
+        a subplot of all galaxy images on the same figure.
 
         The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
         [hyper] header.
 
         Parameters
         ----------
-        hyper_galaxy_image_path_dict
-            A dictionary mapping the path to each galaxy (e.g. its name) to its corresponding hyper galaxy image.
-        hyper_model_image
-            The hyper model image which corresponds to the sum of hyper galaxy images.
+        adapt_galaxy_image_path_dict
+            A dictionary mapping the path to each galaxy (e.g. its name) to its corresponding galaxy image.
+        adapt_model_image
+            The adapt image which corresponds to the sum of galaxy images.
         """
 
         def should_plot(name):
-            return plot_setting(section="hyper", name=name)
+            return plot_setting(section="adapt", name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="hyper")
+        mat_plot_2d = self.mat_plot_2d_from(subfolders="adapt")
 
         hyper_plotter = aplt.AdaptPlotter(
             mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
         )
 
         if should_plot("model_image"):
-            hyper_plotter.figure_hyper_model_image(hyper_model_image=hyper_model_image)
+            hyper_plotter.figure_adapt_model_image(adapt_model_image=adapt_model_image)
 
         if should_plot("images_of_galaxies"):
 
-            hyper_plotter.subplot_hyper_images_of_galaxies(
-                hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict
+            hyper_plotter.subplot_adapt_images_of_galaxies(
+                adapt_galaxy_image_path_dict=adapt_galaxy_image_path_dict
             )
 
     def visualize_contribution_maps(self, tracer: Tracer):
@@ -230,9 +230,9 @@ class Visualizer(AgVisualizer):
         """
 
         def should_plot(name):
-            return plot_setting(section="hyper", name=name)
+            return plot_setting(section="adapt", name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="hyper")
+        mat_plot_2d = self.mat_plot_2d_from(subfolders="adapt")
 
         hyper_plotter = aplt.AdaptPlotter(
             mat_plot_2d=mat_plot_2d, include_2d=self.include_2d

@@ -12,7 +12,7 @@ def _tracer_from(fit: af.Fit, galaxies: List[ag.Galaxy]) -> Tracer:
     Returns a `Tracer` object from a PyAutoFit database `Fit` object and an instance of galaxies from a non-linear
     search model-fit.
 
-    This function adds the `hyper_model_image` and `hyper_galaxy_image_path_dict` to the galaxies before constructing
+    This function adds the `adapt_model_image` and `adapt_galaxy_image_path_dict` to the galaxies before constructing
     the `Tracer`, if they were used.
 
     Parameters
@@ -28,12 +28,12 @@ def _tracer_from(fit: af.Fit, galaxies: List[ag.Galaxy]) -> Tracer:
         The tracer computed via an instance of galaxies.
     """
 
-    hyper_model_image = fit.value(name="hyper_model_image")
-    hyper_galaxy_image_path_dict = fit.value(name="hyper_galaxy_image_path_dict")
+    adapt_model_image = fit.value(name="adapt_model_image")
+    adapt_galaxy_image_path_dict = fit.value(name="adapt_galaxy_image_path_dict")
 
-    galaxies_with_hyper = []
+    galaxies_with_adapt = []
 
-    if hyper_galaxy_image_path_dict is not None:
+    if adapt_galaxy_image_path_dict is not None:
 
         galaxy_path_list = [
             gal[0] for gal in fit.instance.path_instance_tuples_for_class(ag.Galaxy)
@@ -41,13 +41,13 @@ def _tracer_from(fit: af.Fit, galaxies: List[ag.Galaxy]) -> Tracer:
 
         for (galaxy_path, galaxy) in zip(galaxy_path_list, galaxies):
 
-            if galaxy_path in hyper_galaxy_image_path_dict:
-                galaxy.hyper_model_image = hyper_model_image
-                galaxy.hyper_galaxy_image = hyper_galaxy_image_path_dict[galaxy_path]
+            if galaxy_path in adapt_galaxy_image_path_dict:
+                galaxy.adapt_model_image = adapt_model_image
+                galaxy.adapt_galaxy_image = adapt_galaxy_image_path_dict[galaxy_path]
 
-            galaxies_with_hyper.append(galaxy)
+            galaxies_with_adapt.append(galaxy)
 
-        return Tracer.from_galaxies(galaxies=galaxies_with_hyper)
+        return Tracer.from_galaxies(galaxies=galaxies_with_adapt)
 
     return Tracer.from_galaxies(galaxies=galaxies)
 

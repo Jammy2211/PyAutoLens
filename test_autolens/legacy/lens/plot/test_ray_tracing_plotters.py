@@ -44,10 +44,10 @@ def test__all_individual_plotter(
     )
 
     tracer.planes[0].galaxies[0].hyper_galaxy = al.legacy.HyperGalaxy()
-    tracer.planes[0].galaxies[0].hyper_model_image = al.Array2D.ones(
+    tracer.planes[0].galaxies[0].adapt_model_image = al.Array2D.ones(
         shape_native=(7, 7), pixel_scales=0.1
     )
-    tracer.planes[0].galaxies[0].hyper_galaxy_image = al.Array2D.ones(
+    tracer.planes[0].galaxies[0].adapt_galaxy_image = al.Array2D.ones(
         shape_native=(7, 7), pixel_scales=0.1
     )
 

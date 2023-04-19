@@ -161,7 +161,7 @@ def test__cls_pg_list_from(sub_grid_2d_7x7):
     assert pixelization_list == [[]]
 
 
-def test__hyper_galaxy_image_pg_list(sub_grid_2d_7x7):
+def test__adapt_galaxy_image_pg_list(sub_grid_2d_7x7):
 
     gal = al.Galaxy(redshift=0.5)
 
@@ -175,31 +175,31 @@ def test__hyper_galaxy_image_pg_list(sub_grid_2d_7x7):
 
     tracer_to_inversion = al.TracerToInversion(tracer=tracer)
 
-    assert tracer_to_inversion.hyper_galaxy_image_pg_list == [[]]
+    assert tracer_to_inversion.adapt_galaxy_image_pg_list == [[]]
 
     tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal_pix])
 
     tracer_to_inversion = al.TracerToInversion(tracer=tracer)
 
-    assert tracer_to_inversion.hyper_galaxy_image_pg_list == [[None, None]]
+    assert tracer_to_inversion.adapt_galaxy_image_pg_list == [[None, None]]
 
-    gal_pix = al.Galaxy(redshift=0.5, pixelization=pixelization, hyper_galaxy_image=1)
+    gal_pix = al.Galaxy(redshift=0.5, pixelization=pixelization, adapt_galaxy_image=1)
 
     tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal])
 
     tracer_to_inversion = al.TracerToInversion(tracer=tracer)
 
-    assert tracer_to_inversion.hyper_galaxy_image_pg_list == [[1]]
+    assert tracer_to_inversion.adapt_galaxy_image_pg_list == [[1]]
 
     gal0 = al.Galaxy(redshift=0.25)
     gal1 = al.Galaxy(redshift=0.75)
     gal2 = al.Galaxy(redshift=1.5)
 
-    gal_pix0 = al.Galaxy(redshift=0.5, pixelization=pixelization, hyper_galaxy_image=1)
+    gal_pix0 = al.Galaxy(redshift=0.5, pixelization=pixelization, adapt_galaxy_image=1)
 
-    gal_pix1 = al.Galaxy(redshift=2.0, pixelization=pixelization, hyper_galaxy_image=2)
+    gal_pix1 = al.Galaxy(redshift=2.0, pixelization=pixelization, adapt_galaxy_image=2)
 
-    gal_pix2 = al.Galaxy(redshift=2.0, pixelization=pixelization, hyper_galaxy_image=3)
+    gal_pix2 = al.Galaxy(redshift=2.0, pixelization=pixelization, adapt_galaxy_image=3)
 
     tracer = al.Tracer.from_galaxies(
         galaxies=[gal0, gal1, gal2, gal_pix0, gal_pix1, gal_pix2]
@@ -207,7 +207,7 @@ def test__hyper_galaxy_image_pg_list(sub_grid_2d_7x7):
 
     tracer_to_inversion = al.TracerToInversion(tracer=tracer)
 
-    assert tracer_to_inversion.hyper_galaxy_image_pg_list == [[], [1], [], [], [2, 3]]
+    assert tracer_to_inversion.adapt_galaxy_image_pg_list == [[], [1], [], [], [2, 3]]
 
 
 def test__sparse_image_plane_grid_pg_list(masked_imaging_7x7):

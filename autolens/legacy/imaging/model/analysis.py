@@ -60,7 +60,7 @@ class AnalysisImaging(AnalysisImagingBase):
         FitImaging
             The fit of the plane to the imaging dataset, which includes the log likelihood.
         """
-        self.instance_with_associated_hyper_images_from(instance=instance)
+        self.instance_with_associated_adapt_images_from(instance=instance)
         tracer = self.tracer_via_instance_from(
             instance=instance, profiling_dict=profiling_dict
         )
@@ -148,7 +148,7 @@ class AnalysisImaging(AnalysisImagingBase):
         - Images of the best-fit `FitImaging`, including the model-image, residuals and chi-squared of its fit to
           the imaging data.
 
-        - The hyper-images of the model-fit showing how the hyper galaxies are used to represent different galaxies in
+        - The hyper-images of the model-fit showing how the galaxies are used to represent different galaxies in
           the dataset.
 
         - If hyper features are used to scale the noise or background sky, a `FitImaging` with these features turned
@@ -172,7 +172,7 @@ class AnalysisImaging(AnalysisImagingBase):
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
             return
 
-        instance = self.instance_with_associated_hyper_images_from(instance=instance)
+        instance = self.instance_with_associated_adapt_images_from(instance=instance)
 
         fit = self.fit_imaging_via_instance_from(instance=instance)
 
@@ -209,7 +209,7 @@ class AnalysisImaging(AnalysisImagingBase):
 
         visualizer.visualize_contribution_maps(tracer=fit.tracer)
 
-        if visualizer.plot_fit_no_hyper:
+        if visualizer.plot_fit_no_adapt:
             fit = self.fit_imaging_via_tracer_from(
                 tracer=fit.tracer,
                 hyper_image_sky=None,
@@ -217,13 +217,6 @@ class AnalysisImaging(AnalysisImagingBase):
                 use_hyper_scaling=False,
                 preload_overwrite=Preloads(use_w_tilde=False),
             )
-
-            try:
-                visualizer.visualize_fit_imaging(
-                    fit=fit, during_analysis=during_analysis, subfolders="fit_no_hyper"
-                )
-            except exc.InversionException:
-                pass
 
     def make_result(
         self,
@@ -245,7 +238,7 @@ class AnalysisImaging(AnalysisImagingBase):
         - The non-linear search used to perform the model fit.
 
         The `ResultImaging` object contains a number of methods which use the above objects to create the max
-        log likelihood `Tracer`, `FitImaging`, hyper-galaxy images,etc.
+        log likelihood `Tracer`, `FitImaging`, adapt-galaxy images,etc.
 
         Parameters
         ----------

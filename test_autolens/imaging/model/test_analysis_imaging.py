@@ -120,9 +120,9 @@ def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x
     assert analysis_log_likelihood == pytest.approx(-22048700558.9052, 1.0e-4)
 
 
-def test__sets_up_hyper_galaxy_images__froms(masked_imaging_7x7):
+def test__sets_up_adapt_galaxy_images__froms(masked_imaging_7x7):
 
-    hyper_galaxy_image_path_dict = {
+    adapt_galaxy_image_path_dict = {
         ("galaxies", "lens"): al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
         ("galaxies", "source"): al.Array2D.full(
             fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0
@@ -130,27 +130,27 @@ def test__sets_up_hyper_galaxy_images__froms(masked_imaging_7x7):
     }
 
     result = al.m.MockResult(
-        hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
-        hyper_model_image=al.Array2D.full(
+        adapt_galaxy_image_path_dict=adapt_galaxy_image_path_dict,
+        adapt_model_image=al.Array2D.full(
             fill_value=3.0, shape_native=(3, 3), pixel_scales=1.0
         ),
     )
 
     analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7, hyper_dataset_result=result
+        dataset=masked_imaging_7x7, adapt_result=result
     )
 
     assert (
-        analysis.hyper_galaxy_image_path_dict[("galaxies", "lens")].native
+        analysis.adapt_galaxy_image_path_dict[("galaxies", "lens")].native
         == np.ones((3, 3))
     ).all()
 
     assert (
-        analysis.hyper_galaxy_image_path_dict[("galaxies", "source")].native
+        analysis.adapt_galaxy_image_path_dict[("galaxies", "source")].native
         == 2.0 * np.ones((3, 3))
     ).all()
 
-    assert (analysis.hyper_model_image.native == 3.0 * np.ones((3, 3))).all()
+    assert (analysis.adapt_model_image.native == 3.0 * np.ones((3, 3))).all()
 
 
 def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
@@ -159,18 +159,18 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
     lens_hyper_image[4] = 10.0
     source_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
     source_hyper_image[4] = 10.0
-    hyper_model_image = al.Array2D.full(
+    adapt_model_image = al.Array2D.full(
         fill_value=0.5, shape_native=(3, 3), pixel_scales=0.1
     )
 
-    hyper_galaxy_image_path_dict = {
+    adapt_galaxy_image_path_dict = {
         ("galaxies", "lens"): lens_hyper_image,
         ("galaxies", "source"): source_hyper_image,
     }
 
     result = al.m.MockResult(
-        hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
-        hyper_model_image=hyper_model_image,
+        adapt_galaxy_image_path_dict=adapt_galaxy_image_path_dict,
+        adapt_model_image=adapt_model_image,
     )
 
     pixelization = al.Pixelization(mesh=al.mesh.VoronoiMagnification(shape=(3, 3)))
@@ -186,7 +186,7 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
 
     analysis = al.AnalysisImaging(
         dataset=masked_imaging_7x7,
-        hyper_dataset_result=result,
+        adapt_result=result,
         settings_lens=al.SettingsLens(stochastic_samples=10),
     )
 

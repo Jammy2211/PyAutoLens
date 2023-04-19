@@ -66,7 +66,7 @@ class AnalysisInterferometer(AnalysisInterferometerBase):
         FitInterferometer
             The fit of the plane to the interferometer dataset, which includes the log likelihood.
         """
-        self.instance_with_associated_hyper_images_from(instance=instance)
+        self.instance_with_associated_adapt_images_from(instance=instance)
         tracer = self.tracer_via_instance_from(instance=instance)
 
         hyper_background_noise = self.hyper_background_noise_via_instance_from(
@@ -138,7 +138,7 @@ class AnalysisInterferometer(AnalysisInterferometerBase):
         - Images of the best-fit `FitInterferometer`, including the model-image, residuals and chi-squared of its fit
           to the imaging data.
 
-        - The hyper-images of the model-fit showing how the hyper galaxies are used to represent different galaxies in
+        - The hyper-images of the model-fit showing how the galaxies are used to represent different galaxies in
           the dataset.
 
         - If hyper features are used to scale the noise, a `FitInterferometer` with these features turned off may be
@@ -162,7 +162,7 @@ class AnalysisInterferometer(AnalysisInterferometerBase):
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
             return
 
-        instance = self.instance_with_associated_hyper_images_from(instance=instance)
+        instance = self.instance_with_associated_adapt_images_from(instance=instance)
 
         fit = self.fit_interferometer_via_instance_from(instance=instance)
 
@@ -204,20 +204,13 @@ class AnalysisInterferometer(AnalysisInterferometerBase):
 
         visualizer.visualize_contribution_maps(tracer=fit.tracer)
 
-        if visualizer.plot_fit_no_hyper:
+        if visualizer.plot_fit_no_adapt:
             fit = self.fit_interferometer_via_tracer_from(
                 tracer=fit.tracer,
                 hyper_background_noise=None,
                 use_hyper_scaling=False,
                 preload_overwrite=Preloads(use_w_tilde=False),
             )
-
-            try:
-                visualizer.visualize_fit_interferometer(
-                    fit=fit, during_analysis=during_analysis, subfolders="fit_no_hyper"
-                )
-            except exc.InversionException:
-                pass
 
     def make_result(
         self,
@@ -239,7 +232,7 @@ class AnalysisInterferometer(AnalysisInterferometerBase):
         - The non-linear search used to perform the model fit.
 
         The `ResultInterferometer` object contains a number of methods which use the above objects to create the max
-        log likelihood `Plane`, `FitInterferometer`, hyper-galaxy images,etc.
+        log likelihood `Plane`, `FitInterferometer`, adapt-galaxy images,etc.
 
         Parameters
         ----------

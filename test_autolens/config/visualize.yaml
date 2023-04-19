@@ -3,8 +3,6 @@ general:
     backend: default
     imshow_origin: upper
     zoom_around_mask: true
-  units:
-    in_kpc: true
 include:
   include_2d:
     border: true
@@ -121,9 +119,8 @@ plots:
     convergence: false
     image: false
     potential: false
-  hyper:
+  adapt:
     contribution_map_list: true
-    fit_no_hyper: true
     images_of_galaxies: true
     model_image: true
   imaging:

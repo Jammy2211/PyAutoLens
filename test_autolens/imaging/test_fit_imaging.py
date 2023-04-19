@@ -462,8 +462,8 @@ def _test___stochastic_mode__gives_different_log_likelihoods(masked_imaging_7x7)
     g0 = al.Galaxy(
         redshift=0.5,
         pixelization=pixelization,
-        hyper_model_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
-        hyper_galaxy_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
+        adapt_model_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
+        adapt_galaxy_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])

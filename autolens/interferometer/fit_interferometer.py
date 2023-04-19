@@ -163,7 +163,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         - The images of all linear objects (e.g. linear light profiles / pixelizations), where the images are solved
           for first via the inversion.
 
-        For modeling, this dictionary is used to set up the `hyper_images` that adapt certain pixelizations to the
+        For modeling, this dictionary is used to set up the `adapt_images` that adapt certain pixelizations to the
         data being fitted.
         """
         galaxy_model_image_dict = self.tracer.galaxy_image_2d_dict_from(grid=self.grid)

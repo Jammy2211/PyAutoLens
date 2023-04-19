@@ -22,7 +22,7 @@ class ResultInterferometer(ResultDataset):
     - The non-linear search used to perform the model fit.
 
     This class contains a number of methods which use the above objects to create the max log likelihood `Tracer`,
-    `FitInterferometer`, hyper-galaxy images,etc.
+    `FitInterferometer`, adapt-galaxy images,etc.
 
     Parameters
     ----------
@@ -100,33 +100,33 @@ class ResultInterferometer(ResultDataset):
         }
 
     @property
-    def hyper_galaxy_visibilities_path_dict(self):
+    def adapt_galaxy_visibilities_path_dict(self):
         """
         A dictionary associating 1D hyper_galaxies galaxy visibilities with their names.
         """
 
-        hyper_galaxy_visibilities_path_dict = {}
+        adapt_galaxy_visibilities_path_dict = {}
 
         for path, galaxy in self.path_galaxy_tuples:
-            hyper_galaxy_visibilities_path_dict[path] = self.visibilities_galaxy_dict[
+            adapt_galaxy_visibilities_path_dict[path] = self.visibilities_galaxy_dict[
                 path
             ]
 
-        return hyper_galaxy_visibilities_path_dict
+        return adapt_galaxy_visibilities_path_dict
 
     @property
-    def hyper_model_visibilities(self):
+    def adapt_model_visibilities(self):
         """
-        The hyper model visibilities used by AnalysisInterferometer objects to adapt aspects of a model to the dataset
+        The adapt model visibilities used by AnalysisInterferometer objects to adapt aspects of a model to the dataset
         being fitted.
 
-        The hyper model visibilities are the sum of the hyper galaxy visibilities of every individual galaxy.
+        The adapt model visibilities are the sum of the galaxy visibilities of every individual galaxy.
         """
-        hyper_model_visibilities = aa.Visibilities.zeros(
+        adapt_model_visibilities = aa.Visibilities.zeros(
             shape_slim=(self.max_log_likelihood_fit.visibilities.shape_slim,)
         )
 
         for path, galaxy in self.path_galaxy_tuples:
-            hyper_model_visibilities += self.hyper_galaxy_visibilities_path_dict[path]
+            adapt_model_visibilities += self.adapt_galaxy_visibilities_path_dict[path]
 
-        return hyper_model_visibilities
+        return adapt_model_visibilities

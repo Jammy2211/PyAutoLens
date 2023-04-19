@@ -93,9 +93,9 @@ class TracerToInversion(ag.AbstractToInversion):
         return [plane.cls_list_from(cls=cls) for plane in self.planes]
 
     @cached_property
-    def hyper_galaxy_image_pg_list(self) -> List:
+    def adapt_galaxy_image_pg_list(self) -> List:
         return [
-            plane.hyper_galaxies_with_pixelization_image_list for plane in self.planes
+            plane.adapt_galaxies_with_pixelization_image_list for plane in self.planes
         ]
 
     @cached_property
@@ -227,7 +227,7 @@ class TracerToInversion(ag.AbstractToInversion):
                         image_plane_mesh_grid=sparse_image_plane_grid_list[plane_index][
                             mapper_index
                         ],
-                        hyper_galaxy_image=self.hyper_galaxy_image_pg_list[plane_index][
+                        adapt_galaxy_image=self.adapt_galaxy_image_pg_list[plane_index][
                             mapper_index
                         ],
                     )

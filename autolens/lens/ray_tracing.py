@@ -286,7 +286,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         Returns a dictionary associating every `Galaxy` object in the `Tracer` with its corresponding 2D image, using
         the instance of each galaxy as the dictionary keys.
 
-        This object is used for hyper-features, which use the image of each galaxy in a model-fit in order to
+        This object is used for adaptive-features, which use the image of each galaxy in a model-fit in order to
         adapt quantities like a pixelization or regularization scheme to the surface brightness of the galaxies being
         fitted.
 

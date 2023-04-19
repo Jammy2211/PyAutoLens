@@ -3,7 +3,6 @@ import shutil
 from os import path
 
 import pytest
-from autoconf import conf
 import autolens as al
 from autolens.analysis import visualizer as vis
 

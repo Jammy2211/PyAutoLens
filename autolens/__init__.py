@@ -87,7 +87,7 @@ from .lens.to_inversion import TracerToInversion
 from .analysis.positions import PositionsLHResample
 from .analysis.positions import PositionsLHPenalty
 from .analysis.preloads import Preloads
-from .analysis.setup import SetupHyper
+from .analysis.setup import SetupAdapt
 from .imaging.imaging import SimulatorImaging
 from .imaging.fit_imaging import FitImaging
 from .imaging.model.analysis import AnalysisImaging

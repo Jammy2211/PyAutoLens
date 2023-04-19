@@ -115,7 +115,6 @@ def test__info():
         relocated_grid=None,
         mapper_list=None,
         operated_mapping_matrix=None,
-        curvature_matrix_preload=None,
     )
 
     af.formatter.output_list_of_strings_to_file(
@@ -147,8 +146,6 @@ def test__info():
     i += 1
     assert lines[i] == f"Inversion Linear Func (Linear Light Profile) Dicts = False\n"
     i += 1
-    assert lines[i] == f"Curvature Matrix Sparse = False\n"
-    i += 1
     assert lines[i] == f"Curvature Matrix = False\n"
     i += 1
     assert lines[i] == f"Curvature Matrix Mapper Diag = False\n"
@@ -167,7 +164,6 @@ def test__info():
         sparse_image_plane_grid_pg_list=1,
         mapper_list=1,
         operated_mapping_matrix=1,
-        curvature_matrix_preload=1,
         regularization_matrix=1,
         log_det_regularization_matrix_term=1,
     )
@@ -180,8 +176,6 @@ def test__info():
     lines = results.readlines()
 
     i = 0
-
-    print(lines)
 
     assert lines[i] == f"W Tilde = True\n"
     i += 1
@@ -202,8 +196,6 @@ def test__info():
     assert lines[i] == f"Blurred Mapping Matrix = True\n"
     i += 1
     assert lines[i] == f"Inversion Linear Func (Linear Light Profile) Dicts = False\n"
-    i += 1
-    assert lines[i] == f"Curvature Matrix Sparse = True\n"
     i += 1
     assert lines[i] == f"Curvature Matrix = False\n"
     i += 1

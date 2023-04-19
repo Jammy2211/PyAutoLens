@@ -11,8 +11,8 @@ test_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files
 
 def test__contribution_map():
 
-    hyper_model_image = al.Array2D.no_mask(values=[[2.0, 4.0, 10.0]], pixel_scales=1.0)
-    hyper_galaxy_image = al.Array2D.no_mask(values=[[1.0, 5.0, 8.0]], pixel_scales=1.0)
+    adapt_model_image = al.Array2D.no_mask(values=[[2.0, 4.0, 10.0]], pixel_scales=1.0)
+    adapt_galaxy_image = al.Array2D.no_mask(values=[[1.0, 5.0, 8.0]], pixel_scales=1.0)
 
     hyper_galaxy_0 = al.legacy.HyperGalaxy(contribution_factor=5.0)
     hyper_galaxy_1 = al.legacy.HyperGalaxy(contribution_factor=10.0)
@@ -20,15 +20,15 @@ def test__contribution_map():
     galaxy_0 = al.legacy.Galaxy(
         redshift=0.5,
         hyper_galaxy=hyper_galaxy_0,
-        hyper_model_image=hyper_model_image,
-        hyper_galaxy_image=hyper_galaxy_image,
+        adapt_model_image=adapt_model_image,
+        adapt_galaxy_image=adapt_galaxy_image,
     )
 
     galaxy_1 = al.legacy.Galaxy(
         redshift=1.0,
         hyper_galaxy=hyper_galaxy_1,
-        hyper_model_image=hyper_model_image,
-        hyper_galaxy_image=hyper_galaxy_image,
+        adapt_model_image=adapt_model_image,
+        adapt_galaxy_image=adapt_galaxy_image,
     )
 
     tracer = al.legacy.Tracer.from_galaxies(galaxies=[galaxy_0, galaxy_1])
@@ -70,8 +70,8 @@ def test__hyper_noise_map_list_from(sub_grid_2d_7x7):
 
     noise_map_1d = al.Array2D.no_mask(values=[[5.0, 3.0, 1.0]], pixel_scales=1.0)
 
-    hyper_model_image = al.Array2D.no_mask(values=[[2.0, 4.0, 10.0]], pixel_scales=1.0)
-    hyper_galaxy_image = al.Array2D.no_mask(values=[[1.0, 5.0, 8.0]], pixel_scales=1.0)
+    adapt_model_image = al.Array2D.no_mask(values=[[2.0, 4.0, 10.0]], pixel_scales=1.0)
+    adapt_galaxy_image = al.Array2D.no_mask(values=[[1.0, 5.0, 8.0]], pixel_scales=1.0)
 
     hyper_galaxy_0 = al.legacy.HyperGalaxy(contribution_factor=5.0)
     hyper_galaxy_1 = al.legacy.HyperGalaxy(contribution_factor=10.0)
@@ -79,16 +79,16 @@ def test__hyper_noise_map_list_from(sub_grid_2d_7x7):
     galaxy_0 = al.legacy.Galaxy(
         redshift=0.5,
         hyper_galaxy=hyper_galaxy_0,
-        hyper_model_image=hyper_model_image,
-        hyper_galaxy_image=hyper_galaxy_image,
+        adapt_model_image=adapt_model_image,
+        adapt_galaxy_image=adapt_galaxy_image,
         hyper_minimum_value=0.0,
     )
 
     galaxy_1 = al.legacy.Galaxy(
         redshift=1.0,
         hyper_galaxy=hyper_galaxy_1,
-        hyper_model_image=hyper_model_image,
-        hyper_galaxy_image=hyper_galaxy_image,
+        adapt_model_image=adapt_model_image,
+        adapt_galaxy_image=adapt_galaxy_image,
         hyper_minimum_value=0.0,
     )
 

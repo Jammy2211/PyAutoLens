@@ -38,7 +38,7 @@ class AnalysisImaging(AnalysisDataset):
 
         This function:
 
-        - Checks that the hyper-dataset is consistent with previous hyper-datasets if the model-fit is being
+        - Checks that the adapt-dataset is consistent with previous adapt-datasets if the model-fit is being
           resumed from a previous run.
 
         - Checks the model and raises exceptions if certain critieria are not met.
@@ -71,8 +71,8 @@ class AnalysisImaging(AnalysisDataset):
                     )
 
                 visualizer.visualize_adapt_images(
-                    hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
-                    hyper_model_image=self.hyper_model_image,
+                    adapt_galaxy_image_path_dict=self.adapt_galaxy_image_path_dict,
+                    adapt_model_image=self.adapt_model_image,
                 )
 
             self.set_preloads(paths=paths, model=model)
@@ -175,7 +175,7 @@ class AnalysisImaging(AnalysisDataset):
         FitImaging
             The fit of the plane to the imaging dataset, which includes the log likelihood.
         """
-        self.instance_with_associated_hyper_images_from(instance=instance)
+        self.instance_with_associated_adapt_images_from(instance=instance)
         tracer = self.tracer_via_instance_from(
             instance=instance, profiling_dict=profiling_dict
         )
@@ -330,7 +330,7 @@ class AnalysisImaging(AnalysisDataset):
             A log likelihood cap which is applied in a stochastic model-fit to give improved error and posterior
             estimates.
         """
-        instance = self.instance_with_associated_hyper_images_from(instance=instance)
+        instance = self.instance_with_associated_adapt_images_from(instance=instance)
         tracer = self.tracer_via_instance_from(instance=instance)
 
         if not tracer.has(cls=ag.Pixelization):
@@ -390,7 +390,7 @@ class AnalysisImaging(AnalysisDataset):
         - Images of the best-fit `FitImaging`, including the model-image, residuals and chi-squared of its fit to
           the imaging data.
 
-        - The hyper-images of the model-fit showing how the hyper galaxies are used to represent different galaxies in
+        - The hyper-images of the model-fit showing how the galaxies are used to represent different galaxies in
           the dataset.
 
         The images output by this function are customized using the file `config/visualize/plots.ini`.
@@ -411,7 +411,7 @@ class AnalysisImaging(AnalysisDataset):
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
             return
 
-        instance = self.instance_with_associated_hyper_images_from(instance=instance)
+        instance = self.instance_with_associated_adapt_images_from(instance=instance)
 
         fit = self.fit_imaging_via_instance_from(instance=instance)
 
@@ -468,7 +468,7 @@ class AnalysisImaging(AnalysisDataset):
         - The non-linear search used to perform the model fit.
 
         The `ResultImaging` object contains a number of methods which use the above objects to create the max
-        log likelihood `Tracer`, `FitImaging`, hyper-galaxy images,etc.
+        log likelihood `Tracer`, `FitImaging`, adapt-galaxy images,etc.
 
         Parameters
         ----------

@@ -24,7 +24,7 @@ def _fit_imaging_from(
     Returns a `FitImaging` object from a PyAutoFit database `Fit` object and an instance of galaxies from a non-linear
     search model-fit.
 
-    This function adds the `hyper_model_image` and `hyper_galaxy_image_path_dict` to the galaxies before performing the
+    This function adds the `adapt_model_image` and `adapt_galaxy_image_path_dict` to the galaxies before performing the
     fit, if they were used.
 
     Parameters

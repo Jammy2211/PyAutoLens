@@ -13,7 +13,6 @@ lectures are composed of five chapters
 - **Lens Modeling** - How to model strong lenses, including a primer on Bayesian non-linear analysis.
 - **Search Chaining** - How to fit complex lens models using non-linear search chaining.
 - **Pixelizations** - How to perform pixelized reconstructions of the source-galaxy.
-- **Hyper-Mode** - How to use **PyAutoLens** advanced modeling features that adapt the model to the strong lens being analysed.
 
 How to Tackle HowToLens
 -----------------------

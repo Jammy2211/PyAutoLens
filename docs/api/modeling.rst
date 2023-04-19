@@ -63,4 +63,4 @@ Hyper
 .. autosummary::
    :toctree: generated/
 
-   SetupHyper
+   SetupAdapt

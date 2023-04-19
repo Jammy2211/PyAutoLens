@@ -24,8 +24,8 @@ def test__noise_map__with_and_without_hyper_galaxy(masked_imaging_7x7_no_blur):
         hyper_galaxy=al.legacy.HyperGalaxy(
             contribution_factor=1.0, noise_factor=1.0, noise_power=1.0
         ),
-        hyper_model_image=hyper_image,
-        hyper_galaxy_image=hyper_image,
+        adapt_model_image=hyper_image,
+        adapt_galaxy_image=hyper_image,
         hyper_minimum_value=0.0,
     )
 
@@ -49,8 +49,8 @@ def test__noise_map__with_hyper_galaxy_reaches_upper_limit(masked_imaging_7x7_no
         hyper_galaxy=al.legacy.HyperGalaxy(
             contribution_factor=1.0, noise_factor=1.0e9, noise_power=1.0
         ),
-        hyper_model_image=hyper_image,
-        hyper_galaxy_image=hyper_image,
+        adapt_model_image=hyper_image,
+        adapt_galaxy_image=hyper_image,
         hyper_minimum_value=0.0,
     )
 
@@ -132,8 +132,8 @@ def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):
         bulge=al.lp.Sersic(intensity=1.0),
         mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
         hyper_galaxy=hyper_galaxy,
-        hyper_model_image=np.ones(9),
-        hyper_galaxy_image=np.ones(9),
+        adapt_model_image=np.ones(9),
+        adapt_galaxy_image=np.ones(9),
         hyper_minimum_value=0.0,
     )
     g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
@@ -163,8 +163,8 @@ def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):
         redshift=0.5,
         pixelization=pixelization,
         hyper_galaxy=hyper_galaxy,
-        hyper_model_image=np.ones(9),
-        hyper_galaxy_image=np.ones(9),
+        adapt_model_image=np.ones(9),
+        adapt_galaxy_image=np.ones(9),
         hyper_minimum_value=0.0,
     )
 
@@ -187,8 +187,8 @@ def test__fit_figure_of_merit__include_hyper_methods(masked_imaging_7x7):
         redshift=0.5,
         bulge=al.lp.Sersic(intensity=1.0),
         hyper_galaxy=hyper_galaxy,
-        hyper_model_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
-        hyper_galaxy_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
+        adapt_model_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
+        adapt_galaxy_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
         hyper_minimum_value=0.0,
     )
 

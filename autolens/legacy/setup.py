@@ -4,7 +4,7 @@ import autofit as af
 import autogalaxy as ag
 
 
-class SetupHyper(ag.legacy.SetupHyper):
+class SetupAdapt(ag.legacy.SetupAdapt):
     def __init__(
         self,
         hyper_galaxies_lens: bool = False,
@@ -21,11 +21,11 @@ class SetupHyper(ag.legacy.SetupHyper):
         mesh_pixels_fixed: Optional[int] = None,
     ):
         """
-        The hyper setup of a pipeline, which controls how hyper-features in PyAutoLens template pipelines run,
-        for example controlling whether hyper galaxies are used to scale the noise and the non-linear searches used
+        The adapt setup of a pipeline, which controls how adaptive-features in PyAutoLens template pipelines run,
+        for example controlling whether galaxies are used to scale the noise and the non-linear searches used
         in these searchs.
 
-        Users can write their own pipelines which do not use or require the *SetupHyper* class.
+        Users can write their own pipelines which do not use or require the *SetupAdapt* class.
 
         Parameters
         ----------
@@ -43,9 +43,9 @@ class SetupHyper(ag.legacy.SetupHyper):
             the `SLaM` pipelines this is after the `SourcePipeline`. This allow Bayesian model comparison to be
             performed objected between later searchs in a pipeline.
         search_pix_cls
-            The non-linear search used by every hyper model-fit search.
+            The non-linear search used by every adapt model-fit search.
         search_pix_dict
-            The dictionary of search options for the hyper model-fit searches.
+            The dictionary of search options for the adapt model-fit searches.
         """
         hyper_galaxies = hyper_galaxies_lens or hyper_galaxies_source
 
@@ -104,10 +104,10 @@ class SetupHyper(ag.legacy.SetupHyper):
         if not self.hyper_galaxies_lens:
             return None
 
-        if hasattr(result, "hyper"):
+        if hasattr(result, "adapt"):
             return self.hyper_galaxy_via_galaxy_model_from(
-                galaxy_model=result.hyper.model.galaxies.lens,
-                galaxy_instance=result.hyper.instance.galaxies.lens,
+                galaxy_model=result.adapt.model.galaxies.lens,
+                galaxy_instance=result.adapt.instance.galaxies.lens,
                 noise_factor_is_model=noise_factor_is_model,
             )
 
@@ -147,10 +147,10 @@ class SetupHyper(ag.legacy.SetupHyper):
         if not self.hyper_galaxies_source:
             return None
 
-        if hasattr(result, "hyper"):
+        if hasattr(result, "adapt"):
             return self.hyper_galaxy_via_galaxy_model_from(
-                galaxy_model=result.hyper.model.galaxies.source,
-                galaxy_instance=result.hyper.instance.galaxies.source,
+                galaxy_model=result.adapt.model.galaxies.source,
+                galaxy_instance=result.adapt.instance.galaxies.source,
                 noise_factor_is_model=noise_factor_is_model,
             )
 

@@ -2,7 +2,6 @@ from os import path
 
 import pytest
 
-import autolens as al
 import autolens.plot as aplt
 
 directory = path.dirname(path.realpath(__file__))
