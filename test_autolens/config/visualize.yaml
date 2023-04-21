@@ -71,11 +71,8 @@ mat_wrap_2d:
       s: 17
 plots:
   dataset:
-    absolute_signal_to_noise_map: false
     data: true
-    inverse_noise_map: true
     noise_map: false
-    potential_chi_squared_map: true
     signal_to_noise_map: false
     subplot_dataset: true
     uv_wavelengths: false
@@ -99,7 +96,6 @@ plots:
     amplitudes_vs_uv_distances: false
     dirty_chi_squared_map: false
     dirty_image: false
-    dirty_inverse_noise_map: false
     dirty_noise_map: false
     dirty_normalized_residual_map: false
     dirty_residual_map: false
@@ -128,7 +124,6 @@ plots:
   interferometer:
     amplitudes_vs_uv_distances: false
     dirty_image: false
-    dirty_inverse_noise_map: false
     dirty_noise_map: false
     dirty_signal_to_noise_map: false
     phases_vs_uv_distances: false
