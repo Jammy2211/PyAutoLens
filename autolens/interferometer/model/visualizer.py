@@ -53,7 +53,7 @@ class VisualizerInterferometer(Visualizer):
         )
 
         if should_plot("subplot_fit"):
-            fit_interferometer_plotter.subplot_fit_interferometer()
+            fit_interferometer_plotter.subplot_fit()
             fit_interferometer_plotter.subplot_fit_dirty_images()
             fit_interferometer_plotter.subplot_fit_real_space()
 

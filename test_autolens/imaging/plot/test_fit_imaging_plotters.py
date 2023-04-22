@@ -98,7 +98,7 @@ def test__figures_of_plane(
     assert path.join(plot_path, "plane_image_of_plane_1.png") not in plot_patch.paths
 
 
-def test_subplot_fit_imaging_is_output(
+def test_subplot_fit_is_output(
     fit_imaging_x2_plane_7x7, include_2d_all, plot_path, plot_patch
 ):
 
@@ -108,8 +108,8 @@ def test_subplot_fit_imaging_is_output(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )
 
-    fit_imaging_plotter.subplot_fit_imaging()
-    assert path.join(plot_path, "subplot_fit_imaging.png") in plot_patch.paths
+    fit_imaging_plotter.subplot_fit()
+    assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
 
 
 def test__subplot_of_planes(
