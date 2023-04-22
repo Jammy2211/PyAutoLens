@@ -139,6 +139,8 @@ class FitImagingPlotter(Plotter):
         subtracted_image: bool = False,
         model_image: bool = False,
         plane_image: bool = False,
+        zoom_to_brightest: bool = True,
+        interpolate_to_uniform: bool = False,
     ):
         """
         Plots images representing each individual `Plane` in the fit's `Tracer` in 2D, which are computed via the
@@ -165,6 +167,12 @@ class FitImagingPlotter(Plotter):
             Whether to make a 2D plot (via `imshow`) of the image of a plane in its source-plane (e.g. unlensed).
             Depending on how the fit is performed, this could either be an image of light profiles of the reconstruction
             of an `Inversion`.
+        zoom_to_brightest
+            For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
+            the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
+        interpolate_to_uniform
+            If `True`, the mapper's reconstruction is interpolated to a uniform grid before plotting, for example
+            meaning that an irregular Delaunay grid can be plotted as a uniform grid.
         """
 
         visuals_2d = self.get_visuals_2d()
@@ -236,7 +244,7 @@ class FitImagingPlotter(Plotter):
                 if not self.tracer.planes[plane_index].has(cls=aa.Pixelization):
 
                     self.tracer_plotter.figures_2d_of_planes(
-                        plane_image=True, plane_index=plane_index
+                        plane_image=True, plane_index=plane_index, zoom_to_brightest=zoom_to_brightest
                     )
 
                 elif self.tracer.planes[plane_index].has(cls=aa.Pixelization):
@@ -245,7 +253,7 @@ class FitImagingPlotter(Plotter):
                         plane_index=plane_index
                     )
                     inversion_plotter.figures_2d_of_pixelization(
-                        pixelization_index=0, reconstruction=True
+                        pixelization_index=0, reconstruction=True, zoom_to_brightest=zoom_to_brightest, interpolate_to_uniform=interpolate_to_uniform
                     )
 
     def subplot_of_planes(self, plane_index: Optional[int] = None):

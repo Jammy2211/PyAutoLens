@@ -210,6 +210,7 @@ class TracerPlotter(Plotter):
         plane_image: bool = False,
         plane_grid: bool = False,
         plane_index: Optional[int] = None,
+        zoom_to_brightest: bool = True,
     ):
         """
         Plots source-plane images (e.g. the unlensed light) each individual `Plane` in the plotter's `Tracer` in 2D,
@@ -228,6 +229,9 @@ class TracerPlotter(Plotter):
             source-plane.
         plane_index
             If input, plots for only a single plane based on its index in the tracer are created.
+        zoom_to_brightest
+            For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
+            the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
         """
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
@@ -239,6 +243,7 @@ class TracerPlotter(Plotter):
 
                 plane_plotter.figures_2d(
                     plane_image=True,
+                    zoom_to_brightest=zoom_to_brightest,
                     title_suffix=f" Of Plane {plane_index}",
                     filename_suffix=f"_of_plane_{plane_index}",
                 )
