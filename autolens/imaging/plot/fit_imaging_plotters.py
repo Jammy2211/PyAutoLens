@@ -355,6 +355,9 @@ class FitImagingPlotter(Plotter):
         self.set_title(label="Lens Model Image")
         self.figures_2d_of_planes(plane_index=0, model_image=True)
 
+        # If the lens light is not included the subplot index does not increase, so we must manually set it to 4
+        self.mat_plot_2d.subplot_index = 5
+
         final_plane_index = len(self.fit.tracer.planes) - 1
 
         self.set_title(label="Source Model Image (Image Plane)")

@@ -14,7 +14,7 @@ class VisualizerInterferometer(Visualizer):
         self,
         fit: FitInterferometer,
         during_analysis: bool,
-        subfolders: str = "fit_interferometer",
+        subfolders: str = "fit_dataset",
     ):
         """
         Visualizes a `FitInterferometer` object, which fits an interferometer dataset.
@@ -104,7 +104,7 @@ class VisualizerInterferometer(Visualizer):
             if should_plot("all_at_end_fits"):
 
                 mat_plot_2d = self.mat_plot_2d_from(
-                    subfolders=path.join("fit_interferometer", "fits"), format="fits"
+                    subfolders=path.join("fit_dataset", "fits"), format="fits"
                 )
 
                 fit_interferometer_plotter = FitInterferometerPlotter(
