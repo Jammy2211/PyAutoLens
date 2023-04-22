@@ -93,7 +93,7 @@ class FitPointDatasetPlotter(AbstractPlotter):
         self,
         positions: bool = False,
         fluxes: bool = False,
-        auto_filename: str = "subplot_fit_point",
+        auto_filename: str = "subplot_fit",
     ):
 
         self._subplot_custom_plot(
@@ -102,5 +102,5 @@ class FitPointDatasetPlotter(AbstractPlotter):
             auto_labels=aplt.AutoLabels(filename=auto_filename),
         )
 
-    def subplot_fit_point(self):
+    def subplot_fit(self):
         self.subplot(positions=True, fluxes=True)

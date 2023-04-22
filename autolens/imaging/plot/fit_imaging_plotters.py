@@ -64,10 +64,6 @@ class FitImagingPlotter(Plotter):
 
         self.residuals_symmetric_cmap = residuals_symmetric_cmap
 
-        # self.figures_2d = self._fit_imaging_meta_plotter.figures_2d
-        # self.subplot = self._fit_imaging_meta_plotter.subplot
-        # self.subplot_fit = self._fit_imaging_meta_plotter.subplot_fit
-
     def get_visuals_2d(self) -> aplt.Visuals2D:
         return self.get_2d.via_fit_imaging_from(fit=self.fit)
 
@@ -243,8 +239,11 @@ class FitImagingPlotter(Plotter):
 
                 if not self.tracer.planes[plane_index].has(cls=aa.Pixelization):
 
+
                     self.tracer_plotter.figures_2d_of_planes(
-                        plane_image=True, plane_index=plane_index, zoom_to_brightest=zoom_to_brightest
+                        plane_image=True,
+                        plane_index=plane_index,
+                        zoom_to_brightest=zoom_to_brightest
                     )
 
                 elif self.tracer.planes[plane_index].has(cls=aa.Pixelization):
@@ -253,7 +252,10 @@ class FitImagingPlotter(Plotter):
                         plane_index=plane_index
                     )
                     inversion_plotter.figures_2d_of_pixelization(
-                        pixelization_index=0, reconstruction=True, zoom_to_brightest=zoom_to_brightest, interpolate_to_uniform=interpolate_to_uniform
+                        pixelization_index=0,
+                        reconstruction=True,
+                        zoom_to_brightest=zoom_to_brightest,
+                        interpolate_to_uniform=interpolate_to_uniform
                     )
 
     def subplot_of_planes(self, plane_index: Optional[int] = None):
@@ -280,6 +282,7 @@ class FitImagingPlotter(Plotter):
             self.open_subplot_figure(number_subplots=4)
 
             self.figures_2d(data=True)
+
             self.figures_2d_of_planes(subtracted_image=True, plane_index=plane_index)
             self.figures_2d_of_planes(model_image=True, plane_index=plane_index)
             self.figures_2d_of_planes(plane_image=True, plane_index=plane_index)
@@ -342,14 +345,43 @@ class FitImagingPlotter(Plotter):
         """
         Standard subplot of the attributes of the plotter's `FitImaging` object.
         """
-        return self.subplot(
-            data=True,
-            signal_to_noise_map=True,
-            model_image=True,
-            residual_map=True,
-            normalized_residual_map=True,
-            chi_squared_map=True,
+
+        self.open_subplot_figure(number_subplots=9)
+
+        self.figures_2d(data=True)
+        self.figures_2d(signal_to_noise_map=True)
+        self.figures_2d(model_image=True)
+
+        self.set_title(label="Lens Model Image")
+        self.figures_2d_of_planes(plane_index=0, model_image=True)
+
+        final_plane_index = len(self.fit.tracer.planes) - 1
+
+        self.set_title(label="Source Model Image (Image Plane)")
+        self.figures_2d_of_planes(plane_index=final_plane_index, model_image=True)
+        self.set_title(label="Source Model Image (Source Plane)")
+        self.figures_2d_of_planes(plane_index=final_plane_index, plane_image=True)
+
+        self.set_title(label=None)
+
+        self.figures_2d(normalized_residual_map=True)
+
+        self.mat_plot_2d.cmap.kwargs["vmin"] = -1.0
+        self.mat_plot_2d.cmap.kwargs["vmax"] = 1.0
+
+        self.set_title(label="Normalized Residual Map (1 sigma)")
+        self.figures_2d(normalized_residual_map=True)
+        self.set_title(label=None)
+
+        self.mat_plot_2d.cmap.kwargs.pop("vmin")
+        self.mat_plot_2d.cmap.kwargs.pop("vmax")
+
+        self.figures_2d(chi_squared_map=True)
+
+        self.mat_plot_2d.output.subplot_to_figure(
+            auto_filename="subplot_fit"
         )
+        self.close_subplot_figure()
 
     def figures_2d(
         self,
@@ -458,6 +490,7 @@ class FitImagingPlotter(Plotter):
                 visuals_2d=visuals_2d_no_critical_caustic,
                 auto_labels=AutoLabels(
                     title="Normalized Residual Map",
+                    cb_unit=r" $\sigma$",
                     filename=f"normalized_residual_map{suffix}",
                 ),
             )
@@ -470,6 +503,6 @@ class FitImagingPlotter(Plotter):
                 array=self.fit.chi_squared_map,
                 visuals_2d=visuals_2d_no_critical_caustic,
                 auto_labels=AutoLabels(
-                    title="Chi-Squared Map", filename=f"chi_squared_map{suffix}"
+                    title="Chi-Squared Map", cb_unit=r" $\chi^2$",  filename=f"chi_squared_map{suffix}"
                 ),
             )

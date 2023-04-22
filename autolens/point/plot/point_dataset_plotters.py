@@ -168,7 +168,7 @@ class PointDatasetPlotter(Plotter):
         self,
         positions: bool = False,
         fluxes: bool = False,
-        auto_filename="subplot_point_dataset",
+        auto_filename="subplot_dataset",
     ):
 
         self._subplot_custom_plot(
@@ -177,5 +177,5 @@ class PointDatasetPlotter(Plotter):
             auto_labels=aplt.AutoLabels(filename=auto_filename),
         )
 
-    def subplot_point_dataset(self):
+    def subplot_dataset(self):
         self.subplot(positions=True, fluxes=True)
