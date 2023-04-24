@@ -301,7 +301,6 @@ class TestGridAtRedshift:
     def test__input_redshift_between_two_planes__two_planes_between_earth_and_input_redshift(
         self, sub_grid_2d_7x7
     ):
-
         sub_grid_2d_7x7[0] = np.array([[1.0, -1.0]])
         sub_grid_2d_7x7[1] = np.array([[1.0, 0.0]])
 

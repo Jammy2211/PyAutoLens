@@ -84,7 +84,6 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
         return self.via_tracer_from(tracer=tracer, grid=grid)
 
     def via_deflections_and_galaxies_from(self, deflections, galaxies):
-
         grid = aa.Grid2D.uniform(
             shape_native=deflections.shape_native,
             pixel_scales=deflections.pixel_scales,

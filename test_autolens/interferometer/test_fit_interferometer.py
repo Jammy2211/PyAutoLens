@@ -5,7 +5,6 @@ import autolens as al
 
 
 def test__model_visibilities(interferometer_7):
-
     g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d=np.ones(9)))
     tracer = al.Tracer.from_galaxies(galaxies=[g0])
 
@@ -18,7 +17,6 @@ def test__model_visibilities(interferometer_7):
 
 
 def test__fit_figure_of_merit(interferometer_7):
-
     # TODO : Use pytest.parameterize
 
     g0 = al.Galaxy(
@@ -138,7 +136,6 @@ def test__fit_figure_of_merit(interferometer_7):
 def test___fit_figure_of_merit__different_settings(
     interferometer_7, interferometer_7_lop
 ):
-
     pixelization = al.Pixelization(
         mesh=al.mesh.Rectangular(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=0.01),
@@ -162,7 +159,6 @@ def test___fit_figure_of_merit__different_settings(
 
 
 def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
-
     # Normal Light Profiles Only
 
     g0 = al.Galaxy(
@@ -268,7 +264,6 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
 
 
 def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid):
-
     # Normal Light Profiles Only
 
     g0 = al.Galaxy(
@@ -391,7 +386,6 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
 
 
 def test__model_visibilities_of_planes_list(interferometer_7):
-
     g0 = al.Galaxy(
         redshift=0.5,
         bulge=al.lp.Sersic(intensity=1.0),
@@ -428,7 +422,6 @@ def test__model_visibilities_of_planes_list(interferometer_7):
 
 
 def test___stochastic_mode__gives_different_log_likelihood_list(interferometer_7):
-
     pixelization = al.Pixelization(
         mesh=al.mesh.VoronoiBrightnessImage(pixels=5),
         regularization=al.reg.Constant(coefficient=1.0),

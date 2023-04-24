@@ -21,15 +21,12 @@ class FitPointDataset:
     def __init__(
         self, point_dataset: PointDataset, tracer: Tracer, point_solver: PointSolver
     ):
-
         self.point_dataset = point_dataset
 
         point_profile = tracer.extract_profile(profile_name=point_dataset.name)
 
         try:
-
             if isinstance(point_profile, ag.ps.PointSourceChi):
-
                 self.positions = FitPositionsSource(
                     name=point_dataset.name,
                     positions=point_dataset.positions,
@@ -39,7 +36,6 @@ class FitPointDataset:
                 )
 
             else:
-
                 self.positions = FitPositionsImage(
                     name=point_dataset.name,
                     positions=point_dataset.positions,
@@ -55,7 +51,6 @@ class FitPointDataset:
             raise exc.FitException from e
 
         try:
-
             self.flux = FitFluxes(
                 name=point_dataset.name,
                 fluxes=point_dataset.fluxes,
@@ -65,12 +60,10 @@ class FitPointDataset:
             )
 
         except exc.PointExtractionException:
-
             self.flux = None
 
     @property
     def log_likelihood(self) -> float:
-
         log_likelihood_positions = (
             self.positions.log_likelihood if self.positions is not None else 0.0
         )

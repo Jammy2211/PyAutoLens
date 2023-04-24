@@ -45,7 +45,6 @@ class TracerPlotter(TracerPlotterBase):
         """
 
         if image:
-
             self.mat_plot_2d.plot_array(
                 array=self.tracer.image_2d_from(grid=self.grid),
                 visuals_2d=self.get_visuals_2d(),
@@ -66,7 +65,6 @@ class TracerPlotter(TracerPlotterBase):
         )
 
         if contribution_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.tracer.contribution_map,
                 visuals_2d=self.get_visuals_2d(),

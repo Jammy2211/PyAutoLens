@@ -64,10 +64,6 @@ class FitImagingPlotter(Plotter):
 
         self.residuals_symmetric_cmap = residuals_symmetric_cmap
 
-        # self.figures_2d = self._fit_imaging_meta_plotter.figures_2d
-        # self.subplot = self._fit_imaging_meta_plotter.subplot
-        # self.subplot_fit_imaging = self._fit_imaging_meta_plotter.subplot_fit_imaging
-
     def get_visuals_2d(self) -> aplt.Visuals2D:
         return self.get_2d.via_fit_imaging_from(fit=self.fit)
 
@@ -139,6 +135,8 @@ class FitImagingPlotter(Plotter):
         subtracted_image: bool = False,
         model_image: bool = False,
         plane_image: bool = False,
+        zoom_to_brightest: bool = True,
+        interpolate_to_uniform: bool = False,
     ):
         """
         Plots images representing each individual `Plane` in the fit's `Tracer` in 2D, which are computed via the
@@ -165,6 +163,12 @@ class FitImagingPlotter(Plotter):
             Whether to make a 2D plot (via `imshow`) of the image of a plane in its source-plane (e.g. unlensed).
             Depending on how the fit is performed, this could either be an image of light profiles of the reconstruction
             of an `Inversion`.
+        zoom_to_brightest
+            For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
+            the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
+        interpolate_to_uniform
+            If `True`, the mapper's reconstruction is interpolated to a uniform grid before plotting, for example
+            meaning that an irregular Delaunay grid can be plotted as a uniform grid.
         """
 
         visuals_2d = self.get_visuals_2d()
@@ -235,8 +239,11 @@ class FitImagingPlotter(Plotter):
 
                 if not self.tracer.planes[plane_index].has(cls=aa.Pixelization):
 
+
                     self.tracer_plotter.figures_2d_of_planes(
-                        plane_image=True, plane_index=plane_index
+                        plane_image=True,
+                        plane_index=plane_index,
+                        zoom_to_brightest=zoom_to_brightest
                     )
 
                 elif self.tracer.planes[plane_index].has(cls=aa.Pixelization):
@@ -245,7 +252,10 @@ class FitImagingPlotter(Plotter):
                         plane_index=plane_index
                     )
                     inversion_plotter.figures_2d_of_pixelization(
-                        pixelization_index=0, reconstruction=True
+                        pixelization_index=0,
+                        reconstruction=True,
+                        zoom_to_brightest=zoom_to_brightest,
+                        interpolate_to_uniform=interpolate_to_uniform
                     )
 
     def subplot_of_planes(self, plane_index: Optional[int] = None):
@@ -272,6 +282,7 @@ class FitImagingPlotter(Plotter):
             self.open_subplot_figure(number_subplots=4)
 
             self.figures_2d(data=True)
+
             self.figures_2d_of_planes(subtracted_image=True, plane_index=plane_index)
             self.figures_2d_of_planes(model_image=True, plane_index=plane_index)
             self.figures_2d_of_planes(plane_image=True, plane_index=plane_index)
@@ -290,7 +301,7 @@ class FitImagingPlotter(Plotter):
         residual_map: bool = False,
         normalized_residual_map: bool = False,
         chi_squared_map: bool = False,
-        auto_filename: str = "subplot_fit_imaging",
+        auto_filename: str = "subplot_fit",
     ):
         """
         Plots the individual attributes of the plotter's `FitImaging` object in 2D on a subplot.
@@ -330,18 +341,50 @@ class FitImagingPlotter(Plotter):
             auto_labels=AutoLabels(filename=auto_filename),
         )
 
-    def subplot_fit_imaging(self):
+    def subplot_fit(self):
         """
         Standard subplot of the attributes of the plotter's `FitImaging` object.
         """
-        return self.subplot(
-            data=True,
-            signal_to_noise_map=True,
-            model_image=True,
-            residual_map=True,
-            normalized_residual_map=True,
-            chi_squared_map=True,
+
+        self.open_subplot_figure(number_subplots=9)
+
+        self.figures_2d(data=True)
+        self.figures_2d(signal_to_noise_map=True)
+        self.figures_2d(model_image=True)
+
+        self.set_title(label="Lens Model Image")
+        self.figures_2d_of_planes(plane_index=0, model_image=True)
+
+        # If the lens light is not included the subplot index does not increase, so we must manually set it to 4
+        self.mat_plot_2d.subplot_index = 5
+
+        final_plane_index = len(self.fit.tracer.planes) - 1
+
+        self.set_title(label="Source Model Image (Image Plane)")
+        self.figures_2d_of_planes(plane_index=final_plane_index, model_image=True)
+        self.set_title(label="Source Model Image (Source Plane)")
+        self.figures_2d_of_planes(plane_index=final_plane_index, plane_image=True)
+
+        self.set_title(label=None)
+
+        self.figures_2d(normalized_residual_map=True)
+
+        self.mat_plot_2d.cmap.kwargs["vmin"] = -1.0
+        self.mat_plot_2d.cmap.kwargs["vmax"] = 1.0
+
+        self.set_title(label="Normalized Residual Map (1 sigma)")
+        self.figures_2d(normalized_residual_map=True)
+        self.set_title(label=None)
+
+        self.mat_plot_2d.cmap.kwargs.pop("vmin")
+        self.mat_plot_2d.cmap.kwargs.pop("vmax")
+
+        self.figures_2d(chi_squared_map=True)
+
+        self.mat_plot_2d.output.subplot_to_figure(
+            auto_filename="subplot_fit"
         )
+        self.close_subplot_figure()
 
     def figures_2d(
         self,
@@ -450,6 +493,7 @@ class FitImagingPlotter(Plotter):
                 visuals_2d=visuals_2d_no_critical_caustic,
                 auto_labels=AutoLabels(
                     title="Normalized Residual Map",
+                    cb_unit=r" $\sigma$",
                     filename=f"normalized_residual_map{suffix}",
                 ),
             )
@@ -462,6 +506,6 @@ class FitImagingPlotter(Plotter):
                 array=self.fit.chi_squared_map,
                 visuals_2d=visuals_2d_no_critical_caustic,
                 auto_labels=AutoLabels(
-                    title="Chi-Squared Map", filename=f"chi_squared_map{suffix}"
+                    title="Chi-Squared Map", cb_unit=r" $\chi^2$",  filename=f"chi_squared_map{suffix}"
                 ),
             )

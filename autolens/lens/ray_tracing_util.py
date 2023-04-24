@@ -54,8 +54,7 @@ def traced_grid_2d_list_from(
 
     plane_redshifts = [plane.redshift for plane in planes]
 
-    for (plane_index, plane) in enumerate(planes):
-
+    for plane_index, plane in enumerate(planes):
         scaled_grid = grid.copy()
 
         if plane_index > 0:
@@ -133,7 +132,6 @@ def grid_2d_at_redshift_from(
     ]
 
     if plane_index_with_redshift:
-
         traced_grid_list = traced_grid_2d_list_from(
             planes=planes, grid=grid, cosmology=cosmology
         )
@@ -141,7 +139,6 @@ def grid_2d_at_redshift_from(
         return traced_grid_list[plane_index_with_redshift[0]]
 
     for plane_index, plane_redshift in enumerate(plane_redshifts):
-
         if redshift < plane_redshift:
             plane_index_insert = plane_index
 

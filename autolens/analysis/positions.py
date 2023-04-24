@@ -143,7 +143,6 @@ class PositionsLHResample(AbstractPositionsLH):
         )
 
         if not positions_fit.max_separation_within_threshold(self.threshold):
-
             if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
                 return
 
@@ -218,7 +217,6 @@ class PositionsLHPenalty(AbstractPositionsLH):
         )
 
         if isinstance(dataset, aa.Imaging):
-
             chi_squared_map = aa.util.fit.chi_squared_map_from(
                 residual_map=residual_map, noise_map=dataset.noise_map
             )
@@ -230,7 +228,6 @@ class PositionsLHPenalty(AbstractPositionsLH):
             )
 
         else:
-
             chi_squared_map = aa.util.fit.chi_squared_map_complex_from(
                 residual_map=residual_map, noise_map=dataset.noise_map
             )
@@ -269,7 +266,6 @@ class PositionsLHPenalty(AbstractPositionsLH):
         )
 
         if not positions_fit.max_separation_within_threshold(self.threshold):
-
             return self.log_likelihood_penalty_factor * (
                 positions_fit.max_separation_of_source_plane_positions - self.threshold
             )

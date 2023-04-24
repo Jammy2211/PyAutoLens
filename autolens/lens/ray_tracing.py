@@ -57,7 +57,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         profiling_dict: Optional[Dict] = None,
     ):
-
         planes = ag.util.plane.planes_via_galaxies_from(
             galaxies=galaxies, profiling_dict=profiling_dict
         )
@@ -73,7 +72,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         planes_between_lenses,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):
-
         """Ray-tracer for a lens system with any number of planes.
 
         The redshift of these planes are specified by the input parameters *lens_redshifts* and \
@@ -252,14 +250,12 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def image_2d_from(
         self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
     ) -> aa.Array2D:
-
         return sum(self.image_2d_list_from(grid=grid, operated_only=operated_only))
 
     @aa.grid_dec.grid_2d_to_structure_list
     def image_2d_list_from(
         self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
     ) -> List[aa.Array2D]:
-
         traced_grid_list = self.traced_grid_2d_list_from(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
         )
@@ -308,13 +304,12 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         traced_grid_list = self.traced_grid_2d_list_from(grid=grid)
 
-        for (plane_index, plane) in enumerate(self.planes):
+        for plane_index, plane in enumerate(self.planes):
             image_2d_list = plane.image_2d_list_from(
                 grid=traced_grid_list[plane_index], operated_only=operated_only
             )
 
-            for (galaxy_index, galaxy) in enumerate(plane.galaxies):
-
+            for galaxy_index, galaxy in enumerate(plane.galaxies):
                 galaxy_image_2d_dict[galaxy] = image_2d_list[galaxy_index]
 
         return galaxy_image_2d_dict
@@ -340,7 +335,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
     def deflections_between_planes_from(
         self, grid: aa.type.Grid2DLike, plane_i=0, plane_j=-1
     ) -> Union[aa.VectorYX2D, aa.VectorYX2DIrregular]:
-
         traced_grids_list = self.traced_grid_2d_list_from(grid=grid)
 
         return traced_grids_list[plane_i] - traced_grids_list[plane_j]
@@ -413,7 +407,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         """
 
         def extract(value, name):
-
             try:
                 return getattr(value, name)
             except (AttributeError, IndexError):
@@ -465,7 +458,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         This is used for visualization, for example plotting the centres of all mass profiles colored by their profile.
         """
         if filter_nones:
-
             return [
                 plane.extract_attribute(cls=cls, attr_name=attr_name)
                 for plane in self.planes
@@ -473,7 +465,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
             ]
 
         else:
-
             return [
                 plane.extract_attribute(cls=cls, attr_name=attr_name)
                 for plane in self.planes
@@ -522,7 +513,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         This is used for visualization, for example plotting the centres of all mass profiles colored by their profile.
         """
         if filter_nones:
-
             return [
                 galaxy.extract_attribute(cls=cls, attr_name=attr_name)
                 for galaxy in self.galaxies
@@ -530,7 +520,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
             ]
 
         else:
-
             return [
                 galaxy.extract_attribute(cls=cls, attr_name=attr_name)
                 for galaxy in self.galaxies
@@ -621,5 +610,4 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
     @aa.profile_func
     def convolve_via_convolver(self, image, blurring_image, convolver):
-
         return convolver.convolve_image(image=image, blurring_image=blurring_image)

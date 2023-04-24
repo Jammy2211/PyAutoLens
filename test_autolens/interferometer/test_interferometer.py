@@ -5,7 +5,6 @@ import pytest
 
 class TestSimulatorInterferometer:
     def test__from_tracer__same_as_tracer_input(self):
-
         grid = al.Grid2D.uniform(shape_native=(20, 20), pixel_scales=0.05, sub_size=1)
 
         lens_galaxy = al.Galaxy(
@@ -40,7 +39,6 @@ class TestSimulatorInterferometer:
         assert (interferometer.noise_map == interferometer_via_image.noise_map).all()
 
     def test__via_deflections_and_galaxies_from__same_as_calculation_using_tracer(self):
-
         grid = al.Grid2D.uniform(shape_native=(20, 20), pixel_scales=0.05, sub_size=1)
 
         lens_galaxy = al.Galaxy(
@@ -78,7 +76,6 @@ class TestSimulatorInterferometer:
     def test__simulate_interferometer_from_lens__source_galaxy__compare_to_interferometer(
         self,
     ):
-
         lens_galaxy = al.Galaxy(
             redshift=0.5,
             mass=al.mp.Isothermal(

@@ -163,7 +163,6 @@ class SetupAdapt(ag.legacy.SetupAdapt):
     def hyper_galaxy_via_galaxy_model_from(
         self, galaxy_model, galaxy_instance, noise_factor_is_model=False
     ):
-
         hyper_galaxy = af.Model(ag.HyperGalaxy)
 
         if galaxy_model.hyper_galaxy is None:

@@ -58,23 +58,6 @@ class AnalysisImaging(AnalysisDataset):
 
         if not paths.is_complete:
 
-            if not os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
-
-                visualizer = VisualizerImaging(visualize_path=paths.image_path)
-
-                visualizer.visualize_imaging(imaging=self.imaging)
-
-                if self.positions_likelihood is not None:
-                    visualizer.visualize_image_with_positions(
-                        image=self.imaging.image,
-                        positions=self.positions_likelihood.positions,
-                    )
-
-                visualizer.visualize_adapt_images(
-                    adapt_galaxy_image_path_dict=self.adapt_galaxy_image_path_dict,
-                    adapt_model_image=self.adapt_model_image,
-                )
-
             self.set_preloads(paths=paths, model=model)
 
         return self
@@ -212,7 +195,7 @@ class AnalysisImaging(AnalysisDataset):
         FitImaging
             The fit of the plane to the imaging dataset, which includes the log likelihood.
         """
-        preloads = self.preloads if preload_overwrite is None else preload_overwrite
+        preloads = preload_overwrite or self.preloads
 
         return FitImaging(
             dataset=self.dataset,
@@ -371,6 +354,39 @@ class AnalysisImaging(AnalysisDataset):
                 log_evidences.append(log_evidence)
 
         return log_evidences
+
+    def visualize_before_fit(self, paths: af.DirectoryPaths, model: af.Collection):
+        """
+        PyAutoFit calls this function immediately before the non-linear search begins.
+
+        It visualizes objects which do not change throughout the model fit like the dataset.
+
+        Parameters
+        ----------
+        paths
+            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            visualization and the pickled objects used by the aggregator output by this function.
+        model
+            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
+            the imaging data.
+        """
+        if paths.is_complete or not os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
+            return
+
+        visualizer = VisualizerImaging(visualize_path=paths.image_path)
+
+        visualizer.visualize_imaging(imaging=self.imaging)
+
+        if self.positions_likelihood is not None:
+            visualizer.visualize_image_with_positions(
+                image=self.imaging.image,
+                positions=self.positions_likelihood.positions,
+            )
+
+        visualizer.visualize_adapt_images(
+            adapt_galaxy_image_path_dict=self.adapt_galaxy_image_path_dict,
+            adapt_model_image=self.adapt_model_image,
+        )
 
     def visualize(
         self,

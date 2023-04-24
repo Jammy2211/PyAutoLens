@@ -119,7 +119,7 @@ The interferometer can now be passed to a ``FitInterferometer`` object to fit it
     )
 
     fit_interferometer_plotter = aplt.FitInterferometerPlotter(fit=fit)
-    fit_interferometer_plotter.subplot_fit_interferometer()
+    fit_interferometer_plotter.subplot_fit()
     fit_interferometer_plotter.subplot_fit_real_space()
 
 Here is what the image of the tracer looks like before it is Fourier transformed to the uv-plane:

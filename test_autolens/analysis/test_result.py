@@ -12,7 +12,6 @@ directory = os.path.dirname(os.path.realpath(__file__))
 
 
 def test__max_log_likelihood_tracer(analysis_imaging_7x7, samples_with_result):
-
     model = af.Collection(
         galaxies=af.Collection(
             lens=al.Galaxy(redshift=0.5), source=al.Galaxy(redshift=1.0)
@@ -29,7 +28,6 @@ def test__max_log_likelihood_tracer(analysis_imaging_7x7, samples_with_result):
 
 
 def test__max_log_likelihood_positions_threshold(masked_imaging_7x7):
-
     positions_likelihood = al.PositionsLHResample(
         positions=al.Grid2DIrregular(values=[(1.0, 1.0), [-1.0, -1.0]]), threshold=100.0
     )
@@ -60,7 +58,6 @@ def test__max_log_likelihood_positions_threshold(masked_imaging_7x7):
 
 
 def test__source_plane_light_profile_centre(analysis_imaging_7x7):
-
     lens = al.Galaxy(redshift=0.5, light=al.lp.SersicSph(intensity=1.0))
 
     source = al.Galaxy(
@@ -119,7 +116,6 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
 
 
 def test__source_plane_inversion_centre(analysis_imaging_7x7):
-
     lens = al.Galaxy(redshift=0.5, light=al.lp.SersicSph(intensity=1.0))
 
     pixelization = al.Pixelization(
@@ -168,7 +164,6 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
 
 
 def test__source_plane_centre(analysis_imaging_7x7):
-
     lens = al.Galaxy(redshift=0.5, light=al.lp.SersicSph(intensity=1.0))
 
     pixelization = al.Pixelization(
@@ -194,7 +189,6 @@ def test__source_plane_centre(analysis_imaging_7x7):
 
 
 def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
-
     lens = al.Galaxy(
         redshift=0.5,
         mass=al.mp.Isothermal(
@@ -252,7 +246,6 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
 
 
 def test__positions_threshold_from(analysis_imaging_7x7):
-
     tracer = al.Tracer.from_galaxies(
         galaxies=[
             al.Galaxy(
@@ -282,7 +275,6 @@ def test__positions_threshold_from(analysis_imaging_7x7):
 
 
 def test__positions_likelihood_from(analysis_imaging_7x7):
-
     tracer = al.Tracer.from_galaxies(
         galaxies=[
             al.Galaxy(
@@ -317,7 +309,6 @@ def test__positions_likelihood_from(analysis_imaging_7x7):
 def test__results_include_mask__available_as_property(
     analysis_imaging_7x7, masked_imaging_7x7, samples_with_result
 ):
-
     result = res.ResultDataset(
         samples=samples_with_result, analysis=analysis_imaging_7x7, model=None
     )
@@ -328,7 +319,6 @@ def test__results_include_mask__available_as_property(
 def test__results_include_positions__available_as_property(
     analysis_imaging_7x7, masked_imaging_7x7, samples_with_result
 ):
-
     result = res.ResultDataset(
         samples=samples_with_result, analysis=analysis_imaging_7x7, model=None
     )
@@ -351,7 +341,6 @@ def test__results_include_positions__available_as_property(
 
 
 def test___image_dict(analysis_imaging_7x7):
-
     galaxies = af.ModelInstance()
     galaxies.lens = al.Galaxy(redshift=0.5)
     galaxies.source = al.Galaxy(redshift=1.0)

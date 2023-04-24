@@ -10,7 +10,6 @@ directory = path.dirname(path.realpath(__file__))
 
 class TestAnalysisPoint:
     def test__make_result__result_imaging_is_returned(self, point_dict):
-
         model = af.Collection(
             galaxies=af.Collection(
                 lens=al.Galaxy(redshift=0.5, point_0=al.ps.Point(centre=(0.0, 0.0)))
@@ -30,7 +29,6 @@ class TestAnalysisPoint:
     def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         self, positions_x2, positions_x2_noise_map
     ):
-
         point_dataset = al.PointDataset(
             name="point_0",
             positions=positions_x2,
@@ -87,7 +85,6 @@ class TestAnalysisPoint:
     def test__figure_of_merit__includes_fit_fluxes(
         self, positions_x2, positions_x2_noise_map, fluxes_x2, fluxes_x2_noise_map
     ):
-
         point_dataset = al.PointDataset(
             name="point_0",
             positions=positions_x2,

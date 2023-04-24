@@ -134,7 +134,6 @@ class PointDict(dict):
         super().__init__()
 
         for point_dataset in point_dataset_list:
-
             self[point_dataset.name] = point_dataset
 
     @property
@@ -167,14 +166,12 @@ class PointDict(dict):
 
     @classmethod
     def from_json(cls, file_path):
-
         with open(file_path) as infile:
             dicts = json.load(infile)
 
         return cls.from_dicts(dicts=dicts)
 
     def output_to_json(self, file_path, overwrite=False):
-
         file_dir = os.path.split(file_path)[0]
 
         if not path.exists(file_dir):

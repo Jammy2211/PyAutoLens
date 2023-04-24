@@ -10,5 +10,4 @@ class ResultPoint(Result):
 
     @property
     def max_log_likelihood_fit(self):
-
         return self.analysis.fit_positions_for(instance=self.instance_copy)

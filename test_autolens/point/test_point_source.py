@@ -7,7 +7,6 @@ import autolens as al
 
 
 def test__point_dataset_structures_as_dict():
-
     point_dataset_0 = al.PointDataset(
         name="source_1",
         positions=al.Grid2DIrregular([[1.0, 1.0]]),
@@ -49,7 +48,6 @@ def test__point_dataset_structures_as_dict():
 
 
 def test__inputs_are_other_python_types__converted_correctly():
-
     point_dataset_0 = al.PointDataset(
         name="source_1", positions=[[1.0, 1.0]], positions_noise_map=[1.0]
     )
@@ -80,7 +78,6 @@ def test__inputs_are_other_python_types__converted_correctly():
 
 
 def test__from_json_and_output_to_json():
-
     point_dataset_0 = al.PointDataset(
         name="source_1",
         positions=al.Grid2DIrregular([[1.0, 1.0]]),

@@ -79,7 +79,7 @@ Composing the lens model for cluster scale objects requires care, given there ar
 sources galaxies. Manually writing the model in a Python script, in the way we do for galaxy-scale lenses, is therefore
 not feasible.
 
-For this cluster, we therefore composed the the model by interfacing with Source Extractor
+For this cluster, we therefore composed the model by interfacing with Source Extractor
 (https://sextract.readthedocs.io/) catalogue files. A full illustration of how to make the lens and source models
 from catalogue files is given at the following links:
 

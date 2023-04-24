@@ -5,7 +5,6 @@ import autolens as al
 
 
 def test__one_set_of_fluxes__residuals_likelihood_correct():
-
     tracer = al.m.MockTracerPoint(
         profile=al.ps.PointFlux(flux=2.0), magnification=al.ArrayIrregular([2.0, 2.0])
     )
@@ -34,7 +33,6 @@ def test__one_set_of_fluxes__residuals_likelihood_correct():
 
 
 def test__use_real_tracer(gal_x1_mp):
-
     point_source = al.ps.PointFlux(centre=(0.1, 0.1), flux=2.0)
     galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
     tracer = al.Tracer.from_galaxies(galaxies=[gal_x1_mp, galaxy_point_source])
@@ -56,7 +54,6 @@ def test__use_real_tracer(gal_x1_mp):
 
 
 def test__multi_plane_calculation(gal_x1_mp):
-
     g0 = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph(einstein_radius=1.0))
     g1 = al.Galaxy(redshift=1.0, point_0=al.ps.PointFlux(flux=1.0))
     g2 = al.Galaxy(redshift=2.0, point_1=al.ps.PointFlux(flux=2.0))

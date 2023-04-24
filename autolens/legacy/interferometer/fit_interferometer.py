@@ -90,7 +90,6 @@ class FitInterferometer(FitInterferometerBase):
         regions of the data that are poorly fitted in order to avoid overfitting.
         """
         if self.use_hyper_scaling and self.hyper_background_noise is not None:
-
             return self.hyper_background_noise.hyper_noise_map_complex_from(
                 noise_map=self.dataset.noise_map
             )

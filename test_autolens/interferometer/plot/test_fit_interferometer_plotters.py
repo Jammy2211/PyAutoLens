@@ -13,7 +13,6 @@ def make_fit_imaging_plotter_setup():
 def test__fit_quantities_are_output(
     fit_interferometer_x2_plane_7x7, plot_path, plot_patch
 ):
-
     fit_interferometer_plotter = aplt.FitInterferometerPlotter(
         fit=fit_interferometer_x2_plane_7x7,
         mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
@@ -112,7 +111,6 @@ def test__fit_sub_plot_real_space(
     plot_path,
     plot_patch,
 ):
-
     fit_interferometer_plotter = aplt.FitInterferometerPlotter(
         fit=fit_interferometer_x2_plane_7x7,
         include_2d=include_2d_all,

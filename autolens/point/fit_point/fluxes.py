@@ -19,7 +19,6 @@ class FitFluxes(aa.FitDataset):
         tracer: Tracer,
         point_profile: Optional[ag.ps.Point] = None,
     ):
-
         super().__init__(dataset=fluxes)
 
         self.tracer = tracer
@@ -71,7 +70,6 @@ class FitFluxes(aa.FitDataset):
         """
 
         if len(self.tracer.planes) > 2:
-
             upper_plane_index = self.tracer.extract_plane_index_of_profile(
                 profile_name=self.name
             )

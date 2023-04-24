@@ -25,7 +25,6 @@ def test__all_individual_plotter(
     plot_path,
     plot_patch,
 ):
-
     tracer_plotter = aplt.TracerPlotter(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_2d_7x7,
@@ -80,7 +79,6 @@ def test__figures_of_plane(
     plot_path,
     plot_patch,
 ):
-
     tracer_plotter = aplt.TracerPlotter(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_2d_7x7,
@@ -104,7 +102,6 @@ def test__figures_of_plane(
 def test__tracer_sub_plot_output(
     tracer_x2_plane_7x7, sub_grid_2d_7x7, include_2d_all, plot_path, plot_patch
 ):
-
     tracer_plotter = aplt.TracerPlotter(
         tracer=tracer_x2_plane_7x7,
         grid=sub_grid_2d_7x7,

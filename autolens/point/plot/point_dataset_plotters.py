@@ -34,7 +34,6 @@ class PointDictPlotter(Plotter):
         return self.visuals_2d
 
     def point_dataset_plotter_from(self, name):
-
         return PointDatasetPlotter(
             point_dataset=self.point_dict[name],
             mat_plot_1d=self.mat_plot_1d,
@@ -46,11 +45,9 @@ class PointDictPlotter(Plotter):
         )
 
     def subplot(self):
-
         self.open_subplot_figure(number_subplots=len(self.point_dict))
 
         for name in self.point_dict.keys():
-
             point_dataset_plotter = self.point_dataset_plotter_from(name=name)
 
             point_dataset_plotter.figures_2d(positions=True, fluxes=True)
@@ -60,11 +57,9 @@ class PointDictPlotter(Plotter):
         self.close_subplot_figure()
 
     def subplot_positions(self):
-
         self.open_subplot_figure(number_subplots=len(self.point_dict))
 
         for name in self.point_dict.keys():
-
             point_dataset_plotter = self.point_dataset_plotter_from(name=name)
 
             point_dataset_plotter.figures_2d(positions=True)
@@ -76,11 +71,9 @@ class PointDictPlotter(Plotter):
         self.close_subplot_figure()
 
     def subplot_fluxes(self):
-
         self.open_subplot_figure(number_subplots=len(self.point_dict))
 
         for name in self.point_dict.keys():
-
             point_dataset_plotter = self.point_dataset_plotter_from(name=name)
 
             point_dataset_plotter.figures_2d(fluxes=True)
@@ -121,9 +114,7 @@ class PointDatasetPlotter(Plotter):
         return self.visuals_2d
 
     def figures_2d(self, positions: bool = False, fluxes: bool = False):
-
         if positions:
-
             self.mat_plot_2d.plot_grid(
                 grid=self.point_dataset.positions,
                 y_errors=self.point_dataset.positions_noise_map,
@@ -143,15 +134,12 @@ class PointDatasetPlotter(Plotter):
             self.mat_plot_1d.subplot_index is not None
             and self.mat_plot_2d.subplot_index is not None
         ):
-
             self.mat_plot_1d.subplot_index = max(
                 self.mat_plot_1d.subplot_index, self.mat_plot_2d.subplot_index
             )
 
         if fluxes:
-
             if self.point_dataset.fluxes is not None:
-
                 self.mat_plot_1d.plot_yx(
                     y=self.point_dataset.fluxes,
                     y_errors=self.point_dataset.fluxes_noise_map,
@@ -168,14 +156,13 @@ class PointDatasetPlotter(Plotter):
         self,
         positions: bool = False,
         fluxes: bool = False,
-        auto_filename="subplot_point_dataset",
+        auto_filename="subplot_dataset",
     ):
-
         self._subplot_custom_plot(
             positions=positions,
             fluxes=fluxes,
             auto_labels=aplt.AutoLabels(filename=auto_filename),
         )
 
-    def subplot_point_dataset(self):
+    def subplot_dataset(self):
         self.subplot(positions=True, fluxes=True)

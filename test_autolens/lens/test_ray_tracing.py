@@ -61,7 +61,6 @@ def caustics_via_magnification_via_tracer_from(tracer, grid):
 
 
 def test__has():
-
     gal_lp = al.Galaxy(redshift=0.5, light_profile=al.LightProfile())
     gal_mp = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph())
 
@@ -82,7 +81,6 @@ def test__has():
 
 
 def test__total_plane():
-
     tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5)])
 
     assert tracer.total_planes == 1
@@ -115,7 +113,6 @@ def test__total_plane():
 
 
 def test__plane_with_galaxy(sub_grid_2d_7x7):
-
     g1 = al.Galaxy(redshift=1)
     g2 = al.Galaxy(redshift=2)
 
@@ -126,7 +123,6 @@ def test__plane_with_galaxy(sub_grid_2d_7x7):
 
 
 def test__upper_plane_index_with_light_profile():
-
     g0 = al.Galaxy(redshift=0.5)
     g1 = al.Galaxy(redshift=1.0)
     g2 = al.Galaxy(redshift=2.0)
@@ -171,7 +167,6 @@ def test__upper_plane_index_with_light_profile():
 
 
 def test__planes_indexes_with_inversion():
-
     gal = al.Galaxy(redshift=0.5)
     gal_pix = al.Galaxy(
         redshift=0.5, pixelization=al.Pixelization(mesh=al.m.MockMesh())
@@ -312,7 +307,6 @@ def test__image_2d_from__x1_plane__single_plane_tracer(sub_grid_2d_7x7):
 def test__image_2d_from__operated_only_input(
     sub_grid_2d_7x7, lp_0, lp_operated_0, mp_0
 ):
-
     image_2d_not_operated = lp_0.image_2d_from(grid=sub_grid_2d_7x7)
     image_2d_operated = lp_operated_0.image_2d_from(grid=sub_grid_2d_7x7)
 
@@ -350,7 +344,6 @@ def test__image_2d_from__operated_only_input(
 def test__image_2d_list_from__operated_only_input(
     sub_grid_2d_7x7, lp_0, lp_operated_0, mp_0
 ):
-
     image_2d_not_operated = lp_0.image_2d_from(grid=sub_grid_2d_7x7)
     image_2d_operated = lp_operated_0.image_2d_from(grid=sub_grid_2d_7x7)
 
@@ -465,7 +458,6 @@ def test__padded_image_2d_from(sub_grid_2d_7x7, grid_2d_iterate_7x7):
 
 
 def test__galaxy_image_2d_dict_from(sub_grid_2d_7x7):
-
     g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=1.0))
     g1 = al.Galaxy(
         redshift=0.5,
@@ -518,7 +510,6 @@ def test__galaxy_image_2d_dict_from(sub_grid_2d_7x7):
 
 
 def test__light_profile_snr__signal_to_noise_via_simulator_correct():
-
     background_sky_level = 10.0
     exposure_time = 300.0
 
@@ -556,7 +547,6 @@ def test__light_profile_snr__signal_to_noise_via_simulator_correct():
 
 
 def test__convergence_2d_from(sub_grid_2d_7x7):
-
     g0 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
     g1 = al.Galaxy(redshift=0.5)
 
@@ -622,7 +612,6 @@ def test__convergence_2d_from(sub_grid_2d_7x7):
 
 
 def test__potential_2d_from(sub_grid_2d_7x7):
-
     g0 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
     g1 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=2.0))
     g2 = al.Galaxy(redshift=1.0, mass_profile=al.mp.IsothermalSph(einstein_radius=3.0))
@@ -669,7 +658,6 @@ def test__potential_2d_from(sub_grid_2d_7x7):
 
 
 def test__deflections_yx_2d_from(sub_grid_2d_7x7):
-
     g0 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
     g1 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=2.0))
     g2 = al.Galaxy(redshift=1.0, mass_profile=al.mp.IsothermalSph(einstein_radius=3.0))
@@ -713,7 +701,6 @@ def test__deflections_yx_2d_from(sub_grid_2d_7x7):
 
 
 def test__deflections_between_planes_from(sub_grid_2d_7x7_simple, gal_x1_mp):
-
     tracer = al.Tracer.from_galaxies(galaxies=[gal_x1_mp, al.Galaxy(redshift=1.0)])
 
     traced_deflections_between_planes = tracer.deflections_between_planes_from(
@@ -775,7 +762,6 @@ def test__deflections_between_planes_from(sub_grid_2d_7x7_simple, gal_x1_mp):
 
 
 def test__grid_2d_at_redshift_from(sub_grid_2d_7x7):
-
     g0 = al.Galaxy(
         redshift=0.5,
         mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
@@ -823,7 +809,6 @@ def test__grid_2d_at_redshift_from(sub_grid_2d_7x7):
 
 
 def test__traced_grid_2d_list_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
-
     g0 = al.Galaxy(redshift=2.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
     g1 = al.Galaxy(redshift=2.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
     g2 = al.Galaxy(redshift=0.1, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
@@ -961,7 +946,6 @@ def test__traced_grid_2d_list_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
 
 
 def test__extract_attribute():
-
     g0 = al.Galaxy(
         redshift=0.5, mp_0=al.m.MockMassProfile(value=0.9, value1=(1.0, 1.0))
     )
@@ -1009,7 +993,6 @@ def test__extract_attribute():
 
 
 def test__extract_attributes_of_plane():
-
     g0 = al.Galaxy(
         redshift=0.5, mp_0=al.m.MockMassProfile(value=0.9, value1=(1.0, 1.0))
     )
@@ -1077,7 +1060,6 @@ def test__extract_attributes_of_plane():
 
 
 def test__extract_attributes_of_galaxie():
-
     g0 = al.Galaxy(
         redshift=0.5, mp_0=al.m.MockMassProfile(value=0.9, value1=(1.0, 1.0))
     )
@@ -1147,7 +1129,6 @@ def test__extract_attributes_of_galaxie():
 
 
 def test__extract_profile():
-
     g0 = al.Galaxy(
         redshift=0.5, mp_0=al.m.MockMassProfile(value=0.9, value1=(1.0, 1.0))
     )
@@ -1172,7 +1153,6 @@ def test__extract_profile():
 
 
 def test__extract_plane_index_of_profile():
-
     g0 = al.Galaxy(
         redshift=0.5, mp_0=al.m.MockMassProfile(value=0.9, value1=(1.0, 1.0))
     )
@@ -1310,7 +1290,6 @@ def test__sliced_tracer_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
 
 
 def test__centre_of_profile_in_right_place():
-
     grid = al.Grid2D.uniform(shape_native=(7, 7), pixel_scales=1.0)
 
     galaxy = al.Galaxy(
@@ -1419,7 +1398,6 @@ def test__centre_of_profile_in_right_place():
 
 
 def test__grid_iterate_in__iterates_array_result_correctly(gal_x1_lp):
-
     mask = al.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -1472,7 +1450,6 @@ def test__grid_iterate_in__iterates_array_result_correctly(gal_x1_lp):
 def test__grid_iterate_in__method_returns_array_list__uses_highest_sub_size_of_iterate(
     gal_x1_lp,
 ):
-
     mask = al.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -1517,7 +1494,6 @@ def test__grid_iterate_in__method_returns_array_list__uses_highest_sub_size_of_i
 
 
 def test__grid_iterate_in__iterates_grid_result_correctly(gal_x1_mp):
-
     mask = al.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -1574,7 +1550,6 @@ def test__grid_iterate_in__iterates_grid_result_correctly(gal_x1_mp):
 
 
 def test__output_to_and_load_from_json():
-
     json_file = path.join(
         "{}".format(path.dirname(path.realpath(__file__))), "files", "tracer.json"
     )

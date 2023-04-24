@@ -12,7 +12,6 @@ class TestAnalysisQuantity:
     def test__make_result__result_quantity_is_returned(
         self, dataset_quantity_7x7_array_2d
     ):
-
         model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
         analysis = al.AnalysisQuantity(

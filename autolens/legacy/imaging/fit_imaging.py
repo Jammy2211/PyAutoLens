@@ -75,7 +75,14 @@ class FitImaging(FitImagingBase):
             decorator take to run.
         """
 
-        super().__init__(dataset=dataset, tracer=tracer, settings_pixelization=settings_pixelization, settings_inversion=settings_inversion, preloads=preloads, profiling_dict=profiling_dict)
+        super().__init__(
+            dataset=dataset,
+            tracer=tracer,
+            settings_pixelization=settings_pixelization,
+            settings_inversion=settings_inversion,
+            preloads=preloads,
+            profiling_dict=profiling_dict
+        )
 
         self.hyper_image_sky = hyper_image_sky
         self.hyper_background_noise = hyper_background_noise

@@ -27,7 +27,6 @@ def test__all_individual_plotter(
     plot_path,
     plot_patch,
 ):
-
     galaxy = al.legacy.Galaxy(
         redshift=0.5,
         light_profile_0=al.lp.SersicSph(

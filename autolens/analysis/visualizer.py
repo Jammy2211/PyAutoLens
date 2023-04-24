@@ -3,6 +3,7 @@ import numpy as np
 from scipy.stats import norm
 from os import path
 import os
+from typing import Dict
 
 import autoarray as aa
 import autogalaxy.plot as aplt
@@ -70,11 +71,9 @@ class Visualizer(AgVisualizer):
         )
 
         if should_plot("subplot_ray_tracing"):
-
             tracer_plotter.subplot_tracer()
 
         if should_plot("subplot_plane_images"):
-
             tracer_plotter.subplot_plane_images()
 
         tracer_plotter.figures_2d(
@@ -88,9 +87,7 @@ class Visualizer(AgVisualizer):
         )
 
         if not during_analysis:
-
             if should_plot("all_at_end_png"):
-
                 tracer_plotter.figures_2d(
                     image=True,
                     source_plane=True,
@@ -102,7 +99,6 @@ class Visualizer(AgVisualizer):
                 )
 
             if should_plot("all_at_end_fits"):
-
                 fits_mat_plot_2d = self.mat_plot_2d_from(
                     subfolders=path.join("ray_tracing", "fits"), format="fits"
                 )
@@ -167,7 +163,7 @@ class Visualizer(AgVisualizer):
 
     def visualize_adapt_images(
         self,
-        adapt_galaxy_image_path_dict: {str, aa.Array2D},
+        adapt_galaxy_image_path_dict: Dict[str, aa.Array2D],
         adapt_model_image: aa.Array2D,
     ):
         """
@@ -203,7 +199,6 @@ class Visualizer(AgVisualizer):
             hyper_plotter.figure_adapt_model_image(adapt_model_image=adapt_model_image)
 
         if should_plot("images_of_galaxies"):
-
             hyper_plotter.subplot_adapt_images_of_galaxies(
                 adapt_galaxy_image_path_dict=adapt_galaxy_image_path_dict
             )
@@ -284,7 +279,6 @@ class Visualizer(AgVisualizer):
             return
 
         if plot_setting("other", "stochastic_histogram"):
-
             file_path = path.join(self.visualize_path, "other")
 
             try:

@@ -5,7 +5,6 @@ import autolens as al
 
 
 def test__two_sets_of_positions__residuals_likelihood_correct():
-
     point_source = al.ps.Point(centre=(0.1, 0.1))
     galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
     tracer = al.Tracer.from_galaxies(
@@ -46,7 +45,6 @@ def test__two_sets_of_positions__residuals_likelihood_correct():
 
 
 def test__more_model_positions_than_data_positions__pairs_closest_positions():
-
     g0 = al.Galaxy(redshift=1.0, point_0=al.ps.Point(centre=(0.1, 0.1)))
 
     tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
@@ -78,7 +76,6 @@ def test__more_model_positions_than_data_positions__pairs_closest_positions():
 
 
 def test__multi_plane_position_solving():
-
     grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=1)
 
     g0 = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph(einstein_radius=1.0))

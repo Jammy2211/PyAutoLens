@@ -4,7 +4,6 @@ import autolens as al
 
 
 def test__two_sets_of_positions__residuals_likelihood_correct():
-
     point_source = al.ps.PointSourceChi(centre=(0.0, 0.0))
     galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
     tracer = al.Tracer.from_galaxies(
@@ -42,7 +41,6 @@ def test__two_sets_of_positions__residuals_likelihood_correct():
 
 
 def test__multi_plane_position_solving():
-
     g0 = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph(einstein_radius=1.0))
     g1 = al.Galaxy(redshift=1.0, point_0=al.ps.Point(centre=(0.1, 0.1)))
     g2 = al.Galaxy(redshift=2.0, point_1=al.ps.Point(centre=(0.1, 0.1)))

@@ -62,7 +62,6 @@ class TracerPlotter(Plotter):
         )
 
         if tracer.has(cls=LightProfileLinear):
-
             raise exc.raise_linear_light_profile_in_plot(
                 plotter_type=self.__class__.__name__, model_obj="Plane"
             )
@@ -156,7 +155,6 @@ class TracerPlotter(Plotter):
         """
 
         if image:
-
             self.mat_plot_2d.plot_array(
                 array=self.tracer.image_2d_from(grid=self.grid),
                 visuals_2d=self.get_visuals_2d(),
@@ -177,7 +175,6 @@ class TracerPlotter(Plotter):
         )
 
         if contribution_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.tracer.contribution_map,
                 visuals_2d=self.get_visuals_2d(),
@@ -210,6 +207,7 @@ class TracerPlotter(Plotter):
         plane_image: bool = False,
         plane_grid: bool = False,
         plane_index: Optional[int] = None,
+        zoom_to_brightest: bool = True,
     ):
         """
         Plots source-plane images (e.g. the unlensed light) each individual `Plane` in the plotter's `Tracer` in 2D,
@@ -228,23 +226,24 @@ class TracerPlotter(Plotter):
             source-plane.
         plane_index
             If input, plots for only a single plane based on its index in the tracer are created.
+        zoom_to_brightest
+            For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
+            the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
         """
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
         for plane_index in plane_indexes:
-
             plane_plotter = self.plane_plotter_from(plane_index=plane_index)
 
             if plane_image:
-
                 plane_plotter.figures_2d(
                     plane_image=True,
+                    zoom_to_brightest=zoom_to_brightest,
                     title_suffix=f" Of Plane {plane_index}",
                     filename_suffix=f"_of_plane_{plane_index}",
                 )
 
             if plane_grid:
-
                 plane_plotter.figures_2d(
                     plane_grid=True,
                     title_suffix=f" Of Plane {plane_index}",
@@ -332,7 +331,6 @@ class TracerPlotter(Plotter):
         self.open_subplot_figure(number_subplots=number_subplots)
 
         for plane_index in range(0, self.tracer.total_planes):
-
             plane_plotter = self.plane_plotter_from(plane_index=plane_index)
             plane_plotter.figures_2d(
                 image=True, title_suffix=f" Of Plane {plane_index}"
@@ -361,7 +359,6 @@ class TracerPlotter(Plotter):
         self.mat_plot_2d.subplot_index += 1
 
         for plane_index in range(1, self.tracer.total_planes):
-
             plane_plotter = self.plane_plotter_from(plane_index=plane_index)
             plane_plotter.figures_2d(
                 image=True, title_suffix=f" Of Plane {plane_index}"

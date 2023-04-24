@@ -7,7 +7,6 @@ from autolens.lens.subhalo import SubhaloResult
 
 class TestSubhaloResult:
     def test__result_derived_properties(self):
-
         lower_limit_lists = [[0.0, 0.0], [0.0, 0.5], [0.5, 0.0], [0.5, 0.5]]
 
         grid_search_result = af.GridSearchResult(

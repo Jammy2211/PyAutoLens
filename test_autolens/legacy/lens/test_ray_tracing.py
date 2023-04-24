@@ -10,7 +10,6 @@ test_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files
 
 
 def test__contribution_map():
-
     adapt_model_image = al.Array2D.no_mask(values=[[2.0, 4.0, 10.0]], pixel_scales=1.0)
     adapt_galaxy_image = al.Array2D.no_mask(values=[[1.0, 5.0, 8.0]], pixel_scales=1.0)
 
@@ -67,7 +66,6 @@ def test__contribution_map():
 
 
 def test__hyper_noise_map_list_from(sub_grid_2d_7x7):
-
     noise_map_1d = al.Array2D.no_mask(values=[[5.0, 3.0, 1.0]], pixel_scales=1.0)
 
     adapt_model_image = al.Array2D.no_mask(values=[[2.0, 4.0, 10.0]], pixel_scales=1.0)
