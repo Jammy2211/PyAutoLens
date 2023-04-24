@@ -202,7 +202,7 @@ class ResultDataset(Result):
 
         If a dataset is fitted the hyper images of the hyper dataset must first be associated with each galaxy.
         """
-        instance = self.analysis.instance_with_associated_hyper_images_from(
+        instance = self.analysis.instance_with_associated_adapt_images_from(
             instance=self.instance_copy
         )
 
@@ -289,7 +289,7 @@ class ResultDataset(Result):
         """
         A dictionary associating galaxy names with model images of those galaxies.
 
-        This is used for creating the hyper-dataset used by Analysis objects to adapt aspects of a model to the dataset
+        This is used for creating the adapt-dataset used by Analysis objects to adapt aspects of a model to the dataset
         being fitted.
         """
         return {
@@ -298,45 +298,45 @@ class ResultDataset(Result):
         }
 
     @property
-    def hyper_galaxy_image_path_dict(self) -> Dict[str, aa.Array2D]:
+    def adapt_galaxy_image_path_dict(self) -> Dict[str, aa.Array2D]:
         """
-        A dictionary associating 1D hyper galaxy images with their names.
+        A dictionary associating 1D galaxy images with their names.
         """
 
-        hyper_minimum_percent = conf.instance["general"]["hyper"][
-            "hyper_minimum_percent"
+        adapt_minimum_percent = conf.instance["general"]["adapt"][
+            "adapt_minimum_percent"
         ]
 
-        hyper_galaxy_image_path_dict = {}
+        adapt_galaxy_image_path_dict = {}
 
         for path, galaxy in self.path_galaxy_tuples:
 
             galaxy_image = self.image_galaxy_dict[path]
 
             if not np.all(galaxy_image == 0):
-                minimum_galaxy_value = hyper_minimum_percent * max(galaxy_image)
+                minimum_galaxy_value = adapt_minimum_percent * max(galaxy_image)
                 galaxy_image[galaxy_image < minimum_galaxy_value] = minimum_galaxy_value
 
-            hyper_galaxy_image_path_dict[path] = galaxy_image
+            adapt_galaxy_image_path_dict[path] = galaxy_image
 
-        return hyper_galaxy_image_path_dict
+        return adapt_galaxy_image_path_dict
 
     @property
-    def hyper_model_image(self) -> aa.Array2D:
+    def adapt_model_image(self) -> aa.Array2D:
         """
-        The hyper model image used by Analysis objects to adapt aspects of a model to the dataset being fitted.
+        The adapt image used by Analysis objects to adapt aspects of a model to the dataset being fitted.
 
-        The hyper model image is the sum of the hyper galaxy image of every individual galaxy.
+        The adapt image is the sum of the galaxy image of every individual galaxy.
         """
-        hyper_model_image = aa.Array2D(
+        adapt_model_image = aa.Array2D(
             values=np.zeros(self.mask.derive_mask.sub_1.pixels_in_mask),
             mask=self.mask.derive_mask.sub_1,
         )
 
         for path, galaxy in self.path_galaxy_tuples:
-            hyper_model_image += self.hyper_galaxy_image_path_dict[path]
+            adapt_model_image += self.adapt_galaxy_image_path_dict[path]
 
-        return hyper_model_image
+        return adapt_model_image
 
     def stochastic_log_likelihoods_from(self, paths: AbstractPaths) -> np.ndarray:
         """

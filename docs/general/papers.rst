@@ -77,6 +77,8 @@ The following papers use **PyAutoLens**:
 
 `The Two 𝑧 ∼ 13 Galaxy Candidates HD1 and HD2 Are Likely Not Lensed <https://arxiv.org/abs/2209.06830>`_
 
+`The Way of Water: ALMA resolves H2O emission lines in a strongly lensed dusty star-forming galaxy at z ∼ 3.1 <https://arxiv.org/abs/2304.08563>`_
+
 **Surveys**
 
 `When Spectral Modeling Meets Convolutional Networks: A Method for Discovering Reionization-era Lensed Quasars in Multi-band Imaging Data <https://arxiv.org/abs/2211.14543>`_

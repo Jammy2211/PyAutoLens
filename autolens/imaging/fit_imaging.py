@@ -8,9 +8,6 @@ import autogalaxy as ag
 
 from autogalaxy.abstract_fit import AbstractFitInversion
 
-from autogalaxy.imaging.fit_imaging import hyper_image_from
-from autogalaxy.imaging.fit_imaging import hyper_noise_map_from
-
 from autolens.analysis.preloads import Preloads
 from autolens.lens.ray_tracing import Tracer
 from autolens.lens.to_inversion import TracerToInversion
@@ -23,9 +20,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         self,
         dataset: aa.Imaging,
         tracer: Tracer,
-        hyper_image_sky: Optional[ag.hyper_data.HyperImageSky] = None,
-        hyper_background_noise: Optional[ag.hyper_data.HyperBackgroundNoise] = None,
-        use_hyper_scaling: bool = True,
         settings_pixelization: aa.SettingsPixelization = aa.SettingsPixelization(),
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads: Preloads = Preloads(),
@@ -61,13 +55,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             The imaging dataset which is fitted by the galaxies in the tracer.
         tracer
             The tracer of galaxies whose light profile images are used to fit the imaging data.
-        hyper_image_sky
-            If included, accounts for the background sky in the fit.
-        hyper_background_noise
-            If included, adds a noise-scaling term to the background to account for an inaacurate background sky model.
-        use_hyper_scaling
-            If set to False, the hyper scaling functions (e.g. the `hyper_image_sky` / `hyper_background_noise`) are
-            omitted irrespective of their inputs.
         settings_pixelization
             Settings controlling how a pixelization is fitted for example if a border is used when creating the
             pixelization.
@@ -88,44 +75,10 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         self.tracer = tracer
 
-        self.hyper_image_sky = hyper_image_sky
-        self.hyper_background_noise = hyper_background_noise
-        self.use_hyper_scaling = use_hyper_scaling
-
         self.settings_pixelization = settings_pixelization
         self.settings_inversion = settings_inversion
 
         self.preloads = preloads
-
-    @property
-    def data(self) -> aa.Array2D:
-        """
-        Returns the imaging data, which may have a hyper scaling performed which rescales the background sky level
-        in order to account for uncertainty in the background sky subtraction.
-        """
-        if self.use_hyper_scaling:
-
-            return hyper_image_from(
-                image=self.dataset.image, hyper_image_sky=self.hyper_image_sky
-            )
-
-        return self.dataset.data
-
-    @property
-    def noise_map(self) -> aa.Array2D:
-        """
-        Returns the imaging noise-map, which may have a hyper scaling performed which increase the noise in regions of
-        the data that are poorly fitted in order to avoid overfitting.
-        """
-        if self.use_hyper_scaling:
-
-            return hyper_noise_map_from(
-                noise_map=self.dataset.noise_map,
-                model_obj=self.tracer,
-                hyper_background_noise=self.hyper_background_noise,
-            )
-
-        return self.dataset.noise_map
 
     @property
     def blurred_image(self) -> aa.Array2D:
@@ -212,8 +165,8 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         - The images of all linear objects (e.g. linear light profiles / pixelizations), where the images are solved
           for first via the inversion.
 
-        For modeling, this dictionary is used to set up the `hyper_images` that adaptmodel_images_of_planes_list certain pixelizations to the
-        data being fitted.
+        For modeling, this dictionary is used to set up the `adapt_images` that adaptmodel_images_of_planes_list
+        certain pixelizations to the data being fitted.
         """
         galaxy_blurred_image_2d_dict = self.tracer.galaxy_blurred_image_2d_dict_from(
             grid=self.grid,
@@ -365,9 +318,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         return FitImaging(
             dataset=self.imaging,
             tracer=self.tracer,
-            hyper_image_sky=self.hyper_image_sky,
-            hyper_background_noise=self.hyper_background_noise,
-            use_hyper_scaling=self.use_hyper_scaling,
             settings_pixelization=self.settings_pixelization,
             settings_inversion=settings_inversion,
             preloads=preloads,

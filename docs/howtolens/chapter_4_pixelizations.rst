@@ -28,3 +28,12 @@ The chapter contains the following tutorials:
 
 `Tutorial 8: Model Fit <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_4_pixelizations/tutorial_8_model_fit.ipynb>`_
 - An example lens modeling pipeline which uses an inversion.
+
+`Tutorial 9: Fit Problems <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_4_pixelizations/tutorial_9_fit_problems.ipynb>`_
+- The shortcomings of our lens models and inversions.
+
+`Tutorial 10: Brightness Adaption <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_4_pixelizations/tutorial_10_brightness_adaption.ipynb>`_
+- Adapting the pixelization to the source's morphology.
+
+`Tutorial 11: Adaptive Regularization <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_4_pixelizations/tutorial_11_adaptive_regularization.py.ipynb>`_
+- Adapting the regularization to the source's morphology.

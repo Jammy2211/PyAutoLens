@@ -22,7 +22,7 @@ class ResultImaging(ResultDataset):
     - The non-linear search used to perform the model fit.
 
     This class contains a number of methods which use the above objects to create the max log likelihood `Plane`,
-    `FitImaging`, hyper-galaxy images,etc.
+    `FitImaging`, adapt-galaxy images,etc.
 
     Parameters
     ----------

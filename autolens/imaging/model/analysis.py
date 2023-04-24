@@ -38,7 +38,7 @@ class AnalysisImaging(AnalysisDataset):
 
         This function:
 
-        - Checks that the hyper-dataset is consistent with previous hyper-datasets if the model-fit is being
+        - Checks that the adapt-dataset is consistent with previous adapt-datasets if the model-fit is being
           resumed from a previous run.
 
         - Checks the model and raises exceptions if certain critieria are not met.
@@ -70,9 +70,9 @@ class AnalysisImaging(AnalysisDataset):
                         positions=self.positions_likelihood.positions,
                     )
 
-                visualizer.visualize_hyper_images(
-                    hyper_galaxy_image_path_dict=self.hyper_galaxy_image_path_dict,
-                    hyper_model_image=self.hyper_model_image,
+                visualizer.visualize_adapt_images(
+                    adapt_galaxy_image_path_dict=self.adapt_galaxy_image_path_dict,
+                    adapt_model_image=self.adapt_model_image,
                 )
 
             self.set_preloads(paths=paths, model=model)
@@ -148,7 +148,6 @@ class AnalysisImaging(AnalysisDataset):
     def fit_imaging_via_instance_from(
         self,
         instance: af.ModelInstance,
-        use_hyper_scaling: bool = True,
         preload_overwrite: Optional[Preloads] = None,
         profiling_dict: Optional[Dict] = None,
     ) -> FitImaging:
@@ -163,9 +162,6 @@ class AnalysisImaging(AnalysisDataset):
         instance
             An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
             via a non-linear search).
-        use_hyper_scaling
-            If false, the scaling of the background sky and noise are not performed irrespective of the model components
-            themselves.
         preload_overwrite
             If a `Preload` object is input this is used instead of the preloads stored as an attribute in the analysis.
         check_positions
@@ -179,22 +175,13 @@ class AnalysisImaging(AnalysisDataset):
         FitImaging
             The fit of the plane to the imaging dataset, which includes the log likelihood.
         """
-        self.instance_with_associated_hyper_images_from(instance=instance)
+        self.instance_with_associated_adapt_images_from(instance=instance)
         tracer = self.tracer_via_instance_from(
             instance=instance, profiling_dict=profiling_dict
         )
 
-        hyper_image_sky = self.hyper_image_sky_via_instance_from(instance=instance)
-
-        hyper_background_noise = self.hyper_background_noise_via_instance_from(
-            instance=instance
-        )
-
         return self.fit_imaging_via_tracer_from(
             tracer=tracer,
-            hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise,
-            use_hyper_scaling=use_hyper_scaling,
             preload_overwrite=preload_overwrite,
             profiling_dict=profiling_dict,
         )
@@ -202,9 +189,6 @@ class AnalysisImaging(AnalysisDataset):
     def fit_imaging_via_tracer_from(
         self,
         tracer: Tracer,
-        hyper_image_sky: Optional[ag.hyper_data.HyperImageSky],
-        hyper_background_noise: Optional[ag.hyper_data.HyperBackgroundNoise],
-        use_hyper_scaling: bool = True,
         preload_overwrite: Optional[Preloads] = None,
         profiling_dict: Optional[Dict] = None,
     ) -> FitImaging:
@@ -218,13 +202,6 @@ class AnalysisImaging(AnalysisDataset):
         ----------
         tracer
             The tracer of galaxies whose ray-traced model images are used to fit the imaging data.
-        hyper_image_sky
-            A model component which scales the background sky level of the data before computing the log likelihood.
-        hyper_background_noise
-            A model component which scales the background noise level of the data before computing the log likelihood.
-        use_hyper_scaling
-            If false, the scaling of the background sky and noise are not performed irrespective of the model components
-            themselves.
         preload_overwrite
             If a `Preload` object is input this is used instead of the preloads stored as an attribute in the analysis.
         profiling_dict
@@ -240,9 +217,6 @@ class AnalysisImaging(AnalysisDataset):
         return FitImaging(
             dataset=self.dataset,
             tracer=tracer,
-            hyper_image_sky=hyper_image_sky,
-            hyper_background_noise=hyper_background_noise,
-            use_hyper_scaling=use_hyper_scaling,
             settings_pixelization=self.settings_pixelization,
             settings_inversion=self.settings_inversion,
             preloads=preloads,
@@ -356,7 +330,7 @@ class AnalysisImaging(AnalysisDataset):
             A log likelihood cap which is applied in a stochastic model-fit to give improved error and posterior
             estimates.
         """
-        instance = self.instance_with_associated_hyper_images_from(instance=instance)
+        instance = self.instance_with_associated_adapt_images_from(instance=instance)
         tracer = self.tracer_via_instance_from(instance=instance)
 
         if not tracer.has(cls=ag.Pixelization):
@@ -366,12 +340,6 @@ class AnalysisImaging(AnalysisDataset):
             pix.mesh.is_stochastic for pix in tracer.cls_list_from(cls=ag.Pixelization)
         ):
             return
-
-        hyper_image_sky = self.hyper_image_sky_via_instance_from(instance=instance)
-
-        hyper_background_noise = self.hyper_background_noise_via_instance_from(
-            instance=instance
-        )
 
         settings_pixelization = (
             self.settings_pixelization.settings_with_is_stochastic_true()
@@ -386,8 +354,6 @@ class AnalysisImaging(AnalysisDataset):
                 log_evidence = FitImaging(
                     dataset=self.dataset,
                     tracer=tracer,
-                    hyper_image_sky=hyper_image_sky,
-                    hyper_background_noise=hyper_background_noise,
                     settings_pixelization=settings_pixelization,
                     settings_inversion=self.settings_inversion,
                     preloads=self.preloads,
@@ -424,11 +390,8 @@ class AnalysisImaging(AnalysisDataset):
         - Images of the best-fit `FitImaging`, including the model-image, residuals and chi-squared of its fit to
           the imaging data.
 
-        - The hyper-images of the model-fit showing how the hyper galaxies are used to represent different galaxies in
+        - The hyper-images of the model-fit showing how the galaxies are used to represent different galaxies in
           the dataset.
-
-        - If hyper features are used to scale the noise or background sky, a `FitImaging` with these features turned
-          off may be output, to indicate how much these features are altering the dataset.
 
         The images output by this function are customized using the file `config/visualize/plots.ini`.
 
@@ -448,7 +411,7 @@ class AnalysisImaging(AnalysisDataset):
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
             return
 
-        instance = self.instance_with_associated_hyper_images_from(instance=instance)
+        instance = self.instance_with_associated_adapt_images_from(instance=instance)
 
         fit = self.fit_imaging_via_instance_from(instance=instance)
 
@@ -485,22 +448,6 @@ class AnalysisImaging(AnalysisDataset):
 
         visualizer.visualize_contribution_maps(tracer=fit.tracer)
 
-        if visualizer.plot_fit_no_hyper:
-            fit = self.fit_imaging_via_tracer_from(
-                tracer=fit.tracer,
-                hyper_image_sky=None,
-                hyper_background_noise=None,
-                use_hyper_scaling=False,
-                preload_overwrite=Preloads(use_w_tilde=False),
-            )
-
-            try:
-                visualizer.visualize_fit_imaging(
-                    fit=fit, during_analysis=during_analysis, subfolders="fit_no_hyper"
-                )
-            except exc.InversionException:
-                pass
-
     def make_result(
         self,
         samples: af.SamplesPDF,
@@ -521,7 +468,7 @@ class AnalysisImaging(AnalysisDataset):
         - The non-linear search used to perform the model fit.
 
         The `ResultImaging` object contains a number of methods which use the above objects to create the max
-        log likelihood `Tracer`, `FitImaging`, hyper-galaxy images,etc.
+        log likelihood `Tracer`, `FitImaging`, adapt-galaxy images,etc.
 
         Parameters
         ----------

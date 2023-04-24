@@ -244,7 +244,6 @@ strong gravitational lensing with **PyAutoLens**.
    howtolens/chapter_2_lens_modeling
    howtolens/chapter_3_search_chaining
    howtolens/chapter_4_pixelizations
-   howtolens/chapter_5_hyper_mode
    howtolens/chapter_optional
 
 .. toctree::
@@ -272,4 +271,3 @@ strong gravitational lensing with **PyAutoLens**.
    advanced/chaining
    advanced/slam
    advanced/graphical
-   advanced/hyper_mode

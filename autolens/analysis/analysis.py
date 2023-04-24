@@ -65,7 +65,10 @@ class AnalysisLensing:
         self.positions_likelihood = positions_likelihood
 
     def tracer_via_instance_from(
-        self, instance: af.ModelInstance, profiling_dict: Optional[Dict] = None
+        self,
+        instance: af.ModelInstance,
+        profiling_dict: Optional[Dict] = None,
+        tracer_cls=Tracer,
     ) -> Tracer:
         """
         Create a `Tracer` from the galaxies contained in a model instance.
@@ -114,7 +117,7 @@ class AnalysisLensing:
         else:
             cosmology = self.cosmology
 
-        return Tracer.from_galaxies(
+        return tracer_cls.from_galaxies(
             galaxies=instance.galaxies,
             cosmology=cosmology,
             profiling_dict=profiling_dict,
@@ -159,7 +162,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         positions_likelihood: Optional[
             Union[PositionsLHResample, PositionsLHPenalty]
         ] = None,
-        hyper_dataset_result=None,
+        adapt_result=None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_pixelization: aa.SettingsPixelization = None,
         settings_inversion: aa.SettingsInversion = None,
@@ -203,7 +206,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
         super().__init__(
             dataset=dataset,
-            hyper_dataset_result=hyper_dataset_result,
+            adapt_result=adapt_result,
             cosmology=cosmology,
             settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,
@@ -235,7 +238,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
         This function:
 
-        - Checks that the hyper-dataset is consistent with previous hyper-datasets if the model-fit is being
+        - Checks that the adapt-dataset is consistent with previous adapt-datasets if the model-fit is being
           resumed from a previous run.
 
         - Checks the model and raises exceptions if certain critieria are not met.
@@ -358,7 +361,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
                 result.max_log_likelihood_fit.tracer_to_inversion.sparse_image_plane_grid_pg_list,
             )
 
-        if conf.instance["general"]["hyper"]["stochastic_outputs"]:
+        if conf.instance["general"]["adapt"]["stochastic_outputs"]:
             if len(mesh_list) > 0:
                 for mesh in mesh_list:
                     if mesh.is_stochastic:

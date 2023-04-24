@@ -2,7 +2,6 @@ from os import path
 
 import pytest
 
-import autolens as al
 import autolens.plot as aplt
 
 directory = path.dirname(path.realpath(__file__))
@@ -50,18 +49,6 @@ def test__all_individual_plotter(
     assert path.join(plot_path, "deflections_y_2d.png") in plot_patch.paths
     assert path.join(plot_path, "deflections_x_2d.png") in plot_patch.paths
     assert path.join(plot_path, "magnification_2d.png") in plot_patch.paths
-
-    tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_galaxy = al.HyperGalaxy()
-    tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_model_image = al.Array2D.ones(
-        shape_native=(7, 7), pixel_scales=0.1
-    )
-    tracer_x2_plane_7x7.planes[0].galaxies[0].hyper_galaxy_image = al.Array2D.ones(
-        shape_native=(7, 7), pixel_scales=0.1
-    )
-
-    tracer_plotter.figures_2d(contribution_map=True)
-
-    assert path.join(plot_path, "contribution_map_2d.png") in plot_patch.paths
 
     plot_patch.paths = []
 

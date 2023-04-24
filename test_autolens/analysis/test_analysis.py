@@ -107,7 +107,7 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(masked_imagi
     instance = model.instance_from_unit_vector([])
     tracer = analysis.tracer_via_instance_from(instance=instance)
     fit = analysis.fit_imaging_via_tracer_from(
-        tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
+        tracer=tracer,
     )
 
     assert fit.inversion.linear_obj_list[0].source_plane_data_grid[4][
@@ -127,7 +127,7 @@ def test__use_border__determines_if_border_pixel_relocation_is_used(masked_imagi
     instance = model.instance_from_unit_vector([])
     tracer = analysis.tracer_via_instance_from(instance=instance)
     fit = analysis.fit_imaging_via_tracer_from(
-        tracer=tracer, hyper_image_sky=None, hyper_background_noise=None
+        tracer=tracer,
     )
 
     assert fit.inversion.linear_obj_list[0].source_plane_data_grid[4][

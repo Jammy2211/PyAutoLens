@@ -52,34 +52,6 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(interferome
     assert fit.log_likelihood == analysis_log_likelihood
 
 
-def test__figure_of_merit__includes_hyper_image_and_noise__matches_fit(
-    interferometer_7,
-):
-    hyper_background_noise = al.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
-
-    lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.Sersic(intensity=0.1))
-
-    model = af.Collection(
-        galaxies=af.Collection(lens=lens_galaxy),
-        hyper_background_noise=hyper_background_noise,
-    )
-
-    analysis = al.AnalysisInterferometer(dataset=interferometer_7)
-
-    instance = model.instance_from_unit_vector([])
-    analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
-
-    tracer = analysis.tracer_via_instance_from(instance=instance)
-
-    fit = al.FitInterferometer(
-        dataset=interferometer_7,
-        tracer=tracer,
-        hyper_background_noise=hyper_background_noise,
-    )
-
-    assert fit.log_likelihood == analysis_log_likelihood
-
-
 def test__positions__resample__raises_exception(interferometer_7, mask_2d_7x7):
 
     model = af.Collection(
@@ -148,56 +120,54 @@ def test__positions__likelihood_overwrite__changes_likelihood(
 
 def test__sets_up_hyper_galaxy_visibiltiies__froms(interferometer_7):
 
-    hyper_galaxy_image_path_dict = {
+    adapt_galaxy_image_path_dict = {
         ("galaxies", "lens"): al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
         ("galaxies", "source"): al.Array2D.full(
             fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0
         ),
     }
 
-    hyper_galaxy_visibilities_path_dict = {
+    adapt_galaxy_visibilities_path_dict = {
         ("galaxies", "lens"): al.Visibilities.full(fill_value=4.0, shape_slim=(7,)),
         ("galaxies", "source"): al.Visibilities.full(fill_value=5.0, shape_slim=(7,)),
     }
 
     result = al.m.MockResult(
-        hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
-        hyper_model_image=al.Array2D.full(
+        adapt_galaxy_image_path_dict=adapt_galaxy_image_path_dict,
+        adapt_model_image=al.Array2D.full(
             fill_value=3.0, shape_native=(3, 3), pixel_scales=1.0
         ),
-        hyper_galaxy_visibilities_path_dict=hyper_galaxy_visibilities_path_dict,
-        hyper_model_visibilities=al.Visibilities.full(fill_value=6.0, shape_slim=(7,)),
+        adapt_galaxy_visibilities_path_dict=adapt_galaxy_visibilities_path_dict,
+        adapt_model_visibilities=al.Visibilities.full(fill_value=6.0, shape_slim=(7,)),
     )
 
-    analysis = al.AnalysisInterferometer(
-        dataset=interferometer_7, hyper_dataset_result=result
-    )
+    analysis = al.AnalysisInterferometer(dataset=interferometer_7, adapt_result=result)
 
     analysis.set_hyper_dataset(result=result)
 
     assert (
-        analysis.hyper_galaxy_image_path_dict[("galaxies", "lens")].native
+        analysis.adapt_galaxy_image_path_dict[("galaxies", "lens")].native
         == np.ones((3, 3))
     ).all()
 
     assert (
-        analysis.hyper_galaxy_image_path_dict[("galaxies", "source")].native
+        analysis.adapt_galaxy_image_path_dict[("galaxies", "source")].native
         == 2.0 * np.ones((3, 3))
     ).all()
 
-    assert (analysis.hyper_model_image.native == 3.0 * np.ones((3, 3))).all()
+    assert (analysis.adapt_model_image.native == 3.0 * np.ones((3, 3))).all()
 
     assert (
-        analysis.hyper_galaxy_visibilities_path_dict[("galaxies", "lens")]
+        analysis.adapt_galaxy_visibilities_path_dict[("galaxies", "lens")]
         == (4.0 + 4.0j) * np.ones((7,))
     ).all()
 
     assert (
-        analysis.hyper_galaxy_visibilities_path_dict[("galaxies", "source")]
+        analysis.adapt_galaxy_visibilities_path_dict[("galaxies", "source")]
         == (5.0 + 5.0j) * np.ones((7,))
     ).all()
 
-    assert (analysis.hyper_model_visibilities == (6.0 + 6.0j) * np.ones((7,))).all()
+    assert (analysis.adapt_model_visibilities == (6.0 + 6.0j) * np.ones((7,))).all()
 
 
 def test__stochastic_log_likelihoods_for_instance(interferometer_7):
@@ -206,24 +176,24 @@ def test__stochastic_log_likelihoods_for_instance(interferometer_7):
     lens_hyper_image[4] = 10.0
     source_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
     source_hyper_image[4] = 10.0
-    hyper_model_image = al.Array2D.full(
+    adapt_model_image = al.Array2D.full(
         fill_value=0.5, shape_native=(3, 3), pixel_scales=0.1
     )
 
-    hyper_galaxy_image_path_dict = {
+    adapt_galaxy_image_path_dict = {
         ("galaxies", "lens"): lens_hyper_image,
         ("galaxies", "source"): source_hyper_image,
     }
 
     result = al.m.MockResult(
-        hyper_galaxy_image_path_dict=hyper_galaxy_image_path_dict,
-        hyper_model_image=hyper_model_image,
+        adapt_galaxy_image_path_dict=adapt_galaxy_image_path_dict,
+        adapt_model_image=adapt_model_image,
     )
 
     analysis = al.AnalysisInterferometer(
         dataset=interferometer_7,
         settings_lens=al.SettingsLens(stochastic_samples=2),
-        hyper_dataset_result=result,
+        adapt_result=result,
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 

@@ -170,8 +170,10 @@ class FitImagingPlotter(Plotter):
         visuals_2d = self.get_visuals_2d()
 
         visuals_2d_no_critical_caustic = self.get_visuals_2d()
-        visuals_2d_no_critical_caustic.critical_curves = None
-        visuals_2d_no_critical_caustic.caustics = None
+        visuals_2d_no_critical_caustic.tangential_critical_curves = None
+        visuals_2d_no_critical_caustic.radial_critical_curves = None
+        visuals_2d_no_critical_caustic.tangential_caustics = None
+        visuals_2d_no_critical_caustic.radial_caustics = None
 
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
@@ -379,8 +381,10 @@ class FitImagingPlotter(Plotter):
         visuals_2d = self.get_visuals_2d()
 
         visuals_2d_no_critical_caustic = self.get_visuals_2d()
-        visuals_2d_no_critical_caustic.critical_curves = None
-        visuals_2d_no_critical_caustic.caustics = None
+        visuals_2d_no_critical_caustic.tangential_critical_curves = None
+        visuals_2d_no_critical_caustic.radial_critical_curves = None
+        visuals_2d_no_critical_caustic.tangential_caustics = None
+        visuals_2d_no_critical_caustic.radial_caustics = None
         visuals_2d_no_critical_caustic.origin = None
         visuals_2d_no_critical_caustic.light_profile_centres = None
         visuals_2d_no_critical_caustic.mass_profile_centres = None
@@ -390,7 +394,7 @@ class FitImagingPlotter(Plotter):
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,
                 visuals_2d=visuals_2d_no_critical_caustic,
-                auto_labels=AutoLabels(title="Image", filename=f"image_2d{suffix}"),
+                auto_labels=AutoLabels(title="Image", filename=f"data{suffix}"),
             )
 
         if noise_map:

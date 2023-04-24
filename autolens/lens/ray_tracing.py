@@ -62,7 +62,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
             galaxies=galaxies, profiling_dict=profiling_dict
         )
 
-        return Tracer(planes=planes, cosmology=cosmology, profiling_dict=profiling_dict)
+        return cls(planes=planes, cosmology=cosmology, profiling_dict=profiling_dict)
 
     @classmethod
     def sliced_tracer_from(
@@ -286,7 +286,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         Returns a dictionary associating every `Galaxy` object in the `Tracer` with its corresponding 2D image, using
         the instance of each galaxy as the dictionary keys.
 
-        This object is used for hyper-features, which use the image of each galaxy in a model-fit in order to
+        This object is used for adaptive-features, which use the image of each galaxy in a model-fit in order to
         adapt quantities like a pixelization or regularization scheme to the surface brightness of the galaxies being
         fitted.
 
@@ -373,41 +373,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
             for plane_index in plane_indexes_with_inversions
             if plane_index is not None
         ]
-
-    def hyper_noise_map_from(self, noise_map: aa.Array2D) -> aa.Array2D:
-        return sum(self.hyper_noise_map_list_from(noise_map=noise_map))
-
-    def hyper_noise_map_list_from(self, noise_map: aa.Array2D) -> List[aa.Array2D]:
-        return [
-            plane.hyper_noise_map_from(noise_map=noise_map) for plane in self.planes
-        ]
-
-    @property
-    def contribution_map(self) -> Optional[aa.Array2D]:
-
-        contribution_map_list = self.contribution_map_list
-
-        contribution_map_list = [i for i in contribution_map_list if i is not None]
-
-        if contribution_map_list:
-            return sum(contribution_map_list)
-
-    @property
-    def contribution_map_list(self) -> List[aa.Array2D]:
-
-        contribution_map_list = []
-
-        for plane in self.planes:
-
-            if plane.contribution_map is not None:
-
-                contribution_map_list.append(plane.contribution_map)
-
-            else:
-
-                contribution_map_list.append(None)
-
-        return contribution_map_list
 
     @property
     def perform_inversion(self) -> bool:
