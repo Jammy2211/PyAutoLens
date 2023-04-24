@@ -169,7 +169,6 @@ class Result(AgResult):
         use_resample=False,
         positions: Optional[aa.Grid2DIrregular] = None,
     ) -> Union[PositionsLHPenalty, PositionsLHResample]:
-
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
             return None
 
@@ -267,7 +266,7 @@ class ResultDataset(Result):
 
     def image_for_galaxy(self, galaxy: ag.Galaxy) -> np.ndarray:
         """
-        Given an instance of a `Galaxy` object, return an image of the galaxy via the the maximum log likelihood fit.
+        Given an instance of a `Galaxy` object, return an image of the galaxy via the maximum log likelihood fit.
 
         This image is extracted via the fit's `galaxy_model_image_dict`, which is necessary to make it straight
         forward to use the image as hyper-images.
@@ -310,7 +309,6 @@ class ResultDataset(Result):
         adapt_galaxy_image_path_dict = {}
 
         for path, galaxy in self.path_galaxy_tuples:
-
             galaxy_image = self.image_galaxy_dict[path]
 
             if not np.all(galaxy_image == 0):

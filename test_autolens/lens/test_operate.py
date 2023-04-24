@@ -112,7 +112,6 @@ def test__operate_image__blurred_images_2d_via_convolver_from__for_tracer_gives_
 def test__operate_image__visibilities_of_planes_from_grid_and_transformer(
     sub_grid_2d_7x7, transformer_7x7_7
 ):
-
     g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=1.0))
     g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=2.0))
 
@@ -143,7 +142,6 @@ def test__operate_image__visibilities_of_planes_from_grid_and_transformer(
 def test__operate_image__galaxy_blurred_image_2d_dict_from(
     sub_grid_2d_7x7, blurring_grid_2d_7x7, convolver_7x7
 ):
-
     g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=1.0))
     g1 = al.Galaxy(
         redshift=0.5,
@@ -206,7 +204,6 @@ def test__operate_image__galaxy_blurred_image_2d_dict_from(
 def test__operate_image__galaxy_visibilities_dict_from_grid_and_transformer(
     sub_grid_2d_7x7, transformer_7x7_7
 ):
-
     g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=1.0))
     g1 = al.Galaxy(
         redshift=0.5,
@@ -250,7 +247,6 @@ def test__operate_image__galaxy_visibilities_dict_from_grid_and_transformer(
 
 
 def test__operate_lens__sums_individual_quantities():
-
     grid = al.Grid2D.uniform(shape_native=(50, 50), pixel_scales=0.15)
 
     sis_0 = al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=0.2)

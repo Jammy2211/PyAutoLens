@@ -98,7 +98,6 @@ class GetVisuals2D(gv2d.GetVisuals2D):
         radial_caustics = None
 
         if plane_index == 0:
-
             tangential_critical_curves = self.get(
                 "tangential_critical_curves",
                 tracer.tangential_critical_curve_list_from(grid=grid),

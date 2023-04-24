@@ -8,7 +8,6 @@ test_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files
 
 
 def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
-
     # TODO : use pytest.parameterize
 
     galaxy_no_pix = al.Galaxy(redshift=0.5)
@@ -107,7 +106,6 @@ def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
 
 
 def test__cls_pg_list_from(sub_grid_2d_7x7):
-
     mesh_0 = al.mesh.Rectangular(shape=(3, 3))
 
     pixelization_0 = al.Pixelization(mesh=mesh_0)
@@ -162,7 +160,6 @@ def test__cls_pg_list_from(sub_grid_2d_7x7):
 
 
 def test__adapt_galaxy_image_pg_list(sub_grid_2d_7x7):
-
     gal = al.Galaxy(redshift=0.5)
 
     pixelization = al.Pixelization(
@@ -211,7 +208,6 @@ def test__adapt_galaxy_image_pg_list(sub_grid_2d_7x7):
 
 
 def test__sparse_image_plane_grid_pg_list(masked_imaging_7x7):
-
     # Test Correct
 
     pixelization = al.m.MockPixelization(
@@ -270,7 +266,6 @@ def test__sparse_image_plane_grid_pg_list(masked_imaging_7x7):
 
 
 def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
-
     # Test Multi plane
 
     galaxy_no_pix = al.Galaxy(
@@ -362,7 +357,6 @@ def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
 
 
 def test__mapper_galaxy_dict(masked_imaging_7x7):
-
     galaxy_no_pix = al.Galaxy(redshift=0.5)
 
     tracer = al.Tracer.from_galaxies(galaxies=[galaxy_no_pix, galaxy_no_pix])
@@ -444,7 +438,6 @@ def test__mapper_galaxy_dict(masked_imaging_7x7):
 
 
 def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
-
     g_linear = al.Galaxy(redshift=0.5, light_linear=al.lp_linear.Sersic())
 
     tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g_linear])
@@ -490,7 +483,6 @@ def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
 
 
 def test__inversion_interferometer_from(sub_grid_2d_7x7, interferometer_7):
-
     interferometer_7.data = al.Visibilities.ones(shape_slim=(7,))
 
     g_linear = al.Galaxy(redshift=0.5, light_linear=al.lp_linear.Sersic())

@@ -16,7 +16,6 @@ class SubhaloResult:
     def __init__(
         self, grid_search_result, result_no_subhalo, stochastic_log_likelihoods=None
     ):
-
         self.grid_search_result = grid_search_result
         self.result_no_subhalo = result_no_subhalo
         self.stochastic_log_likelihoods = stochastic_log_likelihoods
@@ -32,7 +31,6 @@ class SubhaloResult:
             return self.result_no_subhalo.max_log_likelihood_fit
 
     def _subhalo_array_from(self, values_native) -> aa.Array2D:
-
         values_reshaped = [value for values in values_native for value in values]
 
         return aa.Array2D.from_yx_and_values(
@@ -49,14 +47,12 @@ class SubhaloResult:
         use_stochastic_log_likelihoods: bool = False,
         relative_to_no_subhalo: bool = True,
     ) -> aa.Array2D:
-
         try:
             samples_no_subhalo = self.result_no_subhalo["samples"]
         except TypeError:
             samples_no_subhalo = self.result_no_subhalo.samples
 
         if (not use_log_evidences) and (not use_stochastic_log_likelihoods):
-
             values_native = self.grid_search_result.log_likelihoods_native
             values_native[values_native == None] = np.nan
 
@@ -66,7 +62,6 @@ class SubhaloResult:
                 )
 
         elif use_log_evidences and not use_stochastic_log_likelihoods:
-
             values_native = self.grid_search_result.log_evidences_native
             values_native[values_native == None] = np.nan
 
@@ -74,7 +69,6 @@ class SubhaloResult:
                 values_native -= samples_no_subhalo.log_evidence
 
         else:
-
             values_native = self.stochastic_log_evidences_native
             values_native[values_native == None] = np.nan
 
@@ -90,7 +84,6 @@ class SubhaloResult:
 
     @property
     def stochastic_log_evidences_native(self) -> List[float]:
-
         return self.grid_search_result._list_to_native(
             lst=self.stochastic_log_likelihoods
         )
@@ -103,7 +96,6 @@ class SubhaloResult:
 
     @property
     def masses_native(self) -> List[float]:
-
         instance_list = self.instance_list_via_results_from(
             results=self.grid_search_result.results
         )
@@ -117,7 +109,6 @@ class SubhaloResult:
 
     @property
     def centres_native(self) -> aa.Grid2D:
-
         instance_list = self.instance_list_via_results_from(
             results=self.grid_search_result.results
         )
@@ -192,7 +183,6 @@ class SubhaloPlotter(AbstractPlotter):
         )
 
     def detection_array_from(self, remove_zeros: bool = False):
-
         detection_array = self.subhalo_result.subhalo_detection_array_from(
             use_log_evidences=self.use_log_evidences,
             use_stochastic_log_likelihoods=self.use_stochastic_log_likelihoods,
@@ -200,7 +190,6 @@ class SubhaloPlotter(AbstractPlotter):
         )
 
         if remove_zeros:
-
             detection_array[detection_array < 0.0] = 0.0
 
         return detection_array
@@ -213,7 +202,6 @@ class SubhaloPlotter(AbstractPlotter):
         overwrite_title=False,
         transpose_array=False,
     ):
-
         array_overlay = self.detection_array_from(remove_zeros=remove_zeros)
 
         median_detection = np.round(np.nanmedian(array_overlay), 2)
@@ -240,7 +228,6 @@ class SubhaloPlotter(AbstractPlotter):
         fit_imaging_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
 
     def figure_with_mass_overlay(self, image: bool = False, transpose_array=False):
-
         array_overlay = self.subhalo_result.subhalo_mass_array_from()
 
         # Due to bug with flipped subhalo inv, can remove one day
@@ -260,7 +247,6 @@ class SubhaloPlotter(AbstractPlotter):
         fit_imaging_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
 
     def subplot_detection_imaging(self, remove_zeros: bool = False):
-
         self.open_subplot_figure(number_subplots=4)
 
         self.set_title("Image")

@@ -56,11 +56,9 @@ def _fit_interferometer_from(
     preloads = Preloads(use_w_tilde=settings_inversion.use_w_tilde)
 
     if use_preloaded_grid:
-
         sparse_grids_of_planes = fit.value(name="preload_sparse_grids_of_planes")
 
         if sparse_grids_of_planes is not None:
-
             preloads = Preloads(sparse_image_plane_grid_pg_list=sparse_grids_of_planes)
 
     return FitInterferometer(

@@ -23,7 +23,6 @@ class TracerToInversion(ag.AbstractToInversion):
         preloads=Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
-
         self.tracer = tracer
 
         super().__init__(
@@ -50,7 +49,6 @@ class TracerToInversion(ag.AbstractToInversion):
     def lp_linear_func_list_galaxy_dict(
         self,
     ) -> Dict[ag.LightProfileLinearObjFuncList, ag.Galaxy]:
-
         if not self.tracer.perform_inversion:
             return {}
 
@@ -69,8 +67,7 @@ class TracerToInversion(ag.AbstractToInversion):
                 traced_grids_of_planes_list
             )
 
-        for (plane_index, plane) in enumerate(self.planes):
-
+        for plane_index, plane in enumerate(self.planes):
             plane_to_inversion = ag.PlaneToInversion(
                 plane=plane,
                 dataset=self.dataset,
@@ -110,7 +107,6 @@ class TracerToInversion(ag.AbstractToInversion):
         sparse_image_plane_grid_list_of_planes = []
 
         for plane in self.planes:
-
             plane_to_inversion = ag.PlaneToInversion(
                 plane=plane,
                 grid_pixelization=self.dataset.grid,
@@ -136,29 +132,24 @@ class TracerToInversion(ag.AbstractToInversion):
             self.preloads.sparse_image_plane_grid_pg_list is None
             or self.settings_pixelization.is_stochastic
         ):
-
             sparse_image_plane_grid_pg_list = self.sparse_image_plane_grid_pg_list
 
         else:
-
             sparse_image_plane_grid_pg_list = (
                 self.preloads.sparse_image_plane_grid_pg_list
             )
 
         traced_sparse_grid_pg_list = []
 
-        for (plane_index, plane) in enumerate(self.planes):
-
+        for plane_index, plane in enumerate(self.planes):
             if sparse_image_plane_grid_pg_list[plane_index] is None:
                 traced_sparse_grid_pg_list.append(None)
             else:
-
                 traced_sparse_grids_list = []
 
                 for sparse_image_plane_grid in sparse_image_plane_grid_pg_list[
                     plane_index
                 ]:
-
                     try:
                         traced_sparse_grids_list.append(
                             self.tracer.traced_grid_2d_list_from(
@@ -174,7 +165,6 @@ class TracerToInversion(ag.AbstractToInversion):
 
     @cached_property
     def mapper_galaxy_dict(self) -> Dict[aa.AbstractMapper, ag.Galaxy]:
-
         mapper_galaxy_dict = {}
 
         if self.preloads.traced_grids_of_planes_for_inversion is None:
@@ -195,10 +185,8 @@ class TracerToInversion(ag.AbstractToInversion):
             )
             sparse_image_plane_grid_list = self.preloads.sparse_image_plane_grid_list
 
-        for (plane_index, plane) in enumerate(self.planes):
-
+        for plane_index, plane in enumerate(self.planes):
             if plane.has(cls=aa.Pixelization):
-
                 plane_to_inversion = ag.PlaneToInversion(
                     plane=plane,
                     grid_pixelization=traced_grids_of_planes_list[plane_index],
@@ -213,7 +201,6 @@ class TracerToInversion(ag.AbstractToInversion):
                 for mapper_index in range(
                     len(traced_sparse_grids_list_of_planes[plane_index])
                 ):
-
                     pixelization_list = self.cls_pg_list_from(cls=aa.Pixelization)
 
                     mapper = plane_to_inversion.mapper_from(
@@ -240,7 +227,6 @@ class TracerToInversion(ag.AbstractToInversion):
 
     @cached_property
     def inversion(self):
-
         inversion = inversion_unpacked_from(
             dataset=self.dataset,
             data=self.data,

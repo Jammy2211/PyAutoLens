@@ -70,11 +70,9 @@ class FitPositionsSource(aa.FitDataset):
         case, each data point is paired with its closest model position.
         """
         if len(self.tracer.planes) <= 2:
-
             deflections = self.tracer.deflections_yx_2d_from(grid=self.positions)
 
         else:
-
             upper_plane_index = self.tracer.extract_plane_index_of_profile(
                 profile_name=self.name
             )
@@ -93,7 +91,6 @@ class FitPositionsSource(aa.FitDataset):
 
     @property
     def residual_map(self) -> aa.ArrayIrregular:
-
         return self.model_positions.distances_to_coordinate_from(
             coordinate=self.source_plane_coordinate
         )

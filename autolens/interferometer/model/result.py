@@ -72,7 +72,7 @@ class ResultInterferometer(ResultDataset):
 
     def visibilities_for_galaxy(self, galaxy: ag.Galaxy) -> np.ndarray:
         """
-        Given an instance of a `Galaxy` object, return an image of the galaxy via the the maximum log likelihood fit.
+        Given an instance of a `Galaxy` object, return an image of the galaxy via the maximum log likelihood fit.
 
         This image is extracted via the fit's `galaxy_model_image_dict`, which is necessary to make it straight
         forward to use the image as hyper-images.
@@ -104,15 +104,10 @@ class ResultInterferometer(ResultDataset):
         """
         A dictionary associating 1D hyper_galaxies galaxy visibilities with their names.
         """
-
-        adapt_galaxy_visibilities_path_dict = {}
-
-        for path, galaxy in self.path_galaxy_tuples:
-            adapt_galaxy_visibilities_path_dict[path] = self.visibilities_galaxy_dict[
-                path
-            ]
-
-        return adapt_galaxy_visibilities_path_dict
+        return {
+            self.visibilities_galaxy_dict[path]
+            for path, galaxy in self.path_galaxy_tuples
+        }
 
     @property
     def adapt_model_visibilities(self):

@@ -94,11 +94,9 @@ class AnalysisInterferometer(AnalysisDataset):
         )
 
         if self.adapt_result is not None:
-
-            self.set_hyper_dataset(result=self.adapt_result)
+            self.set_adapt_dataset(result=self.adapt_result)
 
         else:
-
             self.adapt_galaxy_visibilities_path_dict = None
             self.adapt_model_visibilities = None
 
@@ -127,7 +125,6 @@ class AnalysisInterferometer(AnalysisDataset):
         super().modify_before_fit(paths=paths, model=model)
 
         if not paths.is_complete:
-
             logger.info(
                 "PRELOADS - Setting up preloads, may take a few minutes for fits using an inversion."
             )
@@ -136,7 +133,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
         return self
 
-    def set_hyper_dataset(self, result):
+    def set_adapt_dataset(self, result):
         """
         Using a the result of a previous model-fit, set the adapt-dataset for this analysis. This is used to adapt
         aspects of the model (e.g. the pixelization, regularization scheme) to the properties of the dataset being
@@ -155,7 +152,7 @@ class AnalysisInterferometer(AnalysisDataset):
             the dataset, which set up the hyper dataset. These are used by certain classes for adapting the analysis
             to the properties of the dataset.
         """
-        super().set_hyper_dataset(result=result)
+        super().set_adapt_dataset(result=result)
 
         self.adapt_model_visibilities = result.adapt_model_visibilities
         self.adapt_galaxy_visibilities_path_dict = (
@@ -387,7 +384,6 @@ class AnalysisInterferometer(AnalysisDataset):
         log_evidences = []
 
         for i in range(self.settings_lens.stochastic_samples):
-
             try:
                 log_evidence = FitInterferometer(
                     dataset=self.dataset,

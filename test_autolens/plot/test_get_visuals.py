@@ -16,7 +16,6 @@ def make_profile_plotter_setup():
 
 
 def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
-
     visuals_2d = aplt.Visuals2D(vectors=2)
 
     include_2d = aplt.Include2D(
@@ -112,7 +111,6 @@ def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
 
 
 def test__via_fit_imaging_from(fit_imaging_x2_plane_7x7, grid_2d_7x7):
-
     visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vectors=2)
     include_2d = aplt.Include2D(
         origin=True,

@@ -84,7 +84,6 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
             raise exc.FitException from e
 
     def fit_positions_for(self, instance):
-
         tracer = self.tracer_via_instance_from(instance=instance)
 
         return FitPointDict(
@@ -92,7 +91,6 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
         )
 
     def visualize(self, paths, instance, during_analysis):
-
         tracer = self.tracer_via_instance_from(instance=instance)
 
         visualizer = Visualizer(visualize_path=paths.image_path)
@@ -108,5 +106,4 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
         return ResultPoint(samples=samples, model=model, analysis=self)
 
     def save_attributes_for_aggregator(self, paths: af.DirectoryPaths):
-
         paths.save_object("dataset", self.point_dict)

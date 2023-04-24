@@ -34,9 +34,7 @@ class FitPointDatasetPlotter(AbstractPlotter):
         return self.visuals_2d
 
     def figures_2d(self, positions: bool = False, fluxes: bool = False):
-
         if positions:
-
             visuals_2d = self.get_visuals_2d()
 
             visuals_2d += visuals_2d.__class__(
@@ -62,15 +60,12 @@ class FitPointDatasetPlotter(AbstractPlotter):
             self.mat_plot_1d.subplot_index is not None
             and self.mat_plot_2d.subplot_index is not None
         ):
-
             self.mat_plot_1d.subplot_index = max(
                 self.mat_plot_1d.subplot_index, self.mat_plot_2d.subplot_index
             )
 
         if fluxes:
-
             if self.fit.point_dataset.fluxes is not None:
-
                 visuals_1d = self.get_visuals_1d()
 
                 visuals_1d += visuals_1d.__class__(
@@ -95,7 +90,6 @@ class FitPointDatasetPlotter(AbstractPlotter):
         fluxes: bool = False,
         auto_filename: str = "subplot_fit",
     ):
-
         self._subplot_custom_plot(
             positions=positions,
             fluxes=fluxes,

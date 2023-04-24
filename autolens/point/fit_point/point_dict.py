@@ -33,7 +33,6 @@ class FitPointDict(dict):
         super().__init__()
 
         for key, point_dataset in point_dict.items():
-
             self[key] = FitPointDataset(
                 point_dataset=point_dataset, tracer=tracer, point_solver=point_solver
             )

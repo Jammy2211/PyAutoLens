@@ -12,7 +12,6 @@ directory = path.dirname(path.realpath(__file__))
 
 
 def test__make_result__result_interferometer_is_returned(interferometer_7):
-
     model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
     instance = model.instance_from_prior_medians()
@@ -53,7 +52,6 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(interferome
 
 
 def test__positions__resample__raises_exception(interferometer_7, mask_2d_7x7):
-
     model = af.Collection(
         galaxies=af.Collection(
             lens=al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph()),
@@ -78,7 +76,6 @@ def test__positions__resample__raises_exception(interferometer_7, mask_2d_7x7):
 def test__positions__likelihood_overwrite__changes_likelihood(
     interferometer_7, mask_2d_7x7
 ):
-
     lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph())
     source = al.Galaxy(redshift=1.0, light=al.lp.SersicSph())
 
@@ -119,7 +116,6 @@ def test__positions__likelihood_overwrite__changes_likelihood(
 
 
 def test__sets_up_hyper_galaxy_visibiltiies__froms(interferometer_7):
-
     adapt_galaxy_image_path_dict = {
         ("galaxies", "lens"): al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
         ("galaxies", "source"): al.Array2D.full(
@@ -143,7 +139,7 @@ def test__sets_up_hyper_galaxy_visibiltiies__froms(interferometer_7):
 
     analysis = al.AnalysisInterferometer(dataset=interferometer_7, adapt_result=result)
 
-    analysis.set_hyper_dataset(result=result)
+    analysis.set_adapt_dataset(result=result)
 
     assert (
         analysis.adapt_galaxy_image_path_dict[("galaxies", "lens")].native
@@ -171,7 +167,6 @@ def test__sets_up_hyper_galaxy_visibiltiies__froms(interferometer_7):
 
 
 def test__stochastic_log_likelihoods_for_instance(interferometer_7):
-
     lens_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
     lens_hyper_image[4] = 10.0
     source_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)

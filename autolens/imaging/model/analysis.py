@@ -195,7 +195,7 @@ class AnalysisImaging(AnalysisDataset):
         FitImaging
             The fit of the plane to the imaging dataset, which includes the log likelihood.
         """
-        preloads = self.preloads if preload_overwrite is None else preload_overwrite
+        preloads = preload_overwrite or self.preloads
 
         return FitImaging(
             dataset=self.dataset,

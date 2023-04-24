@@ -8,7 +8,6 @@ import pytest
 
 
 def test__perfect_fit__chi_squared_0():
-
     grid = al.Grid2D.uniform(shape_native=(51, 51), pixel_scales=0.1, sub_size=1)
 
     lens_galaxy = al.Galaxy(
@@ -110,7 +109,6 @@ def test__perfect_fit__chi_squared_0():
 
 
 def test__simulate_interferometer_data_and_fit__known_likelihood():
-
     mask = al.Mask2D.circular(
         radius=3.0, shape_native=(31, 31), pixel_scales=0.2, sub_size=1
     )
@@ -156,7 +154,6 @@ def test__simulate_interferometer_data_and_fit__known_likelihood():
 
 
 def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with_standard_light_profiles():
-
     grid = al.Grid2D.uniform(shape_native=(51, 51), pixel_scales=0.1, sub_size=1)
 
     lens_galaxy = al.Galaxy(
@@ -270,7 +267,6 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
 
 
 def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixelization():
-
     grid = al.Grid2D.uniform(shape_native=(51, 51), pixel_scales=0.1, sub_size=1)
 
     lens_galaxy = al.Galaxy(

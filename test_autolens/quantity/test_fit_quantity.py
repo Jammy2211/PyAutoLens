@@ -5,7 +5,6 @@ import autolens as al
 
 
 def test__fit_via_mock_profile(dataset_quantity_7x7_array_2d):
-
     model_object = al.m.MockMassProfile(
         convergence_2d=al.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0),
         potential_2d=al.Array2D.full(

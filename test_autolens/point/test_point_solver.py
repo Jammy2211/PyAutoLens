@@ -14,7 +14,6 @@ class TestAbstractPointSolver:
     def test__solver_with_remove_distance_to_mass_profile_centre__remove_pixels_from_initial_grid(
         self,
     ):
-
         grid = al.Grid2D.no_mask(
             values=[[0.0, -0.1], [0.0, 0.0], [0.0, 0.1]],
             shape_native=(1, 3),
@@ -32,7 +31,6 @@ class TestAbstractPointSolver:
         assert grid == pytest.approx(np.array([[0.0, -0.1], [0.0, 0.1]]), 1.0e-4)
 
     def test__solver_create_buffed_and_updated_grid_from_input_coordinate(self):
-
         solver = AbstractPointSolver(use_upscaling=True, upscale_factor=1)
 
         grid = solver.grid_buffed_and_upscaled_around_coordinate_from(
@@ -82,7 +80,6 @@ class TestAbstractPointSolver:
         assert (grid == grid_util).all()
 
     def test__grid_with_points_below_magnification_threshold_removed(self):
-
         sis = al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0)
 
         grid = al.Grid2DIrregularUniform(
@@ -117,7 +114,6 @@ class TestAbstractPointSolver:
 
 class TestGridRemoveDuplicates:
     def test__remove_duplicates_from_grid_within_tolerance(self):
-
         grid = [(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)]
 
         grid = pos.grid_remove_duplicates(grid=np.asarray(grid))
@@ -489,7 +485,6 @@ class TestGridBuffedAroundCoordinate:
 
 class TestGridNeighbors1d:
     def test__creates_numpy_array_with_correct_neighbors(self):
-
         neighbors_1d, has_neighbors = pos.grid_square_neighbors_1d_from(shape_slim=9)
 
         assert (
@@ -567,7 +562,6 @@ class TestGridNeighbors1d:
 
 class TestPairCoordinateToGrid:
     def test__coordinate_paired_to_closest_pixel_on_grid(self):
-
         grid_slim = np.array(
             [
                 [1.0, -1.0],
@@ -609,7 +603,6 @@ class TestPairCoordinateToGrid:
 
 class TestGridPeaks:
     def test__simple_arrays(self):
-
         distance_1d = np.array([1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0])
 
         grid_slim = np.array(
@@ -685,7 +678,6 @@ class TestGridPeaks:
 
 class TestWithinDistance:
     def test__grid_keeps_only_points_within_distance(self):
-
         grid_slim = np.array([[2.0, 2.0], [1.0, 1.0], [3.0, 3.0]])
 
         distances_1d = np.array([2.0, 1.0, 3.0])
@@ -711,7 +703,6 @@ class TestWithinDistance:
 
 class TestPositionSolver:
     def test__positions_found_for_simple_mass_profile_list(self):
-
         grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 
         sis = al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0)
@@ -750,7 +741,6 @@ class TestPositionSolver:
         assert coordinates.in_list[3] == pytest.approx((-1.028125, -0.003125), 1.0e-4)
 
     def test__positions_found_for_multi_plane_tracer(self):
-
         grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=1)
 
         g0 = al.Galaxy(

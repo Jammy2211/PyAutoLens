@@ -53,7 +53,6 @@ def make_analysis(masked_imaging_7x7):
 
 
 def clean(database_file, result_path):
-
     if path.exists(database_file):
         os.remove(database_file)
 

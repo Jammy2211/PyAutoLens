@@ -20,7 +20,6 @@ def make_fit_point_plotter_setup():
 def test__fit_point_quantities_are_output(
     fit_point_dataset_x2_plane, include_2d_all, plot_path, plot_patch
 ):
-
     fit_point_plotter = aplt.FitPointDatasetPlotter(
         fit=fit_point_dataset_x2_plane,
         include_2d=include_2d_all,
@@ -59,7 +58,6 @@ def test__fit_point_quantities_are_output(
 def test__subplot_fit(
     fit_point_dataset_x2_plane, include_2d_all, plot_path, plot_patch
 ):
-
     fit_point_plotter = aplt.FitPointDatasetPlotter(
         fit=fit_point_dataset_x2_plane,
         include_2d=include_2d_all,

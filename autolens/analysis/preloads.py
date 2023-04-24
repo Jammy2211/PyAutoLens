@@ -127,7 +127,6 @@ class Preloads(ag.Preloads):
         preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
 
         if preloads.mapper_list is not None:
-
             preloads.mapper_galaxy_dict = fit_0.tracer_to_inversion.mapper_galaxy_dict
 
         preloads.set_operated_mapping_matrix_with_preloads(fit_0=fit_0, fit_1=fit_1)
@@ -168,19 +167,16 @@ class Preloads(ag.Preloads):
         )
 
         if traced_grids_of_planes_0[-1] is not None:
-
             if (
                 traced_grids_of_planes_0[-1].shape[0]
                 == traced_grids_of_planes_1[-1].shape[0]
             ):
-
                 if (
                     np.max(
                         abs(traced_grids_of_planes_0[-1] - traced_grids_of_planes_1[-1])
                     )
                     < 1e-8
                 ):
-
                     self.traced_grids_of_planes_for_inversion = traced_grids_of_planes_0
 
                     logger.info(
@@ -218,14 +214,11 @@ class Preloads(ag.Preloads):
         )
 
         if sparse_image_plane_grid_pg_list_0[-1] is not None:
-
             if sparse_image_plane_grid_pg_list_0[-1][0] is not None:
-
                 if (
                     sparse_image_plane_grid_pg_list_0[-1][0].shape[0]
                     == sparse_image_plane_grid_pg_list_1[-1][0].shape[0]
                 ):
-
                     if (
                         np.max(
                             abs(
@@ -235,7 +228,6 @@ class Preloads(ag.Preloads):
                         )
                         < 1e-8
                     ):
-
                         self.sparse_image_plane_grid_pg_list = (
                             sparse_image_plane_grid_pg_list_0
                         )

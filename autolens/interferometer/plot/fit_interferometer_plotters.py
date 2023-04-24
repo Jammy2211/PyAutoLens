@@ -215,7 +215,6 @@ class FitInterferometerPlotter(Plotter):
         )
 
         if image:
-
             if self.fit.inversion is None:
                 self.tracer_plotter.figures_2d(image=True)
             else:
@@ -245,15 +244,12 @@ class FitInterferometerPlotter(Plotter):
             of an `Inversion`.
         """
         if plane_image:
-
             if not self.tracer.planes[plane_index].has(cls=aa.Pixelization):
-
                 self.tracer_plotter.figures_2d_of_planes(
                     plane_image=True, plane_index=plane_index
                 )
 
             elif self.tracer.planes[plane_index].has(cls=aa.Pixelization):
-
                 inversion_plotter = self.inversion_plotter_of_plane(plane_index=1)
                 inversion_plotter.figures_2d_of_pixelization(
                     pixelization_index=0, reconstruction=True
@@ -267,13 +263,11 @@ class FitInterferometerPlotter(Plotter):
         different methods are called to create these real-space images.
         """
         if self.fit.inversion is None:
-
             self.tracer_plotter.subplot(
                 image=True, source_plane=True, auto_filename="subplot_fit_real_space"
             )
 
         elif self.fit.inversion is not None:
-
             self.open_subplot_figure(number_subplots=2)
 
             inversion_plotter = self.inversion_plotter_of_plane(plane_index=1)

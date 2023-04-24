@@ -5,7 +5,6 @@ import autolens as al
 
 
 def test__noise_map__with_and_without_hyper_background(interferometer_7):
-
     g0 = al.legacy.Galaxy(
         redshift=0.5, bulge=al.m.MockLightProfile(image_2d=np.ones(9))
     )
@@ -28,7 +27,6 @@ def test__noise_map__with_and_without_hyper_background(interferometer_7):
 
 
 def test__fit_figure_of_merit__include_hyper_methods(interferometer_7):
-
     hyper_background_noise = al.legacy.hyper_data.HyperBackgroundNoise(noise_scale=1.0)
 
     g0 = al.legacy.Galaxy(

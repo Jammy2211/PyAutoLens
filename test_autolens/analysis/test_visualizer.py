@@ -17,7 +17,6 @@ def make_visualizer_plotter_setup():
 def test__visualizes_ray_tracing__uses_configs(
     masked_imaging_7x7, tracer_x2_plane_7x7, include_2d_all, plot_path, plot_patch
 ):
-
     if os.path.exists(plot_path):
         shutil.rmtree(plot_path)
 
@@ -49,7 +48,6 @@ def test__visualizes_ray_tracing__uses_configs(
 def test__visualizes_image_with_positions__uses_configs(
     image_7x7, positions_x2, include_2d_all, plot_path, plot_patch
 ):
-
     if os.path.exists(plot_path):
         shutil.rmtree(plot_path)
 
@@ -63,7 +61,6 @@ def test__visualizes_image_with_positions__uses_configs(
 
 
 def test__visualize_stochastic_histogram(masked_imaging_7x7, plot_path, plot_patch):
-
     visualizer = vis.Visualizer(visualize_path=plot_path)
 
     visualizer.visualize_stochastic_histogram(

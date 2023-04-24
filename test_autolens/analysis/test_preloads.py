@@ -7,7 +7,6 @@ import autolens as al
 
 
 def test__set_traced_grids_of_planes():
-
     # traced grids is None so no Preloading.
 
     tracer_0 = al.m.MockTracer(traced_grid_2d_list_from=[None, None])
@@ -50,7 +49,6 @@ def test__set_traced_grids_of_planes():
 
 
 def test__set_sparse_grid_of_planes():
-
     # sparse image plane of grids is None so no Preloading.
 
     tracer_0 = al.m.MockTracer(sparse_image_plane_grid_pg_list=[None, None])
@@ -101,7 +99,6 @@ def test__set_sparse_grid_of_planes():
 
 
 def test__info():
-
     file_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
     file_preloads = path.join(file_path, "preloads.summary")

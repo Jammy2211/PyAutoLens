@@ -94,7 +94,6 @@ class AnalysisLensing:
         # TODO : A Subhalo class that extends the Galaxy class maybe?
 
         if hasattr(instance.galaxies, "subhalo"):
-
             subhalo_centre = ray_tracing_util.grid_2d_at_redshift_from(
                 galaxies=instance.galaxies,
                 redshift=instance.galaxies.subhalo.redshift,
@@ -105,7 +104,6 @@ class AnalysisLensing:
             instance.galaxies.subhalo.mass.centre = tuple(subhalo_centre.in_list[0])
 
         if hasattr(instance, "clumps"):
-
             return Tracer.from_galaxies(
                 galaxies=instance.galaxies + instance.clumps,
                 cosmology=self.cosmology,
@@ -146,7 +144,6 @@ class AnalysisLensing:
         else a None is returned to indicate there is no penalty.
         """
         if self.positions_likelihood is not None:
-
             try:
                 return self.positions_likelihood.log_likelihood_function_positions_overwrite(
                     instance=instance, analysis=self
@@ -228,7 +225,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         )
 
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
-
             self.raise_inversion_positions_likelihood_exception = False
 
     def modify_before_fit(self, paths: af.DirectoryPaths, model: af.Collection):
@@ -260,7 +256,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         self.raise_exceptions(model=model)
 
     def raise_exceptions(self, model):
-
         if ag.util.model.has_pixelization_from(model=model):
             if (
                 self.positions_likelihood is None
@@ -355,7 +350,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         mesh_list = ag.util.model.mesh_list_from(model=result.model)
 
         if len(mesh_list) > 0:
-
             paths.save_object(
                 "preload_sparse_grids_of_planes",
                 result.max_log_likelihood_fit.tracer_to_inversion.sparse_image_plane_grid_pg_list,

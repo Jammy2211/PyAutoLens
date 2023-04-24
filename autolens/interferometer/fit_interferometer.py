@@ -106,7 +106,6 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
 
     @property
     def tracer_to_inversion(self) -> TracerToInversion:
-
         return TracerToInversion(
             tracer=self.tracer,
             dataset=self.dataset,
@@ -143,7 +142,6 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         """
 
         if self.perform_inversion:
-
             return self.profile_visibilities + self.inversion.mapped_reconstructed_data
 
         return self.profile_visibilities

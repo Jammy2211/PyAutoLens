@@ -2,12 +2,10 @@ class MockTracer:
     def __init__(
         self, traced_grid_2d_list_from=None, sparse_image_plane_grid_pg_list=None
     ):
-
         self.sparse_image_plane_grid_pg_list = sparse_image_plane_grid_pg_list
         self._traced_grid_2d_list_from = traced_grid_2d_list_from
 
     def traced_grid_2d_list_from(self, grid):
-
         return self._traced_grid_2d_list_from
 
 
@@ -22,7 +20,6 @@ class MockTracerPoint(MockTracer):
         einstein_radius=None,
         einstein_mass=None,
     ):
-
         super().__init__(
             sparse_image_plane_grid_pg_list=sparse_image_plane_grid_pg_list
         )

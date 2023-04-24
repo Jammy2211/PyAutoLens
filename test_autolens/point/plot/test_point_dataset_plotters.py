@@ -20,7 +20,6 @@ def make_point_dataset_plotter_setup():
 def test__point_dataset_quantities_are_output(
     point_dataset, include_2d_all, plot_path, plot_patch
 ):
-
     point_dataset_plotter = aplt.PointDatasetPlotter(
         point_dataset=point_dataset,
         include_2d=include_2d_all,
@@ -57,7 +56,6 @@ def test__point_dataset_quantities_are_output(
 
 
 def test__subplot_dataset(point_dataset, include_2d_all, plot_path, plot_patch):
-
     point_dataset_plotter = aplt.PointDatasetPlotter(
         point_dataset=point_dataset,
         include_2d=include_2d_all,
@@ -71,7 +69,6 @@ def test__subplot_dataset(point_dataset, include_2d_all, plot_path, plot_patch):
 
 
 def test__subplot_point_dict(point_dict, include_2d_all, plot_path, plot_patch):
-
     point_dict_plotter = aplt.PointDictPlotter(
         point_dict=point_dict,
         include_2d=include_2d_all,

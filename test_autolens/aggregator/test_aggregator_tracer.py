@@ -8,7 +8,6 @@ from test_autolens.aggregator.conftest import clean
 
 
 def test__tracer_randomly_drawn_via_pdf_gen_from(analysis, samples, model):
-
     path_prefix = "aggregator_tracer_gen"
 
     database_file = path.join(conf.instance.output_path, "tracer.sqlite")
@@ -32,9 +31,7 @@ def test__tracer_randomly_drawn_via_pdf_gen_from(analysis, samples, model):
     i = 0
 
     for tracer_gen in tracer_pdf_gen:
-
         for tracer in tracer_gen:
-
             i += 1
 
             assert tracer.galaxies[0].redshift == 0.5
@@ -47,7 +44,6 @@ def test__tracer_randomly_drawn_via_pdf_gen_from(analysis, samples, model):
 
 
 def test__tracer_all_above_weight_gen(analysis, samples, model):
-
     path_prefix = "aggregator_tracer_gen"
 
     database_file = path.join(conf.instance.output_path, "tracer.sqlite")
@@ -70,32 +66,25 @@ def test__tracer_all_above_weight_gen(analysis, samples, model):
 
     i = 0
 
-    for (tracer_gen, weight_gen) in zip(tracer_pdf_gen, weight_pdf_gen):
-
+    for tracer_gen, weight_gen in zip(tracer_pdf_gen, weight_pdf_gen):
         for tracer in tracer_gen:
-
             i += 1
 
             if i == 1:
-
                 assert tracer.galaxies[0].redshift == 0.5
                 assert tracer.galaxies[0].light.centre == (1.0, 1.0)
                 assert tracer.galaxies[1].redshift == 1.0
 
             if i == 2:
-
                 assert tracer.galaxies[0].redshift == 0.5
                 assert tracer.galaxies[0].light.centre == (10.0, 10.0)
                 assert tracer.galaxies[1].redshift == 1.0
 
         for weight in weight_gen:
-
             if i == 0:
-
                 assert weight == 0.0
 
             if i == 1:
-
                 assert weight == 1.0
 
     assert i == 2

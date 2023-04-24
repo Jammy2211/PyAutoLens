@@ -2,7 +2,6 @@ import autolens as al
 
 
 def test__hyper_galaxies_names_for_lens_and_source():
-
     setup = al.legacy.SetupAdapt(hyper_galaxies_lens=False, hyper_galaxies_source=False)
     assert setup.hyper_galaxies is False
     assert setup.hyper_galaxy_names == None

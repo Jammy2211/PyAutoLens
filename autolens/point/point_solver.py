@@ -14,7 +14,6 @@ class AbstractPointSolver:
         distance_to_source_centre=None,
         distance_to_mass_profile_centre=None,
     ):
-
         self.use_upscaling = use_upscaling
         self.upscale_factor = upscale_factor
         self.magnification_threshold = magnification_threshold
@@ -24,7 +23,6 @@ class AbstractPointSolver:
     def grid_with_points_below_magnification_threshold_removed(
         self, lensing_obj, deflections_func, grid
     ):
-
         magnifications = np.abs(
             lensing_obj.magnification_2d_via_hessian_from(
                 grid=grid, buffer=grid.pixel_scale, deflections_func=deflections_func
@@ -64,7 +62,6 @@ class AbstractPointSolver:
             with points within the threshold removed.
         """
         if self.distance_to_mass_profile_centre is not None:
-
             pixel_scales = grid.pixel_scales
 
             centres = lensing_obj.extract_attribute(
@@ -72,7 +69,6 @@ class AbstractPointSolver:
             )
 
             for centre in centres.in_list:
-
                 distances_1d = np.sqrt(
                     np.square(grid[:, 0] - centre[0])
                     + np.square(grid[:, 1] - centre[1])
@@ -336,7 +332,6 @@ class PointSolver(AbstractPointSolver):
             return [tuple(coordinate) for coordinate in grid]
 
     def solve(self, lensing_obj, source_plane_coordinate, upper_plane_index=None):
-
         if upper_plane_index is None:
             deflections_func = lensing_obj.deflections_yx_2d_from
         else:
@@ -365,7 +360,6 @@ class PointSolver(AbstractPointSolver):
         )
 
         if not self.use_upscaling:
-
             coordinates_list = self.grid_within_distance_of_source_plane_centre(
                 deflection_func=deflections_func,
                 grid=aa.Grid2DIrregularUniform(
@@ -380,11 +374,9 @@ class PointSolver(AbstractPointSolver):
         pixel_scale = self.grid.pixel_scale
 
         while pixel_scale > self.pixel_scale_precision:
-
             refined_coordinates_list = []
 
             for coordinate in coordinates_list:
-
                 refined_coordinates = self.refined_coordinates_from(
                     deflections_func=deflections_func,
                     coordinate=coordinate,
@@ -423,7 +415,6 @@ class PointSolver(AbstractPointSolver):
 
 @aa.util.numba.jit()
 def grid_remove_duplicates(grid):
-
     tolerance = 1e-8
 
     grid_no_duplicates = []
@@ -438,13 +429,10 @@ def grid_remove_duplicates(grid):
             separations[i, i] = tolerance * 2
 
     for i in range(grid.shape[0]):
-
         is_duplicate = False
 
         for j in range(grid.shape[0]):
-
             if separations[i, j] < tolerance:
-
                 is_duplicate = True
                 separations[i, j] = tolerance * 2
                 separations[j, i] = tolerance * 2
@@ -503,7 +491,6 @@ def grid_buffed_around_coordinate_from(
 
     for y in range(edge_start, edge_end):
         for x in range(edge_start, edge_end):
-
             grid_slim[grid_index, 0] = (
                 coordinate[0]
                 - y * pixel_scales_upscaled[0]
@@ -523,7 +510,6 @@ def grid_buffed_around_coordinate_from(
 
 @aa.util.numba.jit()
 def pair_coordinate_to_closest_pixel_on_grid(coordinate, grid_slim):
-
     squared_distances = np.square(grid_slim[:, 0] - coordinate[0]) + np.square(
         grid_slim[:, 1] - coordinate[1]
     )
@@ -578,9 +564,7 @@ def grid_square_neighbors_1d_from(shape_slim):
 
     for y in range(shape_of_edge):
         for x in range(shape_of_edge):
-
             if y > 0 and x > 0 and y < shape_of_edge - 1 and x < shape_of_edge - 1:
-
                 neighbors_1d[index, 0] = index - shape_of_edge - 1
                 neighbors_1d[index, 1] = index - shape_of_edge
                 neighbors_1d[index, 2] = index - shape_of_edge + 1
@@ -620,9 +604,7 @@ def grid_peaks_from(distance_1d, grid_slim, neighbors, has_neighbors):
     peaks_list = []
 
     for grid_index in range(grid_slim.shape[0]):
-
         if has_neighbors[grid_index]:
-
             distance = distance_1d[grid_index]
 
             if (
@@ -635,7 +617,6 @@ def grid_peaks_from(distance_1d, grid_slim, neighbors, has_neighbors):
                 and distance <= distance_1d[neighbors[grid_index, 6]]
                 and distance <= distance_1d[neighbors[grid_index, 7]]
             ):
-
                 peaks_list.append(grid_slim[grid_index])
 
     return peaks_list
@@ -643,7 +624,6 @@ def grid_peaks_from(distance_1d, grid_slim, neighbors, has_neighbors):
 
 @aa.util.numba.jit()
 def grid_within_distance(distances_1d, grid_slim, within_distance):
-
     grid_within_size = 0
 
     for grid_index in range(grid_slim.shape[0]):
@@ -656,7 +636,6 @@ def grid_within_distance(distances_1d, grid_slim, within_distance):
 
     for grid_index in range(grid_slim.shape[0]):
         if distances_1d[grid_index] < within_distance:
-
             grid_within[grid_within_index, :] = grid_slim[grid_index, :]
             grid_within_index += 1
 

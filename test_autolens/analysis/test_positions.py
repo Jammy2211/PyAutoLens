@@ -9,7 +9,6 @@ from autolens import exc
 
 
 def test__check_positions_on_instantiation():
-
     al.PositionsLHResample(
         positions=al.Grid2DIrregular([(1.0, 2.0), (3.0, 4.0)]), threshold=0.1
     )
@@ -17,14 +16,12 @@ def test__check_positions_on_instantiation():
     # Positions input with threshold but positions are length 1.
 
     with pytest.raises(exc.PositionsException):
-
         al.PositionsLHResample(
             positions=al.Grid2DIrregular([(1.0, 2.0)]), threshold=0.1
         )
 
 
 def test__output_positions_info():
-
     output_path = path.join(
         "{}".format(os.path.dirname(os.path.realpath(__file__))), "files"
     )

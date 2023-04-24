@@ -14,7 +14,6 @@ class Tracer(TracerBase):
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         profiling_dict: Optional[Dict] = None,
     ):
-
         planes = ag.util.plane.planes_via_galaxies_from(
             galaxies=galaxies, profiling_dict=profiling_dict, plane_cls=ag.legacy.Plane
         )
@@ -31,27 +30,20 @@ class Tracer(TracerBase):
 
     @property
     def contribution_map(self) -> Optional[aa.Array2D]:
-
-        contribution_map_list = self.contribution_map_list
-
-        contribution_map_list = [i for i in contribution_map_list if i is not None]
+        contribution_map_list = list(filter(None, self.contribution_map_list))
 
         if contribution_map_list:
             return sum(contribution_map_list)
 
     @property
     def contribution_map_list(self) -> List[aa.Array2D]:
-
         contribution_map_list = []
 
         for plane in self.planes:
-
             if plane.contribution_map is not None:
-
                 contribution_map_list.append(plane.contribution_map)
 
             else:
-
                 contribution_map_list.append(None)
 
         return contribution_map_list
