@@ -21,6 +21,12 @@ logger.setLevel(level="INFO")
 
 class AnalysisImaging(AnalysisImagingBase):
 
+    def tracer_via_instance_from(
+        self, instance: af.ModelInstance, profiling_dict: Optional[Dict] = None, tracer_cls=Tracer
+    ) -> Tracer:
+        return super().tracer_via_instance_from(instance=instance, profiling_dict=profiling_dict, tracer_cls=tracer_cls)
+
+
     def fit_imaging_via_instance_from(
         self,
         instance: af.ModelInstance,
