@@ -135,6 +135,7 @@ class FitImagingPlotter(Plotter):
         subtracted_image: bool = False,
         model_image: bool = False,
         plane_image: bool = False,
+        use_source_vmax: bool = False,
         zoom_to_brightest: bool = True,
         interpolate_to_uniform: bool = False,
     ):
@@ -163,6 +164,9 @@ class FitImagingPlotter(Plotter):
             Whether to make a 2D plot (via `imshow`) of the image of a plane in its source-plane (e.g. unlensed).
             Depending on how the fit is performed, this could either be an image of light profiles of the reconstruction
             of an `Inversion`.
+        use_source_vmax
+            If `True`, the maximum value of the lensed source (e.g. in the image-plane) is used to set the `vmax` of
+            certain plots (e.g. the `data`) in order to ensure the lensed source is visible compared to the lens.
         zoom_to_brightest
             For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
             the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
@@ -181,23 +185,12 @@ class FitImagingPlotter(Plotter):
 
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
+        if use_source_vmax:
+            self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(self.fit.model_images_of_planes_list[-1])
+
         for plane_index in plane_indexes:
 
             if subtracted_image:
-
-                if "vmin" in self.mat_plot_2d.cmap.kwargs:
-                    vmin_stored = True
-                else:
-                    self.mat_plot_2d.cmap.kwargs["vmin"] = 0.0
-                    vmin_stored = False
-
-                if "vmax" in self.mat_plot_2d.cmap.kwargs:
-                    vmax_stored = True
-                else:
-                    self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(
-                        self.fit.model_images_of_planes_list[plane_index]
-                    )
-                    vmax_stored = False
 
                 self.mat_plot_2d.plot_array(
                     array=self.fit.subtracted_images_of_planes_list[plane_index],
@@ -207,12 +200,6 @@ class FitImagingPlotter(Plotter):
                         filename=f"subtracted_image_of_plane_{plane_index}",
                     ),
                 )
-
-                if not vmin_stored:
-                    self.mat_plot_2d.cmap.kwargs.pop("vmin")
-
-                if not vmax_stored:
-                    self.mat_plot_2d.cmap.kwargs.pop("vmax")
 
             if model_image:
 
@@ -257,6 +244,9 @@ class FitImagingPlotter(Plotter):
                         zoom_to_brightest=zoom_to_brightest,
                         interpolate_to_uniform=interpolate_to_uniform
                     )
+
+        if use_source_vmax:
+            self.mat_plot_2d.cmap.kwargs.pop("vmax")
 
     def subplot_of_planes(self, plane_index: Optional[int] = None):
         """
@@ -346,9 +336,14 @@ class FitImagingPlotter(Plotter):
         Standard subplot of the attributes of the plotter's `FitImaging` object.
         """
 
-        self.open_subplot_figure(number_subplots=9)
+        self.open_subplot_figure(number_subplots=12)
 
         self.figures_2d(data=True)
+
+        self.set_title(label="Data (Source Scale)")
+        self.figures_2d(data=True, use_source_vmax=True)
+        self.set_title(label=None)
+
         self.figures_2d(signal_to_noise_map=True)
         self.figures_2d(model_image=True)
 
@@ -356,16 +351,23 @@ class FitImagingPlotter(Plotter):
         self.figures_2d_of_planes(plane_index=0, model_image=True)
 
         # If the lens light is not included the subplot index does not increase, so we must manually set it to 4
-        self.mat_plot_2d.subplot_index = 5
+        self.mat_plot_2d.subplot_index = 6
 
         final_plane_index = len(self.fit.tracer.planes) - 1
 
+        self.set_title(label="Lens Subtracted Image (Image Plane)")
+        self.figures_2d_of_planes(plane_index=final_plane_index, subtracted_image=True, use_source_vmax=True)
+
         self.set_title(label="Source Model Image (Image Plane)")
-        self.figures_2d_of_planes(plane_index=final_plane_index, model_image=True)
-        self.set_title(label="Source Model Image (Source Plane)")
-        self.figures_2d_of_planes(plane_index=final_plane_index, plane_image=True)
+        self.figures_2d_of_planes(plane_index=final_plane_index, model_image=True, use_source_vmax=True)
+
+        self.set_title(label="Source Plane (Zoomed)")
+        self.figures_2d_of_planes(plane_index=final_plane_index, plane_image=True, use_source_vmax=True)
+
 
         self.set_title(label=None)
+
+        self.mat_plot_2d.subplot_index = 9
 
         self.figures_2d(normalized_residual_map=True)
 
@@ -381,6 +383,11 @@ class FitImagingPlotter(Plotter):
 
         self.figures_2d(chi_squared_map=True)
 
+        self.set_title(label="Source Plane (No Zoom)")
+        self.figures_2d_of_planes(plane_index=final_plane_index, plane_image=True, zoom_to_brightest=False, use_source_vmax=True)
+
+        self.set_title(label=None)
+
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename="subplot_fit"
         )
@@ -395,6 +402,7 @@ class FitImagingPlotter(Plotter):
         residual_map: bool = False,
         normalized_residual_map: bool = False,
         chi_squared_map: bool = False,
+        use_source_vmax : bool = False,
         suffix: str = "",
     ):
         """
@@ -419,6 +427,9 @@ class FitImagingPlotter(Plotter):
             Whether to make a 2D plot (via `imshow`) of the normalized residual map.
         chi_squared_map
             Whether to make a 2D plot (via `imshow`) of the chi-squared map.
+        use_source_vmax
+            If `True`, the maximum value of the lensed source (e.g. in the image-plane) is used to set the `vmax` of
+            certain plots (e.g. the `data`) in order to ensure the lensed source is visible compared to the lens.
         """
 
         visuals_2d = self.get_visuals_2d()
@@ -434,11 +445,17 @@ class FitImagingPlotter(Plotter):
 
         if data:
 
+            if use_source_vmax:
+                self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(self.fit.model_images_of_planes_list[-1])
+
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,
                 visuals_2d=visuals_2d_no_critical_caustic,
                 auto_labels=AutoLabels(title="Image", filename=f"data{suffix}"),
             )
+
+            if use_source_vmax:
+                self.mat_plot_2d.cmap.kwargs.pop("vmax")
 
         if noise_map:
 
@@ -456,11 +473,14 @@ class FitImagingPlotter(Plotter):
                 array=self.fit.signal_to_noise_map,
                 visuals_2d=visuals_2d_no_critical_caustic,
                 auto_labels=AutoLabels(
-                    title="Signal-To-Noise Map", filename=f"signal_to_noise_map{suffix}"
+                    title="Signal-To-Noise Map", cb_unit=" S/N", filename=f"signal_to_noise_map{suffix}"
                 ),
             )
 
         if model_image:
+
+            if use_source_vmax:
+                self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(self.fit.model_images_of_planes_list[-1])
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.model_data,
@@ -469,6 +489,9 @@ class FitImagingPlotter(Plotter):
                     title="Model Image", filename=f"model_image{suffix}"
                 ),
             )
+
+            if use_source_vmax:
+                self.mat_plot_2d.cmap.kwargs.pop("vmax")
 
         cmap_original = self.mat_plot_2d.cmap
 

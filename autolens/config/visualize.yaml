@@ -1,10 +1,10 @@
 general: {}
 plots:
   fit:
-    model_images_of_planes: true
-    plane_images_of_planes: true
+    model_images_of_planes: false
+    plane_images_of_planes: false
     subplots_of_planes_fits: true
-    subtracted_images_of_planes: true
+    subtracted_images_of_planes: false
   other:
     stochastic_histogram: false
   positions:

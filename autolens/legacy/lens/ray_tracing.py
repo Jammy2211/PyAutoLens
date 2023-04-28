@@ -30,7 +30,6 @@ class Tracer(TracerBase):
 
     @property
     def contribution_map(self) -> Optional[aa.Array2D]:
-
         contribution_map_list = [i for i in self.contribution_map_list if i is not None]
 
         if contribution_map_list:
