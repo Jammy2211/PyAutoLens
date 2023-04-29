@@ -86,39 +86,49 @@ class Visualizer(AgVisualizer):
             magnification=should_plot("magnification"),
         )
 
-        if not during_analysis:
-            if should_plot("all_at_end_png"):
-                tracer_plotter.figures_2d(
-                    image=True,
-                    source_plane=True,
-                    convergence=True,
-                    potential=True,
-                    deflections_y=True,
-                    deflections_x=True,
-                    magnification=True,
-                )
+        if not during_analysis and should_plot("all_at_end_png"):
+            mat_plot_2d = self.mat_plot_2d_from(
+                subfolders=path.join("ray_tracing", "end"),
+            )
 
-            if should_plot("all_at_end_fits"):
-                fits_mat_plot_2d = self.mat_plot_2d_from(
-                    subfolders=path.join("ray_tracing", "fits"), format="fits"
-                )
+            tracer_plotter = TracerPlotter(
+                tracer=tracer,
+                grid=grid,
+                mat_plot_2d=mat_plot_2d,
+                include_2d=self.include_2d,
+            )
 
-                tracer_plotter = TracerPlotter(
-                    tracer=tracer,
-                    grid=grid,
-                    mat_plot_2d=fits_mat_plot_2d,
-                    include_2d=self.include_2d,
-                )
+            tracer_plotter.figures_2d(
+                image=True,
+                source_plane=True,
+                convergence=True,
+                potential=True,
+                deflections_y=True,
+                deflections_x=True,
+                magnification=True,
+            )
 
-                tracer_plotter.figures_2d(
-                    image=True,
-                    source_plane=True,
-                    convergence=True,
-                    potential=True,
-                    deflections_y=True,
-                    deflections_x=True,
-                    magnification=True,
-                )
+        if not during_analysis and should_plot("all_at_end_fits"):
+            mat_plot_2d = self.mat_plot_2d_from(
+                subfolders=path.join("ray_tracing", "fits"), format="fits"
+            )
+
+            tracer_plotter = TracerPlotter(
+                tracer=tracer,
+                grid=grid,
+                mat_plot_2d=mat_plot_2d,
+                include_2d=self.include_2d,
+            )
+
+            tracer_plotter.figures_2d(
+                image=True,
+                source_plane=True,
+                convergence=True,
+                potential=True,
+                deflections_y=True,
+                deflections_x=True,
+                magnification=True,
+            )
 
     def visualize_image_with_positions(
         self, image: aa.Array2D, positions: aa.Grid2DIrregular

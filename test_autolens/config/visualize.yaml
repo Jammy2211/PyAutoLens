@@ -89,10 +89,12 @@ plots:
     residual_map: false
     signal_to_noise_map: false
     subplot_fit: true
-    subplots_of_planes_fits: false
+    subplots_of_planes: false
     subtracted_images_of_planes: true
   fit_imaging: {}
   fit_interferometer:
+    subplot_fit_real_space: true
+    subplot_fit_dirty_images: true
     amplitudes_vs_uv_distances: false
     dirty_chi_squared_map: false
     dirty_image: false
@@ -151,5 +153,5 @@ plots:
     magnification: true
     potential: false
     source_plane_image: true
-    subplot_plane_images: true
     subplot_ray_tracing: true
+    subplot_plane_images: true

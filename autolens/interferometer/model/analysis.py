@@ -421,7 +421,7 @@ class AnalysisInterferometer(AnalysisDataset):
             The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
             the imaging data.
         """
-        if paths.is_complete or not os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
+        if paths.is_complete or os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
             return
 
         visualizer = VisualizerInterferometer(visualize_path=paths.image_path)
@@ -517,12 +517,6 @@ class AnalysisInterferometer(AnalysisDataset):
                 pass
 
         visualizer.visualize_contribution_maps(tracer=fit.tracer)
-
-        if visualizer.plot_fit_no_adapt:
-            fit = self.fit_interferometer_via_tracer_from(
-                tracer=fit.tracer,
-                preload_overwrite=Preloads(use_w_tilde=False),
-            )
 
     def make_result(
         self,

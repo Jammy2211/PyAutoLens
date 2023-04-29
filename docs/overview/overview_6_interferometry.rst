@@ -44,7 +44,7 @@ for an ``Imaging`` object.
 
 Here is what the interferometer visibilities and uv wavelength (which represent the interferometer's baselines):
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/visibilities.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/data.png
   :width: 400
   :alt: Alternative text
 

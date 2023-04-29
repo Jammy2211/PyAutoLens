@@ -1,0 +1,98 @@
+  dataset:                                   # Settings for plots of all datasets (e.g. ImagingPlotter, InterferometerPlotter).
+    subplot_dataset: true                    # Plot subplot containing all dataset quantities (e.g. the data, noise-map, etc.)?
+    data: false
+    noise_map: false
+    signal_to_noise_map: false
+  imaging:                                   # Settings for plots of imaging datasets (e.g. ImagingPlotter)
+    psf: false
+  positions:                                 # Settings for plots with resampling image-positions on (e.g. the image).
+    image_with_positions: true
+  fit:                                       # Settings for plots of all fits (e.g. FitImagingPlotter, FitInterferometerPlotter).
+    subplot_fit: true                        # Plot subplot of all fit quantities for any dataset (e.g. the model data, residual-map, etc.)?
+    all_at_end_png: true                     # Plot all individual plots listed below as .png (even if False)?
+    all_at_end_fits: true                    # Plot all individual plots listed below as .fits (even if False)?
+    all_at_end_pdf: false                    # Plot all individual plots listed below as publication-quality .pdf (even if False)?
+    subplot_of_planes: false                 # Plot subplot of the model-image, subtracted image and other quantities of each plane?
+    subplot_plane_images: false              # Plot subplot of the image of each plane in the model?
+    data: false
+    noise_map: false
+    signal_to_noise_map: false
+    model_data: false
+    residual_map: false
+    normalized_residual_map: false
+    model_images_of_planes: false            # Plot individual plots of each plane's model image?
+    subtracted_images_of_planes: false       # Plot individual plots of each plane's subtracted image?
+    plane_images_of_planes: false            # Plot individual plots of each plane's image (e.g. in the source plane)?
+  fit_imaging: {}                            # Settings for plots of fits to imaging datasets (e.g. FitImagingPlotter).
+  ray_tracing:                               # Settings for plots of tracers (e.g. TracerPlotter).
+    subplot_ray_tracing: true                # Plot subplot of all quantities in each tracer (e.g. images, convergence)?
+    all_at_end_png: true                     # Plot all individual plots listed below as .png (even if False)?
+    all_at_end_fits: true                    # Plot all individual plots listed below as .fits (even if False)?
+    all_at_end_pdf: false                    # Plot all individual plots listed below as publication-quality .pdf (even if False)?
+    subplot_plane_images: false              # Plot subplot of the image of each plane in the tracer?
+    image: false
+    source_plane_image: false
+    convergence: false
+    potential: false
+    deflections: false
+    magnification: false
+  galaxies:                                  # Settings for plots of galaxies (e.g GalaxyPlotter).
+    image: false
+    convergence: false
+    potential: false
+  inversion:                                 # Settings for plots of inversions (e.g. InversionPlotter).
+    subplot_inversion: true                  # Plot subplot of all quantities in each inversion (e.g. reconstrucuted image, reconstruction)?
+    all_at_end_png: true                     # Plot all individual plots listed below as .png (even if False)?
+    all_at_end_fits: true                    # Plot all individual plots listed below as .fits (even if False)?
+    all_at_end_pdf: false                    # Plot all individual plots listed below as publication-quality .pdf (even if False)?
+    errors: false
+    reconstructed_image: false
+    reconstruction: false
+    regularization_weights: false
+  adapt:                                     # Settings for plots of adapt images used by adaptive pixelizations.
+    images_of_galaxies: true
+    contribution_map_list: true
+    model_image: true
+  interferometer:                            # Settings for plots of interferometer datasets (e.g. InterferometerPlotter).
+    amplitudes_vs_uv_distances: false
+    phases_vs_uv_distances: false
+    uv_wavelengths: false
+    dirty_image: false
+    dirty_noise_map: false
+    dirty_signal_to_noise_map: false
+  fit_interferometer:                        # Settings for plots of fits to interferometer datasets (e.g. FitInterferometerPlotter).
+    subplot_fit_dirty_images: false          # Plot subplot of the dirty-images of all interferometer datasets?
+    subplot_fit_real_space: false            # Plot subplot of the real-space images of all interferometer datasets?
+    amplitudes_vs_uv_distances: false
+    phases_vs_uv_distances: false
+    uv_wavelengths: false
+    dirty_image: false
+    dirty_noise_map: false
+    dirty_signal_to_noise_map: false
+    dirty_residual_map: false
+    dirty_normalized_residual_map: false
+    dirty_chi_squared_map: false
+  other:                                     # Settings for other plotting quantities.
+    stochastic_histogram: false
+  fit_quantity:                              # Settings for plots of fit quantities (e.g. FitQuantityPlotter).
+    all_at_end_png: true                     # Plot all individual plots listed below as .png (even if False)?
+    all_at_end_fits: true                    # Plot all individual plots listed below as .fits (even if False)?
+    all_at_end_pdf: false                    # Plot all individual plots listed below as publication-quality .pdf (even if False)?
+    chi_squared_map: false
+    image: true
+    model_image: false
+    noise_map: false
+    residual_map: false
+    normalized_residual_map: false
+  plane:                                     # Settings for plots of planes (e.g. PlanePlotter).
+    subplot_plane: true                      # Plot subplot of all quantities in each plane (e.g. images, convergence)?
+    all_at_end_png: true                     # Plot all individual plots listed below as .png (even if False)?
+    all_at_end_fits: true                    # Plot all individual plots listed below as .fits (even if False)?
+    all_at_end_pdf: false                    # Plot all individual plots listed below as publication-quality .pdf (even if False)?
+    subplot_galaxy_images: false             # Plot subplot of the image of each galaxy in the model?
+    image: false
+    source_plane_image: false
+    convergence: false
+    deflections: false
+    potential: false
+    magnification: false
