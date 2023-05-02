@@ -272,23 +272,23 @@ class TracerPlotter(Plotter):
         Parameters
         ----------
         image
-            Whether or not to include a 2D plot (via `imshow`) of the image of tracer in its image-plane (e.g. after
+            Whether to include a 2D plot (via `imshow`) of the image of tracer in its image-plane (e.g. after
             lensing).
         source_plane
-            Whether or not to include a 2D plot (via `imshow`) of the image of the tracer in the source-plane (e.g. its
+            Whether to include a 2D plot (via `imshow`) of the image of the tracer in the source-plane (e.g. its
             unlensed light).
         convergence
-            Whether or not to include a 2D plot (via `imshow`) of the convergence.
+            Whether to include a 2D plot (via `imshow`) of the convergence.
         potential
-            Whether or not to include a 2D plot (via `imshow`) of the potential.
+            Whether to include a 2D plot (via `imshow`) of the potential.
         deflections_y
-            Whether or not to include a 2D plot (via `imshow`) of the y component of the deflection angles.
+            Whether to include a 2D plot (via `imshow`) of the y component of the deflection angles.
         deflections_x
-            Whether or not to include a 2D plot (via `imshow`) of the x component of the deflection angles.
+            Whether to include a 2D plot (via `imshow`) of the x component of the deflection angles.
         magnification
-            Whether or not to include a 2D plot (via `imshow`) of the magnification.
+            Whether to include a 2D plot (via `imshow`) of the magnification.
         contribution_map
-            Whether or not to include a 2D plot (via `imshow`) of the contribution map.
+            Whether to include a 2D plot (via `imshow`) of the contribution map.
         auto_filename
             The default filename of the output subplot if written to hard-disk.
         """

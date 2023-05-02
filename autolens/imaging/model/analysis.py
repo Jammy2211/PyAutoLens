@@ -458,9 +458,10 @@ class AnalysisImaging(AnalysisDataset):
             galaxies=tracer.galaxies, grid=fit.grid, during_analysis=during_analysis
         )
         if fit.inversion is not None:
-            visualizer.visualize_inversion(
-                inversion=fit.inversion, during_analysis=during_analysis
-            )
+            if fit.inversion.has(cls=ag.AbstractMapper):
+                visualizer.visualize_inversion(
+                    inversion=fit.inversion, during_analysis=during_analysis
+                )
 
         visualizer.visualize_contribution_maps(tracer=fit.tracer)
 

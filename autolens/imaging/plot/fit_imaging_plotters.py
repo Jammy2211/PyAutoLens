@@ -226,7 +226,6 @@ class FitImagingPlotter(Plotter):
 
                 if not self.tracer.planes[plane_index].has(cls=aa.Pixelization):
 
-
                     self.tracer_plotter.figures_2d_of_planes(
                         plane_image=True,
                         plane_index=plane_index,
@@ -302,21 +301,21 @@ class FitImagingPlotter(Plotter):
         Parameters
         ----------
         data
-            Whether or not to include a 2D plot (via `imshow`) of the image data.
+            Whether to include a 2D plot (via `imshow`) of the image data.
         noise_map
-            Whether or not to include a 2D plot (via `imshow`) of the noise map.
+            Whether to include a 2D plot (via `imshow`) of the noise map.
         psf
-            Whether or not to include a 2D plot (via `imshow`) of the psf.
+            Whether to include a 2D plot (via `imshow`) of the psf.
         signal_to_noise_map
-            Whether or not to include a 2D plot (via `imshow`) of the signal-to-noise map.
+            Whether to include a 2D plot (via `imshow`) of the signal-to-noise map.
         model_image
-            Whether or not to include a 2D plot (via `imshow`) of the model image.
+            Whether to include a 2D plot (via `imshow`) of the model image.
         residual_map
-            Whether or not to include a 2D plot (via `imshow`) of the residual map.
+            Whether to include a 2D plot (via `imshow`) of the residual map.
         normalized_residual_map
-            Whether or not to include a 2D plot (via `imshow`) of the normalized residual map.
+            Whether to include a 2D plot (via `imshow`) of the normalized residual map.
         chi_squared_map
-            Whether or not to include a 2D plot (via `imshow`) of the chi-squared map.
+            Whether to include a 2D plot (via `imshow`) of the chi-squared map.
         auto_filename
             The default filename of the output subplot if written to hard-disk.
         """
@@ -347,7 +346,7 @@ class FitImagingPlotter(Plotter):
         self.figures_2d(signal_to_noise_map=True)
         self.figures_2d(model_image=True)
 
-        self.set_title(label="Lens Model Image")
+        self.set_title(label="Lens Light Model Image")
         self.figures_2d_of_planes(plane_index=0, model_image=True)
 
         # If the lens light is not included the subplot index does not increase, so we must manually set it to 4
@@ -355,11 +354,15 @@ class FitImagingPlotter(Plotter):
 
         final_plane_index = len(self.fit.tracer.planes) - 1
 
-        self.set_title(label="Lens Subtracted Image (Image Plane)")
+        self.mat_plot_2d.cmap.kwargs["vmin"] = 0.0
+
+        self.set_title(label="Lens Light Subtracted Image")
         self.figures_2d_of_planes(plane_index=final_plane_index, subtracted_image=True, use_source_vmax=True)
 
         self.set_title(label="Source Model Image (Image Plane)")
         self.figures_2d_of_planes(plane_index=final_plane_index, model_image=True, use_source_vmax=True)
+
+        self.mat_plot_2d.cmap.kwargs.pop("vmin")
 
         self.set_title(label="Source Plane (Zoomed)")
         self.figures_2d_of_planes(plane_index=final_plane_index, plane_image=True, use_source_vmax=True)
