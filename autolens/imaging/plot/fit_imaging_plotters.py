@@ -504,7 +504,7 @@ class FitImagingPlotter(Plotter):
 
         if residual_map:
 
-            fit = FitImaging(fit=self.fit, tracer=self.tracer)
+            fit = FitImaging(dataset=self.fit.dataset, tracer=self.tracer)
 
             self.mat_plot_2d.plot_array(
                 array=fit.residual_map,
@@ -516,7 +516,7 @@ class FitImagingPlotter(Plotter):
 
         if normalized_residual_map:
 
-            fit = FitImaging(fit=self.fit, tracer=self.tracer)
+            fit = FitImaging(dataset=self.fit.dataset, tracer=self.tracer)
 
             self.mat_plot_2d.plot_array(
                 array=fit.normalized_residual_map,
@@ -532,7 +532,7 @@ class FitImagingPlotter(Plotter):
 
         if chi_squared_map:
 
-            fit = FitImaging(fit=self.fit, tracer=self.tracer)
+            fit = FitImaging(fdataset=self.fit.dataset, tracer=self.tracer)
 
             self.mat_plot_2d.plot_array(
                 array=fit.chi_squared_map,
