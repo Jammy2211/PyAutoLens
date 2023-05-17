@@ -32,7 +32,7 @@ def _fit_interferometer_from(
     Parameters
     ----------
     fit
-        A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
+        A PyAutoFit database Fit object containing the generators of the results of model-fits.
     galaxies
         A list of galaxies corresponding to a sample of a non-linear search and model-fit.
 
@@ -92,15 +92,15 @@ class FitInterferometerAgg(AbstractAgg):
         self.use_preloaded_grid = use_preloaded_grid
         self.real_space_mask = real_space_mask
 
-    def make_object_for_gen(self, fit, galaxies) -> FitInterferometer:
+    def object_via_gen_from(self, fit, galaxies) -> FitInterferometer:
         """
-        Creates a `FitInterferometer` object from a `ModelInstance` that contains the galaxies of a sample from a non-linear
-        search.
+        Creates a `FitInterferometer` object from a `ModelInstance` that contains the galaxies of a sample from a 
+        non-linear search.
 
         Parameters
         ----------
         fit
-            A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
+            A PyAutoFit database Fit object containing the generators of the results of model-fits.
         galaxies
             A list of galaxies corresponding to a sample of a non-linear search and model-fit.
 

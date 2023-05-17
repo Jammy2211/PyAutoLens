@@ -191,7 +191,7 @@ For new **PyAutoLens** users, we recommend they start by
 already!), read through the ``introduction.ipynb`` notebook on
 the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ and take the
 `HowToLens Jupyter notebook lecture series <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_ on
-strong gravitational lensing with **PyAutoLens**.
+strong gravitational lensingtick_maker.min_value.
 
 .. toctree::
    :caption: Overview:

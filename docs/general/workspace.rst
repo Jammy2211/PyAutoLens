@@ -35,7 +35,7 @@ the `config directory of the workspace <https://github.com/Jammy2211/autolens_wo
 Config
 ------
 
-Here, you'll find the configuration files used by **PyAutoLens** which customize:
+Here, you'll find the configuration files which customize:
 
     - The default settings used by every non-linear search.
     - Visualization, including the backend used by *matplotlib*.
@@ -55,7 +55,7 @@ are included here by default.
 Output
 ------
 
-The folder where lens modeling results are stored.
+The folder where  modeling results are stored.
 
 SLaM
 ----

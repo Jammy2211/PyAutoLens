@@ -4,7 +4,7 @@ Database
 --------
 
 The default behaviour of **PyAutoLens** is for model-fitting results to be output to hard-disc in folders, which are
-straight forward to navigate and manually check the lens modeling results. For small samples of lenses this is
+straight forward to navigate and manually check the  modeling results. For small samples of lenses this is
 sufficient, however many users have a need to perform many model fits to large lens datasets, making the manual
 inspection of results time consuming.
 
@@ -66,7 +66,7 @@ This object (and all objects loaded by the ``Aggregator``) are returned as a gen
 dictionary or other Python type). This is because generators do not store large arrays or classes in memory until they
 are used, ensuring that when we are manipulating large sets of results we do not run out of memory!
 
-We can iterate over the samples to print the maximum log likelihood lens model of every fit:
+We can iterate over the samples to print the maximum log likelihood model of every fit:
 
 .. code-block:: python
 

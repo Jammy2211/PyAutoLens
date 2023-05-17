@@ -8,7 +8,7 @@ Overview
 **PyAutoLens** can be installed via the Python distribution `Anaconda <https://www.anaconda.com/>`_ or using
 `Pypi <https://pypi.org/>`_ to ``pip install`` **PyAutoLens** into your Python distribution.
 
-We recommend Anaconda as it manages the installation of many major libraries used by **PyAutoLens** (e.g. numpy, scipy,
+We recommend Anaconda as it manages the installation of many major libraries (e.g. numpy, scipy,
 matplotlib, etc.) making installation more straight forward. Windows users must use Anaconda.
 
 The installation guide for both approaches can be found at:
