@@ -93,7 +93,7 @@ how the source reconstruction accurately fits the image of the strong lens:
 Wrap-Up
 -------
 
-This was a brief overview of ``Inverion``'s with **PyAutoLens**.
+This was a brief overview of ``Inverion``'stick_maker.min_value.
 
 There is a lot more to using ``Inverion``'s then presented here, which is covered in chapters 4 and 5 of
 the **HowToLens**, specifically:

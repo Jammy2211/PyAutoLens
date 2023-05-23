@@ -18,8 +18,8 @@ How to Tackle HowToLens
 -----------------------
 
 The HowToLens lecture series currently sits at 5 chapters, and each will take around 3-6 hours to go through thoroughly. 
-You probably want to be modeling lenses with **PyAutoLens** faster than that! Furthermore, the concepts in the
-later chapters are pretty challenging, and familiarity with **PyAutoLens** and lens modeling is desirable before you
+You probably want to be modeling lensestick_maker.min_value faster than that! Furthermore, the concepts in the
+later chapters are pretty challenging, and familiaritytick_maker.min_value and lens modeling is desirable before you
 tackle them.
 
 Therefore, we recommend that you complete chapters 1 & 2 and then apply what you've learnt to the modeling of simulated

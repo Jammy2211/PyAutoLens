@@ -421,7 +421,7 @@ class AnalysisInterferometer(AnalysisDataset):
             The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
             the imaging data.
         """
-        if paths.is_complete or os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
+        if not self.should_visualize(paths=paths):
             return
 
         visualizer = VisualizerInterferometer(visualize_path=paths.image_path)
@@ -473,7 +473,7 @@ class AnalysisInterferometer(AnalysisDataset):
             which may change which images are output.
         """
 
-        if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
+        if not self.should_visualize(paths=paths):
             return
 
         instance = self.instance_with_associated_adapt_images_from(instance=instance)
@@ -559,7 +559,7 @@ class AnalysisInterferometer(AnalysisDataset):
     def save_attributes_for_aggregator(self, paths: af.DirectoryPaths):
         """
          Before the non-linear search begins, this routine saves attributes of the `Analysis` object to the `pickles`
-         folder such that they can be load after the analysis using PyAutoFit's database and aggregator tools.
+         folder such that they can be loaded after the analysis using PyAutoFit's database and aggregator tools.
 
          For this analysis, it uses the `AnalysisDataset` object's method to output the following:
 

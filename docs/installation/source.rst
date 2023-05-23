@@ -15,7 +15,7 @@ A large amount of **PyAutoLens** functionality is contained in its parent projec
 
 **PyAutoGalaxy** https://github.com/Jammy2211/PyAutoGalaxy
 
-If you wish to build from source all code used by **PyAutoLens** you may need to build from source these 3 additional
+If you wish to build from source all code you may need to build from source these 3 additional
 projects. We include below instructions for building just **PyAutoLens** from source or building all projects.
 
 Building Only PyAutoLens

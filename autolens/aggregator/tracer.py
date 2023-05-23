@@ -18,7 +18,7 @@ def _tracer_from(fit: af.Fit, galaxies: List[ag.Galaxy]) -> Tracer:
     Parameters
     ----------
     fit
-        A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
+        A PyAutoFit database Fit object containing the generators of the results of model-fits.
     galaxies
         A list of galaxies corresponding to a sample of a non-linear search and model-fit.
 
@@ -56,7 +56,7 @@ class TracerAgg(AbstractAgg):
     search model-fit.
     """
 
-    def make_object_for_gen(self, fit, galaxies) -> Tracer:
+    def object_via_gen_from(self, fit, galaxies) -> Tracer:
         """
         Creates a `Tracer` object from a `ModelInstance` that contains the galaxies of a sample from a non-linear
         search.
@@ -64,7 +64,7 @@ class TracerAgg(AbstractAgg):
         Parameters
         ----------
         fit
-            A PyAutoFit database Fit object containing the generators of the results of PyAutoGalaxy model-fits.
+            A PyAutoFit database Fit object containing the generators of the results of model-fits.
         galaxies
             A list of galaxies corresponding to a sample of a non-linear search and model-fit.
 

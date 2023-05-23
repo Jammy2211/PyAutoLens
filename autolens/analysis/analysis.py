@@ -344,7 +344,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
             visualization and the pickled objects used by the aggregator output by this function.
         result
-            The result of a lens model fit, including the non-linear search, samples and maximum likelihood tracer.
+            The result of a model fit, including the non-linear search, samples and maximum likelihood tracer.
         """
 
         mesh_list = ag.util.model.mesh_list_from(model=result.model)

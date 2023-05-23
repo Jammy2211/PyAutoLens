@@ -45,7 +45,7 @@ class Preloads(ag.Preloads):
         Parameters
         ----------
         blurred_image
-            The preloaded array of values containing the blurred image of a lens model fit (e.g. that light profile of
+            The preloaded array of values containing the blurred image of a model fit (e.g. that light profile of
             every galaxy in the model). This can be preloaded when no light profiles in the model vary.
         w_tilde
             A class containing values that enable an inversion's linear algebra to use the w-tilde formalism. This can
