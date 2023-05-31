@@ -94,7 +94,7 @@ class FitInterferometerAgg(AbstractAgg):
 
     def object_via_gen_from(self, fit, galaxies) -> FitInterferometer:
         """
-        Creates a `FitInterferometer` object from a `ModelInstance` that contains the galaxies of a sample from a 
+        Creates a `FitInterferometer` object from a `ModelInstance` that contains the galaxies of a sample from a
         non-linear search.
 
         Parameters
