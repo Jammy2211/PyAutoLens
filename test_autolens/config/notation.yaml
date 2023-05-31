@@ -26,6 +26,7 @@ label:
     intensity: I_{\rm b}
     kappa: \kappa
     kappa_s: \kappa_{\rm s}
+    m: m
     mass: M
     mass_at_200: M_{\rm 200}
     mass_ratio: M_{\rm ratio}
@@ -73,6 +74,7 @@ label_format:
     einstein_radius: '{:.2f}'
     kpc_per_arcsec: '{:.2f}'
     luminosity: '{:.4e}'
+    m: '{:.1f}'
     mass: '{:.4e}'
     mass_at_truncation_radius: '{:.4e}'
     radius: '{:.2f}'
