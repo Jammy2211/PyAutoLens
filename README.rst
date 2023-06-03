@@ -100,7 +100,7 @@ lens ``Galaxy`` with an ``Isothermal`` ``MassProfile`` lenses a background sourc
     """
     tracer = al.Tracer.from_galaxies(
         galaxies=[lens_galaxy, source_galaxy], 
-        cosmology: al.cosmo.Planck15()
+        cosmology = al.cosmo.Planck15()
     )
 
     """
@@ -133,7 +133,9 @@ fits the lens galaxy's mass with an ``Isothermal`` and the source galaxy's light
     Create a mask for the imaging data, which we setup as a 3.0" circle, and apply it.
     """
     mask = al.Mask2D.circular(
-        shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
+        shape_native=dataset.shape_native,
+        pixel_scales=dataset.pixel_scales,
+        radius=3.0
     )
     dataset = dataset.apply_mask(mask=mask)
 

@@ -504,10 +504,8 @@ class FitImagingPlotter(Plotter):
 
         if residual_map:
 
-            fit = FitImaging(dataset=self.fit.dataset, tracer=self.tracer)
-
             self.mat_plot_2d.plot_array(
-                array=fit.residual_map,
+                array=self.fit.residual_map,
                 visuals_2d=visuals_2d_no_critical_caustic,
                 auto_labels=AutoLabels(
                     title="Residual Map", filename=f"residual_map{suffix}"
@@ -516,10 +514,8 @@ class FitImagingPlotter(Plotter):
 
         if normalized_residual_map:
 
-            fit = FitImaging(dataset=self.fit.dataset, tracer=self.tracer)
-
             self.mat_plot_2d.plot_array(
-                array=fit.normalized_residual_map,
+                array=self.fit.normalized_residual_map,
                 visuals_2d=visuals_2d_no_critical_caustic,
                 auto_labels=AutoLabels(
                     title="Normalized Residual Map",
@@ -532,10 +528,8 @@ class FitImagingPlotter(Plotter):
 
         if chi_squared_map:
 
-            fit = FitImaging(dataset=self.fit.dataset, tracer=self.tracer)
-
             self.mat_plot_2d.plot_array(
-                array=fit.chi_squared_map,
+                array=self.fit.chi_squared_map,
                 visuals_2d=visuals_2d_no_critical_caustic,
                 auto_labels=AutoLabels(
                     title="Chi-Squared Map", cb_unit=r" $\chi^2$",  filename=f"chi_squared_map{suffix}"
