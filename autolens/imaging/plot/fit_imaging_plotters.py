@@ -286,7 +286,7 @@ class FitImagingPlotter(Plotter):
         data: bool = False,
         noise_map: bool = False,
         signal_to_noise_map: bool = False,
-        model_image: bool = False,
+        model_data: bool = False,
         residual_map: bool = False,
         normalized_residual_map: bool = False,
         chi_squared_map: bool = False,
@@ -308,7 +308,7 @@ class FitImagingPlotter(Plotter):
             Whether to include a 2D plot (via `imshow`) of the psf.
         signal_to_noise_map
             Whether to include a 2D plot (via `imshow`) of the signal-to-noise map.
-        model_image
+        model_data
             Whether to include a 2D plot (via `imshow`) of the model image.
         residual_map
             Whether to include a 2D plot (via `imshow`) of the residual map.
@@ -323,7 +323,7 @@ class FitImagingPlotter(Plotter):
             data=data,
             noise_map=noise_map,
             signal_to_noise_map=signal_to_noise_map,
-            model_image=model_image,
+            model_image=model_data,
             residual_map=residual_map,
             normalized_residual_map=normalized_residual_map,
             chi_squared_map=chi_squared_map,
@@ -387,7 +387,12 @@ class FitImagingPlotter(Plotter):
         self.figures_2d(chi_squared_map=True)
 
         self.set_title(label="Source Plane (No Zoom)")
-        self.figures_2d_of_planes(plane_index=final_plane_index, plane_image=True, zoom_to_brightest=False, use_source_vmax=True)
+        self.figures_2d_of_planes(
+            plane_index=final_plane_index,
+            plane_image=True,
+            zoom_to_brightest=False,
+            use_source_vmax=True
+        )
 
         self.set_title(label=None)
 

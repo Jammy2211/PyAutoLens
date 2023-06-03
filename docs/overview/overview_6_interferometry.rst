@@ -33,7 +33,7 @@ for an ``Imaging`` object.
     dataset_path = "/path/to/dataset/folder"
 
     dataset = al.Interferometer.from_fits(
-        data_path=path.join(dataset_path, "visibilities.fits"),
+        data_path=path.join(dataset_path, "data.fits"),
         noise_map_path=path.join(dataset_path, "noise_map.fits"),
         uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
         real_space_mask=real_space_mask_2d

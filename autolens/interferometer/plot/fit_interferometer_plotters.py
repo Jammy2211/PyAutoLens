@@ -81,7 +81,7 @@ class FitInterferometerPlotter(Plotter):
         )
 
         self.subplot = self._fit_interferometer_meta_plotter.subplot
-        self.subplot_fit = self._fit_interferometer_meta_plotter.subplot_fit
+        #   self.subplot_fit = self._fit_interferometer_meta_plotter.subplot_fit
         self.subplot_fit_dirty_images = (
             self._fit_interferometer_meta_plotter.subplot_fit_dirty_images
         )
@@ -130,11 +130,70 @@ class FitInterferometerPlotter(Plotter):
             include_2d=self.include_2d,
         )
 
+    def subplot_fit(self):
+        """
+        Standard subplot of the attributes of the plotter's `FitImaging` object.
+        """
+
+        self.open_subplot_figure(number_subplots=12)
+
+        self.figures_2d(amplitudes_vs_uv_distances=True)
+
+        self.mat_plot_1d.subplot_index = 2
+        self.mat_plot_2d.subplot_index = 2
+
+        self.figures_2d(dirty_image=True)
+        self.figures_2d(dirty_signal_to_noise_map=True)
+        self.figures_2d(dirty_model_image=True)
+        self.figures_2d(image=True)
+
+        self.mat_plot_1d.subplot_index = 6
+        self.mat_plot_2d.subplot_index = 6
+
+        self.figures_2d(normalized_residual_map_real=True)
+        self.figures_2d(normalized_residual_map_imag=True)
+
+        self.mat_plot_1d.subplot_index = 8
+        self.mat_plot_2d.subplot_index = 8
+
+        final_plane_index = len(self.fit.tracer.planes) - 1
+
+        self.set_title(label="Source Plane (Zoomed)")
+        self.figures_2d_of_planes(plane_index=final_plane_index, plane_image=True)
+        self.set_title(label=None)
+
+        self.figures_2d(dirty_normalized_residual_map=True)
+
+        self.mat_plot_2d.cmap.kwargs["vmin"] = -1.0
+        self.mat_plot_2d.cmap.kwargs["vmax"] = 1.0
+
+        self.set_title(label="Normalized Residual Map (1 sigma)")
+        self.figures_2d(dirty_normalized_residual_map=True)
+        self.set_title(label=None)
+
+        self.mat_plot_2d.cmap.kwargs.pop("vmin")
+        self.mat_plot_2d.cmap.kwargs.pop("vmax")
+
+        self.figures_2d(dirty_chi_squared_map=True)
+
+        self.set_title(label="Source Plane (No Zoom)")
+        self.figures_2d_of_planes(
+            plane_index=final_plane_index,
+            plane_image=True,
+            zoom_to_brightest=False,
+        )
+
+        self.set_title(label=None)
+
+        self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_fit")
+        self.close_subplot_figure()
+
     def figures_2d(
         self,
         data: bool = False,
         noise_map: bool = False,
         signal_to_noise_map: bool = False,
+        amplitudes_vs_uv_distances: bool = False,
         model_data: bool = False,
         residual_map_real: bool = False,
         residual_map_imag: bool = False,
@@ -198,6 +257,7 @@ class FitInterferometerPlotter(Plotter):
             data=data,
             noise_map=noise_map,
             signal_to_noise_map=signal_to_noise_map,
+            amplitudes_vs_uv_distances=amplitudes_vs_uv_distances,
             model_data=model_data,
             residual_map_real=residual_map_real,
             residual_map_imag=residual_map_imag,
@@ -222,7 +282,10 @@ class FitInterferometerPlotter(Plotter):
                 inversion_plotter.figures_2d(reconstructed_image=True)
 
     def figures_2d_of_planes(
-        self, plane_index: Optional[int] = None, plane_image: bool = False
+        self,
+        plane_index: Optional[int] = None,
+        plane_image: bool = False,
+        zoom_to_brightest: bool = True,
     ):
         """
         Plots images representing each individual `Plane` in the fit's `Tracer` in 2D, which are computed via the
@@ -242,17 +305,24 @@ class FitInterferometerPlotter(Plotter):
             Whether to make a 2D plot (via `imshow`) of the image of a plane in its source-plane (e.g. unlensed).
             Depending on how the fit is performed, this could either be an image of light profiles of the reconstruction
             of an `Inversion`.
+        zoom_to_brightest
+            For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
+            the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
         """
         if plane_image:
             if not self.tracer.planes[plane_index].has(cls=aa.Pixelization):
                 self.tracer_plotter.figures_2d_of_planes(
-                    plane_image=True, plane_index=plane_index
+                    plane_image=True,
+                    plane_index=plane_index,
+                    zoom_to_brightest=zoom_to_brightest,
                 )
 
             elif self.tracer.planes[plane_index].has(cls=aa.Pixelization):
                 inversion_plotter = self.inversion_plotter_of_plane(plane_index=1)
                 inversion_plotter.figures_2d_of_pixelization(
-                    pixelization_index=0, reconstruction=True
+                    pixelization_index=0,
+                    reconstruction=True,
+                    zoom_to_brightest=zoom_to_brightest,
                 )
 
     def subplot_fit_real_space(self):
