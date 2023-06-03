@@ -104,11 +104,20 @@ class GetVisuals2D(gv2d.GetVisuals2D):
                 "tangential_critical_curves",
             )
 
-            radial_critical_curves = self.get(
-                "radial_critical_curves",
-                tracer.radial_critical_curve_list_from(grid=grid),
-                "radial_critical_curves",
+            radial_critical_curves = None
+
+            radial_critical_curve_area_list = (
+                tracer.radial_critical_curve_area_list_from(grid=grid)
             )
+
+            if any(
+                [area > grid.pixel_scale for area in radial_critical_curve_area_list]
+            ):
+                radial_critical_curves = self.get(
+                    "radial_critical_curves",
+                    tracer.radial_critical_curve_list_from(grid=grid),
+                    "radial_critical_curves",
+                )
 
         if plane_index > 0:
             tangential_caustics = self.get(
