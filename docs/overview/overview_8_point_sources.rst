@@ -57,7 +57,7 @@ the point-sources on!
 .. code-block:: python
 
     solver = al.PointSolver(
-        grid=grid_2d,
+        grid=grid,
         pixel_scale_precision=0.001,
     )
 
@@ -142,7 +142,7 @@ chi-squared, likelihood, etc of every individual fit to part of our point source
 Lens Modeling
 -------------
 
-It is straight forward to fit a lens model to a point source dataset, using the same API that we saw for imaging and
+It is straight forward to fit a lens model to a point source dataset, using the same API that we saw for dataset and
 interferometer datasets.
 
 This uses an ``AnalysisPoint`` object which fits the lens model in the correct way for a point source dataset.

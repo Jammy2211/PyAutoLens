@@ -216,16 +216,14 @@ class SubhaloPlotter(AbstractPlotter):
             mass_profile_centres=self.subhalo_result.centres_native,
         )
 
-        fit_imaging_plotter = self.fit_imaging_detect_plotter_from(
-            visuals_2d=visuals_2d
-        )
+        fit_plotter = self.fit_imaging_detect_plotter_from(visuals_2d=visuals_2d)
 
         if show_median:
             if overwrite_title:
-                fit_imaging_plotter.set_title(label=f"Image {median_detection}")
+                fit_plotter.set_title(label=f"Image {median_detection}")
 
-        #   fit_imaging_plotter.figures_2d(image=image)
-        fit_imaging_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
+        #   fit_plotter.figures_2d(image=image)
+        fit_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
 
     def figure_with_mass_overlay(self, image: bool = False, transpose_array=False):
         array_overlay = self.subhalo_result.subhalo_mass_array_from()
@@ -240,11 +238,9 @@ class SubhaloPlotter(AbstractPlotter):
             mass_profile_centres=self.subhalo_result.centres_native,
         )
 
-        fit_imaging_plotter = self.fit_imaging_detect_plotter_from(
-            visuals_2d=visuals_2d
-        )
+        fit_plotter = self.fit_imaging_detect_plotter_from(visuals_2d=visuals_2d)
 
-        fit_imaging_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
+        fit_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
 
     def subplot_detection_imaging(self, remove_zeros: bool = False):
         self.open_subplot_figure(number_subplots=4)

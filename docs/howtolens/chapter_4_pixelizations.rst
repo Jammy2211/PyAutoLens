@@ -1,5 +1,5 @@
-Chapter 4: Inversions
-=====================
+Chapter 4: Pixelizations
+========================
 
 In chapter 4, we use **Pixelizations** to reconstruct complex source galaxies on pixelized grids.
 

@@ -16,14 +16,14 @@ and accounting for the background sky in the exposure which adds Poisson noise:
 
 .. code-block:: python
 
-    psf_2d = ag.Kernel2D.from_gaussian(
-        shape_native=(11, 11), sigma=0.1, pixel_scales=grid_2d.pixel_scales
+    psf = ag.Kernel2D.from_gaussian(
+        shape_native=(11, 11), sigma=0.1, pixel_scales=grid.pixel_scales
     )
 
     simulator = al.SimulatorImaging(
         exposure_time=300.0,
         background_sky_level=1.0,
-        psf=psf_2d,
+        psf=psf,
         add_poisson_noise=True,
     )
 
@@ -32,7 +32,7 @@ Point Spread Function (PSF) by passing it a tracer and grid:
 
 .. code-block:: python
 
-    imaging = simulator.from_tracer_and_grid(tracer=tracer, grid=grid_2d)
+    dataset = simulator.from_tracer_and_grid(tracer=tracer, grid=grid)
 
 Here is what our dataset looks like:
 

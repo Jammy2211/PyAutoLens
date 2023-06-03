@@ -32,15 +32,15 @@ for an ``Imaging`` object.
 
     dataset_path = "/path/to/dataset/folder"
 
-    interferometer = al.Interferometer.from_fits(
+    dataset = al.Interferometer.from_fits(
         data_path=path.join(dataset_path, "visibilities.fits"),
         noise_map_path=path.join(dataset_path, "noise_map.fits"),
         uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
         real_space_mask=real_space_mask_2d
     )
 
-    interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
-    interferometer_plotter.figures_2d(visibilities=True, uv_wavelengths=True)
+    dataset_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
+    dataset_plotter.figures_2d(visibilities=True, uv_wavelengths=True)
 
 Here is what the interferometer visibilities and uv wavelength (which represent the interferometer's baselines):
 
@@ -61,8 +61,8 @@ This can also plot the dataset in real-space, using the fast Fourier transforms 
 
 .. code-block:: python
 
-    interferometer_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
-    interferometer_plotter.figures_2d(dirty_image=True, dirty_signal_to_noise_map=True)
+    dataset_plotter = aplt.InterferometerPlotter(interferometer=interferometer)
+    dataset_plotter.figures_2d(dirty_image=True, dirty_signal_to_noise_map=True)
 
 Here is what the image and signal-to-noise map look like in real space:
 
@@ -103,7 +103,7 @@ but we will apply the settings above:
 
 .. code-block:: python
 
-    interferometer = interferometer.apply_settings(
+    dataset = dataset.apply_settings(
         settings=al.SettingsInterferometer(transformer_class=transformer_class)
     )
 
@@ -118,9 +118,9 @@ The interferometer can now be passed to a ``FitInterferometer`` object to fit it
         interferometer=interferometer, tracer=tracer
     )
 
-    fit_interferometer_plotter = aplt.FitInterferometerPlotter(fit=fit)
-    fit_interferometer_plotter.subplot_fit()
-    fit_interferometer_plotter.subplot_fit_real_space()
+    fit_plotter = aplt.FitInterferometerPlotter(fit=fit)
+    fit_plotter.subplot_fit()
+    fit_plotter.subplot_fit_real_space()
 
 Here is what the image of the tracer looks like before it is Fourier transformed to the uv-plane:
 
@@ -130,7 +130,7 @@ Here is what the image of the tracer looks like before it is Fourier transformed
 
 And here is what the Fourier transformed model visibilities look like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/model_visibilities.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/model_data.png
   :width: 400
   :alt: Alternative text
 
@@ -198,7 +198,7 @@ Gaussian noise to the visibilities:
 
 .. code-block:: python
 
-    real_space_grid_2d = ag.Grid2D.uniform(
+    real_space_grid = ag.Grid2D.uniform(
         shape_native=real_space_mask.shape_native,
         pixel_scales=real_space_mask.pixel_scales
     )
@@ -210,7 +210,7 @@ Gaussian noise to the visibilities:
         noise_sigma=0.01,
     )
 
-    interferometer = simulator.via_tracer_from(tracer=tracer, grid=real_space_grid)
+    dataset = simulator.via_tracer_from(tracer=tracer, grid=real_space_grid)
 
 Wrap-Up
 -------

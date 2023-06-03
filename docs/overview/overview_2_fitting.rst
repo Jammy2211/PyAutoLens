@@ -16,15 +16,15 @@ from .fits files as an ``Imaging`` object:
 
     dataset_path = "/path/to/dataset/folder"
 
-    imaging = al.Imaging.from_fits(
+    dataset = al.Imaging.from_fits(
         data_path=path.join(dataset_path, "data.fits"),
         psf_path=path.join(dataset_path, "psf.fits"),
         noise_map_path=path.join(dataset_path, "noise_map.fits"),
         pixel_scales=0.1,
     )
 
-    imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
-    imaging_plotter.figures_2d(image=True, noise_map=True, psf=True)
+    dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
+    dataset_plotter.figures_2d(image=True, noise_map=True, psf=True)
 
 Here's what our ``image``, ``noise_map`` and ``psf`` (point-spread function) look like:
 
@@ -49,13 +49,13 @@ this we can use a ``Mask2D`` object, which for this example we'll create as a 3.
 .. code-block:: python
 
     mask = al.Mask2D.circular(
-        shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, sub_size=1, radius=3.0
+        shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, sub_size=1, radius=3.0
     )
 
-    imaging = imaging.apply_mask(mask=mask_2d)
+    dataset = dataset.apply_mask(mask=mask_2d)
 
-    imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
-    imaging_plotter.figures_2d(image=True)
+    dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
+    dataset_plotter.figures_2d(image=True)
 
 Here is what our image looks like with the mask applied, where **PyAutoLens** has automatically zoomed around the
 ``Mask2D`` to make the lensed source appear bigger:
@@ -76,10 +76,10 @@ provides a like-with-like comparison.
 
 .. code-block:: python
 
-    fit = al.FitImaging(dataset=masked_imaging, tracer=tracer)
+    fit = al.FitImaging(dataset=masked_dataset, tracer=tracer)
 
-    fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit)
-    fit_imaging_plotter.figures_2d(model_image=True)
+    fit_plotter = aplt.FitImagingPlotter(fit=fit)
+    fit_plotter.figures_2d(model_image=True)
 
 Here is how the ``Tracer``'s image and the ``FitImaging``'s model-image look, note how the model-image has been blurred
 with the PSF of our dataset:
@@ -98,9 +98,9 @@ we can plot:
 
 .. code-block:: python
 
-    fit_imaging_plotter = aplt.FitImagingPlotter(fit=fit)
+    fit_plotter = aplt.FitImagingPlotter(fit=fit)
 
-    fit_imaging_plotter.figures_2d(
+    fit_plotter.figures_2d(
         residual_map=True,
         chi_squared_map=True
     )

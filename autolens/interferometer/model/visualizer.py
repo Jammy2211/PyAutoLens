@@ -45,7 +45,7 @@ class VisualizerInterferometer(Visualizer):
         mat_plot_1d = self.mat_plot_1d_from(subfolders=subfolders)
         mat_plot_2d = self.mat_plot_2d_from(subfolders=subfolders)
 
-        fit_interferometer_plotter = FitInterferometerPlotter(
+        fit_plotter = FitInterferometerPlotter(
             fit=fit,
             include_2d=self.include_2d,
             mat_plot_1d=mat_plot_1d,
@@ -53,19 +53,19 @@ class VisualizerInterferometer(Visualizer):
         )
 
         if should_plot("subplot_fit"):
-            fit_interferometer_plotter.subplot_fit()
+            fit_plotter.subplot_fit()
 
         if should_plot("subplot_fit_dirty_images"):
-            fit_interferometer_plotter.subplot_fit_dirty_images()
+            fit_plotter.subplot_fit_dirty_images()
 
         if should_plot("subplot_fit_real_space"):
-            fit_interferometer_plotter.subplot_fit_real_space()
+            fit_plotter.subplot_fit_real_space()
 
-        fit_interferometer_plotter.figures_2d(
+        fit_plotter.figures_2d(
             data=should_plot("data"),
             noise_map=should_plot("noise_map"),
             signal_to_noise_map=should_plot("signal_to_noise_map"),
-            model_visibilities=should_plot("model_data"),
+            model_data=should_plot("model_data"),
             residual_map_real=should_plot("residual_map"),
             chi_squared_map_real=should_plot("chi_squared_map"),
             normalized_residual_map_real=should_plot("normalized_residual_map"),
@@ -85,18 +85,18 @@ class VisualizerInterferometer(Visualizer):
             mat_plot_1d = self.mat_plot_1d_from(subfolders=path.join(subfolders, "end"))
             mat_plot_2d = self.mat_plot_2d_from(subfolders=path.join(subfolders, "end"))
 
-            fit_interferometer_plotter = FitInterferometerPlotter(
+            fit_plotter = FitInterferometerPlotter(
                 fit=fit,
                 include_2d=self.include_2d,
                 mat_plot_1d=mat_plot_1d,
                 mat_plot_2d=mat_plot_2d,
             )
 
-            fit_interferometer_plotter.figures_2d(
+            fit_plotter.figures_2d(
                 data=True,
                 noise_map=True,
                 signal_to_noise_map=True,
-                model_visibilities=True,
+                model_data=True,
                 residual_map_real=True,
                 chi_squared_map_real=True,
                 normalized_residual_map_real=True,
@@ -117,11 +117,11 @@ class VisualizerInterferometer(Visualizer):
                 subfolders=path.join("fit_dataset", "fits"), format="fits"
             )
 
-            fit_interferometer_plotter = FitInterferometerPlotter(
+            fit_plotter = FitInterferometerPlotter(
                 fit=fit, include_2d=self.include_2d, mat_plot_2d=mat_plot_2d
             )
 
-            fit_interferometer_plotter.figures_2d(
+            fit_plotter.figures_2d(
                 dirty_image=True,
                 dirty_noise_map=True,
                 dirty_signal_to_noise_map=True,

@@ -30,7 +30,7 @@ def test__perfect_fit__chi_squared_0():
         noise_sigma=None,
     )
 
-    interferometer = simulator.via_tracer_from(tracer=tracer, grid=grid)
+    dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
     file_path = path.join(
         "{}".format(path.dirname(path.realpath(__file__))),
@@ -46,7 +46,7 @@ def test__perfect_fit__chi_squared_0():
     if path.exists(file_path) is False:
         os.makedirs(file_path)
 
-    interferometer.output_to_fits(
+    dataset.output_to_fits(
         data_path=path.join(file_path, "visibilities.fits"),
         noise_map_path=path.join(file_path, "noise_map.fits"),
         uv_wavelengths_path=path.join(file_path, "uv_wavelengths.fits"),
@@ -56,20 +56,20 @@ def test__perfect_fit__chi_squared_0():
         shape_native=(51, 51), pixel_scales=0.1, sub_size=2
     )
 
-    interferometer = al.Interferometer.from_fits(
+    dataset = al.Interferometer.from_fits(
         data_path=path.join(file_path, "visibilities.fits"),
         noise_map_path=path.join(file_path, "noise_map.fits"),
         uv_wavelengths_path=path.join(file_path, "uv_wavelengths.fits"),
         real_space_mask=real_space_mask,
     )
-    interferometer = interferometer.apply_settings(
+    dataset = dataset.apply_settings(
         settings=al.SettingsInterferometer(transformer_class=al.TransformerDFT)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
     fit = al.FitInterferometer(
-        dataset=interferometer,
+        dataset=dataset,
         tracer=tracer,
         settings_pixelization=al.SettingsPixelization(use_border=False),
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
@@ -93,7 +93,7 @@ def test__perfect_fit__chi_squared_0():
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
     fit = al.FitInterferometer(
-        dataset=interferometer,
+        dataset=dataset,
         tracer=tracer,
         settings_pixelization=al.SettingsPixelization(use_border=False),
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
@@ -138,14 +138,14 @@ def test__simulate_interferometer_data_and_fit__known_likelihood():
         noise_seed=1,
     )
 
-    interferometer = simulator.via_tracer_from(tracer=tracer, grid=grid)
+    dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
-    interferometer = interferometer.apply_settings(
+    dataset = dataset.apply_settings(
         settings=al.SettingsInterferometer(transformer_class=al.TransformerDFT)
     )
 
     fit = al.FitInterferometer(
-        dataset=interferometer,
+        dataset=dataset,
         tracer=tracer,
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
@@ -183,16 +183,16 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
         noise_sigma=None,
     )
 
-    interferometer = simulator.via_tracer_from(tracer=tracer, grid=grid)
+    dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
-    interferometer = interferometer.apply_settings(
+    dataset = dataset.apply_settings(
         settings=al.SettingsInterferometer(
             grid_class=al.Grid2D, transformer_class=al.TransformerDFT, sub_size=1
         )
     )
 
     fit = al.FitInterferometer(
-        dataset=interferometer,
+        dataset=dataset,
         tracer=tracer,
         settings_pixelization=al.SettingsPixelization(use_border=False),
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
@@ -215,7 +215,7 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
     )
 
     fit_linear = al.FitInterferometer(
-        dataset=interferometer,
+        dataset=dataset,
         tracer=tracer_linear,
         settings_pixelization=al.SettingsPixelization(use_border=False),
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
@@ -235,13 +235,13 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
     ] == pytest.approx(0.2, 1.0e-2)
     assert fit.log_likelihood == pytest.approx(fit_linear.log_likelihood)
 
-    lens_galaxy_image = lens_galaxy.image_2d_from(grid=interferometer.grid)
+    lens_galaxy_image = lens_galaxy.image_2d_from(grid=dataset.grid)
 
     assert fit_linear.galaxy_model_image_dict[lens_galaxy_linear] == pytest.approx(
         lens_galaxy_image, 1.0e-4
     )
 
-    traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=interferometer.grid)
+    traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=dataset.grid)
 
     source_galaxy_image = source_galaxy.image_2d_from(grid=traced_grid_2d_list[1])
 
@@ -250,7 +250,7 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
     )
 
     lens_galaxy_visibilities = lens_galaxy.visibilities_from(
-        grid=interferometer.grid, transformer=interferometer.transformer
+        grid=dataset.grid, transformer=dataset.transformer
     )
 
     assert fit_linear.galaxy_model_visibilities_dict[
@@ -258,7 +258,7 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
     ] == pytest.approx(lens_galaxy_visibilities, 1.0e-4)
 
     source_galaxy_visibilities = source_galaxy.visibilities_from(
-        grid=traced_grid_2d_list[1], transformer=interferometer.transformer
+        grid=traced_grid_2d_list[1], transformer=dataset.transformer
     )
 
     assert fit_linear.galaxy_model_visibilities_dict[
@@ -296,9 +296,9 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixeli
         noise_sigma=None,
     )
 
-    interferometer = simulator.via_tracer_from(tracer=tracer, grid=grid)
+    dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
-    interferometer = interferometer.apply_settings(
+    dataset = dataset.apply_settings(
         settings=al.SettingsInterferometer(
             grid_class=al.Grid2D, transformer_class=al.TransformerDFT, sub_size=1
         )
@@ -322,7 +322,7 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixeli
     )
 
     fit_linear = al.FitInterferometer(
-        dataset=interferometer,
+        dataset=dataset,
         tracer=tracer_linear,
         settings_pixelization=al.SettingsPixelization(use_border=False),
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
@@ -347,13 +347,13 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixeli
     )
     assert fit_linear.figure_of_merit == pytest.approx(-29.20551989, 1.0e-4)
 
-    lens_galaxy_image = lens_galaxy.image_2d_from(grid=interferometer.grid)
+    lens_galaxy_image = lens_galaxy.image_2d_from(grid=dataset.grid)
 
     assert fit_linear.galaxy_model_image_dict[lens_galaxy_linear] == pytest.approx(
         lens_galaxy_image, 1.0e-2
     )
 
-    traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=interferometer.grid)
+    traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=dataset.grid)
 
     source_galaxy_image = source_galaxy.image_2d_from(grid=traced_grid_2d_list[1])
 

@@ -120,7 +120,7 @@ code below shows how to setup and fit a lens model to a dataset:
     """
     Load Imaging data of the strong lens from the dataset folder of the workspace.
     """
-    imaging = al.Imaging.from_fits(
+    dataset = al.Imaging.from_fits(
         data_path="/path/to/dataset/image.fits",
         noise_map_path="/path/to/dataset/noise_map.fits",
         psf_path="/path/to/dataset/psf.fits",
@@ -131,9 +131,9 @@ code below shows how to setup and fit a lens model to a dataset:
     Create a mask for the imaging data, which we setup as a 3.0" circle, and apply it.
     """
     mask = al.Mask2D.circular(
-        shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
+        shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
     )
-    imaging = imaging.apply_mask(mask=mask)
+    dataset = dataset.apply_mask(mask=mask)
 
     """
     We model the lens galaxy using an elliptical isothermal mass profile and
@@ -164,7 +164,7 @@ code below shows how to setup and fit a lens model to a dataset:
     We next set up the `Analysis`, which contains the `log likelihood function` that the
     non-linear search calls to fit the lens model to the data.
     """
-    analysis = al.AnalysisImaging(dataset=imaging)
+    analysis = al.AnalysisImaging(dataset=dataset)
 
     """
     To perform the model-fit we pass the model and analysis to the search's fit method. This will

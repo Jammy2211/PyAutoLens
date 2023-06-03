@@ -86,9 +86,9 @@ class SimulatorImaging(aa.SimulatorImaging):
             grid=grid, psf_shape_2d=self.psf.shape_native
         )
 
-        imaging = self.via_image_from(image=image.binned)
+        dataset = self.via_image_from(image=image.binned)
 
-        return imaging.trimmed_after_convolution_from(
+        return dataset.trimmed_after_convolution_from(
             kernel_shape=self.psf.shape_native
         )
 

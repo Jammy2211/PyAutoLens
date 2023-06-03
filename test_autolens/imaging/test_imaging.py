@@ -27,17 +27,17 @@ class TestSimulatorImaging:
             add_poisson_noise=False,
         )
 
-        imaging = simulator.via_tracer_from(tracer=tracer, grid=grid)
+        dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
         imaging_via_image = simulator.via_image_from(
             image=tracer.image_2d_from(grid=grid)
         )
 
-        assert imaging.shape_native == (20, 20)
-        assert imaging.image.native[0, 0] != imaging_via_image.image.native[0, 0]
-        assert imaging.image.native[10, 10] == imaging_via_image.image.native[10, 10]
-        assert (imaging.psf == imaging_via_image.psf).all()
-        assert (imaging.noise_map == imaging_via_image.noise_map).all()
+        assert dataset.shape_native == (20, 20)
+        assert dataset.data.native[0, 0] != imaging_via_image.image.native[0, 0]
+        assert dataset.data.native[10, 10] == imaging_via_image.image.native[10, 10]
+        assert (dataset.psf == imaging_via_image.psf).all()
+        assert (dataset.noise_map == imaging_via_image.noise_map).all()
 
     def test__via_deflections_and_galaxies_from__same_as_calculation_using_tracer(self):
 
@@ -60,7 +60,7 @@ class TestSimulatorImaging:
             add_poisson_noise=False,
         )
 
-        imaging = simulator.via_deflections_and_galaxies_from(
+        dataset = simulator.via_deflections_and_galaxies_from(
             deflections=tracer.deflections_yx_2d_from(grid=grid),
             galaxies=[source_galaxy],
         )
@@ -69,10 +69,10 @@ class TestSimulatorImaging:
             image=tracer.image_2d_from(grid=grid)
         )
 
-        assert imaging.shape_native == (20, 20)
-        assert (imaging.image.native == imaging_via_image.image.native).all()
-        assert (imaging.psf == imaging_via_image.psf).all()
-        assert (imaging.noise_map == imaging_via_image.noise_map).all()
+        assert dataset.shape_native == (20, 20)
+        assert (dataset.data.native == imaging_via_image.image.native).all()
+        assert (dataset.psf == imaging_via_image.psf).all()
+        assert (dataset.noise_map == imaging_via_image.noise_map).all()
 
     def test__simulate_imaging_from_lens__source_galaxy__compare_to_imaging(self):
 
@@ -106,7 +106,7 @@ class TestSimulatorImaging:
             noise_seed=1,
         )
 
-        imaging = simulator.via_galaxies_from(
+        dataset = simulator.via_galaxies_from(
             galaxies=[lens_galaxy, source_galaxy], grid=grid
         )
 
@@ -116,7 +116,7 @@ class TestSimulatorImaging:
             image=tracer.image_2d_from(grid=grid)
         )
 
-        assert imaging.shape_native == (11, 11)
-        assert (imaging.image.native == imaging_via_image.image.native).all()
-        assert (imaging.psf == imaging_via_image.psf).all()
-        assert (imaging.noise_map == imaging_via_image.noise_map).all()
+        assert dataset.shape_native == (11, 11)
+        assert (dataset.data.native == imaging_via_image.image.native).all()
+        assert (dataset.psf == imaging_via_image.psf).all()
+        assert (dataset.noise_map == imaging_via_image.noise_map).all()

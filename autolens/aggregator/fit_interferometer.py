@@ -17,7 +17,7 @@ def _fit_interferometer_from(
     fit: af.Fit,
     galaxies: List[ag.Galaxy],
     real_space_mask: Optional[aa.Mask2D] = None,
-    settings_interferometer: aa.SettingsInterferometer = None,
+    settings_dataset: aa.SettingsInterferometer = None,
     settings_pixelization: aa.SettingsPixelization = None,
     settings_inversion: aa.SettingsInversion = None,
     use_preloaded_grid: bool = True,
@@ -41,10 +41,10 @@ def _fit_interferometer_from(
     FitInterferometer
         The fit to the interferometer dataset computed via an instance of galaxies.
     """
-    interferometer = _interferometer_from(
+    dataset = _interferometer_from(
         fit=fit,
         real_space_mask=real_space_mask,
-        settings_interferometer=settings_interferometer,
+        settings_dataset=settings_dataset,
     )
     tracer = _tracer_from(fit=fit, galaxies=galaxies)
 
@@ -62,7 +62,7 @@ def _fit_interferometer_from(
             preloads = Preloads(sparse_image_plane_grid_pg_list=sparse_grids_of_planes)
 
     return FitInterferometer(
-        dataset=interferometer,
+        dataset=dataset,
         tracer=tracer,
         settings_pixelization=settings_pixelization,
         settings_inversion=settings_inversion,
@@ -74,7 +74,7 @@ class FitInterferometerAgg(AbstractAgg):
     def __init__(
         self,
         aggregator: af.Aggregator,
-        settings_interferometer: Optional[aa.SettingsInterferometer] = None,
+        settings_dataset: Optional[aa.SettingsInterferometer] = None,
         settings_pixelization: Optional[aa.SettingsPixelization] = None,
         settings_inversion: Optional[aa.SettingsInversion] = None,
         use_preloaded_grid: bool = True,
@@ -86,7 +86,7 @@ class FitInterferometerAgg(AbstractAgg):
         """
         super().__init__(aggregator=aggregator)
 
-        self.settings_interferometer = settings_interferometer
+        self.settings_dataset = settings_dataset
         self.settings_pixelization = settings_pixelization
         self.settings_inversion = settings_inversion
         self.use_preloaded_grid = use_preloaded_grid
@@ -112,7 +112,7 @@ class FitInterferometerAgg(AbstractAgg):
         return _fit_interferometer_from(
             fit=fit,
             galaxies=galaxies,
-            settings_interferometer=self.settings_interferometer,
+            settings_dataset=self.settings_dataset,
             settings_pixelization=self.settings_pixelization,
             settings_inversion=self.settings_inversion,
             use_preloaded_grid=self.use_preloaded_grid,

@@ -201,15 +201,15 @@ class Visualizer(AgVisualizer):
 
         mat_plot_2d = self.mat_plot_2d_from(subfolders="adapt")
 
-        hyper_plotter = aplt.AdaptPlotter(
+        adapt_plotter = aplt.AdaptPlotter(
             mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
         )
 
         if should_plot("model_image"):
-            hyper_plotter.figure_adapt_model_image(adapt_model_image=adapt_model_image)
+            adapt_plotter.figure_adapt_model_image(adapt_model_image=adapt_model_image)
 
         if should_plot("images_of_galaxies"):
-            hyper_plotter.subplot_adapt_images_of_galaxies(
+            adapt_plotter.subplot_adapt_images_of_galaxies(
                 adapt_galaxy_image_path_dict=adapt_galaxy_image_path_dict
             )
 
@@ -239,13 +239,13 @@ class Visualizer(AgVisualizer):
 
         mat_plot_2d = self.mat_plot_2d_from(subfolders="adapt")
 
-        hyper_plotter = aplt.AdaptPlotter(
+        adapt_plotter = aplt.AdaptPlotter(
             mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
         )
 
         if hasattr(tracer, "contribution_map_list"):
             if should_plot("contribution_map_list"):
-                hyper_plotter.subplot_contribution_map_list(
+                adapt_plotter.subplot_contribution_map_list(
                     contribution_map_list_list=tracer.contribution_map_list
                 )
 

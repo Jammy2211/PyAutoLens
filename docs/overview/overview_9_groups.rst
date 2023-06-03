@@ -27,7 +27,7 @@ model and reduces the computational run-time of the model-fit.
         file_path=path.join(dataset_path, "point_dict.json")
     )
 
-    point_solver = al.PointSolver(grid=grid_2d, pixel_scale_precision=0.025)
+    point_solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
 
 Model via JSON
 --------------

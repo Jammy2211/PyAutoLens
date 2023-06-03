@@ -35,11 +35,11 @@ units to arc-seconds):
 
 .. code-block:: python
 
-    grid_2d = al.Grid2D.uniform(
+    grid = al.Grid2D.uniform(
         shape_native=(50, 50), pixel_scales=0.05
     )
-    grid_2d_plotter = aplt.Grid2DPlotter(grid=grid_2d)
-    grid_2d_plotter.figure_2d()
+    grid_plotter = aplt.Grid2DPlotter(grid=grid)
+    grid_plotter.figure_2d()
 
 This is what our ``Grid2D`` looks like:
 
@@ -71,14 +71,14 @@ image of the ``LightProfile``:
 
 .. code-block:: python
 
-    image_2d = sersic_light_profile.image_2d_from(grid=grid_2d)
+    image = sersic_light_profile.image_2d_from(grid=grid)
 
 The **PyAutoLens** plot module provides methods for plotting objects and their properties, like the ``LightProfile``'s image.
 
 .. code-block:: python
 
     light_profile_plotter = aplt.LightProfilePlotter(
-        light_profile=sersic_light_profile, grid=grid_2d
+        light_profile=sersic_light_profile, grid=grid
     )
     light_profile_plotter.figures_2d(image=True)
 
@@ -105,12 +105,12 @@ potential and deflection angles using the Cartesian grid:
         einstein_radius=1.6,
     )
 
-    convergence = isothermal_mass_profile.convergence_2d_from(grid=grid_2d)
-    potential = isothermal_mass_profile.potential_2d_from(grid=grid_2d)
-    deflections = isothermal_mass_profile.deflections_yx_2d_from(grid=grid_2d)
+    convergence = isothermal_mass_profile.convergence_2d_from(grid=grid)
+    potential = isothermal_mass_profile.potential_2d_from(grid=grid)
+    deflections = isothermal_mass_profile.deflections_yx_2d_from(grid=grid)
 
     mass_profile_plotter = aplt.MassProfilePlotter(
-        mass_profile=isothermal_mass_profile, grid=grid_2d
+        mass_profile=isothermal_mass_profile, grid=grid
     )
     mass_profile_plotter.figures_2d(
         convergence=True, potential=True, deflections_y=True, deflections_x=True
@@ -175,9 +175,9 @@ the source appears as a multiply imaged and strongly lensed Einstein ring.
 
 .. code-block:: python
 
-    image_2d = tracer.image_2d_from(grid=grid_2d)
+    image = tracer.image_2d_from(grid=grid)
 
-    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid_2d)
+    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
     tracer_plotter.figures_2d(image=True)
 
 This makes the image below, where the source's light appears as a multiply imaged and strongly lensed Einstein ring.
@@ -244,7 +244,7 @@ dark matter, where the stellar mass using a ``LightMassProfile`` representing bo
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy_0, lens_galaxy_1, source_galaxy])
 
-    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid_2d)
+    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
     tracer_plotter.figures_2d(image=True)
 
 This is what the lens looks like:

@@ -535,12 +535,12 @@ def test__light_profile_snr__signal_to_noise_via_simulator_correct():
         background_sky_level=background_sky_level,
     )
 
-    imaging = simulator.via_tracer_from(tracer=tracer, grid=grid)
+    dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
-    assert 8.0 < imaging.signal_to_noise_map.native[0, 1] < 12.0
-    assert 8.0 < imaging.signal_to_noise_map.native[1, 0] < 12.0
-    assert 8.0 < imaging.signal_to_noise_map.native[1, 2] < 12.0
-    assert 8.0 < imaging.signal_to_noise_map.native[2, 1] < 12.0
+    assert 8.0 < dataset.signal_to_noise_map.native[0, 1] < 12.0
+    assert 8.0 < dataset.signal_to_noise_map.native[1, 0] < 12.0
+    assert 8.0 < dataset.signal_to_noise_map.native[1, 2] < 12.0
+    assert 8.0 < dataset.signal_to_noise_map.native[2, 1] < 12.0
 
 
 ### Mass Profiles ###

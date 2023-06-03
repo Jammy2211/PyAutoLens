@@ -91,7 +91,7 @@ The penalty term is created and passed to an ``Analysis`` object as follows:
     positions_likelihood = al.PositionsLHPenalty(positions=positions, threshold=0.3)
 
     analysis = al.AnalysisImaging(
-        dataset=imaging, positions_likelihood=positions_likelihood
+        dataset=dataset, positions_likelihood=positions_likelihood
     )
 
 The threshold of 0.5" is large. For an accurate lens model we would anticipate the positions trace within < 0.01" of
@@ -112,7 +112,7 @@ guessing and rejecting mass models.
     positions_likelihood = al.PositionsLHResample(positions=positions, threshold=0.3)
 
     analysis = al.AnalysisImaging(
-        dataset=imaging, positions_likelihood=positions_likelihood
+        dataset=dataset, positions_likelihood=positions_likelihood
     )
 
 Auto Position Updates
@@ -168,7 +168,7 @@ This is often used to set up new ``Analysis`` objects with a positions penalty c
 .. code-block:: python
 
     analysis_2 = al.AnalysisImaging(
-        dataset=imaging,
+        dataset=dataset,
         positions_likelihood=result_1.positions_likelihood_from(
             factor=3.0, minimum_threshold=0.2
         ),

@@ -18,13 +18,13 @@ def test__fit_quantities_are_output(
     fit_imaging_x2_plane_7x7, include_2d_all, plot_path, plot_patch
 ):
 
-    fit_imaging_plotter = aplt.FitImagingPlotter(
+    fit_plotter = aplt.FitImagingPlotter(
         fit=fit_imaging_x2_plane_7x7,
         include_2d=include_2d_all,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    fit_imaging_plotter.figures_2d(
+    fit_plotter.figures_2d(
         data=True,
         noise_map=True,
         signal_to_noise_map=True,
@@ -44,7 +44,7 @@ def test__fit_quantities_are_output(
 
     plot_patch.paths = []
 
-    fit_imaging_plotter.figures_2d(
+    fit_plotter.figures_2d(
         data=True,
         noise_map=False,
         signal_to_noise_map=False,
@@ -65,13 +65,13 @@ def test__figures_of_plane(
     fit_imaging_x2_plane_7x7, include_2d_all, plot_path, plot_patch
 ):
 
-    fit_imaging_plotter = aplt.FitImagingPlotter(
+    fit_plotter = aplt.FitImagingPlotter(
         fit=fit_imaging_x2_plane_7x7,
         include_2d=include_2d_all,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    fit_imaging_plotter.figures_2d_of_planes(
+    fit_plotter.figures_2d_of_planes(
         subtracted_image=True, model_image=True, plane_image=True
     )
 
@@ -84,7 +84,7 @@ def test__figures_of_plane(
 
     plot_patch.paths = []
 
-    fit_imaging_plotter.figures_2d_of_planes(
+    fit_plotter.figures_2d_of_planes(
         subtracted_image=True, model_image=True, plane_index=0, plane_image=True
     )
 
@@ -102,13 +102,13 @@ def test_subplot_fit_is_output(
     fit_imaging_x2_plane_7x7, include_2d_all, plot_path, plot_patch
 ):
 
-    fit_imaging_plotter = aplt.FitImagingPlotter(
+    fit_plotter = aplt.FitImagingPlotter(
         fit=fit_imaging_x2_plane_7x7,
         include_2d=include_2d_all,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )
 
-    fit_imaging_plotter.subplot_fit()
+    fit_plotter.subplot_fit()
     assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
 
 
@@ -116,20 +116,20 @@ def test__subplot_of_planes(
     fit_imaging_x2_plane_7x7, include_2d_all, plot_path, plot_patch
 ):
 
-    fit_imaging_plotter = aplt.FitImagingPlotter(
+    fit_plotter = aplt.FitImagingPlotter(
         fit=fit_imaging_x2_plane_7x7,
         include_2d=include_2d_all,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )
 
-    fit_imaging_plotter.subplot_of_planes()
+    fit_plotter.subplot_of_planes()
 
     assert path.join(plot_path, "subplot_of_plane_0.png") in plot_patch.paths
     assert path.join(plot_path, "subplot_of_plane_1.png") in plot_patch.paths
 
     plot_patch.paths = []
 
-    fit_imaging_plotter.subplot_of_planes(plane_index=0)
+    fit_plotter.subplot_of_planes(plane_index=0)
 
     assert path.join(plot_path, "subplot_of_plane_0.png") in plot_patch.paths
     assert path.join(plot_path, "subplot_of_plane_1.png") not in plot_patch.paths

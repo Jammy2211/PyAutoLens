@@ -152,7 +152,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
     @property
     def grid(self) -> aa.type.Grid2DLike:
-        return self.imaging.grid
+        return self.dataset.grid
 
     @property
     def galaxy_model_image_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
@@ -170,8 +170,8 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         """
         galaxy_blurred_image_2d_dict = self.tracer.galaxy_blurred_image_2d_dict_from(
             grid=self.grid,
-            convolver=self.imaging.convolver,
-            blurring_grid=self.imaging.blurring_grid,
+            convolver=self.dataset.convolver,
+            blurring_grid=self.dataset.blurring_grid,
         )
 
         galaxy_linear_obj_image_dict = self.galaxy_linear_obj_data_dict_from(
@@ -254,7 +254,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             exc.raise_linear_light_profile_in_unmasked()
 
         return self.tracer.unmasked_blurred_image_2d_from(
-            grid=self.grid, psf=self.imaging.psf
+            grid=self.grid, psf=self.dataset.psf
         )
 
     @property
@@ -270,7 +270,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             exc.raise_linear_light_profile_in_unmasked()
 
         return self.tracer.unmasked_blurred_image_2d_list_from(
-            grid=self.grid, psf=self.imaging.psf
+            grid=self.grid, psf=self.dataset.psf
         )
 
     @property
@@ -316,7 +316,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         )
 
         return FitImaging(
-            dataset=self.imaging,
+            dataset=self.dataset,
             tracer=self.tracer,
             settings_pixelization=self.settings_pixelization,
             settings_inversion=settings_inversion,

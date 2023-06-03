@@ -40,11 +40,11 @@ class VisualizerImaging(Visualizer):
 
         mat_plot_2d = self.mat_plot_2d_from(subfolders=subfolders)
 
-        fit_imaging_plotter = FitImagingPlotter(
+        fit_plotter = FitImagingPlotter(
             fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
         )
 
-        fit_imaging_plotter.figures_2d(
+        fit_plotter.figures_2d(
             data=should_plot("data"),
             noise_map=should_plot("noise_map"),
             signal_to_noise_map=should_plot("signal_to_noise_map"),
@@ -54,17 +54,17 @@ class VisualizerImaging(Visualizer):
             normalized_residual_map=should_plot("normalized_residual_map"),
         )
 
-        fit_imaging_plotter.figures_2d_of_planes(
+        fit_plotter.figures_2d_of_planes(
             subtracted_image=should_plot("subtracted_images_of_planes"),
             model_image=should_plot("model_images_of_planes"),
             plane_image=should_plot("plane_images_of_planes"),
         )
 
         if should_plot("subplot_fit"):
-            fit_imaging_plotter.subplot_fit()
+            fit_plotter.subplot_fit()
 
         if should_plot("subplot_of_planes"):
-            fit_imaging_plotter.subplot_of_planes()
+            fit_plotter.subplot_of_planes()
 
         if not during_analysis and should_plot("all_at_end_png"):
 
@@ -72,11 +72,11 @@ class VisualizerImaging(Visualizer):
                 subfolders=path.join("fit_dataset", "end"),
             )
 
-            fit_imaging_plotter = FitImagingPlotter(
+            fit_plotter = FitImagingPlotter(
                 fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
             )
 
-            fit_imaging_plotter.figures_2d(
+            fit_plotter.figures_2d(
                 data=True,
                 noise_map=True,
                 signal_to_noise_map=True,
@@ -86,7 +86,7 @@ class VisualizerImaging(Visualizer):
                 chi_squared_map=True,
             )
 
-            fit_imaging_plotter.figures_2d_of_planes(
+            fit_plotter.figures_2d_of_planes(
                 subtracted_image=True, model_image=True, plane_image=True
             )
 
@@ -96,11 +96,11 @@ class VisualizerImaging(Visualizer):
                 subfolders=path.join("fit_dataset", "fits"), format="fits"
             )
 
-            fit_imaging_plotter = FitImagingPlotter(
+            fit_plotter = FitImagingPlotter(
                 fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
             )
 
-            fit_imaging_plotter.figures_2d(
+            fit_plotter.figures_2d(
                 data=True,
                 noise_map=True,
                 signal_to_noise_map=True,
@@ -110,6 +110,6 @@ class VisualizerImaging(Visualizer):
                 chi_squared_map=True,
             )
 
-            fit_imaging_plotter.figures_2d_of_planes(
+            fit_plotter.figures_2d_of_planes(
                 subtracted_image=True, model_image=True, interpolate_to_uniform=True
             )

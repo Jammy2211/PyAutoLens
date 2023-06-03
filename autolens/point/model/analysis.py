@@ -61,7 +61,7 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
         self.point_dict = point_dict
 
         self.solver = solver
-        self.imaging = imaging
+        self.dataset = imaging
 
     def log_likelihood_function(self, instance):
         """
@@ -75,7 +75,7 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
         Returns
         -------
         fit : Fit
-            A fractional value indicating how well this model fit and the model masked_imaging itself
+            A fractional value indicating how well this model fit and the model masked_dataset itself
         """
         try:
             fit = self.fit_positions_for(instance=instance)

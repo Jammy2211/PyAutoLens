@@ -35,7 +35,7 @@ a ``PointSolver``, incase we wish to perform image-plane fits.
 
 .. code-block:: python
 
-    point_solver = al.PointSolver(grid=grid_2d, pixel_scale_precision=0.025)
+    point_solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
 
 Lens Model
 ----------

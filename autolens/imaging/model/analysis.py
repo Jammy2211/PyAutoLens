@@ -260,10 +260,10 @@ class AnalysisImaging(AnalysisDataset):
         )
         fit.figure_of_merit
 
-        info_dict["image_pixels"] = self.imaging.grid.sub_shape_slim
-        info_dict["sub_size_light_profiles"] = self.imaging.grid.sub_size
-        info_dict["sub_size_pixelization"] = self.imaging.grid_pixelization.sub_size
-        info_dict["psf_shape_2d"] = self.imaging.psf.shape_native
+        info_dict["image_pixels"] = self.dataset.grid.sub_shape_slim
+        info_dict["sub_size_light_profiles"] = self.dataset.grid.sub_size
+        info_dict["sub_size_pixelization"] = self.dataset.grid_pixelization.sub_size
+        info_dict["psf_shape_2d"] = self.dataset.psf.shape_native
 
         if fit.inversion is not None:
             info_dict["source_pixels"] = len(fit.inversion.reconstruction)
@@ -375,11 +375,11 @@ class AnalysisImaging(AnalysisDataset):
 
         visualizer = VisualizerImaging(visualize_path=paths.image_path)
 
-        visualizer.visualize_imaging(imaging=self.imaging)
+        visualizer.visualize_imaging(dataset=self.dataset)
 
         if self.positions_likelihood is not None:
             visualizer.visualize_image_with_positions(
-                image=self.imaging.image,
+                image=self.dataset.image,
                 positions=self.positions_likelihood.positions,
             )
 

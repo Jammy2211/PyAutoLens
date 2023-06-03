@@ -25,11 +25,11 @@ def test__perfect_fit__chi_squared_0():
     )
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    imaging = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
 
-    imaging = imaging.via_tracer_from(tracer=tracer, grid=grid)
-    imaging.noise_map = al.Array2D.ones(
-        shape_native=imaging.image.shape_native, pixel_scales=0.2
+    dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
+    dataset.noise_map = al.Array2D.ones(
+        shape_native=dataset.data.shape_native, pixel_scales=0.2
     )
 
     file_path = path.join(
@@ -46,13 +46,13 @@ def test__perfect_fit__chi_squared_0():
     if path.exists(file_path) is False:
         os.makedirs(file_path)
 
-    imaging.output_to_fits(
+    dataset.output_to_fits(
         data_path=path.join(file_path, "data.fits"),
         noise_map_path=path.join(file_path, "noise_map.fits"),
         psf_path=path.join(file_path, "psf.fits"),
     )
 
-    imaging = al.Imaging.from_fits(
+    dataset = al.Imaging.from_fits(
         data_path=path.join(file_path, "data.fits"),
         noise_map_path=path.join(file_path, "noise_map.fits"),
         psf_path=path.join(file_path, "psf.fits"),
@@ -60,17 +60,17 @@ def test__perfect_fit__chi_squared_0():
     )
 
     mask = al.Mask2D.circular(
-        shape_native=imaging.image.shape_native, pixel_scales=0.2, radius=0.8
+        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=0.8
     )
 
-    masked_imaging = imaging.apply_mask(mask=mask)
-    masked_imaging = masked_imaging.apply_settings(
+    masked_dataset = dataset.apply_mask(mask=mask)
+    masked_dataset = masked_dataset.apply_settings(
         settings=al.SettingsImaging(sub_size=1)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = al.FitImaging(dataset=masked_imaging, tracer=tracer)
+    fit = al.FitImaging(dataset=masked_dataset, tracer=tracer)
 
     assert fit.chi_squared == pytest.approx(0.0, 1e-4)
 
@@ -109,15 +109,15 @@ def test__simulate_imaging_data_and_fit__known_likelihood():
 
     simulator = al.SimulatorImaging(exposure_time=300.0, psf=psf, noise_seed=1)
 
-    imaging = simulator.via_tracer_from(tracer=tracer, grid=grid)
+    dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
     mask = al.Mask2D.circular(
-        shape_native=imaging.image.shape_native, pixel_scales=0.2, radius=2.0
+        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=2.0
     )
 
-    masked_imaging = imaging.apply_mask(mask=mask)
+    masked_dataset = dataset.apply_mask(mask=mask)
 
-    fit = al.FitImaging(dataset=masked_imaging, tracer=tracer)
+    fit = al.FitImaging(dataset=masked_dataset, tracer=tracer)
 
     assert fit.figure_of_merit == pytest.approx(526.353910, 1.0e-2)
 
@@ -142,25 +142,25 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
     )
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    imaging = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
 
-    imaging = imaging.via_tracer_from(tracer=tracer, grid=grid)
-    imaging.noise_map = al.Array2D.ones(
-        shape_native=imaging.image.shape_native, pixel_scales=0.2
+    dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
+    dataset.noise_map = al.Array2D.ones(
+        shape_native=dataset.data.shape_native, pixel_scales=0.2
     )
 
     mask = al.Mask2D.circular(
-        shape_native=imaging.image.shape_native, pixel_scales=0.2, radius=0.8
+        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=0.8
     )
 
-    masked_imaging = imaging.apply_mask(mask=mask)
-    masked_imaging = masked_imaging.apply_settings(
+    masked_dataset = dataset.apply_mask(mask=mask)
+    masked_dataset = masked_dataset.apply_settings(
         settings=al.SettingsImaging(sub_size=1)
     )
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = al.FitImaging(dataset=masked_imaging, tracer=tracer)
+    fit = al.FitImaging(dataset=masked_dataset, tracer=tracer)
 
     lens_galaxy_linear = al.Galaxy(
         redshift=0.5,
@@ -178,7 +178,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
     )
 
     fit_linear = al.FitImaging(
-        dataset=masked_imaging,
+        dataset=masked_dataset,
         tracer=tracer_linear,
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
@@ -199,9 +199,9 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
     assert fit_linear.figure_of_merit == pytest.approx(-45.02798, 1.0e-4)
 
     lens_galaxy_image = lens_galaxy.blurred_image_2d_from(
-        grid=masked_imaging.grid,
-        convolver=masked_imaging.convolver,
-        blurring_grid=masked_imaging.blurring_grid,
+        grid=masked_dataset.grid,
+        convolver=masked_dataset.convolver,
+        blurring_grid=masked_dataset.blurring_grid,
     )
 
     assert fit_linear.galaxy_model_image_dict[lens_galaxy_linear] == pytest.approx(
@@ -211,14 +211,14 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
         lens_galaxy_image, 1.0e-4
     )
 
-    traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=masked_imaging.grid)
+    traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=masked_dataset.grid)
     traced_blurring_grid_2d_list = tracer.traced_grid_2d_list_from(
-        grid=masked_imaging.blurring_grid
+        grid=masked_dataset.blurring_grid
     )
 
     source_galaxy_image = source_galaxy.blurred_image_2d_from(
         grid=traced_grid_2d_list[1],
-        convolver=masked_imaging.convolver,
+        convolver=masked_dataset.convolver,
         blurring_grid=traced_blurring_grid_2d_list[1],
     )
 
@@ -251,19 +251,19 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     )
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    imaging = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
 
-    imaging = imaging.via_tracer_from(tracer=tracer, grid=grid)
-    imaging.noise_map = al.Array2D.ones(
-        shape_native=imaging.image.shape_native, pixel_scales=0.2
+    dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
+    dataset.noise_map = al.Array2D.ones(
+        shape_native=dataset.data.shape_native, pixel_scales=0.2
     )
 
     mask = al.Mask2D.circular(
-        shape_native=imaging.image.shape_native, pixel_scales=0.2, radius=0.8
+        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=0.8
     )
 
-    masked_imaging = imaging.apply_mask(mask=mask)
-    masked_imaging = masked_imaging.apply_settings(
+    masked_dataset = dataset.apply_mask(mask=mask)
+    masked_dataset = masked_dataset.apply_settings(
         settings=al.SettingsImaging(sub_size=1)
     )
 
@@ -285,7 +285,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     )
 
     fit_linear = al.FitImaging(
-        dataset=masked_imaging,
+        dataset=masked_dataset,
         tracer=tracer_linear,
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
@@ -310,9 +310,9 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     assert fit_linear.figure_of_merit == pytest.approx(-84.04875317, 1.0e-4)
 
     lens_galaxy_image = lens_galaxy.blurred_image_2d_from(
-        grid=masked_imaging.grid,
-        convolver=masked_imaging.convolver,
-        blurring_grid=masked_imaging.blurring_grid,
+        grid=masked_dataset.grid,
+        convolver=masked_dataset.convolver,
+        blurring_grid=masked_dataset.blurring_grid,
     )
 
     assert fit_linear.galaxy_model_image_dict[lens_galaxy_linear] == pytest.approx(
@@ -331,7 +331,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     )
 
     fit_linear = al.FitImaging(
-        dataset=masked_imaging,
+        dataset=masked_dataset,
         tracer=tracer_linear,
         settings_inversion=al.SettingsInversion(
             use_w_tilde=False,
@@ -390,18 +390,18 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
     source_1 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(centre=(0.3, 0.3)))
     tracer = al.Tracer.from_galaxies(galaxies=[lens_0, lens_1, lens_2, source_0, source_1])
 
-    imaging = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
 
-    imaging = imaging.via_tracer_from(tracer=tracer, grid=grid)
-    imaging.noise_map = al.Array2D.ones(
-        shape_native=imaging.image.shape_native, pixel_scales=0.2
+    dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
+    dataset.noise_map = al.Array2D.ones(
+        shape_native=dataset.data.shape_native, pixel_scales=0.2
     )
     mask = al.Mask2D.circular(
-        shape_native=imaging.image.shape_native, pixel_scales=0.2, radius=0.8
+        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=0.8
     )
 
-    masked_imaging = imaging.apply_mask(mask=mask)
-    masked_imaging = masked_imaging.apply_settings(
+    masked_dataset = dataset.apply_mask(mask=mask)
+    masked_dataset = masked_dataset.apply_settings(
         settings=al.SettingsImaging(sub_size=2)
     )
 
@@ -442,13 +442,13 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
     )
 
     fit_mapping = al.FitImaging(
-        dataset=masked_imaging,
+        dataset=masked_dataset,
         tracer=tracer,
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     fit_w_tilde = al.FitImaging(
-        dataset=masked_imaging,
+        dataset=masked_dataset,
         tracer=tracer,
         settings_inversion=al.SettingsInversion(use_w_tilde=True),
     )
@@ -469,7 +469,7 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
     )
 
     fit_w_tilde = al.FitImaging(
-        dataset=masked_imaging,
+        dataset=masked_dataset,
         tracer=tracer,
         preloads=preloads,
         settings_inversion=al.SettingsInversion(use_w_tilde=True),
@@ -490,7 +490,7 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
     )
 
     fit_w_tilde = al.FitImaging(
-        dataset=masked_imaging,
+        dataset=masked_dataset,
         tracer=tracer,
         preloads=preloads,
         settings_inversion=al.SettingsInversion(use_w_tilde=True),

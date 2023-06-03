@@ -426,11 +426,11 @@ class AnalysisInterferometer(AnalysisDataset):
 
         visualizer = VisualizerInterferometer(visualize_path=paths.image_path)
 
-        visualizer.visualize_interferometer(interferometer=self.interferometer)
+        visualizer.visualize_interferometer(dataset=self.interferometer)
 
         if self.positions_likelihood is not None:
             visualizer.visualize_image_with_positions(
-                image=self.interferometer.dirty_image,
+                image=self.dataset.dirty_image,
                 positions=self.positions_likelihood.positions,
             )
 

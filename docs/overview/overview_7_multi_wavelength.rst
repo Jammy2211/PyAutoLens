@@ -40,7 +40,7 @@ We simply use lists of the classes we are now familiar with, for example the ``I
 
 .. code-block:: python
 
-    imaging_list = [
+    dataset_list = [
         al.Imaging.from_fits(
             image_path=path.join(dataset_path, f"{color}_image.fits"),
             psf_path=path.join(dataset_path, f"{color}_psf.fits"),
@@ -75,9 +75,9 @@ necessary, but provides a more reliable analysis.
 
     mask_2d_list = [
         al.Mask2D.circular(
-            shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0
+            shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
         )
-        for imaging in imaging_list
+        for dataset in dataset_list
     ]
 
 Analysis
@@ -87,7 +87,7 @@ We create a list of ``AnalysisImaging`` objects for every dataset.
 
 .. code-block:: python
 
-    analysis_list = [al.AnalysisImaging(dataset=imaging) for imaging in imaging_list]
+    analysis_list = [al.AnalysisImaging(dataset=dataset) for dataset in dataset_list]
 
 We now introduce the key new aspect to the **PyAutoLens** multi-dataset API, which is critical to fitting multiple
 datasets simultaneously.
@@ -231,13 +231,13 @@ to a dataset observed in the g and I bands.
 
     analysis_list = []
 
-    for wavelength, imaging in zip(wavelength_list, imaging_list):
+    for wavelength, imaging in zip(wavelength_list, dataset_list):
 
         lens_intensity = (wavelength * lens_m) + lens_c
         source_intensity = (wavelength * source_m) + source_c
 
         analysis_list.append(
-            al.AnalysisImaging(dataset=imaging).with_model(
+            al.AnalysisImaging(dataset=dataset).with_model(
                 model.replacing(
                     {
                         model.galaxies.lens.bulge.intensity: lens_intensity,

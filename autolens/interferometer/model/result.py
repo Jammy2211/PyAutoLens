@@ -68,7 +68,7 @@ class ResultInterferometer(ResultDataset):
         """
         The real space mask used by this model-fit.
         """
-        return self.max_log_likelihood_fit.interferometer.real_space_mask
+        return self.max_log_likelihood_fit.dataset.real_space_mask
 
     def visibilities_for_galaxy(self, galaxy: ag.Galaxy) -> np.ndarray:
         """

@@ -21,10 +21,10 @@ To fit this image with an ``Inversion``, we first mask the ``Imaging`` object:
 .. code-block:: python
 
    mask = al.Mask2D.circular(
-      shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.6
+      shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.6
     )
 
-   imaging = imaging.apply_mask(mask=mask_2d)
+   dataset = dataset.apply_mask(mask=mask_2d)
 
 To reconstruct the source on a pixel-grid, called a mesh, we simply pass it the ``Mesh`` class we want to reconstruct its
 light on.
@@ -53,7 +53,7 @@ the lensed source's light using the ``Inversion``:
 
     tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
-    fit = al.FitImaging(dataset=imaging, tracer=tracer)
+    fit = al.FitImaging(dataset=dataset, tracer=tracer)
 
 Here is what our reconstructed source galaxy looks like:
 

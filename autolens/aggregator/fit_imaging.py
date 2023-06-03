@@ -15,7 +15,7 @@ from autolens.aggregator.tracer import _tracer_from
 def _fit_imaging_from(
     fit: af.Fit,
     galaxies: List[ag.Galaxy],
-    settings_imaging: aa.SettingsImaging = None,
+    settings_dataset: aa.SettingsImaging = None,
     settings_pixelization: aa.SettingsPixelization = None,
     settings_inversion: aa.SettingsInversion = None,
     use_preloaded_grid: bool = True,
@@ -40,7 +40,7 @@ def _fit_imaging_from(
         The fit to the imaging dataset computed via an instance of galaxies.
     """
 
-    imaging = _imaging_from(fit=fit, settings_imaging=settings_imaging)
+    dataset = _imaging_from(fit=fit, settings_dataset=settings_dataset)
 
     tracer = _tracer_from(fit=fit, galaxies=galaxies)
 
@@ -67,7 +67,7 @@ def _fit_imaging_from(
                     ]
 
     return FitImaging(
-        dataset=imaging,
+        dataset=dataset,
         tracer=tracer,
         settings_pixelization=settings_pixelization,
         settings_inversion=settings_inversion,
@@ -79,7 +79,7 @@ class FitImagingAgg(AbstractAgg):
     def __init__(
         self,
         aggregator: af.Aggregator,
-        settings_imaging: Optional[aa.SettingsImaging] = None,
+        settings_dataset: Optional[aa.SettingsImaging] = None,
         settings_pixelization: Optional[aa.SettingsPixelization] = None,
         settings_inversion: Optional[aa.SettingsInversion] = None,
         use_preloaded_grid: bool = True,
@@ -90,7 +90,7 @@ class FitImagingAgg(AbstractAgg):
         """
         super().__init__(aggregator=aggregator)
 
-        self.settings_imaging = settings_imaging
+        self.settings_dataset = settings_dataset
         self.settings_pixelization = settings_pixelization
         self.settings_inversion = settings_inversion
         self.use_preloaded_grid = use_preloaded_grid
@@ -116,7 +116,7 @@ class FitImagingAgg(AbstractAgg):
         return _fit_imaging_from(
             fit=fit,
             galaxies=galaxies,
-            settings_imaging=self.settings_imaging,
+            settings_dataset=self.settings_dataset,
             settings_pixelization=self.settings_pixelization,
             settings_inversion=self.settings_inversion,
             use_preloaded_grid=self.use_preloaded_grid,

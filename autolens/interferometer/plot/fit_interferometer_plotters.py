@@ -87,7 +87,7 @@ class FitInterferometerPlotter(Plotter):
         )
 
     def get_visuals_2d_real_space(self) -> aplt.Visuals2D:
-        return self.get_2d.via_mask_from(mask=self.fit.interferometer.real_space_mask)
+        return self.get_2d.via_mask_from(mask=self.fit.dataset.real_space_mask)
 
     @property
     def tracer(self) -> Tracer:
@@ -100,7 +100,7 @@ class FitInterferometerPlotter(Plotter):
         """
         return TracerPlotter(
             tracer=self.tracer,
-            grid=self.fit.interferometer.grid,
+            grid=self.fit.dataset.grid,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.visuals_2d,
             include_2d=self.include_2d,
@@ -135,7 +135,7 @@ class FitInterferometerPlotter(Plotter):
         data: bool = False,
         noise_map: bool = False,
         signal_to_noise_map: bool = False,
-        model_visibilities: bool = False,
+        model_data: bool = False,
         residual_map_real: bool = False,
         residual_map_imag: bool = False,
         normalized_residual_map_real: bool = False,
@@ -165,7 +165,7 @@ class FitInterferometerPlotter(Plotter):
             Whether to make a 2D plot (via `scatter`) of the noise-map.
         signal_to_noise_map
             Whether to make a 2D plot (via `scatter`) of the signal-to-noise-map.
-        model_visibilities
+        model_data
             Whether to make a 2D plot (via `scatter`) of the model visibility data.
         residual_map_real
             Whether to make a 1D plot (via `plot`) of the real component of the residual map.
@@ -198,7 +198,7 @@ class FitInterferometerPlotter(Plotter):
             data=data,
             noise_map=noise_map,
             signal_to_noise_map=signal_to_noise_map,
-            model_visibilities=model_visibilities,
+            model_data=model_data,
             residual_map_real=residual_map_real,
             residual_map_imag=residual_map_imag,
             normalized_residual_map_real=normalized_residual_map_real,
