@@ -1,3 +1,7 @@
+.. image:: https://github.com/Jammy2211/PyAutoLogo/blob/main/gifs/pyautolens.gif?raw=true
+  :width: 900
+
+
 What is PyAutoLens?
 ===================
 
@@ -8,7 +12,6 @@ The software comes distributed with the **HowToLens** Jupyter notebook lectures,
 previous knowledge about what gravitational lensing is and teach a new user theory and statistics required to analyse
 strong lens data. Checkout `the howtolens section of
 the readthedocs <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_.
-
 
 An overview of **PyAutoLens**'s core features can be found in
 the `overview section of the readthedocs <https://pyautolens.readthedocs.io/en/latest/overview/lensing.html>`_.
@@ -70,7 +73,9 @@ below shows this in action:
     The lens galaxy has an elliptical isothermal mass profile and is at redshift 0.5.
     """
     mass = al.mp.Isothermal(
-        centre=(0.0, 0.0), ell_comps=(0.1, 0.05), einstein_radius=1.6
+        centre=(0.0, 0.0),
+        ell_comps=(0.1, 0.05),
+        einstein_radius=1.6
     )
 
     lens_galaxy = al.Galaxy(redshift=0.5, mass=mass)
@@ -93,7 +98,7 @@ below shows this in action:
     """
     tracer = al.Tracer.from_galaxies(
         galaxies=[lens_galaxy, source_galaxy],
-        cosmology: al.cosmo.Planck15()
+        cosmology = al.cosmo.Planck15()
     )
 
     """
@@ -131,7 +136,9 @@ code below shows how to setup and fit a lens model to a dataset:
     Create a mask for the imaging data, which we setup as a 3.0" circle, and apply it.
     """
     mask = al.Mask2D.circular(
-        shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
+        shape_native=dataset.shape_native,
+        pixel_scales=dataset.pixel_scales,
+        radius=3.0
     )
     dataset = dataset.apply_mask(mask=mask)
 

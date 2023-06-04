@@ -37,10 +37,8 @@ PyAutoLens: Open-Source Strong Lensing
   :width: 900
 
 When two or more galaxies are aligned perfectly down our line-of-sight, the background galaxy appears multiple times.
-This is called strong gravitational lensing and **PyAutoLens** makes it simple to model strong gravitational lenses,
-like this one:
 
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/files/imageaxis.png?raw=true
+This is called strong gravitational lensing and **PyAutoLens** makes it simple to model strong gravitational lenses.
 
 Getting Started
 ---------------
@@ -114,7 +112,7 @@ lens ``Galaxy`` with an ``Isothermal`` ``MassProfile`` lenses a background sourc
     tracer_plotter.figures_2d(image=True)
 
 With **PyAutoLens**, you can begin modeling a lens in minutes. The example below demonstrates a simple analysis which
-fits the lens galaxy's mass with an ``Isothermal`` and the source galaxy's light with an ``Sersic``.
+fits the lens galaxy's mass with an ``Isothermal`` and the source galaxy's light with a ``Sersic``.
 
 .. code-block:: python
 
