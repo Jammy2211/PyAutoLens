@@ -16,8 +16,6 @@ class MockResult(af.m.MockResult):
         max_log_likelihood_mesh_grids_of_planes=None,
         adapt_galaxy_image_path_dict=None,
         adapt_model_image=None,
-        adapt_galaxy_visibilities_path_dict=None,
-        adapt_model_visibilities=None,
         pixelization=None,
         positions=None,
         updated_positions=None,
@@ -39,8 +37,6 @@ class MockResult(af.m.MockResult):
         self.mask = mask
         self.adapt_galaxy_image_path_dict = adapt_galaxy_image_path_dict
         self.adapt_model_image = adapt_model_image
-        self.adapt_galaxy_visibilities_path_dict = adapt_galaxy_visibilities_path_dict
-        self.adapt_model_visibilities = adapt_model_visibilities
         self.model_image = model_image
         self.unmasked_model_image = model_image
         self.max_log_likelihood_tracer = max_log_likelihood_tracer
@@ -77,8 +73,6 @@ class MockResults(af.ResultsCollection):
         max_log_likelihood_tracer=None,
         adapt_galaxy_image_path_dict=None,
         adapt_model_image=None,
-        adapt_galaxy_visibilities_path_dict=None,
-        adapt_model_visibilities=None,
         pixelization=None,
         positions=None,
         updated_positions=None,
@@ -103,8 +97,6 @@ class MockResults(af.ResultsCollection):
             max_log_likelihood_tracer=max_log_likelihood_tracer,
             adapt_galaxy_image_path_dict=adapt_galaxy_image_path_dict,
             adapt_model_image=adapt_model_image,
-            adapt_galaxy_visibilities_path_dict=adapt_galaxy_visibilities_path_dict,
-            adapt_model_visibilities=adapt_model_visibilities,
             pixelization=pixelization,
             positions=positions,
             updated_positions=updated_positions,
