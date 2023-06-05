@@ -93,13 +93,6 @@ class AnalysisInterferometer(AnalysisDataset):
             raise_inversion_positions_likelihood_exception=raise_inversion_positions_likelihood_exception,
         )
 
-        if self.adapt_result is not None:
-            self.set_adapt_dataset(result=self.adapt_result)
-
-        else:
-            self.adapt_galaxy_visibilities_path_dict = None
-            self.adapt_model_visibilities = None
-
     @property
     def interferometer(self):
         return self.dataset
@@ -132,72 +125,6 @@ class AnalysisInterferometer(AnalysisDataset):
             self.set_preloads(paths=paths, model=model)
 
         return self
-
-    def set_adapt_dataset(self, result):
-        """
-        Using a the result of a previous model-fit, set the adapt-dataset for this analysis. This is used to adapt
-        aspects of the model (e.g. the pixelization, regularization scheme) to the properties of the dataset being
-        fitted.
-
-        This passes the adapt image and galaxy images of the previous fit. These represent where different
-        galaxies in the dataset are located and thus allows the fit to adapt different aspects of the model to
-        different galaxies in the data.
-
-        It also passes hyper visibilities, which are used to scale the noise of a visibility dataset.
-
-        Parameters
-        ----------
-        result
-            The result of a previous model-fit which contains the model image and model galaxy images of a fit to
-            the dataset, which set up the hyper dataset. These are used by certain classes for adapting the analysis
-            to the properties of the dataset.
-        """
-        super().set_adapt_dataset(result=result)
-
-        self.adapt_model_visibilities = result.adapt_model_visibilities
-        self.adapt_galaxy_visibilities_path_dict = (
-            result.adapt_galaxy_visibilities_path_dict
-        )
-
-    def instance_with_associated_hyper_visibilities_from(
-        self, instance: af.ModelInstance
-    ) -> af.ModelInstance:
-        """
-        Using the model visibilities that were set up as the hyper dataset, associate the galaxy images of that result
-        with the galaxies in this model fit.
-
-        Association is performed based on galaxy names, whereby if the name of a galaxy in this search matches the
-        full-path name of galaxies in the hyper dataset the galaxy image is passed.
-
-        If the galaxy collection has a different name then an association is not made.
-
-        For example, `galaxies.lens` will match with:
-            `galaxies.lens`
-        but not with:
-            `galaxies.source`
-
-        Parameters
-        ----------
-        instance
-            An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
-            via a non-linear search), which has 0 or more galaxies in its tree.
-
-        Returns
-        -------
-        instance
-           The input instance with visibilities associated with galaxies where possible.
-        """
-        if self.adapt_galaxy_visibilities_path_dict is not None:
-            for galaxy_path, galaxy in instance.path_instance_tuples_for_class(
-                ag.Galaxy
-            ):
-                if galaxy_path in self.adapt_galaxy_visibilities_path_dict:
-                    galaxy.adapt_model_visibilities = self.adapt_model_visibilities
-                    galaxy.adapt_galaxy_visibilities = (
-                        self.adapt_galaxy_visibilities_path_dict[galaxy_path]
-                    )
-
-        return instance
 
     def log_likelihood_function(self, instance):
         """

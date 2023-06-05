@@ -183,9 +183,6 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
           space.
         - The visibilities of all linear objects (e.g. linear light profiles / pixelizations), where the visibilities
           are solved for first via the inversion.
-
-        For modeling, this dictionary is used to set up the `hyper_visibilities` that adapt certain pixelizations to the
-        data being fitted.
         """
         galaxy_model_visibilities_dict = self.tracer.galaxy_visibilities_dict_from(
             grid=self.dataset.grid, transformer=self.dataset.transformer
