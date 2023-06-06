@@ -58,9 +58,6 @@ label:
     weight_power: W_{\rm p}
   superscript:
     ExternalShear: ext
-    HyperBackgroundNoise: hyper
-    HyperGalaxy: hyper
-    HyperImageSky: hyper
     InputDeflections: defl
     Pixelization: pix
     Point: point

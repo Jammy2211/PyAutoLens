@@ -199,7 +199,7 @@ class ResultDataset(Result):
         """
         An instance of a `Tracer` corresponding to the maximum log likelihood model inferred by the non-linear search.
 
-        If a dataset is fitted the hyper images of the hyper dataset must first be associated with each galaxy.
+        If a dataset is fitted the adapt images of the adapt dataset must first be associated with each galaxy.
         """
         instance = self.analysis.instance_with_associated_adapt_images_from(
             instance=self.instance_copy
@@ -269,7 +269,7 @@ class ResultDataset(Result):
         Given an instance of a `Galaxy` object, return an image of the galaxy via the maximum log likelihood fit.
 
         This image is extracted via the fit's `galaxy_model_image_dict`, which is necessary to make it straight
-        forward to use the image as hyper-images.
+        forward to use the image as adapt-images.
 
         Parameters
         ----------

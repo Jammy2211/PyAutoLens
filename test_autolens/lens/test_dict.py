@@ -33,7 +33,6 @@ def make_tracer_dict():
             {
                 "galaxies": [
                     {
-                        "hyper_galaxy": None,
                         "mass": {
                             "centre": (0.0, 0.0),
                             "einstein_radius": 1.6,
@@ -60,7 +59,6 @@ def make_tracer_dict():
                             "intensity": 0.05,
                             "type": "autogalaxy.profiles.light.standard.Exponential",
                         },
-                        "hyper_galaxy": None,
                         "pixelization": None,
                         "redshift": 1.0,
                         "regularization": None,
