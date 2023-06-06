@@ -55,7 +55,7 @@ The priors of parameters of every component of a mdoel, which is fitted to data,
    LogUniformPrior
    LogGaussianPrior
 
-Hyper
+Adapt
 -----
 
 .. currentmodule:: autolens

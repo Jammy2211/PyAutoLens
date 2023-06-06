@@ -177,16 +177,16 @@ class Visualizer(AgVisualizer):
         adapt_model_image: aa.Array2D,
     ):
         """
-        Visualizes the hyper-images and hyper dataset inferred by a model-fit.
+        Visualizes the adapt-images and adapt dataset inferred by a model-fit.
 
-        Images are output to the `image` folder of the `visualize_path` in a subfolder called `hyper`. When
+        Images are output to the `image` folder of the `visualize_path` in a subfolder called `adapt`. When
         used with a non-linear search the `visualize_path` points to the search's results folder.
 
-        Visualization includes individual images of attributes of the hyper dataset (e.g. the adapt image) and
+        Visualization includes individual images of attributes of the adapt dataset (e.g. the adapt image) and
         a subplot of all galaxy images on the same figure.
 
         The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
-        [hyper] header.
+        [adapt] header.
 
         Parameters
         ----------
@@ -215,18 +215,18 @@ class Visualizer(AgVisualizer):
 
     def visualize_contribution_maps(self, tracer: Tracer):
         """
-        Visualizes the contribution maps that are used for hyper features which adapt a model to the dataset it is
+        Visualizes the contribution maps that are used for adapt features which adapt a model to the dataset it is
         fitting.
 
-        Images are output to the `image` folder of the `visualize_path` in a subfolder called `hyper`. When
+        Images are output to the `image` folder of the `visualize_path` in a subfolder called `adapt`. When
         used with a non-linear search the `visualize_path` points to the search's results folder and this function
         visualizes the maximum log likelihood contribution maps inferred by the search so far.
 
-        Visualization includes individual images of attributes of the hyper dataset (e.g. the contribution map of
+        Visualization includes individual images of attributes of the adapt dataset (e.g. the contribution map of
         each galaxy) and a subplot of all contribution maps on the same figure.
 
         The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
-        [hyper] header.
+        [adapt] header.
 
         Parameters
         ----------

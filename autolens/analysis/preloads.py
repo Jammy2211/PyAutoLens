@@ -145,7 +145,7 @@ class Preloads(ag.Preloads):
         traced grids if the grids of both fits are the same. This preloaded grid is only used when constructing an
         inversion, because the `blurred_image` preload accounts for light profiles.
 
-        The preload is typically used in adapt searches, where the mass model is fixed and the hyper-parameters are
+        The preload is typically used in adapt searches, where the mass model is fixed and the adapt-parameters are
         varied.
 
         Parameters
@@ -193,7 +193,7 @@ class Preloads(ag.Preloads):
         reloads the grid if the grids of both fits are the same.
 
         The preload is typically used thoughout search chaining pipelines which use inversions, as it is common to
-        for the pixelization's parameters to only vary in the hyper-searches.
+        for the pixelization's parameters to only vary in the adapt-searches.
 
         Parameters
         ----------

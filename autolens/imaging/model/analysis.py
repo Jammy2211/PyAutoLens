@@ -71,7 +71,7 @@ class AnalysisImaging(AnalysisDataset):
 
         For this analysis class, this function performs the following steps:
 
-        1) If the analysis has a hyper dataset, associated the model galaxy images of this dataset to the galaxies in
+        1) If the analysis has a adapt dataset, associated the model galaxy images of this dataset to the galaxies in
            the model instance.
 
         2) Extract attributes which model aspects of the data reductions, like the scaling the background sky
@@ -406,7 +406,7 @@ class AnalysisImaging(AnalysisDataset):
         - Images of the best-fit `FitImaging`, including the model-image, residuals and chi-squared of its fit to
           the imaging data.
 
-        - The hyper-images of the model-fit showing how the galaxies are used to represent different galaxies in
+        - The adapt-images of the model-fit showing how the galaxies are used to represent different galaxies in
           the dataset.
 
         The images output by this function are customized using the file `config/visualize/plots.ini`.
@@ -516,7 +516,7 @@ class AnalysisImaging(AnalysisDataset):
         - The settings associated with the inversion.
         - The settings associated with the pixelization.
         - The Cosmology.
-        - The hyper dataset's model image and galaxy images, if used.
+        - The adapt dataset's model image and galaxy images, if used.
 
         This function also outputs attributes specific to an imaging dataset:
 

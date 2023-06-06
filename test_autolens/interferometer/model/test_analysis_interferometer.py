@@ -115,7 +115,7 @@ def test__positions__likelihood_overwrite__changes_likelihood(
     assert analysis_log_likelihood == pytest.approx(-22048700567.590656, 1.0e-4)
 
 
-def test__sets_up_hyper_galaxy_images(interferometer_7):
+def test__sets_up_adapt_galaxy_images(interferometer_7):
     adapt_galaxy_image_path_dict = {
         ("galaxies", "lens"): al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
         ("galaxies", "source"): al.Array2D.full(
@@ -146,18 +146,19 @@ def test__sets_up_hyper_galaxy_images(interferometer_7):
 
     assert (analysis.adapt_model_image.native == 3.0 * np.ones((3, 3))).all()
 
+
 def test__stochastic_log_likelihoods_for_instance(interferometer_7):
-    lens_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
-    lens_hyper_image[4] = 10.0
-    source_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
-    source_hyper_image[4] = 10.0
+    lens_adapt_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
+    lens_adapt_image[4] = 10.0
+    source_adapt_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
+    source_adapt_image[4] = 10.0
     adapt_model_image = al.Array2D.full(
         fill_value=0.5, shape_native=(3, 3), pixel_scales=0.1
     )
 
     adapt_galaxy_image_path_dict = {
-        ("galaxies", "lens"): lens_hyper_image,
-        ("galaxies", "source"): source_hyper_image,
+        ("galaxies", "lens"): lens_adapt_image,
+        ("galaxies", "source"): source_adapt_image,
     }
 
     result = al.m.MockResult(

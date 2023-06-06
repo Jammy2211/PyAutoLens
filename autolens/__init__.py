@@ -107,7 +107,6 @@ from .point.point_solver import PointSolver
 from .quantity.fit_quantity import FitQuantity
 from .quantity.model.analysis import AnalysisQuantity
 from . import exc
-from . import legacy
 from . import mock as m
 from . import util
 

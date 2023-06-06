@@ -155,17 +155,17 @@ def test__sets_up_adapt_galaxy_images__froms(masked_imaging_7x7):
 
 def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
 
-    lens_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
-    lens_hyper_image[4] = 10.0
-    source_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
-    source_hyper_image[4] = 10.0
+    lens_adapt_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
+    lens_adapt_image[4] = 10.0
+    source_adapt_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
+    source_adapt_image[4] = 10.0
     adapt_model_image = al.Array2D.full(
         fill_value=0.5, shape_native=(3, 3), pixel_scales=0.1
     )
 
     adapt_galaxy_image_path_dict = {
-        ("galaxies", "lens"): lens_hyper_image,
-        ("galaxies", "source"): source_hyper_image,
+        ("galaxies", "lens"): lens_adapt_image,
+        ("galaxies", "source"): source_adapt_image,
     }
 
     result = al.m.MockResult(

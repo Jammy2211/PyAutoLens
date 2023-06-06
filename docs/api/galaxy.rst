@@ -30,16 +30,3 @@ The ``Redshift`` object does not need to be used for general **PyAutoGalaxy** us
    :recursive:
 
     Redshift
-
-By using a ``HyperGalaxy``, the noise-map value in the regions of the image that the galaxy is located
-are increased.
-
-This prevents over-fitting regions of the data where the model does not provide a good fit
-(e.g. where a high chi-squared is inferred).
-
-.. autosummary::
-   :toctree: _autosummary
-   :template: custom-class-template.rst
-   :recursive:
-
-   HyperGalaxy
