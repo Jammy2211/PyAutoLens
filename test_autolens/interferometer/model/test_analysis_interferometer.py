@@ -146,6 +146,7 @@ def test__sets_up_hyper_galaxy_images(interferometer_7):
 
     assert (analysis.adapt_model_image.native == 3.0 * np.ones((3, 3))).all()
 
+
 def test__stochastic_log_likelihoods_for_instance(interferometer_7):
     lens_hyper_image = al.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1)
     lens_hyper_image[4] = 10.0
