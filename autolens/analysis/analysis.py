@@ -67,13 +67,13 @@ class AnalysisLensing:
     def tracer_via_instance_from(
         self,
         instance: af.ModelInstance,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
         tracer_cls=Tracer,
     ) -> Tracer:
         """
         Create a `Tracer` from the galaxies contained in a model instance.
 
-        If PyAutoFit's profiling tools are used with the analsyis class, this function may receive a `profiling_dict`
+        If PyAutoFit's profiling tools are used with the analsyis class, this function may receive a `run_time_dict`
         which times how long each set of the model-fit takes to perform.
 
         Parameters
@@ -107,7 +107,7 @@ class AnalysisLensing:
             return Tracer.from_galaxies(
                 galaxies=instance.galaxies + instance.clumps,
                 cosmology=self.cosmology,
-                profiling_dict=profiling_dict,
+                run_time_dict=run_time_dict,
             )
 
         if hasattr(instance, "cosmology"):
@@ -118,7 +118,7 @@ class AnalysisLensing:
         return tracer_cls.from_galaxies(
             galaxies=instance.galaxies,
             cosmology=cosmology,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
     def log_likelihood_positions_overwrite_from(

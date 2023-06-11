@@ -25,11 +25,11 @@ class FitPointDataset:
         point_dataset: PointDataset,
         tracer: Tracer,
         point_solver: PointSolver,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         self.point_dataset = point_dataset
         self.tracer = tracer
-        self.profiling_dict = profiling_dict
+        self.run_time_dict = run_time_dict
 
         point_profile = tracer.extract_profile(profile_name=point_dataset.name)
 

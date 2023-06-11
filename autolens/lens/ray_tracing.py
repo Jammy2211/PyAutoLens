@@ -18,7 +18,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         self,
         planes,
         cosmology: ag.cosmo.LensingCosmology,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         Ray-tracer for a lens system with any number of planes.
@@ -48,20 +48,20 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
         self.plane_redshifts = [plane.redshift for plane in planes]
         self.cosmology = cosmology
 
-        self.profiling_dict = profiling_dict
+        self.run_time_dict = run_time_dict
 
     @classmethod
     def from_galaxies(
         cls,
         galaxies,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         planes = ag.util.plane.planes_via_galaxies_from(
-            galaxies=galaxies, profiling_dict=profiling_dict
+            galaxies=galaxies, run_time_dict=run_time_dict
         )
 
-        return cls(planes=planes, cosmology=cosmology, profiling_dict=profiling_dict)
+        return cls(planes=planes, cosmology=cosmology, run_time_dict=run_time_dict)
 
     @classmethod
     def sliced_tracer_from(

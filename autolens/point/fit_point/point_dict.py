@@ -13,7 +13,7 @@ class FitPointDict(dict):
         point_dict: PointDict,
         tracer: Tracer,
         point_solver: PointSolver,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         A fit to a point source dataset, which is stored as a dictionary containing the fit of every data point in a
@@ -43,10 +43,10 @@ class FitPointDict(dict):
                 point_dataset=point_dataset,
                 tracer=tracer,
                 point_solver=point_solver,
-                profiling_dict=profiling_dict,
+                run_time_dict=run_time_dict,
             )
 
-        self.profiling_dict = profiling_dict
+        self.run_time_dict = run_time_dict
 
     @property
     def model_obj(self):

@@ -23,7 +23,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         settings_pixelization: aa.SettingsPixelization = aa.SettingsPixelization(),
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads: Preloads = Preloads(),
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         Fits an imaging dataset using a `Tracer` object.
@@ -63,12 +63,12 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         preloads
             Contains preloaded calculations (e.g. linear algebra matrices) which can skip certain calculations in
             the fit.
-        profiling_dict
+        run_time_dict
             A dictionary which if passed to the fit records how long fucntion calls which have the `profile_func`
             decorator take to run.
         """
 
-        super().__init__(dataset=dataset, profiling_dict=profiling_dict)
+        super().__init__(dataset=dataset, run_time_dict=run_time_dict)
         AbstractFitInversion.__init__(
             self=self, model_obj=tracer, settings_inversion=settings_inversion
         )
@@ -307,7 +307,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         -------
         A new fit which has used new preloads input into this function but the same dataset, tracer and other settings.
         """
-        profiling_dict = {} if self.profiling_dict is not None else None
+        run_time_dict = {} if self.run_time_dict is not None else None
 
         settings_inversion = (
             self.settings_inversion
@@ -321,5 +321,5 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             settings_pixelization=self.settings_pixelization,
             settings_inversion=settings_inversion,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )

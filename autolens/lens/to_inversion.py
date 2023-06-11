@@ -21,7 +21,7 @@ class TracerToInversion(ag.AbstractToInversion):
         settings_pixelization=aa.SettingsPixelization(),
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads=Preloads(),
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         self.tracer = tracer
 
@@ -33,7 +33,7 @@ class TracerToInversion(ag.AbstractToInversion):
             settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
     @property
@@ -235,7 +235,7 @@ class TracerToInversion(ag.AbstractToInversion):
             linear_obj_list=self.linear_obj_list,
             settings=self.settings_inversion,
             preloads=self.preloads,
-            profiling_dict=self.tracer.profiling_dict,
+            run_time_dict=self.tracer.run_time_dict,
         )
 
         inversion.linear_obj_galaxy_dict = self.linear_obj_galaxy_dict

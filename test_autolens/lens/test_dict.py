@@ -45,7 +45,7 @@ def make_tracer_dict():
                         "type": "autogalaxy.galaxy.galaxy.Galaxy",
                     }
                 ],
-                "profiling_dict": None,
+                "run_time_dict": None,
                 "redshift": 0.5,
                 "type": "autogalaxy.plane.plane.Plane",
             },
@@ -65,12 +65,12 @@ def make_tracer_dict():
                         "type": "autogalaxy.galaxy.galaxy.Galaxy",
                     }
                 ],
-                "profiling_dict": None,
+                "run_time_dict": None,
                 "redshift": 1.0,
                 "type": "autogalaxy.plane.plane.Plane",
             },
         ],
-        "profiling_dict": None,
+        "run_time_dict": None,
         "type": "autolens.lens.ray_tracing.Tracer",
     }
 
