@@ -38,15 +38,15 @@ We use the `ImagingPlotter` to plot the image, noise-map and psf (point-spread f
 Here's what our ``data``, ``noise_map`` and ``psf`` look like:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/0_data.png?raw=true
-  :width: 600
+  :width: 400
   :alt: Alternative text
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/1_noise_map.png?raw=true
-  :width: 600
+  :width: 400
   :alt: Alternative text
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/2_psf.png?raw=true
-  :width: 600
+  :width: 400
   :alt: Alternative text
 
 The ``ImagingPlotter`` also contains a subplot which plots all these properties simultaneously.
