@@ -1,3 +1,5 @@
+from typing import Dict, Optional
+
 from autolens.point.point_dataset import PointDict
 from autolens.point.point_solver import PointSolver
 from autolens.lens.ray_tracing import Tracer
@@ -7,7 +9,11 @@ from autolens.point.fit_point.point_dataset import FitPointDataset
 
 class FitPointDict(dict):
     def __init__(
-        self, point_dict: PointDict, tracer: Tracer, point_solver: PointSolver
+        self,
+        point_dict: PointDict,
+        tracer: Tracer,
+        point_solver: PointSolver,
+        profiling_dict: Optional[Dict] = None,
     ):
         """
         A fit to a point source dataset, which is stored as a dictionary containing the fit of every data point in a
@@ -34,9 +40,22 @@ class FitPointDict(dict):
 
         for key, point_dataset in point_dict.items():
             self[key] = FitPointDataset(
-                point_dataset=point_dataset, tracer=tracer, point_solver=point_solver
+                point_dataset=point_dataset,
+                tracer=tracer,
+                point_solver=point_solver,
+                profiling_dict=profiling_dict,
             )
+
+        self.profiling_dict = profiling_dict
+
+    @property
+    def model_obj(self):
+        return self.tracer
 
     @property
     def log_likelihood(self) -> float:
         return sum(fit.log_likelihood for fit in self.values())
+
+    @property
+    def figure_of_merit(self) -> float:
+        return self.log_likelihood

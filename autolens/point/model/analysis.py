@@ -1,5 +1,9 @@
+from typing import Callable, Dict, Optional, Tuple
+
 import autofit as af
 import autogalaxy as ag
+
+from autogalaxy.analysis.analysis import Analysis as AgAnalysis
 
 from autolens.analysis.analysis import AnalysisLensing
 from autolens.analysis.visualizer import Visualizer
@@ -20,12 +24,12 @@ except ModuleNotFoundError:
     NumbaException = ValueError
 
 
-class AnalysisPoint(af.Analysis, AnalysisLensing):
+class AnalysisPoint(AgAnalysis, AnalysisLensing):
     def __init__(
         self,
         point_dict: PointDict,
         solver: PointSolver,
-        imaging=None,
+        dataset=None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_lens=SettingsLens(),
     ):
@@ -43,7 +47,7 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
             A dictionary containing the full point source dictionary that is used for model-fitting.
         solver
             The object which is used to determine the image-plane of source-plane positions of a model (via a `Tracer`).
-        imaging
+        dataset
             The imaging of the point-source dataset, which is not used for model-fitting but can be used for
             visualization.
         cosmology
@@ -52,7 +56,7 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
             Settings which control how the model-fit is performed.
         """
 
-        super().__init__(settings_lens=settings_lens, cosmology=cosmology)
+        super().__init__(cosmology=cosmology)
 
         AnalysisLensing.__init__(
             self=self, settings_lens=settings_lens, cosmology=cosmology
@@ -61,7 +65,11 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
         self.point_dict = point_dict
 
         self.solver = solver
-        self.dataset = imaging
+        self.dataset = dataset
+
+    @property
+    def fit_func(self) -> Callable:
+        return self.fit_positions_for
 
     def log_likelihood_function(self, instance):
         """
@@ -83,11 +91,18 @@ class AnalysisPoint(af.Analysis, AnalysisLensing):
         except (AttributeError, ValueError, TypeError, NumbaException) as e:
             raise exc.FitException from e
 
-    def fit_positions_for(self, instance):
-        tracer = self.tracer_via_instance_from(instance=instance)
+    def fit_positions_for(
+        self, instance, profiling_dict: Optional[Dict] = None
+    ) -> FitPointDict:
+        tracer = self.tracer_via_instance_from(
+            instance=instance, profiling_dict=profiling_dict
+        )
 
         return FitPointDict(
-            point_dict=self.point_dict, tracer=tracer, point_solver=self.solver
+            point_dict=self.point_dict,
+            tracer=tracer,
+            point_solver=self.solver,
+            profiling_dict=profiling_dict,
         )
 
     def visualize(self, paths, instance, during_analysis):

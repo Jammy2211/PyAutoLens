@@ -1,3 +1,5 @@
+from typing import Dict, Optional
+
 import autogalaxy as ag
 
 from autolens.point.point_dataset import PointDataset
@@ -19,9 +21,15 @@ except ModuleNotFoundError:
 
 class FitPointDataset:
     def __init__(
-        self, point_dataset: PointDataset, tracer: Tracer, point_solver: PointSolver
+        self,
+        point_dataset: PointDataset,
+        tracer: Tracer,
+        point_solver: PointSolver,
+        profiling_dict: Optional[Dict] = None,
     ):
         self.point_dataset = point_dataset
+        self.tracer = tracer
+        self.profiling_dict = profiling_dict
 
         point_profile = tracer.extract_profile(profile_name=point_dataset.name)
 
@@ -63,6 +71,10 @@ class FitPointDataset:
             self.flux = None
 
     @property
+    def model_obj(self):
+        return self.tracer
+
+    @property
     def log_likelihood(self) -> float:
         log_likelihood_positions = (
             self.positions.log_likelihood if self.positions is not None else 0.0
@@ -70,3 +82,7 @@ class FitPointDataset:
         log_likelihood_flux = self.flux.log_likelihood if self.flux is not None else 0.0
 
         return log_likelihood_positions + log_likelihood_flux
+
+    @property
+    def figure_of_merit(self) -> float:
+        return self.log_likelihood

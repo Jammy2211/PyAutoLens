@@ -18,6 +18,33 @@ performed in a very different way to ray-tracing a light profile. In this exampl
 `PositionSolver`, which does exactly this and thus makes the analysis of strong lensed quasars, supernovae and
 point-like source's possible in **PyAutoLens**!
 
+Source Plane Chi Squared
+------------------------
+
+This example performs point-source modeling using a source-plane chi-squared. This means the likelihood of a model
+is evaluated based on how close the multiple image positions it predicts trace to the centre of the point source
+in the source-plane.
+
+This is often regard as a less robust way to perform point-source modeling than an image-plane chi-squared, and it
+means that other information about the multiple images of the point source (e.g. their fluxes) cannot be used. On
+the plus side, it is much faster to perform modeling using a source-plane chi-squared.
+
+Visualization of point-source modeling results are also limited, as the feature is still in development.
+
+Image Plane Chi Squared (In Development)
+----------------------------------------
+
+An image-plane chi-squared is also available, however it is an in development feature with limitations. The main
+limitation is that the solver for the image-plane positions of a point-source in the source-plane is not robust. It
+often infers incorrect additional multiple image positions or fails to locate the correct ones.
+
+This is because I made the foolish decision to try and locate the positions by ray-tracing squares surrounding the
+image-plane positions to the source-plane and using a nearest neighbor based approach based on the Euclidean distance.
+This contrasts standard implementations elsewhere in the literature, which use a more robust approach based on ray
+tracing triangles to the source-plane and using whether the source-plane position lands within each triangle.
+
+This will one day be fixed, but we have so far not found time to do so.
+
 Lensed Point Source
 -------------------
 
@@ -74,7 +101,7 @@ Lets now treat this source as a point source, by setting up a source galaxy usin
 
 .. code-block:: python
 
-    point_source = al.ps.Point(centre=(0.07, 0.07))
+    point_source = al.ps.PointSourceChi(centre=(0.07, 0.07))
 
     source_galaxy = al.Galaxy(redshift=1.0, point_0=point_source)
 
