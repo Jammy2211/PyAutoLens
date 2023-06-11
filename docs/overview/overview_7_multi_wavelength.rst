@@ -10,7 +10,7 @@ This enables multi-wavelength lens modeling, where the color of the lens and sou
 
 Multi-wavelength lens modeling offers a number of advantages:
 
-- It provides a wealth of additional information to fit the lens model, especially if the source changes its appears across wavelength.
+- It provides a wealth of additional information to fit the lens model, especially if the source changes its appearance across wavelength.
 
 - It overcomes challenges associated with the lens and source galaxy emission blending with one another, as their brightness depends differently on wavelength.
 
@@ -40,6 +40,8 @@ We simply use lists of the classes we are now familiar with, for example the ``I
 
 .. code-block:: python
 
+    dataset_path = path.join("dataset", "multi", "imaging", "lens_sersic")
+
     dataset_list = [
         al.Imaging.from_fits(
             image_path=path.join(dataset_path, f"{color}_image.fits"),
@@ -52,9 +54,9 @@ We simply use lists of the classes we are now familiar with, for example the ``I
 
 Here is what our r-band and g-band observations of this lens system looks like.
 
-Now how in the r-band, the lens outshines the source, whereas in the g-band the source galaxy is more visible.
+In the r-band, the lens outshines the source, whereas in the g-band the source galaxy is more visible.
 
-The different variation of the colors of the lens and source across wavelength is a powerful tool for lensing modeling,
+The different variation of the colors of the lens and source across wavelength is a powerful tool for lens modeling,
 as it helps deblend the two objects.
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/r_image.png
@@ -65,8 +67,7 @@ as it helps deblend the two objects.
   :width: 400
   :alt: Alternative text
 
-The model-fit requires a ``Mask2D`` defining the regions of the image we fit the lens model to the data, which we define
-and use to set up the ``Imaging`` object that the lens model fits.
+We define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
 
 For multi-wavelength lens modeling, we use the same mask for every dataset whenever possible. This is not absolutely
 necessary, but provides a more reliable analysis.
@@ -79,6 +80,24 @@ necessary, but provides a more reliable analysis.
         )
         for dataset in dataset_list
     ]
+
+    dataset_list = [
+    dataset.apply_mask(mask=mask) for dataset, mask in zip(dataset_list, mask_list)
+]
+
+    for dataset in dataset_list:
+        dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
+        dataset_plotter.subplot_dataset()
+
+Here is how the masked datasets appear:
+
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/r_image.png
+  :width: 400
+  :alt: Alternative text
+
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/g_image.png
+  :width: 400
+  :alt: Alternative text
 
 Analysis
 --------
@@ -102,13 +121,6 @@ multi-wavelength imaging data, where:
 .. code-block:: python
 
     analysis = sum(analysis_list)
-
-We can parallelize the likelihood function of these analysis classes, whereby each evaluation is performed on a
-different CPU.
-
-.. code-block:: python
-
-    analysis.n_cores = 1
 
 
 Model
@@ -173,7 +185,7 @@ how the above API can be extended to add any number of additional free parameter
 Result
 ------
 
-The model-fit is performed as per usual.
+Fitting the model uses the same API we introduced in previous overviews.
 
 The result object returned by this model-fit is a list of ``Result`` objects, because we used a combined analysis.
 Each result corresponds to each analysis created above and is there the fit to each dataset at each wavelength.
@@ -194,6 +206,8 @@ different intensities.
             tracer=result.max_log_likelihood_tracer, grid=result.grid
         )
         tracer_plotter.subplot_tracer()
+
+Here is how these subplots appear:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/r_tracer.png
   :width: 400
@@ -231,7 +245,7 @@ to a dataset observed in the g and I bands.
 
     analysis_list = []
 
-    for wavelength, imaging in zip(wavelength_list, dataset_list):
+    for wavelength, dataset in zip(wavelength_list, dataset_list):
 
         lens_intensity = (wavelength * lens_m) + lens_c
         source_intensity = (wavelength * source_m) + source_c
@@ -270,11 +284,11 @@ script showing this in full).
 Below are mock strong lens images of a system observed at a green wavelength (g-band) and with an interferometer at
 sub millimeter wavelengths.
 
-A number of benefits are apparently if we combine the analysis of both datasets at both wavelengths:
+A number of benefits are apparent if we combine the analysis of both datasets at both wavelengths:
 
- - The lens galaxy is invisible at sub-mm wavelengths, making it straight-forward to infer a lens mass model by fitting the source at submm wavelengths.
+- The lens galaxy is invisible at sub-mm wavelengths, making it straight-forward to infer a lens mass model by fitting the source at submm wavelengths.
 
- - The source galaxy appears completely different in the g-band and at sub-millimeter wavelengths, providing a lot more information with which to constrain the lens galaxy mass model.
+- The source galaxy appears completely different in the g-band and at sub-millimeter wavelengths, providing a lot more information with which to constrain the lens galaxy mass model.
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/dirty_image.png
   :width: 400
@@ -283,6 +297,22 @@ A number of benefits are apparently if we combine the analysis of both datasets 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/g_image.png
   :width: 400
   :alt: Alternative text
+
+Linear Light Profiles
+---------------------
+
+The modeling overview example described linear light profiles, where the ``intensity`` parameters of all parametric
+components are solved via linear algebra every time the model is fitted using a process called an inversion.
+
+These profiles are particular powerful when combined with multi-wavelength datasets, because the linear algebra
+will solve for the ``intensity`` value in each individual dataset separately.
+
+This means that the ``intensity`` value of all of the galaxy light profiles in the model vary across the multi-wavelength
+datasets, but the dimensionality of the model does not increase as more datasets are fitted.
+
+A full example is given in the ``linear_light_profiles`` example:
+
+https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/multi/modeling/features/linear_light_profiles.ipynb
 
 Wrap-Up
 -------

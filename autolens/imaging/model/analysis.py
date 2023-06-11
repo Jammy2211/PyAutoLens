@@ -212,14 +212,14 @@ class AnalysisImaging(AnalysisDataset):
 
     def profile_log_likelihood_function(
         self, instance: af.ModelInstance, paths: Optional[af.DirectoryPaths] = None
-    ):
+    ) -> Dict:
         """
         This function is optionally called throughout a model-fit to profile the log likelihood function.
 
         All function calls inside the `log_likelihood_function` that are decorated with the `profile_func` are timed
         with their times stored in a dictionary called the `profiling_dict`.
 
-        An `info_dict` is also created which stores information no aspects of the model and dataset that dictate
+        An `info_dict` is also created which stores information on aspects of the model and dataset that dictate
         run times, so the profiled times can be interpreted with this context.
 
         The results of this profiling are then output to hard-disk in the `preloads` folder of the model-fit results,
@@ -265,7 +265,12 @@ class AnalysisImaging(AnalysisDataset):
         info_dict["sub_size_pixelization"] = self.dataset.grid_pixelization.sub_size
         info_dict["psf_shape_2d"] = self.dataset.psf.shape_native
 
-        if fit.inversion is not None:
+        if fit.tracer.has(cls=ag.Pixelization):
+
+            info_dict["use_w_tilde"] = fit.inversion.settings.use_w_tilde
+            info_dict["use_positive_only_solver"] = fit.inversion.settings.use_positive_only_solver
+            info_dict["force_edge_pixels_to_zeros"] = fit.inversion.settings.force_edge_pixels_to_zeros
+            info_dict["use_w_tilde_numpy"] = fit.inversion.settings.use_w_tilde_numpy
             info_dict["source_pixels"] = len(fit.inversion.reconstruction)
 
         if hasattr(fit.inversion, "w_tilde"):
@@ -286,7 +291,7 @@ class AnalysisImaging(AnalysisDataset):
             with open(path.join(paths.profile_path, "info_dict.json"), "w+") as f:
                 json.dump(info_dict, f, indent=4)
 
-        return profiling_dict
+        return profiling_dict, info_dict
 
     def stochastic_log_likelihoods_via_instance_from(self, instance: af.ModelInstance):
         """
@@ -379,7 +384,7 @@ class AnalysisImaging(AnalysisDataset):
 
         if self.positions_likelihood is not None:
             visualizer.visualize_image_with_positions(
-                image=self.dataset.image,
+                image=self.dataset.data,
                 positions=self.positions_likelihood.positions,
             )
 

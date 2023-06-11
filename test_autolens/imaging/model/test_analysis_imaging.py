@@ -243,7 +243,7 @@ def test__profile_log_likelihood_function(masked_imaging_7x7):
 
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
-    profiling_dict = analysis.profile_log_likelihood_function(instance=instance)
+    profiling_dict, info_dict = analysis.profile_log_likelihood_function(instance=instance)
 
     assert "regularization_term_0" in profiling_dict
     assert "log_det_regularization_matrix_term_0" in profiling_dict

@@ -235,12 +235,18 @@ class TracerPlotter(Plotter):
         for plane_index in plane_indexes:
             plane_plotter = self.plane_plotter_from(plane_index=plane_index)
 
+            if plane_index == 1:
+                source_plane_title = True
+            else:
+                source_plane_title = False
+
             if plane_image:
                 plane_plotter.figures_2d(
                     plane_image=True,
                     zoom_to_brightest=zoom_to_brightest,
                     title_suffix=f" Of Plane {plane_index}",
                     filename_suffix=f"_of_plane_{plane_index}",
+                    source_plane_title=source_plane_title,
                 )
 
             if plane_grid:
@@ -248,6 +254,7 @@ class TracerPlotter(Plotter):
                     plane_grid=True,
                     title_suffix=f" Of Plane {plane_index}",
                     filename_suffix=f"_of_plane_{plane_index}",
+                    source_plane_title=source_plane_title,
                 )
 
     def subplot(
