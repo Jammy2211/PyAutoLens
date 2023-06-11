@@ -23,6 +23,9 @@ baselines (i.e. higher resolution data) require higher resolution and larger mas
 
 .. code-block:: python
 
+    import autolens as al
+    import autolens.plot as aplt
+
     real_space_mask_2d = ag.Mask2D.circular(
         shape_native=(400, 400), pixel_scales=0.025, radius=3.0
     )

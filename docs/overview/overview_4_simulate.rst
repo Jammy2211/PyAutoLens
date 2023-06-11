@@ -16,6 +16,9 @@ and checkout the appropriate example!
 
 .. code-block:: python
 
+    import autolens as al
+    import autolens.plot as aplt
+
     grid = al.Grid2D.uniform(
         shape_native=(80, 80),
         pixel_scales=0.1,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
@@ -96,19 +99,19 @@ physical properties and for creating imaging datasets for a variety of telescope
 
 Below, we show what a strong lens looks like for different instruments.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_4_simulate/vro_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_4_simulate/data_vro.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_4_simulate/euclid_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_4_simulate/data_euclid.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_4_simulate/hst_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_4_simulate/data_hst.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_4_simulate/ao_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_4_simulate/data_ao.png
   :width: 400
   :alt: Alternative text
 

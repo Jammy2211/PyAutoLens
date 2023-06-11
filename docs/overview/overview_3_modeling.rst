@@ -13,7 +13,17 @@ Dataset
 In this example, we model Hubble Space Telescope imaging of a real strong lens system, with our goal to
 infer the lens and source galaxy light and mass models that fit the data well!
 
+This data has had the lens galaxy's light already subtracted from it, in order to make the lens modeling process
+faster for this example. Extending the example to include the lens light is simple and shown in other examples.
+
+The image of the data shows certain features which are not present in simulated lens data, for example noise-like
+features. These are common preprocessing steps performed on real data, which are described in the `data_preparation`
+section of the workspace.
+
 .. code-block:: python
+
+    import autolens as al
+    import autolens.plot as aplt
 
     dataset_name = "simple__no_lens_light"
     dataset_path = path.join("dataset", "slacs", "slacs2303+1422")
@@ -30,7 +40,7 @@ infer the lens and source galaxy light and mass models that fit the data well!
 
 Here is what the dataset looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/fitting/chi_squared_map.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3_modeling/0_subplot_dataset.png
   :width: 400
   :alt: Alternative text
 
@@ -50,7 +60,7 @@ source galaxy.
 
 Note how when we plot the ``Imaging`` below, the figure now zooms into the masked region.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/fitting/chi_squared_map.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3_modeling/1_subplot_dataset.png
   :width: 400
   :alt: Alternative text
 
@@ -79,8 +89,7 @@ they are instead determined by a fitting procedure.
 
 We will fit our strong lens data with two galaxies:
 
-- A lens galaxy with a `Sersic` light profile representing a bulge and an
-  `Isothermal` mass profile representing its mass.
+- A lens galaxy with an `Isothermal` mass profile representing its mass, whose centre is fixed to (0.0", 0.0").
 
 - A source galaxy with an `Exponential` light profile representing a disk.
 
@@ -90,15 +99,8 @@ The redshifts of the lens (z=0.155) and source(z=0.517) are fixed.
 
     # Lens:
 
-    bulge = af.Model(al.lp.Sersic)
     mass = af.Model(al.mp.Isothermal)
-
-    lens = af.Model(
-        al.Galaxy,
-        redshift=0.155,
-        bulge=bulge,
-        mass=mass
-    )
+    mass.centre = (0.0, 0.0)
 
     # Source:
 
@@ -118,7 +120,36 @@ This gives the following output:
 
 .. code-block:: bash
 
-    galaxies
+    Total Free Parameters = 3
+
+    model                                                 Galaxy (N=3)
+        mass                                              Isothermal (N=3)
+
+    redshift                                              0.155
+    mass
+        centre                                            (0.0, 0.0)
+        ell_comps
+            ell_comps_0                                   GaussianPrior [3], mean = 0.0, sigma = 0.3
+            ell_comps_1                                   GaussianPrior [4], mean = 0.0, sigma = 0.3
+        einstein_radius                                   UniformPrior [5], lower_limit = 0.0, upper_limit = 8.0
+
+
+
+    Total Free Parameters = 6
+
+    model                                                 Galaxy (N=6)
+        disk                                              Exponential (N=6)
+
+    redshift                                              0.517
+    disk
+        centre
+            centre_0                                      GaussianPrior [6], mean = 0.0, sigma = 0.3
+            centre_1                                      GaussianPrior [7], mean = 0.0, sigma = 0.3
+        ell_comps
+            ell_comps_0                                   GaussianPrior [8], mean = 0.0, sigma = 0.3
+            ell_comps_1                                   GaussianPrior [9], mean = 0.0, sigma = 0.3
+        intensity                                         LogUniformPrior [10], lower_limit = 1e-06, upper_limit = 1000000.0
+        effective_radius                                  UniformPrior [11], lower_limit = 0.0, upper_limit = 30.0
 
 We combine the lens and source model galaxies above into a `Collection`, which is the final lens model we will fit.
 
@@ -143,37 +174,35 @@ This gives the following output:
 
 .. code-block:: bash
 
-galaxies
-    lens
-        redshift                                 0.5
-        bulge
-            centre
-                centre_0                         GaussianPrior, mean = 0.0, sigma = 0.3
-                centre_1                         GaussianPrior, mean = 0.0, sigma = 0.3
-            ell_comps
-                ell_comps_0                      GaussianPrior, mean = 0.0, sigma = 0.5
-                ell_comps_1                      GaussianPrior, mean = 0.0, sigma = 0.5
-            intensity                            LogUniformPrior, lower_limit = 1e-06, upper_limit = 1000000.0
-            effective_radius                     UniformPrior, lower_limit = 0.0, upper_limit = 30.0
-        mass
-            centre
-                centre_0                         GaussianPrior, mean = 0.0, sigma = 0.1
-                centre_1                         GaussianPrior, mean = 0.0, sigma = 0.1
-            ell_comps
-                ell_comps_0                      GaussianPrior, mean = 0.0, sigma = 0.3
-                ell_comps_1                      GaussianPrior, mean = 0.0, sigma = 0.3
-            einstein_radius                      UniformPrior, lower_limit = 0.0, upper_limit = 8.0
-    source
-        redshift                                 1.0
-        disk
-            centre
-                centre_0                         GaussianPrior, mean = 0.0, sigma = 0.3
-                centre_1                         GaussianPrior, mean = 0.0, sigma = 0.3
-            ell_comps
-                ell_comps_0                      GaussianPrior, mean = 0.0, sigma = 0.5
-                ell_comps_1                      GaussianPrior, mean = 0.0, sigma = 0.5
-            intensity                            LogUniformPrior, lower_limit = 1e-06, upper_limit = 1000000.0
-            effective_radius                     UniformPrior, lower_limit = 0.0, upper_limit = 30.0
+    Total Free Parameters = 9
+
+    model                                                 Collection (N=9)
+        galaxies                                          Collection (N=9)
+            lens                                          Galaxy (N=3)
+                mass                                      Isothermal (N=3)
+            source                                        Galaxy (N=6)
+                disk                                      Exponential (N=6)
+
+    galaxies
+        lens
+            redshift                                      0.155
+            mass
+                centre                                    (0.0, 0.0)
+                ell_comps
+                    ell_comps_0                           GaussianPrior [3], mean = 0.0, sigma = 0.3
+                    ell_comps_1                           GaussianPrior [4], mean = 0.0, sigma = 0.3
+                einstein_radius                           UniformPrior [5], lower_limit = 0.0, upper_limit = 8.0
+        source
+            redshift                                      0.517
+            disk
+                centre
+                    centre_0                              GaussianPrior [6], mean = 0.0, sigma = 0.3
+                    centre_1                              GaussianPrior [7], mean = 0.0, sigma = 0.3
+                ell_comps
+                    ell_comps_0                           GaussianPrior [8], mean = 0.0, sigma = 0.3
+                    ell_comps_1                           GaussianPrior [9], mean = 0.0, sigma = 0.3
+                intensity                                 LogUniformPrior [10], lower_limit = 1e-06, upper_limit = 1000000.0
+                effective_radius                          UniformPrior [11], lower_limit = 0.0, upper_limit = 30.0
 
 Non-linear Search
 -----------------
@@ -189,9 +218,12 @@ documented throughout the workspace.
 
 The ``path_prefix`` and ``name`` determine the output folders the results are written on hard-disk.
 
+We include an input ``number_of_cores``, which when above 1 means that Dynesty uses parallel processing to sample multiple
+lens models at once on your CPU.
+
 .. code-block:: python
 
-    search = af.DynestyStatic(path_prefix="overview", name="modeling")
+    search = af.DynestyStatic(path_prefix="overview", name="modeling", number_of_cores=4)
 
 The non-linear search fits the lens model by guessing many lens models over and over iteratively, using the models which
 give a good fit to the data to guide it where to guess subsequent model. An animation of a non-linear search is shown
@@ -311,126 +343,86 @@ This gives the following output:
 
 .. code-block:: bash
 
-    Bayesian Evidence                              6333.47023932
-    Maximum Log Likelihood                         6382.79198627
-    Maximum Log Posterior                          1442056.41248673
-    
-    model                                          Collection (N=18)
-        galaxies                                   Collection (N=18)
-            lens                                   Galaxy (N=12)
-                bulge                              Sersic (N=7)
-                mass                               Isothermal (N=5)
-            source                                 Galaxy (N=6)
-                disk                               Exponential (N=6)
-    
-    Maximum Log Likelihood Model:
-    
-    galaxies
-        lens
-            bulge
-                centre
-                    centre_0                       0.369
-                    centre_1                       -0.169
-                ell_comps
-                    ell_comps_0             0.766
-                    ell_comps_1             0.061
-                intensity                          0.000
-                effective_radius                   1.161
-                sersic_index                       1.597
-            mass
-                centre
-                    centre_0                       -0.002
-                    centre_1                       0.004
-                ell_comps
-                    ell_comps_0             -0.037
-                    ell_comps_1             -0.107
-                einstein_radius                    1.616
-        source
-            disk
-                centre
-                    centre_0                       -0.002
-                    centre_1                       0.000
-                ell_comps
-                    ell_comps_0             0.165
-                    ell_comps_1             -0.025
-                intensity                          0.252
-                effective_radius                   0.127
-    
-    
-    Summary (3.0 sigma limits):
-    
-    galaxies
-        lens
-            bulge
-                centre
-                    centre_0                       0.0236 (-0.7006, 0.7200)
-                    centre_1                       0.0218 (-0.6997, 1.0533)
-                ell_comps
-                    ell_comps_0             -0.0801 (-0.9960, 0.9758)
-                    ell_comps_1             0.0775 (-0.9711, 0.9989)
-                intensity                          0.0000 (0.0000, 0.0000)
-                effective_radius                   11.2907 (0.0573, 29.6304)
-                sersic_index                       2.7800 (0.8359, 4.9234)
-            mass
-                centre
-                    centre_0                       -0.0036 (-0.0081, 0.0010)
-                    centre_1                       0.0039 (-0.0003, 0.0087)
-                ell_comps
-                    ell_comps_0             -0.0368 (-0.0398, -0.0338)
-                    ell_comps_1             -0.1079 (-0.1116, -0.1037)
-                einstein_radius                    1.6160 (1.6129, 1.6195)
-        source
-            disk
-                centre
-                    centre_0                       -0.0024 (-0.0055, 0.0013)
-                    centre_1                       0.0003 (-0.0033, 0.0037)
-                ell_comps
-                    ell_comps_0             0.1669 (0.1430, 0.2035)
-                    ell_comps_1             -0.0244 (-0.0408, -0.0035)
-                intensity                          0.2499 (0.2401, 0.2587)
-                effective_radius                   0.1275 (0.1245, 0.1309)
-    
-    
-    Summary (1.0 sigma limits):
-    
-    galaxies
-        lens
-            bulge
-                centre
-                    centre_0                       0.0236 (-0.2004, 0.2672)
-                    centre_1                       0.0218 (-0.2204, 0.2282)
-                ell_comps
-                    ell_comps_0             -0.0801 (-0.4468, 0.2718)
-                    ell_comps_1             0.0775 (-0.3457, 0.4478)
-                intensity                          0.0000 (0.0000, 0.0000)
-                effective_radius                   11.2907 (3.0980, 19.0891)
-                sersic_index                       2.7800 (1.5561, 3.9258)
-            mass
-                centre
-                    centre_0                       -0.0036 (-0.0051, -0.0021)
-                    centre_1                       0.0039 (0.0026, 0.0057)
-                ell_comps
-                    ell_comps_0             -0.0368 (-0.0379, -0.0357)
-                    ell_comps_1             -0.1079 (-0.1090, -0.1066)
-                einstein_radius                    1.6160 (1.6149, 1.6170)
-        source
-            disk
-                centre
-                    centre_0                       -0.0024 (-0.0036, -0.0013)
-                    centre_1                       0.0003 (-0.0009, 0.0016)
-                ell_comps
-                    ell_comps_0             0.1669 (0.1567, 0.1777)
-                    ell_comps_1             -0.0244 (-0.0304, -0.0180)
-                intensity                          0.2499 (0.2470, 0.2532)
-                effective_radius                   0.1275 (0.1265, 0.1285)
-    
-    instances
-    
-    galaxies
-        lens
-            redshift                               0.5
-        source
-            redshift                               1.0
+Bayesian Evidence                                     -38105.45328689
+Maximum Log Likelihood                                -38049.90634989
+Maximum Log Posterior                                 757231.20186250
+
+model                                                 Collection (N=9)
+    galaxies                                          Collection (N=9)
+        lens                                          Galaxy (N=3)
+            mass                                      Isothermal (N=3)
+        source                                        Galaxy (N=6)
+            disk                                      Exponential (N=6)
+
+Maximum Log Likelihood Model:
+
+galaxies
+    lens
+        mass
+            ell_comps
+                ell_comps_0                           0.220
+                ell_comps_1                           0.067
+            einstein_radius                           1.654
+    source
+        disk
+            centre
+                centre_0                              -0.295
+                centre_1                              0.349
+            ell_comps
+                ell_comps_0                           -0.028
+                ell_comps_1                           -0.299
+            intensity                                 0.067
+            effective_radius                          0.233
+
+
+Summary (3.0 sigma limits):
+
+galaxies
+    lens
+        mass
+            ell_comps
+                ell_comps_0                           0.2188 (0.2141, 0.2218)
+                ell_comps_1                           0.0675 (0.0638, 0.0714)
+            einstein_radius                           1.6542 (1.6491, 1.6580)
+    source
+        disk
+            centre
+                centre_0                              -0.2946 (-0.2986, -0.2895)
+                centre_1                              0.3489 (0.3466, 0.3513)
+            ell_comps
+                ell_comps_0                           -0.0255 (-0.0424, -0.0080)
+                ell_comps_1                           -0.2971 (-0.3126, -0.2810)
+            intensity                                 0.0669 (0.0644, 0.0694)
+            effective_radius                          0.2334 (0.2289, 0.2394)
+
+
+Summary (1.0 sigma limits):
+
+galaxies
+    lens
+        mass
+            ell_comps
+                ell_comps_0                           0.2188 (0.2174, 0.2202)
+                ell_comps_1                           0.0675 (0.0660, 0.0689)
+            einstein_radius                           1.6542 (1.6526, 1.6554)
+    source
+        disk
+            centre
+                centre_0                              -0.2946 (-0.2960, -0.2929)
+                centre_1                              0.3489 (0.3480, 0.3500)
+            ell_comps
+                ell_comps_0                           -0.0255 (-0.0309, -0.0199)
+                ell_comps_1                           -0.2971 (-0.3026, -0.2901)
+            intensity                                 0.0669 (0.0662, 0.0677)
+            effective_radius                          0.2334 (0.2314, 0.2351)
+
+instances
+
+galaxies
+    lens
+        redshift                                      0.155
+    source
+        redshift                                      0.517
 
 Below, we print the maximum log likelihood model inferred.
 
@@ -450,7 +442,7 @@ for plotting this.
 
 Here is an example of how a PDF estimated for a lens model appears:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/modeling/cornerplot.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3_modeling/cornerplot.png
   :width: 600
   :alt: Alternative text
 
@@ -466,10 +458,19 @@ The result also contains the maximum log likelihood `Tracer` and `FitImaging` ob
     fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
     fit_plotter.subplot_fit()
 
-Here's what the tracer and model-fit of the model which maximizes the log likelihood looks like, providing good
-residuals and low chi-squared values:
+Here's what the tracer and model-fit of the model which maximizes the log likelihood looks like.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/fitting/subplot_fit.png
+The fit has more significant residuals than the previous tutorial, and it is clear that the lens model cannot fully
+capture the complex structure of the lensed source galaxy. Nevertheless, it is sufficient to estimate simple
+lens quantities, like the Einstein Mass.
+
+The next examples cover all the features that **PyAutoLens** has to improve the model-fit.
+
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3_modeling/subplot_tracer.png
+  :width: 600
+  :alt: Alternative text
+
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3_modeling/subplot_fit.png
   :width: 600
   :alt: Alternative text
 
@@ -560,7 +561,7 @@ model is inferred.
 
 A full descriptions of this feature is given in the `linear_light_profiles` example:
 
-https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/modeling/features/linear_light_profiles.ipynb
+https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/overview_3_modeling/features/linear_light_profiles.ipynb
 
 Multi Gaussian Expansion
 ------------------------
@@ -573,7 +574,7 @@ model-fitting efficient and robust.
 
 A full descriptions of this feature is given in the ``multi_gaussian_expansion`` example:
 
-https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/modeling/features/multi_gaussian_expansion.ipynb
+https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/overview_3_modeling/features/multi_gaussian_expansion.ipynb
 
 Shapelets
 ---------
@@ -583,7 +584,7 @@ typically act as the source galaxy in strong lensing systems.
 
 A full descriptions of this feature is given in the ``shapelets`` example:
 
-https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/modeling/features/shapelets.ipynb
+https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/overview_3_modeling/features/shapelets.ipynb
 
 Pixelizations
 -------------
@@ -597,7 +598,7 @@ of a lens galaxy's mass.
 
 A full descriptions of this feature is given in the ``pixelization`` example:
 
-https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/modeling/features/pixelization.ipynb
+https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/overview_3_modeling/features/pixelization.ipynb
 
 The fifth overview example of the readthedocs also give a description of pixelizations:
 
@@ -608,7 +609,7 @@ Wrap-Up
 
 A more detailed description of lens modeling is provided at the following example:
 
-https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/modeling/start_here.ipynb
+https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/overview_3_modeling/start_here.ipynb
 
 Chapters 2 and 3 **HowToLens** lecture series give a comprehensive description of lens modeling, including a
 description of what a non-linear search is and strategies to fit complex lens model to data in efficient and

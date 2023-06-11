@@ -107,6 +107,7 @@ class FitImagingPlotter(Plotter):
             ),
             include_2d=self.include_2d,
         )
+        inversion_plotter.visuals_2d.mask = None
         inversion_plotter.visuals_2d.border = None
         return inversion_plotter
 
@@ -237,6 +238,7 @@ class FitImagingPlotter(Plotter):
                     inversion_plotter = self.inversion_plotter_of_plane(
                         plane_index=plane_index
                     )
+
                     inversion_plotter.figures_2d_of_pixelization(
                         pixelization_index=0,
                         reconstruction=True,

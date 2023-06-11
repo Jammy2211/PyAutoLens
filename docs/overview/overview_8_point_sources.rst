@@ -31,6 +31,18 @@ the plus side, it is much faster to perform modeling using a source-plane chi-sq
 
 Visualization of point-source modeling results are also limited, as the feature is still in development.
 
+Overview Script Quality
+-----------------------
+
+This script is less well written than others, lacking visualization, a coherent description and general writing
+quality. This is because it is a work-in-progress and I am still finding time to present this feature in a clear
+and concise way.
+
+If you have a desire to use point source lens modeling, and are okay with a source-plane chi-squared analysis, I
+recommend you go to the following modeling script which is more complete and better written:
+
+https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/point_source/modeling/start_here.ipynb
+
 Image Plane Chi Squared (In Development)
 ----------------------------------------
 
@@ -55,6 +67,9 @@ Although we are going to show how **PyAutoLens**`s positional analysis tools mod
 using an extended source will make it visibly clearer where the multiple images of the point source are!
 
 .. code-block:: python
+
+    import autolens as al
+    import autolens.plot as aplt
 
     grid = al.Grid2D.uniform(
         shape_native=(100, 100),

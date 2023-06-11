@@ -25,6 +25,9 @@ must ultimately include them in the lens model.
 
 .. code-block:: python
 
+    import autolens as al
+    import autolens.plot as aplt
+
     dataset_name = "lens_x3__source_x1"
     dataset_path = path.join("dataset", "group", dataset_name)
 
@@ -43,7 +46,7 @@ Here is what the group-scale lens looks like.
 The Source's ring is much larger than other examples (> 5.0") and there are clearly additional galaxies in and around
 the main lens galaxy.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_9_groups/image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_9_groups/0_subplot_dataset.png
   :width: 400
   :alt: Alternative text
 
@@ -74,7 +77,7 @@ We plot its positions over the observed image, using the ``Visuals2D`` object:
 
 Here is what it looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_9_groups/image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_9_groups/1_array.png
   :width: 400
   :alt: Alternative text
 
@@ -113,6 +116,57 @@ The model can be displayed via its ``info`` property:
 .. code-block:: python
 
     print(model.info)
+
+Here is how the model appears when printed:
+
+.. code-block:: bash:
+
+    Total Free Parameters = 13
+    
+    model                             Collection (N=13)
+        galaxies                      Collection (N=13)
+            lens_0                    Galaxy (N=5)
+                mass                  IsothermalSph (N=3)
+                shear                 ExternalShear (N=2)
+            lens_1                    Galaxy (N=3)
+                mass                  IsothermalSph (N=3)
+            lens_2                    Galaxy (N=3)
+                mass                  IsothermalSph (N=3)
+            source_0                  Galaxy (N=2)
+                point_0               PointSourceChi (N=2)
+    
+    galaxies
+        lens_0
+            redshift                  0.5
+            mass
+                centre
+                    centre_0          GaussianPrior [4], mean = 0.0, sigma = 0.5
+                    centre_1          GaussianPrior [5], mean = 0.0, sigma = 0.5
+                einstein_radius       UniformPrior [6], lower_limit = 0.0, upper_limit = 8.0
+            shear
+                gamma_1               UniformPrior [9], lower_limit = -0.2, upper_limit = 0.2
+                gamma_2               UniformPrior [10], lower_limit = -0.2, upper_limit = 0.2
+        lens_1
+            redshift                  0.5
+            mass
+                centre
+                    centre_0          GaussianPrior [14], mean = 3.5, sigma = 0.5
+                    centre_1          GaussianPrior [15], mean = 2.5, sigma = 0.5
+                einstein_radius       UniformPrior [16], lower_limit = 0.0, upper_limit = 8.0
+        lens_2
+            redshift                  0.5
+            mass
+                centre
+                    centre_0          GaussianPrior [20], mean = -4.4, sigma = 0.5
+                    centre_1          GaussianPrior [21], mean = -5.0, sigma = 0.5
+                einstein_radius       UniformPrior [22], lower_limit = 0.0, upper_limit = 8.0
+        source_0
+            redshift                  1.0
+            point_0
+                centre
+                    centre_0          GaussianPrior [25], mean = 0.0, sigma = 3.0
+                    centre_1          GaussianPrior [26], mean = 0.0, sigma = 3.0
+
 
 The source does not use the ``Point`` class discussed in the previous overview example, but instead uses
 a ``PointSourceChi`` object.

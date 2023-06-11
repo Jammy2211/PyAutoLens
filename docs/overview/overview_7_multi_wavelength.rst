@@ -26,6 +26,9 @@ is straight forward.
 
 .. code-block:: python
 
+    import autolens as al
+    import autolens.plot as aplt
+
     color_list = ["g", "r"]
 
 Every dataset in our multi-wavelength observations can have its own unique pixel-scale.
@@ -59,11 +62,19 @@ In the r-band, the lens outshines the source, whereas in the g-band the source g
 The different variation of the colors of the lens and source across wavelength is a powerful tool for lens modeling,
 as it helps deblend the two objects.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/r_image.png
+.. code-block:: python
+
+    for dataset in dataset_list:
+        dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
+        dataset_plotter.subplot_dataset()
+
+Here are the images:
+
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/0_subplot_dataset.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/g_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/1_subplot_dataset.png
   :width: 400
   :alt: Alternative text
 
@@ -91,11 +102,11 @@ necessary, but provides a more reliable analysis.
 
 Here is how the masked datasets appear:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/r_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/2_subplot_dataset.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/g_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/3_subplot_dataset.png
   :width: 400
   :alt: Alternative text
 
@@ -209,13 +220,33 @@ different intensities.
 
 Here is how these subplots appear:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/r_tracer.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/6_subplot_tracer.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/g_tracer.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/7_subplot_tracer.png
   :width: 400
   :alt: Alternative text
+
+Subplots of each fit show that a good overall fit is achieved to each dataset.
+
+.. code-block:: python
+
+    for result in result_list:
+        fit_plotter = aplt.FitImagingPlotter(
+            fit=result.max_log_likelihood_fit,
+        )
+        fit_plotter.subplot_fit()
+
+Here is how these subplots appear:
+
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/8_subplot_fit.png
+  :width: 400
+  :alt: Alternative text
+
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/9_subplot_fit.png
+    :width: 400
+    :alt: Alternative text
 
 Wavelength Dependence
 ---------------------
@@ -290,11 +321,11 @@ A number of benefits are apparent if we combine the analysis of both datasets at
 
 - The source galaxy appears completely different in the g-band and at sub-millimeter wavelengths, providing a lot more information with which to constrain the lens galaxy mass model.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/dirty_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/dirty_image.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/g_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/g_image.png
   :width: 400
   :alt: Alternative text
 

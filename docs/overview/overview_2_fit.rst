@@ -16,6 +16,9 @@ from .fits files as an ``Imaging`` object:
 
     from os import path
 
+    import autolens as al
+    import autolens.plot as aplt
+
     dataset_path = path.join("dataset", "imaging", dataset_name)
 
     dataset = al.Imaging.from_fits(

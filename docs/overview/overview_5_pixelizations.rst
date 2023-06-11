@@ -23,6 +23,9 @@ model using light profiles!
 
 .. code-block:: python
 
+    import autolens as al
+    import autolens.plot as aplt
+
     dataset_name = "source_complex"
     dataset_path = path.join("dataset", "imaging", dataset_name)
 
