@@ -46,8 +46,8 @@ Here is what the group-scale lens looks like.
 The Source's ring is much larger than other examples (> 5.0") and there are clearly additional galaxies in and around
 the main lens galaxy.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_9_groups/0_subplot_dataset.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_9_groups/0_subplot_dataset.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Point Source
@@ -77,8 +77,8 @@ We plot its positions over the observed image, using the ``Visuals2D`` object:
 
 Here is what it looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_9_groups/1_array.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_9_groups/1_array.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Model via JSON
@@ -214,12 +214,12 @@ of a pixelized source reconstruction.
 This will extract a lot more information from the data than the point-source model and the source reconstruction means
 that you can study the properties of the highly magnified source galaxy. Here is what the fit looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_9_groups/fit_group.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_9_groups/fit_group.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_9_groups/source_group.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_9_groups/source_group.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 For group-scale lenses like this one, with a modest number of lens and source galaxies it is feasible to

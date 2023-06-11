@@ -39,8 +39,8 @@ model using light profiles!
     dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
     dataset_plotter.subplot_dataset()
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_5_pixelizations/image.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_5_pixelizations/image.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 We are going to fit this data via a pixelization, which requires us to define a 2D mask within which the pixelization
@@ -115,8 +115,8 @@ Here is what the subplot looks like, with the following worth noting:
 - This reconstructed model image produces significal residuals, because a rectangular mesh is not an optimal way to
   reconstruct the source galaxy.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_5_pixelizations/rectangular.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_5_pixelizations/rectangular.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Alternative Pixelizations
@@ -149,8 +149,8 @@ is noticeably smoother.
 
 Here is the subplot:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_5_pixelizations/voronoi.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_5_pixelizations/voronoi.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Voronoi

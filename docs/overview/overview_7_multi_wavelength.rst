@@ -70,12 +70,12 @@ as it helps deblend the two objects.
 
 Here are the images:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/0_subplot_dataset.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/0_subplot_dataset.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/1_subplot_dataset.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/1_subplot_dataset.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 We define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
@@ -102,12 +102,12 @@ necessary, but provides a more reliable analysis.
 
 Here is how the masked datasets appear:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/2_subplot_dataset.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/2_subplot_dataset.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/3_subplot_dataset.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/3_subplot_dataset.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Analysis
@@ -220,12 +220,12 @@ different intensities.
 
 Here is how these subplots appear:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/6_subplot_tracer.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/6_subplot_tracer.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/7_subplot_tracer.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/7_subplot_tracer.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Subplots of each fit show that a good overall fit is achieved to each dataset.
@@ -240,12 +240,12 @@ Subplots of each fit show that a good overall fit is achieved to each dataset.
 
 Here is how these subplots appear:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/8_subplot_fit.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/8_subplot_fit.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/9_subplot_fit.png
-    :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/9_subplot_fit.png?raw=true
+    :width: 600
     :alt: Alternative text
 
 Wavelength Dependence
@@ -321,12 +321,12 @@ A number of benefits are apparent if we combine the analysis of both datasets at
 
 - The source galaxy appears completely different in the g-band and at sub-millimeter wavelengths, providing a lot more information with which to constrain the lens galaxy mass model.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/dirty_image.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/dirty_image.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_7_multi_wavelength/g_image.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/g_image.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Linear Light Profiles

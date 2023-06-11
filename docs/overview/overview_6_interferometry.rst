@@ -63,12 +63,12 @@ datasets from an instrument like ALMA.
 
 Here is what the interferometer visibilities and uv wavelength (which represent the interferometer's baselines):
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/0_data.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_6_interferometer/0_data.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/1_uv_wavelengths.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_6_interferometer/1_uv_wavelengths.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 It can also plot dirty images of the dataset in real-space, using the fast Fourier transforms described below.
@@ -80,12 +80,12 @@ It can also plot dirty images of the dataset in real-space, using the fast Fouri
 
 Here is what the image and signal-to-noise map look like in real space:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/2_dirty_image.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_6_interferometer/2_dirty_image.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/3_dirty_signal_to_noise_map.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_6_interferometer/3_dirty_signal_to_noise_map.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Tracer
@@ -127,8 +127,8 @@ Lets quickly set up the ``Tracer`` we'll use in this example.
 
 Here is what the image of the tracer looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/4_image_2d.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_6_interferometer/4_image_2d.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 UV-Plane FFT
@@ -189,8 +189,8 @@ Note that the fit is not performed in real-space, but plotting it in real-space 
 
 Here is what the subplot image looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/5_subplot_fit.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_6_interferometer/5_subplot_fit.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Pixelized Sources
@@ -225,8 +225,8 @@ The source reconstruction is visualized in real space:
 
 Here is what it looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/6_reconstruction.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_6_interferometer/6_reconstruction.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Computing this source reconstruction would be extremely inefficient if **PyAutoLens** used a traditional approach to
@@ -300,8 +300,8 @@ results, for example the maximum log likelihood fit:
 
 Here is what it looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/7_subplot_fit.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_6_interferometer/7_subplot_fit.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Simulations
@@ -328,8 +328,8 @@ Gaussian noise to the visibilities:
 
 Here is the subplot of the simulated interferometer dataset:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/8_subplot_dataset.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_6_interferometer/8_subplot_dataset.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Wrap-Up

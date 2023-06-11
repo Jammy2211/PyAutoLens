@@ -37,16 +37,16 @@ We use the `ImagingPlotter` to plot the image, noise-map and psf (point-spread f
 
 Here's what our ``data``, ``noise_map`` and ``psf`` look like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_2_fit/0_data.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/0_data.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_2_fit/1_noise_map.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/1_noise_map.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_2_fit/2_psf.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/2_psf.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 The ``ImagingPlotter`` also contains a subplot which plots all these properties simultaneously.
@@ -58,8 +58,8 @@ The ``ImagingPlotter`` also contains a subplot which plots all these properties 
 
 Here is what it looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_2_fit/3_subplot_dataset.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/3_subplot_dataset.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Masking
@@ -91,8 +91,8 @@ source appear bigger.
 
 Here is what the image looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_2_fit/4_data.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/4_data.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 The mask is also used to compute a `Grid2D`, where the (y,x) arc-second coordinates are only computed in unmasked 
@@ -109,8 +109,8 @@ data below.
 
 Here is the grid of the mask:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_2_fit/5_grid.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/5_grid.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Fitting
@@ -166,8 +166,8 @@ the telescope optics when it is observed. It mimicks this blurring effect via a 
 
 Here is the tracer's image, which is similar to the dataset shown above:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_2_fit/6_image_2d.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/6_image_2d.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 We now use a `FitImaging` object to fit this tracer to the dataset. 
@@ -186,8 +186,8 @@ the fit`s model image (which is).
 Here is how the ``FitImaging``'s model-image looks, note how the model-image is thicker than the tracer's image above
 because it has been blurred with the PSF:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_2_fit/7_model_image.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/7_model_image.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 The fit does a lot more than just blur the tracer's image with the PSF, it also creates the following:
@@ -209,16 +209,16 @@ residuals, normalized residuals and chi-squareds are minimized:
 For a good lens model where the ``Tracer``'s model image is representative of the strong lens system the residuals,
 normalized residuals and chi-squared values minimized:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_2_fit/8_residual_map.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/8_residual_map.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_2_fit/9_normalized_residual_map.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/9_normalized_residual_map.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_2_fit/10_chi_squared_map.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/10_chi_squared_map.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 A subplot can be plotted which contains all of the above quantities, as well as other information contained in the
@@ -234,8 +234,8 @@ anticipate seeing a lot of!
 
 Here is the subplot:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_2_fit/11_subplot_fit.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/11_subplot_fit.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 
@@ -294,8 +294,8 @@ A new fit using this plane shows residuals, normalized residuals and chi-squared
 
 Here is what this bad fit looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_2_fit/12_subplot_fit.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/12_subplot_fit.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Its ``log_likelihood`` is also significantly lower than the good fit above!

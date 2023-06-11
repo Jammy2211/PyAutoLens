@@ -8,7 +8,7 @@ intervening mass of the foreground galaxy. Its light can be fully bent around th
 paths to the Earth, meaning that the background galaxy is observed multiple times. This by-chance alignment of two
 galaxies is called a strong gravitational lens and a two-dimensional scheme of such a system is pictured below.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/overview_1_lensing/schematic.jpg
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_1_lensing/schematic.jpg
   :width: 600
   :alt: Alternative text
 
@@ -48,7 +48,7 @@ most convenient unit to represent lensing quantities:
 This is what our ``Grid2D`` looks like:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_1_lensing/0_grid.png?raw=true
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 Light Profiles
@@ -91,8 +91,8 @@ The **PyAutoLens** plot module provides methods for plotting objects and their p
 
 The light profile's image appears as shown below:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/overview_1_lensing/1_image_2d.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_1_lensing/1_image_2d.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Mass Profiles
@@ -132,12 +132,12 @@ don't worry about it for now!
 
 Here is what they look like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/overview_1_lensing/2_deflections_y_2d.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_1_lensing/2_deflections_y_2d.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/overview_1_lensing/3_deflections_x_2d.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_1_lensing/3_deflections_x_2d.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 .. code-block:: python
@@ -153,12 +153,12 @@ Here is what they look like:
 
 Here is what they look like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/overview_1_lensing/4_convergence_2d.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_1_lensing/4_convergence_2d.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/overview_1_lensing/5_potential_2d.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_1_lensing/5_potential_2d.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 If you are not familiar with gravitational lensing and therefore are unclear on what the convergence and potential
@@ -213,8 +213,8 @@ the source appears as a multiply imaged and strongly lensed Einstein ring.
 
 This makes the image below, where the source's light appears as a multiply imaged and strongly lensed Einstein ring.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/overview_1_lensing/6_image_2d.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_1_lensing/6_image_2d.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 The `TracerPlotter` includes the `MassProfile` quantities we plotted previously, which can be plotted as a subplot
@@ -229,8 +229,8 @@ you do not need to worry about for now if you don't know what that is!
 
 Here is how the subplot appears:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/overview_1_lensing/7_subplot_tracer.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_1_lensing/7_subplot_tracer.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 The tracer is composed of planes. The system above has two planes, an image-plane (at redshift=0.5) and a
@@ -256,12 +256,12 @@ grids.
 
 Here is how they appear:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/overview_1_lensing/8_grid.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_1_lensing/8_grid.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/overview_1_lensing/9_grid.png
-    :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_1_lensing/9_grid.png?raw=true
+    :width: 600
     :alt: Alternative text
 
 Extending Objects
@@ -331,8 +331,8 @@ This is what the lens looks like.
 
 Note how crazy the critical curves are!
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/overview_1_lensing/10_image_2d.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_1_lensing/10_image_2d.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Wrap Up

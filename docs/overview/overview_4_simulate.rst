@@ -87,8 +87,8 @@ By plotting a subplot of the ``Imaging`` dataset, we can see this object include
 
 Here is what the dataset looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_4_simulate/image.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_4_simulate/image.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Examples
@@ -99,20 +99,20 @@ physical properties and for creating imaging datasets for a variety of telescope
 
 Below, we show what a strong lens looks like for different instruments.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_4_simulate/data_vro.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_4_simulate/data_vro.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_4_simulate/data_euclid.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_4_simulate/data_euclid.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_4_simulate/data_hst.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_4_simulate/data_hst.png?raw=true
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_4_simulate/data_ao.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_4_simulate/data_ao.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Wrap Up

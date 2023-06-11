@@ -11,8 +11,8 @@ and beyond.
 Here is an image of SDSS1152P3312, the example cluster we will adopt for illustrating
 **PyAutoLens**'s cluster modeling tools:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/clusters/cluster.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/clusters/cluster.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 Point Source

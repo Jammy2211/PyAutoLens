@@ -40,8 +40,8 @@ section of the workspace.
 
 Here is what the dataset looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3_modeling/0_subplot_dataset.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_3_modeling/0_subplot_dataset.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 We next mask the dataset, to remove the exterior regions of the image that do not contain emission from the lens or
@@ -60,8 +60,8 @@ source galaxy.
 
 Note how when we plot the ``Imaging`` below, the figure now zooms into the masked region.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3_modeling/1_subplot_dataset.png
-  :width: 400
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_3_modeling/1_subplot_dataset.png?raw=true
+  :width: 600
   :alt: Alternative text
 
 PyAutoFit
@@ -442,7 +442,7 @@ for plotting this.
 
 Here is an example of how a PDF estimated for a lens model appears:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3_modeling/cornerplot.png
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_3_modeling/cornerplot.png?raw=true
   :width: 600
   :alt: Alternative text
 
@@ -466,11 +466,11 @@ lens quantities, like the Einstein Mass.
 
 The next examples cover all the features that **PyAutoLens** has to improve the model-fit.
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3_modeling/subplot_tracer.png
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_3_modeling/subplot_tracer.png?raw=true
   :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3_modeling/subplot_fit.png
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_3_modeling/subplot_fit.png?raw=true
   :width: 600
   :alt: Alternative text
 
@@ -602,7 +602,7 @@ https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/o
 
 The fifth overview example of the readthedocs also give a description of pixelizations:
 
-https://pyautolens.readthedocs.io/en/latest/overview/overview_5_pixelizations.html
+https://pyautolens.readthedocs.io/en/latest/overview/images/overview_5_pixelizations.html
 
 Wrap-Up
 -------
