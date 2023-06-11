@@ -64,11 +64,11 @@ datasets from an instrument like ALMA.
 Here is what the interferometer visibilities and uv wavelength (which represent the interferometer's baselines):
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_6_interferometer/0_data.png?raw=true
-  :width: 600
+  :width: 400
   :alt: Alternative text
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_6_interferometer/1_uv_wavelengths.png?raw=true
-  :width: 600
+  :width: 400
   :alt: Alternative text
 
 It can also plot dirty images of the dataset in real-space, using the fast Fourier transforms described below.
@@ -81,11 +81,11 @@ It can also plot dirty images of the dataset in real-space, using the fast Fouri
 Here is what the image and signal-to-noise map look like in real space:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_6_interferometer/2_dirty_image.png?raw=true
-  :width: 600
+  :width: 400
   :alt: Alternative text
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_6_interferometer/3_dirty_signal_to_noise_map.png?raw=true
-  :width: 600
+  :width: 400
   :alt: Alternative text
 
 Tracer

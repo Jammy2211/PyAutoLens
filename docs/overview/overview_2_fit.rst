@@ -210,15 +210,15 @@ For a good lens model where the ``Tracer``'s model image is representative of th
 normalized residuals and chi-squared values minimized:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/8_residual_map.png?raw=true
-  :width: 600
+  :width: 400
   :alt: Alternative text
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/9_normalized_residual_map.png?raw=true
-  :width: 600
+  :width: 400
   :alt: Alternative text
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/10_chi_squared_map.png?raw=true
-  :width: 600
+  :width: 400
   :alt: Alternative text
 
 A subplot can be plotted which contains all of the above quantities, as well as other information contained in the

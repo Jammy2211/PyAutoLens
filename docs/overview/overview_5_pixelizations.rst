@@ -39,7 +39,7 @@ model using light profiles!
     dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
     dataset_plotter.subplot_dataset()
 
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_5_pixelizations/image.png?raw=true
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_5_pixelizations/0_subplot_dataset.png?raw=true
   :width: 600
   :alt: Alternative text
 
@@ -115,7 +115,7 @@ Here is what the subplot looks like, with the following worth noting:
 - This reconstructed model image produces significal residuals, because a rectangular mesh is not an optimal way to
   reconstruct the source galaxy.
 
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_5_pixelizations/rectangular.png?raw=true
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_5_pixelizations/1_subplot_fit.png?raw=true
   :width: 600
   :alt: Alternative text
 
@@ -149,7 +149,7 @@ is noticeably smoother.
 
 Here is the subplot:
 
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_5_pixelizations/voronoi.png?raw=true
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_5_pixelizations/2_subplot_fit.png?raw=true
   :width: 600
   :alt: Alternative text
 
@@ -168,6 +168,10 @@ If you want to use this pixelization, checkout the installation instructions her
 https://github.com/Jammy2211/PyAutoArray/tree/main/autoarray/util/nn
 
 Here is an example of a source reconstruction using this pixelization:
+
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_5_pixelizations/3_reconstruction.png?raw=true
+  :width: 600
+  :alt: Alternative text
 
 Wrap-Up
 -------

@@ -5,16 +5,20 @@
 What is PyAutoLens?
 ===================
 
-**PyAutoLens** is open source software for the analysis and modeling of strong gravitational lenses, with its target
-audience anyone with an interest in astronomy and cosmology.
+When two or more galaxies are aligned perfectly down our line-of-sight, the background galaxy appears multiple times.
 
-The software comes distributed with the **HowToLens** Jupyter notebook lectures, which are written assuming no
-previous knowledge about what gravitational lensing is and teach a new user theory and statistics required to analyse
-strong lens data. Checkout `the howtolens section of
-the readthedocs <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_.
+This is called strong gravitational lensing and **PyAutoLens** makes it simple to model strong gravitational lenses.
 
-An overview of **PyAutoLens**'s core features can be found in
-the `overview section of the readthedocs <https://pyautolens.readthedocs.io/en/latest/overview/lensing.html>`_.
+Getting Started
+===============
+
+The following links are useful for new starters:
+
+- `The introduction Jupyter Notebook on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=introduction.ipynb>`_, where you can try **PyAutoLens** in a web browser (without installation).
+
+- `The PyAutoLens readthedocs <https://pyautolens.readthedocs.io/en/latest>`_, which includes `an installation guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ and an overview of **PyAutoLens**'s core features.
+
+- `The autolens_workspace GitHub repository <https://github.com/Jammy2211/autolens_workspace>`_, which includes example scripts and the `HowToLens Jupyter notebook tutorials <https://github.com/Jammy2211/autolens_workspace/tree/master/notebooks/howtolens>`_ which give new users a step-by-step introduction to **PyAutoLens**.
 
 Strong Gravitational Lensing
 ============================

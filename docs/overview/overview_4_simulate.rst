@@ -49,7 +49,7 @@ and checkout the appropriate example!
 Simulator
 ---------
 
-Simulating strong lens images uses a `SimulatorImaging` object, which simulates the process that an instrument like the
+Simulating strong lens images uses a ``SimulatorImaging`` object, which simulates the process that an instrument like the
 Hubble Space Telescope goes through when it acquires imaging of a strong lens, including:
 
  - Using for the exposure time to determine the signal-to-noise of the data by converting the simulated image from
@@ -87,7 +87,7 @@ By plotting a subplot of the ``Imaging`` dataset, we can see this object include
 
 Here is what the dataset looks like:
 
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_4_simulate/image.png?raw=true
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_4_simulate/0_image_2d.png?raw=true
   :width: 600
   :alt: Alternative text
 

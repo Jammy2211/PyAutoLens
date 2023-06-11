@@ -122,12 +122,12 @@ This gives the following output:
 
     Total Free Parameters = 3
 
-    model                                                 Galaxy (N=3)
-        mass                                              Isothermal (N=3)
+    model           Galaxy (N=3)
+        mass        Isothermal (N=3)
 
-    redshift                                              0.155
+    redshift        0.155
     mass
-        centre                                            (0.0, 0.0)
+        centre      (0.0, 0.0)
         ell_comps
             ell_comps_0                                   GaussianPrior [3], mean = 0.0, sigma = 0.3
             ell_comps_1                                   GaussianPrior [4], mean = 0.0, sigma = 0.3
@@ -137,18 +137,18 @@ This gives the following output:
 
     Total Free Parameters = 6
 
-    model                                                 Galaxy (N=6)
-        disk                                              Exponential (N=6)
+    model           Galaxy (N=6)
+        disk        Exponential (N=6)
 
-    redshift                                              0.517
+    redshift        0.517
     disk
         centre
-            centre_0                                      GaussianPrior [6], mean = 0.0, sigma = 0.3
-            centre_1                                      GaussianPrior [7], mean = 0.0, sigma = 0.3
+            centre_0GaussianPrior [6], mean = 0.0, sigma = 0.3
+            centre_1GaussianPrior [7], mean = 0.0, sigma = 0.3
         ell_comps
             ell_comps_0                                   GaussianPrior [8], mean = 0.0, sigma = 0.3
             ell_comps_1                                   GaussianPrior [9], mean = 0.0, sigma = 0.3
-        intensity                                         LogUniformPrior [10], lower_limit = 1e-06, upper_limit = 1000000.0
+        intensity   LogUniformPrior [10], lower_limit = 1e-06, upper_limit = 1000000.0
         effective_radius                                  UniformPrior [11], lower_limit = 0.0, upper_limit = 30.0
 
 We combine the lens and source model galaxies above into a `Collection`, which is the final lens model we will fit.
@@ -176,16 +176,16 @@ This gives the following output:
 
     Total Free Parameters = 9
 
-    model                                                 Collection (N=9)
-        galaxies                                          Collection (N=9)
-            lens                                          Galaxy (N=3)
-                mass                                      Isothermal (N=3)
-            source                                        Galaxy (N=6)
-                disk                                      Exponential (N=6)
+    model           Collection (N=9)
+        galaxies    Collection (N=9)
+            lens    Galaxy (N=3)
+                massIsothermal (N=3)
+            source  Galaxy (N=6)
+                diskExponential (N=6)
 
     galaxies
         lens
-            redshift                                      0.155
+            redshift0.155
             mass
                 centre                                    (0.0, 0.0)
                 ell_comps
@@ -193,7 +193,7 @@ This gives the following output:
                     ell_comps_1                           GaussianPrior [4], mean = 0.0, sigma = 0.3
                 einstein_radius                           UniformPrior [5], lower_limit = 0.0, upper_limit = 8.0
         source
-            redshift                                      0.517
+            redshift0.517
             disk
                 centre
                     centre_0                              GaussianPrior [6], mean = 0.0, sigma = 0.3
@@ -343,86 +343,86 @@ This gives the following output:
 
 .. code-block:: bash
 
-Bayesian Evidence                                     -38105.45328689
-Maximum Log Likelihood                                -38049.90634989
-Maximum Log Posterior                                 757231.20186250
+    Bayesian Evidence                                     -38105.45328689
+    Maximum Log Likelihood                                -38049.90634989
+    Maximum Log Posterior                                 757231.20186250
 
-model                                                 Collection (N=9)
-    galaxies                                          Collection (N=9)
-        lens                                          Galaxy (N=3)
-            mass                                      Isothermal (N=3)
-        source                                        Galaxy (N=6)
-            disk                                      Exponential (N=6)
+    model           Collection (N=9)
+        galaxies    Collection (N=9)
+            lens    Galaxy (N=3)
+                massIsothermal (N=3)
+            source  Galaxy (N=6)
+                diskExponential (N=6)
 
-Maximum Log Likelihood Model:
+    Maximum Log Likelihood Model:
 
-galaxies
-    lens
-        mass
-            ell_comps
-                ell_comps_0                           0.220
-                ell_comps_1                           0.067
-            einstein_radius                           1.654
-    source
-        disk
-            centre
-                centre_0                              -0.295
-                centre_1                              0.349
-            ell_comps
-                ell_comps_0                           -0.028
-                ell_comps_1                           -0.299
-            intensity                                 0.067
-            effective_radius                          0.233
-
-
-Summary (3.0 sigma limits):
-
-galaxies
-    lens
-        mass
-            ell_comps
-                ell_comps_0                           0.2188 (0.2141, 0.2218)
-                ell_comps_1                           0.0675 (0.0638, 0.0714)
-            einstein_radius                           1.6542 (1.6491, 1.6580)
-    source
-        disk
-            centre
-                centre_0                              -0.2946 (-0.2986, -0.2895)
-                centre_1                              0.3489 (0.3466, 0.3513)
-            ell_comps
-                ell_comps_0                           -0.0255 (-0.0424, -0.0080)
-                ell_comps_1                           -0.2971 (-0.3126, -0.2810)
-            intensity                                 0.0669 (0.0644, 0.0694)
-            effective_radius                          0.2334 (0.2289, 0.2394)
+    galaxies
+        lens
+            mass
+                ell_comps
+                    ell_comps_0                           0.220
+                    ell_comps_1                           0.067
+                einstein_radius                           1.654
+        source
+            disk
+                centre
+                    centre_0                              -0.295
+                    centre_1                              0.349
+                ell_comps
+                    ell_comps_0                           -0.028
+                    ell_comps_1                           -0.299
+                intensity                                 0.067
+                effective_radius                          0.233
 
 
-Summary (1.0 sigma limits):
+    Summary (3.0 sigma limits):
 
-galaxies
-    lens
-        mass
-            ell_comps
-                ell_comps_0                           0.2188 (0.2174, 0.2202)
-                ell_comps_1                           0.0675 (0.0660, 0.0689)
-            einstein_radius                           1.6542 (1.6526, 1.6554)
-    source
-        disk
-            centre
-                centre_0                              -0.2946 (-0.2960, -0.2929)
-                centre_1                              0.3489 (0.3480, 0.3500)
-            ell_comps
-                ell_comps_0                           -0.0255 (-0.0309, -0.0199)
-                ell_comps_1                           -0.2971 (-0.3026, -0.2901)
-            intensity                                 0.0669 (0.0662, 0.0677)
-            effective_radius                          0.2334 (0.2314, 0.2351)
+    galaxies
+        lens
+            mass
+                ell_comps
+                    ell_comps_0                           0.2188 (0.2141, 0.2218)
+                    ell_comps_1                           0.0675 (0.0638, 0.0714)
+                einstein_radius                           1.6542 (1.6491, 1.6580)
+        source
+            disk
+                centre
+                    centre_0                              -0.2946 (-0.2986, -0.2895)
+                    centre_1                              0.3489 (0.3466, 0.3513)
+                ell_comps
+                    ell_comps_0                           -0.0255 (-0.0424, -0.0080)
+                    ell_comps_1                           -0.2971 (-0.3126, -0.2810)
+                intensity                                 0.0669 (0.0644, 0.0694)
+                effective_radius                          0.2334 (0.2289, 0.2394)
 
-instances
 
-galaxies
-    lens
-        redshift                                      0.155
-    source
-        redshift                                      0.517
+    Summary (1.0 sigma limits):
+
+    galaxies
+        lens
+            mass
+                ell_comps
+                    ell_comps_0                           0.2188 (0.2174, 0.2202)
+                    ell_comps_1                           0.0675 (0.0660, 0.0689)
+                einstein_radius                           1.6542 (1.6526, 1.6554)
+        source
+            disk
+                centre
+                    centre_0                              -0.2946 (-0.2960, -0.2929)
+                    centre_1                              0.3489 (0.3480, 0.3500)
+                ell_comps
+                    ell_comps_0                           -0.0255 (-0.0309, -0.0199)
+                    ell_comps_1                           -0.2971 (-0.3026, -0.2901)
+                intensity                                 0.0669 (0.0662, 0.0677)
+                effective_radius                          0.2334 (0.2314, 0.2351)
+
+    instances
+
+    galaxies
+        lens
+            redshift0.155
+        source
+            redshift0.517
 
 Below, we print the maximum log likelihood model inferred.
 
@@ -466,11 +466,11 @@ lens quantities, like the Einstein Mass.
 
 The next examples cover all the features that **PyAutoLens** has to improve the model-fit.
 
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_3_modeling/subplot_tracer.png?raw=true
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_3_modeling/2_subplot_tracer.png?raw=true
   :width: 600
   :alt: Alternative text
 
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_3_modeling/subplot_fit.png?raw=true
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_3_modeling/3_subplot_fit.png?raw=true
   :width: 600
   :alt: Alternative text
 
@@ -536,6 +536,31 @@ The ``info`` attribute shows the customized lens model.
 This gives the following output:
 
 .. code-block:: bash
+
+Total Free Parameters = 8
+
+    model                                     Galaxy (N=8)
+        bulge                                 DevVaucouleurs (N=5)
+        mass                                  Isothermal (N=5)
+    
+    redshift                                  0.5
+    bulge
+        centre
+            centre_0                          GaussianPrior [18], mean = 0.0, sigma = 0.1
+            centre_1                          GaussianPrior [19], mean = 0.0, sigma = 0.1
+        ell_comps
+            ell_comps_0                       GaussianPrior [14], mean = 0.0, sigma = 0.3
+            ell_comps_1                       GaussianPrior [15], mean = 0.0, sigma = 0.3
+        intensity                             LogUniformPrior [16], lower_limit = 1e-06, upper_limit = 1000000.0
+        effective_radius                      0.8
+    mass
+        centre
+            centre_0                          GaussianPrior [18], mean = 0.0, sigma = 0.1
+            centre_1                          GaussianPrior [19], mean = 0.0, sigma = 0.1
+        ell_comps
+            ell_comps_0                       GaussianPrior [20], mean = 0.0, sigma = 0.3
+            ell_comps_1                       GaussianPrior [21], mean = 0.0, sigma = 0.3
+        einstein_radius                       UniformPrior [22], lower_limit = 0.0, upper_limit = 8.0
 
 Model Cookbook
 --------------
