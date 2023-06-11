@@ -325,7 +325,7 @@ A number of benefits are apparent if we combine the analysis of both datasets at
   :width: 600
   :alt: Alternative text
 
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/g_image.png?raw=true
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/g_data.png?raw=true
   :width: 600
   :alt: Alternative text
 

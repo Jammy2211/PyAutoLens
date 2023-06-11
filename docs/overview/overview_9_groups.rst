@@ -218,10 +218,6 @@ that you can study the properties of the highly magnified source galaxy. Here is
   :width: 600
   :alt: Alternative text
 
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_9_groups/source_group.png?raw=true
-  :width: 600
-  :alt: Alternative text
-
 For group-scale lenses like this one, with a modest number of lens and source galaxies it is feasible to
 perform extended surface-brightness fitting to the source's extended emission. This includes using a pixelized
 source reconstruction.
