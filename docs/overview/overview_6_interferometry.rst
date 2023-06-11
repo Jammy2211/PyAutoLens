@@ -60,11 +60,11 @@ datasets from an instrument like ALMA.
 
 Here is what the interferometer visibilities and uv wavelength (which represent the interferometer's baselines):
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/data.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/0_data.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/uv_wavelengths.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/1_uv_wavelengths.png
   :width: 400
   :alt: Alternative text
 
@@ -77,11 +77,11 @@ It can also plot dirty images of the dataset in real-space, using the fast Fouri
 
 Here is what the image and signal-to-noise map look like in real space:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/dirty_image.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/2_dirty_image.png
   :width: 400
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/dirty_signal_to_noise_map.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/3_dirty_signal_to_noise_map.png
   :width: 400
   :alt: Alternative text
 
@@ -124,7 +124,7 @@ Lets quickly set up the ``Tracer`` we'll use in this example.
 
 Here is what the image of the tracer looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/dirty_signal_to_noise_map.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/4_image_2d.png
   :width: 400
   :alt: Alternative text
 
@@ -186,7 +186,7 @@ Note that the fit is not performed in real-space, but plotting it in real-space 
 
 Here is what the subplot image looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/image_pre_ft.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/5_subplot_fit.png
   :width: 400
   :alt: Alternative text
 
@@ -218,11 +218,11 @@ The source reconstruction is visualized in real space:
 .. code-block:: python
 
     fit_plotter = aplt.FitInterferometerPlotter(fit=fit)
-    fit_plotter.subplot_fit()
+    fit_plotter.figures_2d_of_planes(plane_index=1, plane_image=True)
 
 Here is what it looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/reconstruction.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/6_reconstruction.png
   :width: 400
   :alt: Alternative text
 
@@ -297,7 +297,7 @@ results, for example the maximum log likelihood fit:
 
 Here is what it looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/reconstruction.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/7_subplot_fit.png
   :width: 400
   :alt: Alternative text
 
@@ -325,7 +325,7 @@ Gaussian noise to the visibilities:
 
 Here is the subplot of the simulated interferometer dataset:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/interferometry/reconstruction.png
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_6_interferometer/8_subplot_dataset.png
   :width: 400
   :alt: Alternative text
 
