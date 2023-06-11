@@ -230,7 +230,7 @@ you do not need to worry about for now if you don't know what that is!
 Here is how the subplot appears:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_1_lensing/7_subplot_tracer.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
 The tracer is composed of planes. The system above has two planes, an image-plane (at redshift=0.5) and a
