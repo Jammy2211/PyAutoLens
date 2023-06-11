@@ -47,7 +47,7 @@ most convenient unit to represent lensing quantities:
 
 This is what our ``Grid2D`` looks like:
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/overview_1_lensing/0_grid.png
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_1_lensing/0_grid.png?raw=true
   :width: 400
   :alt: Alternative text
 
