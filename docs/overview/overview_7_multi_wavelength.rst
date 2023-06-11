@@ -52,8 +52,7 @@ We simply use lists of the classes we are now familiar with, for example the ``I
             noise_map_path=path.join(dataset_path, f"{color}_noise_map.fits"),
             pixel_scales=pixel_scales,
         )
-        for color, pixel_scales in zip(color_list, pixel_scales_list)
-    ]
+        for color, pixel_scales in zip(color_list, pixel_scales_list)]
 
 Here is what our r-band and g-band observations of this lens system looks like.
 
@@ -65,6 +64,7 @@ as it helps deblend the two objects.
 .. code-block:: python
 
     for dataset in dataset_list:
+
         dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
         dataset_plotter.subplot_dataset()
 
