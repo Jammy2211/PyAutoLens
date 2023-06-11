@@ -81,7 +81,7 @@ bibliography: paper.bib
 
 Strong gravitational lensing, which can make a background source galaxy appears multiple times due to its light rays being 
 deflected by the mass of one or more foreground lens galaxies, provides astronomers with a powerful tool to study dark 
-matter, cosmology and the most distant Universe. `PyAutoLens` is an open-source Python 3.8+ package for strong 
+matter, cosmology and the most distant Universe. `PyAutoLens` is an open-source Python 3.8 - 3.10 package for strong 
 gravitational lensing, with core features including fully automated strong lens modeling of galaxies and galaxy 
 clusters, support for direct imaging and interferometer datasets and comprehensive tools for simulating samples of 
 strong lenses. The API allows users to perform ray-tracing by using analytic light and mass profiles to build strong 
@@ -187,7 +187,7 @@ taken without a local `PyAutoLens` installation.
 
 # Software Citations
 
-`PyAutoLens` is written in Python 3.8+ [@python] and uses the following software packages:
+`PyAutoLens` is written in Python 3.8 - 3.10 [@python] and uses the following software packages:
 
 - `Astropy` [@astropy1] [@astropy2]
 - `COLOSSUS` [@colossus]

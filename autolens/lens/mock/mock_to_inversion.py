@@ -6,13 +6,13 @@ class MockTracerToInversion:
         self,
         tracer,
         sparse_image_plane_grid_pg_list=None,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         self.tracer = tracer
 
         self.sparse_image_plane_grid_pg_list = sparse_image_plane_grid_pg_list
 
-        self.profiling_dict = profiling_dict
+        self.run_time_dict = run_time_dict
 
     def sparse_image_plane_grid_pg_list(self):
         return self.sparse_image_plane_grid_pg_list

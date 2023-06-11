@@ -459,7 +459,7 @@ class FitImagingPlotter(Plotter):
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,
                 visuals_2d=visuals_2d_no_critical_caustic,
-                auto_labels=AutoLabels(title="Image", filename=f"data{suffix}"),
+                auto_labels=AutoLabels(title="Data", filename=f"data{suffix}"),
             )
 
             if use_source_vmax:

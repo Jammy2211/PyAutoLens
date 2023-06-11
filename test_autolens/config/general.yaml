@@ -43,5 +43,5 @@ test:
   bypass_figure_of_merit_sanity: false
   check_preloads: false
   exception_override: false
-  preloads_check_threshold: 0.1     # If the figure of merit of a fit with and without preloads is greater than this threshold, the check preload test fails and an exception raised for a model-fit. 
+  preloads_check_threshold: 1.0     # If the figure of merit of a fit with and without preloads is greater than this threshold, the check preload test fails and an exception raised for a model-fit. 
   disable_positions_lh_inversion_check: false

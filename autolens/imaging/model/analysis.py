@@ -1,12 +1,7 @@
-import json
 import logging
 import numpy as np
-import os
-import time
-from typing import Dict, Optional
-from os import path
+from typing import Dict, Optional, Tuple
 
-from autoconf import conf
 import autofit as af
 import autogalaxy as ag
 
@@ -132,7 +127,7 @@ class AnalysisImaging(AnalysisDataset):
         self,
         instance: af.ModelInstance,
         preload_overwrite: Optional[Preloads] = None,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ) -> FitImaging:
         """
         Given a model instance create a `FitImaging` object.
@@ -150,7 +145,7 @@ class AnalysisImaging(AnalysisDataset):
         check_positions
             Whether the multiple image positions of the lensed source should be checked, i.e. whether they trace
             within the position threshold of one another in the source plane.
-        profiling_dict
+        run_time_dict
             A dictionary which times functions called to fit the model to data, for profiling.
 
         Returns
@@ -160,20 +155,20 @@ class AnalysisImaging(AnalysisDataset):
         """
         self.instance_with_associated_adapt_images_from(instance=instance)
         tracer = self.tracer_via_instance_from(
-            instance=instance, profiling_dict=profiling_dict
+            instance=instance, run_time_dict=run_time_dict
         )
 
         return self.fit_imaging_via_tracer_from(
             tracer=tracer,
             preload_overwrite=preload_overwrite,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
     def fit_imaging_via_tracer_from(
         self,
         tracer: Tracer,
         preload_overwrite: Optional[Preloads] = None,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ) -> FitImaging:
         """
         Given a `Tracer`, which the analysis constructs from a model instance, create a `FitImaging` object.
@@ -187,7 +182,7 @@ class AnalysisImaging(AnalysisDataset):
             The tracer of galaxies whose ray-traced model images are used to fit the imaging data.
         preload_overwrite
             If a `Preload` object is input this is used instead of the preloads stored as an attribute in the analysis.
-        profiling_dict
+        run_time_dict
             A dictionary which times functions called to fit the model to data, for profiling.
 
         Returns
@@ -203,90 +198,12 @@ class AnalysisImaging(AnalysisDataset):
             settings_pixelization=self.settings_pixelization,
             settings_inversion=self.settings_inversion,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
     @property
     def fit_func(self):
         return self.fit_imaging_via_instance_from
-
-    def profile_log_likelihood_function(
-        self, instance: af.ModelInstance, paths: Optional[af.DirectoryPaths] = None
-    ):
-        """
-        This function is optionally called throughout a model-fit to profile the log likelihood function.
-
-        All function calls inside the `log_likelihood_function` that are decorated with the `profile_func` are timed
-        with their times stored in a dictionary called the `profiling_dict`.
-
-        An `info_dict` is also created which stores information no aspects of the model and dataset that dictate
-        run times, so the profiled times can be interpreted with this context.
-
-        The results of this profiling are then output to hard-disk in the `preloads` folder of the model-fit results,
-        which they can be inspected to ensure run-times are as expected.
-
-        Parameters
-        ----------
-        instance
-            An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
-            via a non-linear search).
-        paths
-            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
-            visualization and the pickled objects used by the aggregator output by this function.
-        """
-        profiling_dict = {}
-        info_dict = {}
-
-        repeats = conf.instance["general"]["profiling"]["repeats"]
-        info_dict["repeats"] = repeats
-
-        start = time.time()
-
-        for i in range(repeats):
-
-            try:
-                fit = self.fit_imaging_via_instance_from(instance=instance)
-                fit.figure_of_merit
-            except Exception:
-                logger.info("Profiling failed. Returning without outputting information.")
-                return
-
-        fit_time = (time.time() - start) / repeats
-
-        info_dict["fit_time"] = fit_time
-
-        fit = self.fit_imaging_via_instance_from(
-            instance=instance, profiling_dict=profiling_dict
-        )
-        fit.figure_of_merit
-
-        info_dict["image_pixels"] = self.dataset.grid.sub_shape_slim
-        info_dict["sub_size_light_profiles"] = self.dataset.grid.sub_size
-        info_dict["sub_size_pixelization"] = self.dataset.grid_pixelization.sub_size
-        info_dict["psf_shape_2d"] = self.dataset.psf.shape_native
-
-        if fit.inversion is not None:
-            info_dict["source_pixels"] = len(fit.inversion.reconstruction)
-
-        if hasattr(fit.inversion, "w_tilde"):
-            info_dict[
-                "w_tilde_curvature_preload_size"
-            ] = fit.inversion.w_tilde.curvature_preload.shape[0]
-
-        if paths is not None:
-
-            try:
-                os.makedirs(paths.profile_path)
-            except FileExistsError:
-                pass
-
-            with open(path.join(paths.profile_path, "profiling_dict.json"), "w+") as f:
-                json.dump(fit.profiling_dict, f, indent=4)
-
-            with open(path.join(paths.profile_path, "info_dict.json"), "w+") as f:
-                json.dump(info_dict, f, indent=4)
-
-        return profiling_dict
 
     def stochastic_log_likelihoods_via_instance_from(self, instance: af.ModelInstance):
         """
@@ -379,7 +296,7 @@ class AnalysisImaging(AnalysisDataset):
 
         if self.positions_likelihood is not None:
             visualizer.visualize_image_with_positions(
-                image=self.dataset.image,
+                image=self.dataset.data,
                 positions=self.positions_likelihood.positions,
             )
 
@@ -543,3 +460,42 @@ class AnalysisImaging(AnalysisDataset):
         paths.save_object("psf", self.dataset.psf)
         paths.save_object("mask", self.dataset.mask)
         paths.save_object("positions_likelihood", self.positions_likelihood)
+
+    def profile_log_likelihood_function(
+        self, instance: af.ModelInstance, paths: Optional[af.DirectoryPaths] = None
+    ) -> Tuple[Dict, Dict]:
+        """
+        This function is optionally called throughout a model-fit to profile the log likelihood function.
+
+        All function calls inside the `log_likelihood_function` that are decorated with the `profile_func` are timed
+        with their times stored in a dictionary called the `run_time_dict`.
+
+        An `info_dict` is also created which stores information on aspects of the model and dataset that dictate
+        run times, so the profiled times can be interpreted with this context.
+
+        The results of this profiling are then output to hard-disk in the `preloads` folder of the model-fit results,
+        which they can be inspected to ensure run-times are as expected.
+
+        Parameters
+        ----------
+        instance
+            An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
+            via a non-linear search).
+        paths
+            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            visualization and the pickled objects used by the aggregator output by this function.
+
+        Returns
+        -------
+        Two dictionaries, the profiling dictionary and info dictionary, which contain the profiling times of the
+        `log_likelihood_function` and information on the model and dataset used to perform the profiling.
+        """
+        run_time_dict, info_dict = super().profile_log_likelihood_function(
+            instance=instance,
+        )
+
+        info_dict["psf_shape_2d"] = self.dataset.psf.shape_native
+
+        self.output_profiling_info(paths=paths, run_time_dict=run_time_dict, info_dict=info_dict)
+
+        return run_time_dict, info_dict

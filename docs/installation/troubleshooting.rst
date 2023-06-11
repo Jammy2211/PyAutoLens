@@ -67,8 +67,8 @@ your system.
 
 .. code-block:: bash
 
-    [general]
-    backend = default
+    general:
+      backend: default
 
 There have been reports that using the default backend causes crashes when running the test script below (either the
 code crashes without a error or your computer restarts). If this happens, change the config's backend until the test
@@ -76,5 +76,5 @@ works (TKAgg has worked on Linux machines, Qt5Agg has worked on new MACs). For e
 
 .. code-block:: bash
 
-    [general]
-    backend = TKAgg
+    general:
+      backend: TKAgg

@@ -21,7 +21,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         settings_pixelization: aa.SettingsPixelization = aa.SettingsPixelization(),
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads: Preloads = Preloads(),
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         Fits an interferometer dataset using a `Tracer` object.
@@ -62,7 +62,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         preloads
             Contains preloaded calculations (e.g. linear algebra matrices) which can skip certain calculations in
             the fit.
-        profiling_dict
+        run_time_dict
             A dictionary which if passed to the fit records how long fucntion calls which have the `profile_func`
             decorator take to run.
         """
@@ -79,9 +79,9 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
 
         self.preloads = preloads
 
-        self.profiling_dict = profiling_dict
+        self.run_time_dict = run_time_dict
 
-        super().__init__(dataset=dataset, profiling_dict=profiling_dict)
+        super().__init__(dataset=dataset, run_time_dict=run_time_dict)
         AbstractFitInversion.__init__(
             self=self, model_obj=tracer, settings_inversion=settings_inversion
         )
@@ -257,10 +257,10 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         -------
         A new fit which has used new preloads input into this function but the same dataset, tracer and other settings.
         """
-        if self.profiling_dict is not None:
-            profiling_dict = {}
+        if self.run_time_dict is not None:
+            run_time_dict = {}
         else:
-            profiling_dict = None
+            run_time_dict = None
 
         if settings_inversion is None:
             settings_inversion = self.settings_inversion
@@ -271,5 +271,5 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
             settings_pixelization=self.settings_pixelization,
             settings_inversion=settings_inversion,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )

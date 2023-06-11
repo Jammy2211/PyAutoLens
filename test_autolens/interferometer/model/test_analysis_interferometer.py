@@ -199,3 +199,26 @@ def test__stochastic_log_likelihoods_for_instance(interferometer_7):
 
     assert len(log_evidences) == 2
     assert log_evidences[0] != log_evidences[1]
+
+
+def test__profile_log_likelihood_function(interferometer_7):
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
+
+    lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph())
+    source = al.Galaxy(redshift=1.0, pixelization=pixelization)
+
+    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+
+    instance = model.instance_from_unit_vector([])
+
+    analysis = al.AnalysisInterferometer(dataset=interferometer_7)
+
+    run_time_dict, info_dict = analysis.profile_log_likelihood_function(
+        instance=instance
+    )
+
+    assert "regularization_term_0" in run_time_dict
+    assert "log_det_regularization_matrix_term_0" in run_time_dict

@@ -206,7 +206,7 @@ strong gravitational lensingtick_maker.min_value.
    :hidden:
 
    overview/overview_1_lensing
-   overview/overview_2_fitting
+   overview/overview_2_fit
    overview/overview_3_modeling
    overview/overview_4_simulate
    overview/overview_5_pixelizations
