@@ -68,14 +68,16 @@ as it helps deblend the two objects.
         dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
         dataset_plotter.subplot_dataset()
 
-Here are the images:
+Here are the g-band images:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/0_subplot_dataset.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
+Here are the r-band images:
+
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/1_subplot_dataset.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
 We define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
@@ -100,14 +102,16 @@ necessary, but provides a more reliable analysis.
         dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
         dataset_plotter.subplot_dataset()
 
-Here is how the masked datasets appear:
+Here is how the masked g-band dataset appears:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/2_subplot_dataset.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
+Here is how the masked r-band dataset appears:
+
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/3_subplot_dataset.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
 Analysis
@@ -218,14 +222,16 @@ different intensities.
         )
         tracer_plotter.subplot_tracer()
 
-Here is how these subplots appear:
+Here is how the g-band subplot appears:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/6_subplot_tracer.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
+Here is how the r-band subplot appears:
+
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/7_subplot_tracer.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
 Subplots of each fit show that a good overall fit is achieved to each dataset.
@@ -238,14 +244,16 @@ Subplots of each fit show that a good overall fit is achieved to each dataset.
         )
         fit_plotter.subplot_fit()
 
-Here is how these subplots appear:
+Here is how the g-band subplot appears:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/8_subplot_fit.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
+Here is how the r-band subplot appears:
+
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/9_subplot_fit.png?raw=true
-    :width: 600
+    :width: 800
     :alt: Alternative text
 
 Wavelength Dependence
@@ -315,19 +323,20 @@ script showing this in full).
 Below are mock strong lens images of a system observed at a green wavelength (g-band) and with an interferometer at
 sub millimeter wavelengths.
 
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/g_data.png?raw=true
+  :width: 600
+  :alt: Alternative text
+
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/dirty_image.png?raw=true
+  :width: 600
+  :alt: Alternative text
+
 A number of benefits are apparent if we combine the analysis of both datasets at both wavelengths:
 
 - The lens galaxy is invisible at sub-mm wavelengths, making it straight-forward to infer a lens mass model by fitting the source at submm wavelengths.
 
 - The source galaxy appears completely different in the g-band and at sub-millimeter wavelengths, providing a lot more information with which to constrain the lens galaxy mass model.
 
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/dirty_image.png?raw=true
-  :width: 600
-  :alt: Alternative text
-
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_7_multi_wavelength/g_data.png?raw=true
-  :width: 600
-  :alt: Alternative text
 
 Linear Light Profiles
 ---------------------

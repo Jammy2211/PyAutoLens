@@ -40,7 +40,7 @@ model using light profiles!
     dataset_plotter.subplot_dataset()
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_5_pixelizations/0_subplot_dataset.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
 We are going to fit this data via a pixelization, which requires us to define a 2D mask within which the pixelization
@@ -116,7 +116,7 @@ Here is what the subplot looks like, with the following worth noting:
   reconstruct the source galaxy.
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_5_pixelizations/1_subplot_fit.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
 Alternative Pixelizations
@@ -150,7 +150,7 @@ is noticeably smoother.
 Here is the subplot:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_5_pixelizations/2_subplot_fit.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
 Voronoi

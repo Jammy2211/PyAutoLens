@@ -33,7 +33,7 @@ infer the lens and source galaxy light and mass models that fit the data well!
 Here is what the dataset looks like:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_3_modeling/0_subplot_dataset.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
 We next mask the dataset, to remove the exterior regions of the image that do not contain emission from the lens or
@@ -53,7 +53,7 @@ source galaxy.
 Note how when we plot the ``Imaging`` below, the figure now zooms into the masked region.
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_3_modeling/1_subplot_dataset.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
 PyAutoFit
@@ -110,7 +110,7 @@ This gives the following output:
 
 .. code-block:: bash
 
-Total Free Parameters = 8
+    Total Free Parameters = 8
 
     model                                       Galaxy (N=8)
         bulge                                   Sersic (N=5)
@@ -536,37 +536,24 @@ The result also contains the maximum log likelihood `Tracer` and `FitImaging` ob
     fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
     fit_plotter.subplot_fit()
 
-Here's what the tracer and model-fit of the model which maximizes the log likelihood looks like.
+Here's what the maximum likelihood tracer looks like:
+
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_3_modeling/2_subplot_tracer.png?raw=true
+  :width: 800
+  :alt: Alternative text
+
+Here's what the maximum likelihood fit looks like:
+
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_3_modeling/3_subplot_fit.png?raw=true
+  :width: 800
+  :alt: Alternative text
 
 The fit has more significant residuals than the previous tutorial. It is clear that the lens model cannot fully
 capture the central emission of the lens galaxy and the complex structure of the lensed source galaxy. Nevertheless,
-it is sufficient to estimate simple lens quantities, like the Einstein Mass.
-
-The next examples cover all the features that **PyAutoLens** has to improve the model-fit.
-
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_3_modeling/2_subplot_tracer.png?raw=true
-  :width: 600
-  :alt: Alternative text
-
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_3_modeling/3_subplot_fit.png?raw=true
-  :width: 600
-  :alt: Alternative text
+it is sufficient to estimate simple lens quantities, like the Einstein Mass. The next examples cover all the
+features that **PyAutoLens** has to improve the model-fit.
 
 A full guide of result objects is contained in the `autolens_workspace/*/imaging/results` package.
-
-The result also contains the maximum log likelihood ``Tracer`` and ``FitImaging`` objects and which can easily be
-plotted.
-
-.. code-block:: python
-
-    tracer_plotter = aplt.TracerPlotter(tracer=result.max_log_likelihood_tracer, grid=mask.derive_grid.masked)
-    tracer_plotter.subplot_tracer()
-
-    fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
-    fit_plotter.subplot_fit()
-
-The script ``autolens_workspace/*/results`` contains a full description of all information contained
-in a ``Result``.
 
 Model Customization
 -------------------

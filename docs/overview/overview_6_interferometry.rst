@@ -190,7 +190,7 @@ Note that the fit is not performed in real-space, but plotting it in real-space 
 Here is what the subplot image looks like:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_6_interferometer/5_subplot_fit.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
 Pixelized Sources
@@ -301,7 +301,7 @@ results, for example the maximum log likelihood fit:
 Here is what it looks like:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_6_interferometer/7_subplot_fit.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
 Simulations
@@ -329,7 +329,7 @@ Gaussian noise to the visibilities:
 Here is the subplot of the simulated interferometer dataset:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_6_interferometer/8_subplot_dataset.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
 Wrap-Up

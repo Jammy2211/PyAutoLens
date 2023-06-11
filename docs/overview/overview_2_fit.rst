@@ -235,7 +235,7 @@ anticipate seeing a lot of!
 Here is the subplot:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/11_subplot_fit.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
 
@@ -295,7 +295,7 @@ A new fit using this plane shows residuals, normalized residuals and chi-squared
 Here is what this bad fit looks like:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_2_fit/12_subplot_fit.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
 Its ``log_likelihood`` is also significantly lower than the good fit above!
