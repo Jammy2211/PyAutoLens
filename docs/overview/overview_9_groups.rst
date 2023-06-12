@@ -215,7 +215,7 @@ This will extract a lot more information from the data than the point-source mod
 that you can study the properties of the highly magnified source galaxy. Here is what the fit looks like:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_9_groups/subplot_fit.png?raw=true
-  :width: 600
+  :width: 800
   :alt: Alternative text
 
 For group-scale lenses like this one, with a modest number of lens and source galaxies it is feasible to
