@@ -49,7 +49,18 @@ The following links are useful for new starters:
 
 - `The introduction Jupyter Notebook on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=introduction.ipynb>`_, where you can try **PyAutoLens** in a web browser (without installation).
 
-- `The autolens_workspace GitHub repository <https://github.com/Jammy2211/autolens_workspace>`_, which includes example scripts and the `HowToLens Jupyter notebook tutorials <https://github.com/Jammy2211/autolens_workspace/tree/master/notebooks/howtolens>`_ which give new users a step-by-step introduction to **PyAutoLens**.
+- `The autolens_workspace GitHub repository <https://github.com/Jammy2211/autolens_workspace>`_, which includes example scripts and the HowToLens Jupyter notebook lectures.
+
+Support
+-------
+
+Support for installation issues, help with lens modeling and using **PyAutoLens** is available by
+`raising an issue on the GitHub issues page <https://github.com/Jammy2211/PyAutoLens/issues>`_.
+
+We also offer support on the **PyAutoLens** `Slack channel <https://pyautolens.slack.com/>`_, where we also provide the
+latest updates on **PyAutoLens**. Slack is invitation-only, so if you'd like to join send
+an `email <https://github.com/Jammy2211>`_ requesting an invite.
+
 
 API Overview
 ------------
@@ -182,13 +193,3 @@ fits the lens galaxy's mass with an ``Isothermal`` and the source galaxy's light
     model from the Dynesty parameter space search.
     """
     print(result.samples.max_log_likelihood())
-
-Support
--------
-
-Support for installation issues, help with lens modeling and using **PyAutoLens** is available by
-`raising an issue on the GitHub issues page <https://github.com/Jammy2211/PyAutoLens/issues>`_.
-
-We also offer support on the **PyAutoLens** `Slack channel <https://pyautolens.slack.com/>`_, where we also provide the
-latest updates on **PyAutoLens**. Slack is invitation-only, so if you'd like to join send
-an `email <https://github.com/Jammy2211>`_ requesting an invite.

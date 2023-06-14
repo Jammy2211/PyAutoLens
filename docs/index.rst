@@ -18,7 +18,7 @@ The following links are useful for new starters:
 
 - `The introduction Jupyter Notebook on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=introduction.ipynb>`_, where you can try **PyAutoLens** in a web browser (without installation).
 
-- `The autolens_workspace GitHub repository <https://github.com/Jammy2211/autolens_workspace>`_, which includes example scripts and the `HowToLens Jupyter notebook tutorials <https://github.com/Jammy2211/autolens_workspace/tree/master/notebooks/howtolens>`_ which give new users a step-by-step introduction to **PyAutoLens**.
+- `The autolens_workspace GitHub repository <https://github.com/Jammy2211/autolens_workspace>`_, which includes example scripts and the HowToLens Jupyter notebook lectures.
 
 Strong Gravitational Lensing
 ============================
@@ -202,7 +202,7 @@ For new **PyAutoLens** users, we recommend they start by
 already!), read through the ``introduction.ipynb`` notebook on
 the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ and take the
 `HowToLens Jupyter notebook lecture series <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_ on
-strong gravitational lensingtick_maker.min_value.
+strong gravitational lensing.
 
 .. toctree::
    :caption: Overview:
