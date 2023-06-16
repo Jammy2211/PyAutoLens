@@ -45,7 +45,7 @@ Getting Started
 
 The following links are useful for new starters:
 
-- `The PyAutoLens readthedocs <https://pyautolens.readthedocs.io/en/latest>`_: including `an installation guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ and `overview of lensing analysis features <https://pyautolens.readthedocs.io/en/latest/overview/overview_1_lensing.html>`_.
+- `The PyAutoLens readthedocs <https://pyautolens.readthedocs.io/en/latest>`_: including `an installation guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ and `overview of lens analysis features <https://pyautolens.readthedocs.io/en/latest/overview/overview_1_lensing.html>`_.
 
 - `The introduction Jupyter Notebook on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=introduction.ipynb>`_: try **PyAutoLens** in a web browser (without installation).
 
@@ -61,6 +61,14 @@ We also offer support on the **PyAutoLens** `Slack channel <https://pyautolens.s
 latest updates on **PyAutoLens**. Slack is invitation-only, so if you'd like to join send
 an `email <https://github.com/Jammy2211>`_ requesting an invite.
 
+HowToLens
+---------
+
+For users less familiar with gravitational lensing, Bayesian inference and scientific analysis
+you may wish to read through the **HowToLens** lectures. These teach you the basic principles of gravitational lensing
+and Bayesian inference, with the content pitched at undergraduate level and above.
+
+A complete overview of the lectures `is provided on the HowToLens readthedocs page <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
 
 API Overview
 ------------

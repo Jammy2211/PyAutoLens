@@ -18,12 +18,23 @@ You should also specify the non-linear search(es) you use in your analysis (e.g.
 the main body of text, and delete as appropriate any packages your analysis did not use. The citations.bib file includes
 the citation key for all of these projects.
 
+Dynesty
+-------
+
+If you used the nested sampling algorithm Dynesty, please follow the citation instructions `on the dynesty readthedocs <https://dynesty.readthedocs.io/en/latest/references.html>`_.
+
+Mass Models
+-----------
+
 If you use decomposed mass models (e.g. stellar mass models like an ``Sersic`` or dark matter models like
 an ``NFW``) please cite the following paper https://arxiv.org/abs/2106.11464 under
 citation key ``Oguri2021``. Our deflection angle calculations are based on this method.
 
 If you specifically use a decomposed mass model with the ``GeneralizedNFW`` please cite the following paper https://academic.oup.com/mnras/article/488/1/1387/5526256 under
 citation key ``Anowar2019``.
+
+Science Papers
+--------------
 
 The citations.bib file above also includes my work on `using strong lensing to study galaxy structure
 <https://ui.adsabs.harvard.edu/abs/2019MNRAS.489.2049N/abstract>`_. If you're feeling kind, please go ahead and stick

@@ -366,3 +366,66 @@ year = {2019}
     url = {https://doi.org/10.1093/mnras/stz1796},
     eprint = {https://academic.oup.com/mnras/article-pdf/488/1/1387/28937972/stz1796.pdf},
 }
+
+@INPROCEEDINGS{dynesty1,
+       author = {{Skilling}, John},
+        title = "{Nested Sampling}",
+     keywords = {02.50.Tt, Inference methods},
+    booktitle = {Bayesian Inference and Maximum Entropy Methods in Science and Engineering: 24th International Workshop on Bayesian Inference and Maximum Entropy Methods in Science and Engineering},
+         year = 2004,
+       editor = {{Fischer}, Rainer and {Preuss}, Roland and {Toussaint}, Udo Von},
+       series = {American Institute of Physics Conference Series},
+       volume = {735},
+        month = nov,
+        pages = {395-405},
+          doi = {10.1063/1.1835238},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2004AIPC..735..395S},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
+
+
+@article{dynesty2,
+abstract = {Nested sampling estimates directly how the likelihood function relates to prior mass. The evidence (alternatively the marginal likelihood, marginal density of the data, or the prior predictive) is immediately obtained by summation. It is the prime result of the computation, and is accompanied by an estimate of numerical uncertainty. Samples from the posterior distribution are an optional by-product, obtainable for any temperature. The method relies on sampling within a hard constraint on likelihood value, as opposed to the softened likelihood of annealing methods. Progress depends only on the shape of the "nested"contours of likelihood, and not on the likelihood values. This invariance (over monotonic relabelling) allows the method to deal with a class of phasechange problems which effectively defeat thermal annealing. {\textcopyright} 2006 International Society for Bayesian Analysis.},
+archivePrefix = {arXiv},
+arxivId = {arXiv:1011.1669v3},
+author = {Skilling, John},
+doi = {10.1214/06-BA127},
+eprint = {arXiv:1011.1669v3},
+isbn = {9788578110796},
+issn = {19360975},
+journal = {Bayesian Analysis},
+keywords = {Algorithm,Annealing,Bayesian computation,Evidence,Marginal likelihood,Model selection,Nest,Phase change},
+number = {4},
+pages = {833--860},
+pmid = {25246403},
+title = {{Nested sampling for general Bayesian computation}},
+url = {http://projecteuclid.org/euclid.ba/1340370944},
+volume = {1},
+year = {2006}
+}
+
+@article{dynesty3,
+abstract = {We present further development and the first public release of our multimodal nested sampling algorithm, called MultiNest. This Bayesian inference tool calculates the evidence, with an associated error estimate, and produces posterior samples from distributions that may contain multiple modes and pronounced (curving) degeneracies in high dimensions. The developments presented here lead to further substantial improvements in sampling efficiency and robustness, as compared to the original algorithm presented in Feroz and Hobson, which itself significantly outperformed existing Markov chain Monte Carlo techniques in a wide range of astrophysical inference problems. The accuracy and economy of the MultiNest algorithm are demonstrated by application to two toy problems and to a cosmological inference problem focusing on the extension of the vanilla $\Lambda$ cold dark matter model to include spatial curvature and a varying equation of state for dark energy. The MultiNest software, which is fully parallelized using MPI and includes an interface to CosmoMC, is available at http://www.mrao.cam.ac.uk/software/multinest/. It will also be released as part of the SuperBayeS package, for the analysis of supersymmetric theories of particle physics, at http://www.superbayes.org. {\textcopyright} 2009 RAS.},
+archivePrefix = {arXiv},
+arxivId = {0809.3437},
+author = {Feroz, F. and Hobson, M. P. and Bridges, M.},
+doi = {10.1111/j.1365-2966.2009.14548.x},
+eprint = {0809.3437},
+isbn = {0035-8711},
+issn = {00358711},
+journal = {MNRAS},
+keywords = {Methods: Data analysis,Methods: Statistical},
+number = {4},
+pages = {1601--1614},
+pmid = {29176},
+title = {{MultiNest: An efficient and robust Bayesian inference tool for cosmology and particle physics}},
+volume = {398},
+year = {2009}
+}
+
+@article{dynesty4,
+title={joshspeagle/dynesty: v2.1.2}, DOI={10.5281/zenodo.7995596},
+abstractNote={<p>This is a bug release mostly concerning the checkpointing. Check the changelog for more details.</p>},
+publisher={Zenodo},
+author={Sergey Koposov and Josh Speagle and Kyle Barbary and Gregory Ashton and Ed Bennett and Johannes Buchner
+and Carl Scheffler and Ben Cook and Colm Talbot and James Guillochon and et al.}, year={2023}, month={Jun} }

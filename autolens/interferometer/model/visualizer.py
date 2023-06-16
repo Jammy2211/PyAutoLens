@@ -112,6 +112,12 @@ class VisualizerInterferometer(Visualizer):
                 dirty_chi_squared_map=True,
             )
 
+            plane_index_max = len(fit.tracer.planes) - 1
+
+            fit_plotter.figures_2d_of_planes(
+                plane_index=plane_index_max, plane_image=True
+            )
+
         if not during_analysis and should_plot("all_at_end_fits"):
             mat_plot_2d = self.mat_plot_2d_from(
                 subfolders=path.join("fit_dataset", "fits"), format="fits"
@@ -129,4 +135,10 @@ class VisualizerInterferometer(Visualizer):
                 dirty_residual_map=True,
                 dirty_normalized_residual_map=True,
                 dirty_chi_squared_map=True,
+            )
+
+            plane_index_max = len(fit.tracer.planes) - 1
+
+            fit_plotter.figures_2d_of_planes(
+                plane_index=plane_index_max, plane_image=True
             )

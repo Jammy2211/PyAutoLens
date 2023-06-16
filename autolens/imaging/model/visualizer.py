@@ -111,5 +111,5 @@ class VisualizerImaging(Visualizer):
             )
 
             fit_plotter.figures_2d_of_planes(
-                subtracted_image=True, model_image=True, interpolate_to_uniform=True
+                subtracted_image=True, model_image=True, plane_image=True, interpolate_to_uniform=True
             )
