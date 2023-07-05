@@ -34,8 +34,8 @@ class TestSimulatorImaging:
         )
 
         assert dataset.shape_native == (20, 20)
-        assert dataset.data.native[0, 0] != imaging_via_image.image.native[0, 0]
-        assert dataset.data.native[10, 10] == imaging_via_image.image.native[10, 10]
+        assert dataset.data.native[0, 0] != imaging_via_image.data.native[0, 0]
+        assert dataset.data.native[10, 10] == imaging_via_image.data.native[10, 10]
         assert (dataset.psf == imaging_via_image.psf).all()
         assert (dataset.noise_map == imaging_via_image.noise_map).all()
 
@@ -70,7 +70,7 @@ class TestSimulatorImaging:
         )
 
         assert dataset.shape_native == (20, 20)
-        assert (dataset.data.native == imaging_via_image.image.native).all()
+        assert (dataset.data.native == imaging_via_image.data.native).all()
         assert (dataset.psf == imaging_via_image.psf).all()
         assert (dataset.noise_map == imaging_via_image.noise_map).all()
 
@@ -117,6 +117,6 @@ class TestSimulatorImaging:
         )
 
         assert dataset.shape_native == (11, 11)
-        assert (dataset.data.native == imaging_via_image.image.native).all()
+        assert (dataset.data.native == imaging_via_image.data.native).all()
         assert (dataset.psf == imaging_via_image.psf).all()
         assert (dataset.noise_map == imaging_via_image.noise_map).all()

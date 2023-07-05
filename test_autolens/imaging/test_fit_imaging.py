@@ -299,7 +299,7 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
         galaxies=[g0, g0_linear, g2, galaxy_pix_0, galaxy_pix_1]
     )
 
-    masked_imaging_7x7.image[0] = 3.0
+    masked_imaging_7x7.data[0] = 3.0
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer, settings_inversion=al.SettingsInversion(use_w_tilde=False))
 
