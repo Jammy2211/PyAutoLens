@@ -380,7 +380,6 @@ class AnalysisImaging(AnalysisDataset):
     def make_result(
         self,
         samples: af.SamplesPDF,
-        model: af.Collection,
         sigma=1.0,
         use_errors=True,
         use_widths=False,
@@ -404,16 +403,13 @@ class AnalysisImaging(AnalysisDataset):
         samples
             A PyAutoFit object which contains the samples of the non-linear search, for example the chains of an MCMC
             run of samples of the nested sampler.
-        model
-            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
-            the imaging data.
 
         Returns
         -------
         ResultImaging
             The result of fitting the model to the imaging dataset, via a non-linear search.
         """
-        return ResultImaging(samples=samples, model=model, analysis=self)
+        return ResultImaging(samples=samples, analysis=self)
 
     def save_attributes_for_aggregator(self, paths: af.DirectoryPaths):
         """
