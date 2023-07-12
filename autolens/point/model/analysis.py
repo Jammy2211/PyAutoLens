@@ -113,12 +113,11 @@ class AnalysisPoint(AgAnalysis, AnalysisLensing):
     def make_result(
         self,
         samples: af.SamplesPDF,
-        model: af.Collection,
         sigma=1.0,
         use_errors=True,
         use_widths=False,
     ):
-        return ResultPoint(samples=samples, model=model, analysis=self)
+        return ResultPoint(samples=samples, analysis=self)
 
     def save_attributes_for_aggregator(self, paths: af.DirectoryPaths):
         paths.save_object("dataset", self.point_dict)

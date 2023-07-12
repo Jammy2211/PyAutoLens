@@ -17,7 +17,7 @@ def test___linear_light_profiles_in_result(analysis_imaging_7x7):
 
     samples = al.m.MockSamples(max_log_likelihood_instance=instance)
 
-    result = ResultImaging(samples=samples, analysis=analysis_imaging_7x7, model=None)
+    result = ResultImaging(samples=samples, analysis=analysis_imaging_7x7)
 
     assert not isinstance(
         result.max_log_likelihood_tracer.galaxies[0].bulge,

@@ -8,6 +8,14 @@ import autolens as al
 from autofit.non_linear.samples import Sample
 
 
+def clean(database_file, result_path):
+    if path.exists(database_file):
+        os.remove(database_file)
+
+    if path.exists(result_path):
+        shutil.rmtree(result_path)
+
+
 @pytest.fixture(name="model")
 def make_model():
     return af.Collection(
@@ -36,25 +44,5 @@ def make_samples(model):
     )
 
     return al.m.MockSamples(
-        model=model, sample_list=sample_list, max_log_likelihood_instance=tracer
+        model=model, sample_list=sample_list, max_log_likelihood_instance=tracer,
     )
-
-
-@pytest.fixture(name="analysis")
-def make_analysis(masked_imaging_7x7):
-    def null(paths: af.DirectoryPaths, result):
-        pass
-
-    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
-
-    analysis.save_results_for_aggregator = null
-
-    return analysis
-
-
-def clean(database_file, result_path):
-    if path.exists(database_file):
-        os.remove(database_file)
-
-    if path.exists(result_path):
-        shutil.rmtree(result_path)
