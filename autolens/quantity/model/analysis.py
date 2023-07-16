@@ -133,9 +133,6 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
     def make_result(
         self,
         samples: af.SamplesPDF,
-        sigma=1.0,
-        use_errors=True,
-        use_widths=False,
     ) -> ResultQuantity:
         """
         After the non-linear search is complete create its `ResultQuantity`, which includes:

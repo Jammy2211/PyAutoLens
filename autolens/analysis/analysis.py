@@ -326,7 +326,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
     def stochastic_log_likelihoods_via_instance_from(self, instance) -> List[float]:
         raise NotImplementedError()
 
-    def save_results_for_aggregator(
+    def save_results(
         self, paths: af.DirectoryPaths, result: ResultDataset
     ):
         """

@@ -7,10 +7,6 @@ nest:
       number_of_cores: 1
     printing:
       silence: false
-    prior_passer:
-      sigma: 3.0
-      use_errors: true
-      use_widths: true
     run:
       dlogz_init: 0.01
       logl_max_init: .inf
@@ -43,10 +39,6 @@ nest:
       number_of_cores: 1
     printing:
       silence: false
-    prior_passer:
-      sigma: 3.0
-      use_errors: true
-      use_widths: true
     run:
       dlogz: null
       logl_max: .inf

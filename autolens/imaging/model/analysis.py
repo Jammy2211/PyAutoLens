@@ -380,9 +380,6 @@ class AnalysisImaging(AnalysisDataset):
     def make_result(
         self,
         samples: af.SamplesPDF,
-        sigma=1.0,
-        use_errors=True,
-        use_widths=False,
     ) -> ResultImaging:
         """
         After the non-linear search is complete create its `Result`, which includes:
@@ -411,7 +408,7 @@ class AnalysisImaging(AnalysisDataset):
         """
         return ResultImaging(samples=samples, analysis=self)
 
-    def save_attributes_for_aggregator(self, paths: af.DirectoryPaths):
+    def save_attributes(self, paths: af.DirectoryPaths):
         """
         Before the non-linear search begins, this routine saves attributes of the `Analysis` object to the `pickles`
         folder such that they can be loaded after the analysis using PyAutoFit's database and aggregator tools.
@@ -446,7 +443,7 @@ class AnalysisImaging(AnalysisDataset):
             The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
             visualization, and the pickled objects used by the aggregator output by this function.
         """
-        super().save_attributes_for_aggregator(paths=paths)
+        super().save_attributes(paths=paths)
 
         paths.save_object("psf", self.dataset.psf)
         paths.save_object("mask", self.dataset.mask)

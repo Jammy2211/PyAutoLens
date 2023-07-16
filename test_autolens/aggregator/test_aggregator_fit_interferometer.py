@@ -15,7 +15,7 @@ def make_analysis(interferometer_7):
 
     analysis = al.AnalysisInterferometer(dataset=interferometer_7)
 
-    analysis.save_results_for_aggregator = null
+    analysis.save_results = null
 
     return analysis
 
