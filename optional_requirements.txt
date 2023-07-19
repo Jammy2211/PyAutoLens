@@ -5,3 +5,4 @@ zeus-mcmc==2.5.4
 getdist==1.4
 jax==0.4.10
 jaxlib==0.4.10
+ultranest==3.6.2
