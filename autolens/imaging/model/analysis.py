@@ -452,7 +452,12 @@ class AnalysisImaging(AnalysisDataset):
         )
         self.dataset.mask.output_to_fits(file_path=dataset_path / "mask.fits", overwrite=True)
 
-        paths.save_object("positions_likelihood", self.positions_likelihood)
+        if self.positions_likelihood is not None:
+
+            self.positions_likelihood.positions.output_to_json(
+                file_path=dataset_path / "positions.json", overwrite=True
+            )
+
 
     def profile_log_likelihood_function(
         self, instance: af.ModelInstance, paths: Optional[af.DirectoryPaths] = None

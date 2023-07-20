@@ -44,3 +44,35 @@ def test__output_positions_info():
     assert "Positions" in output[0]
 
     os.remove(positions_file)
+
+
+@pytest.fixture(name="settings_dict")
+def make_settings_dict():
+    return {
+        'type': 'autolens.analysis.positions.PositionsLHPenalty',
+        'positions': {'type': 'numpy.ndarray', 'array': [[1.0, 2.0], [3.0, 4.0]], 'dtype': 'float64'},
+        'threshold': 0.1,
+        'log_likelihood_penalty_factor': 100000000.0
+    }
+
+
+def test_settings_from_dict(settings_dict):
+    assert isinstance(
+        al.PositionsLHPenalty.from_dict(settings_dict), al.PositionsLHPenalty
+    )
+
+
+def test_file():
+    filename = "/tmp/temp.json"
+
+    al.PositionsLHPenalty(
+        positions=al.Grid2DIrregular([(1.0, 2.0), (3.0, 4.0)]),
+        threshold=0.1
+    ).output_to_json(filename)
+
+    try:
+        assert isinstance(
+            al.PositionsLHPenalty.from_json(filename), al.PositionsLHPenalty
+        )
+    finally:
+        os.remove(filename)
