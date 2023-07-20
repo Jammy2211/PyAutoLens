@@ -529,12 +529,6 @@ class AnalysisInterferometer(AnalysisDataset):
                 file_path=dataset_path / "positions.json", overwrite=True
             )
 
-        if self.preloads.sparse_image_plane_grid_pg_list is not None:
-            paths.save_object(
-                "preload_sparse_grids_of_planes",
-                self.preloads.sparse_image_plane_grid_pg_list,
-            )
-
     def profile_log_likelihood_function(
         self, instance: af.ModelInstance, paths: Optional[af.DirectoryPaths] = None
     ) -> Tuple[Dict, Dict]:
