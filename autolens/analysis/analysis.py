@@ -350,6 +350,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         mesh_list = ag.util.model.mesh_list_from(model=result.model)
 
         if len(mesh_list) > 0:
+            ddd
             paths.save_object(
                 "preload_sparse_grids_of_planes",
                 result.max_log_likelihood_fit.tracer_to_inversion.sparse_image_plane_grid_pg_list,

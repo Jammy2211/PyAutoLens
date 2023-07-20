@@ -511,9 +511,24 @@ class AnalysisInterferometer(AnalysisDataset):
         """
         super().save_attributes(paths=paths)
 
-        paths.save_object("uv_wavelengths", self.dataset.uv_wavelengths)
-        paths.save_object("real_space_mask", self.dataset.real_space_mask)
-        paths.save_object("positions_likelihood", self.positions_likelihood)
+        dataset_path = paths._files_path / "dataset"
+
+        aa.util.array_2d.numpy_array_2d_to_fits(
+            array_2d=self.dataset.uv_wavelengths,
+            file_path=dataset_path / "uv_wavelengths.fits",
+            overwrite=True
+        )
+
+        self.dataset.real_space_mask.output_to_fits(
+            file_path=dataset_path / "real_space_mask.fits", overwrite=True
+        )
+
+        if self.positions_likelihood is not None:
+
+            self.positions_likelihood.positions.output_to_json(
+                file_path=dataset_path / "positions.json", overwrite=True
+            )
+
         if self.preloads.sparse_image_plane_grid_pg_list is not None:
             paths.save_object(
                 "preload_sparse_grids_of_planes",
