@@ -117,7 +117,6 @@ class AnalysisPoint(AgAnalysis, AnalysisLensing):
         return ResultPoint(samples=samples, analysis=self)
 
     def save_attributes(self, paths: af.DirectoryPaths):
-
         self.point_dict.output_to_json(
             file_path=paths._files_path / "point_dict.json", overwrite=True
         )

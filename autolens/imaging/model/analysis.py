@@ -22,14 +22,11 @@ logger.setLevel(level="INFO")
 
 
 class AnalysisImaging(AnalysisDataset):
-    @property
-    def imaging(self):
-        return self.dataset
 
     def modify_before_fit(self, paths: af.DirectoryPaths, model: af.Collection):
         """
-        PyAutoFit calls this function immediately before the non-linear search begins, therefore it can be used to
-        perform tasks using the final model parameterization.
+        This function is called immediately before the non-linear search begins and performs final tasks and checks 
+        before it begins.
 
         This function:
 

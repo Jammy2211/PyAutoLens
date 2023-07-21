@@ -11,18 +11,21 @@ from autolens.imaging.model.result import ResultImaging
 directory = os.path.dirname(os.path.realpath(__file__))
 
 
-def test__max_log_likelihood_tracer(analysis_imaging_7x7, tracer_x2_plane_7x7,):
+def test__max_log_likelihood_tracer(
+    analysis_imaging_7x7,
+    tracer_x2_plane_7x7,
+):
     model = af.Collection(
         galaxies=af.Collection(
             lens=al.Galaxy(redshift=0.5, mass=al.mp.Isothermal),
-            source=al.Galaxy(redshift=1.0, light=al.lp.Sersic)
+            source=al.Galaxy(redshift=1.0, light=al.lp.Sersic),
         )
     )
 
     samples = al.m.MockSamples(
         model=model,
         max_log_likelihood_instance=tracer_x2_plane_7x7,
-        gaussian_tuples=[(1.0, 2.0)] * model.prior_count
+        gaussian_tuples=[(1.0, 2.0)] * model.prior_count,
     )
 
     search = al.m.MockSearch(name="test_search_2", samples=samples)
@@ -293,7 +296,6 @@ def test__positions_likelihood_from(analysis_imaging_7x7):
         ]
     )
 
-
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
     result = res.Result(samples=samples, analysis=analysis_imaging_7x7)
@@ -317,7 +319,8 @@ def test__results_include_mask__available_as_property(
     analysis_imaging_7x7, masked_imaging_7x7, samples_with_result
 ):
     result = res.ResultDataset(
-        samples=samples_with_result, analysis=analysis_imaging_7x7,
+        samples=samples_with_result,
+        analysis=analysis_imaging_7x7,
     )
 
     assert (result.mask == masked_imaging_7x7.mask).all()
@@ -327,7 +330,8 @@ def test__results_include_positions__available_as_property(
     analysis_imaging_7x7, masked_imaging_7x7, samples_with_result
 ):
     result = res.ResultDataset(
-        samples=samples_with_result, analysis=analysis_imaging_7x7,
+        samples=samples_with_result,
+        analysis=analysis_imaging_7x7,
     )
 
     assert result.positions == None
@@ -341,7 +345,8 @@ def test__results_include_positions__available_as_property(
     )
 
     result = res.ResultDataset(
-        samples=samples_with_result, analysis=analysis,
+        samples=samples_with_result,
+        analysis=analysis,
     )
 
     assert (result.positions[0] == np.array([1.0, 100.0])).all()
