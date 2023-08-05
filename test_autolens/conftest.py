@@ -9,6 +9,10 @@ from matplotlib import pyplot
 from autofit import conf
 from autolens import fixtures
 
+import logging
+logger = logging.getLogger(__name__)
+
+logger.setLevel(level="INFO")
 
 class PlotPatch:
     def __init__(self):
@@ -23,7 +27,6 @@ def make_plot_patch(monkeypatch):
     plot_patch = PlotPatch()
     monkeypatch.setattr(pyplot, "savefig", plot_patch)
     return plot_patch
-
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -43,12 +46,6 @@ def remove_logs():
         for file in files:
             if file.endswith(".log"):
                 os.remove(path.join(d, file))
-
-
-@pytest.fixture(autouse=True, scope="session")
-def remove_output():
-    yield
-    shutil.rmtree(Path(directory) / "output", ignore_errors=True)
 
 
 ############

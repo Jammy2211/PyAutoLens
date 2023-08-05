@@ -2,12 +2,19 @@ from os import path
 
 from autoconf import conf
 import autofit as af
+import autogalaxy as ag
 import autolens as al
 
 from test_autolens.aggregator.conftest import clean
 
 
-# def test__tracer_randomly_drawn_via_pdf_gen_from(masked_imaging_7x7, samples, model):
+# def test__tracer_randomly_drawn_via_pdf_gen_from(
+#     masked_imaging_7x7,
+#     adapt_model_image_7x7,
+#     adapt_galaxy_image_path_dict_7x7,
+#     samples,
+#     model,
+# ):
 #     path_prefix = "aggregator_tracer_gen"
 #
 #     database_file = path.join(conf.instance.output_path, "tracer.sqlite")
@@ -15,12 +22,18 @@ from test_autolens.aggregator.conftest import clean
 #
 #     clean(database_file=database_file, result_path=result_path)
 #
-#     search = al.m.MockSearch(
-#         samples=samples, result=al.m.MockResult(model=model, samples=samples)
+#     search = ag.m.MockSearch(
+#         samples=samples, result=ag.m.MockResult(model=model, samples=samples)
 #     )
+#
 #     search.paths = af.DirectoryPaths(path_prefix=path_prefix)
 #     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+#
+#     analysis.adapt_model_image = adapt_model_image_7x7
+#     analysis.adapt_galaxy_image_path_dict = adapt_galaxy_image_path_dict_7x7
+#
 #     search.fit(model=model, analysis=analysis)
+#
 #     agg = af.Aggregator.from_database(filename=database_file)
 #     agg.add_directory(directory=result_path)
 #
