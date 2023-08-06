@@ -7,13 +7,7 @@ import autofit as af
 import autolens as al
 from autofit.non_linear.samples import Sample
 
-
-def clean(database_file, result_path):
-    if path.exists(database_file):
-        os.remove(database_file)
-
-    if path.exists(result_path):
-        shutil.rmtree(result_path)
+from test_autogalaxy.aggregator.conftest import clean, aggregator_from
 
 
 @pytest.fixture(name="model")
