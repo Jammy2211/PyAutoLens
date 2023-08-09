@@ -455,7 +455,6 @@ class AnalysisImaging(AnalysisDataset):
                 file_path=dataset_path / "positions.json", overwrite=True
             )
 
-
     def profile_log_likelihood_function(
         self, instance: af.ModelInstance, paths: Optional[af.DirectoryPaths] = None
     ) -> Tuple[Dict, Dict]:

@@ -289,9 +289,9 @@ def make_tracer_x2_plane_point():
     return fixtures.make_tracer_x2_plane_point()
 
 
-@pytest.fixture(name="planck15")
-def make_planck15():
-    return fixtures.make_planck15()
+@pytest.fixture(name="Planck15")
+def make_Planck15():
+    return fixtures.make_Planck15()
 
 
 ### QUANTITY ###
