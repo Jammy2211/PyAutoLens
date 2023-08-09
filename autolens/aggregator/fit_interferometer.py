@@ -87,7 +87,7 @@ def _fit_interferometer_from(
             preloads_cls=Preloads,
             use_preloaded_grid=use_preloaded_grid,
             sparse_grids_of_planes=sparse_grids_of_planes,
-            use_w_tilde=settings_inversion.use_w_tilde
+            use_w_tilde=None
         )
 
         fit_dataset_list.append(FitInterferometer(

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 def _tracer_from(fit: af.Fit, galaxies: List[ag.Galaxy]) -> List[Tracer]:
     """
-    Returns an `Tracer` object from a `PyAutoFit` sqlite database `Fit` object.
+    Returns a list of `Tracer` objects from a `PyAutoFit` sqlite database `Fit` object.
 
     The results of a model-fit can be stored in a sqlite database, including the following attributes of the fit:
 
