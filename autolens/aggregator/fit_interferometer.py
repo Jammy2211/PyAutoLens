@@ -10,6 +10,7 @@ from autogalaxy.aggregator.abstract import AbstractAgg
 from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.analysis.preloads import Preloads
 
+from autogalaxy.aggregator import agg_util
 from autolens.aggregator.tracer import _tracer_from
 
 
@@ -21,9 +22,9 @@ def _fit_interferometer_from(
     settings_pixelization: aa.SettingsPixelization = None,
     settings_inversion: aa.SettingsInversion = None,
     use_preloaded_grid: bool = True,
-) -> FitInterferometer:
+) -> List[FitInterferometer]:
     """
-    Returns an `FitInterferometer` object from a `PyAutoFit` sqlite database `Fit` object.
+    Returns a list of `FitInterferometer` objects from a `PyAutoFit` sqlite database `Fit` object.
 
     The results of a model-fit can be stored in a sqlite database, including the following attributes of the fit:
 
@@ -37,6 +38,10 @@ def _fit_interferometer_from(
     This method combines all of these attributes and returns a `FitInterferometer` object for a given non-linear
     search sample (e.g. the maximum likelihood model). This includes associating adapt images with their respective
     galaxies.
+
+    If multiple `FitInterferometer` objects were fitted simultaneously via analysis summing, the `fit.child_values()`
+    method is instead used to load lists of the data, noise-map, PSF and mask and combine them into a list of
+    `FitInterferometer` objects.
 
     The settings of a pixelization of inversion can be overwritten by inputting a `settings_dataset` object, for
     example if you want to use a grid with a different inversion solver.
@@ -58,33 +63,43 @@ def _fit_interferometer_from(
         may be output to hard-disk after the model-fit and loaded via the database to ensure the same grid is used
         as the fit.
     """
-    dataset = _interferometer_from(
+    dataset_list = _interferometer_from(
         fit=fit,
         real_space_mask=real_space_mask,
         settings_dataset=settings_dataset,
     )
-    tracer = _tracer_from(fit=fit, galaxies=galaxies)
+    tracer_list = _tracer_from(fit=fit, galaxies=galaxies)
 
     settings_pixelization = settings_pixelization or fit.value(
         name="settings_pixelization"
     )
     settings_inversion = settings_inversion or fit.value(name="settings_inversion")
 
-    preloads = Preloads(use_w_tilde=settings_inversion.use_w_tilde)
-
-    if use_preloaded_grid:
-        sparse_grids_of_planes = fit.value(name="preload_sparse_grids_of_planes")
-
-        if sparse_grids_of_planes is not None:
-            preloads = Preloads(sparse_image_plane_grid_pg_list=sparse_grids_of_planes)
-
-    return FitInterferometer(
-        dataset=dataset,
-        tracer=tracer,
-        settings_pixelization=settings_pixelization,
-        settings_inversion=settings_inversion,
-        preloads=preloads,
+    sparse_grids_of_planes_list = agg_util.sparse_grids_of_planes_list_from(
+        fit=fit, total_fits=len(dataset_list), use_preloaded_grid=use_preloaded_grid
     )
+
+    fit_dataset_list = []
+
+    for dataset, tracer, sparse_grids_of_planes in zip(dataset_list, tracer_list, sparse_grids_of_planes_list):
+
+        preloads = agg_util.preloads_from(
+            preloads_cls=Preloads,
+            use_preloaded_grid=use_preloaded_grid,
+            sparse_grids_of_planes=sparse_grids_of_planes,
+            use_w_tilde=settings_inversion.use_w_tilde
+        )
+
+        fit_dataset_list.append(FitInterferometer(
+            dataset=dataset,
+            tracer=tracer,
+            settings_pixelization=settings_pixelization,
+            settings_inversion=settings_inversion,
+            preloads=preloads,
+        )
+        )
+
+    return fit_dataset_list
 
 
 class FitInterferometerAgg(AbstractAgg):
