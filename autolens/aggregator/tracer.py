@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 import autofit as af
@@ -6,10 +7,11 @@ import autogalaxy as ag
 from autogalaxy.aggregator.abstract import AbstractAgg
 from autolens.lens.ray_tracing import Tracer
 
-from autogalaxy.aggregator.plane import galaxies_with_adapt_images_from
+from autogalaxy.aggregator import agg_util
 
+logger = logging.getLogger(__name__)
 
-def _tracer_from(fit: af.Fit, galaxies: List[ag.Galaxy]) -> Tracer:
+def _tracer_from(fit: af.Fit, galaxies: List[ag.Galaxy]) -> List[Tracer]:
     """
     Returns an `Tracer` object from a `PyAutoFit` sqlite database `Fit` object.
 
@@ -23,6 +25,10 @@ def _tracer_from(fit: af.Fit, galaxies: List[ag.Galaxy]) -> Tracer:
     This method combines all of these attributes and returns a `Tracer` object for a given non-linear search sample
     (e.g. the maximum likelihood model). This includes associating adapt images with their respective galaxies.
 
+    If multiple `Tracer` objects were fitted simultaneously via analysis summing, the `fit.child_values()` method
+    is instead used to load lists of Tracers. This is necessary if each Tracer has different galaxies (e.g. certain
+    parameters vary across each dataset and `Analysis` object).
+
     Parameters
     ----------
     fit
@@ -31,9 +37,21 @@ def _tracer_from(fit: af.Fit, galaxies: List[ag.Galaxy]) -> Tracer:
         A list of galaxies corresponding to a sample of a non-linear search and model-fit.
     """
 
-    galaxies = galaxies_with_adapt_images_from(fit=fit, galaxies=galaxies)
+    galaxies = agg_util.galaxies_with_adapt_images_from(fit=fit, galaxies=galaxies)
 
-    return Tracer.from_galaxies(galaxies=galaxies)
+    if len(fit.children) > 0:
+        logger.info(
+            """
+            Using database for a fit with multiple summed Analysis objects.
+
+            Tracer objects do not fully support this yet (e.g. adapt images may not be set up correctly)
+            so proceed with caution!
+            """
+        )
+
+        return [Tracer.from_galaxies(galaxies=galaxies)] * len(fit.children)
+
+    return [Tracer.from_galaxies(galaxies=galaxies)]
 
 
 class TracerAgg(AbstractAgg):
@@ -56,6 +74,10 @@ class TracerAgg(AbstractAgg):
     For example, if the `aggregator` contains 3 model-fits, this class can be used to create a generator which
     creates instances of the corresponding 3 `Tracer` objects.
 
+    If multiple `Tracer` objects were fitted simultaneously via analysis summing, the `fit.child_values()` method
+    is instead used to load lists of Tracers. This is necessary if each Tracer has different galaxies (e.g. certain
+    parameters vary across each dataset and `Analysis` object).
+
     This can be done manually, but this object provides a more concise API.
 
     Parameters
@@ -64,7 +86,7 @@ class TracerAgg(AbstractAgg):
         A `PyAutoFit` aggregator object which can load the results of model-fits.
     """
 
-    def object_via_gen_from(self, fit, galaxies) -> Tracer:
+    def object_via_gen_from(self, fit, galaxies) -> List[Tracer]:
         """
         Returns a generator of `Tracer` objects from an input aggregator.
 

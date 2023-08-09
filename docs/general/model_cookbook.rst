@@ -307,6 +307,25 @@ We can customize the lens model parameters in a number of different ways, as sho
     # Assert that the Einstein Radius is below 3.0":
     model.add_assertion(model.galaxies.mass.einstein_radius < 3.0)
 
+Redshift Free
+-------------
+
+The redshift of a galaxy can be treated as a free parameter in the model-fit by using the following API:
+
+.. code-block:: python
+
+    redshift = af.Model(al.Redshift)
+    redshift.redshift = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)
+
+    lens = af.Model(
+        al.Galaxy,
+        redshift=redshift,
+        mass=al.mp.Isothermal
+    )
+
+The model-fit will automatically enable multi-plane ray tracing and alter the ordering of the planes depending on the
+redshifts of the galaxies.
+
 Available Model Components
 --------------------------
 

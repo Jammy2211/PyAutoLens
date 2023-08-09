@@ -30,12 +30,12 @@ def test__tracer_randomly_drawn_via_pdf_gen_from(
     i = 0
 
     for tracer_gen in tracer_pdf_gen:
-        for tracer in tracer_gen:
+        for tracer_list in tracer_gen:
             i += 1
 
-            assert tracer.galaxies[0].redshift == 0.5
-            assert tracer.galaxies[0].light.centre == (10.0, 10.0)
-            assert tracer.galaxies[1].redshift == 1.0
+            assert tracer_list[0].galaxies[0].redshift == 0.5
+            assert tracer_list[0].galaxies[0].light.centre == (10.0, 10.0)
+            assert tracer_list[0].galaxies[1].redshift == 1.0
 
     assert i == 2
 
@@ -58,18 +58,18 @@ def test__tracer_all_above_weight_gen(analysis_imaging_7x7, samples, model):
     i = 0
 
     for tracer_gen, weight_gen in zip(tracer_pdf_gen, weight_pdf_gen):
-        for tracer in tracer_gen:
+        for tracer_list in tracer_gen:
             i += 1
 
             if i == 1:
-                assert tracer.galaxies[0].redshift == 0.5
-                assert tracer.galaxies[0].light.centre == (1.0, 1.0)
-                assert tracer.galaxies[1].redshift == 1.0
+                assert tracer_list[0].galaxies[0].redshift == 0.5
+                assert tracer_list[0].galaxies[0].light.centre == (1.0, 1.0)
+                assert tracer_list[0].galaxies[1].redshift == 1.0
 
             if i == 2:
-                assert tracer.galaxies[0].redshift == 0.5
-                assert tracer.galaxies[0].light.centre == (10.0, 10.0)
-                assert tracer.galaxies[1].redshift == 1.0
+                assert tracer_list[0].galaxies[0].redshift == 0.5
+                assert tracer_list[0].galaxies[0].light.centre == (10.0, 10.0)
+                assert tracer_list[0].galaxies[1].redshift == 1.0
 
         for weight in weight_gen:
             if i == 0:
