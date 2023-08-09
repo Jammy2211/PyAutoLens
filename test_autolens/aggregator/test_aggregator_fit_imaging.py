@@ -21,12 +21,12 @@ def test__fit_imaging_randomly_drawn_via_pdf_gen_from(analysis_imaging_7x7, samp
     i = 0
 
     for fit_gen in fit_pdf_gen:
-        for fit in fit_gen:
+        for fit_list in fit_gen:
             i += 1
 
-            assert fit.tracer.galaxies[0].redshift == 0.5
-            assert fit.tracer.galaxies[0].light.centre == (10.0, 10.0)
-            assert fit.tracer.galaxies[1].redshift == 1.0
+            assert fit_list[0].tracer.galaxies[0].redshift == 0.5
+            assert fit_list[0].tracer.galaxies[0].light.centre == (10.0, 10.0)
+            assert fit_list[0].tracer.galaxies[1].redshift == 1.0
 
     assert i == 2
 
@@ -49,18 +49,18 @@ def test__fit_imaging_all_above_weight_gen(analysis_imaging_7x7, samples, model)
     i = 0
 
     for fit_gen in fit_pdf_gen:
-        for fit in fit_gen:
+        for fit_list in fit_gen:
             i += 1
 
             if i == 1:
-                assert fit.tracer.galaxies[0].redshift == 0.5
-                assert fit.tracer.galaxies[0].light.centre == (1.0, 1.0)
-                assert fit.tracer.galaxies[1].redshift == 1.0
+                assert fit_list[0].tracer.galaxies[0].redshift == 0.5
+                assert fit_list[0].tracer.galaxies[0].light.centre == (1.0, 1.0)
+                assert fit_list[0].tracer.galaxies[1].redshift == 1.0
 
             if i == 2:
-                assert fit.tracer.galaxies[0].redshift == 0.5
-                assert fit.tracer.galaxies[0].light.centre == (10.0, 10.0)
-                assert fit.tracer.galaxies[1].redshift == 1.0
+                assert fit_list[0].tracer.galaxies[0].redshift == 0.5
+                assert fit_list[0].tracer.galaxies[0].light.centre == (10.0, 10.0)
+                assert fit_list[0].tracer.galaxies[1].redshift == 1.0
 
     assert i == 2
 
