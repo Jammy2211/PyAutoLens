@@ -24,12 +24,13 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
         """
         Analysis classes are used by PyAutoFit to fit a model to a dataset via a non-linear search.
 
-        An Analysis class defines the `log_likelihood_function` which fits the model to the dataset and returns the
-        log likelihood value defining how well the model fitted the data. The Analysis class handles many other tasks,
-        such as visualization, outputting results to hard-disk and storing results in a format that can be loaded after
-        the model-fit is complete using PyAutoFit's database tools.
+        The `Analysis` class defines the `log_likelihood_function` which fits the model to the dataset and returns the
+        log likelihood value defining how well the model fitted the data.
 
-        This Analysis class is used for model-fits which fit derived quantity of galaxies, for example their
+        It handles many other tasks, such as visualization, outputting results to hard-disk and storing results in
+        a format that can be loaded after the model-fit is complete.
+
+        This class is used for model-fits which fit derived quantity of galaxies, for example their
         convergence, potential or deflection angles, to another model for that quantity. For example, one could find
         the `PowerLaw` mass profile model that best fits the deflection angles of an `NFW` mass profile.
 
@@ -133,9 +134,6 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
     def make_result(
         self,
         samples: af.SamplesPDF,
-        sigma=1.0,
-        use_errors=True,
-        use_widths=False,
     ) -> ResultQuantity:
         """
         After the non-linear search is complete create its `ResultQuantity`, which includes:

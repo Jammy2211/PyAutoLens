@@ -113,11 +113,10 @@ class AnalysisPoint(AgAnalysis, AnalysisLensing):
     def make_result(
         self,
         samples: af.SamplesPDF,
-        sigma=1.0,
-        use_errors=True,
-        use_widths=False,
     ):
         return ResultPoint(samples=samples, analysis=self)
 
-    def save_attributes_for_aggregator(self, paths: af.DirectoryPaths):
-        paths.save_object("dataset", self.point_dict)
+    def save_attributes(self, paths: af.DirectoryPaths):
+        self.point_dict.output_to_json(
+            file_path=paths._files_path / "point_dict.json", overwrite=True
+        )

@@ -4,13 +4,15 @@ import autofit as af
 import autoarray as aa
 import autogalaxy as ag
 
-from autogalaxy.aggregator.imaging import _imaging_from
 from autogalaxy.aggregator.abstract import AbstractAgg
 
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.analysis.preloads import Preloads
-from autolens.aggregator.tracer import _tracer_from
 
+from autogalaxy.aggregator.imaging import _imaging_from
+from autogalaxy.aggregator import agg_util
+
+from autolens.aggregator.tracer import _tracer_from
 
 def _fit_imaging_from(
     fit: af.Fit,
@@ -19,61 +21,82 @@ def _fit_imaging_from(
     settings_pixelization: aa.SettingsPixelization = None,
     settings_inversion: aa.SettingsInversion = None,
     use_preloaded_grid: bool = True,
-) -> FitImaging:
+) -> List[FitImaging]:
     """
-    Returns a `FitImaging` object from a PyAutoFit database `Fit` object and an instance of galaxies from a non-linear
-    search model-fit.
+    Returns a list of `FitImaging` object from a `PyAutoFit` sqlite database `Fit` object.
 
-    This function adds the `adapt_model_image` and `adapt_galaxy_image_path_dict` to the galaxies before performing the
-    fit, if they were used.
+    The results of a model-fit can be stored in a sqlite database, including the following attributes of the fit:
+
+    - The imaging data, noise-map, PSF and settings as .fits files (e.g. `dataset/data.fits`).
+    - The mask used to mask the `Imaging` data structure in the fit (`dataset/mask.fits`).
+    - The settings of pixelization used by the fit (`dataset/settings_pixelization.json`).
+    - The settings of inversions used by the fit (`dataset/settings_inversion.json`).
+
+    Each individual attribute can be loaded from the database via the `fit.value()` method.
+
+    This method combines all of these attributes and returns a `FitImaging` object for a given non-linear search sample
+    (e.g. the maximum likelihood model). This includes associating adapt images with their respective galaxies.
+
+    If multiple `FitImaging` objects were fitted simultaneously via analysis summing, the `fit.child_values()` method
+    is instead used to load lists of the data, noise-map, PSF and mask and combine them into a list of
+    `FitImaging` objects.
+
+    The settings of a pixelization of inversion can be overwritten by inputting a `settings_dataset` object, for example
+    if you want to use a grid with a different inversion solver.
 
     Parameters
     ----------
     fit
-        A PyAutoFit database Fit object containing the generators of the results of model-fits.
+        A `PyAutoFit` `Fit` object which contains the results of a model-fit as an entry in a sqlite database.
     galaxies
         A list of galaxies corresponding to a sample of a non-linear search and model-fit.
-
-    Returns
-    -------
-    FitImaging
-        The fit to the imaging dataset computed via an instance of galaxies.
+    settings_dataset
+        Optionally overwrite the `SettingsImaging` of the `Imaging` object that is created from the fit.
+    settings_pixelization
+        Optionally overwrite the `SettingsPixelization` of the `Pixelization` object that is created from the fit.
+    settings_inversion
+        Optionally overwrite the `SettingsInversion` of the `Inversion` object that is created from the fit.
+    use_preloaded_grid
+        Certain pixelization's construct their mesh in the source-plane from a stochastic KMeans algorithm. This grid
+        may be output to hard-disk after the model-fit and loaded via the database to ensure the same grid is used
+        as the fit.
     """
 
-    dataset = _imaging_from(fit=fit, settings_dataset=settings_dataset)
+    dataset_list = _imaging_from(fit=fit, settings_dataset=settings_dataset)
 
-    tracer = _tracer_from(fit=fit, galaxies=galaxies)
+    tracer_list = _tracer_from(fit=fit, galaxies=galaxies)
 
     settings_pixelization = settings_pixelization or fit.value(
         name="settings_pixelization"
     )
     settings_inversion = settings_inversion or fit.value(name="settings_inversion")
 
-    preloads = Preloads(use_w_tilde=False)
-
-    if use_preloaded_grid:
-        sparse_grids_of_planes = fit.value(name="preload_sparse_grids_of_planes")
-
-        if sparse_grids_of_planes is not None:
-            preloads = Preloads(
-                sparse_image_plane_grid_pg_list=sparse_grids_of_planes,
-                use_w_tilde=False,
-            )
-
-            if len(preloads.sparse_image_plane_grid_pg_list) == 2:
-                if type(preloads.sparse_image_plane_grid_pg_list[1]) != list:
-                    preloads.sparse_image_plane_grid_pg_list[1] = [
-                        preloads.sparse_image_plane_grid_pg_list[1]
-                    ]
-
-    return FitImaging(
-        dataset=dataset,
-        tracer=tracer,
-        settings_pixelization=settings_pixelization,
-        settings_inversion=settings_inversion,
-        preloads=preloads,
+    sparse_grids_of_planes_list = agg_util.sparse_grids_of_planes_list_from(
+        fit=fit, total_fits=len(dataset_list), use_preloaded_grid=use_preloaded_grid
     )
 
+    fit_dataset_list = []
+
+    for dataset, tracer, sparse_grids_of_planes in zip(dataset_list, tracer_list, sparse_grids_of_planes_list):
+
+        preloads = agg_util.preloads_from(
+            preloads_cls=Preloads,
+            use_preloaded_grid=use_preloaded_grid,
+            sparse_grids_of_planes=sparse_grids_of_planes,
+            use_w_tilde=False
+        )
+
+        fit_dataset_list.append(FitImaging(
+            dataset=dataset,
+            tracer=tracer,
+            settings_pixelization=settings_pixelization,
+            settings_inversion=settings_inversion,
+            preloads=preloads,
+        )
+        )
+
+
+    return fit_dataset_list
 
 class FitImagingAgg(AbstractAgg):
     def __init__(
@@ -85,8 +108,46 @@ class FitImagingAgg(AbstractAgg):
         use_preloaded_grid: bool = True,
     ):
         """
-        Wraps a PyAutoFit aggregator in order to create generators of fits to imaging data, corresponding to the
-        results of a non-linear search model-fit.
+        Interfaces with an `PyAutoFit` aggregator object to create instances of `FitImaging` objects from the results
+        of a model-fit.
+
+        The results of a model-fit can be stored in a sqlite database, including the following attributes of the fit:
+
+        - The imaging data, noise-map, PSF and settings as .fits files (e.g. `dataset/data.fits`).
+        - The mask used to mask the `Imaging` data structure in the fit (`dataset/mask.fits`).
+        - The settings of pixelization used by the fit (`dataset/settings_pixelization.json`).
+        - The settings of inversions used by the fit (`dataset/settings_inversion.json`).
+
+        The `aggregator` contains the path to each of these files, and they can be loaded individually. This class
+        can load them all at once and create an `FitImaging` object via the `_fit_imaging_from` method.
+
+        This class's methods returns generators which create the instances of the `FitImaging` objects. This ensures
+        that large sets of results can be efficiently loaded from the hard-disk and do not require storing all
+        `FitImaging` instances in the memory at once.
+
+        For example, if the `aggregator` contains 3 model-fits, this class can be used to create a generator which
+        creates instances of the corresponding 3 `FitImaging` objects.
+
+        If multiple `FitImaging` objects were fitted simultaneously via analysis summing, the `fit.child_values()` method
+        is instead used to load lists of the data, noise-map, PSF and mask and combine them into a list of
+        `FitImaging` objects.
+
+        This can be done manually, but this object provides a more concise API.
+
+        Parameters
+        ----------
+        aggregator
+            A `PyAutoFit` aggregator object which can load the results of model-fits.
+        settings_dataset
+            Optionally overwrite the `SettingsImaging` of the `Imaging` object that is created from the fit.
+        settings_pixelization
+            Optionally overwrite the `SettingsPixelization` of the `Pixelization` object that is created from the fit.
+        settings_inversion
+            Optionally overwrite the `SettingsInversion` of the `Inversion` object that is created from the fit.
+        use_preloaded_grid
+            Certain pixelization's construct their mesh in the source-plane from a stochastic KMeans algorithm. This
+            grid may be output to hard-disk after the model-fit and loaded via the database to ensure the same grid is
+            used as the fit.
         """
         super().__init__(aggregator=aggregator)
 
@@ -95,24 +156,19 @@ class FitImagingAgg(AbstractAgg):
         self.settings_inversion = settings_inversion
         self.use_preloaded_grid = use_preloaded_grid
 
-    def object_via_gen_from(self, fit, galaxies) -> FitImaging:
+    def object_via_gen_from(self, fit, galaxies) -> List[FitImaging]:
         """
-        Creates a `FitImaging` object from a `ModelInstance` that contains the galaxies of a sample from a non-linear
-        search.
+        Returns a generator of `FitImaging` objects from an input aggregator.
+
+        See `__init__` for a description of how the `FitImaging` objects are created by this method.
 
         Parameters
         ----------
         fit
-            A PyAutoFit database Fit object containing the generators of the results of model-fits.
+            A `PyAutoFit` `Fit` object which contains the results of a model-fit as an entry in a sqlite database.
         galaxies
             A list of galaxies corresponding to a sample of a non-linear search and model-fit.
-
-        Returns
-        -------
-        FitImaging
-            A fit to imaging data whose galaxies are a sample of a PyAutoFit non-linear search.
         """
-
         return _fit_imaging_from(
             fit=fit,
             galaxies=galaxies,

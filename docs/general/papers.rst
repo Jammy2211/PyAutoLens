@@ -59,6 +59,9 @@ The following papers use **PyAutoLens**:
 
 `Strong lens modelling: comparing and combining Bayesian neural networks and parametric profile fitting <https://arxiv.org/abs/2103.03257>`_
 
+`Streamlined Lensed Quasar Identification in Multiband Images via Ensemble Networks <https://arxiv.org/abs/2307.01090>`_
+
+
 **Source Science**
 
 `A Glimpse of the Stellar Populations and Elemental Abundances of Gravitationally Lensed, Quiescent Galaxies at z≳1 with Keck Deep Spectroscopy <https://arxiv.org/abs/2212.04731>`_

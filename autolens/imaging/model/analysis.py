@@ -22,14 +22,11 @@ logger.setLevel(level="INFO")
 
 
 class AnalysisImaging(AnalysisDataset):
-    @property
-    def imaging(self):
-        return self.dataset
 
     def modify_before_fit(self, paths: af.DirectoryPaths, model: af.Collection):
         """
-        PyAutoFit calls this function immediately before the non-linear search begins, therefore it can be used to
-        perform tasks using the final model parameterization.
+        This function is called immediately before the non-linear search begins and performs final tasks and checks 
+        before it begins.
 
         This function:
 
@@ -380,9 +377,6 @@ class AnalysisImaging(AnalysisDataset):
     def make_result(
         self,
         samples: af.SamplesPDF,
-        sigma=1.0,
-        use_errors=True,
-        use_widths=False,
     ) -> ResultImaging:
         """
         After the non-linear search is complete create its `Result`, which includes:
@@ -411,7 +405,7 @@ class AnalysisImaging(AnalysisDataset):
         """
         return ResultImaging(samples=samples, analysis=self)
 
-    def save_attributes_for_aggregator(self, paths: af.DirectoryPaths):
+    def save_attributes(self, paths: af.DirectoryPaths):
         """
         Before the non-linear search begins, this routine saves attributes of the `Analysis` object to the `pickles`
         folder such that they can be loaded after the analysis using PyAutoFit's database and aggregator tools.
@@ -446,11 +440,20 @@ class AnalysisImaging(AnalysisDataset):
             The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
             visualization, and the pickled objects used by the aggregator output by this function.
         """
-        super().save_attributes_for_aggregator(paths=paths)
+        super().save_attributes(paths=paths)
 
-        paths.save_object("psf", self.dataset.psf)
-        paths.save_object("mask", self.dataset.mask)
-        paths.save_object("positions_likelihood", self.positions_likelihood)
+        dataset_path = paths._files_path / "dataset"
+
+        self.dataset.psf.output_to_fits(
+            file_path=dataset_path / "psf.fits", overwrite=True,
+        )
+        self.dataset.mask.output_to_fits(file_path=dataset_path / "mask.fits", overwrite=True)
+
+        if self.positions_likelihood is not None:
+
+            self.positions_likelihood.positions.output_to_json(
+                file_path=dataset_path / "positions.json", overwrite=True
+            )
 
     def profile_log_likelihood_function(
         self, instance: af.ModelInstance, paths: Optional[af.DirectoryPaths] = None

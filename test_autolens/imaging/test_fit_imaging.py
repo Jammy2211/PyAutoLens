@@ -29,6 +29,7 @@ def test__model_image__with_and_without_psf_blurring(
     assert fit.log_likelihood == pytest.approx(-14.52960, 1.0e-4)
 
 
+
 def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7):
 
     g0 = al.Galaxy(

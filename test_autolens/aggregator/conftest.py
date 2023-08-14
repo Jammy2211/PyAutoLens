@@ -7,13 +7,7 @@ import autofit as af
 import autolens as al
 from autofit.non_linear.samples import Sample
 
-
-def clean(database_file, result_path):
-    if path.exists(database_file):
-        os.remove(database_file)
-
-    if path.exists(result_path):
-        shutil.rmtree(result_path)
+from test_autogalaxy.aggregator.conftest import clean, aggregator_from
 
 
 @pytest.fixture(name="model")
@@ -44,5 +38,8 @@ def make_samples(model):
     )
 
     return al.m.MockSamples(
-        model=model, sample_list=sample_list, max_log_likelihood_instance=tracer,
+        model=model,
+        sample_list=sample_list,
+        max_log_likelihood_instance=tracer,
+        gaussian_tuples=[(1.0, 2.0)] * model.prior_count,
     )

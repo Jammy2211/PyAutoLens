@@ -7,6 +7,7 @@ from scipy.stats import norm
 from typing import Dict, Optional, List, Union
 
 from autoconf import conf
+from autoconf.dictable import as_dict
 
 import autofit as af
 import autoarray as aa
@@ -167,7 +168,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         raise_inversion_positions_likelihood_exception: bool = True,
     ):
         """
-        Analysis classes are used by PyAutoFit to fit a model to a dataset via a non-linear search.
+        Fits a lens model to a dataset via a non-linear search.
 
         This abstract Analysis class has attributes and methods for all model-fits which fit the model to a dataset
         (e.g. imaging or interferometer data).
@@ -229,8 +230,8 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
     def modify_before_fit(self, paths: af.DirectoryPaths, model: af.Collection):
         """
-        PyAutoFit calls this function immediately before the non-linear search begins, therefore it can be used to
-        perform tasks using the final model parameterization.
+        This function is called immediately before the non-linear search begins and performs final tasks and checks
+        before it begins.
 
         This function:
 
@@ -326,9 +327,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
     def stochastic_log_likelihoods_via_instance_from(self, instance) -> List[float]:
         raise NotImplementedError()
 
-    def save_results_for_aggregator(
-        self, paths: af.DirectoryPaths, result: ResultDataset
-    ):
+    def save_results(self, paths: af.DirectoryPaths, result: ResultDataset):
         """
         At the end of a model-fit,  this routine saves attributes of the `Analysis` object to the `pickles`
         folder such that they can be loaded after the analysis using PyAutoFit's database and aggregator tools.
@@ -350,9 +349,10 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         mesh_list = ag.util.model.mesh_list_from(model=result.model)
 
         if len(mesh_list) > 0:
-            paths.save_object(
-                "preload_sparse_grids_of_planes",
-                result.max_log_likelihood_fit.tracer_to_inversion.sparse_image_plane_grid_pg_list,
+
+            paths.save_json(
+                name="preload_sparse_grids_of_planes",
+                object_dict=as_dict(result.max_log_likelihood_fit.tracer_to_inversion.sparse_image_plane_grid_pg_list)
             )
 
         if conf.instance["general"]["adapt"]["stochastic_outputs"]:
@@ -386,7 +386,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             run of samples of the nested sampler.
         """
         stochastic_log_likelihoods_json_file = path.join(
-            paths.output_path, "stochastic_log_likelihoods.json"
+            paths._files_path, "stochastic_log_likelihoods.json"
         )
 
         try:
@@ -405,8 +405,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             json.dump(
                 [float(evidence) for evidence in stochastic_log_likelihoods], outfile
             )
-
-        paths.save_object("stochastic_log_likelihoods", stochastic_log_likelihoods)
 
         visualizer = Visualizer(visualize_path=paths.image_path)
 

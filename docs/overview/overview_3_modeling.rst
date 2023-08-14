@@ -512,7 +512,7 @@ Below, we print the maximum log likelihood model inferred.
 The result contains the full posterior information of our non-linear search, including all parameter samples,
 log likelihood values and tools to compute the errors on the lens model.
 
-**PyAutoLens** includes visualization tools for plotting this.
+There are built in visualization tools for plotting this.
 
 The plot is labeled with short hand parameter names (e.g. ``sersic_index`` is mapped to the short hand
 parameter ``n``). These mappings ate specified in the ``config/notation.yaml`` file and can be customized by users.
