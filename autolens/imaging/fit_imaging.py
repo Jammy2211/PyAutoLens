@@ -168,6 +168,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         For modeling, this dictionary is used to set up the `adapt_images` that adaptmodel_images_of_planes_list
         certain pixelizations to the data being fitted.
         """
+
         galaxy_blurred_image_2d_dict = self.tracer.galaxy_blurred_image_2d_dict_from(
             grid=self.grid,
             convolver=self.dataset.convolver,
