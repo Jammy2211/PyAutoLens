@@ -4,6 +4,7 @@ import numpy as np
 import json
 from typing import Dict, Optional, Union
 
+from autoconf import cached_property
 from autoconf import conf
 
 import autoarray as aa
@@ -283,7 +284,7 @@ class ResultDataset(Result):
         """
         return self.max_log_likelihood_fit.galaxy_model_image_dict[galaxy]
 
-    @property
+    @cached_property
     def image_galaxy_dict(self) -> {str: ag.Galaxy}:
         """
         A dictionary associating galaxy names with model images of those galaxies.
