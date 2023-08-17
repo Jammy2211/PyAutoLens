@@ -48,7 +48,7 @@ class ResultImaging(ResultDataset):
         search.
         """
         return self.analysis.fit_imaging_via_instance_from(
-            instance=self.instance_copy,
+            instance=self.instance,
         )
 
     @property

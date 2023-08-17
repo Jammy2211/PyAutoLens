@@ -2,15 +2,13 @@ import os
 from os import path
 import numpy as np
 import json
-from typing import Dict, Optional, Union
-
-from autoconf import conf
+from typing import Optional, Union
 
 import autoarray as aa
 import autogalaxy as ag
 
 from autofit.non_linear.paths.abstract import AbstractPaths
-from autogalaxy.analysis.result import Result as AgResult
+from autogalaxy.analysis.result import ResultDataset as AgResultDataset
 
 from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
@@ -19,13 +17,13 @@ from autolens.lens.ray_tracing import Tracer
 from autolens.point.point_solver import PointSolver
 
 
-class Result(AgResult):
+class Result(AgResultDataset):
     @property
     def max_log_likelihood_tracer(self) -> Tracer:
         """
         An instance of a `Tracer` corresponding to the maximum log likelihood model inferred by the non-linear search.
         """
-        return self.analysis.tracer_via_instance_from(instance=self.instance_copy)
+        return self.analysis.tracer_via_instance_from(instance=self.instance)
 
     @property
     def max_log_likelihood_positions_threshold(self) -> float:
@@ -190,7 +188,7 @@ class Result(AgResult):
         """
         Tuples associating the names of galaxies with instances from the best fit
         """
-        return self.instance_copy.path_instance_tuples_for_class(cls=ag.Galaxy)
+        return self.instance.path_instance_tuples_for_class(cls=ag.Galaxy)
 
 
 class ResultDataset(Result):
@@ -202,28 +200,10 @@ class ResultDataset(Result):
         If a dataset is fitted the adapt images of the adapt dataset must first be associated with each galaxy.
         """
         instance = self.analysis.instance_with_associated_adapt_images_from(
-            instance=self.instance_copy
+            instance=self.instance
         )
 
         return self.analysis.tracer_via_instance_from(instance=instance)
-
-    @property
-    def max_log_likelihood_fit(self):
-        raise NotImplementedError
-
-    @property
-    def mask(self) -> aa.Mask2D:
-        """
-        The 2D mask applied to the dataset for the model-fit.
-        """
-        return self.analysis.dataset.mask
-
-    @property
-    def grid(self) -> aa.Grid2D:
-        """
-        The masked 2D grid used by the dataset in the model-fit.
-        """
-        return self.analysis.dataset.grid
 
     @property
     def positions(self):
@@ -263,78 +243,6 @@ class ResultDataset(Result):
                 return self.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre_list[
                     0
                 ]
-
-    def image_for_galaxy(self, galaxy: ag.Galaxy) -> np.ndarray:
-        """
-        Given an instance of a `Galaxy` object, return an image of the galaxy via the maximum log likelihood fit.
-
-        This image is extracted via the fit's `galaxy_model_image_dict`, which is necessary to make it straight
-        forward to use the image as adapt-images.
-
-        Parameters
-        ----------
-        galaxy
-            A galaxy used by the model-fit.
-
-        Returns
-        -------
-        ndarray or None
-            A numpy arrays giving the model image of that galaxy.
-        """
-        return self.max_log_likelihood_fit.galaxy_model_image_dict[galaxy]
-
-    @property
-    def image_galaxy_dict(self) -> {str: ag.Galaxy}:
-        """
-        A dictionary associating galaxy names with model images of those galaxies.
-
-        This is used for creating the adapt-dataset used by Analysis objects to adapt aspects of a model to the dataset
-        being fitted.
-        """
-        return {
-            galaxy_path: self.image_for_galaxy(galaxy)
-            for galaxy_path, galaxy in self.path_galaxy_tuples
-        }
-
-    @property
-    def adapt_galaxy_image_path_dict(self) -> Dict[str, aa.Array2D]:
-        """
-        A dictionary associating 1D galaxy images with their names.
-        """
-
-        adapt_minimum_percent = conf.instance["general"]["adapt"][
-            "adapt_minimum_percent"
-        ]
-
-        adapt_galaxy_image_path_dict = {}
-
-        for path, galaxy in self.path_galaxy_tuples:
-            galaxy_image = self.image_galaxy_dict[path]
-
-            if not np.all(galaxy_image == 0):
-                minimum_galaxy_value = adapt_minimum_percent * max(galaxy_image)
-                galaxy_image[galaxy_image < minimum_galaxy_value] = minimum_galaxy_value
-
-            adapt_galaxy_image_path_dict[path] = galaxy_image
-
-        return adapt_galaxy_image_path_dict
-
-    @property
-    def adapt_model_image(self) -> aa.Array2D:
-        """
-        The adapt image used by Analysis objects to adapt aspects of a model to the dataset being fitted.
-
-        The adapt image is the sum of the galaxy image of every individual galaxy.
-        """
-        adapt_model_image = aa.Array2D(
-            values=np.zeros(self.mask.derive_mask.sub_1.pixels_in_mask),
-            mask=self.mask.derive_mask.sub_1,
-        )
-
-        for path, galaxy in self.path_galaxy_tuples:
-            adapt_model_image += self.adapt_galaxy_image_path_dict[path]
-
-        return adapt_model_image
 
     def stochastic_log_likelihoods_from(self, paths: AbstractPaths) -> np.ndarray:
         """
