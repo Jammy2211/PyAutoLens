@@ -4,8 +4,7 @@ from typing import Dict, List, Optional, Type, Union
 
 import autoarray as aa
 import autogalaxy as ag
-
-from autoconf.dictable import Dictable
+from autoconf.dictable import from_dict, as_dict
 
 from autogalaxy.plane.plane import Plane
 from autogalaxy.profiles.light.snr import LightProfileSNR
@@ -13,7 +12,7 @@ from autogalaxy.profiles.light.snr import LightProfileSNR
 from autolens.lens import ray_tracing_util
 
 
-class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
+class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def __init__(
         self,
         planes,
@@ -129,19 +128,13 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
         return Tracer(planes=planes, cosmology=cosmology)
 
-    def dict(self) -> Dict:
-        tracer_dict = super().dict()
-        tracer_dict["cosmology"] = self.cosmology.name
-        tracer_dict["planes"] = [plane.dict() for plane in self.planes]
-        return tracer_dict
-
     @staticmethod
     def from_dict(cls_dict):
         arguments = cls_dict["arguments"]
         cosmology = arguments["cosmology"]
         if isinstance(cosmology, str):
             arguments["cosmology"] = getattr(ag.cosmo, cosmology)
-        return Dictable.from_dict(cls_dict)
+        return from_dict(cls_dict)
 
     @property
     def galaxies(self) -> List[ag.Galaxy]:

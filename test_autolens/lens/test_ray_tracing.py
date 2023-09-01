@@ -7,6 +7,7 @@ import shutil
 from skimage import measure
 
 import autolens as al
+from autoconf.dictable import from_json, output_to_json
 
 test_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
@@ -1559,9 +1560,9 @@ def test__output_to_and_load_from_json():
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-    tracer.output_to_json(file_path=json_file)
+    output_to_json(tracer, file_path=json_file)
 
-    tracer_from_json = al.Tracer.from_json(file_path=json_file)
+    tracer_from_json = from_json(file_path=json_file)
 
     assert tracer_from_json.galaxies[0].redshift == 0.5
     assert tracer_from_json.galaxies[1].redshift == 1.0

@@ -3,8 +3,6 @@ from typing import Optional, Union
 from os import path
 import os
 
-from autoconf.dictable import Dictable
-
 import autoarray as aa
 import autofit as af
 
@@ -20,7 +18,7 @@ from autolens.point.fit_point.max_separation import FitPositionsSourceMaxSeparat
 from autolens import exc
 
 
-class AbstractPositionsLH(Dictable):
+class AbstractPositionsLH:
     def __init__(self, positions: aa.Grid2DIrregular, threshold: float):
         """
         The `PositionsLH` objects add a penalty term to the likelihood of the **PyAutoLens** `log_likelihood_function`
