@@ -137,9 +137,10 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
     @staticmethod
     def from_dict(cls_dict):
-        cls_dict["arguments"]["cosmology"] = getattr(
-            ag.cosmo, cls_dict["arguments"]["cosmology"]
-        )
+        arguments = cls_dict["arguments"]
+        cosmology = arguments["cosmology"]
+        if isinstance(cosmology, str):
+            arguments["cosmology"] = getattr(ag.cosmo, cosmology)
         return Dictable.from_dict(cls_dict)
 
     @property
