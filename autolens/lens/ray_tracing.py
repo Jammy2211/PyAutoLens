@@ -137,8 +137,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections, Dictable):
 
     @staticmethod
     def from_dict(cls_dict):
-        cls_dict["cosmology"] = getattr(ag.cosmo, cls_dict["cosmology"])
-        cls_dict["planes"] = list(map(Plane.from_dict, cls_dict["planes"]))
+        cls_dict["arguments"]["cosmology"] = getattr(
+            ag.cosmo, cls_dict["arguments"]["cosmology"]
+        )
         return Dictable.from_dict(cls_dict)
 
     @property
