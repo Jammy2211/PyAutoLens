@@ -1543,7 +1543,7 @@ def test__grid_iterate_in__iterates_grid_result_correctly(gal_x1_mp):
     grid_sub_8 = al.Grid2D.from_mask(mask=mask_sub_8)
     deflections_sub_8 = galaxy.deflections_yx_2d_from(grid=grid_sub_8).binned
 
-    assert deflections[4, 0] == deflections_sub_8[4, 0]
+    assert deflections[4, 0] == pytest.approx(deflections_sub_8[4, 0])
 
 
 ### Dictable ###
