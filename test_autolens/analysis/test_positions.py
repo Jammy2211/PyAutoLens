@@ -49,14 +49,17 @@ def test__output_positions_info():
 @pytest.fixture(name="settings_dict")
 def make_settings_dict():
     return {
-        "type": "autolens.analysis.positions.PositionsLHPenalty",
-        "positions": {
-            "type": "numpy.ndarray",
-            "array": [[1.0, 2.0], [3.0, 4.0]],
-            "dtype": "float64",
+        "type": "instance",
+        "class_path": "autolens.analysis.positions.PositionsLHPenalty",
+        "arguments": {
+            "positions": {
+                "type": "ndarray",
+                "array": [[1.0, 2.0], [3.0, 4.0]],
+                "dtype": "float64",
+            },
+            "threshold": 0.1,
+            "log_likelihood_penalty_factor": 100000000.0,
         },
-        "threshold": 0.1,
-        "log_likelihood_penalty_factor": 100000000.0,
     }
 
 
