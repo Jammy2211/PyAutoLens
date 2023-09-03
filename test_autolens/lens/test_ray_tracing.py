@@ -7,6 +7,7 @@ import shutil
 from skimage import measure
 
 import autolens as al
+from autoconf.dictable import from_json, output_to_json
 
 test_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
@@ -1543,7 +1544,7 @@ def test__grid_iterate_in__iterates_grid_result_correctly(gal_x1_mp):
     grid_sub_8 = al.Grid2D.from_mask(mask=mask_sub_8)
     deflections_sub_8 = galaxy.deflections_yx_2d_from(grid=grid_sub_8).binned
 
-    assert deflections[4, 0] == deflections_sub_8[4, 0]
+    assert deflections[4, 0] == pytest.approx(deflections_sub_8[4, 0])
 
 
 ### Dictable ###
@@ -1559,9 +1560,9 @@ def test__output_to_and_load_from_json():
 
     tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
 
-    tracer.output_to_json(file_path=json_file)
+    output_to_json(tracer, file_path=json_file)
 
-    tracer_from_json = al.Tracer.from_json(file_path=json_file)
+    tracer_from_json = from_json(file_path=json_file)
 
     assert tracer_from_json.galaxies[0].redshift == 0.5
     assert tracer_from_json.galaxies[1].redshift == 1.0

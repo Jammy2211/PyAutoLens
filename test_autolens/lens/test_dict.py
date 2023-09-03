@@ -28,50 +28,71 @@ def make_tracer():
 @pytest.fixture(name="tracer_dict")
 def make_tracer_dict():
     return {
-        "cosmology": "Planck15",
-        "planes": [
-            {
-                "galaxies": [
-                    {
-                        "mass": {
-                            "centre": (0.0, 0.0),
-                            "einstein_radius": 1.6,
-                            "ell_comps": (0.1, 0.05),
-                            "type": "autogalaxy.profiles.mass.total.Isothermal",
-                        },
-                        "pixelization": None,
+        "arguments": {
+            "cosmology": "Planck15",
+            "planes": [
+                {
+                    "arguments": {
+                        "galaxies": [
+                            {
+                                "arguments": {
+                                    "mass": {
+                                        "arguments": {
+                                            "centre": (0.0, 0.0),
+                                            "einstein_radius": 1.6,
+                                            "ell_comps": (0.1, 0.05),
+                                        },
+                                        "type": "instance",
+                                        "class_path": "autogalaxy.profiles.mass.total.Isothermal",
+                                    },
+                                    "pixelization": None,
+                                    "redshift": 0.5,
+                                    "regularization": None,
+                                },
+                                "type": "instance",
+                                "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
+                            }
+                        ],
+                        "run_time_dict": None,
                         "redshift": 0.5,
-                        "regularization": None,
-                        "type": "autogalaxy.galaxy.galaxy.Galaxy",
-                    }
-                ],
-                "run_time_dict": None,
-                "redshift": 0.5,
-                "type": "autogalaxy.plane.plane.Plane",
-            },
-            {
-                "galaxies": [
-                    {
-                        "disk": {
-                            "centre": (0.3, 0.2),
-                            "effective_radius": 0.5,
-                            "ell_comps": (0.05, 0.25),
-                            "intensity": 0.05,
-                            "type": "autogalaxy.profiles.light.standard.Exponential",
-                        },
-                        "pixelization": None,
+                    },
+                    "type": "instance",
+                    "class_path": "autogalaxy.plane.plane.Plane",
+                },
+                {
+                    "arguments": {
+                        "galaxies": [
+                            {
+                                "arguments": {
+                                    "disk": {
+                                        "arguments": {
+                                            "centre": (0.3, 0.2),
+                                            "effective_radius": 0.5,
+                                            "ell_comps": (0.05, 0.25),
+                                            "intensity": 0.05,
+                                        },
+                                        "type": "instance",
+                                        "class_path": "autogalaxy.profiles.light.standard.Exponential",
+                                    },
+                                    "pixelization": None,
+                                    "redshift": 1.0,
+                                    "regularization": None,
+                                },
+                                "type": "instance",
+                                "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
+                            }
+                        ],
+                        "run_time_dict": None,
                         "redshift": 1.0,
-                        "regularization": None,
-                        "type": "autogalaxy.galaxy.galaxy.Galaxy",
-                    }
-                ],
-                "run_time_dict": None,
-                "redshift": 1.0,
-                "type": "autogalaxy.plane.plane.Plane",
-            },
-        ],
-        "run_time_dict": None,
-        "type": "autolens.lens.ray_tracing.Tracer",
+                    },
+                    "type": "instance",
+                    "class_path": "autogalaxy.plane.plane.Plane",
+                },
+            ],
+            "run_time_dict": None,
+        },
+        "type": "instance",
+        "class_path": "autolens.lens.ray_tracing.Tracer",
     }
 
 

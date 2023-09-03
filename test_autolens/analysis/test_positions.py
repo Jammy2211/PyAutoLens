@@ -2,6 +2,7 @@ import os
 from os import path
 import pytest
 
+from autoconf.dictable import output_to_json, from_json, from_dict
 from autofit.tools.util import open_
 
 import autolens as al
@@ -49,33 +50,35 @@ def test__output_positions_info():
 @pytest.fixture(name="settings_dict")
 def make_settings_dict():
     return {
-        "type": "autolens.analysis.positions.PositionsLHPenalty",
-        "positions": {
-            "type": "numpy.ndarray",
-            "array": [[1.0, 2.0], [3.0, 4.0]],
-            "dtype": "float64",
+        "type": "instance",
+        "class_path": "autolens.analysis.positions.PositionsLHPenalty",
+        "arguments": {
+            "positions": {
+                "type": "ndarray",
+                "array": [[1.0, 2.0], [3.0, 4.0]],
+                "dtype": "float64",
+            },
+            "threshold": 0.1,
+            "log_likelihood_penalty_factor": 100000000.0,
         },
-        "threshold": 0.1,
-        "log_likelihood_penalty_factor": 100000000.0,
     }
 
 
 def test_settings_from_dict(settings_dict):
-    assert isinstance(
-        al.PositionsLHPenalty.from_dict(settings_dict), al.PositionsLHPenalty
-    )
+    assert isinstance(from_dict(settings_dict), al.PositionsLHPenalty)
 
 
 def test_file():
     filename = "/tmp/temp.json"
 
-    al.PositionsLHPenalty(
-        positions=al.Grid2DIrregular([(1.0, 2.0), (3.0, 4.0)]), threshold=0.1
-    ).output_to_json(filename)
+    output_to_json(
+        al.PositionsLHPenalty(
+            positions=al.Grid2DIrregular([(1.0, 2.0), (3.0, 4.0)]), threshold=0.1
+        ),
+        filename,
+    )
 
     try:
-        assert isinstance(
-            al.PositionsLHPenalty.from_json(filename), al.PositionsLHPenalty
-        )
+        assert isinstance(from_json(filename), al.PositionsLHPenalty)
     finally:
         os.remove(filename)
