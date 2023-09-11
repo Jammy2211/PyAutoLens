@@ -1,6 +1,7 @@
 import pytest
 
 import autolens as al
+from autoconf.dictable import to_dict
 
 
 @pytest.fixture(name="tracer")
@@ -28,76 +29,84 @@ def make_tracer():
 @pytest.fixture(name="tracer_dict")
 def make_tracer_dict():
     return {
-        "arguments": {
-            "cosmology": "Planck15",
-            "planes": [
-                {
-                    "arguments": {
-                        "galaxies": [
-                            {
-                                "arguments": {
-                                    "mass": {
-                                        "arguments": {
-                                            "centre": (0.0, 0.0),
-                                            "einstein_radius": 1.6,
-                                            "ell_comps": (0.1, 0.05),
-                                        },
-                                        "type": "instance",
-                                        "class_path": "autogalaxy.profiles.mass.total.Isothermal",
-                                    },
-                                    "pixelization": None,
-                                    "redshift": 0.5,
-                                    "regularization": None,
-                                },
-                                "type": "instance",
-                                "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
-                            }
-                        ],
-                        "run_time_dict": None,
-                        "redshift": 0.5,
-                    },
-                    "type": "instance",
-                    "class_path": "autogalaxy.plane.plane.Plane",
-                },
-                {
-                    "arguments": {
-                        "galaxies": [
-                            {
-                                "arguments": {
-                                    "disk": {
-                                        "arguments": {
-                                            "centre": (0.3, 0.2),
-                                            "effective_radius": 0.5,
-                                            "ell_comps": (0.05, 0.25),
-                                            "intensity": 0.05,
-                                        },
-                                        "type": "instance",
-                                        "class_path": "autogalaxy.profiles.light.standard.Exponential",
-                                    },
-                                    "pixelization": None,
-                                    "redshift": 1.0,
-                                    "regularization": None,
-                                },
-                                "type": "instance",
-                                "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
-                            }
-                        ],
-                        "run_time_dict": None,
-                        "redshift": 1.0,
-                    },
-                    "type": "instance",
-                    "class_path": "autogalaxy.plane.plane.Plane",
-                },
-            ],
-            "run_time_dict": None,
-        },
         "type": "instance",
         "class_path": "autolens.lens.ray_tracing.Tracer",
+        "arguments": {
+            "run_time_dict": None,
+            "planes": {
+                "type": "list",
+                "values": [
+                    {
+                        "type": "instance",
+                        "class_path": "autogalaxy.plane.plane.Plane",
+                        "arguments": {
+                            "galaxies": {
+                                "type": "list",
+                                "values": [
+                                    {
+                                        "type": "instance",
+                                        "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
+                                        "arguments": {
+                                            "redshift": 0.5,
+                                            "mass": {
+                                                "type": "instance",
+                                                "class_path": "autogalaxy.profiles.mass.total.isothermal.Isothermal",
+                                                "arguments": {
+                                                    "ell_comps": (0.1, 0.05),
+                                                    "centre": (0.0, 0.0),
+                                                    "einstein_radius": 1.6,
+                                                },
+                                            },
+                                        },
+                                    }
+                                ],
+                            },
+                            "run_time_dict": None,
+                            "redshift": 0.5,
+                        },
+                    },
+                    {
+                        "type": "instance",
+                        "class_path": "autogalaxy.plane.plane.Plane",
+                        "arguments": {
+                            "galaxies": {
+                                "type": "list",
+                                "values": [
+                                    {
+                                        "type": "instance",
+                                        "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
+                                        "arguments": {
+                                            "redshift": 1.0,
+                                            "disk": {
+                                                "type": "instance",
+                                                "class_path": "autogalaxy.profiles.light.standard.exponential.Exponential",
+                                                "arguments": {
+                                                    "ell_comps": (0.05, 0.25),
+                                                    "centre": (0.3, 0.2),
+                                                    "effective_radius": 0.5,
+                                                    "intensity": 0.05,
+                                                },
+                                            },
+                                        },
+                                    }
+                                ],
+                            },
+                            "run_time_dict": None,
+                            "redshift": 1.0,
+                        },
+                    },
+                ],
+            },
+            "cosmology": {
+                "type": "type",
+                "class_path": "autogalaxy.cosmology.wrap.Planck15",
+            },
+        },
     }
 
 
-# def test_to_dict(tracer, tracer_dict):
-#     assert tracer.dict() == tracer_dict
+def test_to_dict(tracer, tracer_dict):
+    assert to_dict(tracer) == tracer_dict
 
 
 def test_from_dict(tracer, tracer_dict):

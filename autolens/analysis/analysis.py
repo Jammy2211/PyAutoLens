@@ -7,7 +7,7 @@ from scipy.stats import norm
 from typing import Dict, Optional, List, Union
 
 from autoconf import conf
-from autoconf.dictable import as_dict
+from autoconf.dictable import to_dict
 
 import autofit as af
 import autoarray as aa
@@ -349,10 +349,11 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         mesh_list = ag.util.model.mesh_list_from(model=result.model)
 
         if len(mesh_list) > 0:
-
             paths.save_json(
                 name="preload_sparse_grids_of_planes",
-                object_dict=as_dict(result.max_log_likelihood_fit.tracer_to_inversion.sparse_image_plane_grid_pg_list)
+                object_dict=to_dict(
+                    result.max_log_likelihood_fit.tracer_to_inversion.sparse_image_plane_grid_pg_list
+                ),
             )
 
         if conf.instance["general"]["adapt"]["stochastic_outputs"]:

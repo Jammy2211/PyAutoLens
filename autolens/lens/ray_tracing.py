@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Type, Union
 
 import autoarray as aa
 import autogalaxy as ag
-from autoconf.dictable import from_dict, as_dict
+from autoconf.dictable import from_dict, to_dict
 
 from autogalaxy.plane.plane import Plane
 from autogalaxy.profiles.light.snr import LightProfileSNR
