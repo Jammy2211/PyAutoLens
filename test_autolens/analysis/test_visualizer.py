@@ -42,7 +42,7 @@ def test__visualizes_ray_tracing__uses_configs(
         file_path=path.join(plot_path, "fits", "convergence_2d.fits"), hdu=0
     )
 
-    assert convergence.shape == (5, 5)
+    assert convergence.shape == (7, 7)
 
 
 def test__visualizes_image_with_positions__uses_configs(

@@ -18,7 +18,6 @@ def make_visualizer_plotter_setup():
 def test__visualizes_fit_imaging__uses_configs(
     fit_imaging_x2_plane_inversion_7x7, include_2d_all, plot_path, plot_patch
 ):
-
     if os.path.exists(plot_path):
         shutil.rmtree(plot_path)
 
@@ -43,4 +42,4 @@ def test__visualizes_fit_imaging__uses_configs(
         file_path=path.join(plot_path, "fits", "data.fits"), hdu=0
     )
 
-    assert image.shape == (5, 5)
+    assert image.shape == (7, 7)
