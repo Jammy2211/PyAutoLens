@@ -4,6 +4,7 @@ from test_autolens.aggregator.conftest import clean, aggregator_from
 
 database_file = "db_tracer"
 
+
 def test__tracer_randomly_drawn_via_pdf_gen_from(
     masked_imaging_7x7,
     adapt_model_image_7x7,
@@ -11,7 +12,6 @@ def test__tracer_randomly_drawn_via_pdf_gen_from(
     samples,
     model,
 ):
-
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
     analysis.adapt_model_image = adapt_model_image_7x7
@@ -43,7 +43,6 @@ def test__tracer_randomly_drawn_via_pdf_gen_from(
 
 
 def test__tracer_all_above_weight_gen(analysis_imaging_7x7, samples, model):
-
     agg = aggregator_from(
         database_file=database_file,
         analysis=analysis_imaging_7x7,

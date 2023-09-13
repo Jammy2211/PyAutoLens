@@ -14,6 +14,7 @@ from autogalaxy.aggregator import agg_util
 
 from autolens.aggregator.tracer import _tracer_from
 
+
 def _fit_imaging_from(
     fit: af.Fit,
     galaxies: List[ag.Galaxy],
@@ -77,26 +78,28 @@ def _fit_imaging_from(
 
     fit_dataset_list = []
 
-    for dataset, tracer, sparse_grids_of_planes in zip(dataset_list, tracer_list, sparse_grids_of_planes_list):
-
+    for dataset, tracer, sparse_grids_of_planes in zip(
+        dataset_list, tracer_list, sparse_grids_of_planes_list
+    ):
         preloads = agg_util.preloads_from(
             preloads_cls=Preloads,
             use_preloaded_grid=use_preloaded_grid,
             sparse_grids_of_planes=sparse_grids_of_planes,
-            use_w_tilde=False
+            use_w_tilde=False,
         )
 
-        fit_dataset_list.append(FitImaging(
-            dataset=dataset,
-            tracer=tracer,
-            settings_pixelization=settings_pixelization,
-            settings_inversion=settings_inversion,
-            preloads=preloads,
+        fit_dataset_list.append(
+            FitImaging(
+                dataset=dataset,
+                tracer=tracer,
+                settings_pixelization=settings_pixelization,
+                settings_inversion=settings_inversion,
+                preloads=preloads,
+            )
         )
-        )
-
 
     return fit_dataset_list
+
 
 class FitImagingAgg(AbstractAgg):
     def __init__(

@@ -524,7 +524,6 @@ class AnalysisInterferometer(AnalysisDataset):
             prefix="dataset",
         )
         if self.positions_likelihood is not None:
-
             paths.save_json(
                 name="positions",
                 object_dict=to_dict(self.positions_likelihood.positions),
