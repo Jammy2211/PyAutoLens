@@ -7,6 +7,7 @@ from autofit.non_linear.samples import Sample
 
 from test_autogalaxy.aggregator.conftest import clean, aggregator_from
 
+
 @pytest.fixture(autouse=True)
 def set_test_mode():
     os.environ["PYAUTOFIT_TEST_MODE"] = "1"
