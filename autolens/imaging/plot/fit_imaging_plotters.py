@@ -193,12 +193,27 @@ class FitImagingPlotter(Plotter):
 
             if subtracted_image:
 
+                title = f"Subtracted Image of Plane {plane_index}"
+                filename = f"subtracted_image_of_plane_{plane_index}"
+
+                if len(plane_indexes) == 2:
+
+                    if plane_index == 0:
+
+                        title = "Source Subtracted Image"
+                        filename = "source_subtracted_image"
+
+                    elif plane_index == 1:
+
+                        title = "Lens Subtracted Image"
+                        filename = "lens_subtracted_image"
+
                 self.mat_plot_2d.plot_array(
                     array=self.fit.subtracted_images_of_planes_list[plane_index],
                     visuals_2d=visuals_2d_no_critical_caustic,
                     auto_labels=aplt.AutoLabels(
-                        title=f"Subtracted Image of Plane {plane_index}",
-                        filename=f"subtracted_image_of_plane_{plane_index}",
+                        title=title,
+                        filename=filename
                     ),
                 )
 
@@ -214,12 +229,27 @@ class FitImagingPlotter(Plotter):
 
                     visuals_2d_model_image = visuals_2d
 
+                title = f"Model Image of Plane {plane_index}"
+                filename = f"model_image_of_plane_{plane_index}"
+
+                if len(plane_indexes) == 2:
+
+                    if plane_index == 0:
+
+                        title = "Lens Model Image"
+                        filename = "lens_model_image"
+
+                    elif plane_index == 1:
+
+                        title = "Source Model Image"
+                        filename = "source_model_image"
+
                 self.mat_plot_2d.plot_array(
                     array=self.fit.model_images_of_planes_list[plane_index],
                     visuals_2d=visuals_2d_model_image,
                     auto_labels=aplt.AutoLabels(
-                        title=f"Model Image of Plane {plane_index}",
-                        filename=f"model_image_of_plane_{plane_index}",
+                        title=title,
+                        filename=filename
                     ),
                 )
 
