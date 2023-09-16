@@ -1,18 +1,50 @@
 import os
+from os import path
 import pytest
+import shutil
 
+from autoconf import conf
 import autofit as af
 import autolens as al
 from autofit.non_linear.samples import Sample
-
-from test_autogalaxy.aggregator.conftest import clean, aggregator_from
-
 
 @pytest.fixture(autouse=True)
 def set_test_mode():
     os.environ["PYAUTOFIT_TEST_MODE"] = "1"
     yield
     del os.environ["PYAUTOFIT_TEST_MODE"]
+
+
+def clean(database_file):
+    database_sqlite = path.join(conf.instance.output_path, f"{database_file}.sqlite")
+
+    if path.exists(database_sqlite):
+        os.remove(database_sqlite)
+
+    result_path = path.join(conf.instance.output_path, database_file)
+
+    if path.exists(result_path):
+        shutil.rmtree(result_path)
+
+
+def aggregator_from(database_file, analysis, model, samples):
+    result_path = path.join(conf.instance.output_path, database_file)
+
+    clean(database_file=database_file)
+
+    search = al.m.MockSearch(
+        samples=samples, result=al.m.MockResult(model=model, samples=samples)
+    )
+    search.paths = af.DirectoryPaths(path_prefix=database_file)
+    search.fit(model=model, analysis=analysis)
+
+    database_file = path.join(conf.instance.output_path, f"{database_file}.sqlite")
+
+    agg = af.Aggregator.from_database(filename=database_file)
+    agg.add_directory(directory=result_path)
+
+    return agg
+
 
 
 @pytest.fixture(name="model")
