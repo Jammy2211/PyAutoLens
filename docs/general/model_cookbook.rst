@@ -12,7 +12,7 @@ readable code for different use-cases.
 Simple Lens Model
 -----------------
 
-A simple lens model we can compose has a lens galaxy with a Sersic light profile, Isothermal mass profile and
+A simple lens model has a lens galaxy with a Sersic light profile, Isothermal mass profile and
 source galaxy with a Sersic light profile:
 
 .. code-block:: python
@@ -41,12 +41,13 @@ source galaxy with a Sersic light profile:
 
 The redshifts in the above model are used to determine which galaxy is the lens and which is the source.
 
-The model ``prior_count`` tells us the total number of free parameters (which are fitted for via a non-linear search),
-which in this case is 19 (7 from the lens Sersic, 5 from the lens Isothermal and 7 from the source Sersic).
+The model ``total_free_parameters`` attribute which tells us the total number of free parameters (which are fitted for
+via a non-linear search), which in this case is 19 (7 from the lens Sersic, 5 from the lens Isothermal and 7 from the
+source Sersic).
 
 .. code-block:: python
 
-    print(f"Model Prior Count = {model.prior_count}")
+    print(f"Model Total Free Parameters = {model.total_free_parameters}")
 
 If we print the ``info`` attribute of the model we get information on all of the parameters and their priors.
 
@@ -326,6 +327,14 @@ The redshift of a galaxy can be treated as a free parameter in the model-fit by 
 The model-fit will automatically enable multi-plane ray tracing and alter the ordering of the planes depending on the
 redshifts of the galaxies.
 
+NOTE: For strong lenses with just two planes (an image-plane and source-plane) the redshifts of the galaxies do not
+impact the model-fit. You should therefore never make the redshifts free if you are only modeling a two-plane lens
+system. This is because lensing calculations can be defined in arc-second coordinates, which do not change as a
+function of redshift.
+
+Redshifts should be made free when modeling three or more planes, as the mulit-plane ray-tracing calculations have an
+obvious dependence on the redshifts of the galaxies which could be inferred by the model-fit.
+
 Available Model Components
 --------------------------
 
@@ -342,6 +351,9 @@ JSon Outputs
 After a model is composed, it can easily be output to a .json file on hard-disk in a readable structure:
 
 .. code-block:: python
+
+    import os
+    import json
 
     model_path = path.join("path", "to", "model", "json")
 
@@ -396,13 +408,8 @@ https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/multi/mod
 Relations (Advanced)
 --------------------
 
-In the model above, an extra free parameter ``intensity`` was added for every dataset.
-
-With 2 datasets this did not produce a complex model, but if there are 5+ datasets one will quickly find that the
-model complexity increases dramatically.
-
-We can therefore compose models where the free parameter(s) vary according to a user-specified function across the
-datasets.
+We can compose models where the free parameter(s) vary according to a user-specified function
+(e.g. y = mx +c -> intensity = (m * wavelength) + c across the datasets.
 
 The following example notebooks show how to compose and fit these models:
 
@@ -416,11 +423,8 @@ detailed in this cookbook.
 
 The **PyAutoFit** model composition cookbooks detail this API in more detail:
 
-https://pyautofit.readthedocs.io/en/latest/cookbooks/cookbook_1_basics.html
-https://pyautofit.readthedocs.io/en/latest/cookbooks/cookbook_2_collections.html
-https://pyautofit.readthedocs.io/en/latest/cookbooks/cookbook_3_multiple_datasets.html
-https://pyautofit.readthedocs.io/en/latest/cookbooks/cookbook_4_multi_level.html
-https://pyautofit.readthedocs.io/en/latest/cookbooks/cookbook_5_model_linking.html
+https://pyautofit.readthedocs.io/en/latest/cookbooks/model.html
+https://pyautofit.readthedocs.io/en/latest/cookbooks/multi_level_model.html
 
 Wrap Up
 -------

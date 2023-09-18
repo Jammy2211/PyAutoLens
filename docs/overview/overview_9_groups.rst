@@ -187,7 +187,7 @@ overview.
 
 .. code-block:: python
 
-    search = af.DynestyStatic(name="overview_groups")
+    search = af.Nautilus(name="overview_groups")
 
     analysis = al.AnalysisPoint(point_dict=point_dict, solver=None)
 

@@ -270,7 +270,7 @@ We again choose the non-linear search ``dynesty`` (https://github.com/joshspeagl
 
 .. code-block:: python
 
-    search = af.DynestyStatic(path_prefix="overview", name="interferometer")
+    search = af.Nautilus(path_prefix="overview", name="interferometer")
 
 Whereas we previously used an ``AnalysisImaging`` object, we instead use an ``AnalysisInterferometer`` object which fits
 the lens model in the correct way for an interferometer dataset.

@@ -196,7 +196,7 @@ class FitImagingPlotter(Plotter):
                 title = f"Subtracted Image of Plane {plane_index}"
                 filename = f"subtracted_image_of_plane_{plane_index}"
 
-                if len(plane_indexes) == 2:
+                if len(self.tracer.planes) == 2:
 
                     if plane_index == 0:
 
@@ -232,7 +232,7 @@ class FitImagingPlotter(Plotter):
                 title = f"Model Image of Plane {plane_index}"
                 filename = f"model_image_of_plane_{plane_index}"
 
-                if len(plane_indexes) == 2:
+                if len(self.tracer.planes) == 2:
 
                     if plane_index == 0:
 

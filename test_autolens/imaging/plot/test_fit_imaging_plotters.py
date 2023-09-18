@@ -75,10 +75,10 @@ def test__figures_of_plane(
         subtracted_image=True, model_image=True, plane_image=True
     )
 
-    assert path.join(plot_path, "subtracted_image_of_plane_0.png") in plot_patch.paths
-    assert path.join(plot_path, "subtracted_image_of_plane_1.png") in plot_patch.paths
-    assert path.join(plot_path, "model_image_of_plane_0.png") in plot_patch.paths
-    assert path.join(plot_path, "model_image_of_plane_1.png") in plot_patch.paths
+    assert path.join(plot_path, "source_subtracted_image.png") in plot_patch.paths
+    assert path.join(plot_path, "lens_subtracted_image.png") in plot_patch.paths
+    assert path.join(plot_path, "lens_model_image.png") in plot_patch.paths
+    assert path.join(plot_path, "source_model_image.png") in plot_patch.paths
     assert path.join(plot_path, "plane_image_of_plane_0.png") in plot_patch.paths
     assert path.join(plot_path, "plane_image_of_plane_1.png") in plot_patch.paths
 
@@ -88,12 +88,14 @@ def test__figures_of_plane(
         subtracted_image=True, model_image=True, plane_index=0, plane_image=True
     )
 
-    assert path.join(plot_path, "subtracted_image_of_plane_0.png") in plot_patch.paths
+    print(plot_patch.paths)
+
+    assert path.join(plot_path, "source_subtracted_image.png") in plot_patch.paths
     assert (
-        path.join(plot_path, "subtracted_image_of_plane_1.png") not in plot_patch.paths
+        path.join(plot_path, "lens_subtracted_image.png") not in plot_patch.paths
     )
-    assert path.join(plot_path, "model_image_of_plane_0.png") in plot_patch.paths
-    assert path.join(plot_path, "model_image_of_plane_1.png") not in plot_patch.paths
+    assert path.join(plot_path, "lens_model_image.png") in plot_patch.paths
+    assert path.join(plot_path, "source_model_image.png") not in plot_patch.paths
     assert path.join(plot_path, "plane_image_of_plane_0.png") in plot_patch.paths
     assert path.join(plot_path, "plane_image_of_plane_1.png") not in plot_patch.paths
 

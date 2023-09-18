@@ -279,7 +279,7 @@ the lens model.
 
     # Search + Analysis + Model-Fit
 
-    search = af.DynestyStatic(name="overview_point_source")
+    search = af.Nautilus(name="overview_point_source")
 
     analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 

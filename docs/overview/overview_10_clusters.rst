@@ -96,7 +96,7 @@ We are now able to model this dataset as a point source:
 
 .. code-block:: python
 
-    search = af.DynestyStatic(name="overview_clusters")
+    search = af.Nautilus(name="overview_clusters")
 
     analysis = al.AnalysisPoint(point_dict=point_dict, solver=point_solver)
 
