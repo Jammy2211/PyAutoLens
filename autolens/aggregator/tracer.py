@@ -11,6 +11,7 @@ from autogalaxy.aggregator import agg_util
 
 logger = logging.getLogger(__name__)
 
+
 def _tracer_from(fit: af.Fit, galaxies: List[ag.Galaxy]) -> List[Tracer]:
     """
     Returns a list of `Tracer` objects from a `PyAutoFit` sqlite database `Fit` object.

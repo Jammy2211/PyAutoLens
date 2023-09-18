@@ -2,6 +2,8 @@ import logging
 import numpy as np
 from typing import Dict, Optional, Tuple, Union
 
+from autoconf.dictable import to_dict
+
 import autofit as af
 import autoarray as aa
 import autogalaxy as ag
@@ -512,21 +514,20 @@ class AnalysisInterferometer(AnalysisDataset):
         """
         super().save_attributes(paths=paths)
 
-        dataset_path = paths._files_path / "dataset"
-
-        aa.util.array_2d.numpy_array_2d_to_fits(
+        hdu = aa.util.array_2d.hdu_for_output_from(
             array_2d=self.dataset.uv_wavelengths,
-            file_path=dataset_path / "uv_wavelengths.fits",
-            overwrite=True,
         )
-
-        self.dataset.real_space_mask.output_to_fits(
-            file_path=dataset_path / "real_space_mask.fits", overwrite=True
+        paths.save_fits(name="uv_wavelengths", hdu=hdu, prefix="dataset")
+        paths.save_fits(
+            name="real_space_mask",
+            hdu=self.dataset.real_space_mask.hdu_for_output,
+            prefix="dataset",
         )
-
         if self.positions_likelihood is not None:
-            self.positions_likelihood.positions.output_to_json(
-                file_path=dataset_path / "positions.json", overwrite=True
+            paths.save_json(
+                name="positions",
+                object_dict=to_dict(self.positions_likelihood.positions),
+                prefix="dataset",
             )
 
     def profile_log_likelihood_function(

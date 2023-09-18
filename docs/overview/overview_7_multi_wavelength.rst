@@ -207,7 +207,7 @@ Each result corresponds to each analysis created above and is there the fit to e
 
 .. code-block:: python
 
-    search = af.DynestyStatic(name="overview_example_multiwavelength")
+    search = af.Nautilus(name="overview_example_multiwavelength")
     result_list = search.fit(model=model, analysis=analysis)
 
 Plotting each result's tracer shows that the lens and source galaxies appear different in each result, owning to their

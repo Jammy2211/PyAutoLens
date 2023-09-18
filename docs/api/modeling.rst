@@ -34,7 +34,7 @@ Markov Chain Monte Carlo (MCMC) and optimizers.
    :template: custom-class-template.rst
    :recursive:
 
-   DynestyStatic
+   Nautilus
    DynestyDynamic
    Emcee
    PySwarmsLocal

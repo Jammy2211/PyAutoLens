@@ -2,6 +2,8 @@ import logging
 import numpy as np
 from typing import Dict, Optional, Tuple
 
+from autoconf.dictable import to_dict
+
 import autofit as af
 import autogalaxy as ag
 
@@ -442,17 +444,23 @@ class AnalysisImaging(AnalysisDataset):
         """
         super().save_attributes(paths=paths)
 
-        dataset_path = paths._files_path / "dataset"
-
-        self.dataset.psf.output_to_fits(
-            file_path=dataset_path / "psf.fits", overwrite=True,
+        paths.save_fits(
+            name="psf",
+            hdu=self.dataset.psf.hdu_for_output,
+            prefix="dataset",
         )
-        self.dataset.mask.output_to_fits(file_path=dataset_path / "mask.fits", overwrite=True)
+        paths.save_fits(
+            name="mask",
+            hdu=self.dataset.mask.hdu_for_output,
+            prefix="dataset",
+        )
 
         if self.positions_likelihood is not None:
 
-            self.positions_likelihood.positions.output_to_json(
-                file_path=dataset_path / "positions.json", overwrite=True
+            paths.save_json(
+                name="positions",
+                object_dict=to_dict(self.positions_likelihood.positions),
+                prefix="dataset",
             )
 
     def profile_log_likelihood_function(

@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Type, Union
 
 import autoarray as aa
 import autogalaxy as ag
-from autoconf.dictable import from_dict, to_dict
+from autoconf.dictable import from_dict, to_dict, output_to_json
 
 from autogalaxy.plane.plane import Plane
 from autogalaxy.profiles.light.snr import LightProfileSNR
@@ -135,6 +135,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         if isinstance(cosmology, str):
             arguments["cosmology"] = getattr(ag.cosmo, cosmology)
         return from_dict(cls_dict)
+
+    def output_to_json(self, file_path):
+        output_to_json(obj=to_dict(self), file_path=file_path)
 
     @property
     def galaxies(self) -> List[ag.Galaxy]:

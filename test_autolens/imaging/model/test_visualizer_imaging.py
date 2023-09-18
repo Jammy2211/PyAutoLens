@@ -33,8 +33,8 @@ def test__visualizes_fit_imaging__uses_configs(
     assert path.join(plot_path, "data.png") in plot_patch.paths
     assert path.join(plot_path, "noise_map.png") not in plot_patch.paths
 
-    assert path.join(plot_path, "subtracted_image_of_plane_1.png") in plot_patch.paths
-    assert path.join(plot_path, "model_image_of_plane_1.png") not in plot_patch.paths
+    assert path.join(plot_path, "lens_subtracted_image.png") in plot_patch.paths
+    assert path.join(plot_path, "source_model_image.png") not in plot_patch.paths
 
     assert path.join(plot_path, "reconstruction.png") in plot_patch.paths
 
