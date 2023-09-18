@@ -137,11 +137,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         return from_dict(cls_dict)
 
     def output_to_json(self, file_path):
-
-        output_to_json(
-            obj=to_dict(self),
-            file_path=file_path
-        )
+        output_to_json(obj=to_dict(self), file_path=file_path)
 
     @property
     def galaxies(self) -> List[ag.Galaxy]:

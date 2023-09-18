@@ -8,6 +8,7 @@ import autofit as af
 import autolens as al
 from autofit.non_linear.samples import Sample
 
+
 @pytest.fixture(autouse=True)
 def set_test_mode():
     os.environ["PYAUTOFIT_TEST_MODE"] = "1"
@@ -44,7 +45,6 @@ def aggregator_from(database_file, analysis, model, samples):
     agg.add_directory(directory=result_path)
 
     return agg
-
 
 
 @pytest.fixture(name="model")
