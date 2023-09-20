@@ -7,7 +7,7 @@ from scipy.stats import norm
 from typing import Dict, Optional, List, Union
 
 from autoconf import conf
-from autoconf.dictable import to_dict
+from autoconf.dictable import to_dict, output_to_json
 
 import autofit as af
 import autoarray as aa
@@ -345,6 +345,13 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         result
             The result of a model fit, including the non-linear search, samples and maximum likelihood tracer.
         """
+        try:
+            output_to_json(
+                obj=result.max_log_likelihood_tracer,
+                file_path=paths._files_path / "tracer.json"
+            )
+        except AttributeError:
+            pass
 
         mesh_list = ag.util.model.mesh_list_from(model=result.model)
 
