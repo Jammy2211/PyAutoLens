@@ -188,7 +188,7 @@ def test__check_preloads(masked_imaging_7x7):
         analysis.preloads.check_via_fit(fit=fit)
 
 
-def test__tracer__output_to_json(analysis_imaging_7x7):
+def test__save_results__tracer_output_to_json(analysis_imaging_7x7):
 
     lens = al.Galaxy(redshift=0.5)
     source = al.Galaxy(redshift=1.0)
@@ -196,7 +196,7 @@ def test__tracer__output_to_json(analysis_imaging_7x7):
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
     tracer = al.Tracer.from_galaxies(
-        galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
+        galaxies=[lens, source]
     )
 
     paths = af.DirectoryPaths()

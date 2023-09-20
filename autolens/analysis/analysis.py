@@ -284,6 +284,52 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
     def fit_maker_cls(self):
         return FitMaker
 
+    def save_results(self, paths: af.DirectoryPaths, result: ResultDataset):
+        """
+        At the end of a model-fit, this routine saves attributes of the `Analysis` object to the `files`
+        folder such that they can be loaded after the analysis using PyAutoFit's database and aggregator tools.
+
+        For this analysis it outputs the following:
+
+        - The maximum log likelihood tracer of the fit.
+
+        - The stochastic log likelihoods of a pixelization, provided the pixelization has functionality that can
+          compute likelihoods for different KMeans seeds and grids (e.g. `VoronoiBrightnessImage).
+
+        Parameters
+        ----------
+        paths
+            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            visualization and the pickled objects used by the aggregator output by this function.
+        result
+            The result of a model fit, including the non-linear search, samples and maximum likelihood tracer.
+        """
+        try:
+            output_to_json(
+                obj=result.max_log_likelihood_tracer,
+                file_path=paths._files_path / "tracer.json"
+            )
+        except AttributeError:
+            pass
+
+        mesh_list = ag.util.model.mesh_list_from(model=result.model)
+
+        if len(mesh_list) > 0:
+            paths.save_json(
+                name="preload_sparse_grids_of_planes",
+                object_dict=to_dict(
+                    result.max_log_likelihood_fit.tracer_to_inversion.sparse_image_plane_grid_pg_list
+                ),
+            )
+
+        if conf.instance["general"]["adapt"]["stochastic_outputs"]:
+            if len(mesh_list) > 0:
+                for mesh in mesh_list:
+                    if mesh.is_stochastic:
+                        self.save_stochastic_outputs(
+                            paths=paths, samples=result.samples
+                        )
+
     def log_likelihood_cap_from(
         self, stochastic_log_likelihoods_json_file: str
     ) -> float:
@@ -326,50 +372,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
     def stochastic_log_likelihoods_via_instance_from(self, instance) -> List[float]:
         raise NotImplementedError()
-
-    def save_results(self, paths: af.DirectoryPaths, result: ResultDataset):
-        """
-        At the end of a model-fit,  this routine saves attributes of the `Analysis` object to the `pickles`
-        folder such that they can be loaded after the analysis using PyAutoFit's database and aggregator tools.
-
-        For this analysis it outputs the following:
-
-        - The stochastic log likelihoods of a pixelization, provided the pixelization has functionality that can
-          compute likelihoods for different KMeans seeds and grids (e.g. `VoronoiBrightnessImage).
-
-        Parameters
-        ----------
-        paths
-            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
-            visualization and the pickled objects used by the aggregator output by this function.
-        result
-            The result of a model fit, including the non-linear search, samples and maximum likelihood tracer.
-        """
-        try:
-            output_to_json(
-                obj=result.max_log_likelihood_tracer,
-                file_path=paths._files_path / "tracer.json"
-            )
-        except AttributeError:
-            pass
-
-        mesh_list = ag.util.model.mesh_list_from(model=result.model)
-
-        if len(mesh_list) > 0:
-            paths.save_json(
-                name="preload_sparse_grids_of_planes",
-                object_dict=to_dict(
-                    result.max_log_likelihood_fit.tracer_to_inversion.sparse_image_plane_grid_pg_list
-                ),
-            )
-
-        if conf.instance["general"]["adapt"]["stochastic_outputs"]:
-            if len(mesh_list) > 0:
-                for mesh in mesh_list:
-                    if mesh.is_stochastic:
-                        self.save_stochastic_outputs(
-                            paths=paths, samples=result.samples
-                        )
 
     def save_stochastic_outputs(self, paths: af.DirectoryPaths, samples: af.Samples):
         """
