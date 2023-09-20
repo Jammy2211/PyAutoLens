@@ -1564,6 +1564,8 @@ def test__output_to_and_load_from_json():
 
     tracer_from_json = from_json(file_path=json_file)
 
+    print(type(tracer_from_json))
+
     assert tracer_from_json.galaxies[0].redshift == 0.5
     assert tracer_from_json.galaxies[1].redshift == 1.0
     assert tracer_from_json.galaxies[0].mass_profile.einstein_radius == 1.0

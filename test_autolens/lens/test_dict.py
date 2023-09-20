@@ -1,7 +1,7 @@
 import pytest
 
 import autolens as al
-from autoconf.dictable import to_dict
+from autoconf.dictable import to_dict, from_dict
 
 
 @pytest.fixture(name="tracer")
@@ -105,9 +105,9 @@ def make_tracer_dict():
     }
 
 
-def test_to_dict(tracer, tracer_dict):
+def test__to_dict(tracer, tracer_dict):
     assert to_dict(tracer) == tracer_dict
 
 
-def test_from_dict(tracer, tracer_dict):
-    assert tracer.from_dict(tracer_dict) == tracer
+def test__from_dict(tracer, tracer_dict):
+    assert from_dict(tracer_dict) == tracer
