@@ -1,3 +1,4 @@
+import dill
 import os
 import json
 import logging
@@ -22,7 +23,6 @@ from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
 from autolens.analysis.visualizer import Visualizer
 from autolens.lens.ray_tracing import Tracer
-from autolens.lens.to_inversion import TracerToInversion
 from autolens.analysis.settings import SettingsLens
 
 from autolens.lens import ray_tracing_util
@@ -311,6 +311,10 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             )
         except AttributeError:
             pass
+
+        if conf.instance["general"]["output"]["fit_dill"]:
+            with open(paths._files_path / "fit.dill", "wb") as f:
+                dill.dump(result.max_log_likelihood_fit, f)
 
         mesh_list = ag.util.model.mesh_list_from(model=result.model)
 

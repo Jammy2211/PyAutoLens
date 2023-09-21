@@ -1,2 +1,4 @@
+output:
+  fit_dill: false
 test:
   disable_positions_lh_inversion_check: false

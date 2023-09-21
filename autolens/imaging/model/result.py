@@ -60,8 +60,6 @@ class ResultImaging(ResultDataset):
         are converted to normal light profiles with their `intensity` values updated.
         """
 
-        # TODO : IS this going to cause horrific issues? Remember linear algebra stuff
-
         return (
             self.max_log_likelihood_fit.model_obj_linear_light_profiles_to_light_profiles
         )
