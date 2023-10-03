@@ -19,7 +19,8 @@
     signal_to_noise_map: false
     model_data: false
     residual_map: false
-    normalized_residual_map: false
+    chi_squared_map: false                   # Plot individual plots of the chi-squared-map?
+    residual_flux_fraction: false            # Plot individual plots of the residual_flux_fraction?
     model_images_of_planes: false            # Plot individual plots of each plane's model image?
     subtracted_images_of_planes: false       # Plot individual plots of each plane's subtracted image?
     plane_images_of_planes: false            # Plot individual plots of each plane's image (e.g. in the source plane)?
