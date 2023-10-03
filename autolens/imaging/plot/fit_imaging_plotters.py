@@ -442,6 +442,7 @@ class FitImagingPlotter(Plotter):
         residual_map: bool = False,
         normalized_residual_map: bool = False,
         chi_squared_map: bool = False,
+        residual_flux_fraction_map: bool = False,
         use_source_vmax : bool = False,
         suffix: str = "",
     ):
@@ -467,6 +468,8 @@ class FitImagingPlotter(Plotter):
             Whether to make a 2D plot (via `imshow`) of the normalized residual map.
         chi_squared_map
             Whether to make a 2D plot (via `imshow`) of the chi-squared map.
+        residual_flux_fraction_map
+            Whether to make a 2D plot (via `imshow`) of the residual flux fraction map.
         use_source_vmax
             If `True`, the maximum value of the lensed source (e.g. in the image-plane) is used to set the `vmax` of
             certain plots (e.g. the `data`) in order to ensure the lensed source is visible compared to the lens.
@@ -570,5 +573,15 @@ class FitImagingPlotter(Plotter):
                 visuals_2d=visuals_2d_no_critical_caustic,
                 auto_labels=AutoLabels(
                     title="Chi-Squared Map", cb_unit=r" $\chi^2$",  filename=f"chi_squared_map{suffix}"
+                ),
+            )
+
+        if residual_flux_fraction_map:
+
+            self.mat_plot_2d.plot_array(
+                array=self.fit.residual_flux_fraction_map,
+                visuals_2d=visuals_2d_no_critical_caustic,
+                auto_labels=AutoLabels(
+                    title="Residual Flux Fraction Map", filename=f"residual_flux_fraction_map{suffix}"
                 ),
             )
