@@ -6,6 +6,7 @@ import shutil
 from autoconf import conf
 import autofit as af
 import autolens as al
+from autoconf.conf import with_config
 from autofit.non_linear.samples import Sample
 
 
@@ -28,6 +29,12 @@ def clean(database_file):
         shutil.rmtree(result_path)
 
 
+@with_config(
+    "general",
+    "output",
+    "samples_to_csv",
+    value=True,
+)
 def aggregator_from(database_file, analysis, model, samples):
     result_path = path.join(conf.instance.output_path, database_file)
 
