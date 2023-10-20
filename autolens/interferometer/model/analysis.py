@@ -185,6 +185,7 @@ class AnalysisInterferometer(AnalysisDataset):
             exc.PixelizationException,
             exc.InversionException,
             exc.GridException,
+            exc.MeshException,
             ValueError,
             TypeError,
             np.linalg.LinAlgError,
