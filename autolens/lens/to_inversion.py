@@ -73,6 +73,7 @@ class TracerToInversion(ag.AbstractToInversion):
                 dataset=self.dataset,
                 grid=traced_grids_of_planes_list[plane_index],
                 blurring_grid=traced_blurring_grids_of_planes_list[plane_index],
+                noise_map=self.noise_map,
             )
 
             lp_linear_galaxy_dict_of_plane = (
@@ -111,6 +112,7 @@ class TracerToInversion(ag.AbstractToInversion):
                 plane=plane,
                 grid_pixelization=self.dataset.grid,
                 settings_pixelization=self.settings_pixelization,
+                noise_map=self.noise_map,
             )
 
             sparse_image_plane_grid_list = (
@@ -192,6 +194,7 @@ class TracerToInversion(ag.AbstractToInversion):
                     grid_pixelization=traced_grids_of_planes_list[plane_index],
                     settings_pixelization=self.settings_pixelization,
                     preloads=self.preloads,
+                    noise_map=self.noise_map,
                 )
 
                 galaxies_with_pixelization_list = plane.galaxies_with_cls_list_from(
