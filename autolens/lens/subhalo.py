@@ -75,11 +75,40 @@ class SubhaloResult:
             shape_native=self.grid_search_result_with_subhalo.shape,
         )
 
-    def subhalo_detection_array_from(
+    def detection_array_from(
         self,
         use_log_evidences: bool = True,
         relative_to_no_subhalo: bool = True,
     ) -> aa.Array2D:
+        """
+        Returns an `Array2D` where the values are the `log_evidence` or `log_likelihood` increases of every lens model
+        with a DM subhalo.
+
+        If the `Samples` of the no subhalo lens model are available, these values can be plotted relative to the no
+        subhalo model, therefore giving the values of the `log_evidence` or `log_likelihood` increase of every lens
+        model with a DM subhalo relative to the no subhalo model.
+
+        The array may be produced mid way through the grid search of non-linear searches. In this case, certain
+        values may be None. These values are set to np.nan in the array, so that the array can be used and plotted
+        but their values are not included in the visualization.
+
+        The orientation of the 2D array and its values are chosen to ensure that when this array is plotted, DM
+        subhalos with positive y and negative x `centre` coordinates appear in the top-left of the image.
+
+        Parameters
+        ----------
+        use_log_evidences
+            If `True`, the `log_evidence` increases of every lens model with a DM subhalo are plotted. If `False`, the
+            `log_likelihood` increases are plotted.
+        relative_to_no_subhalo
+            If `True`, the values are plotted relative to the no subhalo model. If `False`, the values are plotted
+            in absolute terms.
+
+        Returns
+        -------
+        The 2D array of values, where the values are the `log_evidence` or `log_likelihood` increases of every lens
+        model with a DM subhalo.
+        """
 
         if not use_log_evidences:
             values_native = self.grid_search_result_with_subhalo.log_likelihoods_native
@@ -191,7 +220,7 @@ class SubhaloPlotter(AbstractPlotter):
         )
 
     def detection_array_from(self, remove_zeros: bool = False):
-        detection_array = self.subhalo_result.subhalo_detection_array_from(
+        detection_array = self.subhalo_result.detection_array_from(
             use_log_evidences=self.use_log_evidences,
             relative_to_no_subhalo=True,
         )
