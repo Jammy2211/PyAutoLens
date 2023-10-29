@@ -43,7 +43,28 @@ class SubhaloResult:
         self.fit_imaging_no_subhalo = fit_imaging_no_subhalo
         self.samples_no_subhalo = samples_no_subhalo
 
-    def _subhalo_array_from(self, values_native) -> aa.Array2D:
+    def _array_2d_from(self, values_native) -> aa.Array2D:
+        """
+        Returns an `Array2D` where the input values are reshaped from list of lists to a 2D array, which is
+        suitable for plotting.
+
+        For example, this function may return the 2D array of the increases in log evidence for every lens model
+        with a DM subhalo.
+
+        The orientation of the 2D array and its values are chosen to ensure that when this array is plotted, DM
+        subhalos with positive y and negative x `centre` coordinates appear in the top-left of the image.
+
+        Parameters
+        ----------
+        values_native
+            The list of list of values which are mapped to the 2D array (e.g. the `log_evidence` increases of every
+            lens model with a DM subhalo).
+
+        Returns
+        -------
+        The 2D array of values, where the values are mapped from the input list of lists.
+
+        """
         values_reshaped = [value for values in values_native for value in values]
 
         return aa.Array2D.from_yx_and_values(
@@ -76,10 +97,10 @@ class SubhaloResult:
             if relative_to_no_subhalo:
                 values_native -= self.samples_no_subhalo.log_evidence
 
-        return self._subhalo_array_from(values_native=values_native)
+        return self._array_2d_from(values_native=values_native)
 
     def subhalo_mass_array_from(self):
-        return self._subhalo_array_from(values_native=self.masses_native)
+        return self._array_2d_from(values_native=self.masses_native)
 
     def instance_list_via_results_from(self, results):
         return [

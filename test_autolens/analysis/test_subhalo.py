@@ -22,7 +22,7 @@ class TestSubhaloResult:
             grid_search_result=grid_search_result, fit_agg_no_subhalo=1
         )
 
-        subhalo_array = subhalo_result._subhalo_array_from(
+        subhalo_array = subhalo_result._array_2d_from(
             values_native=np.array([[1.0, 2.0], [3.0, 4.0]])
         )
 
