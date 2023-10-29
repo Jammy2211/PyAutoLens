@@ -307,7 +307,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         try:
             output_to_json(
                 obj=result.max_log_likelihood_tracer,
-                file_path=paths._files_path / "tracer.json"
+                file_path=paths._files_path / "tracer.json",
             )
         except AttributeError:
             pass

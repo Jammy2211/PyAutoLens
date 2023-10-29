@@ -14,9 +14,9 @@ from autolens.imaging.plot.fit_imaging_plotters import FitImagingPlotter
 class SubhaloResult:
     def __init__(
         self,
-        grid_search_result_with_subhalo : af.GridSearchResult,
-        fit_imaging_no_subhalo : FitImaging,
-        samples_no_subhalo : af.Samples,
+        grid_search_result_with_subhalo: af.GridSearchResult,
+        fit_imaging_no_subhalo: FitImaging,
+        samples_no_subhalo: af.Samples,
     ):
         """
         The results of a subhalo detection analysis, where dark matter halos are added to the lens model and fitted
@@ -68,8 +68,14 @@ class SubhaloResult:
         values_reshaped = [value for values in values_native for value in values]
 
         return aa.Array2D.from_yx_and_values(
-            y=[centre[0] for centre in self.grid_search_result_with_subhalo.physical_centres_lists],
-            x=[centre[1] for centre in self.grid_search_result_with_subhalo.physical_centres_lists],
+            y=[
+                centre[0]
+                for centre in self.grid_search_result_with_subhalo.physical_centres_lists
+            ],
+            x=[
+                centre[1]
+                for centre in self.grid_search_result_with_subhalo.physical_centres_lists
+            ],
             values=values_reshaped,
             pixel_scales=self.grid_search_result_with_subhalo.physical_step_sizes,
             shape_native=self.grid_search_result_with_subhalo.shape,
@@ -79,6 +85,7 @@ class SubhaloResult:
         self,
         use_log_evidences: bool = True,
         relative_to_no_subhalo: bool = True,
+        remove_zeros: bool = False,
     ) -> aa.Array2D:
         """
         Returns an `Array2D` where the values are the `log_evidence` or `log_likelihood` increases of every lens model
@@ -88,7 +95,7 @@ class SubhaloResult:
         subhalo model, therefore giving the values of the `log_evidence` or `log_likelihood` increase of every lens
         model with a DM subhalo relative to the no subhalo model.
 
-        The array may be produced mid way through the grid search of non-linear searches. In this case, certain
+        The array may be produced mid-way through the grid search of non-linear searches. In this case, certain
         values may be None. These values are set to np.nan in the array, so that the array can be used and plotted
         but their values are not included in the visualization.
 
@@ -103,6 +110,9 @@ class SubhaloResult:
         relative_to_no_subhalo
             If `True`, the values are plotted relative to the no subhalo model. If `False`, the values are plotted
             in absolute terms.
+        remove_zeros
+            If `True` and values are being plotted relative to no subhalo, the values of the array that are below zero
+            are set to zero, so that the negative values do not impact the color-map of the visualization.
 
         Returns
         -------
@@ -126,9 +136,22 @@ class SubhaloResult:
             if relative_to_no_subhalo:
                 values_native -= self.samples_no_subhalo.log_evidence
 
+        if relative_to_no_subhalo and remove_zeros:
+            values_native[values_native < 0.0] = 0.0
+
         return self._array_2d_from(values_native=values_native)
 
-    def subhalo_mass_array_from(self):
+    def subhalo_mass_array_from(self) -> aa.Array2D:
+        """
+        Returns an `Array2D` where the values are the `mass_at_200` of every lens model with a DM subhalo.
+
+        The array may be produced mid-way through the grid search of non-linear searches. In this case, certain
+        values may be None. These values are set to np.nan in the array, so that the array can be used and plotted
+
+        Returns
+        -------
+
+        """
         return self._array_2d_from(values_native=self.masses_native)
 
     def instance_list_via_results_from(self, results):
@@ -157,7 +180,11 @@ class SubhaloResult:
         )
 
         centres_native = np.zeros(
-            (self.grid_search_result_with_subhalo.shape[0], self.grid_search_result_with_subhalo.shape[1], 2)
+            (
+                self.grid_search_result_with_subhalo.shape[0],
+                self.grid_search_result_with_subhalo.shape[1],
+                2,
+            )
         )
 
         centres_native[:, :, 0] = self.grid_search_result_with_subhalo._list_to_native(
@@ -219,17 +246,6 @@ class SubhaloPlotter(AbstractPlotter):
             include_2d=self.include_2d,
         )
 
-    def detection_array_from(self, remove_zeros: bool = False):
-        detection_array = self.subhalo_result.detection_array_from(
-            use_log_evidences=self.use_log_evidences,
-            relative_to_no_subhalo=True,
-        )
-
-        if remove_zeros:
-            detection_array[detection_array < 0.0] = 0.0
-
-        return detection_array
-
     def figure_with_detection_overlay(
         self,
         image: bool = False,
@@ -238,7 +254,9 @@ class SubhaloPlotter(AbstractPlotter):
         overwrite_title=False,
         transpose_array=False,
     ):
-        array_overlay = self.detection_array_from(remove_zeros=remove_zeros)
+        array_overlay = self.subhalo_result.detection_array_from(
+            remove_zeros=remove_zeros
+        )
 
         median_detection = np.round(np.nanmedian(array_overlay), 2)
 
@@ -289,7 +307,7 @@ class SubhaloPlotter(AbstractPlotter):
         self.set_title(None)
 
         self.mat_plot_2d.plot_array(
-            array=self.detection_array_from(remove_zeros=remove_zeros),
+            array=self.subhalo_result.detection_array_from(remove_zeros=remove_zeros),
             visuals_2d=self.visuals_2d,
             auto_labels=aplt.AutoLabels(title="Increase in Log Evidence"),
         )
