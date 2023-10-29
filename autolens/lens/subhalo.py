@@ -1,6 +1,7 @@
-from typing import List, Tuple
+from typing import List
 import numpy as np
 
+import autofit as af
 import autoarray as aa
 import autogalaxy.plot as aplt
 
@@ -9,35 +10,48 @@ from autoarray.plot.abstract_plotters import AbstractPlotter
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.imaging.plot.fit_imaging_plotters import FitImagingPlotter
 
-from autolens.aggregator.fit_imaging import _fit_imaging_from
-
 
 class SubhaloResult:
     def __init__(
-        self, grid_search_result, result_no_subhalo,
+        self,
+        grid_search_result_with_subhalo : af.GridSearchResult,
+        fit_imaging_no_subhalo : FitImaging,
+        samples_no_subhalo : af.Samples,
     ):
-        self.grid_search_result = grid_search_result
-        self.result_no_subhalo = result_no_subhalo
+        """
+        The results of a subhalo detection analysis, where dark matter halos are added to the lens model and fitted
+        to the data.
 
-    @property
-    def fit_imaging_before(self):
-        try:
-            return _fit_imaging_from(
-                fit=self.result_no_subhalo,
-                galaxies=self.result_no_subhalo.instance.galaxies,
-            )
-        except AttributeError:
-            return self.result_no_subhalo.max_log_likelihood_fit
+        This result may use a grid search of non-linear searches where the (y,x) coordinates of each DM subhalo
+        included in the lens model are confined to a small region of the image plane via uniform priors. This object
+        contains functionality for creates ndarrays of these results for visualization and analysis.
+
+        The samples of a previous lens model fit, not including a subhalo, may also be passed to this object. These
+        are used to plot all quantities relative to the no subhalo model, e.g. the change in log evidence.
+
+        Parameters
+        ----------
+        grid_search_result_with_subhalo
+            The results of a grid search of non-linear searches where each DM subhalo's (y,x) coordinates are
+            confined to a small region of the image plane via uniform priors.
+        fit_imaging_no_subhalo
+            The `FitImaging` of the model-fit to the image without a subhalo.
+        samples_no_subhalo
+            The `Samples` of the model-fit to the image without a subhalo.
+        """
+        self.grid_search_result_with_subhalo = grid_search_result_with_subhalo
+        self.fit_imaging_no_subhalo = fit_imaging_no_subhalo
+        self.samples_no_subhalo = samples_no_subhalo
 
     def _subhalo_array_from(self, values_native) -> aa.Array2D:
         values_reshaped = [value for values in values_native for value in values]
 
         return aa.Array2D.from_yx_and_values(
-            y=[centre[0] for centre in self.grid_search_result.physical_centres_lists],
-            x=[centre[1] for centre in self.grid_search_result.physical_centres_lists],
+            y=[centre[0] for centre in self.grid_search_result_with_subhalo.physical_centres_lists],
+            x=[centre[1] for centre in self.grid_search_result_with_subhalo.physical_centres_lists],
             values=values_reshaped,
-            pixel_scales=self.grid_search_result.physical_step_sizes,
-            shape_native=self.grid_search_result.shape,
+            pixel_scales=self.grid_search_result_with_subhalo.physical_step_sizes,
+            shape_native=self.grid_search_result_with_subhalo.shape,
         )
 
     def subhalo_detection_array_from(
@@ -45,26 +59,22 @@ class SubhaloResult:
         use_log_evidences: bool = True,
         relative_to_no_subhalo: bool = True,
     ) -> aa.Array2D:
-        try:
-            samples_no_subhalo = self.result_no_subhalo["samples"]
-        except TypeError:
-            samples_no_subhalo = self.result_no_subhalo.samples
 
         if not use_log_evidences:
-            values_native = self.grid_search_result.log_likelihoods_native
+            values_native = self.grid_search_result_with_subhalo.log_likelihoods_native
             values_native[values_native == None] = np.nan
 
             if relative_to_no_subhalo:
                 values_native -= (
-                    samples_no_subhalo.max_log_likelihood_sample.log_likelihood
+                    self.samples_no_subhalo.max_log_likelihood_sample.log_likelihood
                 )
 
         elif use_log_evidences:
-            values_native = self.grid_search_result.log_evidences_native
+            values_native = self.grid_search_result_with_subhalo.log_evidences_native
             values_native[values_native == None] = np.nan
 
             if relative_to_no_subhalo:
-                values_native -= samples_no_subhalo.log_evidence
+                values_native -= self.samples_no_subhalo.log_evidence
 
         return self._subhalo_array_from(values_native=values_native)
 
@@ -80,10 +90,10 @@ class SubhaloResult:
     @property
     def masses_native(self) -> List[float]:
         instance_list = self.instance_list_via_results_from(
-            results=self.grid_search_result.results
+            results=self.grid_search_result_with_subhalo.results
         )
 
-        return self.grid_search_result._list_to_native(
+        return self.grid_search_result_with_subhalo._list_to_native(
             [
                 None if instance is None else instance.galaxies.subhalo.mass.mass_at_200
                 for instance in instance_list
@@ -93,21 +103,21 @@ class SubhaloResult:
     @property
     def centres_native(self) -> aa.Grid2D:
         instance_list = self.instance_list_via_results_from(
-            results=self.grid_search_result.results
+            results=self.grid_search_result_with_subhalo.results
         )
 
         centres_native = np.zeros(
-            (self.grid_search_result.shape[0], self.grid_search_result.shape[1], 2)
+            (self.grid_search_result_with_subhalo.shape[0], self.grid_search_result_with_subhalo.shape[1], 2)
         )
 
-        centres_native[:, :, 0] = self.grid_search_result._list_to_native(
+        centres_native[:, :, 0] = self.grid_search_result_with_subhalo._list_to_native(
             lst=[
                 None if instance is None else instance.galaxies.subhalo.mass.centre[0]
                 for instance in instance_list
             ]
         )
 
-        centres_native[:, :, 1] = self.grid_search_result._list_to_native(
+        centres_native[:, :, 1] = self.grid_search_result_with_subhalo._list_to_native(
             lst=[
                 None if instance is None else instance.galaxies.subhalo.mass.centre[1]
                 for instance in instance_list
@@ -116,7 +126,7 @@ class SubhaloResult:
 
         return aa.Grid2D.no_mask(
             values=centres_native,
-            pixel_scales=self.grid_search_result.physical_step_sizes,
+            pixel_scales=self.grid_search_result_with_subhalo.physical_step_sizes,
         )
 
 
@@ -139,13 +149,9 @@ class SubhaloPlotter(AbstractPlotter):
         self.use_log_evidences = use_log_evidences
 
     @property
-    def fit_imaging_before(self):
-        return self.subhalo_result.fit_imaging_before
-
-    @property
-    def fit_imaging_before_plotter(self):
+    def fit_imaging_no_subhalo_plotter(self):
         return FitImagingPlotter(
-            fit=self.fit_imaging_before,
+            fit=self.subhalo_result.fit_imaging_no_subhalo,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.visuals_2d,
             include_2d=self.include_2d,
@@ -274,13 +280,13 @@ class SubhaloPlotter(AbstractPlotter):
         self.open_subplot_figure(number_subplots=6)
 
         self.set_title("Normalized Residuals (No Subhalo)")
-        self.fit_imaging_before_plotter.figures_2d(normalized_residual_map=True)
+        self.fit_imaging_no_subhalo_plotter.figures_2d(normalized_residual_map=True)
 
         self.set_title("Chi-Squared Map (No Subhalo)")
-        self.fit_imaging_before_plotter.figures_2d(chi_squared_map=True)
+        self.fit_imaging_no_subhalo_plotter.figures_2d(chi_squared_map=True)
 
         self.set_title("Source Reconstruction (No Subhalo)")
-        self.fit_imaging_before_plotter.figures_2d_of_planes(
+        self.fit_imaging_no_subhalo_plotter.figures_2d_of_planes(
             plane_index=1, plane_image=True
         )
 

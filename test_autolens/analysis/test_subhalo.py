@@ -19,7 +19,7 @@ class TestSubhaloResult:
         )
 
         subhalo_result = SubhaloResult(
-            grid_search_result=grid_search_result, result_no_subhalo=1
+            grid_search_result=grid_search_result, fit_agg_no_subhalo=1
         )
 
         subhalo_array = subhalo_result._subhalo_array_from(
