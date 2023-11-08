@@ -82,6 +82,8 @@ The following papers use **PyAutoLens**:
 
 `The Way of Water: ALMA resolves H2O emission lines in a strongly lensed dusty star-forming galaxy at z ∼ 3.1 <https://arxiv.org/abs/2304.08563>`_
 
+`Characterisation of Herschel-selected strong lens candidates through HST and sub-mm/mm observations <https://arxiv.org/abs/2311.01158>`_
+
 **Surveys**
 
 `When Spectral Modeling Meets Convolutional Networks: A Method for Discovering Reionization-era Lensed Quasars in Multi-band Imaging Data <https://arxiv.org/abs/2211.14543>`_

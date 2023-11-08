@@ -11,7 +11,7 @@ from autolens.imaging.fit_imaging import FitImaging
 from autolens.imaging.plot.fit_imaging_plotters import FitImagingPlotter
 
 
-class SubhaloResult:
+class SubhaloResult(af.GridSearchResult):
     def __init__(
         self,
         grid_search_result_with_subhalo: af.GridSearchResult,
@@ -39,7 +39,13 @@ class SubhaloResult:
         samples_no_subhalo
             The `Samples` of the model-fit to the image without a subhalo.
         """
-        self.grid_search_result_with_subhalo = grid_search_result_with_subhalo
+        
+        super().__init__(
+            samples=grid_search_result_with_subhalo.samples,
+            lower_limits_lists=grid_search_result_with_subhalo.lower_limits_lists,
+            grid_priors=grid_search_result_with_subhalo.grid_priors,
+        )
+        
         self.fit_imaging_no_subhalo = fit_imaging_no_subhalo
         self.samples_no_subhalo = samples_no_subhalo
 
@@ -70,140 +76,37 @@ class SubhaloResult:
         return aa.Array2D.from_yx_and_values(
             y=[
                 centre[0]
-                for centre in self.grid_search_result_with_subhalo.physical_centres_lists
+                for centre in self.physical_centres_lists
             ],
             x=[
                 centre[1]
-                for centre in self.grid_search_result_with_subhalo.physical_centres_lists
+                for centre in self.physical_centres_lists
             ],
             values=values_reshaped,
-            pixel_scales=self.grid_search_result_with_subhalo.physical_step_sizes,
-            shape_native=self.grid_search_result_with_subhalo.shape,
-        )
-
-    def detection_array_from(
-        self,
-        use_log_evidences: bool = True,
-        relative_to_no_subhalo: bool = True,
-        remove_zeros: bool = False,
-    ) -> aa.Array2D:
-        """
-        Returns an `Array2D` where the values are the `log_evidence` or `log_likelihood` increases of every lens model
-        with a DM subhalo.
-
-        If the `Samples` of the no subhalo lens model are available, these values can be plotted relative to the no
-        subhalo model, therefore giving the values of the `log_evidence` or `log_likelihood` increase of every lens
-        model with a DM subhalo relative to the no subhalo model.
-
-        The array may be produced mid-way through the grid search of non-linear searches. In this case, certain
-        values may be None. These values are set to np.nan in the array, so that the array can be used and plotted
-        but their values are not included in the visualization.
-
-        The orientation of the 2D array and its values are chosen to ensure that when this array is plotted, DM
-        subhalos with positive y and negative x `centre` coordinates appear in the top-left of the image.
-
-        Parameters
-        ----------
-        use_log_evidences
-            If `True`, the `log_evidence` increases of every lens model with a DM subhalo are plotted. If `False`, the
-            `log_likelihood` increases are plotted.
-        relative_to_no_subhalo
-            If `True`, the values are plotted relative to the no subhalo model. If `False`, the values are plotted
-            in absolute terms.
-        remove_zeros
-            If `True` and values are being plotted relative to no subhalo, the values of the array that are below zero
-            are set to zero, so that the negative values do not impact the color-map of the visualization.
-
-        Returns
-        -------
-        The 2D array of values, where the values are the `log_evidence` or `log_likelihood` increases of every lens
-        model with a DM subhalo.
-        """
-
-        if not use_log_evidences:
-            values_native = self.grid_search_result_with_subhalo.log_likelihoods_native
-            values_native[values_native == None] = np.nan
-
-            if relative_to_no_subhalo:
-                values_native -= (
-                    self.samples_no_subhalo.max_log_likelihood_sample.log_likelihood
-                )
-
-        elif use_log_evidences:
-            values_native = self.grid_search_result_with_subhalo.log_evidences_native
-            values_native[values_native == None] = np.nan
-
-            if relative_to_no_subhalo:
-                values_native -= self.samples_no_subhalo.log_evidence
-
-        if relative_to_no_subhalo and remove_zeros:
-            values_native[values_native < 0.0] = 0.0
-
-        return self._array_2d_from(values_native=values_native)
-
-    def subhalo_mass_array_from(self) -> aa.Array2D:
-        """
-        Returns an `Array2D` where the values are the `mass_at_200` of every lens model with a DM subhalo.
-
-        The array may be produced mid-way through the grid search of non-linear searches. In this case, certain
-        values may be None. These values are set to np.nan in the array, so that the array can be used and plotted
-
-        Returns
-        -------
-
-        """
-        return self._array_2d_from(values_native=self.masses_native)
-
-    def instance_list_via_results_from(self, results):
-        return [
-            None if result.samples.median_pdf() is None else result.samples.median_pdf()
-            for result in results
-        ]
-
-    @property
-    def masses_native(self) -> List[float]:
-        instance_list = self.instance_list_via_results_from(
-            results=self.grid_search_result_with_subhalo.results
-        )
-
-        return self.grid_search_result_with_subhalo._list_to_native(
-            [
-                None if instance is None else instance.galaxies.subhalo.mass.mass_at_200
-                for instance in instance_list
-            ]
+            pixel_scales=self.physical_step_sizes,
+            shape_native=self.shape,
         )
 
     @property
-    def centres_native(self) -> aa.Grid2D:
-        instance_list = self.instance_list_via_results_from(
-            results=self.grid_search_result_with_subhalo.results
+    def subhalo_mass_array(self) -> aa.Array2D:
+        """
+        Returns an `Array2D` where the values are the `mass_at_200` of every DM subhalo of every lens model on the
+        grid search.
+        """
+        return self._array_2d_from(
+            values_native=self.attribute_grid("galaxies.subhalo.mass.mass_at_200").native
         )
 
-        centres_native = np.zeros(
-            (
-                self.grid_search_result_with_subhalo.shape[0],
-                self.grid_search_result_with_subhalo.shape[1],
-                2,
-            )
-        )
-
-        centres_native[:, :, 0] = self.grid_search_result_with_subhalo._list_to_native(
-            lst=[
-                None if instance is None else instance.galaxies.subhalo.mass.centre[0]
-                for instance in instance_list
-            ]
-        )
-
-        centres_native[:, :, 1] = self.grid_search_result_with_subhalo._list_to_native(
-            lst=[
-                None if instance is None else instance.galaxies.subhalo.mass.centre[1]
-                for instance in instance_list
-            ]
-        )
-
+    @property
+    def subhalo_centres_grid(self) -> aa.Grid2D:
+        """
+        Returns a `Grid2D` where the values are the (y,x) coordinates of every DM subhalo of every lens model on
+        the grid search.
+        """
         return aa.Grid2D.no_mask(
-            values=centres_native,
-            pixel_scales=self.grid_search_result_with_subhalo.physical_step_sizes,
+            values=np.asarray(self.attribute_grid("galaxies.subhalo.mass.centre")),
+            pixel_scales=self.physical_step_sizes,
+            shape_native=self.shape,
         )
 
 
@@ -267,7 +170,7 @@ class SubhaloPlotter(AbstractPlotter):
 
         visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
             array_overlay=array_overlay,
-            mass_profile_centres=self.subhalo_result.centres_native,
+            mass_profile_centres=self.subhalo_result.subhalo_centres_grid,
         )
 
         fit_plotter = self.fit_imaging_detect_plotter_from(visuals_2d=visuals_2d)
@@ -280,7 +183,7 @@ class SubhaloPlotter(AbstractPlotter):
         fit_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
 
     def figure_with_mass_overlay(self, image: bool = False, transpose_array=False):
-        array_overlay = self.subhalo_result.subhalo_mass_array_from()
+        array_overlay = self.subhalo_result.subhalo_mass_array()
 
         # Due to bug with flipped subhalo inv, can remove one day
 
@@ -289,7 +192,7 @@ class SubhaloPlotter(AbstractPlotter):
 
         visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
             array_overlay=array_overlay,
-            mass_profile_centres=self.subhalo_result.centres_native,
+            mass_profile_centres=self.subhalo_result.subhalo_centres_grid,
         )
 
         fit_plotter = self.fit_imaging_detect_plotter_from(visuals_2d=visuals_2d)
@@ -312,10 +215,10 @@ class SubhaloPlotter(AbstractPlotter):
             auto_labels=aplt.AutoLabels(title="Increase in Log Evidence"),
         )
 
-        mass_array = self.subhalo_result.subhalo_mass_array_from()
+        subhalo_mass_array = self.subhalo_result.subhalo_mass_array()
 
         self.mat_plot_2d.plot_array(
-            array=mass_array,
+            array=subhalo_mass_array,
             visuals_2d=self.visuals_2d,
             auto_labels=aplt.AutoLabels(title="Subhalo Mass"),
         )
