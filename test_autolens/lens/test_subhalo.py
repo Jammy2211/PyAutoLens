@@ -16,8 +16,8 @@ def test__detection_array_from():
         grid_priors=[[1, 2], [3, 4]]
     )
 
-    subhalo_result = al.subhalo.SubhaloResult(
-        grid_search_result_with_subhalo=grid_search_result_with_subhalo,
+    subhalo_result = al.subhalo.SubhaloGridSearchResult(
+        subhalo_grid_search_result=grid_search_result_with_subhalo,
         fit_imaging_no_subhalo=None,
         samples_no_subhalo=None
     )
