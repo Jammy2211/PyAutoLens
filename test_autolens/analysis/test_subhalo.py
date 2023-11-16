@@ -2,10 +2,10 @@ import numpy as np
 
 import autofit as af
 import autolens as al
-from autolens.lens.subhalo import SubhaloResult
+from autolens.lens.subhalo import SubhaloGridSearchResult
 
 
-class TestSubhaloResult:
+class TestSubhaloGridSearchResult:
     def test__result_derived_properties(self):
         lower_limit_lists = [[0.0, 0.0], [0.0, 0.5], [0.5, 0.0], [0.5, 0.5]]
 
@@ -18,11 +18,11 @@ class TestSubhaloResult:
             lower_limits_lists=lower_limit_lists,
         )
 
-        subhalo_result = SubhaloResult(
-            grid_search_result=grid_search_result, result_no_subhalo=1
+        subhalo_result = SubhaloGridSearchResult(
+            grid_search_result=grid_search_result, fit_agg_no_subhalo=1
         )
 
-        subhalo_array = subhalo_result._subhalo_array_from(
+        subhalo_array = subhalo_result._array_2d_from(
             values_native=np.array([[1.0, 2.0], [3.0, 4.0]])
         )
 
