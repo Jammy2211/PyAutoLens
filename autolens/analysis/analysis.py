@@ -88,8 +88,8 @@ class AnalysisLensing:
         Tracer
             An instance of the Tracer class that is used to then fit the dataset.
         """
-        if hasattr(instance, "perturbation"):
-            instance.galaxies.subhalo = instance.perturbation
+        if hasattr(instance, "perturb"):
+            instance.galaxies.subhalo = instance.perturb
 
         # TODO : Need to think about how we do this without building it into the model attribute names.
         # TODO : A Subhalo class that extends the Galaxy class maybe?

@@ -115,7 +115,7 @@ class SubhaloGridSearchResult(af.GridSearchResult):
         )
 
         if remove_zeros:
-            figures_of_merits = af.LimitLists(
+            figures_of_merits = af.GridList(
                 values=[fom if fom > 0.0 else 0.0 for fom in figures_of_merits],
                 shape=figures_of_merits.shape
             )
