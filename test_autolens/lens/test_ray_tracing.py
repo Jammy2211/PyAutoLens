@@ -1241,7 +1241,7 @@ def test__sliced_tracer_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
     # This test_autoarray is essentially the same as the TracerMulti test_autoarray, we just slightly change how many galaxies go
     # in each plane and therefore change the factor in front of val for different planes.
 
-    # The scaling factors are as follows and were computed indepedently from the test_autoarray.
+    # The scaling factors are as follows and were computed independently from the test_autoarray.
     beta_01 = 0.57874474423
     beta_02 = 0.91814281
     # Beta_03 = 1.0

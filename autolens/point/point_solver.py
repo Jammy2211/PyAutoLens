@@ -267,13 +267,13 @@ class PointSolver(AbstractPointSolver):
             resolution grid find its peak pixel.
 
          This process thus finds a set of 'peak' pixels and iteratively refines their values by locating them for
-         higher and higher resolution grids. The following occurances may happen during this process:
+         higher and higher resolution grids. The following occurrences may happen during this process:
 
           - A peak pixel may 'split' into multiple images. This is to be expected, when genuine multiple images
             were previously merged into one due to the grid being too low resolution.
 
           - Image pixels which do not correspond to genuine multiple images may be detected as they meet the peak
-            criteria. This can occurance in certain circumstances where a non-multiple image still traces closer than its
+            criteria. This can occurrence in certain circumstances where a non-multiple image still traces closer than its
             8 neighbors. Depending on how the `PositionFinder` is being used these can be removed.
         """
 
@@ -520,7 +520,7 @@ def pair_coordinate_to_closest_pixel_on_grid(coordinate, grid_slim):
 @aa.util.numba.jit()
 def grid_square_neighbors_1d_from(shape_slim):
     """
-    From a (y,x) grid of coordinates, determine the 8 neighors of every coordinate on the grid which has 8
+    From a (y,x) grid of coordinates, determine the 8 neighbors of every coordinate on the grid which has 8
     neighboring (y,x) coordinates.
 
     Neighbor indexes use the 1D index of the pixel on the masked grid counting from the top-left right and down.

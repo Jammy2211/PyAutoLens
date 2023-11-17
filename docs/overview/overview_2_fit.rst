@@ -157,7 +157,7 @@ However, the tracer's image does appear different to the data, in that its ring 
 because its image has not been blurred with the telescope optics PSF, which the data has.
 
 [For those not familiar with Astronomy data, the PSF describes how the observed emission of the galaxy is blurred by
-the telescope optics when it is observed. It mimicks this blurring effect via a 2D convolution operation].
+the telescope optics when it is observed. It mimics this blurring effect via a 2D convolution operation].
 
 .. code-block:: python
 

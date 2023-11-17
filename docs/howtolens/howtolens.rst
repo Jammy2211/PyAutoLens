@@ -55,7 +55,7 @@ Notebooks are a different way to write, view and use Python code. Compared to th
 - Text script to appear between the blocks of code.
 
 This makes them an ideal way for us to present the HowToFit lecture series, therefore I recommend you get yourself
-a Jupyter notebook viewer (https://jupyter.org/) if you havent done so already.
+a Jupyter notebook viewer (https://jupyter.org/) if you haven't done so already.
 
 If you *really* want to use Python scripts, all tutorials are supplied a .py python files in the 'scripts' folder of
 the workspace.

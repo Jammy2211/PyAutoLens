@@ -64,7 +64,7 @@ class AbstractPositionsLH:
         - The arc second coordinates of the lensed source multiple images used for the model-fit.
         - The radial distance of these coordinates from (0.0, 0.0).
         - The threshold value used by the likelihood penalty.
-        - The maximum source plane seperation of the maximum likelihood tracer.
+        - The maximum source plane separation of the maximum likelihood tracer.
 
         Parameters
         ----------
@@ -88,7 +88,7 @@ class AbstractPositionsLH:
             f.write(f"Radial Distance from (0.0, 0.0): \n {distances} \n\n")
             f.write(f"Threshold = {self.threshold} \n")
             f.write(
-                f"Max Source Plane Seperation of Maximum Likelihood Model = {positions_fit.max_separation_of_source_plane_positions}"
+                f"Max Source Plane Separation of Maximum Likelihood Model = {positions_fit.max_separation_of_source_plane_positions}"
             )
 
 

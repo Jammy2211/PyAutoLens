@@ -74,7 +74,7 @@ class AnalysisLensing:
         """
         Create a `Tracer` from the galaxies contained in a model instance.
 
-        If PyAutoFit's profiling tools are used with the analsyis class, this function may receive a `run_time_dict`
+        If PyAutoFit's profiling tools are used with the analysis class, this function may receive a `run_time_dict`
         which times how long each set of the model-fit takes to perform.
 
         Parameters

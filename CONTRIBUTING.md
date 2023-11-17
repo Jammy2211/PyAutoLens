@@ -51,7 +51,7 @@ on our [readthedocs](https://pyautolens.readthedocs.io/en/latest/installation/so
     ```
     Now you can make your changes locally.
 
-3. When you're done making changes, check that old and new tests pass succesfully:
+3. When you're done making changes, check that old and new tests pass successfully:
     ```
     cd PyAutoLens/test_autolens
     python3 -m pytest

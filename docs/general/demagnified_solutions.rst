@@ -95,7 +95,7 @@ The penalty term is created and passed to an ``Analysis`` object as follows:
     )
 
 The threshold of 0.5" is large. For an accurate lens model we would anticipate the positions trace within < 0.01" of
-one another. However, we only want the threshold to aid the non-linear with the choice of mass model in the intial fit
+one another. However, we only want the threshold to aid the non-linear with the choice of mass model in the initial fit
 and remove demagnified solutions.
 
 Resampling
@@ -118,7 +118,7 @@ guessing and rejecting mass models.
 Auto Position Updates
 ---------------------
 
-There are a number of downsides to having to input the mulitple images positions manually:
+There are a number of downsides to having to input the multiple images positions manually:
 
  - For large lens samples this could take a lot of time.
 
@@ -145,7 +145,7 @@ the ``result``'s maximum likelihood mass model.
 
     result.positions_threshold_from(factor=2.0, minimum_threshold=0.3)
 
-The ``factor`` input is a value that the computed ``threshold`` is multiplied by. For exmaple, if a ``threshold`` of
+The ``factor`` input is a value that the computed ``threshold`` is multiplied by. For example, if a ``threshold`` of
 0.1" is computed, the returned value above for ``factor=2.0`` will be 0.2".
 
 The ``minimum_threshold`` is the lowest number the function return will reutnr. Above, if a ``threshold`` of 0.1"

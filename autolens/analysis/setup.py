@@ -14,7 +14,7 @@ class SetupAdapt(ag.SetupAdapt):
         """
         The adapt setup of a pipeline, which controls how adaptive-features in PyAutoLens template pipelines run,
         for example controlling whether galaxies are used to scale the noise and the non-linear searches used
-        in these searchs.
+        in these searches.
 
         Users can write their own pipelines which do not use or require the *SetupAdapt* class.
 
