@@ -64,7 +64,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             Contains preloaded calculations (e.g. linear algebra matrices) which can skip certain calculations in
             the fit.
         run_time_dict
-            A dictionary which if passed to the fit records how long fucntion calls which have the `profile_func`
+            A dictionary which if passed to the fit records how long function calls which have the `profile_func`
             decorator take to run.
         """
 

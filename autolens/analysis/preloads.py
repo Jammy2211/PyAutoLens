@@ -34,7 +34,7 @@ class Preloads(ag.Preloads):
         """
         Class which offers a concise API for settings up the preloads, which before a model-fit are set up via
         a comparison of two fits using two different models. If a quantity in these two fits is identical, it does
-        not change thoughout the model-fit and can therefore be preloaded to avoid computation, speeding up
+        not change throughout the model-fit and can therefore be preloaded to avoid computation, speeding up
         the analysis.
 
         For example, the image-plane source-plane pixelization grid (which may be computationally expensive to compute
@@ -192,7 +192,7 @@ class Preloads(ag.Preloads):
         This function compares the image plane sparse grid of two fit's corresponding to two model instances, and p
         reloads the grid if the grids of both fits are the same.
 
-        The preload is typically used thoughout search chaining pipelines which use inversions, as it is common to
+        The preload is typically used throughout search chaining pipelines which use inversions, as it is common to
         for the pixelization's parameters to only vary in the adapt-searches.
 
         Parameters

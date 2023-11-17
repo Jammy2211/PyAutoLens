@@ -43,7 +43,7 @@ Markov Chain Monte Carlo (MCMC) and optimizers.
 Priors
 ------
 
-The priors of parameters of every component of a mdoel, which is fitted to data, are customized using ``Prior`` objects.
+The priors of parameters of every component of a model, which is fitted to data, are customized using ``Prior`` objects.
 
 .. autosummary::
    :toctree: _autosummary

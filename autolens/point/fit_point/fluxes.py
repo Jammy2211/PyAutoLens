@@ -65,7 +65,7 @@ class FitFluxes(aa.FitDataset):
         Returns the defleciton function, which given the image-plane positions computes their deflection angles.
 
         For multi-plane ray-tracing with more than 2 planes, the deflection function determines the index of the
-        plane with the last mass profile such that the deflection function does not perform unecessary computations
+        plane with the last mass profile such that the deflection function does not perform unnecessary computations
         beyond this plane.
         """
 

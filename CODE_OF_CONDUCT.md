@@ -168,7 +168,7 @@ The current PyAutoLens Code of Conduct Enforcement Team consists of:
 #### Conflicts of Interest
 
 In the event of any conflict of interest, the team member will immediately notify the PyAutoLens Code of Conduct 
-Enforcement Team and recuse themselves if necessary.
+Enforcement Team and recurse themselves if necessary.
 
 #### What to Include in a Report
 

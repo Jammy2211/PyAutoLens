@@ -124,7 +124,7 @@ class Result(AgResultDataset):
         Parameters
         ----------
         factor
-            The value the computed threshold is multipled by to make the position threshold larger or smaller than the
+            The value the computed threshold is multiplied by to make the position threshold larger or smaller than the
             maximum log likelihood model's threshold.
         minimum_threshold
             The output threshold is rounded up to this value if it is below it, to avoid extremely small threshold
@@ -136,7 +136,7 @@ class Result(AgResultDataset):
         Returns
         -------
         float
-            The maximum source plane separation of this results maximum likelihood `Tracer` multiple images multipled
+            The maximum source plane separation of this results maximum likelihood `Tracer` multiple images multiplied
             by `factor` and rounded up to the `threshold`.
         """
 

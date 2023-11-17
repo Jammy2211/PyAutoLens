@@ -20,7 +20,7 @@ def test__set_traced_grids_of_planes():
 
     assert preloads.traced_grids_of_planes_for_inversion is None
 
-    # traced grids are different, indiciating the model parameters change the grid, so no preloading.
+    # traced grids are different, indicating the model parameters change the grid, so no preloading.
 
     tracer_0 = al.m.MockTracer(traced_grid_2d_list_from=[None, np.array([[1.0]])])
     tracer_1 = al.m.MockTracer(traced_grid_2d_list_from=[None, np.array([[2.0]])])
@@ -62,7 +62,7 @@ def test__set_sparse_grid_of_planes():
 
     assert preloads.sparse_image_plane_grid_pg_list is None
 
-    # sparse image plane of grids are different, indiciating the model parameters change the grid, so no preloading.
+    # sparse image plane of grids are different, indicating the model parameters change the grid, so no preloading.
 
     tracer_0 = al.m.MockTracer(
         sparse_image_plane_grid_pg_list=[None, np.array([[1.0]])]

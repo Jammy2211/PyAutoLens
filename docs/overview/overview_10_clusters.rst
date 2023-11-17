@@ -31,7 +31,7 @@ Source-Plane Chi Squared
 
 To model a cluster, we assume that every source galaxy is a ``PointSrcChi`` model, which means the goodness-of-fit is
 evaluated in the source-plane. This removes the need to iteratively solve the lens equation. However, we still define
-a ``PointSolver``, incase we wish to perform image-plane fits.
+a ``PointSolver``, in case we wish to perform image-plane fits.
 
 .. code-block:: python
 
