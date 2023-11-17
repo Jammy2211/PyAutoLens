@@ -1,7 +1,6 @@
 from typing import Optional, List
 
 import autoarray as aa
-import autogalaxy as ag
 import autogalaxy.plot as aplt
 
 from autogalaxy.plot.mass_plotter import MassPlotter
@@ -63,7 +62,7 @@ class TracerPlotter(Plotter):
 
         if tracer.has(cls=LightProfileLinear):
             raise exc.raise_linear_light_profile_in_plot(
-                plotter_type=self.__class__.__name__, model_obj="Plane"
+                plotter_type=self.__class__.__name__,
             )
 
         super().__init__(
