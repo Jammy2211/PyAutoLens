@@ -263,7 +263,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         return image_2d_list
 
     def image_2d_via_input_plane_image_from(
-        self, grid: aa.type.Grid2DLike, plane_image: aa.Array2D, plane_index: int = -1
+        self, grid: aa.type.Grid2DLike, plane_image: aa.Array2D, plane_index: int = -1, include_foreground_planes : bool = True
     ) -> aa.Array2D:
         """
         Returns the lensed image of a plane or galaxy, where the input image is uniform and interpolated to compute
@@ -275,6 +275,33 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         By default, this function computes the lensed image of the final plane, which is the source-plane, by using
         `plane_index=-1`. For multi-plane lens systems, the lensed image of any planes can be computed by setting
         `plane_index` to the index of the plane in the lens system.
+
+        The emission of all foreground planes and galaxies can be included or omitted setting
+        the `include_foreground_planes` bool. If there are multiple planes in a multi-plane lens system, the emission i
+        of the foreground planes are fully lensed. All planes after `plane_index` are omitted from the lensing
+        calculation.
+
+        __Source Plane Interpolation__
+
+        We use the scipy interpolation function `griddata` to create the lensed source galaxy image.
+
+        In brief, we trace light rays to the source plane and calculate values based on where those light rays land in
+        the source plane via interpolation.
+
+        In more detail:
+
+        - `points`: The 2D grid of (y,x) coordinates representing the location of every pixel of the source galaxy
+          image in the source-plane, from which we are creating the lensed source image. These coordinates are the
+          uniform source-plane grid computed after interpolating the irregular mesh the original source reconstruction
+          used.
+
+        - `values`: The intensity values of the source galaxy image which is used to create the lensed source image.
+           These values are the flux values of the interpolated source galaxy image computed after interpolating the
+           irregular mesh the original source reconstruction used.
+
+        - `xi`: The image-plane grid ray traced to the source-plane. This evaluates the flux of each image-plane
+          lensed source-pixel by ray-tracing it to the source-plane grid and computing its value by interpolating the
+          source galaxy image.
 
         Parameters
         ----------
@@ -289,8 +316,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
         Returns
         -------
-
+        The lensed image of the plane or galaxy computed by interpolating its image to the image-plane.
         """
+
         plane_grid = aa.Grid2D.uniform(
             shape_native=plane_image.shape_native,
             pixel_scales=plane_image.pixel_scales,
@@ -308,6 +336,18 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             fill_value=0.0,
             method="linear",
         )
+
+        if include_foreground_planes:
+
+            if plane_index < 0:
+                plane_index_max = self.total_planes + plane_index
+
+            image_list = self.image_2d_list_from(
+                grid=grid, operated_only=False
+            )
+
+            for plane_index in range(plane_index_max):
+                image += image_list[plane_index]
 
         return aa.Array2D(
             values=image,

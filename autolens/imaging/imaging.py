@@ -131,55 +131,6 @@ class SimulatorImaging(aa.SimulatorImaging):
 
     def via_source_image_from(self, tracer, grid, source_image):
 
-        traced_image_plane_grid_2d = tracer.traced_grid_2d_list_from(
-            grid=grid
-        )[-1]
-
-        """
-        __Source Plane Interpolation__
-
-        We now use the scipy interpolation function `griddata` to create the lensed source galaxy image.
-
-        In brief, we trace light rays to the source plane and calculate values based on where those light rays land in
-        the source plane via interpolation.
-
-        In more detail:
-
-        - `points`: The 2D grid of (y,x) coordinates representing the location of every pixel of the source galaxy
-          image in the source-plane, from which we are creating the lensed source image. These coordinates are the 
-          uniform source-plane grid computed after interpolating the irregular mesh the original source reconstruction
-          used.
-
-        - `values`: The intensity values of the source galaxy image which is used to create the lensed source image. 
-           These values are the flux values of the interpolated source galaxy image computed after interpolating the
-           irregular mesh the original source reconstruction used.
-
-        - `xi`: The image-plane grid ray traced to the source-plane. This evaluates the flux of each image-plane 
-          lensed source-pixel by ray-tracing it to the source-plane grid and computing its value by interpolating the 
-          source galaxy image.
-        """
-
-        source_plane_grid = aa.Grid2D.uniform(
-            shape_native=self.interpolated_pixelized_shape,
-            pixel_scales=source_image.pixel_scales,
-            sub_size=1,
-        )
-
-        lensed_source_image = griddata(
-            points=source_plane_grid,
-            values=source_image,
-            xi=traced_image_plane_grid_2d,
-            fill_value=0.0,
-            method="linear",
-        )
-
-        lensed_source_image = al.Array2D.no_mask(
-            values=lensed_source_image,
-            shape_native=self.mask.shape_native,
-            pixel_scales=self.mask.pixel_scales,
-            sub_size=self.image_plane_subgrid_size,
-        )
-
         """
         __Lensed Source Image__
 
@@ -188,10 +139,9 @@ class SimulatorImaging(aa.SimulatorImaging):
         THe function `lensed_source_image_from` describes how this is performed via interpolation in its
         docstring.
         """
-        lensed_source_image = self.lensed_source_image_from(
-            tracer=tracer,
-            image_plane_grid=image_plane_grid,
-            source_image=source_image,
+        lensed_source_image = tracer.image_2d_via_input_plane_image_from(
+            grid=grid,
+            plane_image=source_image
         )
 
         """
@@ -204,7 +154,7 @@ class SimulatorImaging(aa.SimulatorImaging):
 
         However, it must be included in the simulated image to ensure the noise-map is computed correctly.
         """
-        lens_image = instance.galaxies.lens.image_2d_from(grid=image_plane_grid)
+        lens_image = tracer.galaxies[0].image_2d_from(grid=grid)
 
         """
         Combine the two images, including binning up from the sub-grid they are computed on.
@@ -227,8 +177,8 @@ class SimulatorImaging(aa.SimulatorImaging):
         padded_image = image.padded_before_convolution_from(
             kernel_shape=self.psf.shape_native
         )
-        dataset = simulator.via_image_from(image=padded_image)
+        dataset = self.via_image_from(image=padded_image)
 
-        dataset = dataset.trimmed_after_convolution_from(
+        return dataset.trimmed_after_convolution_from(
             kernel_shape=self.psf.shape_native
         )
