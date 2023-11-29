@@ -267,7 +267,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         grid: aa.type.Grid2DLike,
         plane_image: aa.Array2D,
         plane_index: int = -1,
-        include_foreground_planes: bool = True,
+        include_other_planes: bool = True,
     ) -> aa.Array2D:
         """
         Returns the lensed image of a plane or galaxy, where the input image is uniform and interpolated to compute
@@ -280,10 +280,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         `plane_index=-1`. For multi-plane lens systems, the lensed image of any planes can be computed by setting
         `plane_index` to the index of the plane in the lens system.
 
-        The emission of all foreground planes and galaxies can be included or omitted setting
-        the `include_foreground_planes` bool. If there are multiple planes in a multi-plane lens system, the emission i
-        of the foreground planes are fully lensed. All planes after `plane_index` are omitted from the lensing
-        calculation.
+        The emission of all other planes and galaxies can be included or omitted setting the `include_other_planes`
+        bool. If there are multiple planes in a multi-plane lens system, the emission of the other planes are fully
+        lensed.
 
         __Source Plane Interpolation__
 
@@ -341,16 +340,16 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             method="linear",
         )
 
-        if include_foreground_planes:
-            if plane_index < 0:
-                plane_index_max = self.total_planes + plane_index
-            else:
-                plane_index_max = plane_index
+        if include_other_planes:
 
             image_list = self.image_2d_list_from(grid=grid, operated_only=False)
 
-            for plane_index in range(plane_index_max):
-                image += image_list[plane_index]
+            if plane_index < 0:
+                plane_index = self.total_planes + plane_index
+
+            for plane_lp_index in range(self.total_planes):
+                if plane_lp_index != plane_index:
+                    image += image_list[plane_lp_index]
 
         return aa.Array2D(
             values=image,
