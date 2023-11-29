@@ -1,11 +1,10 @@
 from abc import ABC
 import numpy as np
+from scipy.interpolate import griddata
 from typing import Dict, List, Optional, Type, Union
 
 import autoarray as aa
 import autogalaxy as ag
-
-from autoconf.dictable import from_dict, to_dict, output_to_json
 
 from autogalaxy.plane.plane import Plane
 from autogalaxy.profiles.light.snr import LightProfileSNR
@@ -262,6 +261,58 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                 image_2d_list.append(np.zeros(shape=image_2d_list[0].shape))
 
         return image_2d_list
+
+    def image_2d_via_input_plane_image_from(
+        self, grid: aa.type.Grid2DLike, plane_image: aa.Array2D, plane_index: int = -1
+    ) -> aa.Array2D:
+        """
+        Returns the lensed image of a plane or galaxy, where the input image is uniform and interpolated to compute
+        the lensed image.
+
+        The typical use case is inputting the image of an irregular galaxy in the source-plane (whose values are
+        on a uniform array) and using this function computing the lensed image of this source galaxy.
+
+        By default, this function computes the lensed image of the final plane, which is the source-plane, by using
+        `plane_index=-1`. For multi-plane lens systems, the lensed image of any planes can be computed by setting
+        `plane_index` to the index of the plane in the lens system.
+
+        Parameters
+        ----------
+        grid
+            The image-plane grid which is traced to the plane where the image is computed, where these values are
+            used to perform the interpolation.
+        plane_image
+            The image of the plane or galaxy which is interpolated to compute the lensed image.
+        plane_index
+            The index of the plane the image is computed, where the default (-1) computes the image in the last plane
+            and therefore the source-plane.
+
+        Returns
+        -------
+
+        """
+        plane_grid = aa.Grid2D.uniform(
+            shape_native=plane_image.shape_native,
+            pixel_scales=plane_image.pixel_scales,
+            sub_size=plane_image.sub_size,
+        )
+
+        traced_grid = self.traced_grid_2d_list_from(
+            grid=grid, plane_index_limit=plane_index
+        )[plane_index]
+
+        image = griddata(
+            points=plane_grid,
+            values=plane_image,
+            xi=traced_grid,
+            fill_value=0.0,
+            method="linear",
+        )
+
+        return aa.Array2D(
+            values=image,
+            mask=grid.mask,
+        )
 
     def galaxy_image_2d_dict_from(
         self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None

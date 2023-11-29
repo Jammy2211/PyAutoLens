@@ -12,7 +12,6 @@ from autolens.imaging.plot.fit_imaging_plotters import FitImagingPlotter
 
 
 class SubhaloGridSearchResult(af.GridSearchResult):
-
     def __init__(
         self,
         subhalo_grid_search_result: af.GridSearchResult,
@@ -34,7 +33,7 @@ class SubhaloGridSearchResult(af.GridSearchResult):
             The results of a grid search of non-linear searches where each DM subhalo's (y,x) coordinates are
             confined to a small region of the image plane via uniform priors.
         """
-        
+
         super().__init__(
             samples=subhalo_grid_search_result.samples,
             lower_limits_lists=subhalo_grid_search_result.lower_limits_lists,
@@ -66,14 +65,8 @@ class SubhaloGridSearchResult(af.GridSearchResult):
         values_reshaped = [value for values in values.native for value in values]
 
         return aa.Array2D.from_yx_and_values(
-            y=[
-                centre[0]
-                for centre in self.physical_centres_lists
-            ],
-            x=[
-                centre[1]
-                for centre in self.physical_centres_lists
-            ],
+            y=[centre[0] for centre in self.physical_centres_lists],
+            x=[centre[1] for centre in self.physical_centres_lists],
             values=values_reshaped,
             pixel_scales=self.physical_step_sizes,
             shape_native=self.shape,
@@ -111,13 +104,13 @@ class SubhaloGridSearchResult(af.GridSearchResult):
         """
 
         figures_of_merits = self.figure_of_merits(
-           use_log_evidences=use_log_evidences, relative_to_value=relative_to_value
+            use_log_evidences=use_log_evidences, relative_to_value=relative_to_value
         )
 
         if remove_zeros:
             figures_of_merits = af.GridList(
                 values=[fom if fom > 0.0 else 0.0 for fom in figures_of_merits],
-                shape=figures_of_merits.shape
+                shape=figures_of_merits.shape,
             )
 
         return self._array_2d_from(values=figures_of_merits)
@@ -149,8 +142,8 @@ class SubhaloPlotter(AbstractPlotter):
     def __init__(
         self,
         subhalo_grid_search_result: SubhaloGridSearchResult,
-        fit_imaging_with_subhalo : FitImaging,
-        fit_imaging_no_subhalo : FitImaging,
+        fit_imaging_with_subhalo: FitImaging,
+        fit_imaging_no_subhalo: FitImaging,
         mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
         visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
         include_2d: aplt.Include2D = aplt.Include2D(),
@@ -241,7 +234,9 @@ class SubhaloPlotter(AbstractPlotter):
             include_2d=self.include_2d,
         )
 
-    def set_auto_filename(self, filename : str, use_log_evidences : Optional[bool] = None) -> bool:
+    def set_auto_filename(
+        self, filename: str, use_log_evidences: Optional[bool] = None
+    ) -> bool:
         """
         If a subplot figure does not have an input filename, this function is used to set one automatically.
 
@@ -262,7 +257,6 @@ class SubhaloPlotter(AbstractPlotter):
         """
 
         if self.mat_plot_2d.output.filename is None:
-
             if use_log_evidences is None:
                 figure_of_merit = ""
             elif use_log_evidences:
@@ -282,8 +276,8 @@ class SubhaloPlotter(AbstractPlotter):
         self,
         use_log_evidences: bool = True,
         relative_to_value: float = 0.0,
-        remove_zeros : bool = True,
-        show_max_in_title : bool = True,
+        remove_zeros: bool = True,
+        show_max_in_title: bool = True,
     ):
         """
         Plot the results of the subhalo grid search, where the figures of merit (e.g. `log_evidence`) of the
@@ -341,7 +335,7 @@ class SubhaloPlotter(AbstractPlotter):
         Plots the results of the subhalo grid search, where the subhalo mass of every grid search is plotted over
         the image of the lensed source galaxy.
         """
-        
+
         reset_filename = self.set_auto_filename(
             filename="subhalo_mass",
         )
@@ -356,15 +350,15 @@ class SubhaloPlotter(AbstractPlotter):
         fit_plotter = self.fit_imaging_with_subhalo_plotter_from(visuals_2d=visuals_2d)
 
         fit_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
-        
+
         if reset_filename:
             self.set_filename(filename=None)
 
     def subplot_detection_imaging(
-            self,
-            use_log_evidences: bool = True,
-            relative_to_value: float = 0.0,
-            remove_zeros: bool = False,
+        self,
+        use_log_evidences: bool = True,
+        relative_to_value: float = 0.0,
+        remove_zeros: bool = False,
     ):
         """
         Plots a subplot showing the image, signal-to-noise-map, figures of merit and subhalo masses of the subhalo

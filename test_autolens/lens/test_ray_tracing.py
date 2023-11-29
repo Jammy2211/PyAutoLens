@@ -381,6 +381,29 @@ def test__image_2d_list_from__operated_only_input(
     )
 
 
+def test__image_2d_via_input_plane_image_from(sub_grid_2d_7x7):
+    g0 = al.Galaxy(redshift=0.5)
+    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=2.0))
+
+    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+
+    traced_grid = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)[-1]
+
+    image_via_light_profile = tracer.image_2d_from(grid=traced_grid)
+
+    plane_grid = al.Grid2D.uniform(shape_native=(20, 20), pixel_scales=0.5, sub_size=4)
+
+    plane_image = g1.image_2d_from(grid=plane_grid)
+
+    image_via_input_plane_image = tracer.image_2d_via_input_plane_image_from(
+        grid=sub_grid_2d_7x7, plane_image=plane_image, plane_index=-1
+    )
+
+    assert image_via_light_profile.binned[0] == pytest.approx(
+        image_via_input_plane_image.binned[0], 1.0e-2
+    )
+
+
 def test__padded_image_2d_from(sub_grid_2d_7x7, grid_2d_iterate_7x7):
     padded_grid = sub_grid_2d_7x7.padded_grid_from(kernel_shape_native=(3, 3))
 
