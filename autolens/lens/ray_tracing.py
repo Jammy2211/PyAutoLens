@@ -263,7 +263,11 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         return image_2d_list
 
     def image_2d_via_input_plane_image_from(
-        self, grid: aa.type.Grid2DLike, plane_image: aa.Array2D, plane_index: int = -1, include_foreground_planes : bool = True
+        self,
+        grid: aa.type.Grid2DLike,
+        plane_image: aa.Array2D,
+        plane_index: int = -1,
+        include_foreground_planes: bool = True,
     ) -> aa.Array2D:
         """
         Returns the lensed image of a plane or galaxy, where the input image is uniform and interpolated to compute
@@ -338,13 +342,12 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         )
 
         if include_foreground_planes:
-
             if plane_index < 0:
                 plane_index_max = self.total_planes + plane_index
+            else:
+                plane_index_max = plane_index
 
-            image_list = self.image_2d_list_from(
-                grid=grid, operated_only=False
-            )
+            image_list = self.image_2d_list_from(grid=grid, operated_only=False)
 
             for plane_index in range(plane_index_max):
                 image += image_list[plane_index]
