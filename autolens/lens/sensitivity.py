@@ -1,20 +1,21 @@
-import numpy as np
 from typing import Optional
 
 import autofit as af
+
+from autofit.non_linear.grid.sensitivity.result import SensitivityResult
+
+import autofit as af
 import autoarray as aa
-import autogalaxy.plot as aplt
 
-from autoarray.plot.abstract_plotters import AbstractPlotter
+from autolens.lens.ray_tracing import Tracer
 
-from autolens.imaging.fit_imaging import FitImaging
-from autolens.imaging.plot.fit_imaging_plotters import FitImagingPlotter
+import autolens.plot as aplt
 
 
-class SubhaloSensitivityResult(af.SensitivityResult):
+class SubhaloSensitivityResult(SensitivityResult):
     def __init__(
         self,
-        result_sensitivity: af.SensitivityResult,
+        result_sensitivity: SensitivityResult,
     ):
         """
         The results of a subhalo sensitivity mapping analysis, where dark matter halos are used to simulate many
@@ -27,8 +28,9 @@ class SubhaloSensitivityResult(af.SensitivityResult):
         """
 
         super().__init__(
-            results=result_sensitivity.results,
-            shape=result_sensitivity.shape
+            samples=result_sensitivity.samples,
+            perturb_samples=result_sensitivity.perturb_samples,
+            shape=result_sensitivity.shape,
         )
 
     def _array_2d_from(self, values) -> aa.Array2D:
@@ -95,3 +97,172 @@ class SubhaloSensitivityResult(af.SensitivityResult):
             )
 
         return self._array_2d_from(values=figures_of_merits)
+
+
+class SubhaloSensitivityPlotter:
+    def __init__(
+        self,
+        grid: aa.type.Grid2DLike,
+        mask: aa.Mask2D,
+        tracer_perturb: Optional[Tracer] = None,
+        tracer_no_perturb: Optional[Tracer] = None,
+        source_image: Optional[aa.Array2D] = None,
+        result_sensitivity: Optional[SensitivityResult] = None,
+        mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
+        visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
+        include_2d: aplt.Include2D = aplt.Include2D(),
+    ):
+        """
+        Plots the simulated datasets and results of a sensitivity mapping analysis, where dark matter halos are used
+        to simulate many strong lens datasets which are fitted to quantify how detectable they are.
+
+        The `mat_plot_1d` and `mat_plot_2d` attributes wrap matplotlib function calls to make the figure. By default,
+        the settings passed to every matplotlib function called are those specified in
+        the `config/visualize/mat_wrap/*.ini` files, but a user can manually input values into `MatPlot2D` to
+        customize the figure's appearance.
+
+        Overlaid on the figure are visuals, contained in the `Visuals1D` and `Visuals2D` objects. Attributes may be
+        extracted from the `MassProfile` and plotted via the visuals object, if the corresponding entry is `True` in
+        the `Include1D` or `Include2D` object or the `config/visualize/include.ini` file.
+
+        Parameters
+        ----------
+        tracer
+            The tracer the plotter plots.
+        grid
+            The 2D (y,x) grid of coordinates used to evaluate the tracer's light and mass quantities that are plotted.
+        mat_plot_1d
+            Contains objects which wrap the matplotlib function calls that make 1D plots.
+        visuals_1d
+            Contains 1D visuals that can be overlaid on 1D plots.
+        include_1d
+            Specifies which attributes of the `MassProfile` are extracted and plotted as visuals for 1D plots.
+        mat_plot_2d
+            Contains objects which wrap the matplotlib function calls that make 2D plots.
+        visuals_2d
+            Contains 2D visuals that can be overlaid on 2D plots.
+        include_2d
+            Specifies which attributes of the `MassProfile` are extracted and plotted as visuals for 2D plots.
+        """
+        self.grid = grid
+        self.mask = mask
+        self.tracer_perturb = tracer_perturb
+        self.tracer_no_perturb = tracer_no_perturb
+        self.source_image = source_image
+        self.result_sensitivity = result_sensitivity
+        self.mat_plot_2d = mat_plot_2d
+        self.visuals_2d = visuals_2d
+        self.include_2d = include_2d
+
+    def subplot_tracer_images(self):
+        """
+        Output the tracer images of the dataset simulated for sensitivity mapping as a .png subplot.
+
+        This dataset corresponds to a single grid-cell on the sensitivity mapping grid and therefore will be output
+        many times over the entire sensitivity mapping grid.
+
+        The subplot includes the overall image, the lens galaxy image, the lensed source galaxy image and the source
+        galaxy image interpolated to a uniform grid.
+
+        Images are masked before visualization, so that they zoom in on the region of interest which is actually
+        fitted.
+        """
+
+        grid = aa.Grid2D.from_mask(mask=self.mask)
+
+        image = self.tracer_perturb.image_2d_from(grid=grid).binned
+        lens_image = self.tracer_perturb.image_2d_list_from(grid=grid)[0].binned
+        lensed_source_image = self.tracer_perturb.image_2d_via_input_plane_image_from(
+            grid=grid, plane_image=self.source_image
+        ).binned
+        lensed_source_image_no_perturb = (
+            self.tracer_no_perturb.image_2d_via_input_plane_image_from(
+                grid=grid, plane_image=self.source_image
+            ).binned
+        )
+
+        plotter = aplt.Array2DPlotter(
+            array=image,
+            mat_plot_2d=self.mat_plot_2d,
+        )
+        plotter.open_subplot_figure(number_subplots=6)
+        plotter.set_title("Image")
+        plotter.figure_2d()
+
+        plotter = aplt.Array2DPlotter(
+            array=lens_image,
+            mat_plot_2d=self.mat_plot_2d,
+        )
+        plotter.set_title("Lens Image")
+        plotter.figure_2d()
+
+        grid = self.mask.derive_grid.unmasked_sub_1
+
+        visuals_2d = aplt.Visuals2D(
+            mask=self.mask,
+            tangential_critical_curves=self.tracer_perturb.tangential_critical_curve_list_from(
+                grid=grid
+            ),
+            radial_critical_curves=self.tracer_perturb.radial_critical_curve_list_from(
+                grid=grid
+            ),
+        )
+
+        plotter = aplt.Array2DPlotter(
+            array=lensed_source_image,
+            mat_plot_2d=self.mat_plot_2d,
+            visuals_2d=visuals_2d,
+        )
+        plotter.set_title("Lensed Source Image")
+        plotter.figure_2d()
+
+        visuals_2d = aplt.Visuals2D(
+            mask=self.mask,
+            tangential_caustics=self.tracer_perturb.tangential_caustic_list_from(
+                grid=grid
+            ),
+            radial_caustics=self.tracer_perturb.radial_caustic_list_from(grid=grid),
+        )
+
+        plotter = aplt.Array2DPlotter(
+            array=self.source_image.binned,
+            mat_plot_2d=self.mat_plot_2d,
+            visuals_2d=visuals_2d,
+        )
+        plotter.set_title("Source Image")
+        plotter.figure_2d()
+
+        visuals_2d = aplt.Visuals2D(
+            mask=self.mask,
+            tangential_critical_curves=self.tracer_no_perturb.tangential_critical_curve_list_from(
+                grid=grid
+            ),
+            radial_critical_curves=self.tracer_no_perturb.radial_critical_curve_list_from(
+                grid=grid
+            ),
+        )
+
+        plotter = aplt.Array2DPlotter(
+            array=lensed_source_image,
+            mat_plot_2d=self.mat_plot_2d,
+            visuals_2d=visuals_2d,
+        )
+        plotter.set_title("Lensed Source Image (No Subhalo)")
+        plotter.figure_2d()
+
+        residual_map = (
+            lensed_source_image.binned - lensed_source_image_no_perturb.binned
+        )
+
+        plotter = aplt.Array2DPlotter(
+            array=residual_map,
+            mat_plot_2d=self.mat_plot_2d,
+            visuals_2d=visuals_2d,
+        )
+        plotter.set_title("Residual Map (Subhalo - No Subhalo)")
+        plotter.figure_2d()
+
+        plotter.mat_plot_2d.output.subplot_to_figure(
+            auto_filename=f"subplot_lensed_images"
+        )
+        plotter.close_subplot_figure()

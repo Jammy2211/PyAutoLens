@@ -4,7 +4,6 @@ from autolens.lens.ray_tracing import Tracer
 
 
 class SimulatorInterferometer(aa.SimulatorInterferometer):
-
     def via_tracer_from(self, tracer, grid):
         """
         Returns a realistic simulated image by applying effects to a plain simulated image.
