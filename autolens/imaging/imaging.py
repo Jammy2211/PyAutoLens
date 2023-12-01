@@ -1,80 +1,29 @@
+from typing import List
+
 import autoarray as aa
+import autogalaxy as ag
 
 from autolens.lens.ray_tracing import Tracer
 
-from scipy.interpolate import griddata
-
 class SimulatorImaging(aa.SimulatorImaging):
-    def __init__(
-        self,
-        exposure_time: float,
-        background_sky_level: float = 0.0,
-        psf: aa.Kernel2D = None,
-        normalize_psf: bool = True,
-        read_noise: float = None,
-        add_poisson_noise: bool = True,
-        noise_if_add_noise_false: float = 0.1,
-        noise_seed: int = -1,
-    ):
+
+    def via_tracer_from(self, tracer : Tracer, grid : aa.type.Grid2DLike) -> aa.Imaging:
         """
-        A class representing a Imaging observation, using the shape of the image, the pixel scale,
-        psf, exposure time, etc.
+        Simulate an `Imaging` dataset from an input tracer and grid.
+
+        The tracer is used to perform ray-tracing and generate the image of the strong lens galaxies (e.g.
+        the lens light, lensed source light, etc) which is simulated.
+
+        The steps of the `SimulatorImaging` simulation process (e.g. PSF convolution, noise addition) are
+        described in the `SimulatorImaging` `__init__` method docstring.
 
         Parameters
         ----------
-        psf : Kernel2D
-            An arrays describing the PSF kernel of the image.
-        exposure_time
-            The exposure time of the simulated imaging.
-        background_sky_level
-            The level of the background sky of the simulated imaging.
-        normalize_psf
-            If `True`, the PSF kernel is normalized so all values sum to 1.0.
-        read_noise
-            The level of read-noise added to the simulated imaging by drawing from a Gaussian distribution with
-            sigma equal to the value `read_noise`.
-        add_poisson_noise
-            Whether Poisson noise corresponding to photon count statistics on the imaging observation is added.
-        noise_if_add_noise_false
-            If noise is not added to the simulated dataset a `noise_map` must still be returned. This value gives
-            the value of noise assigned to every pixel in the noise-map.
-        noise_seed
-            The random seed used to add random noise, where -1 corresponds to a random seed every run.
-        """
-
-        super().__init__(
-            psf=psf,
-            exposure_time=exposure_time,
-            background_sky_level=background_sky_level,
-            normalize_psf=normalize_psf,
-            read_noise=read_noise,
-            add_poisson_noise=add_poisson_noise,
-            noise_if_add_noise_false=noise_if_add_noise_false,
-            noise_seed=noise_seed,
-        )
-
-    def via_tracer_from(self, tracer, grid):
-        """
-        Returns a realistic simulated image by applying effects to a plain simulated image.
-
-        Parameters
-        ----------
-        name
-        image
-            The image before simulating (e.g. the lens and source galaxies before optics blurring and Imaging read-out).
-        pixel_scales
-            The scale of each pixel in arc seconds
-        exposure_time_map
-            An arrays representing the effective exposure time of each pixel.
-        psf: PSF
-            An arrays describing the PSF the simulated image is blurred with.
-        background_sky_map
-            The value of background sky in every image pixel (electrons per second).
-        add_poisson_noise: Bool
-            If `True` poisson noise_maps is simulated and added to the image, based on the total counts in each image
-            pixel
-        noise_seed: int
-            A seed for random noise_maps generation
+        tracer
+            The tracer, which describes the ray-tracing and strong lens configuration used to simulate the imaging
+            dataset.
+        grid
+            The image-plane grid which the image of the strong lens is generated on.
         """
 
         tracer.set_snr_of_snr_light_profiles(
@@ -93,30 +42,53 @@ class SimulatorImaging(aa.SimulatorImaging):
             kernel_shape=self.psf.shape_native
         )
 
-    def via_galaxies_from(self, galaxies, grid):
+    def via_galaxies_from(self, galaxies : List[ag.Galaxy], grid : aa.type.Grid2DLike) -> aa.Imaging:
         """
-        Simulate imaging data for this data, as follows:
+        Simulate an `Imaging` dataset from an input list of galaxies and grid.
 
-        1)  Setup the image-plane grid of the Imaging arrays, which defines the coordinates used for the ray-tracing.
+        The galaxies are used to create a tracer, which performs ray-tracing and generate the image of the strong lens
+        galaxies (e.g. the lens light, lensed source light, etc) which is simulated.
 
-        2) Use this grid and the lens and source galaxies to setup a tracer, which generates the image of \
-           the simulated imaging data.
+        The steps of the `SimulatorImaging` simulation process (e.g. PSF convolution, noise addition) are
+        described in the `SimulatorImaging` `__init__` method docstring.
 
-        3) Simulate the imaging data, using a special image which ensures edge-effects don't
-           degrade simulator of the telescope optics (e.g. the PSF convolution).
-
-        4) Plot the image using Matplotlib, if the plot_imaging bool is True.
-
-        5) Output the dataset to .fits format if a dataset_path and data_name are specified. Otherwise, return the simulated \
-           imaging data instance.
+        Parameters
+        ----------
+        galaxies
+            The galaxies used to create the tracer, which describes the ray-tracing and strong lens configuration
+            used to simulate the imaging dataset.
+        grid
+            The image-plane grid which the image of the strong lens is generated on.
         """
 
         tracer = Tracer.from_galaxies(galaxies=galaxies)
 
         return self.via_tracer_from(tracer=tracer, grid=grid)
 
-    def via_deflections_and_galaxies_from(self, deflections, galaxies):
+    def via_deflections_and_galaxies_from(self, deflections : aa.VectorYX2D, galaxies : List[ag.Galaxy]) -> aa.Imaging:
+        """
+        Simulate an `Imaging` dataset from an input deflection angle map and list of galaxies.
 
+        The input deflection angle map ray-traces the image-plane coordinates from the image-plane to source-plane,
+        via the lens equation.
+
+        This traced grid is then used to evaluate the light of the list of galaxies, which therefore simulate the
+        image of the strong lens.
+
+        This function is used in situations where one has access to a deflection angle map which does not suit being
+        ray-traced using a `Tracer` object (e.g. deflection angles from a cosmological simulation of a galaxy).
+
+        The steps of the `SimulatorImaging` simulation process (e.g. PSF convolution, noise addition) are
+        described in the `SimulatorImaging` `__init__` method docstring.
+
+        Parameters
+        ----------
+        galaxies
+            The galaxies used to create the tracer, which describes the ray-tracing and strong lens configuration
+            used to simulate the imaging dataset.
+        grid
+            The image-plane grid which the image of the strong lens is generated on.
+        """
         grid = aa.Grid2D.uniform(
             shape_native=deflections.shape_native,
             pixel_scales=deflections.pixel_scales,
@@ -129,50 +101,40 @@ class SimulatorImaging(aa.SimulatorImaging):
 
         return self.via_image_from(image=image)
 
-    def via_source_image_from(self, tracer, grid, source_image):
-
+    def via_source_image_from(self, tracer : Tracer, grid : aa.type.Grid2DLike, source_image : aa.Array2D) -> aa.Imaging:
         """
-        __Lensed Source Image__
+        Simulate an `Imaging` dataset from an input image of a source galaxy.
 
-        Using the tracer above, we create the image of the lensed source galaxy on the image-plane grid.
+        This input image is on a uniform and regular 2D array, meaning it can simulate the source's irregular
+        and assymetric source galaxy morphological features.
 
-        THe function `lensed_source_image_from` describes how this is performed via interpolation in its
-        docstring.
+        The typical use case is inputting the image of an irregular galaxy in the source-plane (whose values are
+        on a uniform array) and using this function computing the lensed image of this source galaxy.
+
+        The tracer is used to perform ray-tracing and generate the image of the strong lens galaxies (e.g.
+        the lens light, lensed source light, etc) which is simulated.
+
+        The source galaxy light profiles are ignored in favour of the input source image, but the emission of
+        other galaxies (e.g. the lems galaxy's light) are included.
+
+        The steps of the `SimulatorImaging` simulation process (e.g. PSF convolution, noise addition) are
+        described in the `SimulatorImaging` `__init__` method docstring.
+
+        Parameters
+        ----------
+        tracer
+            The tracer, which describes the ray-tracing and strong lens configuration used to simulate the imaging
+            dataset.
+        grid
+            The image-plane grid which the image of the strong lens is generated on.
+        source_image
+            The image of the source-plane and source galaxy which is interpolated to compute the lensed image.
         """
-        lensed_source_image = tracer.image_2d_via_input_plane_image_from(
+
+        image = tracer.image_2d_via_input_plane_image_from(
             grid=grid,
             plane_image=source_image
-        )
-
-        """
-        __Lens Image__
-
-        We now create the foreground lens image, and add it to the lensed source image created above.
-
-        The lens image is typically not modeled during sensitivity mapping, whereby the true model image is used
-        to subtract it off beforehand.
-
-        However, it must be included in the simulated image to ensure the noise-map is computed correctly.
-        """
-        lens_image = tracer.galaxies[0].image_2d_from(grid=grid)
-
-        """
-        Combine the two images, including binning up from the sub-grid they are computed on.
-        """
-        image = lensed_source_image.binned + lens_image.binned
-
-        """
-        __Simulate__
-
-        Set up the grid, PSF and simulator settings used to simulate imaging of the strong lens. These should be 
-        tuned to match the S/N and noise properties of the observed data you are performing sensitivity mapping on.
-
-        The `SimulatorImaging` will be passed directly the image of the strong lens we created above, which
-        will be convolved with the psf before noise is added. 
-
-        To ensure the PSF convolution extends over the whole image, the image is padded before convolution to mitigate 
-        edge effects and trimmed after the simulation so it retains the original `shape_native`.
-        """
+        ).binned
 
         padded_image = image.padded_before_convolution_from(
             kernel_shape=self.psf.shape_native

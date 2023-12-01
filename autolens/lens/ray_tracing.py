@@ -341,7 +341,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         )
 
         if include_other_planes:
-
             image_list = self.image_2d_list_from(grid=grid, operated_only=False)
 
             if plane_index < 0:

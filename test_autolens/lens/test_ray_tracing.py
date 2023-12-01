@@ -412,7 +412,6 @@ def test__image_2d_via_input_plane_image_from__without_foreground_planes(
 
 
 def test__image_2d_via_input_plane_image_from__with_foreground_planes(sub_grid_2d_7x7):
-
     plane_grid = al.Grid2D.uniform(shape_native=(40, 40), pixel_scales=0.3, sub_size=4)
 
     g0 = al.Galaxy(
@@ -438,6 +437,7 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes(sub_grid_2
     assert image_via_light_profile.binned[0] == pytest.approx(
         image_via_input_plane_image.binned[0], 1.0e-2
     )
+
 
 #
 def test__image_2d_via_input_plane_image_from__with_foreground_planes__multi_plane(
