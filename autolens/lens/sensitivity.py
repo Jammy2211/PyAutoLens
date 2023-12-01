@@ -208,13 +208,6 @@ class SubhaloSensitivityPlotter:
         plotter.set_title("Lensed Source Image")
         plotter.figure_2d()
 
-        plotter = aplt.Array2DPlotter(
-            array=self.tracer_perturb.convergence_2d_from(grid=grid).binned,
-            mat_plot_2d=self.mat_plot_2d,
-        )
-        plotter.set_title("Convergence")
-        plotter.figure_2d()
-
         visuals_2d = aplt.Visuals2D(
             mask=self.mask,
             tangential_caustics=self.tracer_perturb.tangential_caustic_list_from(
@@ -229,6 +222,13 @@ class SubhaloSensitivityPlotter:
             visuals_2d=visuals_2d,
         )
         plotter.set_title("Source Image")
+        plotter.figure_2d()
+
+        plotter = aplt.Array2DPlotter(
+            array=self.tracer_perturb.convergence_2d_from(grid=grid).binned,
+            mat_plot_2d=self.mat_plot_2d,
+        )
+        plotter.set_title("Convergence")
         plotter.figure_2d()
 
         visuals_2d = aplt.Visuals2D(
