@@ -1,8 +1,8 @@
 from autoconf.dictable import from_dict, from_json, output_to_json, to_dict
 from autoarray import preprocess
 from autoarray.dataset.imaging.w_tilde import WTildeImaging
-from autoarray.dataset.imaging.imaging import Imaging, SettingsImaging
-from autoarray.dataset.interferometer.interferometer import (
+from autoarray.dataset.imaging.dataset import Imaging, SettingsImaging
+from autoarray.dataset.interferometer.dataset import (
     Interferometer,
     SettingsInterferometer,
 )
@@ -89,10 +89,10 @@ from .analysis.positions import PositionsLHResample
 from .analysis.positions import PositionsLHPenalty
 from .analysis.preloads import Preloads
 from .analysis.setup import SetupAdapt
-from .imaging.imaging import SimulatorImaging
+from .imaging.simulator import SimulatorImaging
 from .imaging.fit_imaging import FitImaging
 from .imaging.model.analysis import AnalysisImaging
-from .interferometer.interferometer import SimulatorInterferometer
+from .interferometer.simulator import SimulatorInterferometer
 from .interferometer.fit_interferometer import FitInterferometer
 from .interferometer.model.analysis import AnalysisInterferometer
 from .point.point_dataset import PointDataset

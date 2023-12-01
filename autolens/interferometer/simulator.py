@@ -4,39 +4,6 @@ from autolens.lens.ray_tracing import Tracer
 
 
 class SimulatorInterferometer(aa.SimulatorInterferometer):
-    def __init__(
-        self,
-        uv_wavelengths,
-        exposure_time: float,
-        transformer_class=aa.TransformerDFT,
-        noise_sigma=0.1,
-        noise_if_add_noise_false=0.1,
-        noise_seed=-1,
-    ):
-        """A class representing a Imaging observation, using the shape of the image, the pixel scale,
-        psf, exposure time, etc.
-
-        Parameters
-        ----------
-        shape_native
-            The shape of the observation. Note that we do not simulator a full Imaging frame (e.g. 2000 x 2000 pixels for \
-            Hubble imaging), but instead just a cut-out around the strong lens.
-        pixel_scales
-            The size of each pixel in arc seconds.
-        psf : PSF
-            An arrays describing the PSF kernel of the image.
-        exposure_time_map
-            The exposure time of an observation using this data.
-        """
-
-        super().__init__(
-            uv_wavelengths=uv_wavelengths,
-            exposure_time=exposure_time,
-            transformer_class=transformer_class,
-            noise_sigma=noise_sigma,
-            noise_if_add_noise_false=noise_if_add_noise_false,
-            noise_seed=noise_seed,
-        )
 
     def via_tracer_from(self, tracer, grid):
         """

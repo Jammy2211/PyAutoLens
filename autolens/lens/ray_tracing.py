@@ -1,5 +1,6 @@
 from abc import ABC
 import numpy as np
+from scipy.interpolate import griddata
 from typing import Dict, List, Optional, Type, Union
 
 import autoarray as aa
@@ -260,6 +261,99 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                 image_2d_list.append(np.zeros(shape=image_2d_list[0].shape))
 
         return image_2d_list
+
+    def image_2d_via_input_plane_image_from(
+        self,
+        grid: aa.type.Grid2DLike,
+        plane_image: aa.Array2D,
+        plane_index: int = -1,
+        include_other_planes: bool = True,
+    ) -> aa.Array2D:
+        """
+        Returns the lensed image of a plane or galaxy, where the input image is uniform and interpolated to compute
+        the lensed image.
+
+        The typical use case is inputting the image of an irregular galaxy in the source-plane (whose values are
+        on a uniform array) and using this function computing the lensed image of this source galaxy.
+
+        By default, this function computes the lensed image of the final plane, which is the source-plane, by using
+        `plane_index=-1`. For multi-plane lens systems, the lensed image of any planes can be computed by setting
+        `plane_index` to the index of the plane in the lens system.
+
+        The emission of all other planes and galaxies can be included or omitted setting the `include_other_planes`
+        bool. If there are multiple planes in a multi-plane lens system, the emission of the other planes are fully
+        lensed.
+
+        __Source Plane Interpolation__
+
+        We use the scipy interpolation function `griddata` to create the lensed source galaxy image.
+
+        In brief, we trace light rays to the source plane and calculate values based on where those light rays land in
+        the source plane via interpolation.
+
+        In more detail:
+
+        - `points`: The 2D grid of (y,x) coordinates representing the location of every pixel of the source galaxy
+          image in the source-plane, from which we are creating the lensed source image. These coordinates are the
+          uniform source-plane grid computed after interpolating the irregular mesh the original source reconstruction
+          used.
+
+        - `values`: The intensity values of the source galaxy image which is used to create the lensed source image.
+           These values are the flux values of the interpolated source galaxy image computed after interpolating the
+           irregular mesh the original source reconstruction used.
+
+        - `xi`: The image-plane grid ray traced to the source-plane. This evaluates the flux of each image-plane
+          lensed source-pixel by ray-tracing it to the source-plane grid and computing its value by interpolating the
+          source galaxy image.
+
+        Parameters
+        ----------
+        grid
+            The image-plane grid which is traced to the plane where the image is computed, where these values are
+            used to perform the interpolation.
+        plane_image
+            The image of the plane or galaxy which is interpolated to compute the lensed image.
+        plane_index
+            The index of the plane the image is computed, where the default (-1) computes the image in the last plane
+            and therefore the source-plane.
+
+        Returns
+        -------
+        The lensed image of the plane or galaxy computed by interpolating its image to the image-plane.
+        """
+
+        plane_grid = aa.Grid2D.uniform(
+            shape_native=plane_image.shape_native,
+            pixel_scales=plane_image.pixel_scales,
+            sub_size=plane_image.sub_size,
+        )
+
+        traced_grid = self.traced_grid_2d_list_from(
+            grid=grid, plane_index_limit=plane_index
+        )[plane_index]
+
+        image = griddata(
+            points=plane_grid,
+            values=plane_image,
+            xi=traced_grid,
+            fill_value=0.0,
+            method="linear",
+        )
+
+        if include_other_planes:
+            image_list = self.image_2d_list_from(grid=grid, operated_only=False)
+
+            if plane_index < 0:
+                plane_index = self.total_planes + plane_index
+
+            for plane_lp_index in range(self.total_planes):
+                if plane_lp_index != plane_index:
+                    image += image_list[plane_lp_index]
+
+        return aa.Array2D(
+            values=image,
+            mask=grid.mask,
+        )
 
     def galaxy_image_2d_dict_from(
         self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
