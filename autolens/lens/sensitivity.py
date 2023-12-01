@@ -171,7 +171,6 @@ class SubhaloSensitivityPlotter:
         grid = aa.Grid2D.from_mask(mask=self.mask)
 
         image = self.tracer_perturb.image_2d_from(grid=grid).binned
-        lens_image = self.tracer_perturb.image_2d_list_from(grid=grid)[0].binned
         lensed_source_image = self.tracer_perturb.image_2d_via_input_plane_image_from(
             grid=grid, plane_image=self.source_image
         ).binned
@@ -187,13 +186,6 @@ class SubhaloSensitivityPlotter:
         )
         plotter.open_subplot_figure(number_subplots=6)
         plotter.set_title("Image")
-        plotter.figure_2d()
-
-        plotter = aplt.Array2DPlotter(
-            array=lens_image,
-            mat_plot_2d=self.mat_plot_2d,
-        )
-        plotter.set_title("Lens Image")
         plotter.figure_2d()
 
         grid = self.mask.derive_grid.unmasked_sub_1
@@ -214,6 +206,13 @@ class SubhaloSensitivityPlotter:
             visuals_2d=visuals_2d,
         )
         plotter.set_title("Lensed Source Image")
+        plotter.figure_2d()
+
+        plotter = aplt.Array2DPlotter(
+            array=self.tracer_perturb.convergence_2d_from(grid=grid).binned,
+            mat_plot_2d=self.mat_plot_2d,
+        )
+        plotter.set_title("Convergence")
         plotter.figure_2d()
 
         visuals_2d = aplt.Visuals2D(
