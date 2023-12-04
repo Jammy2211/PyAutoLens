@@ -98,3 +98,4 @@ from autolens.interferometer.plot.fit_interferometer_plotters import (
 from autolens.point.plot.fit_point_plotters import FitPointDatasetPlotter
 from autolens.lens.plot.ray_tracing_plotters import TracerPlotter
 from autolens.lens.subhalo import SubhaloPlotter
+from autolens.lens.sensitivity import SubhaloSensitivityPlotter
