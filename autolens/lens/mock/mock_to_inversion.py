@@ -5,14 +5,14 @@ class MockTracerToInversion:
     def __init__(
         self,
         tracer,
-        sparse_image_plane_grid_pg_list=None,
+        image_plane_mesh_grid_pg_list=None,
         run_time_dict: Optional[Dict] = None,
     ):
         self.tracer = tracer
 
-        self.sparse_image_plane_grid_pg_list = sparse_image_plane_grid_pg_list
+        self.image_plane_mesh_grid_pg_list = image_plane_mesh_grid_pg_list
 
         self.run_time_dict = run_time_dict
 
-    def sparse_image_plane_grid_pg_list(self):
-        return self.sparse_image_plane_grid_pg_list
+    def image_plane_mesh_grid_pg_list(self):
+        return self.image_plane_mesh_grid_pg_list

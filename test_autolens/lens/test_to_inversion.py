@@ -207,11 +207,11 @@ def test__adapt_galaxy_image_pg_list(sub_grid_2d_7x7):
     assert tracer_to_inversion.adapt_galaxy_image_pg_list == [[], [1], [], [], [2, 3]]
 
 
-def test__sparse_image_plane_grid_pg_list(masked_imaging_7x7):
+def test__image_plane_mesh_grid_pg_list(masked_imaging_7x7):
     # Test Correct
 
     pixelization = al.m.MockPixelization(
-        mesh=al.m.MockMesh(image_plane_mesh_grid=np.array([[1.0, 1.0]]))
+        image_mesh=al.m.MockImageMesh(image_plane_mesh_grid=np.array([[1.0, 1.0]]))
     )
 
     galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
@@ -223,7 +223,7 @@ def test__sparse_image_plane_grid_pg_list(masked_imaging_7x7):
         tracer=tracer, dataset=masked_imaging_7x7
     )
 
-    mesh_grids = tracer_to_inversion.sparse_image_plane_grid_pg_list
+    mesh_grids = tracer_to_inversion.image_plane_mesh_grid_pg_list
 
     assert mesh_grids[0] == None
     assert (mesh_grids[1] == np.array([[1.0, 1.0]])).all()
@@ -233,7 +233,7 @@ def test__sparse_image_plane_grid_pg_list(masked_imaging_7x7):
     galaxy_pix0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     pixelization = al.m.MockPixelization(
-        mesh=al.m.MockMesh(image_plane_mesh_grid=np.array([[2.0, 2.0]]))
+        image_mesh=al.m.MockImageMesh(image_plane_mesh_grid=np.array([[2.0, 2.0]]))
     )
 
     galaxy_pix1 = al.Galaxy(redshift=2.0, pixelization=pixelization)
@@ -256,7 +256,7 @@ def test__sparse_image_plane_grid_pg_list(masked_imaging_7x7):
         tracer=tracer, dataset=masked_imaging_7x7
     )
 
-    mesh_grids = tracer_to_inversion.sparse_image_plane_grid_pg_list
+    mesh_grids = tracer_to_inversion.image_plane_mesh_grid_pg_list
 
     assert mesh_grids[0] == None
     assert mesh_grids[1] == None
@@ -265,7 +265,7 @@ def test__sparse_image_plane_grid_pg_list(masked_imaging_7x7):
     assert (mesh_grids[4] == np.array([[2.0, 2.0]])).all()
 
 
-def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
+def test__traced_mesh_grid_pg_list(masked_imaging_7x7):
     # Test Multi plane
 
     galaxy_no_pix = al.Galaxy(
@@ -278,7 +278,7 @@ def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
     )
 
     pixelization_0 = al.m.MockPixelization(
-        mesh=al.m.MockMesh(image_plane_mesh_grid=image_plane_mesh_grid_0)
+        image_mesh=al.m.MockImageMesh(image_plane_mesh_grid=image_plane_mesh_grid_0)
     )
 
     galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization_0)
@@ -288,7 +288,7 @@ def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
     )
 
     pixelization_1 = al.m.MockPixelization(
-        mesh=al.m.MockMesh(image_plane_mesh_grid=image_plane_mesh_grid_1)
+        image_mesh=al.m.MockImageMesh(image_plane_mesh_grid=image_plane_mesh_grid_1)
     )
 
     galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization_1)
@@ -302,15 +302,15 @@ def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
     )
 
     (
-        traced_sparse_grids_list_of_planes,
-        sparse_image_plane_grid_list,
-    ) = tracer_to_inversion.traced_sparse_grid_pg_list
+        traced_mesh_grids_list_of_planes,
+        image_plane_mesh_grid_list,
+    ) = tracer_to_inversion.traced_mesh_grid_pg_list
 
-    assert traced_sparse_grids_list_of_planes[0] == None
-    assert traced_sparse_grids_list_of_planes[1][0] == pytest.approx(
+    assert traced_mesh_grids_list_of_planes[0] == None
+    assert traced_mesh_grids_list_of_planes[1][0] == pytest.approx(
         np.array([[1.0 - 0.5, 0.0]]), 1.0e-4
     )
-    assert traced_sparse_grids_list_of_planes[1][1] == pytest.approx(
+    assert traced_mesh_grids_list_of_planes[1][1] == pytest.approx(
         np.array([[2.0 - 0.5, 0.0]]), 1.0e-4
     )
 
@@ -342,18 +342,18 @@ def test__traced_sparse_grid_pg_list(masked_imaging_7x7):
     )
 
     (
-        traced_sparse_grids_list_of_planes,
-        sparse_image_plane_grid_list,
-    ) = tracer_to_inversion.traced_sparse_grid_pg_list
+        traced_mesh_grids_list_of_planes,
+        image_plane_mesh_grid_list,
+    ) = tracer_to_inversion.traced_mesh_grid_pg_list
 
     traced_grid_pix_0 = tracer.traced_grid_2d_list_from(grid=np.array([[1.0, 0.0]]))[2]
     traced_grid_pix_1 = tracer.traced_grid_2d_list_from(grid=np.array([[2.0, 0.0]]))[4]
 
-    assert traced_sparse_grids_list_of_planes[0] == None
-    assert traced_sparse_grids_list_of_planes[1] == None
-    assert (traced_sparse_grids_list_of_planes[2][0] == traced_grid_pix_0).all()
-    assert traced_sparse_grids_list_of_planes[3] == None
-    assert (traced_sparse_grids_list_of_planes[4][0] == traced_grid_pix_1).all()
+    assert traced_mesh_grids_list_of_planes[0] == None
+    assert traced_mesh_grids_list_of_planes[1] == None
+    assert (traced_mesh_grids_list_of_planes[2][0] == traced_grid_pix_0).all()
+    assert traced_mesh_grids_list_of_planes[3] == None
+    assert (traced_mesh_grids_list_of_planes[4][0] == traced_grid_pix_1).all()
 
 
 def test__mapper_galaxy_dict(masked_imaging_7x7):

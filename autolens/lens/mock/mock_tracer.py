@@ -1,8 +1,8 @@
 class MockTracer:
     def __init__(
-        self, traced_grid_2d_list_from=None, sparse_image_plane_grid_pg_list=None
+        self, traced_grid_2d_list_from=None, image_plane_mesh_grid_pg_list=None
     ):
-        self.sparse_image_plane_grid_pg_list = sparse_image_plane_grid_pg_list
+        self.image_plane_mesh_grid_pg_list = image_plane_mesh_grid_pg_list
         self._traced_grid_2d_list_from = traced_grid_2d_list_from
 
     def traced_grid_2d_list_from(self, grid):
@@ -12,7 +12,7 @@ class MockTracer:
 class MockTracerPoint(MockTracer):
     def __init__(
         self,
-        sparse_image_plane_grid_pg_list=None,
+        image_plane_mesh_grid_pg_list=None,
         traced_grid=None,
         attribute=None,
         profile=None,
@@ -21,7 +21,7 @@ class MockTracerPoint(MockTracer):
         einstein_mass=None,
     ):
         super().__init__(
-            sparse_image_plane_grid_pg_list=sparse_image_plane_grid_pg_list
+            image_plane_mesh_grid_pg_list=image_plane_mesh_grid_pg_list
         )
 
         self.positions = traced_grid

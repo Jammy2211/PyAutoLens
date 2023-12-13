@@ -320,9 +320,9 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
         if len(mesh_list) > 0:
             paths.save_json(
-                name="preload_sparse_grids_of_planes",
+                name="preload_mesh_grids_of_planes",
                 object_dict=to_dict(
-                    result.max_log_likelihood_fit.tracer_to_inversion.sparse_image_plane_grid_pg_list
+                    result.max_log_likelihood_fit.tracer_to_inversion.image_plane_mesh_grid_pg_list
                 ),
             )
 

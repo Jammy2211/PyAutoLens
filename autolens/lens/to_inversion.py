@@ -98,14 +98,14 @@ class TracerToInversion(ag.AbstractToInversion):
 
     @cached_property
     @aa.profile_func
-    def sparse_image_plane_grid_pg_list(self) -> List[List]:
+    def image_plane_mesh_grid_pg_list(self) -> List[List]:
         """
         Specific pixelizations, like the `VoronoiMagnification`, begin by determining what will become its the
         source-pixel centres by calculating them  in the image-plane. The `VoronoiBrightnessImage` pixelization
         performs a KMeans clustering.
         """
 
-        sparse_image_plane_grid_list_of_planes = []
+        image_plane_mesh_grid_list_of_planes = []
 
         for plane in self.planes:
             plane_to_inversion = ag.PlaneToInversion(
@@ -115,55 +115,55 @@ class TracerToInversion(ag.AbstractToInversion):
                 noise_map=self.noise_map,
             )
 
-            sparse_image_plane_grid_list = (
-                plane_to_inversion.sparse_image_plane_grid_list
+            image_plane_mesh_grid_list = (
+                plane_to_inversion.image_plane_mesh_grid_list
             )
-            sparse_image_plane_grid_list_of_planes.append(sparse_image_plane_grid_list)
+            image_plane_mesh_grid_list_of_planes.append(image_plane_mesh_grid_list)
 
-        return sparse_image_plane_grid_list_of_planes
+        return image_plane_mesh_grid_list_of_planes
 
     @cached_property
     @aa.profile_func
-    def traced_sparse_grid_pg_list(self) -> Tuple[List[List], List[List]]:
+    def traced_mesh_grid_pg_list(self) -> Tuple[List[List], List[List]]:
         """
         Ray-trace the sparse image plane grid used to define the source-pixel centres by calculating the deflection
         angles at (y,x) coordinate on the grid from the galaxy mass profiles and then ray-trace them from the
         image-plane to the source plane.
         """
         if (
-            self.preloads.sparse_image_plane_grid_pg_list is None
+            self.preloads.image_plane_mesh_grid_pg_list is None
             or self.settings_pixelization.is_stochastic
         ):
-            sparse_image_plane_grid_pg_list = self.sparse_image_plane_grid_pg_list
+            image_plane_mesh_grid_pg_list = self.image_plane_mesh_grid_pg_list
 
         else:
-            sparse_image_plane_grid_pg_list = (
-                self.preloads.sparse_image_plane_grid_pg_list
+            image_plane_mesh_grid_pg_list = (
+                self.preloads.image_plane_mesh_grid_pg_list
             )
 
-        traced_sparse_grid_pg_list = []
+        traced_mesh_grid_pg_list = []
 
         for plane_index, plane in enumerate(self.planes):
-            if sparse_image_plane_grid_pg_list[plane_index] is None:
-                traced_sparse_grid_pg_list.append(None)
+            if image_plane_mesh_grid_pg_list[plane_index] is None:
+                traced_mesh_grid_pg_list.append(None)
             else:
-                traced_sparse_grids_list = []
+                traced_mesh_grids_list = []
 
-                for sparse_image_plane_grid in sparse_image_plane_grid_pg_list[
+                for image_plane_mesh_grid in image_plane_mesh_grid_pg_list[
                     plane_index
                 ]:
                     try:
-                        traced_sparse_grids_list.append(
+                        traced_mesh_grids_list.append(
                             self.tracer.traced_grid_2d_list_from(
-                                grid=sparse_image_plane_grid
+                                grid=image_plane_mesh_grid
                             )[plane_index]
                         )
                     except AttributeError:
-                        traced_sparse_grids_list.append(None)
+                        traced_mesh_grids_list.append(None)
 
-                traced_sparse_grid_pg_list.append(traced_sparse_grids_list)
+                traced_mesh_grid_pg_list.append(traced_mesh_grids_list)
 
-        return traced_sparse_grid_pg_list, sparse_image_plane_grid_pg_list
+        return traced_mesh_grid_pg_list, image_plane_mesh_grid_pg_list
 
     @cached_property
     def mapper_galaxy_dict(self) -> Dict[aa.AbstractMapper, ag.Galaxy]:
@@ -176,16 +176,16 @@ class TracerToInversion(ag.AbstractToInversion):
                 self.preloads.traced_grids_of_planes_for_inversion
             )
 
-        if self.preloads.traced_sparse_grids_list_of_planes is None:
+        if self.preloads.traced_mesh_grids_list_of_planes is None:
             (
-                traced_sparse_grids_list_of_planes,
-                sparse_image_plane_grid_list,
-            ) = self.traced_sparse_grid_pg_list
+                traced_mesh_grids_list_of_planes,
+                image_plane_mesh_grid_list,
+            ) = self.traced_mesh_grid_pg_list
         else:
-            traced_sparse_grids_list_of_planes = (
-                self.preloads.traced_sparse_grids_list_of_planes
+            traced_mesh_grids_list_of_planes = (
+                self.preloads.traced_mesh_grids_list_of_planes
             )
-            sparse_image_plane_grid_list = self.preloads.sparse_image_plane_grid_list
+            image_plane_mesh_grid_list = self.preloads.image_plane_mesh_grid_list
 
         for plane_index, plane in enumerate(self.planes):
             if plane.has(cls=aa.Pixelization):
@@ -202,7 +202,7 @@ class TracerToInversion(ag.AbstractToInversion):
                 )
 
                 for mapper_index in range(
-                    len(traced_sparse_grids_list_of_planes[plane_index])
+                    len(traced_mesh_grids_list_of_planes[plane_index])
                 ):
                     pixelization_list = self.cls_pg_list_from(cls=aa.Pixelization)
 
@@ -211,10 +211,10 @@ class TracerToInversion(ag.AbstractToInversion):
                         regularization=pixelization_list[plane_index][
                             mapper_index
                         ].regularization,
-                        source_plane_mesh_grid=traced_sparse_grids_list_of_planes[
+                        source_plane_mesh_grid=traced_mesh_grids_list_of_planes[
                             plane_index
                         ][mapper_index],
-                        image_plane_mesh_grid=sparse_image_plane_grid_list[plane_index][
+                        image_plane_mesh_grid=image_plane_mesh_grid_list[plane_index][
                             mapper_index
                         ],
                         adapt_galaxy_image=self.adapt_galaxy_image_pg_list[plane_index][

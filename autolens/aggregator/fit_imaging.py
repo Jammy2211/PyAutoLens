@@ -72,19 +72,19 @@ def _fit_imaging_from(
     )
     settings_inversion = settings_inversion or fit.value(name="settings_inversion")
 
-    sparse_grids_of_planes_list = agg_util.sparse_grids_of_planes_list_from(
+    mesh_grids_of_planes_list = agg_util.mesh_grids_of_planes_list_from(
         fit=fit, total_fits=len(dataset_list), use_preloaded_grid=use_preloaded_grid
     )
 
     fit_dataset_list = []
 
-    for dataset, tracer, sparse_grids_of_planes in zip(
-        dataset_list, tracer_list, sparse_grids_of_planes_list
+    for dataset, tracer, mesh_grids_of_planes in zip(
+        dataset_list, tracer_list, mesh_grids_of_planes_list
     ):
         preloads = agg_util.preloads_from(
             preloads_cls=Preloads,
             use_preloaded_grid=use_preloaded_grid,
-            sparse_grids_of_planes=sparse_grids_of_planes,
+            mesh_grids_of_planes=mesh_grids_of_planes,
             use_w_tilde=False,
         )
 
