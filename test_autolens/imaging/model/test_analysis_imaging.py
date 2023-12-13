@@ -177,7 +177,10 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
         adapt_model_image=adapt_model_image,
     )
 
-    pixelization = al.Pixelization(mesh=al.mesh.VoronoiMagnification(shape=(3, 3)))
+    pixelization = al.Pixelization(
+        image_mesh=al.image_mesh.Overlay(shape=(3, 3)),
+        mesh=al.mesh.Voronoi()
+    )
 
     galaxies = af.ModelInstance()
     galaxies.lens = al.Galaxy(
@@ -191,7 +194,7 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
     analysis = al.AnalysisImaging(
         dataset=masked_imaging_7x7,
         adapt_result=result,
-        settings_lens=al.SettingsLens(stochastic_samples=10),
+        settings_lens=al.SettingsLens(stochastic_samples=2),
     )
 
     stochastic_log_likelihoods = analysis.stochastic_log_likelihoods_via_instance_from(
@@ -200,7 +203,10 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
 
     assert stochastic_log_likelihoods is None
 
-    pixelization = al.Pixelization(mesh=al.mesh.VoronoiBrightnessImage(pixels=7))
+    pixelization = al.Pixelization(
+        image_mesh=al.image_mesh.KMeans(pixels=7),
+        mesh=al.mesh.Voronoi()
+    )
 
     galaxies.source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
@@ -211,24 +217,8 @@ def test__stochastic_log_likelihoods_for_instance(masked_imaging_7x7):
         instance=instance
     )
 
-    assert sum(stochastic_log_likelihoods[0:5]) != pytest.approx(
-        sum(stochastic_log_likelihoods[5:10], 1.0e-4)
-    )
-
-    pixelization = al.Pixelization(mesh=al.mesh.DelaunayBrightnessImage(pixels=5))
-
-    galaxies.source = al.Galaxy(redshift=1.0, pixelization=pixelization)
-
-    instance = af.ModelInstance()
-    instance.galaxies = galaxies
-
-    stochastic_log_likelihoods = analysis.stochastic_log_likelihoods_via_instance_from(
-        instance=instance
-    )
-
-    assert sum(stochastic_log_likelihoods[0:5]) != pytest.approx(
-        sum(stochastic_log_likelihoods[5:10], 1.0e-4)
-    )
+    assert len(stochastic_log_likelihoods) == 2
+    assert stochastic_log_likelihoods[0] != stochastic_log_likelihoods[1]
 
 
 def test__profile_log_likelihood_function(masked_imaging_7x7):

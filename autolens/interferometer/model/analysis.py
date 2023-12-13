@@ -305,24 +305,23 @@ class AnalysisInterferometer(AnalysisDataset):
 
         if not any(
             [
-                pix.mesh.is_stochastic
+                pix.image_mesh.is_stochastic
                 for pix in tracer.cls_list_from(cls=ag.Pixelization)
             ]
         ):
             return
 
-        settings_pixelization = (
-            self.settings_pixelization.settings_with_is_stochastic_true()
-        )
-
         log_evidences = []
 
         for i in range(self.settings_lens.stochastic_samples):
             try:
+
+                tracer.galaxies[-1].pixelization.image_mesh.seed = i
+
                 log_evidence = FitInterferometer(
                     dataset=self.dataset,
                     tracer=tracer,
-                    settings_pixelization=settings_pixelization,
+                    settings_pixelization=self.settings_pixelization,
                     settings_inversion=self.settings_inversion,
                     preloads=self.preloads,
                 ).log_evidence

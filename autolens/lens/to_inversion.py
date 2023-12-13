@@ -132,7 +132,6 @@ class TracerToInversion(ag.AbstractToInversion):
         """
         if (
             self.preloads.image_plane_mesh_grid_pg_list is None
-            or self.settings_pixelization.is_stochastic
         ):
             image_plane_mesh_grid_pg_list = self.image_plane_mesh_grid_pg_list
 
