@@ -175,7 +175,7 @@ The pixelization mesh which tests have revealed performs best is the ``VoronoiNN
 mesh with a technique called natural neighbour interpolation (full details are provided in the **HowToLens**
 tutorials).
 
-I recommend users always use these pixelizations, however they require a c library to be installed, thus they are
+I recommend users use this pixelization, how it requires a c library to be installed, thus it is
 not the default pixelization used in this tutorial.
 
 If you want to use this pixelization, checkout the installation instructions here:
