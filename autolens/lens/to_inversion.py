@@ -115,9 +115,7 @@ class TracerToInversion(ag.AbstractToInversion):
                 noise_map=self.noise_map,
             )
 
-            image_plane_mesh_grid_list = (
-                plane_to_inversion.image_plane_mesh_grid_list
-            )
+            image_plane_mesh_grid_list = plane_to_inversion.image_plane_mesh_grid_list
             image_plane_mesh_grid_list_of_planes.append(image_plane_mesh_grid_list)
 
         return image_plane_mesh_grid_list_of_planes
@@ -130,15 +128,11 @@ class TracerToInversion(ag.AbstractToInversion):
         angles at (y,x) coordinate on the grid from the galaxy mass profiles and then ray-trace them from the
         image-plane to the source plane.
         """
-        if (
-            self.preloads.image_plane_mesh_grid_pg_list is None
-        ):
+        if self.preloads.image_plane_mesh_grid_pg_list is None:
             image_plane_mesh_grid_pg_list = self.image_plane_mesh_grid_pg_list
 
         else:
-            image_plane_mesh_grid_pg_list = (
-                self.preloads.image_plane_mesh_grid_pg_list
-            )
+            image_plane_mesh_grid_pg_list = self.preloads.image_plane_mesh_grid_pg_list
 
         traced_mesh_grid_pg_list = []
 
@@ -148,9 +142,7 @@ class TracerToInversion(ag.AbstractToInversion):
             else:
                 traced_mesh_grids_list = []
 
-                for image_plane_mesh_grid in image_plane_mesh_grid_pg_list[
-                    plane_index
-                ]:
+                for image_plane_mesh_grid in image_plane_mesh_grid_pg_list[plane_index]:
                     try:
                         traced_mesh_grids_list.append(
                             self.tracer.traced_grid_2d_list_from(

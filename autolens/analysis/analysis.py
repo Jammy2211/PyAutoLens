@@ -257,8 +257,9 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         self.raise_exceptions(model=model)
 
     def raise_exceptions(self, model):
-
-        has_pix = model.has_model(cls=(aa.Pixelization,)) or model.has_instance(cls=(aa.Pixelization,))
+        has_pix = model.has_model(cls=(aa.Pixelization,)) or model.has_instance(
+            cls=(aa.Pixelization,)
+        )
 
         if has_pix:
             if (
@@ -324,7 +325,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
                 if pixelization is not None:
                     image_mesh_list.append(pixelization.image_mesh)
 
-
         if len(image_mesh_list) > 0:
             paths.save_json(
                 name="preload_mesh_grids_of_planes",
@@ -332,7 +332,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
                     result.max_log_likelihood_fit.tracer_to_inversion.image_plane_mesh_grid_pg_list
                 ),
             )
-            aaa
 
         if conf.instance["general"]["adapt"]["stochastic_outputs"]:
             if len(image_mesh_list) > 0:

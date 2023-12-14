@@ -20,9 +20,7 @@ class MockTracerPoint(MockTracer):
         einstein_radius=None,
         einstein_mass=None,
     ):
-        super().__init__(
-            image_plane_mesh_grid_pg_list=image_plane_mesh_grid_pg_list
-        )
+        super().__init__(image_plane_mesh_grid_pg_list=image_plane_mesh_grid_pg_list)
 
         self.positions = traced_grid
 

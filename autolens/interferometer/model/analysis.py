@@ -315,7 +315,6 @@ class AnalysisInterferometer(AnalysisDataset):
 
         for i in range(self.settings_lens.stochastic_samples):
             try:
-
                 tracer.galaxies[-1].pixelization.image_mesh.seed = i
 
                 log_evidence = FitInterferometer(

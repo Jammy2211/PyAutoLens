@@ -174,8 +174,7 @@ def test__stochastic_log_likelihoods_for_instance(interferometer_7):
     )
 
     pixelization = al.Pixelization(
-        image_mesh=al.image_mesh.KMeans(pixels=5),
-        mesh=al.mesh.Voronoi()
+        image_mesh=al.image_mesh.KMeans(pixels=5), mesh=al.mesh.Voronoi()
     )
 
     galaxies = af.ModelInstance()

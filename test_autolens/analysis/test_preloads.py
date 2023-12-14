@@ -64,12 +64,8 @@ def test__set_mesh_grid_of_planes():
 
     # sparse image plane of grids are different, indicating the model parameters change the grid, so no preloading.
 
-    tracer_0 = al.m.MockTracer(
-        image_plane_mesh_grid_pg_list=[None, np.array([[1.0]])]
-    )
-    tracer_1 = al.m.MockTracer(
-        image_plane_mesh_grid_pg_list=[None, np.array([[2.0]])]
-    )
+    tracer_0 = al.m.MockTracer(image_plane_mesh_grid_pg_list=[None, np.array([[1.0]])])
+    tracer_1 = al.m.MockTracer(image_plane_mesh_grid_pg_list=[None, np.array([[2.0]])])
 
     fit_0 = al.m.MockFitImaging(tracer=tracer_0)
     fit_1 = al.m.MockFitImaging(tracer=tracer_1)
@@ -81,12 +77,8 @@ def test__set_mesh_grid_of_planes():
 
     # sparse image plane of grids are the same meaning they are fixed in the model, so do preload.
 
-    tracer_0 = al.m.MockTracer(
-        image_plane_mesh_grid_pg_list=[None, np.array([[1.0]])]
-    )
-    tracer_1 = al.m.MockTracer(
-        image_plane_mesh_grid_pg_list=[None, np.array([[1.0]])]
-    )
+    tracer_0 = al.m.MockTracer(image_plane_mesh_grid_pg_list=[None, np.array([[1.0]])])
+    tracer_1 = al.m.MockTracer(image_plane_mesh_grid_pg_list=[None, np.array([[1.0]])])
 
     fit_0 = al.m.MockFitImaging(tracer=tracer_0)
     fit_1 = al.m.MockFitImaging(tracer=tracer_1)
