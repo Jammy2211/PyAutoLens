@@ -75,8 +75,8 @@ class AbstractPointSolver:
                 )
 
                 grid = grid_outside_distance_mask_from(
-                    distances_1d=distances_1d,
-                    grid_slim=grid,
+                    distances_1d=np.array(distances_1d),
+                    grid_slim=np.array(grid),
                     outside_distance=self.distance_to_mass_profile_centre,
                 )
 
@@ -180,8 +180,8 @@ class AbstractPointSolver:
         )
 
         grid_peaks = grid_peaks_from(
-            distance_1d=source_plane_distances,
-            grid_slim=grid,
+            distance_1d=np.array(source_plane_distances),
+            grid_slim=np.array(grid),
             neighbors=neighbors.astype("int"),
             has_neighbors=has_neighbors,
         )
