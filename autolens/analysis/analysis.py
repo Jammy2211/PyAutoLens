@@ -257,7 +257,11 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         self.raise_exceptions(model=model)
 
     def raise_exceptions(self, model):
-        if ag.util.model.has_pixelization_from(model=model):
+        has_pix = model.has_model(cls=(aa.Pixelization,)) or model.has_instance(
+            cls=(aa.Pixelization,)
+        )
+
+        if has_pix:
             if (
                 self.positions_likelihood is None
                 and self.raise_inversion_positions_likelihood_exception
@@ -312,24 +316,27 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         except AttributeError:
             pass
 
-        if conf.instance["general"]["output"]["fit_dill"]:
-            with open(paths._files_path / "fit.dill", "wb") as f:
-                dill.dump(result.max_log_likelihood_fit, f)
+        image_mesh_list = []
 
-        mesh_list = ag.util.model.mesh_list_from(model=result.model)
+        for galaxy in result.instance.galaxies:
+            pixelization_list = galaxy.cls_list_from(cls=aa.Pixelization)
 
-        if len(mesh_list) > 0:
+            for pixelization in pixelization_list:
+                if pixelization is not None:
+                    image_mesh_list.append(pixelization.image_mesh)
+
+        if len(image_mesh_list) > 0:
             paths.save_json(
-                name="preload_sparse_grids_of_planes",
+                name="preload_mesh_grids_of_planes",
                 object_dict=to_dict(
-                    result.max_log_likelihood_fit.tracer_to_inversion.sparse_image_plane_grid_pg_list
+                    result.max_log_likelihood_fit.tracer_to_inversion.image_plane_mesh_grid_pg_list
                 ),
             )
 
         if conf.instance["general"]["adapt"]["stochastic_outputs"]:
-            if len(mesh_list) > 0:
-                for mesh in mesh_list:
-                    if mesh.is_stochastic:
+            if len(image_mesh_list) > 0:
+                for image_mesh in image_mesh_list:
+                    if image_mesh.is_stochastic:
                         self.save_stochastic_outputs(
                             paths=paths, samples=result.samples
                         )
