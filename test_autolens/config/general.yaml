@@ -13,7 +13,6 @@ hpc:
 adapt:
   adapt_minimum_percent: 0.01
   adapt_noise_limit: 100000000.0
-  stochastic_outputs: false
 inversion:
   check_reconstruction: false       # If True, the inversion's reconstruction is checked to ensure the solution of a meshs's mapper is not an invalid solution where the values are all the same.
   use_positive_only_solver: false    # If True, inversion's use a positive-only linear algebra solver by default, which is slower but prevents unphysical negative values in the reconstructed solutuion.
