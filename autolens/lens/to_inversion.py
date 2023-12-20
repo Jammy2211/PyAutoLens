@@ -18,7 +18,6 @@ class TracerToInversion(ag.AbstractToInversion):
         data: Optional[Union[aa.Array2D, aa.Visibilities]] = None,
         noise_map: Optional[Union[aa.Array2D, aa.VisibilitiesNoiseMap]] = None,
         w_tilde: Optional[Union[aa.WTildeImaging, aa.WTildeInterferometer]] = None,
-        settings_pixelization=aa.SettingsPixelization(),
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads=Preloads(),
         run_time_dict: Optional[Dict] = None,
@@ -30,7 +29,6 @@ class TracerToInversion(ag.AbstractToInversion):
             data=data,
             noise_map=noise_map,
             w_tilde=w_tilde,
-            settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,
             preloads=preloads,
             run_time_dict=run_time_dict,
@@ -111,7 +109,6 @@ class TracerToInversion(ag.AbstractToInversion):
             plane_to_inversion = ag.PlaneToInversion(
                 plane=plane,
                 grid_pixelization=self.dataset.grid,
-                settings_pixelization=self.settings_pixelization,
                 noise_map=self.noise_map,
             )
 
@@ -183,7 +180,6 @@ class TracerToInversion(ag.AbstractToInversion):
                 plane_to_inversion = ag.PlaneToInversion(
                     plane=plane,
                     grid_pixelization=traced_grids_of_planes_list[plane_index],
-                    settings_pixelization=self.settings_pixelization,
                     preloads=self.preloads,
                     noise_map=self.noise_map,
                 )

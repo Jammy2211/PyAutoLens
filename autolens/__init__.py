@@ -16,7 +16,6 @@ from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMe
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.pixelization.pixelization import Pixelization
-from autoarray.inversion.pixelization.settings import SettingsPixelization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.inversion.factory import inversion_from as Inversion
 from autoarray.inversion.inversion.factory import (

@@ -35,7 +35,6 @@ class AnalysisInterferometer(AnalysisDataset):
         ] = None,
         adapt_result=None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
-        settings_pixelization: aa.SettingsPixelization = None,
         settings_inversion: aa.SettingsInversion = None,
         raise_inversion_positions_likelihood_exception: bool = True,
     ):
@@ -68,9 +67,6 @@ class AnalysisInterferometer(AnalysisDataset):
             used by certain classes for adapting the analysis to the properties of the dataset.
         cosmology
             The Cosmology assumed for this analysis.
-        settings_pixelization
-            settings controlling how a pixelization is fitted for example if a border is used when creating the
-            pixelization.
         settings_inversion
             Settings controlling how an inversion is fitted, for example which linear algebra formalism is used.
         raise_inversion_positions_likelihood_exception
@@ -84,7 +80,6 @@ class AnalysisInterferometer(AnalysisDataset):
             positions_likelihood=positions_likelihood,
             adapt_result=adapt_result,
             cosmology=cosmology,
-            settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,
             raise_inversion_positions_likelihood_exception=raise_inversion_positions_likelihood_exception,
         )
@@ -256,7 +251,6 @@ class AnalysisInterferometer(AnalysisDataset):
         return FitInterferometer(
             dataset=self.dataset,
             tracer=tracer,
-            settings_pixelization=self.settings_pixelization,
             settings_inversion=self.settings_inversion,
             preloads=preloads,
             run_time_dict=run_time_dict,

@@ -156,7 +156,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         ] = None,
         adapt_result=None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
-        settings_pixelization: aa.SettingsPixelization = None,
         settings_inversion: aa.SettingsInversion = None,
         raise_inversion_positions_likelihood_exception: bool = True,
     ):
@@ -179,9 +178,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             trace close to one another in the source-plane.
         cosmology
             The AstroPy Cosmology assumed for this analysis.
-        settings_pixelization
-            settings controlling how a pixelization is fitted during the model-fit, for example if a border is used
-            when creating the pixelization.
         settings_inversion
             Settings controlling how an inversion is fitted during the model-fit, for example which linear algebra
             formalism is used.
@@ -196,7 +192,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             dataset=dataset,
             adapt_result=adapt_result,
             cosmology=cosmology,
-            settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,
         )
 
