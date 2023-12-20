@@ -119,6 +119,7 @@ def test__relocate_pix_border__determines_if_border_pixel_relocation_is_used(mas
 
     analysis = al.AnalysisImaging(
         dataset=masked_imaging_7x7,
+        settings_inversion=al.SettingsInversion(relocate_pix_border=False),
     )
 
     analysis.dataset.grid_pixelization[4] = np.array([300.0, 0.0])
