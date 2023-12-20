@@ -243,36 +243,3 @@ class ResultDataset(Result):
                 return self.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre_list[
                     0
                 ]
-
-    def stochastic_log_likelihoods_from(self, paths: AbstractPaths) -> np.ndarray:
-        """
-        Certain `Inversion`'s have stochasticity in their log likelihood estimate.
-
-        For example, the `VoronoiBrightnessImage` pixelization, which changes the likelihood depending on how different
-        KMeans seeds change the pixel-grid.
-
-        A log likelihood cap can be applied to model-fits performed using these `Inversion`'s to improve error and
-        posterior estimates. This log likelihood cap is estimated from a list of stochastic log likelihoods, where
-        these log likelihoods are computed using the same model but with different KMeans seeds.
-
-        This function loads existing stochastic log likelihoods from the hard disk via a .json file. If the .json
-        file is not presented, then the log likelihoods are computed via the `stochastic_log_likelihoods_via_instance_from`
-        function of the associated Analysis class.
-        """
-        stochastic_log_likelihoods_json_file = path.join(
-            paths.output_path, "stochastic_log_likelihoods.json"
-        )
-
-        paths.restore()
-
-        try:
-            with open(stochastic_log_likelihoods_json_file, "r") as f:
-                stochastic_log_likelihoods = np.asarray(json.load(f))
-        except FileNotFoundError:
-            self.analysis.save_stochastic_outputs(paths=paths, samples=self.samples)
-            with open(stochastic_log_likelihoods_json_file, "r") as f:
-                stochastic_log_likelihoods = np.asarray(json.load(f))
-
-        paths.zip_remove()
-
-        return stochastic_log_likelihoods
