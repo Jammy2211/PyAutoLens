@@ -73,8 +73,6 @@
     dirty_residual_map: false
     dirty_normalized_residual_map: false
     dirty_chi_squared_map: false
-  other:                                     # Settings for other plotting quantities.
-    stochastic_histogram: false
   fit_quantity:                              # Settings for plots of fit quantities (e.g. FitQuantityPlotter).
     all_at_end_png: true                     # Plot all individual plots listed below as .png (even if False)?
     all_at_end_fits: true                    # Plot all individual plots listed below as .fits (even if False)?
