@@ -54,9 +54,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLensing):
 
         super().__init__(cosmology=cosmology)
 
-        AnalysisLensing.__init__(
-            self=self, cosmology=cosmology
-        )
+        AnalysisLensing.__init__(self=self, cosmology=cosmology)
 
         self.point_dict = point_dict
 

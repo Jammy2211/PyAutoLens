@@ -146,6 +146,7 @@ def test__sets_up_adapt_galaxy_images(interferometer_7):
 
     assert (analysis.adapt_model_image.native == 3.0 * np.ones((3, 3))).all()
 
+
 def test__profile_log_likelihood_function(interferometer_7):
     pixelization = al.Pixelization(
         mesh=al.mesh.Rectangular(shape=(3, 3)),

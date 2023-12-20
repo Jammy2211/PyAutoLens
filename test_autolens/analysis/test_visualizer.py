@@ -58,4 +58,3 @@ def test__visualizes_image_with_positions__uses_configs(
     plot_path = path.join(plot_path, "positions")
 
     assert path.join(plot_path, "image_with_positions.png") in plot_patch.paths
-
