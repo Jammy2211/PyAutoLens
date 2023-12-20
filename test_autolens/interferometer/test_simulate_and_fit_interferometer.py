@@ -71,7 +71,6 @@ def test__perfect_fit__chi_squared_0():
     fit = al.FitInterferometer(
         dataset=dataset,
         tracer=tracer,
-        settings_pixelization=al.SettingsPixelization(use_border=False),
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
@@ -95,7 +94,6 @@ def test__perfect_fit__chi_squared_0():
     fit = al.FitInterferometer(
         dataset=dataset,
         tracer=tracer,
-        settings_pixelization=al.SettingsPixelization(use_border=False),
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
     assert abs(fit.chi_squared) < 1.0e-4
@@ -194,7 +192,6 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
     fit = al.FitInterferometer(
         dataset=dataset,
         tracer=tracer,
-        settings_pixelization=al.SettingsPixelization(use_border=False),
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
@@ -217,7 +214,6 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
     fit_linear = al.FitInterferometer(
         dataset=dataset,
         tracer=tracer_linear,
-        settings_pixelization=al.SettingsPixelization(use_border=False),
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
@@ -324,7 +320,6 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixeli
     fit_linear = al.FitInterferometer(
         dataset=dataset,
         tracer=tracer_linear,
-        settings_pixelization=al.SettingsPixelization(use_border=False),
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
