@@ -59,11 +59,3 @@ def test__visualizes_image_with_positions__uses_configs(
 
     assert path.join(plot_path, "image_with_positions.png") in plot_patch.paths
 
-
-def test__visualize_stochastic_histogram(masked_imaging_7x7, plot_path, plot_patch):
-    visualizer = vis.Visualizer(visualize_path=plot_path)
-
-    visualizer.visualize_stochastic_histogram(
-        stochastic_log_likelihoods=[1.0, 2.0, 1.0, 2.0, 3.0, 2.5], max_log_evidence=3.0
-    )
-    assert path.join(plot_path, "other", "stochastic_histogram.png") in plot_patch.paths
