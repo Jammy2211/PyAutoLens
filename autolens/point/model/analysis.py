@@ -12,7 +12,6 @@ from autolens.point.fit_point.point_dict import FitPointDict
 from autolens.point.model.result import ResultPoint
 
 from autolens.point.point_solver import PointSolver
-from autolens.analysis.settings import SettingsLens
 
 from autolens import exc
 
@@ -31,7 +30,6 @@ class AnalysisPoint(AgAnalysis, AnalysisLensing):
         solver: PointSolver,
         dataset=None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
-        settings_lens=SettingsLens(),
     ):
         """
         The analysis performed for model-fitting a point-source dataset, for example fitting the point-sources of a
@@ -52,14 +50,12 @@ class AnalysisPoint(AgAnalysis, AnalysisLensing):
             visualization.
         cosmology
             The cosmology of the ray-tracing calculation.
-        settings_lens
-            Settings which control how the model-fit is performed.
         """
 
         super().__init__(cosmology=cosmology)
 
         AnalysisLensing.__init__(
-            self=self, settings_lens=settings_lens, cosmology=cosmology
+            self=self, cosmology=cosmology
         )
 
         self.point_dict = point_dict

@@ -7,7 +7,6 @@ from autogalaxy.quantity.model.visualizer import VisualizerQuantity
 
 from autolens.analysis.visualizer import Visualizer
 from autolens.analysis.analysis import AnalysisLensing
-from autolens.analysis.settings import SettingsLens
 from autogalaxy.quantity.plot.fit_quantity_plotters import FitQuantityPlotter
 from autolens.quantity.model.result import ResultQuantity
 from autolens.quantity.fit_quantity import FitQuantity
@@ -19,7 +18,6 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
         dataset: ag.DatasetQuantity,
         func_str: str,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
-        settings_lens=SettingsLens(),
     ):
         """
         Analysis classes are used by PyAutoFit to fit a model to a dataset via a non-linear search.
@@ -50,9 +48,6 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
             the dataset.
         cosmology
             The Cosmology assumed for this analysis.
-        settings_lens
-            Settings controlling the lens calculation, for example how close the lensed source's multiple images have
-            to trace within one another in the source plane for the model to not be discarded.
         """
         super().__init__(dataset=dataset, func_str=func_str, cosmology=cosmology)
 

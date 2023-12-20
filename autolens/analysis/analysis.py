@@ -23,7 +23,6 @@ from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
 from autolens.analysis.visualizer import Visualizer
 from autolens.lens.ray_tracing import Tracer
-from autolens.analysis.settings import SettingsLens
 
 from autolens.lens import ray_tracing_util
 
@@ -40,7 +39,6 @@ class AnalysisLensing:
         positions_likelihood: Optional[
             Union[PositionsLHResample, PositionsLHPenalty]
         ] = None,
-        settings_lens: SettingsLens = SettingsLens(),
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):
         """
@@ -55,14 +53,10 @@ class AnalysisLensing:
 
         Parameters
         ----------
-        settings_lens
-            Settings controlling the lens calculation, for example how close the lensed source's multiple images have
-            to trace within one another in the source plane for the model to not be discarded.
         cosmology
             The Cosmology assumed for this analysis.
         """
         self.cosmology = cosmology
-        self.settings_lens = settings_lens or SettingsLens()
         self.positions_likelihood = positions_likelihood
 
     def tracer_via_instance_from(
@@ -164,7 +158,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_pixelization: aa.SettingsPixelization = None,
         settings_inversion: aa.SettingsInversion = None,
-        settings_lens: SettingsLens = None,
         raise_inversion_positions_likelihood_exception: bool = True,
     ):
         """
@@ -192,9 +185,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         settings_inversion
             Settings controlling how an inversion is fitted during the model-fit, for example which linear algebra
             formalism is used.
-        settings_lens
-            Settings controlling the lens calculation, for example how close the lensed source's multiple images have
-            to trace within one another in the source plane for the model to not be discarded.
         raise_inversion_positions_likelihood_exception
             If an inversion is used without the `positions_likelihood` it is likely a systematic solution will
             be inferred, in which case an Exception is raised before the model-fit begins to inform the user
@@ -213,11 +203,8 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         AnalysisLensing.__init__(
             self=self,
             positions_likelihood=positions_likelihood,
-            settings_lens=settings_lens,
             cosmology=cosmology,
         )
-
-        self.settings_lens = settings_lens or SettingsLens()
 
         self.preloads = self.preloads_cls()
 

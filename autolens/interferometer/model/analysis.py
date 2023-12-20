@@ -18,7 +18,6 @@ from autolens.lens.ray_tracing import Tracer
 from autolens.interferometer.model.result import ResultInterferometer
 from autolens.interferometer.model.visualizer import VisualizerInterferometer
 from autolens.interferometer.fit_interferometer import FitInterferometer
-from autolens.analysis.settings import SettingsLens
 
 from autolens import exc
 
@@ -38,7 +37,6 @@ class AnalysisInterferometer(AnalysisDataset):
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_pixelization: aa.SettingsPixelization = None,
         settings_inversion: aa.SettingsInversion = None,
-        settings_lens: SettingsLens = None,
         raise_inversion_positions_likelihood_exception: bool = True,
     ):
         """
@@ -75,9 +73,6 @@ class AnalysisInterferometer(AnalysisDataset):
             pixelization.
         settings_inversion
             Settings controlling how an inversion is fitted, for example which linear algebra formalism is used.
-        settings_lens
-            Settings controlling the lens calculation, for example how close the lensed source's multiple images have
-            to trace within one another in the source plane for the model to not be discarded.
         raise_inversion_positions_likelihood_exception
             If an inversion is used without the `positions_likelihood` it is likely a systematic solution will
             be inferred, in which case an Exception is raised before the model-fit begins to inform the user
@@ -91,7 +86,6 @@ class AnalysisInterferometer(AnalysisDataset):
             cosmology=cosmology,
             settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,
-            settings_lens=settings_lens,
             raise_inversion_positions_likelihood_exception=raise_inversion_positions_likelihood_exception,
         )
 

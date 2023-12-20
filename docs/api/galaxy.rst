@@ -15,7 +15,6 @@ Galaxy / Plane / Tracer
    Galaxy
    Plane
    Tracer
-   SettingsLens
 
 To treat the redshift of a galaxy as a free parameter in a model, the ``Redshift`` object must
 be used.
