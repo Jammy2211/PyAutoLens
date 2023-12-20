@@ -284,9 +284,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
         - The maximum log likelihood tracer of the fit.
 
-        - The stochastic log likelihoods of a pixelization, provided the pixelization has functionality that can
-          compute likelihoods for different KMeans seeds and grids (e.g. `VoronoiBrightnessImage).
-
         Parameters
         ----------
         paths
