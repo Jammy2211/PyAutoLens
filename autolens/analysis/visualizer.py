@@ -1,11 +1,7 @@
-import matplotlib.pyplot as plt
-import numpy as np
-from scipy.stats import norm
 from os import path
-import os
-from typing import Dict
 
 import autoarray as aa
+import autogalaxy as ag
 import autogalaxy.plot as aplt
 
 from autogalaxy.analysis.visualizer import plot_setting
@@ -173,8 +169,7 @@ class Visualizer(AgVisualizer):
 
     def visualize_adapt_images(
         self,
-        adapt_galaxy_name_image_dict: Dict[str, aa.Array2D],
-        adapt_model_image: aa.Array2D,
+        adapt_images : ag.AdaptImages
     ):
         """
         Visualizes the adapt-images and adapt image inferred by a model-fit.
@@ -190,10 +185,8 @@ class Visualizer(AgVisualizer):
 
         Parameters
         ----------
-        adapt_galaxy_name_image_dict
-            A dictionary mapping the path to each galaxy (e.g. its name) to its corresponding galaxy image.
-        adapt_model_image
-            The adapt image which corresponds to the sum of galaxy images.
+        adapt_images
+            The adapt images (e.g. overall model image, individual galaxy images).
         """
 
         def should_plot(name):
@@ -206,11 +199,11 @@ class Visualizer(AgVisualizer):
         )
 
         if should_plot("model_image"):
-            adapt_plotter.figure_model_image(model_image=adapt_model_image)
+            adapt_plotter.figure_model_image(model_image=adapt_images.model_image)
 
         if should_plot("images_of_galaxies"):
             adapt_plotter.subplot_images_of_galaxies(
-                adapt_galaxy_name_image_dict=adapt_galaxy_name_image_dict
+                adapt_galaxy_name_image_dict=adapt_images.galaxy_image_dict
             )
 
     def visualize_contribution_maps(self, tracer: Tracer):

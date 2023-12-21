@@ -154,7 +154,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         positions_likelihood: Optional[
             Union[PositionsLHResample, PositionsLHPenalty]
         ] = None,
-        adapt_result=None,
+        adapt_images: Optional[ag.AdaptImages] = None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_inversion: aa.SettingsInversion = None,
         raise_inversion_positions_likelihood_exception: bool = True,
@@ -176,6 +176,9 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             An object which alters the likelihood function to include a term which accounts for whether
             image-pixel coordinates in arc-seconds corresponding to the multiple images of the lensed source galaxy
             trace close to one another in the source-plane.
+        adapt_images
+            Contains the adapt-images which are used to make a pixelization's mesh and regularization adapt to the
+            reconstructed galaxy's morphology.
         cosmology
             The AstroPy Cosmology assumed for this analysis.
         settings_inversion
@@ -190,7 +193,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
         super().__init__(
             dataset=dataset,
-            adapt_result=adapt_result,
+            adapt_images=adapt_images,
             cosmology=cosmology,
             settings_inversion=settings_inversion,
         )

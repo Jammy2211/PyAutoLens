@@ -47,7 +47,7 @@ class ResultInterferometer(ResultDataset):
         An instance of a `FitInterferometer` corresponding to the maximum log likelihood model inferred by the
         non-linear search.
         """
-        return self.analysis.fit_interferometer_via_instance_from(
+        return self.analysis.fit_from(
             instance=self.instance
         )
 

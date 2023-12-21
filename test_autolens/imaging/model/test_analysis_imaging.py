@@ -123,39 +123,6 @@ def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x
     )
     assert analysis_log_likelihood == pytest.approx(-22048700558.9052, 1.0e-4)
 
-
-def test__sets_up_adapt_galaxy_images__froms(masked_imaging_7x7):
-
-    adapt_galaxy_name_image_dict = {
-        ("galaxies", "lens"): al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
-        ("galaxies", "source"): al.Array2D.full(
-            fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0
-        ),
-    }
-
-    result = al.m.MockResult(
-        adapt_galaxy_name_image_dict=adapt_galaxy_name_image_dict,
-        adapt_model_image=al.Array2D.full(
-            fill_value=3.0, shape_native=(3, 3), pixel_scales=1.0
-        ),
-    )
-
-    analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7, adapt_result=result
-    )
-
-    assert (
-        analysis.adapt_galaxy_name_image_dict[("galaxies", "lens")].native
-        == np.ones((3, 3))
-    ).all()
-
-    assert (
-        analysis.adapt_galaxy_name_image_dict[("galaxies", "source")].native
-        == 2.0 * np.ones((3, 3))
-    ).all()
-
-    assert (analysis.adapt_model_image.native == 3.0 * np.ones((3, 3))).all()
-
 def test__profile_log_likelihood_function(masked_imaging_7x7):
 
     pixelization = al.Pixelization(

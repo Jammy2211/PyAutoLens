@@ -105,9 +105,8 @@ def test__relocate_pix_border__determines_if_border_pixel_relocation_is_used(mas
     analysis.dataset.grid_pixelization[4] = np.array([[500.0, 0.0]])
 
     instance = model.instance_from_unit_vector([])
-    tracer = analysis.tracer_via_instance_from(instance=instance)
-    fit = analysis.fit_imaging_via_tracer_from(
-        tracer=tracer,
+    fit = analysis.fit_from(
+        instance=instance
     )
 
     assert fit.inversion.linear_obj_list[0].source_plane_data_grid[4][
@@ -125,9 +124,8 @@ def test__relocate_pix_border__determines_if_border_pixel_relocation_is_used(mas
     analysis.dataset.grid_pixelization[4] = np.array([300.0, 0.0])
 
     instance = model.instance_from_unit_vector([])
-    tracer = analysis.tracer_via_instance_from(instance=instance)
-    fit = analysis.fit_imaging_via_tracer_from(
-        tracer=tracer,
+    fit = analysis.fit_from(
+        instance=instance,
     )
 
     assert fit.inversion.linear_obj_list[0].source_plane_data_grid[4][

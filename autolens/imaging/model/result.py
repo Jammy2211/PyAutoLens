@@ -47,7 +47,7 @@ class ResultImaging(ResultDataset):
         An instance of a `FitImaging` corresponding to the maximum log likelihood model inferred by the non-linear
         search.
         """
-        return self.analysis.fit_imaging_via_instance_from(
+        return self.analysis.fit_from(
             instance=self.instance,
         )
 

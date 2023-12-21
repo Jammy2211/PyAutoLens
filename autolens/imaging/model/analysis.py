@@ -108,7 +108,7 @@ class AnalysisImaging(AnalysisDataset):
             return log_likelihood_positions_overwrite
 
         try:
-            return self.fit_imaging_via_instance_from(instance=instance).figure_of_merit
+            return self.fit_from(instance=instance).figure_of_merit
         except (
             PixelizationException,
             exc.PixelizationException,
@@ -122,7 +122,7 @@ class AnalysisImaging(AnalysisDataset):
         ) as e:
             raise exc.FitException from e
 
-    def fit_imaging_via_instance_from(
+    def fit_from(
         self,
         instance: af.ModelInstance,
         preload_overwrite: Optional[Preloads] = None,
@@ -152,56 +152,23 @@ class AnalysisImaging(AnalysisDataset):
         FitImaging
             The fit of the plane to the imaging dataset, which includes the log likelihood.
         """
-        self.instance_with_associated_adapt_images_from(instance=instance)
+
         tracer = self.tracer_via_instance_from(
             instance=instance, run_time_dict=run_time_dict
         )
 
-        return self.fit_imaging_via_tracer_from(
-            tracer=tracer,
-            preload_overwrite=preload_overwrite,
-            run_time_dict=run_time_dict,
-        )
+        adapt_images = self.adapt_images_via_instance_from(instance=instance)
 
-    def fit_imaging_via_tracer_from(
-        self,
-        tracer: Tracer,
-        preload_overwrite: Optional[Preloads] = None,
-        run_time_dict: Optional[Dict] = None,
-    ) -> FitImaging:
-        """
-        Given a `Tracer`, which the analysis constructs from a model instance, create a `FitImaging` object.
-
-        This function is used in the `log_likelihood_function` to fit the model to the imaging data and compute the
-        log likelihood.
-
-        Parameters
-        ----------
-        tracer
-            The tracer of galaxies whose ray-traced model images are used to fit the imaging data.
-        preload_overwrite
-            If a `Preload` object is input this is used instead of the preloads stored as an attribute in the analysis.
-        run_time_dict
-            A dictionary which times functions called to fit the model to data, for profiling.
-
-        Returns
-        -------
-        FitImaging
-            The fit of the plane to the imaging dataset, which includes the log likelihood.
-        """
         preloads = preload_overwrite or self.preloads
 
         return FitImaging(
             dataset=self.dataset,
             tracer=tracer,
+            adapt_images=adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=preloads,
             run_time_dict=run_time_dict,
         )
-
-    @property
-    def fit_func(self):
-        return self.fit_imaging_via_instance_from
 
     def visualize_before_fit(self, paths: af.DirectoryPaths, model: af.Collection):
         """
@@ -229,10 +196,10 @@ class AnalysisImaging(AnalysisDataset):
                 positions=self.positions_likelihood.positions,
             )
 
-        visualizer.visualize_adapt_images(
-            adapt_galaxy_name_image_dict=self.adapt_galaxy_name_image_dict,
-            adapt_model_image=self.adapt_model_image,
-        )
+        if self.adapt_images is not None:
+            visualizer.visualize_adapt_images(
+                adapt_images=self.adapt_images
+            )
 
     def visualize(
         self,
@@ -270,9 +237,7 @@ class AnalysisImaging(AnalysisDataset):
             which may change which images are output.
         """
 
-        instance = self.instance_with_associated_adapt_images_from(instance=instance)
-
-        fit = self.fit_imaging_via_instance_from(instance=instance)
+        fit = self.fit_from(instance=instance)
 
         if self.positions_likelihood is not None:
             self.positions_likelihood.output_positions_info(

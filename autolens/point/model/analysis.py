@@ -61,10 +61,6 @@ class AnalysisPoint(AgAnalysis, AnalysisLensing):
         self.solver = solver
         self.dataset = dataset
 
-    @property
-    def fit_func(self) -> Callable:
-        return self.fit_positions_for
-
     def log_likelihood_function(self, instance):
         """
         Determine the fit of the strong lens system of lens galaxies and source galaxies to the point source data.
@@ -80,12 +76,12 @@ class AnalysisPoint(AgAnalysis, AnalysisLensing):
             A fractional value indicating how well this model fit and the model masked_dataset itself
         """
         try:
-            fit = self.fit_positions_for(instance=instance)
+            fit = self.fit_from(instance=instance)
             return fit.log_likelihood
         except (AttributeError, ValueError, TypeError, NumbaException) as e:
             raise exc.FitException from e
 
-    def fit_positions_for(
+    def fit_from(
         self, instance, run_time_dict: Optional[Dict] = None
     ) -> FitPointDict:
         tracer = self.tracer_via_instance_from(
