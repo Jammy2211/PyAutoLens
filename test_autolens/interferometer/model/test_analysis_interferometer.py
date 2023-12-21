@@ -115,38 +115,6 @@ def test__positions__likelihood_overwrite__changes_likelihood(
     assert analysis_log_likelihood == pytest.approx(-22048700567.590656, 1.0e-4)
 
 
-def test__sets_up_adapt_galaxy_images(interferometer_7):
-    adapt_galaxy_name_image_dict = {
-        ("galaxies", "lens"): al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
-        ("galaxies", "source"): al.Array2D.full(
-            fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0
-        ),
-    }
-
-    result = al.m.MockResult(
-        adapt_galaxy_name_image_dict=adapt_galaxy_name_image_dict,
-        adapt_model_image=al.Array2D.full(
-            fill_value=3.0, shape_native=(3, 3), pixel_scales=1.0
-        ),
-    )
-
-    analysis = al.AnalysisInterferometer(dataset=interferometer_7, adapt_result=result)
-
-    analysis.set_adapt_dataset(result=result)
-
-    assert (
-        analysis.adapt_galaxy_name_image_dict[("galaxies", "lens")].native
-        == np.ones((3, 3))
-    ).all()
-
-    assert (
-        analysis.adapt_galaxy_name_image_dict[("galaxies", "source")].native
-        == 2.0 * np.ones((3, 3))
-    ).all()
-
-    assert (analysis.adapt_model_image.native == 3.0 * np.ones((3, 3))).all()
-
-
 def test__profile_log_likelihood_function(interferometer_7):
     pixelization = al.Pixelization(
         mesh=al.mesh.Rectangular(shape=(3, 3)),

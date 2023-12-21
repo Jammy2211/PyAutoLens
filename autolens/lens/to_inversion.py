@@ -75,7 +75,7 @@ class TracerToInversion(ag.AbstractToInversion):
                 blurring_grid=traced_blurring_grids_of_planes_list[plane_index],
                 noise_map=self.noise_map,
                 settings_inversion=self.settings_inversion,
-                adapt_images=self.adapt_images
+                adapt_images=self.adapt_images,
             )
 
             lp_linear_galaxy_dict_of_plane = (
@@ -94,19 +94,17 @@ class TracerToInversion(ag.AbstractToInversion):
 
     @cached_property
     def adapt_galaxy_image_pg_list(self) -> List:
-
         adapt_galaxy_image_pg_list = []
 
         for plane in self.planes:
-
             if plane.has(cls=aa.Pixelization):
-
                 plane_image_list = []
 
-                galaxies_with_pixelization_list = plane.galaxies_with_cls_list_from(cls=aa.Pixelization)
+                galaxies_with_pixelization_list = plane.galaxies_with_cls_list_from(
+                    cls=aa.Pixelization
+                )
 
                 for galaxy in galaxies_with_pixelization_list:
-
                     try:
                         image = self.adapt_images.galaxy_image_dict[galaxy]
                     except (AttributeError, KeyError):
@@ -117,7 +115,6 @@ class TracerToInversion(ag.AbstractToInversion):
                 adapt_galaxy_image_pg_list.append(plane_image_list)
 
             else:
-
                 adapt_galaxy_image_pg_list.append([])
 
         return adapt_galaxy_image_pg_list
@@ -226,10 +223,9 @@ class TracerToInversion(ag.AbstractToInversion):
                     pixelization_list = self.cls_pg_list_from(cls=aa.Pixelization)
 
                     try:
-
-                        adapt_galaxy_image = self.adapt_galaxy_image_pg_list[plane_index][
-                            mapper_index
-                        ]
+                        adapt_galaxy_image = self.adapt_galaxy_image_pg_list[
+                            plane_index
+                        ][mapper_index]
                     except AttributeError:
                         adapt_galaxy_image = None
 
@@ -244,7 +240,7 @@ class TracerToInversion(ag.AbstractToInversion):
                         image_plane_mesh_grid=image_plane_mesh_grid_list[plane_index][
                             mapper_index
                         ],
-                        adapt_galaxy_image=adapt_galaxy_image
+                        adapt_galaxy_image=adapt_galaxy_image,
                     )
 
                     galaxy = galaxies_with_pixelization_list[mapper_index]

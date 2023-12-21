@@ -78,7 +78,9 @@ def test__tracer_for_instance__subhalo_redshift_rescale_used(analysis_imaging_7x
     assert tracer.galaxies[1].mass.centre == pytest.approx((-0.19959, -0.39919), 1.0e-4)
 
 
-def test__relocate_pix_border__determines_if_border_pixel_relocation_is_used(masked_imaging_7x7):
+def test__relocate_pix_border__determines_if_border_pixel_relocation_is_used(
+    masked_imaging_7x7,
+):
     pixelization = al.Pixelization(
         mesh=al.mesh.Rectangular(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
@@ -105,9 +107,7 @@ def test__relocate_pix_border__determines_if_border_pixel_relocation_is_used(mas
     analysis.dataset.grid_pixelization[4] = np.array([[500.0, 0.0]])
 
     instance = model.instance_from_unit_vector([])
-    fit = analysis.fit_from(
-        instance=instance
-    )
+    fit = analysis.fit_from(instance=instance)
 
     assert fit.inversion.linear_obj_list[0].source_plane_data_grid[4][
         0

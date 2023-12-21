@@ -81,9 +81,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLensing):
         except (AttributeError, ValueError, TypeError, NumbaException) as e:
             raise exc.FitException from e
 
-    def fit_from(
-        self, instance, run_time_dict: Optional[Dict] = None
-    ) -> FitPointDict:
+    def fit_from(self, instance, run_time_dict: Optional[Dict] = None) -> FitPointDict:
         tracer = self.tracer_via_instance_from(
             instance=instance, run_time_dict=run_time_dict
         )

@@ -51,9 +51,7 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
         """
         super().__init__(dataset=dataset, func_str=func_str, cosmology=cosmology)
 
-        AnalysisLensing.__init__(
-            self=self, cosmology=cosmology
-        )
+        AnalysisLensing.__init__(self=self, cosmology=cosmology)
 
     def fit_quantity_for_instance(self, instance: af.ModelInstance) -> FitQuantity:
         """

@@ -166,9 +166,7 @@ class AnalysisInterferometer(AnalysisDataset):
             raise e
 
         try:
-            return self.fit_from(
-                instance=instance
-            ).figure_of_merit
+            return self.fit_from(instance=instance).figure_of_merit
         except (
             PixelizationException,
             exc.PixelizationException,
@@ -212,7 +210,7 @@ class AnalysisInterferometer(AnalysisDataset):
         FitInterferometer
             The fit of the plane to the interferometer dataset, which includes the log likelihood.
         """
-        
+
         tracer = self.tracer_via_instance_from(
             instance=instance, run_time_dict=run_time_dict
         )
@@ -257,9 +255,7 @@ class AnalysisInterferometer(AnalysisDataset):
             )
 
         if self.adapt_images is not None:
-            visualizer.visualize_adapt_images(
-                adapt_images=self.adapt_images
-            )
+            visualizer.visualize_adapt_images(adapt_images=self.adapt_images)
 
     def visualize(self, paths: af.DirectoryPaths, instance, during_analysis):
         """

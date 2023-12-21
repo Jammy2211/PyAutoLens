@@ -167,10 +167,7 @@ class Visualizer(AgVisualizer):
             if should_plot("image_with_positions"):
                 image_plotter.figure_2d()
 
-    def visualize_adapt_images(
-        self,
-        adapt_images : ag.AdaptImages
-    ):
+    def visualize_adapt_images(self, adapt_images: ag.AdaptImages):
         """
         Visualizes the adapt-images and adapt image inferred by a model-fit.
 

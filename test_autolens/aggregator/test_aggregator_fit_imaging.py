@@ -114,7 +114,6 @@ def test__fit_imaging__adapt_images(
 
     for fit_gen in fit_pdf_gen:
         for fit_list in fit_gen:
-
             i += 1
 
             assert (
