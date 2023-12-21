@@ -107,13 +107,18 @@ class TracerToInversion(ag.AbstractToInversion):
 
                 for galaxy in galaxies_with_pixelization_list:
 
-                    plane_image_list.append(self.adapt_images.galaxy_image_dict[galaxy])
+                    try:
+                        image = self.adapt_images.galaxy_image_dict[galaxy]
+                    except (AttributeError, KeyError):
+                        image = None
+
+                    plane_image_list.append(image)
 
                 adapt_galaxy_image_pg_list.append(plane_image_list)
 
             else:
 
-                adapt_galaxy_image_pg_list.append(None)
+                adapt_galaxy_image_pg_list.append([])
 
         return adapt_galaxy_image_pg_list
 
