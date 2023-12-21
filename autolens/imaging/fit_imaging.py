@@ -20,6 +20,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         self,
         dataset: aa.Imaging,
         tracer: Tracer,
+        adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads: Preloads = Preloads(),
         run_time_dict: Optional[Dict] = None,
@@ -54,6 +55,9 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             The imaging dataset which is fitted by the galaxies in the tracer.
         tracer
             The tracer of galaxies whose light profile images are used to fit the imaging data.
+        adapt_images
+            Contains the adapt-images which are used to make a pixelization's mesh and regularization adapt to the
+            reconstructed galaxy's morphology.
         settings_inversion
             Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
         preloads
@@ -71,6 +75,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         self.tracer = tracer
 
+        self.adapt_images = adapt_images
         self.settings_inversion = settings_inversion
 
         self.preloads = preloads
@@ -109,6 +114,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             data=self.profile_subtracted_image,
             noise_map=self.noise_map,
             w_tilde=self.w_tilde,
+            adapt_images=self.adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=self.preloads,
         )

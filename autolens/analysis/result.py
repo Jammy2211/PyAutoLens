@@ -197,7 +197,7 @@ class ResultDataset(Result):
         """
         An instance of a `Tracer` corresponding to the maximum log likelihood model inferred by the non-linear search.
 
-        If a dataset is fitted the adapt images of the adapt dataset must first be associated with each galaxy.
+        If a dataset is fitted the adapt images of the adapt image must first be associated with each galaxy.
         """
         instance = self.analysis.instance_with_associated_adapt_images_from(
             instance=self.instance

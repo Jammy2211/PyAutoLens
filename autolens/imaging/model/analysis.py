@@ -65,7 +65,7 @@ class AnalysisImaging(AnalysisDataset):
 
         For this analysis class, this function performs the following steps:
 
-        1) If the analysis has a adapt dataset, associated the model galaxy images of this dataset to the galaxies in
+        1) If the analysis has a adapt image, associated the model galaxy images of this dataset to the galaxies in
            the model instance.
 
         2) Extract attributes which model aspects of the data reductions, like the scaling the background sky
@@ -230,7 +230,7 @@ class AnalysisImaging(AnalysisDataset):
             )
 
         visualizer.visualize_adapt_images(
-            adapt_galaxy_image_path_dict=self.adapt_galaxy_image_path_dict,
+            adapt_galaxy_name_image_dict=self.adapt_galaxy_name_image_dict,
             adapt_model_image=self.adapt_model_image,
         )
 
@@ -352,7 +352,7 @@ class AnalysisImaging(AnalysisDataset):
         - The settings associated with the inversion.
         - The settings associated with the pixelization.
         - The Cosmology.
-        - The adapt dataset's model image and galaxy images, if used.
+        - The adapt image's model image and galaxy images, if used.
 
         This function also outputs attributes specific to an imaging dataset:
 

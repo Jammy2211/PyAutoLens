@@ -30,7 +30,7 @@ def test__model_image__with_and_without_psf_blurring(
 
 
 
-def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7):
+def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7, adapt_model_image_7x7):
 
     g0 = al.Galaxy(
         redshift=0.5,
@@ -203,6 +203,28 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
 
     assert fit.perform_inversion is False
     assert fit.figure_of_merit == pytest.approx(-3688191.0841, 1.0e-4)
+
+    pixelization = al.Pixelization(
+        image_mesh=al.image_mesh.KMeans(pixels=5),
+        mesh=al.mesh.Delaunay(),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
+
+    galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
+
+    tracer = al.Tracer.from_galaxies(galaxies=[g0, galaxy_pix])
+
+    adapt_images = al.AdaptImages(
+        model_image=adapt_model_image_7x7,
+        galaxy_image_dict={galaxy_pix: adapt_model_image_7x7},
+    )
+
+    fit = al.FitImaging(
+        dataset=masked_imaging_7x7, tracer=tracer, adapt_images=adapt_images
+    )
+
+    assert fit.perform_inversion is True
+    assert fit.figure_of_merit == pytest.approx(-341415.8258823, 1.0e-4)
 
 
 def test__galaxy_model_image_dict(masked_imaging_7x7):

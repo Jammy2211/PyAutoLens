@@ -173,16 +173,16 @@ class Visualizer(AgVisualizer):
 
     def visualize_adapt_images(
         self,
-        adapt_galaxy_image_path_dict: Dict[str, aa.Array2D],
+        adapt_galaxy_name_image_dict: Dict[str, aa.Array2D],
         adapt_model_image: aa.Array2D,
     ):
         """
-        Visualizes the adapt-images and adapt dataset inferred by a model-fit.
+        Visualizes the adapt-images and adapt image inferred by a model-fit.
 
         Images are output to the `image` folder of the `visualize_path` in a subfolder called `adapt`. When
         used with a non-linear search the `visualize_path` points to the search's results folder.
 
-        Visualization includes individual images of attributes of the adapt dataset (e.g. the adapt image) and
+        Visualization includes individual images of attributes of the adapt image (e.g. the adapt image) and
         a subplot of all galaxy images on the same figure.
 
         The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
@@ -190,7 +190,7 @@ class Visualizer(AgVisualizer):
 
         Parameters
         ----------
-        adapt_galaxy_image_path_dict
+        adapt_galaxy_name_image_dict
             A dictionary mapping the path to each galaxy (e.g. its name) to its corresponding galaxy image.
         adapt_model_image
             The adapt image which corresponds to the sum of galaxy images.
@@ -206,11 +206,11 @@ class Visualizer(AgVisualizer):
         )
 
         if should_plot("model_image"):
-            adapt_plotter.figure_adapt_model_image(adapt_model_image=adapt_model_image)
+            adapt_plotter.figure_model_image(model_image=adapt_model_image)
 
         if should_plot("images_of_galaxies"):
-            adapt_plotter.subplot_adapt_images_of_galaxies(
-                adapt_galaxy_image_path_dict=adapt_galaxy_image_path_dict
+            adapt_plotter.subplot_images_of_galaxies(
+                adapt_galaxy_name_image_dict=adapt_galaxy_name_image_dict
             )
 
     def visualize_contribution_maps(self, tracer: Tracer):
@@ -222,7 +222,7 @@ class Visualizer(AgVisualizer):
         used with a non-linear search the `visualize_path` points to the search's results folder and this function
         visualizes the maximum log likelihood contribution maps inferred by the search so far.
 
-        Visualization includes individual images of attributes of the adapt dataset (e.g. the contribution map of
+        Visualization includes individual images of attributes of the adapt image (e.g. the contribution map of
         each galaxy) and a subplot of all contribution maps on the same figure.
 
         The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
