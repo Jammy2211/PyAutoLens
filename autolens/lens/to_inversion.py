@@ -222,9 +222,6 @@ class TracerToInversion(ag.AbstractToInversion):
 
                     try:
 
-                        print()
-                        print(self.adapt_galaxy_image_pg_list)
-
                         adapt_galaxy_image = self.adapt_galaxy_image_pg_list[plane_index][
                             mapper_index
                         ]

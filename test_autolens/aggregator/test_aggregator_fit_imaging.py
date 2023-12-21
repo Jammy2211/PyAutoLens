@@ -95,3 +95,36 @@ def test__fit_imaging_all_above_weight_gen(analysis_imaging_7x7, samples, model)
     assert i == 2
 
     clean(database_file=database_file)
+
+
+def test__fit_imaging__adapt_images(
+    analysis_imaging_7x7, samples, model, adapt_images_7x7
+):
+    agg = aggregator_from(
+        database_file=database_file,
+        analysis=analysis_imaging_7x7,
+        model=model,
+        samples=samples,
+    )
+
+    fit_agg = al.agg.FitImagingAgg(aggregator=agg)
+    fit_pdf_gen = fit_agg.randomly_drawn_via_pdf_gen_from(total_samples=2)
+
+    i = 0
+
+    for fit_gen in fit_pdf_gen:
+        for fit_list in fit_gen:
+
+            i += 1
+
+            assert (
+                fit_list[0].adapt_images.model_image == adapt_images_7x7.model_image
+            ).all()
+            assert (
+                list(fit_list[0].adapt_images.galaxy_image_dict.values())[0]
+                == list(adapt_images_7x7.galaxy_name_image_dict.values())[0]
+            ).all()
+
+    assert i == 2
+
+    clean(database_file=database_file)

@@ -128,15 +128,35 @@ def make_fit_point_dict_x2_plane():
     )
 
 
+def make_adapt_galaxy_name_image_dict_7x7():
+    adapt_galaxy_name_image_dict = {
+        "('galaxies', 'lens')": make_adapt_galaxy_image_0_7x7(),
+        "('galaxies', 'source')": make_adapt_galaxy_image_1_7x7(),
+    }
+
+    return adapt_galaxy_name_image_dict
+
+
+def make_adapt_images_7x7():
+    return ag.AdaptImages(
+        model_image=make_adapt_model_image_7x7(),
+        galaxy_name_image_dict=make_adapt_galaxy_name_image_dict_7x7(),
+    )
+
+
 def make_analysis_imaging_7x7():
     return al.AnalysisImaging(
         dataset=make_masked_imaging_7x7(),
         settings_inversion=aa.SettingsInversion(use_w_tilde=False),
+        adapt_images=make_adapt_images_7x7()
     )
 
 
 def make_analysis_interferometer_7():
-    return al.AnalysisInterferometer(dataset=make_interferometer_7())
+    return al.AnalysisInterferometer(
+        dataset=make_interferometer_7(),
+        adapt_images=make_adapt_images_7x7()
+    )
 
 
 def make_analysis_point_x2():

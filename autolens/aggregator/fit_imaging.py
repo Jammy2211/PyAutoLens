@@ -63,6 +63,8 @@ def _fit_imaging_from(
 
     tracer_list = _tracer_from(fit=fit, galaxies=galaxies)
 
+    adapt_images_list = agg_util.adapt_images_from(fit=fit)
+
     settings_inversion = settings_inversion or fit.value(name="settings_inversion")
 
     mesh_grids_of_planes_list = agg_util.mesh_grids_of_planes_list_from(
@@ -71,8 +73,8 @@ def _fit_imaging_from(
 
     fit_dataset_list = []
 
-    for dataset, tracer, mesh_grids_of_planes in zip(
-        dataset_list, tracer_list, mesh_grids_of_planes_list
+    for dataset, tracer, adapt_images, mesh_grids_of_planes in zip(
+        dataset_list, tracer_list, adapt_images_list, mesh_grids_of_planes_list
     ):
         preloads = agg_util.preloads_from(
             preloads_cls=Preloads,
@@ -85,6 +87,7 @@ def _fit_imaging_from(
             FitImaging(
                 dataset=dataset,
                 tracer=tracer,
+                adapt_images=adapt_images,
                 settings_inversion=settings_inversion,
                 preloads=preloads,
             )
