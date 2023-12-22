@@ -376,11 +376,6 @@ def make_adapt_galaxy_image_0_7x7():
     return fixtures.make_adapt_galaxy_image_0_7x7()
 
 
-@pytest.fixture(name="adapt_model_image_7x7")
-def make_adapt_model_image_7x7():
-    return fixtures.make_adapt_model_image_7x7()
-
-
 @pytest.fixture(name="adapt_galaxy_name_image_dict_7x7")
 def make_adapt_galaxy_name_image_dict_7x7():
     return fixtures.make_adapt_galaxy_name_image_dict_7x7()

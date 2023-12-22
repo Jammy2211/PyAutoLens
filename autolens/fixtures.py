@@ -129,9 +129,20 @@ def make_fit_point_dict_x2_plane():
 
 
 def make_adapt_galaxy_name_image_dict_7x7():
+
+    image_0 = ag.Array2D(
+        np.full(fill_value=2.0, shape=make_mask_2d_7x7().pixels_in_mask),
+        mask=make_mask_2d_7x7(),
+    )
+
+    image_1 = ag.Array2D(
+        np.full(fill_value=3.0, shape=make_mask_2d_7x7().pixels_in_mask),
+        mask=make_mask_2d_7x7(),
+    )
+
     adapt_galaxy_name_image_dict = {
-        "('galaxies', 'lens')": make_adapt_galaxy_image_0_7x7(),
-        "('galaxies', 'source')": make_adapt_galaxy_image_1_7x7(),
+        "('galaxies', 'lens')": image_0,
+        "('galaxies', 'source')": image_1,
     }
 
     return adapt_galaxy_name_image_dict
@@ -139,7 +150,6 @@ def make_adapt_galaxy_name_image_dict_7x7():
 
 def make_adapt_images_7x7():
     return ag.AdaptImages(
-        model_image=make_adapt_model_image_7x7(),
         galaxy_name_image_dict=make_adapt_galaxy_name_image_dict_7x7(),
     )
 

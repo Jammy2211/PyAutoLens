@@ -182,7 +182,7 @@ def test__adapt_galaxy_image_pg_list(sub_grid_2d_7x7):
 
     gal_pix = al.Galaxy(redshift=0.5, pixelization=pixelization)
 
-    adapt_images = al.AdaptImages(model_image=1, galaxy_image_dict={gal_pix: 1})
+    adapt_images = al.AdaptImages(galaxy_image_dict={gal_pix: 1})
 
     tracer = al.Tracer.from_galaxies(galaxies=[gal_pix, gal])
 
@@ -201,7 +201,7 @@ def test__adapt_galaxy_image_pg_list(sub_grid_2d_7x7):
     gal_pix2 = al.Galaxy(redshift=2.0, pixelization=pixelization)
 
     adapt_images = al.AdaptImages(
-        model_image=1, galaxy_image_dict={gal_pix0: 1, gal_pix1: 2, gal_pix2: 3}
+        galaxy_image_dict={gal_pix0: 1, gal_pix1: 2, gal_pix2: 3}
     )
 
     tracer = al.Tracer.from_galaxies(
