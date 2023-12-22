@@ -59,7 +59,6 @@ class ResultImaging(ResultDataset):
         The `Tracer` is computed from the `max_log_likelihood_fit`, as this ensures that all linear light profiles
         are converted to normal light profiles with their `intensity` values updated.
         """
-
         return (
             self.max_log_likelihood_fit.model_obj_linear_light_profiles_to_light_profiles
         )

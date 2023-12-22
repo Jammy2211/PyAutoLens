@@ -183,13 +183,6 @@ class Result(AgResultDataset):
             return PositionsLHPenalty(positions=positions, threshold=threshold)
         return PositionsLHResample(positions=positions, threshold=threshold)
 
-    @property
-    def path_galaxy_tuples(self) -> [(str, ag.Galaxy)]:
-        """
-        Tuples associating the names of galaxies with instances from the best fit
-        """
-        return self.instance.path_instance_tuples_for_class(cls=ag.Galaxy)
-
 
 class ResultDataset(Result):
     @property
