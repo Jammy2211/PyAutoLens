@@ -128,15 +128,43 @@ def make_fit_point_dict_x2_plane():
     )
 
 
+def make_adapt_galaxy_name_image_dict_7x7():
+    image_0 = ag.Array2D(
+        np.full(fill_value=2.0, shape=make_mask_2d_7x7().pixels_in_mask),
+        mask=make_mask_2d_7x7(),
+    )
+
+    image_1 = ag.Array2D(
+        np.full(fill_value=3.0, shape=make_mask_2d_7x7().pixels_in_mask),
+        mask=make_mask_2d_7x7(),
+    )
+
+    adapt_galaxy_name_image_dict = {
+        "('galaxies', 'lens')": image_0,
+        "('galaxies', 'source')": image_1,
+    }
+
+    return adapt_galaxy_name_image_dict
+
+
+def make_adapt_images_7x7():
+    return ag.AdaptImages(
+        galaxy_name_image_dict=make_adapt_galaxy_name_image_dict_7x7(),
+    )
+
+
 def make_analysis_imaging_7x7():
     return al.AnalysisImaging(
         dataset=make_masked_imaging_7x7(),
         settings_inversion=aa.SettingsInversion(use_w_tilde=False),
+        adapt_images=make_adapt_images_7x7(),
     )
 
 
 def make_analysis_interferometer_7():
-    return al.AnalysisInterferometer(dataset=make_interferometer_7())
+    return al.AnalysisInterferometer(
+        dataset=make_interferometer_7(), adapt_images=make_adapt_images_7x7()
+    )
 
 
 def make_analysis_point_x2():

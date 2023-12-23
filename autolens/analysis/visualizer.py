@@ -1,11 +1,7 @@
-import matplotlib.pyplot as plt
-import numpy as np
-from scipy.stats import norm
 from os import path
-import os
-from typing import Dict
 
 import autoarray as aa
+import autogalaxy as ag
 import autogalaxy.plot as aplt
 
 from autogalaxy.analysis.visualizer import plot_setting
@@ -171,18 +167,14 @@ class Visualizer(AgVisualizer):
             if should_plot("image_with_positions"):
                 image_plotter.figure_2d()
 
-    def visualize_adapt_images(
-        self,
-        adapt_galaxy_image_path_dict: Dict[str, aa.Array2D],
-        adapt_model_image: aa.Array2D,
-    ):
+    def visualize_adapt_images(self, adapt_images: ag.AdaptImages):
         """
-        Visualizes the adapt-images and adapt dataset inferred by a model-fit.
+        Visualizes the adapt-images and adapt image inferred by a model-fit.
 
         Images are output to the `image` folder of the `visualize_path` in a subfolder called `adapt`. When
         used with a non-linear search the `visualize_path` points to the search's results folder.
 
-        Visualization includes individual images of attributes of the adapt dataset (e.g. the adapt image) and
+        Visualization includes individual images of attributes of the adapt image (e.g. the adapt image) and
         a subplot of all galaxy images on the same figure.
 
         The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
@@ -190,10 +182,8 @@ class Visualizer(AgVisualizer):
 
         Parameters
         ----------
-        adapt_galaxy_image_path_dict
-            A dictionary mapping the path to each galaxy (e.g. its name) to its corresponding galaxy image.
-        adapt_model_image
-            The adapt image which corresponds to the sum of galaxy images.
+        adapt_images
+            The adapt images (e.g. overall model image, individual galaxy images).
         """
 
         def should_plot(name):
@@ -206,11 +196,11 @@ class Visualizer(AgVisualizer):
         )
 
         if should_plot("model_image"):
-            adapt_plotter.figure_adapt_model_image(adapt_model_image=adapt_model_image)
+            adapt_plotter.figure_model_image(model_image=adapt_images.model_image)
 
         if should_plot("images_of_galaxies"):
-            adapt_plotter.subplot_adapt_images_of_galaxies(
-                adapt_galaxy_image_path_dict=adapt_galaxy_image_path_dict
+            adapt_plotter.subplot_images_of_galaxies(
+                adapt_galaxy_name_image_dict=adapt_images.galaxy_image_dict
             )
 
     def visualize_contribution_maps(self, tracer: Tracer):
@@ -222,7 +212,7 @@ class Visualizer(AgVisualizer):
         used with a non-linear search the `visualize_path` points to the search's results folder and this function
         visualizes the maximum log likelihood contribution maps inferred by the search so far.
 
-        Visualization includes individual images of attributes of the adapt dataset (e.g. the contribution map of
+        Visualization includes individual images of attributes of the adapt image (e.g. the contribution map of
         each galaxy) and a subplot of all contribution maps on the same figure.
 
         The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
@@ -248,70 +238,3 @@ class Visualizer(AgVisualizer):
                 adapt_plotter.subplot_contribution_map_list(
                     contribution_map_list_list=tracer.contribution_map_list
                 )
-
-    def visualize_stochastic_histogram(
-        self,
-        stochastic_log_likelihoods: np.ndarray,
-        max_log_evidence: float,
-        histogram_bins: int = 10,
-    ):
-        """
-        Certain `Inversion`'s have stochasticity in their log likelihood estimate.
-
-        For example, the `VoronoiBrightnessImage` pixelization, which changes the likelihood depending on how different
-        KMeans seeds change the pixel-grid.
-
-        A log likelihood cap can be applied to model-fits performed using these `Inversion`'s to improve error and
-        posterior estimates. This log likelihood cap is estimated from a list of stochastic log likelihoods, where
-        these log likelihoods are computed using the same model but with different KMeans seeds.
-
-        This function plots a histogram representing the distribution of these stochastic log likelihoods with a 1D
-        Gaussian fit to the likelihoods overlaid. This figure can be used to determine how subject the fit to this
-        dataset is to the stochastic likelihood effect.
-
-        Parameters
-        ----------
-        stochastic_log_likelihoods
-            The stochastic log likelihood which are used to plot the histogram and Gaussian.
-        max_log_evidence
-            The maximum log likelihood value of the non-linear search, which will likely be much larger than any of the
-            stochastic log likelihoods as it will be boosted high relative to most samples.
-        histogram_bins
-            The number of bins in the histogram used to visualize the distribution of stochastic log likelihoods.
-
-        Returns
-        -------
-        float
-            A log likelihood cap which is applied in a stochastic model-fit to give improved error and posterior
-            estimates.
-        """
-        if stochastic_log_likelihoods is None:
-            return
-
-        if plot_setting("other", "stochastic_histogram"):
-            file_path = path.join(self.visualize_path, "other")
-
-            try:
-                os.makedirs(file_path)
-            except FileExistsError or IsADirectoryError:
-                pass
-
-            filename = path.join(file_path, "stochastic_histogram.png")
-
-            if path.exists(filename):
-                try:
-                    os.rmdir(filename)
-                except Exception:
-                    pass
-
-            (mu, sigma) = norm.fit(stochastic_log_likelihoods)
-            n, bins, patches = plt.hist(
-                x=stochastic_log_likelihoods, bins=histogram_bins, density=1
-            )
-            y = norm.pdf(bins, mu, sigma)
-            plt.plot(bins, y, "--")
-            plt.xlabel("log evidence")
-            plt.title("Stochastic Log Evidence Histogram")
-            plt.axvline(max_log_evidence, color="r")
-            plt.savefig(filename, bbox_inches="tight")
-            plt.close()

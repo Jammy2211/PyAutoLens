@@ -12,7 +12,6 @@ from autolens.point.fit_point.point_dict import FitPointDict
 from autolens.point.model.result import ResultPoint
 
 from autolens.point.point_solver import PointSolver
-from autolens.analysis.settings import SettingsLens
 
 from autolens import exc
 
@@ -31,7 +30,6 @@ class AnalysisPoint(AgAnalysis, AnalysisLensing):
         solver: PointSolver,
         dataset=None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
-        settings_lens=SettingsLens(),
     ):
         """
         The analysis performed for model-fitting a point-source dataset, for example fitting the point-sources of a
@@ -52,24 +50,16 @@ class AnalysisPoint(AgAnalysis, AnalysisLensing):
             visualization.
         cosmology
             The cosmology of the ray-tracing calculation.
-        settings_lens
-            Settings which control how the model-fit is performed.
         """
 
         super().__init__(cosmology=cosmology)
 
-        AnalysisLensing.__init__(
-            self=self, settings_lens=settings_lens, cosmology=cosmology
-        )
+        AnalysisLensing.__init__(self=self, cosmology=cosmology)
 
         self.point_dict = point_dict
 
         self.solver = solver
         self.dataset = dataset
-
-    @property
-    def fit_func(self) -> Callable:
-        return self.fit_positions_for
 
     def log_likelihood_function(self, instance):
         """
@@ -86,14 +76,12 @@ class AnalysisPoint(AgAnalysis, AnalysisLensing):
             A fractional value indicating how well this model fit and the model masked_dataset itself
         """
         try:
-            fit = self.fit_positions_for(instance=instance)
+            fit = self.fit_from(instance=instance)
             return fit.log_likelihood
         except (AttributeError, ValueError, TypeError, NumbaException) as e:
             raise exc.FitException from e
 
-    def fit_positions_for(
-        self, instance, run_time_dict: Optional[Dict] = None
-    ) -> FitPointDict:
+    def fit_from(self, instance, run_time_dict: Optional[Dict] = None) -> FitPointDict:
         tracer = self.tracer_via_instance_from(
             instance=instance, run_time_dict=run_time_dict
         )

@@ -11,7 +11,6 @@ class SubhaloAgg:
         self,
         aggregator_grid_search: af.GridSearchAggregator,
         settings_dataset: Optional[aa.SettingsImaging] = None,
-        settings_pixelization: Optional[aa.SettingsPixelization] = None,
         settings_inversion: Optional[aa.SettingsInversion] = None,
         use_preloaded_grid: bool = True,
     ):
@@ -22,7 +21,6 @@ class SubhaloAgg:
 
         self.aggregator_grid_search = aggregator_grid_search
         self.settings_dataset = settings_dataset
-        self.settings_pixelization = settings_pixelization
         self.settings_inversion = settings_inversion
         self.use_preloaded_grid = use_preloaded_grid
 

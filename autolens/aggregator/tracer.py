@@ -38,14 +38,12 @@ def _tracer_from(fit: af.Fit, galaxies: List[ag.Galaxy]) -> List[Tracer]:
         A list of galaxies corresponding to a sample of a non-linear search and model-fit.
     """
 
-    galaxies = agg_util.galaxies_with_adapt_images_from(fit=fit, galaxies=galaxies)
-
     if len(fit.children) > 0:
         logger.info(
             """
             Using database for a fit with multiple summed Analysis objects.
 
-            Tracer objects do not fully support this yet (e.g. adapt images may not be set up correctly)
+            Tracer objects do not fully support this yet (e.g. model parameters which vary over analyses may be incorrect)
             so proceed with caution!
             """
         )

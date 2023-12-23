@@ -16,7 +16,6 @@ from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMe
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.pixelization.pixelization import Pixelization
-from autoarray.inversion.pixelization.settings import SettingsPixelization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.inversion.factory import inversion_from as Inversion
 from autoarray.inversion.inversion.factory import (
@@ -48,6 +47,7 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
 from autogalaxy import cosmology as cosmo
+from autogalaxy.analysis.adapt_images import AdaptImages
 from autogalaxy.gui.clicker import Clicker
 from autogalaxy.gui.scribbler import Scribbler
 from autogalaxy.galaxy.galaxy import Galaxy
@@ -83,7 +83,6 @@ from autogalaxy import convert
 from . import plot
 from . import aggregator as agg
 from .lens import subhalo
-from .analysis.settings import SettingsLens
 from .lens.ray_tracing import Tracer
 from .lens.to_inversion import TracerToInversion
 from .analysis.positions import PositionsLHResample

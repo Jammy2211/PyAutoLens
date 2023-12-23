@@ -202,7 +202,8 @@ directly fitting the visibilities in the uv-plane.
 .. code-block:: python
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.DelaunayMagnification(shape=(30, 30)),
+            image_mesh=al.image_mesh.Overlay(shape=(30, 30)),
+    mesh=al.mesh.Delaunay(),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
