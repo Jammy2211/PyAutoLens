@@ -27,6 +27,7 @@ from autoarray.plot.wrap.base import (
 from autoarray.plot.wrap.one_d import YXPlot, FillBetween
 from autoarray.plot.wrap.two_d import (
     ArrayOverlay,
+    Contour,
     GridScatter,
     GridPlot,
     VectorYXQuiver,

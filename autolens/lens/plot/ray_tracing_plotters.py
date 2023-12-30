@@ -315,14 +315,42 @@ class TracerPlotter(Plotter):
         """
         Standard subplot of the attributes of the plotter's `Tracer` object.
         """
-        return self.subplot(
-            image=True,
-            source_plane=True,
-            convergence=True,
-            potential=True,
-            deflections_y=True,
-            deflections_x=True,
+
+        use_log10_original = self.mat_plot_2d.use_log10
+
+        self.open_subplot_figure(number_subplots=9)
+
+        self.figures_2d(image=True)
+
+        self.mat_plot_2d.use_log10 = True
+
+        self.set_title(label="Lens Image")
+        self.figures_2d_of_planes(plane_image=True, plane_index=0)
+
+        self.mat_plot_2d.use_log10 = False
+
+        self.set_title(label="Lensed Source Image")
+        self.figures_2d_of_planes(plane_image=True, plane_index=0)
+
+        self.set_title(label="Source Plane Image")
+        self.figures_2d(source_plane=True)
+        self.set_title(label=None)
+
+        self.figures_2d(convergence=True)
+        self.figures_2d(potential=True)
+
+        self.mat_plot_2d.use_log10 = False
+
+        self.figures_2d(magnification=True)
+        self.figures_2d(deflections_y=True)
+        self.figures_2d(deflections_x=True)
+
+        self.mat_plot_2d.output.subplot_to_figure(
+            auto_filename="subplot_tracer"
         )
+        self.close_subplot_figure()
+
+        self.mat_plot_2d.use_log10 = use_log10_original
 
     def subplot_lensed_images(self):
         """
