@@ -17,7 +17,7 @@ class Preloads(ag.Preloads):
         use_w_tilde: Optional[bool] = None,
         blurred_image: Optional[aa.Array2D] = None,
         traced_grids_of_planes_for_inversion: Optional[aa.Grid2D] = None,
-        sparse_image_plane_grid_pg_list: Optional[List[List[aa.Grid2D]]] = None,
+        image_plane_mesh_grid_pg_list: Optional[List[List[aa.Grid2D]]] = None,
         relocated_grid: Optional[aa.Grid2D] = None,
         mapper_list: Optional[aa.AbstractMapper] = None,
         mapper_galaxy_dict: Optional[Dict[aa.AbstractMapper, ag.Galaxy]] = None,
@@ -27,8 +27,8 @@ class Preloads(ag.Preloads):
         mapper_operated_mapping_matrix_dict=None,
         regularization_matrix: Optional[np.ndarray] = None,
         log_det_regularization_matrix_term: Optional[float] = None,
-        traced_sparse_grids_list_of_planes=None,
-        sparse_image_plane_grid_list=None,
+        traced_mesh_grids_list_of_planes=None,
+        image_plane_mesh_grid_list=None,
         failed=False,
     ):
         """
@@ -56,7 +56,7 @@ class Preloads(ag.Preloads):
         traced_grids_of_planes_for_inversion
             The two dimensional grids corresponding to the traced grids in a lens fit. This can be preloaded when no
              mass profiles in the model vary.
-        sparse_image_plane_grid_pg_list
+        image_plane_mesh_grid_pg_list
             The two dimensional grids corresponding to the sparse image plane grids in a lens fit, that is ray-traced to
             the source plane to form the source pixelization. This can be preloaded when no pixelizations in the model
             vary.
@@ -80,7 +80,7 @@ class Preloads(ag.Preloads):
             use_w_tilde=use_w_tilde,
             blurred_image=blurred_image,
             relocated_grid=relocated_grid,
-            sparse_image_plane_grid_pg_list=sparse_image_plane_grid_pg_list,
+            image_plane_mesh_grid_pg_list=image_plane_mesh_grid_pg_list,
             mapper_list=mapper_list,
             mapper_galaxy_dict=mapper_galaxy_dict,
             operated_mapping_matrix=operated_mapping_matrix,
@@ -89,8 +89,8 @@ class Preloads(ag.Preloads):
             mapper_operated_mapping_matrix_dict=mapper_operated_mapping_matrix_dict,
             regularization_matrix=regularization_matrix,
             log_det_regularization_matrix_term=log_det_regularization_matrix_term,
-            traced_sparse_grids_list_of_planes=traced_sparse_grids_list_of_planes,
-            sparse_image_plane_grid_list=sparse_image_plane_grid_list,
+            traced_mesh_grids_list_of_planes=traced_mesh_grids_list_of_planes,
+            image_plane_mesh_grid_list=image_plane_mesh_grid_list,
         )
 
         self.traced_grids_of_planes_for_inversion = traced_grids_of_planes_for_inversion
@@ -122,7 +122,7 @@ class Preloads(ag.Preloads):
             preloads.set_blurred_image(fit_0=fit_0, fit_1=fit_1)
 
         preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
-        preloads.set_sparse_image_plane_grid_pg_list(fit_0=fit_0, fit_1=fit_1)
+        preloads.set_image_plane_mesh_grid_pg_list(fit_0=fit_0, fit_1=fit_1)
         preloads.set_relocated_grid(fit_0=fit_0, fit_1=fit_1)
         preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
 
@@ -183,7 +183,7 @@ class Preloads(ag.Preloads):
                         "PRELOADS - Traced grid of planes (for inversion) preloaded for this model-fit."
                     )
 
-    def set_sparse_image_plane_grid_pg_list(self, fit_0, fit_1):
+    def set_image_plane_mesh_grid_pg_list(self, fit_0, fit_1):
         """
         If the `Pixelization`'s in a model are fixed their image-plane sparse grid (which defines the set of pixels
         that are ray-traced to construct the source-plane pixelization) do not change during the model=fit and
@@ -203,33 +203,33 @@ class Preloads(ag.Preloads):
             The second fit corresponding to a model with a different set of unit-values.
         """
 
-        self.sparse_image_plane_grid_pg_list = None
+        self.image_plane_mesh_grid_pg_list = None
 
-        sparse_image_plane_grid_pg_list_0 = (
-            fit_0.tracer_to_inversion.sparse_image_plane_grid_pg_list
+        image_plane_mesh_grid_pg_list_0 = (
+            fit_0.tracer_to_inversion.image_plane_mesh_grid_pg_list
         )
 
-        sparse_image_plane_grid_pg_list_1 = (
-            fit_1.tracer_to_inversion.sparse_image_plane_grid_pg_list
+        image_plane_mesh_grid_pg_list_1 = (
+            fit_1.tracer_to_inversion.image_plane_mesh_grid_pg_list
         )
 
-        if sparse_image_plane_grid_pg_list_0[-1] is not None:
-            if sparse_image_plane_grid_pg_list_0[-1][0] is not None:
+        if image_plane_mesh_grid_pg_list_0[-1] is not None:
+            if image_plane_mesh_grid_pg_list_0[-1][0] is not None:
                 if (
-                    sparse_image_plane_grid_pg_list_0[-1][0].shape[0]
-                    == sparse_image_plane_grid_pg_list_1[-1][0].shape[0]
+                    image_plane_mesh_grid_pg_list_0[-1][0].shape[0]
+                    == image_plane_mesh_grid_pg_list_1[-1][0].shape[0]
                 ):
                     if (
                         np.max(
                             abs(
-                                sparse_image_plane_grid_pg_list_0[-1][0]
-                                - sparse_image_plane_grid_pg_list_1[-1][0]
+                                image_plane_mesh_grid_pg_list_0[-1][0]
+                                - image_plane_mesh_grid_pg_list_1[-1][0]
                             )
                         )
                         < 1e-8
                     ):
-                        self.sparse_image_plane_grid_pg_list = (
-                            sparse_image_plane_grid_pg_list_0
+                        self.image_plane_mesh_grid_pg_list = (
+                            image_plane_mesh_grid_pg_list_0
                         )
 
                         logger.info(
@@ -252,7 +252,7 @@ class Preloads(ag.Preloads):
             f"Traced Grids of Planes (For LEq) = {self.traced_grids_of_planes_for_inversion is not None}\n"
         ]
         line += [
-            f"Sparse Image-Plane Grids of Planes = {self.sparse_image_plane_grid_pg_list is not None}\n"
+            f"Sparse Image-Plane Grids of Planes = {self.image_plane_mesh_grid_pg_list is not None}\n"
         ]
         line += [f"Relocated Grid = {self.relocated_grid is not None}\n"]
         line += [f"Mapper = {self.mapper_list is not None}\n"]

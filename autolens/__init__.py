@@ -9,12 +9,13 @@ from autoarray.dataset.interferometer.dataset import (
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.convolver import Convolver
+from autoarray.inversion.pixelization import image_mesh
 from autoarray.inversion.pixelization import mesh
 from autoarray.inversion import regularization as reg
+from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.pixelization.pixelization import Pixelization
-from autoarray.inversion.pixelization.settings import SettingsPixelization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.inversion.factory import inversion_from as Inversion
 from autoarray.inversion.inversion.factory import (
@@ -33,7 +34,6 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.grids.sparse_2d import Grid2DSparse
 from autoarray.structures.grids.iterate_2d import Grid2DIterate
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.irregular_2d import Grid2DIrregularUniform
@@ -47,6 +47,7 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
 from autogalaxy import cosmology as cosmo
+from autogalaxy.analysis.adapt_images import AdaptImages
 from autogalaxy.gui.clicker import Clicker
 from autogalaxy.gui.scribbler import Scribbler
 from autogalaxy.galaxy.galaxy import Galaxy
@@ -82,7 +83,6 @@ from autogalaxy import convert
 from . import plot
 from . import aggregator as agg
 from .lens import subhalo
-from .analysis.settings import SettingsLens
 from .lens.ray_tracing import Tracer
 from .lens.to_inversion import TracerToInversion
 from .analysis.positions import PositionsLHResample

@@ -140,8 +140,6 @@ plots:
     regularization_weights: false
     residual_map: false
     subplot_inversion: true
-  other:
-    stochastic_histogram: true
   positions:
     image_with_positions: true
   ray_tracing:

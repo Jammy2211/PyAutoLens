@@ -19,7 +19,6 @@ def _fit_interferometer_from(
     galaxies: List[ag.Galaxy],
     real_space_mask: Optional[aa.Mask2D] = None,
     settings_dataset: aa.SettingsInterferometer = None,
-    settings_pixelization: aa.SettingsPixelization = None,
     settings_inversion: aa.SettingsInversion = None,
     use_preloaded_grid: bool = True,
 ) -> List[FitInterferometer]:
@@ -30,7 +29,6 @@ def _fit_interferometer_from(
 
     - The interferometer data, noise-map, uv-wavelengths and settings as .fits files (e.g. `dataset/data.fits`).
     - The real space mask defining the grid of the interferometer for the FFT (`dataset/real_space_mask.fits`).
-    - The settings of pixelization used by the fit (`dataset/settings_pixelization.json`).
     - The settings of inversions used by the fit (`dataset/settings_inversion.json`).
 
     Each individual attribute can be loaded from the database via the `fit.value()` method.
@@ -54,8 +52,6 @@ def _fit_interferometer_from(
         A list of galaxies corresponding to a sample of a non-linear search and model-fit.
     settings_dataset
         Optionally overwrite the `SettingsInterferometer` of the `Interferometer` object that is created from the fit.
-    settings_pixelization
-        Optionally overwrite the `SettingsPixelization` of the `Pixelization` object that is created from the fit.
     settings_inversion
         Optionally overwrite the `SettingsInversion` of the `Inversion` object that is created from the fit.
     use_preloaded_grid
@@ -70,24 +66,23 @@ def _fit_interferometer_from(
     )
     tracer_list = _tracer_from(fit=fit, galaxies=galaxies)
 
-    settings_pixelization = settings_pixelization or fit.value(
-        name="settings_pixelization"
-    )
+    adapt_images_list = agg_util.adapt_images_from(fit=fit)
+
     settings_inversion = settings_inversion or fit.value(name="settings_inversion")
 
-    sparse_grids_of_planes_list = agg_util.sparse_grids_of_planes_list_from(
+    mesh_grids_of_planes_list = agg_util.mesh_grids_of_planes_list_from(
         fit=fit, total_fits=len(dataset_list), use_preloaded_grid=use_preloaded_grid
     )
 
     fit_dataset_list = []
 
-    for dataset, tracer, sparse_grids_of_planes in zip(
-        dataset_list, tracer_list, sparse_grids_of_planes_list
+    for dataset, tracer, adapt_images, mesh_grids_of_planes in zip(
+        dataset_list, tracer_list, adapt_images_list, mesh_grids_of_planes_list
     ):
         preloads = agg_util.preloads_from(
             preloads_cls=Preloads,
             use_preloaded_grid=use_preloaded_grid,
-            sparse_grids_of_planes=sparse_grids_of_planes,
+            mesh_grids_of_planes=mesh_grids_of_planes,
             use_w_tilde=False,
         )
 
@@ -95,7 +90,7 @@ def _fit_interferometer_from(
             FitInterferometer(
                 dataset=dataset,
                 tracer=tracer,
-                settings_pixelization=settings_pixelization,
+                adapt_images=adapt_images,
                 settings_inversion=settings_inversion,
                 preloads=preloads,
             )
@@ -109,7 +104,6 @@ class FitInterferometerAgg(AbstractAgg):
         self,
         aggregator: af.Aggregator,
         settings_dataset: Optional[aa.SettingsInterferometer] = None,
-        settings_pixelization: Optional[aa.SettingsPixelization] = None,
         settings_inversion: Optional[aa.SettingsInversion] = None,
         use_preloaded_grid: bool = True,
         real_space_mask: Optional[aa.Mask2D] = None,
@@ -122,7 +116,6 @@ class FitInterferometerAgg(AbstractAgg):
 
         - The interferometer data, noise-map, uv-wavelengths and settings as .fits files (e.g. `dataset/data.fits`).
         - The real space mask defining the grid of the interferometer for the FFT (`dataset/real_space_mask.fits`).
-        - The settings of pixelization used by the fit (`dataset/settings_pixelization.json`).
         - The settings of inversions used by the fit (`dataset/settings_inversion.json`).
 
         The `aggregator` contains the path to each of these files, and they can be loaded individually. This class
@@ -143,8 +136,6 @@ class FitInterferometerAgg(AbstractAgg):
             A `PyAutoFit` aggregator object which can load the results of model-fits.
         settings_dataset
             Optionally overwrite the `SettingsInterferometer` of the `Interferometer` object that is created from the fit.
-        settings_pixelization
-            Optionally overwrite the `SettingsPixelization` of the `Pixelization` object that is created from the fit.
         settings_inversion
             Optionally overwrite the `SettingsInversion` of the `Inversion` object that is created from the fit.
         use_preloaded_grid
@@ -155,7 +146,6 @@ class FitInterferometerAgg(AbstractAgg):
         super().__init__(aggregator=aggregator)
 
         self.settings_dataset = settings_dataset
-        self.settings_pixelization = settings_pixelization
         self.settings_inversion = settings_inversion
         self.use_preloaded_grid = use_preloaded_grid
         self.real_space_mask = real_space_mask
@@ -177,7 +167,6 @@ class FitInterferometerAgg(AbstractAgg):
             fit=fit,
             galaxies=galaxies,
             settings_dataset=self.settings_dataset,
-            settings_pixelization=self.settings_pixelization,
             settings_inversion=self.settings_inversion,
             use_preloaded_grid=self.use_preloaded_grid,
         )

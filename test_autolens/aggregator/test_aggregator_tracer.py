@@ -7,15 +7,10 @@ database_file = "db_tracer"
 
 def test__tracer_randomly_drawn_via_pdf_gen_from(
     masked_imaging_7x7,
-    adapt_model_image_7x7,
-    adapt_galaxy_image_path_dict_7x7,
     samples,
     model,
 ):
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
-
-    analysis.adapt_model_image = adapt_model_image_7x7
-    analysis.adapt_galaxy_image_path_dict = adapt_galaxy_image_path_dict_7x7
 
     agg = aggregator_from(
         database_file=database_file,

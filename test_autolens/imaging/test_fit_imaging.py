@@ -204,6 +204,32 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
     assert fit.perform_inversion is False
     assert fit.figure_of_merit == pytest.approx(-3688191.0841, 1.0e-4)
 
+    pixelization = al.Pixelization(
+        image_mesh=al.image_mesh.KMeans(pixels=5),
+        mesh=al.mesh.Delaunay(),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
+
+    galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
+
+    tracer = al.Tracer.from_galaxies(galaxies=[g0, galaxy_pix])
+
+    model_image = al.Array2D(
+        np.full(fill_value=5.0, shape=masked_imaging_7x7.mask.pixels_in_mask),
+        mask=masked_imaging_7x7.mask,
+    )
+
+    adapt_images = al.AdaptImages(
+        galaxy_image_dict={galaxy_pix: model_image},
+    )
+
+    fit = al.FitImaging(
+        dataset=masked_imaging_7x7, tracer=tracer, adapt_images=adapt_images
+    )
+
+    assert fit.perform_inversion is True
+    assert fit.figure_of_merit == pytest.approx(-341415.8258823, 1.0e-4)
+
 
 def test__galaxy_model_image_dict(masked_imaging_7x7):
 
@@ -451,56 +477,6 @@ def test__tracer_linear_light_profiles_to_light_profiles(masked_imaging_7x7):
     assert tracer.galaxies[0].bulge.intensity == pytest.approx(1.0, 1.0e-4)
     assert tracer.galaxies[1].bulge.intensity == pytest.approx(-371.061130, 1.0e-4)
     assert tracer.galaxies[2].bulge.intensity == pytest.approx(0.08393533428, 1.0e-4)
-
-
-def _test___stochastic_mode__gives_different_log_likelihoods(masked_imaging_7x7):
-
-    pixelization = al.Pixelization(
-        mesh=al.mesh.VoronoiBrightnessImage(pixels=7),
-        regularization=al.reg.Constant(coefficient=1.0),
-    )
-
-    g0 = al.Galaxy(
-        redshift=0.5,
-        pixelization=pixelization,
-        adapt_model_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
-        adapt_galaxy_image=al.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
-    )
-
-    tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
-
-    fit_0 = al.FitImaging(
-        dataset=masked_imaging_7x7,
-        tracer=tracer,
-        settings_pixelization=al.SettingsPixelization(is_stochastic=False),
-    )
-    fit_1 = al.FitImaging(
-        dataset=masked_imaging_7x7,
-        tracer=tracer,
-        settings_pixelization=al.SettingsPixelization(is_stochastic=False),
-    )
-
-    assert fit_0.log_evidence == fit_1.log_evidence
-
-    fit_0 = al.FitImaging(
-        dataset=masked_imaging_7x7,
-        tracer=tracer,
-        settings_pixelization=al.SettingsPixelization(is_stochastic=True),
-    )
-    fit_1 = al.FitImaging(
-        dataset=masked_imaging_7x7,
-        tracer=tracer,
-        settings_pixelization=al.SettingsPixelization(is_stochastic=True),
-    )
-
-    # Sum 5 stochastic likelihoods to avoid random chance of identical
-    # pixelizations and therefore likelihoods.
-
-    log_evidence_x5_0 = sum([fit_0.log_evidence for i in range(5)])
-    log_evidence_x5_1 = sum([fit_1.log_evidence for i in range(5)])
-
-    assert log_evidence_x5_0 != log_evidence_x5_1
-
 
 def test__preloads__refit_with_new_preloads(masked_imaging_7x7):
 

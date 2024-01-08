@@ -47,7 +47,7 @@ class ResultImaging(ResultDataset):
         An instance of a `FitImaging` corresponding to the maximum log likelihood model inferred by the non-linear
         search.
         """
-        return self.analysis.fit_imaging_via_instance_from(
+        return self.analysis.fit_from(
             instance=self.instance,
         )
 
@@ -59,7 +59,6 @@ class ResultImaging(ResultDataset):
         The `Tracer` is computed from the `max_log_likelihood_fit`, as this ensures that all linear light profiles
         are converted to normal light profiles with their `intensity` values updated.
         """
-
         return (
             self.max_log_likelihood_fit.model_obj_linear_light_profiles_to_light_profiles
         )

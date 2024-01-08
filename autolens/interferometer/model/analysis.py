@@ -18,7 +18,6 @@ from autolens.lens.ray_tracing import Tracer
 from autolens.interferometer.model.result import ResultInterferometer
 from autolens.interferometer.model.visualizer import VisualizerInterferometer
 from autolens.interferometer.fit_interferometer import FitInterferometer
-from autolens.analysis.settings import SettingsLens
 
 from autolens import exc
 
@@ -34,11 +33,9 @@ class AnalysisInterferometer(AnalysisDataset):
         positions_likelihood: Optional[
             Union[PositionsLHResample, PositionsLHPenalty]
         ] = None,
-        adapt_result=None,
+        adapt_images: Optional[ag.AdaptImages] = None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
-        settings_pixelization: aa.SettingsPixelization = None,
         settings_inversion: aa.SettingsInversion = None,
-        settings_lens: SettingsLens = None,
         raise_inversion_positions_likelihood_exception: bool = True,
     ):
         """
@@ -54,7 +51,7 @@ class AnalysisInterferometer(AnalysisDataset):
         `Tracer`) to an interferometer dataset.
 
         This class stores the settings used to perform the model-fit for certain components of the model (e.g. a
-        pixelization or inversion), the Cosmology used for the analysis and adapt datasets used for certain model
+        pixelization or inversion), the Cosmology used for the analysis and adapt images used for certain model
         classes.
 
         Parameters
@@ -65,19 +62,13 @@ class AnalysisInterferometer(AnalysisDataset):
             An object which alters the likelihood function to include a term which accounts for whether
             image-pixel coordinates in arc-seconds corresponding to the multiple images of the lensed source galaxy
             trace close to one another in the source-plane.
-        adapt_result
-            Theadapt-model image and galaxies images of a previous result in a model-fitting pipeline, which are
-            used by certain classes for adapting the analysis to the properties of the dataset.
+        adapt_images
+            Contains the adapt-images which are used to make a pixelization's mesh and regularization adapt to the
+            reconstructed galaxy's morphology.
         cosmology
             The Cosmology assumed for this analysis.
-        settings_pixelization
-            settings controlling how a pixelization is fitted for example if a border is used when creating the
-            pixelization.
         settings_inversion
             Settings controlling how an inversion is fitted, for example which linear algebra formalism is used.
-        settings_lens
-            Settings controlling the lens calculation, for example how close the lensed source's multiple images have
-            to trace within one another in the source plane for the model to not be discarded.
         raise_inversion_positions_likelihood_exception
             If an inversion is used without the `positions_likelihood` it is likely a systematic solution will
             be inferred, in which case an Exception is raised before the model-fit begins to inform the user
@@ -87,11 +78,9 @@ class AnalysisInterferometer(AnalysisDataset):
         super().__init__(
             dataset=dataset,
             positions_likelihood=positions_likelihood,
-            adapt_result=adapt_result,
+            adapt_images=adapt_images,
             cosmology=cosmology,
-            settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,
-            settings_lens=settings_lens,
             raise_inversion_positions_likelihood_exception=raise_inversion_positions_likelihood_exception,
         )
 
@@ -137,7 +126,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
         For this analysis class, this function performs the following steps:
 
-        1) If the analysis has a adapt dataset, associated the model galaxy images of this dataset to the galaxies in
+        1) If the analysis has a adapt image, associated the model galaxy images of this dataset to the galaxies in
            the model instance.
 
         2) Extract attributes which model aspects of the data reductions, like the scaling the background sky
@@ -177,9 +166,7 @@ class AnalysisInterferometer(AnalysisDataset):
             raise e
 
         try:
-            return self.fit_interferometer_via_instance_from(
-                instance=instance
-            ).figure_of_merit
+            return self.fit_from(instance=instance).figure_of_merit
         except (
             PixelizationException,
             exc.PixelizationException,
@@ -193,9 +180,10 @@ class AnalysisInterferometer(AnalysisDataset):
         ) as e:
             raise exc.FitException from e
 
-    def fit_interferometer_via_instance_from(
+    def fit_from(
         self,
         instance: af.ModelInstance,
+        preload_overwrite: Optional[Preloads] = None,
         run_time_dict: Optional[Dict] = None,
     ) -> FitInterferometer:
         """
@@ -222,123 +210,23 @@ class AnalysisInterferometer(AnalysisDataset):
         FitInterferometer
             The fit of the plane to the interferometer dataset, which includes the log likelihood.
         """
-        self.instance_with_associated_adapt_images_from(instance=instance)
+
         tracer = self.tracer_via_instance_from(
             instance=instance, run_time_dict=run_time_dict
         )
 
-        return self.fit_interferometer_via_tracer_from(
-            tracer=tracer, run_time_dict=run_time_dict
-        )
+        adapt_images = self.adapt_images_via_instance_from(instance=instance)
 
-    def fit_interferometer_via_tracer_from(
-        self,
-        tracer: Tracer,
-        preload_overwrite: Optional[Preloads] = None,
-        run_time_dict: Optional[Dict] = None,
-    ):
-        """
-        Given a `Tracer`, which the analysis constructs from a model instance, create a `FitInterferometer` object.
-
-        This function is used in the `log_likelihood_function` to fit the model to the imaging data and compute the
-        log likelihood.
-
-        Parameters
-        ----------
-        tracer
-            The tracer of galaxies whose ray-traced model images are used to fit the imaging data.
-        preload_overwrite
-            If a `Preload` object is input this is used instead of the preloads stored as an attribute in the analysis.
-        run_time_dict
-            A dictionary which times functions called to fit the model to data, for profiling.
-
-        Returns
-        -------
-        FitImaging
-            The fit of the plane to the imaging dataset, which includes the log likelihood.
-        """
         preloads = self.preloads if preload_overwrite is None else preload_overwrite
 
         return FitInterferometer(
             dataset=self.dataset,
             tracer=tracer,
-            settings_pixelization=self.settings_pixelization,
+            adapt_images=adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=preloads,
             run_time_dict=run_time_dict,
         )
-
-    @property
-    def fit_func(self):
-        return self.fit_interferometer_via_instance_from
-
-    def stochastic_log_likelihoods_via_instance_from(self, instance):
-        """
-         Certain `Inversion`'s have stochasticity in their log likelihood estimate.
-
-         For example, the `VoronoiBrightnessImage` pixelization, which changes the likelihood depending on how different
-         KMeans seeds change the pixel-grid.
-
-         A log likelihood cap can be applied to model-fits performed using these `Inversion`'s to improve error and
-         posterior estimates. This log likelihood cap is estimated from a list of stochastic log likelihoods, where
-         these log likelihoods are computed using the same model but with different KMeans seeds.
-
-         This function computes these stochastic log likelihoods by iterating over many model-fits using different
-         KMeans seeds.
-
-         Parameters
-         ----------
-        instance
-             The maximum log likelihood instance of a model that is has finished being fitted to the dataset.
-
-         Returns
-         -------
-         float
-             A log likelihood cap which is applied in a stochastic model-fit to give improved error and posterior
-             estimates.
-        """
-        instance = self.instance_with_associated_adapt_images_from(instance=instance)
-        tracer = self.tracer_via_instance_from(instance=instance)
-
-        if not tracer.has(cls=aa.Pixelization):
-            return None
-
-        if not any(
-            [
-                pix.mesh.is_stochastic
-                for pix in tracer.cls_list_from(cls=ag.Pixelization)
-            ]
-        ):
-            return
-
-        settings_pixelization = (
-            self.settings_pixelization.settings_with_is_stochastic_true()
-        )
-
-        log_evidences = []
-
-        for i in range(self.settings_lens.stochastic_samples):
-            try:
-                log_evidence = FitInterferometer(
-                    dataset=self.dataset,
-                    tracer=tracer,
-                    settings_pixelization=settings_pixelization,
-                    settings_inversion=self.settings_inversion,
-                    preloads=self.preloads,
-                ).log_evidence
-            except (
-                PixelizationException,
-                exc.PixelizationException,
-                exc.InversionException,
-                exc.GridException,
-                OverflowError,
-            ) as e:
-                log_evidence = None
-
-            if log_evidence is not None:
-                log_evidences.append(log_evidence)
-
-        return log_evidences
 
     def visualize_before_fit(self, paths: af.DirectoryPaths, model: af.Collection):
         """
@@ -366,10 +254,8 @@ class AnalysisInterferometer(AnalysisDataset):
                 positions=self.positions_likelihood.positions,
             )
 
-        visualizer.visualize_adapt_images(
-            adapt_galaxy_image_path_dict=self.adapt_galaxy_image_path_dict,
-            adapt_model_image=self.adapt_model_image,
-        )
+        if self.adapt_images is not None:
+            visualizer.visualize_adapt_images(adapt_images=self.adapt_images)
 
     def visualize(self, paths: af.DirectoryPaths, instance, during_analysis):
         """
@@ -404,10 +290,7 @@ class AnalysisInterferometer(AnalysisDataset):
             If True the visualization is being performed midway through the non-linear search before it is finished,
             which may change which images are output.
         """
-
-        instance = self.instance_with_associated_adapt_images_from(instance=instance)
-
-        fit = self.fit_interferometer_via_instance_from(instance=instance)
+        fit = self.fit_from(instance=instance)
 
         if self.positions_likelihood is not None:
             self.positions_likelihood.output_positions_info(
@@ -491,7 +374,7 @@ class AnalysisInterferometer(AnalysisDataset):
          - The settings associated with the inversion.
          - The settings associated with the pixelization.
          - The Cosmology.
-         - The adapt dataset's model image and galaxy images, if used.
+         - The adapt image's model image and galaxy images, if used.
 
          This function also outputs attributes specific to an imaging dataset:
 

@@ -31,5 +31,5 @@ class MockFitImaging(aa.m.MockFitImaging):
 
         return MockTracerToInversion(
             tracer=self.tracer,
-            sparse_image_plane_grid_pg_list=self.tracer.sparse_image_plane_grid_pg_list,
+            image_plane_mesh_grid_pg_list=self.tracer.image_plane_mesh_grid_pg_list,
         )

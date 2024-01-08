@@ -23,7 +23,6 @@ from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
 from autolens.analysis.visualizer import Visualizer
 from autolens.lens.ray_tracing import Tracer
-from autolens.analysis.settings import SettingsLens
 
 from autolens.lens import ray_tracing_util
 
@@ -40,7 +39,6 @@ class AnalysisLensing:
         positions_likelihood: Optional[
             Union[PositionsLHResample, PositionsLHPenalty]
         ] = None,
-        settings_lens: SettingsLens = SettingsLens(),
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):
         """
@@ -55,14 +53,10 @@ class AnalysisLensing:
 
         Parameters
         ----------
-        settings_lens
-            Settings controlling the lens calculation, for example how close the lensed source's multiple images have
-            to trace within one another in the source plane for the model to not be discarded.
         cosmology
             The Cosmology assumed for this analysis.
         """
         self.cosmology = cosmology
-        self.settings_lens = settings_lens or SettingsLens()
         self.positions_likelihood = positions_likelihood
 
     def tracer_via_instance_from(
@@ -160,11 +154,9 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         positions_likelihood: Optional[
             Union[PositionsLHResample, PositionsLHPenalty]
         ] = None,
-        adapt_result=None,
+        adapt_images: Optional[ag.AdaptImages] = None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
-        settings_pixelization: aa.SettingsPixelization = None,
         settings_inversion: aa.SettingsInversion = None,
-        settings_lens: SettingsLens = None,
         raise_inversion_positions_likelihood_exception: bool = True,
     ):
         """
@@ -184,17 +176,14 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
             An object which alters the likelihood function to include a term which accounts for whether
             image-pixel coordinates in arc-seconds corresponding to the multiple images of the lensed source galaxy
             trace close to one another in the source-plane.
+        adapt_images
+            Contains the adapt-images which are used to make a pixelization's mesh and regularization adapt to the
+            reconstructed galaxy's morphology.
         cosmology
             The AstroPy Cosmology assumed for this analysis.
-        settings_pixelization
-            settings controlling how a pixelization is fitted during the model-fit, for example if a border is used
-            when creating the pixelization.
         settings_inversion
             Settings controlling how an inversion is fitted during the model-fit, for example which linear algebra
             formalism is used.
-        settings_lens
-            Settings controlling the lens calculation, for example how close the lensed source's multiple images have
-            to trace within one another in the source plane for the model to not be discarded.
         raise_inversion_positions_likelihood_exception
             If an inversion is used without the `positions_likelihood` it is likely a systematic solution will
             be inferred, in which case an Exception is raised before the model-fit begins to inform the user
@@ -204,20 +193,16 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
         super().__init__(
             dataset=dataset,
-            adapt_result=adapt_result,
+            adapt_images=adapt_images,
             cosmology=cosmology,
-            settings_pixelization=settings_pixelization,
             settings_inversion=settings_inversion,
         )
 
         AnalysisLensing.__init__(
             self=self,
             positions_likelihood=positions_likelihood,
-            settings_lens=settings_lens,
             cosmology=cosmology,
         )
-
-        self.settings_lens = settings_lens or SettingsLens()
 
         self.preloads = self.preloads_cls()
 
@@ -257,7 +242,11 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         self.raise_exceptions(model=model)
 
     def raise_exceptions(self, model):
-        if ag.util.model.has_pixelization_from(model=model):
+        has_pix = model.has_model(cls=(aa.Pixelization,)) or model.has_instance(
+            cls=(aa.Pixelization,)
+        )
+
+        if has_pix:
             if (
                 self.positions_likelihood is None
                 and self.raise_inversion_positions_likelihood_exception
@@ -293,9 +282,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
         - The maximum log likelihood tracer of the fit.
 
-        - The stochastic log likelihoods of a pixelization, provided the pixelization has functionality that can
-          compute likelihoods for different KMeans seeds and grids (e.g. `VoronoiBrightnessImage).
-
         Parameters
         ----------
         paths
@@ -312,118 +298,19 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
         except AttributeError:
             pass
 
-        if conf.instance["general"]["output"]["fit_dill"]:
-            with open(paths._files_path / "fit.dill", "wb") as f:
-                dill.dump(result.max_log_likelihood_fit, f)
+        image_mesh_list = []
 
-        mesh_list = ag.util.model.mesh_list_from(model=result.model)
+        for galaxy in result.instance.galaxies:
+            pixelization_list = galaxy.cls_list_from(cls=aa.Pixelization)
 
-        if len(mesh_list) > 0:
+            for pixelization in pixelization_list:
+                if pixelization is not None:
+                    image_mesh_list.append(pixelization.image_mesh)
+
+        if len(image_mesh_list) > 0:
             paths.save_json(
-                name="preload_sparse_grids_of_planes",
+                name="preload_mesh_grids_of_planes",
                 object_dict=to_dict(
-                    result.max_log_likelihood_fit.tracer_to_inversion.sparse_image_plane_grid_pg_list
+                    result.max_log_likelihood_fit.tracer_to_inversion.image_plane_mesh_grid_pg_list
                 ),
             )
-
-        if conf.instance["general"]["adapt"]["stochastic_outputs"]:
-            if len(mesh_list) > 0:
-                for mesh in mesh_list:
-                    if mesh.is_stochastic:
-                        self.save_stochastic_outputs(
-                            paths=paths, samples=result.samples
-                        )
-
-    def log_likelihood_cap_from(
-        self, stochastic_log_likelihoods_json_file: str
-    ) -> float:
-        """
-        Certain `Inversion`'s have stochasticity in their log likelihood estimate (e.g. due to how different KMeans
-        seeds change the pixelization constructed by a `VoronoiBrightnessImage` pixelization).
-
-        A log likelihood cap can be applied to model-fits performed using these `Inversion`'s to improve error and
-        posterior estimates. This log likelihood cap is estimated from a list of stochastic log likelihoods, where
-        these log likelihoods are computed using the same model but with different KMeans seeds.
-
-        This function computes the log likelihood cap of a model-fit by loading a set of stochastic log likelihoods
-        from a .json file and fitting them with a 1D Gaussian. The cap is the mean value of this Gaussian.
-
-        Parameters
-        ----------
-        stochastic_log_likelihoods_json_file
-            A .json file which loads an ndarray of stochastic log likelihoods, which are likelihoods computed using the
-            same model but with different KMeans seeds.
-
-        Returns
-        -------
-        float
-            A log likelihood cap which is applied in a stochastic model-fit to give improved error and posterior
-            estimates.
-        """
-        try:
-            with open(stochastic_log_likelihoods_json_file, "r") as f:
-                stochastic_log_likelihoods = np.asarray(json.load(f))
-        except FileNotFoundError:
-            raise exc.AnalysisException(
-                "The file 'stochastic_log_likelihoods.json' could not be found in the output of the model-fitting results"
-                "in the analysis before the stochastic analysis. Rerun PyAutoLens with `stochastic_outputs=True` in the"
-                "`general.ini` configuration file."
-            )
-
-        mean, sigma = norm.fit(stochastic_log_likelihoods)
-
-        return mean
-
-    def stochastic_log_likelihoods_via_instance_from(self, instance) -> List[float]:
-        raise NotImplementedError()
-
-    def save_stochastic_outputs(self, paths: af.DirectoryPaths, samples: af.Samples):
-        """
-        Certain `Inversion`'s have stochasticity in their log likelihood estimate (e.g. due to how different KMeans
-        seeds change the pixelization constructed by a `VoronoiBrightnessImage` pixelization).
-
-        This function computes the stochastic log likelihoods of such a model, which are the log likelihoods computed
-        using the same model but with different KMeans seeds.
-
-        It outputs these stochastic likelihoods to a format which can be loaded via PyAutoFit's database tools, and
-        may also be loaded if this analysis is extended with a stochastic model-fit that applies a log likelihood cap.
-
-        This function also outputs visualization showing a histogram of the stochastic likelihood distribution.
-
-        Parameters
-        ----------
-        paths
-            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
-            visualization and the pickled objects used by the aggregator output by this function.
-        samples
-            A PyAutoFit object which contains the samples of the non-linear search, for example the chains of an MCMC
-            run of samples of the nested sampler.
-        """
-        stochastic_log_likelihoods_json_file = path.join(
-            paths._files_path, "stochastic_log_likelihoods.json"
-        )
-
-        try:
-            with open(stochastic_log_likelihoods_json_file, "r") as f:
-                stochastic_log_likelihoods = np.asarray(json.load(f))
-        except FileNotFoundError:
-            instance = samples.max_log_likelihood()
-            stochastic_log_likelihoods = (
-                self.stochastic_log_likelihoods_via_instance_from(instance=instance)
-            )
-
-        if stochastic_log_likelihoods is None:
-            return
-
-        with open(stochastic_log_likelihoods_json_file, "w") as outfile:
-            json.dump(
-                [float(evidence) for evidence in stochastic_log_likelihoods], outfile
-            )
-
-        visualizer = Visualizer(visualize_path=paths.image_path)
-
-        visualizer.visualize_stochastic_histogram(
-            stochastic_log_likelihoods=stochastic_log_likelihoods,
-            max_log_evidence=np.max(samples.log_likelihood_list),
-            histogram_bins=self.settings_lens.stochastic_histogram_bins,
-        )
