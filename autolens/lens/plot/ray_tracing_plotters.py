@@ -322,20 +322,31 @@ class TracerPlotter(Plotter):
 
         self.figures_2d(image=True)
 
-        self.mat_plot_2d.use_log10 = True
-
-        self.set_title(label="Lens Image")
-        self.figures_2d_of_planes(plane_image=True, plane_index=0)
-
-        self.mat_plot_2d.use_log10 = False
-
         self.set_title(label="Lensed Source Image")
-        self.figures_2d_of_planes(plane_image=True, plane_index=0)
+
+        plane_plotter = self.plane_plotter_from(plane_index=1)
+
+        plane_plotter.visuals_2d.tangential_caustics = None
+        plane_plotter.visuals_2d.radial_caustics = None
+
+        plane_plotter.figures_2d(
+            image=True,
+        )
 
         self.set_title(label="Source Plane Image")
         self.figures_2d(source_plane=True)
         self.set_title(label=None)
 
+        include_tangential_critical_curves_original = self.include_2d._tangential_critical_curves
+        include_radial_critical_curves_original = self.include_2d._radial_critical_curves
+
+        self.mat_plot_2d.use_log10 = True
+        self.include_2d._tangential_critical_curves = False
+        self.include_2d._radial_critical_curves = False
+
+        self.set_title(label="Lens Galaxy Image")
+        self.figures_2d_of_planes(plane_image=True, plane_index=0)
+        self.set_title(label=None)
         self.figures_2d(convergence=True)
         self.figures_2d(potential=True)
 
@@ -350,6 +361,8 @@ class TracerPlotter(Plotter):
         )
         self.close_subplot_figure()
 
+        self.include_2d._tangential_critical_curves = include_tangential_critical_curves_original
+        self.include_2d._radial_critical_curves = include_radial_critical_curves_original
         self.mat_plot_2d.use_log10 = use_log10_original
 
     def subplot_lensed_images(self):
