@@ -316,6 +316,8 @@ class TracerPlotter(Plotter):
         Standard subplot of the attributes of the plotter's `Tracer` object.
         """
 
+        final_plane_index = len(self.tracer.planes) - 1
+
         use_log10_original = self.mat_plot_2d.use_log10
 
         self.open_subplot_figure(number_subplots=9)
@@ -324,7 +326,7 @@ class TracerPlotter(Plotter):
 
         self.set_title(label="Lensed Source Image")
 
-        plane_plotter = self.plane_plotter_from(plane_index=1)
+        plane_plotter = self.plane_plotter_from(plane_index=final_plane_index)
 
         plane_plotter.visuals_2d.tangential_caustics = None
         plane_plotter.visuals_2d.radial_caustics = None
@@ -337,15 +339,21 @@ class TracerPlotter(Plotter):
         self.figures_2d(source_plane=True)
         self.set_title(label=None)
 
-        include_tangential_critical_curves_original = self.include_2d._tangential_critical_curves
-        include_radial_critical_curves_original = self.include_2d._radial_critical_curves
+        include_tangential_critical_curves_original = (
+            self.include_2d._tangential_critical_curves
+        )
+        include_radial_critical_curves_original = (
+            self.include_2d._radial_critical_curves
+        )
 
         self.mat_plot_2d.use_log10 = True
         self.include_2d._tangential_critical_curves = False
         self.include_2d._radial_critical_curves = False
 
         self.set_title(label="Lens Galaxy Image")
-        self.figures_2d_of_planes(plane_image=True, plane_index=0)
+        self.figures_2d_of_planes(
+            plane_image=True, plane_index=0, zoom_to_brightest=False
+        )
         self.set_title(label=None)
         self.figures_2d(convergence=True)
         self.figures_2d(potential=True)
@@ -356,13 +364,15 @@ class TracerPlotter(Plotter):
         self.figures_2d(deflections_y=True)
         self.figures_2d(deflections_x=True)
 
-        self.mat_plot_2d.output.subplot_to_figure(
-            auto_filename="subplot_tracer"
-        )
+        self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_tracer")
         self.close_subplot_figure()
 
-        self.include_2d._tangential_critical_curves = include_tangential_critical_curves_original
-        self.include_2d._radial_critical_curves = include_radial_critical_curves_original
+        self.include_2d._tangential_critical_curves = (
+            include_tangential_critical_curves_original
+        )
+        self.include_2d._radial_critical_curves = (
+            include_radial_critical_curves_original
+        )
         self.mat_plot_2d.use_log10 = use_log10_original
 
     def subplot_lensed_images(self):

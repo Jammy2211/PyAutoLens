@@ -76,9 +76,18 @@ class FitImagingPlotter(Plotter):
         """
         Returns an `TracerPlotter` corresponding to the `Tracer` in the `FitImaging`.
         """
+
+        extent = self.fit.data.extent_of_zoomed_array(buffer=0)
+        shape_native = self.fit.data.zoomed_around_mask(buffer=0).shape_native
+
+        grid = aa.Grid2D.from_extent(
+            extent=extent,
+            shape_native=shape_native
+        )
+
         return TracerPlotter(
             tracer=self.tracer,
-            grid=self.fit.grid,
+            grid=grid,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.visuals_2d,
             include_2d=self.include_2d,
@@ -432,6 +441,68 @@ class FitImagingPlotter(Plotter):
             auto_filename="subplot_fit"
         )
         self.close_subplot_figure()
+
+    def subplot_tracer(self):
+        """
+        Standard subplot of a Tracer.
+
+        The `subplot_tracer` method in the `Tracer` class cannot plot the images of galaxies which are computed
+        via an `Inversion`. Therefore, using the `subplot_tracer` method of the `FitImagingPLotter` can plot
+        more information.
+
+        Returns
+        -------
+
+        """
+        use_log10_original = self.mat_plot_2d.use_log10
+
+        final_plane_index = len(self.fit.tracer.planes) - 1
+
+        self.open_subplot_figure(number_subplots=9)
+
+        self.figures_2d(model_image=True)
+
+        self.set_title(label="Lensed Source Image")
+        self.figures_2d_of_planes(plane_index=final_plane_index, model_image=True, use_source_vmax=True)
+        self.set_title(label=None)
+
+        self.set_title(label="Source Plane")
+        self.figures_2d_of_planes(
+            plane_index=final_plane_index,
+            plane_image=True,
+            zoom_to_brightest=False,
+            use_source_vmax=True
+        )
+
+        tracer_plotter = self.tracer_plotter
+
+        include_tangential_critical_curves_original = tracer_plotter.include_2d._tangential_critical_curves
+        include_radial_critical_curves_original = tracer_plotter.include_2d._radial_critical_curves
+
+        tracer_plotter.mat_plot_2d.use_log10 = True
+        tracer_plotter.include_2d._tangential_critical_curves = False
+        tracer_plotter.include_2d._radial_critical_curves = False
+
+        tracer_plotter.set_title(label="Lens Galaxy Image")
+        tracer_plotter.figures_2d_of_planes(plane_image=True, plane_index=0, zoom_to_brightest=False)
+        tracer_plotter.set_title(label=None)
+        tracer_plotter.figures_2d(convergence=True)
+        tracer_plotter.figures_2d(potential=True)
+
+        tracer_plotter.mat_plot_2d.use_log10 = False
+
+        tracer_plotter.figures_2d(magnification=True)
+        tracer_plotter.figures_2d(deflections_y=True)
+        tracer_plotter.figures_2d(deflections_x=True)
+
+        self.mat_plot_2d.output.subplot_to_figure(
+            auto_filename="subplot_tracer"
+        )
+        self.close_subplot_figure()
+
+        self.include_2d._tangential_critical_curves = include_tangential_critical_curves_original
+        self.include_2d._radial_critical_curves = include_radial_critical_curves_original
+        self.mat_plot_2d.use_log10 = use_log10_original
 
     def figures_2d(
         self,
