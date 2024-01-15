@@ -28,7 +28,6 @@ def test__visualizes_ray_tracing__uses_configs(
 
     plot_path = path.join(plot_path, "ray_tracing")
 
-    assert path.join(plot_path, "subplot_tracer.png") in plot_patch.paths
     assert path.join(plot_path, "subplot_plane_images.png") in plot_patch.paths
     assert path.join(plot_path, "image_2d.png") in plot_patch.paths
     assert path.join(plot_path, "plane_image_of_plane_1.png") in plot_patch.paths

@@ -35,6 +35,16 @@ class VisualizerImaging(Visualizer):
             profiles).
         """
 
+        if plot_setting(section="ray_tracing", name="subplot_ray_tracing"):
+
+            mat_plot_2d = self.mat_plot_2d_from(subfolders="")
+
+            fit_plotter = FitImagingPlotter(
+                fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
+            )
+
+            fit_plotter.subplot_tracer()
+
         def should_plot(name):
             return plot_setting(section=["fit", "fit_imaging"], name=name)
 
@@ -58,6 +68,12 @@ class VisualizerImaging(Visualizer):
             subtracted_image=should_plot("subtracted_images_of_planes"),
             model_image=should_plot("model_images_of_planes"),
             plane_image=should_plot("plane_images_of_planes"),
+        )
+
+        mat_plot_2d = self.mat_plot_2d_from(subfolders="")
+
+        fit_plotter = FitImagingPlotter(
+            fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
         )
 
         if should_plot("subplot_fit"):

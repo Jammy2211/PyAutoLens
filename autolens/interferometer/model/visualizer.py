@@ -42,8 +42,8 @@ class VisualizerInterferometer(Visualizer):
         def should_plot(name):
             return plot_setting(section=["fit", "fit_interferometer"], name=name)
 
-        mat_plot_1d = self.mat_plot_1d_from(subfolders=subfolders)
-        mat_plot_2d = self.mat_plot_2d_from(subfolders=subfolders)
+        mat_plot_1d = self.mat_plot_1d_from(subfolders="")
+        mat_plot_2d = self.mat_plot_2d_from(subfolders="")
 
         fit_plotter = FitInterferometerPlotter(
             fit=fit,
@@ -60,6 +60,17 @@ class VisualizerInterferometer(Visualizer):
 
         if should_plot("subplot_fit_real_space"):
             fit_plotter.subplot_fit_real_space()
+
+        mat_plot_1d = self.mat_plot_1d_from(subfolders=subfolders)
+        mat_plot_2d = self.mat_plot_2d_from(subfolders=subfolders)
+
+        fit_plotter = FitInterferometerPlotter(
+            fit=fit,
+            include_2d=self.include_2d,
+            mat_plot_1d=mat_plot_1d,
+            mat_plot_2d=mat_plot_2d,
+        )
+
 
         fit_plotter.figures_2d(
             data=should_plot("data"),
