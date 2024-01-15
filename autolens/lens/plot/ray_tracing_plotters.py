@@ -346,23 +346,7 @@ class TracerPlotter(Plotter):
             self.include_2d._radial_critical_curves
         )
 
-        self.mat_plot_2d.use_log10 = True
-        self.include_2d._tangential_critical_curves = False
-        self.include_2d._radial_critical_curves = False
-
-        self.set_title(label="Lens Galaxy Image")
-        self.figures_2d_of_planes(
-            plane_image=True, plane_index=0, zoom_to_brightest=False
-        )
-        self.set_title(label=None)
-        self.figures_2d(convergence=True)
-        self.figures_2d(potential=True)
-
-        self.mat_plot_2d.use_log10 = False
-
-        self.figures_2d(magnification=True)
-        self.figures_2d(deflections_y=True)
-        self.figures_2d(deflections_x=True)
+        self._subplot_lens_and_mass()
 
         self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_tracer")
         self.close_subplot_figure()
@@ -374,6 +358,31 @@ class TracerPlotter(Plotter):
             include_radial_critical_curves_original
         )
         self.mat_plot_2d.use_log10 = use_log10_original
+
+    def _subplot_lens_and_mass(self):
+
+        self.mat_plot_2d.use_log10 = True
+        self.include_2d._tangential_critical_curves = False
+        self.include_2d._radial_critical_curves = False
+
+        self.set_title(label="Lens Galaxy Image")
+        self.figures_2d_of_planes(
+            plane_image=True, plane_index=0, zoom_to_brightest=False
+        )
+
+        self.mat_plot_2d.subplot_index = 5
+
+        self.set_title(label=None)
+        self.figures_2d(convergence=True)
+        self.figures_2d(potential=True)
+
+        self.mat_plot_2d.use_log10 = False
+
+        self.figures_2d(magnification=True)
+        self.figures_2d(deflections_y=True)
+        self.figures_2d(deflections_x=True)
+
+
 
     def subplot_lensed_images(self):
         """

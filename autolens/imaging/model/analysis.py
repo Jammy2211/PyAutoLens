@@ -259,8 +259,16 @@ class AnalysisImaging(AnalysisDataset):
 
         tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
+        extent = fit.data.extent_of_zoomed_array(buffer=0)
+        shape_native = fit.data.zoomed_around_mask(buffer=0).shape_native
+
+        grid = ag.Grid2D.from_extent(
+            extent=extent,
+            shape_native=shape_native
+        )
+
         visualizer.visualize_tracer(
-            tracer=tracer, grid=fit.grid, during_analysis=during_analysis
+            tracer=tracer, grid=grid, during_analysis=during_analysis
         )
         visualizer.visualize_galaxies(
             galaxies=tracer.galaxies, grid=fit.grid, during_analysis=during_analysis

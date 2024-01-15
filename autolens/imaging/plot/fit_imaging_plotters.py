@@ -479,21 +479,7 @@ class FitImagingPlotter(Plotter):
         include_tangential_critical_curves_original = tracer_plotter.include_2d._tangential_critical_curves
         include_radial_critical_curves_original = tracer_plotter.include_2d._radial_critical_curves
 
-        tracer_plotter.mat_plot_2d.use_log10 = True
-        tracer_plotter.include_2d._tangential_critical_curves = False
-        tracer_plotter.include_2d._radial_critical_curves = False
-
-        tracer_plotter.set_title(label="Lens Galaxy Image")
-        tracer_plotter.figures_2d_of_planes(plane_image=True, plane_index=0, zoom_to_brightest=False)
-        tracer_plotter.set_title(label=None)
-        tracer_plotter.figures_2d(convergence=True)
-        tracer_plotter.figures_2d(potential=True)
-
-        tracer_plotter.mat_plot_2d.use_log10 = False
-
-        tracer_plotter.figures_2d(magnification=True)
-        tracer_plotter.figures_2d(deflections_y=True)
-        tracer_plotter.figures_2d(deflections_x=True)
+        tracer_plotter._subplot_lens_and_mass()
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename="subplot_tracer"
