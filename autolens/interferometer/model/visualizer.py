@@ -71,7 +71,6 @@ class VisualizerInterferometer(Visualizer):
             mat_plot_2d=mat_plot_2d,
         )
 
-
         fit_plotter.figures_2d(
             data=should_plot("data"),
             noise_map=should_plot("noise_map"),

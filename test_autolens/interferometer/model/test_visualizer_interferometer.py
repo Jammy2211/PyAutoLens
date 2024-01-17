@@ -27,7 +27,6 @@ def test__visualize_fit_interferometer__uses_configs(
     assert path.join(plot_path, "subplot_fit_real_space.png") in plot_patch.paths
     assert path.join(plot_path, "subplot_fit_dirty_images.png") in plot_patch.paths
 
-
     plot_path = path.join(plot_path, "fit_dataset")
 
     assert path.join(plot_path, "data.png") in plot_patch.paths

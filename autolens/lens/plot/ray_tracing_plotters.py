@@ -360,7 +360,6 @@ class TracerPlotter(Plotter):
         self.mat_plot_2d.use_log10 = use_log10_original
 
     def _subplot_lens_and_mass(self):
-
         self.mat_plot_2d.use_log10 = True
         self.include_2d._tangential_critical_curves = False
         self.include_2d._radial_critical_curves = False
@@ -381,8 +380,6 @@ class TracerPlotter(Plotter):
         self.figures_2d(magnification=True)
         self.figures_2d(deflections_y=True)
         self.figures_2d(deflections_x=True)
-
-
 
     def subplot_lensed_images(self):
         """
