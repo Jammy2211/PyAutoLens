@@ -25,6 +25,8 @@ The following papers use **PyAutoLens**:
 
 **Galaxy Formation & Evolution**
 
+`Two-dimensional kinematics and dynamical modelling of the 'Jackpot' gravitational lens from deep MUSE observations <https://arxiv.org/abs/2401.08771>`_
+
 `Beyond the bulge-halo conspiracy? Density profiles of Early-type galaxies from extended-source strong lensing <https://arxiv.org/abs/2207.04070>`_
 
 `Galaxy structure with strong gravitational lensing: decomposing the internal mass distribution of massive elliptical galaxies <https://arxiv.org/abs/1901.07801>`_
@@ -33,7 +35,7 @@ The following papers use **PyAutoLens**:
 
 **Lens Modeling / Theory**
 
-`Strong gravitational lensing's `external shear' is not shear <https://arxiv.org/abs/2301.05244>`_
+`Strong gravitational lensings external shear is not shear <https://arxiv.org/abs/2301.05244>`_
 
 `Automated galaxy-galaxy strong lens modelling: no lens left behind <https://arxiv.org/abs/2202.09201>`_
 
