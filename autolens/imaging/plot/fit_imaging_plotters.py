@@ -526,6 +526,7 @@ class FitImagingPlotter(Plotter):
         self.close_subplot_figure()
 
         self.mat_plot_2d.use_log10 = use_log10_original
+        self.mat_plot_2d.contour = contour_original
 
     def subplot_tracer(self):
         """
