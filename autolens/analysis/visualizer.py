@@ -66,21 +66,30 @@ class Visualizer(AgVisualizer):
             include_2d=self.include_2d,
         )
 
-        if should_plot("subplot_ray_tracing"):
-            tracer_plotter.subplot_tracer()
-
         if should_plot("subplot_plane_images"):
             tracer_plotter.subplot_plane_images()
 
         tracer_plotter.figures_2d(
             image=should_plot("image"),
             source_plane=should_plot("source_plane_image"),
-            convergence=should_plot("convergence"),
-            potential=should_plot("potential"),
             deflections_y=should_plot("deflections"),
             deflections_x=should_plot("deflections"),
             magnification=should_plot("magnification"),
         )
+
+        mat_plot_2d.use_log10 = True
+
+        tracer_plotter.figures_2d(
+            convergence=should_plot("convergence"),
+            potential=should_plot("potential"),
+        )
+
+        if should_plot("lens_image"):
+            tracer_plotter.figures_2d_of_planes(
+                plane_image=True, plane_index=0, zoom_to_brightest=False
+            )
+
+        mat_plot_2d.use_log10 = False
 
         if not during_analysis and should_plot("all_at_end_png"):
             mat_plot_2d = self.mat_plot_2d_from(
@@ -97,12 +106,23 @@ class Visualizer(AgVisualizer):
             tracer_plotter.figures_2d(
                 image=True,
                 source_plane=True,
-                convergence=True,
-                potential=True,
                 deflections_y=True,
                 deflections_x=True,
                 magnification=True,
             )
+
+            mat_plot_2d.use_log10 = True
+
+            tracer_plotter.figures_2d(
+                convergence=True,
+                potential=True,
+            )
+
+            tracer_plotter.figures_2d_of_planes(
+                plane_image=True, plane_index=0, zoom_to_brightest=False
+            )
+
+            mat_plot_2d.use_log10 = False
 
         if not during_analysis and should_plot("all_at_end_fits"):
             mat_plot_2d = self.mat_plot_2d_from(
