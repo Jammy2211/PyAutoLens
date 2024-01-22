@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 from typing import Optional
 
@@ -441,6 +442,90 @@ class FitImagingPlotter(Plotter):
             auto_filename="subplot_fit"
         )
         self.close_subplot_figure()
+
+    def subplot_fit_log10(self):
+        """
+        Standard subplot of the attributes of the plotter's `FitImaging` object.
+        """
+
+        contour_original = copy.copy(self.mat_plot_2d.contour)
+        use_log10_original = self.mat_plot_2d.use_log10
+
+        self.open_subplot_figure(number_subplots=12)
+
+        self.mat_plot_2d.contour = False
+        self.mat_plot_2d.use_log10 = True
+
+        self.figures_2d(data=True)
+
+        self.set_title(label="Data (Source Scale)")
+
+        self.figures_2d(data=True, use_source_vmax=True)
+        self.set_title(label=None)
+
+        self.figures_2d(signal_to_noise_map=True)
+        self.figures_2d(model_image=True)
+
+        self.set_title(label="Lens Light Model Image")
+        self.figures_2d_of_planes(plane_index=0, model_image=True)
+
+        # If the lens light is not included the subplot index does not increase, so we must manually set it to 4
+        self.mat_plot_2d.subplot_index = 6
+
+        final_plane_index = len(self.fit.tracer.planes) - 1
+
+        self.mat_plot_2d.cmap.kwargs["vmin"] = 0.0
+
+        self.set_title(label="Lens Light Subtracted Image")
+        self.figures_2d_of_planes(plane_index=final_plane_index, subtracted_image=True, use_source_vmax=True)
+
+        self.set_title(label="Source Model Image (Image Plane)")
+        self.figures_2d_of_planes(plane_index=final_plane_index, model_image=True, use_source_vmax=True)
+
+        self.mat_plot_2d.cmap.kwargs.pop("vmin")
+
+        self.set_title(label="Source Plane (Zoomed)")
+        self.figures_2d_of_planes(plane_index=final_plane_index, plane_image=True, use_source_vmax=True)
+
+
+        self.set_title(label=None)
+
+        self.mat_plot_2d.use_log10 = False
+
+        self.mat_plot_2d.subplot_index = 9
+
+        self.figures_2d(normalized_residual_map=True)
+
+        self.mat_plot_2d.cmap.kwargs["vmin"] = -1.0
+        self.mat_plot_2d.cmap.kwargs["vmax"] = 1.0
+
+        self.set_title(label="Normalized Residual Map (1 sigma)")
+        self.figures_2d(normalized_residual_map=True)
+        self.set_title(label=None)
+
+        self.mat_plot_2d.cmap.kwargs.pop("vmin")
+        self.mat_plot_2d.cmap.kwargs.pop("vmax")
+
+        self.mat_plot_2d.use_log10 = True
+
+        self.figures_2d(chi_squared_map=True)
+
+        self.set_title(label="Source Plane (No Zoom)")
+        self.figures_2d_of_planes(
+            plane_index=final_plane_index,
+            plane_image=True,
+            zoom_to_brightest=False,
+            use_source_vmax=True
+        )
+
+        self.set_title(label=None)
+
+        self.mat_plot_2d.output.subplot_to_figure(
+            auto_filename="subplot_fit_log10"
+        )
+        self.close_subplot_figure()
+
+        self.mat_plot_2d.use_log10 = use_log10_original
 
     def subplot_tracer(self):
         """

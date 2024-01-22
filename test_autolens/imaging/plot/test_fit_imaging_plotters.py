@@ -113,6 +113,9 @@ def test_subplot_fit_is_output(
     fit_plotter.subplot_fit()
     assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
 
+    fit_plotter.subplot_fit_log10()
+    assert path.join(plot_path, "subplot_fit_log10.png") in plot_patch.paths
+
 
 def test__subplot_of_planes(
     fit_imaging_x2_plane_7x7, include_2d_all, plot_path, plot_patch
