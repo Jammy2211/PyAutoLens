@@ -71,6 +71,7 @@ jobs:
         pip3 install -r PyAutoFit/requirements.txt
         pip3 install -r PyAutoArray/requirements.txt
         pip3 install -r PyAutoArray/optional_requirements.txt --no-deps numba-scipy
+        pip3 install numba
         pip3 install -r PyAutoGalaxy/requirements.txt
         pip3 install -r PyAutoLens/requirements.txt
     - name: Run tests
