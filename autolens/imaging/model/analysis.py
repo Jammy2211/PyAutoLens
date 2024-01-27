@@ -11,7 +11,6 @@ from autoarray.exc import PixelizationException
 
 from autolens.analysis.analysis import AnalysisDataset
 from autolens.analysis.preloads import Preloads
-from autolens.lens.ray_tracing import Tracer
 from autolens.imaging.model.result import ResultImaging
 from autolens.imaging.model.visualizer import VisualizerImaging
 from autolens.imaging.fit_imaging import FitImaging
