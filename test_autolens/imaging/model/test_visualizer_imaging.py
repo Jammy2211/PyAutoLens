@@ -29,6 +29,7 @@ def test__visualizes_fit_imaging__uses_configs(
 
     assert path.join(plot_path, "subplot_tracer.png") in plot_patch.paths
     assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
+    assert path.join(plot_path, "subplot_fit_log10.png") in plot_patch.paths
 
     plot_path = path.join(plot_path, "fit_dataset")
 

@@ -114,4 +114,4 @@ from autoconf import conf
 
 conf.instance.register(__file__)
 
-__version__ = "2023.9.18.4"
+__version__ = "2024.1.27.4"

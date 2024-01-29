@@ -79,6 +79,9 @@ class VisualizerImaging(Visualizer):
         if should_plot("subplot_fit"):
             fit_plotter.subplot_fit()
 
+        if should_plot("subplot_fit_log10"):
+            fit_plotter.subplot_fit_log10()
+
         if should_plot("subplot_of_planes"):
             fit_plotter.subplot_of_planes()
 
