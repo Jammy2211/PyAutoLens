@@ -666,7 +666,7 @@ class TestGridPeaks:
 
         peaks_coordinates = pos.grid_peaks_from(
             distance_1d=distance_1d,
-            grid_slim=grid_slim,
+            grid_slim=np.array(grid_slim),
             neighbors=neighbors_1d.astype("int"),
             has_neighbors=has_neighbors,
         )
