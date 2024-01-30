@@ -362,15 +362,23 @@ def test__subtracted_image_of_galaxies_dict(masked_imaging_7x7):
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
-    blurred_image_2d_list = tracer.blurred_image_2d_list_from(
+    g0_image = g0.blurred_image_2d_from(
         grid=masked_imaging_7x7.grid,
-        convolver=masked_imaging_7x7.convolver,
         blurring_grid=masked_imaging_7x7.blurring_grid,
+        convolver=masked_imaging_7x7.convolver
     )
 
-    g0_image = g0.blurred_image_2d_from(grid=masked_imaging_7x7.grid, blurring_grid=masked_imaging_7x7.blurring_grid, convolver=masked_imaging_7x7.convolver)
-    g1_image = g1.blurred_image_2d_from(grid=masked_imaging_7x7.grid, blurring_grid=masked_imaging_7x7.blurring_grid, convolver=masked_imaging_7x7.convolver)
-    g2_image = g2.blurred_image_2d_from(grid=masked_imaging_7x7.grid, blurring_grid=masked_imaging_7x7.blurring_grid, convolver=masked_imaging_7x7.convolver)
+    g1_image = g1.blurred_image_2d_from(
+        grid=masked_imaging_7x7.grid,
+        blurring_grid=masked_imaging_7x7.blurring_grid,
+        convolver=masked_imaging_7x7.convolver
+    )
+
+    g2_image = g2.blurred_image_2d_from(
+        grid=masked_imaging_7x7.grid,
+        blurring_grid=masked_imaging_7x7.blurring_grid,
+        convolver=masked_imaging_7x7.convolver
+    )
 
     assert fit.subtracted_image_of_galaxies_dict[g0] == pytest.approx(
         masked_imaging_7x7.data - g1_image - g2_image, 1.0e-4

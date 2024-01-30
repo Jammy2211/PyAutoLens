@@ -183,24 +183,27 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         return {**galaxy_blurred_image_2d_dict, **galaxy_linear_obj_image_dict}
 
     @property
-    def subtracted_image_of_galaxies_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
+    def subtracted_images_of_galaxies_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
         """
-        A dictionary associating galaxies with their subtracted image, where:
+        A dictionary which associates every galaxy in the tracer with its `subtracted image`.
 
-        Subtracted Image = Blurred Image - Galaxy Model Image
+        A subtracted image of a galaxy is the data where all other galaxy images are subtracted from it, therefore
+        showing how a galaxy appears in the data in the absence of all other galaxies.
+
+        This is used to visualize the contribution of each galaxy in the data.
         """
 
-        subtracted_image_of_galaxies_dict = {}
+        subtracted_images_of_galaxies_dict = {}
 
         for (galaxy, galaxy_model_image) in self.galaxy_model_image_dict.items():
-            subtracted_image_of_galaxies_dict[galaxy] = copy.copy(self.dataset.data)
+            subtracted_images_of_galaxies_dict[galaxy] = copy.copy(self.dataset.data)
 
         for (galaxy, galaxy_model_image) in self.galaxy_model_image_dict.items():
             for (galaxy_other, galaxy_model_image_other) in self.galaxy_model_image_dict.items():
                 if galaxy != galaxy_other:
-                    subtracted_image_of_galaxies_dict[galaxy] -= galaxy_model_image_other
+                    subtracted_images_of_galaxies_dict[galaxy] -= galaxy_model_image_other
 
-        return subtracted_image_of_galaxies_dict
+        return subtracted_images_of_galaxies_dict
 
     @property
     def model_images_of_planes_list(self) -> List[aa.Array2D]:
