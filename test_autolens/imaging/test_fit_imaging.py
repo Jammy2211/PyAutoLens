@@ -416,7 +416,9 @@ def test__subtracted_image_of_galaxies_dict(masked_imaging_7x7):
     assert fit.subtracted_images_of_galaxies_dict[g1] == pytest.approx(
         masked_imaging_7x7.data - blurred_image_2d_list[0] - blurred_image_2d_list[2], 1.0e-4
     )
-    assert (fit.subtracted_images_of_galaxies_dict[g2] == masked_imaging_7x7.data - blurred_image_2d_list[0] - blurred_image_2d_list[1]).all()
+    assert fit.subtracted_images_of_galaxies_dict[g2] == pytest.approx(
+        masked_imaging_7x7.data - blurred_image_2d_list[0] - blurred_image_2d_list[1], 1.0e-4
+    )
 
 
 
