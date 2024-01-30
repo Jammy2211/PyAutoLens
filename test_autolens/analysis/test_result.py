@@ -366,14 +366,14 @@ def test___image_dict(analysis_imaging_7x7):
         analysis=analysis_imaging_7x7,
     )
 
-    image_dict = result.image_galaxy_dict
+    image_dict = result.model_image_galaxy_dict
 
     assert isinstance(image_dict[str(("galaxies", "lens"))], Array2D)
     assert isinstance(image_dict[str(("galaxies", "source"))], Array2D)
 
     result.instance.galaxies.lens = al.Galaxy(redshift=0.5)
 
-    image_dict = result.image_galaxy_dict
+    image_dict = result.model_image_galaxy_dict
 
     assert (image_dict[str(("galaxies", "lens"))].native == np.zeros((7, 7))).all()
     assert isinstance(image_dict[str(("galaxies", "source"))], Array2D)
