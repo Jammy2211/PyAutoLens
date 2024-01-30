@@ -380,13 +380,13 @@ def test__subtracted_image_of_galaxies_dict(masked_imaging_7x7):
         convolver=masked_imaging_7x7.convolver
     )
 
-    assert fit.subtracted_image_of_galaxies_dict[g0] == pytest.approx(
+    assert fit.subtracted_images_of_galaxies_dict[g0] == pytest.approx(
         masked_imaging_7x7.data - g1_image - g2_image, 1.0e-4
     )
-    assert fit.subtracted_image_of_galaxies_dict[g1] == pytest.approx(
+    assert fit.subtracted_images_of_galaxies_dict[g1] == pytest.approx(
         masked_imaging_7x7.data - g0_image - g2_image, 1.0e-4
     )
-    assert fit.subtracted_image_of_galaxies_dict[g2] == pytest.approx(
+    assert fit.subtracted_images_of_galaxies_dict[g2] == pytest.approx(
         masked_imaging_7x7.data - g0_image - g1_image, 1.0e-4
     )
 
@@ -410,13 +410,13 @@ def test__subtracted_image_of_galaxies_dict(masked_imaging_7x7):
         blurring_grid=masked_imaging_7x7.blurring_grid,
     )
 
-    assert fit.subtracted_image_of_galaxies_dict[g0] == pytest.approx(
+    assert fit.subtracted_images_of_galaxies_dict[g0] == pytest.approx(
         masked_imaging_7x7.data - blurred_image_2d_list[1] - blurred_image_2d_list[2], 1.0e-4
     )
-    assert fit.subtracted_image_of_galaxies_dict[g1] == pytest.approx(
+    assert fit.subtracted_images_of_galaxies_dict[g1] == pytest.approx(
         masked_imaging_7x7.data - blurred_image_2d_list[0] - blurred_image_2d_list[2], 1.0e-4
     )
-    assert (fit.subtracted_image_of_galaxies_dict[g2] == masked_imaging_7x7.data - blurred_image_2d_list[0] - blurred_image_2d_list[1]).all()
+    assert (fit.subtracted_images_of_galaxies_dict[g2] == masked_imaging_7x7.data - blurred_image_2d_list[0] - blurred_image_2d_list[1]).all()
 
 
 
