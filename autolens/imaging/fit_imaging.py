@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 from typing import Dict, List, Optional
 
@@ -180,6 +181,26 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         )
 
         return {**galaxy_blurred_image_2d_dict, **galaxy_linear_obj_image_dict}
+
+    @property
+    def subtracted_image_of_galaxies_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
+        """
+        A dictionary associating galaxies with their subtracted image, where:
+
+        Subtracted Image = Blurred Image - Galaxy Model Image
+        """
+
+        subtracted_image_of_galaxies_dict = {}
+
+        for (galaxy, galaxy_model_image) in self.galaxy_model_image_dict.items():
+            subtracted_image_of_galaxies_dict[galaxy] = copy.copy(self.dataset.data)
+
+        for (galaxy, galaxy_model_image) in self.galaxy_model_image_dict.items():
+            for (galaxy_other, galaxy_model_image_other) in self.galaxy_model_image_dict.items():
+                if galaxy != galaxy_other:
+                    subtracted_image_of_galaxies_dict[galaxy] -= galaxy_model_image_other
+
+        return subtracted_image_of_galaxies_dict
 
     @property
     def model_images_of_planes_list(self) -> List[aa.Array2D]:

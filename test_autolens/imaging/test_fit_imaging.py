@@ -347,6 +347,71 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
     assert (fit.galaxy_model_image_dict[g2] == np.zeros(9)).all()
 
 
+def test__subtracted_image_of_galaxies_dict(masked_imaging_7x7):
+
+    # 2 Planes with Summed Galaxies
+
+    g0 = al.Galaxy(
+        redshift=0.5,
+        bulge=al.lp.Sersic(intensity=1.0),
+    )
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=2.0))
+    g2 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=3.0))
+
+    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    blurred_image_2d_list = tracer.blurred_image_2d_list_from(
+        grid=masked_imaging_7x7.grid,
+        convolver=masked_imaging_7x7.convolver,
+        blurring_grid=masked_imaging_7x7.blurring_grid,
+    )
+
+    g0_image = g0.blurred_image_2d_from(grid=masked_imaging_7x7.grid, blurring_grid=masked_imaging_7x7.blurring_grid, convolver=masked_imaging_7x7.convolver)
+    g1_image = g1.blurred_image_2d_from(grid=masked_imaging_7x7.grid, blurring_grid=masked_imaging_7x7.blurring_grid, convolver=masked_imaging_7x7.convolver)
+    g2_image = g2.blurred_image_2d_from(grid=masked_imaging_7x7.grid, blurring_grid=masked_imaging_7x7.blurring_grid, convolver=masked_imaging_7x7.convolver)
+
+    assert fit.subtracted_image_of_galaxies_dict[g0] == pytest.approx(
+        masked_imaging_7x7.data - g1_image - g2_image, 1.0e-4
+    )
+    assert fit.subtracted_image_of_galaxies_dict[g1] == pytest.approx(
+        masked_imaging_7x7.data - g0_image - g2_image, 1.0e-4
+    )
+    assert fit.subtracted_image_of_galaxies_dict[g2] == pytest.approx(
+        masked_imaging_7x7.data - g0_image - g1_image, 1.0e-4
+    )
+
+    # 3 Planes
+
+    g0 = al.Galaxy(
+        redshift=0.5,
+        bulge=al.lp.Sersic(intensity=1.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
+    )
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=2.0))
+    g2 = al.Galaxy(redshift=2.0, bulge=al.lp.Sersic(intensity=3.0))
+
+    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    blurred_image_2d_list = tracer.blurred_image_2d_list_from(
+        grid=masked_imaging_7x7.grid,
+        convolver=masked_imaging_7x7.convolver,
+        blurring_grid=masked_imaging_7x7.blurring_grid,
+    )
+
+    assert fit.subtracted_image_of_galaxies_dict[g0] == pytest.approx(
+        masked_imaging_7x7.data - blurred_image_2d_list[1] - blurred_image_2d_list[2], 1.0e-4
+    )
+    assert fit.subtracted_image_of_galaxies_dict[g1] == pytest.approx(
+        masked_imaging_7x7.data - blurred_image_2d_list[0] - blurred_image_2d_list[2], 1.0e-4
+    )
+    assert (fit.subtracted_image_of_galaxies_dict[g2] == masked_imaging_7x7.data - blurred_image_2d_list[0] - blurred_image_2d_list[1]).all()
+
+
+
 def test__model_images_of_planes_list(masked_imaging_7x7):
 
     g0 = al.Galaxy(
@@ -382,6 +447,36 @@ def test__model_images_of_planes_list(masked_imaging_7x7):
         + fit.galaxy_model_image_dict[galaxy_pix_1],
         1.0e-4,
     )
+
+
+def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur):
+
+    g0 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
+
+    g1 = al.Galaxy(redshift=0.75, bulge=al.lp.Sersic(intensity=2.0))
+
+    g2 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=3.0))
+
+    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
+
+    assert fit.subtracted_images_of_planes_list[0].slim[0] == pytest.approx(0.200638, 1.0e-4)
+    assert fit.subtracted_images_of_planes_list[1].slim[0] == pytest.approx(0.360511, 1.0e-4)
+    assert fit.subtracted_images_of_planes_list[2].slim[0] == pytest.approx(0.520383, 1.0e-4)
+
+    g0 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
+
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=2.0))
+
+    g2 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=3.0))
+
+    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
+
+    assert fit.subtracted_images_of_planes_list[0].slim[0] == pytest.approx(0.200638, 1.0e-4)
+    assert fit.subtracted_images_of_planes_list[1].slim[0] == pytest.approx(0.840127, 1.0e-4)
 
 
 def test___unmasked_blurred_images(masked_imaging_7x7):
@@ -424,36 +519,6 @@ def test___unmasked_blurred_images(masked_imaging_7x7):
     ).all()
 
 
-def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur):
-
-    g0 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
-
-    g1 = al.Galaxy(redshift=0.75, bulge=al.lp.Sersic(intensity=2.0))
-
-    g2 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=3.0))
-
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
-
-    fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
-
-    assert fit.subtracted_images_of_planes_list[0].slim[0] == pytest.approx(0.200638, 1.0e-4)
-    assert fit.subtracted_images_of_planes_list[1].slim[0] == pytest.approx(0.360511, 1.0e-4)
-    assert fit.subtracted_images_of_planes_list[2].slim[0] == pytest.approx(0.520383, 1.0e-4)
-
-    g0 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
-
-    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=2.0))
-
-    g2 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=3.0))
-
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
-
-    fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
-
-    assert fit.subtracted_images_of_planes_list[0].slim[0] == pytest.approx(0.200638, 1.0e-4)
-    assert fit.subtracted_images_of_planes_list[1].slim[0] == pytest.approx(0.840127, 1.0e-4)
-
-
 def test__tracer_linear_light_profiles_to_light_profiles(masked_imaging_7x7):
 
     g0 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
@@ -477,6 +542,7 @@ def test__tracer_linear_light_profiles_to_light_profiles(masked_imaging_7x7):
     assert tracer.galaxies[0].bulge.intensity == pytest.approx(1.0, 1.0e-4)
     assert tracer.galaxies[1].bulge.intensity == pytest.approx(-371.061130, 1.0e-4)
     assert tracer.galaxies[2].bulge.intensity == pytest.approx(0.08393533428, 1.0e-4)
+
 
 def test__preloads__refit_with_new_preloads(masked_imaging_7x7):
 
