@@ -206,6 +206,25 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         return subtracted_images_of_galaxies_dict
 
     @property
+    def subtracted_signal_to_noise_maps_of_galaxies_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
+        """
+        A dictionary which associates every galaxy in the tracer with its `subtracted image`.
+
+        A subtracted image of a galaxy is the data where all other galaxy images are subtracted from it, therefore
+        showing how a galaxy appears in the data in the absence of all other galaxies.
+
+        This is used to visualize the contribution of each galaxy in the data.
+        """
+
+        subtracted_signal_to_noise_maps_of_galaxies_dict = {}
+
+        for (galaxy, subtracted_image) in self.subtracted_images_of_galaxies_dict.items():
+
+            subtracted_signal_to_noise_maps_of_galaxies_dict[galaxy] = subtracted_image / self.noise_map
+
+        return subtracted_signal_to_noise_maps_of_galaxies_dict
+
+    @property
     def model_images_of_planes_list(self) -> List[aa.Array2D]:
         """
         A list of every model image of every plane in the tracer.
