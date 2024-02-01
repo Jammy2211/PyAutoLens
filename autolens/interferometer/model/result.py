@@ -3,6 +3,7 @@ import numpy as np
 import autoarray as aa
 import autogalaxy as ag
 
+from autogalaxy.analysis.adapt_images import AdaptImages
 from autolens.lens.ray_tracing import Tracer
 from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.analysis.result import ResultDataset
@@ -67,3 +68,29 @@ class ResultInterferometer(ResultDataset):
         The real space mask used by this model-fit.
         """
         return self.max_log_likelihood_fit.dataset.real_space_mask
+
+    def adapt_images_from(self, use_model_images : bool = False) -> AdaptImages:
+        """
+        Returns the adapt-images which are used to make a pixelization's mesh and regularization adapt to the
+        reconstructed galaxy's morphology.
+
+        This can use either:
+
+        - The model image of each galaxy in the best-fit model.
+        - The subtracted image of each galaxy in the best-fit model, where the subtracted image is the dataset
+          minus the model images of all other galaxies.
+
+        In **PyAutoLens** these adapt images have had lensing calculations performed on them and therefore for source
+        galaxies are their lensed model images in the image-plane.
+
+        Parameters
+        ----------
+        use_model_images
+            If True, the model images of the galaxies are used to create the adapt images. If False, the subtracted
+            images of the galaxies are used.
+        """
+
+        return AdaptImages.from_result(
+            result=self,
+            use_model_images=True
+        )
