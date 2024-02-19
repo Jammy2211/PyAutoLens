@@ -15,7 +15,6 @@ directory = path.dirname(path.realpath(__file__))
 
 
 def test__make_result__result_imaging_is_returned(masked_imaging_7x7):
-
     model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
     instance = model.instance_from_prior_medians()
@@ -23,7 +22,6 @@ def test__make_result__result_imaging_is_returned(masked_imaging_7x7):
     samples = al.m.MockSamples(
         model=model,
         max_log_likelihood_instance=instance,
-        gaussian_tuples=[(1.0, 2.0)] * model.prior_count
     )
 
     search = al.m.MockSearch(name="test_search", samples=samples)
@@ -43,7 +41,7 @@ def test__make_result__result_imaging_is_returned(masked_imaging_7x7):
 
 
 def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
-    masked_imaging_7x7
+    masked_imaging_7x7,
 ):
     lens = al.Galaxy(redshift=0.5, light=al.lp.Sersic(intensity=0.1))
 
@@ -61,7 +59,6 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
 
 
 def test__positions__resample__raises_exception(masked_imaging_7x7):
-
     model = af.Collection(
         galaxies=af.Collection(
             lens=al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph()),
@@ -84,7 +81,6 @@ def test__positions__resample__raises_exception(masked_imaging_7x7):
 
 
 def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x7):
-
     lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph())
     source = al.Galaxy(redshift=1.0, light=al.lp.SersicSph())
 
@@ -123,8 +119,8 @@ def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x
     )
     assert analysis_log_likelihood == pytest.approx(-22048700558.9052, 1.0e-4)
 
-def test__profile_log_likelihood_function(masked_imaging_7x7):
 
+def test__profile_log_likelihood_function(masked_imaging_7x7):
     pixelization = al.Pixelization(
         mesh=al.mesh.Rectangular(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
@@ -139,7 +135,9 @@ def test__profile_log_likelihood_function(masked_imaging_7x7):
 
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
-    run_time_dict, info_dict = analysis.profile_log_likelihood_function(instance=instance)
+    run_time_dict, info_dict = analysis.profile_log_likelihood_function(
+        instance=instance
+    )
 
     assert "regularization_term_0" in run_time_dict
     assert "log_det_regularization_matrix_term_0" in run_time_dict
