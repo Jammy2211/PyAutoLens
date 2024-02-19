@@ -23,7 +23,7 @@ def test__make_result__result_imaging_is_returned(masked_imaging_7x7):
     samples = al.m.MockSamples(
         model=model,
         max_log_likelihood_instance=instance,
-        gaussian_tuples=[(1.0, 2.0)] * model.prior_count
+        prior_means=[1.0] * model.prior_count
     )
 
     search = al.m.MockSearch(name="test_search", samples=samples)

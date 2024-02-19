@@ -85,5 +85,5 @@ def make_samples(model):
         model=model,
         sample_list=sample_list,
         max_log_likelihood_instance=tracer,
-        gaussian_tuples=[(1.0, 2.0)] * model.prior_count,
+        prior_means=[1.0] * model.prior_count
     )
