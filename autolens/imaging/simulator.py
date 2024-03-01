@@ -61,7 +61,7 @@ class SimulatorImaging(aa.SimulatorImaging):
             The image-plane grid which the image of the strong lens is generated on.
         """
 
-        tracer = Tracer.from_galaxies(galaxies=galaxies)
+        tracer = Tracer(galaxies=galaxies)
 
         return self.via_tracer_from(tracer=tracer, grid=grid)
 

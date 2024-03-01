@@ -99,7 +99,7 @@ class AnalysisLensing:
             instance.galaxies.subhalo.mass.centre = tuple(subhalo_centre.in_list[0])
 
         if hasattr(instance, "clumps"):
-            return Tracer.from_galaxies(
+            return Tracer(
                 galaxies=instance.galaxies + instance.clumps,
                 cosmology=self.cosmology,
                 run_time_dict=run_time_dict,
@@ -110,7 +110,7 @@ class AnalysisLensing:
         else:
             cosmology = self.cosmology
 
-        return tracer_cls.from_galaxies(
+        return tracer_cls(
             galaxies=instance.galaxies,
             cosmology=cosmology,
             run_time_dict=run_time_dict,

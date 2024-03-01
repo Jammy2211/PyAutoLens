@@ -16,7 +16,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def __init__(
         self,
         galaxies : List[ag.Galaxy],
-        cosmology: ag.cosmo.LensingCosmology,
+        cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -58,7 +58,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def from_planes(
             cls,
             planes : List[Plane],
-            cosmology: ag.cosmo.LensingCosmology,
+            cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
             run_time_dict: Optional[Dict] = None,
     ) -> "Tracer":
         """
@@ -79,7 +79,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         """
         galaxies = []
         for plane in planes:
-            galaxies.extend(plane.galaxies)
+            for galaxy in plane.galaxies:
+                galaxies.append(galaxy)
+
         return cls(galaxies=galaxies, cosmology=cosmology, run_time_dict=run_time_dict)
 
     @property
@@ -101,9 +103,10 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         planes_between_lenses,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):
-        """Ray-tracer for a lens system with any number of planes.
+        """
+        Ray-tracer for a lens system with any number of planes.
 
-        The redshift of these planes are specified by the input parameters *lens_redshifts* and \
+        The redshift of these planes are specified by the input parameters *lens_redshifts* and
          *slices_between_main_planes*. Every galaxy is placed in its closest plane in redshift-space.
 
         To perform multi-plane ray-tracing, a cosmology must be supplied so that deflection-angles can be rescaled \
@@ -156,7 +159,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                 )
             )
 
-        return Tracer(planes=planes, cosmology=cosmology)
+        return Tracer.from_planes(planes=planes, cosmology=cosmology)
 
     def has(self, cls: Type) -> bool:
         return any(map(lambda plane: plane.has(cls=cls), self.planes))

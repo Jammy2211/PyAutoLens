@@ -48,9 +48,9 @@ def _tracer_from(fit: af.Fit, galaxies: List[ag.Galaxy]) -> List[Tracer]:
             """
         )
 
-        return [Tracer.from_galaxies(galaxies=galaxies)] * len(fit.children)
+        return [Tracer(galaxies=galaxies)] * len(fit.children)
 
-    return [Tracer.from_galaxies(galaxies=galaxies)]
+    return [Tracer(galaxies=galaxies)]
 
 
 class TracerAgg(AbstractAgg):

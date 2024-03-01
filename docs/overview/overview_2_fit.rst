@@ -148,7 +148,7 @@ It therefore produces a tracer whose image looks exactly like the dataset.
         ),
     )
     
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 Because the tracer's light and mass profiles are the same used to make the dataset, its image is nearly the same as the
 observed image.
@@ -281,7 +281,7 @@ in the fit.
         ),
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 
 A new fit using this plane shows residuals, normalized residuals and chi-squared which are non-zero.

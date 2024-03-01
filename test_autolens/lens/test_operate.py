@@ -127,7 +127,7 @@ def test__operate_image__visibilities_of_planes_from_grid_and_transformer(
         grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
     )
 
-    tracer = al.Tracer(
+    tracer = al.Tracer.from_planes(
         planes=[plane_0, plane_1, plane_2], cosmology=al.cosmo.Planck15()
     )
 
@@ -259,7 +259,7 @@ def test__operate_lens__sums_individual_quantities():
 
     plane = al.Plane(galaxies=[galaxy_0, galaxy_1])
 
-    tracer = al.Tracer(
+    tracer = al.Tracer.from_planes(
         planes=[plane, al.Plane(redshift=1.0, galaxies=None)],
         cosmology=al.cosmo.Planck15(),
     )
