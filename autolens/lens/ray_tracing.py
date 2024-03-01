@@ -15,7 +15,7 @@ from autolens.lens import ray_tracing_util
 class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def __init__(
         self,
-        planes,
+        galaxies : List[ag.Galaxy],
         cosmology: ag.cosmo.LensingCosmology,
         run_time_dict: Optional[Dict] = None,
     ):
@@ -43,24 +43,20 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.
         """
-        self.planes = planes
-        self.plane_redshifts = [plane.redshift for plane in planes]
+        self.galaxies = galaxies
         self.cosmology = cosmology
 
         self.run_time_dict = run_time_dict
 
-    @classmethod
-    def from_galaxies(
-        cls,
-        galaxies,
-        cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
-        run_time_dict: Optional[Dict] = None,
-    ):
-        planes = ag.util.plane.planes_via_galaxies_from(
-            galaxies=galaxies, run_time_dict=run_time_dict
+    @property
+    def planes(self):
+        return ag.util.plane.planes_via_galaxies_from(
+            galaxies=self.galaxies, run_time_dict=self.run_time_dict
         )
 
-        return cls(planes=planes, cosmology=cosmology, run_time_dict=run_time_dict)
+    @property
+    def plane_redshifts(self):
+        return [plane.redshift for plane in self.planes]
 
     @classmethod
     def sliced_tracer_from(
@@ -127,10 +123,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             )
 
         return Tracer(planes=planes, cosmology=cosmology)
-
-    @property
-    def galaxies(self) -> List[ag.Galaxy]:
-        return list([galaxy for plane in self.planes for galaxy in plane.galaxies])
 
     def has(self, cls: Type) -> bool:
         return any(map(lambda plane: plane.has(cls=cls), self.planes))
