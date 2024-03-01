@@ -12,7 +12,7 @@ def test__model_image__with_and_without_psf_blurring(
         redshift=0.5,
         bulge=al.m.MockLightProfile(image_2d_value=1.0, image_2d_first_value=2.0),
     )
-    tracer = al.Tracer.from_galaxies(galaxies=[g0])
+    tracer = al.Tracer(galaxies=[g0])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
@@ -41,7 +41,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
 
     g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+    tracer = al.Tracer(galaxies=[g0, g1])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -61,7 +61,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
 
     g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+    tracer = al.Tracer(galaxies=[g0, g1])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -75,7 +75,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
 
     g0 = al.Galaxy(redshift=0.5, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), g0])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -91,7 +91,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
 
     galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
+    tracer = al.Tracer(galaxies=[galaxy_light, galaxy_pix])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -105,7 +105,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
         mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1])
+    tracer = al.Tracer(galaxies=[g0_linear, g1])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -123,7 +123,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
         redshift=0.5, bulge=basis, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1])
+    tracer = al.Tracer(galaxies=[g0_linear, g1])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -142,14 +142,14 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
         redshift=0.5, bulge=basis, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0_basis, g1])
+    tracer = al.Tracer(galaxies=[g0_basis, g1])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
     assert fit.perform_inversion is True
     assert fit.figure_of_merit == pytest.approx(-208205.2074336, 1.0e-4)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, galaxy_pix])
+    tracer = al.Tracer(galaxies=[g0_linear, galaxy_pix])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -164,7 +164,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
 
     g1_operated = al.Galaxy(redshift=1.0, bulge=al.lp_operated.Sersic(intensity=1.0))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0_operated, g1_operated])
+    tracer = al.Tracer(galaxies=[g0_operated, g1_operated])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -181,7 +181,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
         redshift=1.0, bulge=al.lp_linear_operated.Sersic(sersic_index=4.0)
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0_linear_operated, g1_linear_operated])
+    tracer = al.Tracer(galaxies=[g0_linear_operated, g1_linear_operated])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -197,7 +197,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
 
     g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+    tracer = al.Tracer(galaxies=[g0, g1])
 
     fit = al.FitImaging(dataset=masked_imaging_covariance_7x7, tracer=tracer)
 
@@ -212,7 +212,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
 
     galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, galaxy_pix])
+    tracer = al.Tracer(galaxies=[g0, galaxy_pix])
 
     model_image = al.Array2D(
         np.full(fill_value=5.0, shape=masked_imaging_7x7.mask.pixels_in_mask),
@@ -243,7 +243,7 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
     g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
     g2 = al.Galaxy(redshift=1.0)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -275,7 +275,7 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
     )
     g1_linear = al.Galaxy(redshift=1.0, bulge=al.lp_linear.Sersic())
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1_linear, g2])
+    tracer = al.Tracer(galaxies=[g0_linear, g1_linear, g2])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -305,7 +305,7 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
 
     galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0_no_light, galaxy_pix_0])
+    tracer = al.Tracer(galaxies=[g0_no_light, galaxy_pix_0])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -322,7 +322,7 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
 
     galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[g0, g0_linear, g2, galaxy_pix_0, galaxy_pix_1]
     )
 
@@ -358,7 +358,7 @@ def test__subtracted_image_of_galaxies_dict(masked_imaging_7x7):
     g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=2.0))
     g2 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=3.0))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -400,7 +400,7 @@ def test__subtracted_image_of_galaxies_dict(masked_imaging_7x7):
     g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=2.0))
     g2 = al.Galaxy(redshift=2.0, bulge=al.lp.Sersic(intensity=3.0))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -440,7 +440,7 @@ def test__model_images_of_planes_list(masked_imaging_7x7):
     galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
     galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[g0, g1_linear, galaxy_pix_0, galaxy_pix_1]
     )
 
@@ -467,7 +467,7 @@ def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur):
 
     g2 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=3.0))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
@@ -481,7 +481,7 @@ def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur):
 
     g2 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=3.0))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
@@ -499,7 +499,7 @@ def test___unmasked_blurred_images(masked_imaging_7x7):
 
     g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+    tracer = al.Tracer(galaxies=[g0, g1])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -541,7 +541,7 @@ def test__tracer_linear_light_profiles_to_light_profiles(masked_imaging_7x7):
 
     g1_linear = al.Galaxy(redshift=1.0, bulge=al.lp_linear.Sersic(sersic_index=4.0))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g0_linear, g1_linear])
+    tracer = al.Tracer(galaxies=[g0, g0_linear, g1_linear])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -564,7 +564,7 @@ def test__preloads__refit_with_new_preloads(masked_imaging_7x7):
 
     g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+    tracer = al.Tracer(galaxies=[g0, g1])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -583,7 +583,7 @@ def test__preloads__blurred_image_uses_preload_when_passed(masked_imaging_7x7_no
 
     g0 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0])
+    tracer = al.Tracer(galaxies=[g0])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
@@ -607,7 +607,7 @@ def test__total_mappers(masked_imaging_7x7):
 
     g2 = al.Galaxy(redshift=2.0)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -617,7 +617,7 @@ def test__total_mappers(masked_imaging_7x7):
 
     g2 = al.Galaxy(redshift=2.0, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
@@ -629,7 +629,7 @@ def test__total_mappers(masked_imaging_7x7):
 
     g2 = al.Galaxy(redshift=2.0, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
 
     fit = al.FitImaging(
         dataset=masked_imaging_7x7,

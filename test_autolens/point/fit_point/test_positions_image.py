@@ -7,7 +7,7 @@ import autolens as al
 def test__two_sets_of_positions__residuals_likelihood_correct():
     point_source = al.ps.Point(centre=(0.1, 0.1))
     galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source]
     )
 
@@ -47,7 +47,7 @@ def test__two_sets_of_positions__residuals_likelihood_correct():
 def test__more_model_positions_than_data_positions__pairs_closest_positions():
     g0 = al.Galaxy(redshift=1.0, point_0=al.ps.Point(centre=(0.1, 0.1)))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), g0])
 
     positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
     noise_map = al.ArrayIrregular([0.5, 1.0])
@@ -82,7 +82,7 @@ def test__multi_plane_position_solving():
     g1 = al.Galaxy(redshift=1.0, point_0=al.ps.Point(centre=(0.1, 0.1)))
     g2 = al.Galaxy(redshift=2.0, point_1=al.ps.Point(centre=(0.1, 0.1)))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
 
     positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
     noise_map = al.ArrayIrregular([0.5, 1.0])

@@ -23,7 +23,7 @@ def test__perfect_fit__chi_squared_0():
     source_galaxy = al.Galaxy(
         redshift=1.0, light=al.lp.Exponential(centre=(0.1, 0.1), intensity=0.5)
     )
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
     dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
 
@@ -68,7 +68,7 @@ def test__perfect_fit__chi_squared_0():
         settings=al.SettingsImaging(sub_size=1)
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
     fit = al.FitImaging(dataset=masked_dataset, tracer=tracer)
 
@@ -103,7 +103,7 @@ def test__simulate_imaging_data_and_fit__known_likelihood():
     )
     source_galaxy_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
     source_galaxy_1 = al.Galaxy(redshift=2.0, pixelization=pixelization)
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1]
     )
 
@@ -140,7 +140,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
         bulge=al.lp.Sersic(intensity=0.1, sersic_index=1.0),
         disk=al.lp.Sersic(intensity=0.2, sersic_index=4.0),
     )
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
     dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
 
@@ -158,7 +158,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
         settings=al.SettingsImaging(sub_size=1)
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
     fit = al.FitImaging(dataset=masked_dataset, tracer=tracer)
 
@@ -173,7 +173,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
         disk=al.lp_linear.Sersic(sersic_index=4.0),
     )
 
-    tracer_linear = al.Tracer.from_galaxies(
+    tracer_linear = al.Tracer(
         galaxies=[lens_galaxy_linear, source_galaxy_linear]
     )
 
@@ -249,7 +249,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
         bulge=al.lp.Sersic(intensity=0.1, sersic_index=1.0),
         disk=al.lp.Sersic(intensity=0.2, sersic_index=4.0),
     )
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
     dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
 
@@ -280,7 +280,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
 
     source_galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer_linear = al.Tracer.from_galaxies(
+    tracer_linear = al.Tracer(
         galaxies=[lens_galaxy_linear, source_galaxy_pix]
     )
 
@@ -388,7 +388,7 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
 
     source_0 = al.Galaxy(redshift=0.4, bulge=al.lp.Sersic(centre=(0.3, 0.3)))
     source_1 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(centre=(0.3, 0.3)))
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_0, lens_1, lens_2, source_0, source_1])
+    tracer = al.Tracer(galaxies=[lens_0, lens_1, lens_2, source_0, source_1])
 
     dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
 
@@ -437,7 +437,7 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
 
     source_1 = al.Galaxy(redshift=0.5, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[lens_0, lens_1, lens_2, source_0, source_1]
     )
 

@@ -20,7 +20,7 @@ def test__perfect_fit__chi_squared_0():
         redshift=1.0, light=al.lp.Exponential(centre=(0.1, 0.1), intensity=0.5)
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
     simulator = al.SimulatorInterferometer(
         uv_wavelengths=np.ones(shape=(7, 2)),
@@ -66,7 +66,7 @@ def test__perfect_fit__chi_squared_0():
         settings=al.SettingsInterferometer(transformer_class=al.TransformerDFT)
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
     fit = al.FitInterferometer(
         dataset=dataset,
@@ -89,7 +89,7 @@ def test__perfect_fit__chi_squared_0():
 
     source_galaxy = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
     fit = al.FitInterferometer(
         dataset=dataset,
@@ -125,7 +125,7 @@ def test__simulate_interferometer_data_and_fit__known_likelihood():
     )
     source_galaxy_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
     source_galaxy_1 = al.Galaxy(redshift=2.0, pixelization=pixelization)
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1]
     )
 
@@ -166,7 +166,7 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
         disk=al.lp.Sersic(intensity=0.2, sersic_index=4.0),
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
     simulator = al.SimulatorInterferometer(
         uv_wavelengths=np.array(
@@ -207,7 +207,7 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
         disk=al.lp_linear.Sersic(sersic_index=4.0),
     )
 
-    tracer_linear = al.Tracer.from_galaxies(
+    tracer_linear = al.Tracer(
         galaxies=[lens_galaxy_linear, source_galaxy_linear]
     )
 
@@ -277,7 +277,7 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixeli
         disk=al.lp.Sersic(intensity=0.2, sersic_index=4.0),
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
     simulator = al.SimulatorInterferometer(
         uv_wavelengths=np.array(
@@ -313,7 +313,7 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixeli
 
     source_galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer_linear = al.Tracer.from_galaxies(
+    tracer_linear = al.Tracer(
         galaxies=[lens_galaxy_linear, source_galaxy_pix]
     )
 

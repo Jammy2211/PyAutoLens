@@ -46,7 +46,7 @@ def test__max_log_likelihood_positions_threshold(masked_imaging_7x7):
         dataset=masked_imaging_7x7, positions_likelihood=positions_likelihood
     )
 
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[
             al.Galaxy(
                 redshift=0.5,
@@ -74,7 +74,7 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
         redshift=1.0, light=al.lp.SersicSph(centre=(1.0, 2.0), intensity=2.0)
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
+    tracer = al.Tracer(galaxies=[lens, source])
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -92,7 +92,7 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
         redshift=1.0, light=al.lp.SersicSph(centre=(5.0, 6.0), intensity=2.0)
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens, source_0, source_1])
+    tracer = al.Tracer(galaxies=[lens, source_0, source_1])
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -108,7 +108,7 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
         redshift=2.0, light=al.lp.SersicSph(centre=(5.0, 6.0), intensity=2.0)
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens, source_0, source_1])
+    tracer = al.Tracer(galaxies=[lens, source_0, source_1])
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -116,7 +116,7 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
 
     assert result.source_plane_light_profile_centre.in_list == [(5.0, 6.0)]
 
-    tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5)])
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5)])
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -135,7 +135,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
 
     source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
+    tracer = al.Tracer(galaxies=[lens, source])
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -153,7 +153,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
     lens = al.Galaxy(redshift=0.5, light=al.lp.SersicSph(intensity=1.0))
     source = al.Galaxy(redshift=1.0)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
+    tracer = al.Tracer(galaxies=[lens, source])
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -164,7 +164,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
     lens = al.Galaxy(redshift=0.5, light=al.lp_linear.Sersic())
     source = al.Galaxy(redshift=1.0)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
+    tracer = al.Tracer(galaxies=[lens, source])
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -187,7 +187,7 @@ def test__source_plane_centre(analysis_imaging_7x7):
         pixelization=pixelization,
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
+    tracer = al.Tracer(galaxies=[lens, source])
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -218,7 +218,7 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
         pixelization=pixelization,
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
+    tracer = al.Tracer(galaxies=[lens, source])
 
     samples = al.m.MockSamples(max_log_likelihood_instance=tracer)
 
@@ -231,7 +231,7 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
     assert multiple_images.in_list[1][0] == pytest.approx(-0.19287109, 1.0e-4)
     assert multiple_images.in_list[1][1] == pytest.approx(0.27978516, 1.0e-4)
 
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[
             al.Galaxy(
                 redshift=0.5,
@@ -256,7 +256,7 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
 
 
 def test__positions_threshold_from(analysis_imaging_7x7):
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[
             al.Galaxy(
                 redshift=0.5,
@@ -285,7 +285,7 @@ def test__positions_threshold_from(analysis_imaging_7x7):
 
 
 def test__positions_likelihood_from(analysis_imaging_7x7):
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[
             al.Galaxy(
                 redshift=0.5,

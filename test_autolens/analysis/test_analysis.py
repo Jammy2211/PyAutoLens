@@ -192,7 +192,7 @@ def test__save_results__tracer_output_to_json(analysis_imaging_7x7):
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens, source])
+    tracer = al.Tracer(galaxies=[lens, source])
 
     paths = af.DirectoryPaths()
 

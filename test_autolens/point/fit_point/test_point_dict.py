@@ -7,7 +7,7 @@ def test__fits_dataset__positions_only():
     point_source = al.ps.Point(centre=(0.1, 0.1))
     galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
 
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source]
     )
 
@@ -52,7 +52,7 @@ def test__fits_dataset__positions_and_flux():
     point_source = al.ps.PointFlux(centre=(0.1, 0.1), flux=2.0)
     galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
 
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source]
     )
 
@@ -117,7 +117,7 @@ def test__model_has_image_and_source_chi_squared__fits_both_correctly():
         redshift=1.0, point_1=al.ps.PointSourceChi(centre=(0.1, 0.1))
     )
 
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[al.Galaxy(redshift=0.5), galaxy_point_image, galaxy_point_source]
     )
 

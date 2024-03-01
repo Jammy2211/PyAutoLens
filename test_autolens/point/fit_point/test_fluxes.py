@@ -35,7 +35,7 @@ def test__one_set_of_fluxes__residuals_likelihood_correct():
 def test__use_real_tracer(gal_x1_mp):
     point_source = al.ps.PointFlux(centre=(0.1, 0.1), flux=2.0)
     galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
-    tracer = al.Tracer.from_galaxies(galaxies=[gal_x1_mp, galaxy_point_source])
+    tracer = al.Tracer(galaxies=[gal_x1_mp, galaxy_point_source])
 
     fluxes = al.ArrayIrregular([1.0, 2.0])
     noise_map = al.ArrayIrregular([3.0, 1.0])
@@ -58,7 +58,7 @@ def test__multi_plane_calculation(gal_x1_mp):
     g1 = al.Galaxy(redshift=1.0, point_0=al.ps.PointFlux(flux=1.0))
     g2 = al.Galaxy(redshift=2.0, point_1=al.ps.PointFlux(flux=2.0))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
 
     fluxes = al.ArrayIrregular([1.0])
     noise_map = al.ArrayIrregular([3.0])

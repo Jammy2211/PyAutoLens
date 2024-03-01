@@ -6,7 +6,7 @@ import autolens as al
 
 def test__model_visibilities(interferometer_7):
     g0 = al.Galaxy(redshift=0.5, bulge=al.m.MockLightProfile(image_2d=np.ones(9)))
-    tracer = al.Tracer.from_galaxies(galaxies=[g0])
+    tracer = al.Tracer(galaxies=[g0])
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
@@ -26,7 +26,7 @@ def test__fit_figure_of_merit(interferometer_7):
 
     g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+    tracer = al.Tracer(galaxies=[g0, g1])
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
@@ -46,7 +46,7 @@ def test__fit_figure_of_merit(interferometer_7):
 
     g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1])
+    tracer = al.Tracer(galaxies=[g0, g1])
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
@@ -60,7 +60,7 @@ def test__fit_figure_of_merit(interferometer_7):
 
     g0 = al.Galaxy(redshift=0.5, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), g0])
 
     fit = al.FitInterferometer(
         dataset=interferometer_7,
@@ -80,7 +80,7 @@ def test__fit_figure_of_merit(interferometer_7):
 
     galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[galaxy_light, galaxy_pix])
+    tracer = al.Tracer(galaxies=[galaxy_light, galaxy_pix])
 
     fit = al.FitInterferometer(
         dataset=interferometer_7,
@@ -98,7 +98,7 @@ def test__fit_figure_of_merit(interferometer_7):
         mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1])
+    tracer = al.Tracer(galaxies=[g0_linear, g1])
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
@@ -116,14 +116,14 @@ def test__fit_figure_of_merit(interferometer_7):
         redshift=0.5, bulge=basis, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1])
+    tracer = al.Tracer(galaxies=[g0_linear, g1])
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
     assert fit.perform_inversion is True
     assert fit.figure_of_merit == pytest.approx(-669283.091396, 1.0e-4)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, galaxy_pix])
+    tracer = al.Tracer(galaxies=[g0_linear, galaxy_pix])
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
@@ -141,7 +141,7 @@ def test___fit_figure_of_merit__different_settings(
 
     g0 = al.Galaxy(redshift=0.5, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[al.Galaxy(redshift=0.5), g0])
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), g0])
 
     fit = al.FitInterferometer(
         dataset=interferometer_7_lop,
@@ -167,7 +167,7 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
     g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
     g2 = al.Galaxy(redshift=1.0)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
 
     fit = al.FitInterferometer(
         dataset=interferometer_7_grid,
@@ -194,7 +194,7 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
     )
     g1_linear = al.Galaxy(redshift=1.0, bulge=al.lp_linear.Sersic())
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1_linear, g2])
+    tracer = al.Tracer(galaxies=[g0_linear, g1_linear, g2])
 
     fit = al.FitInterferometer(
         dataset=interferometer_7_grid,
@@ -219,7 +219,7 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
     )
     galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0_no_light, galaxy_pix_0])
+    tracer = al.Tracer(galaxies=[g0_no_light, galaxy_pix_0])
 
     fit = al.FitInterferometer(
         dataset=interferometer_7,
@@ -236,7 +236,7 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
     # Normal light + Linear Light PRofiles + Pixelization + Regularizaiton
 
     galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization)
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[g0, g0_linear, g2, galaxy_pix_0, galaxy_pix_1]
     )
 
@@ -272,7 +272,7 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
     g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
     g2 = al.Galaxy(redshift=1.0)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
@@ -313,7 +313,7 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
     )
     g1_linear = al.Galaxy(redshift=1.0, bulge=al.lp_linear.Sersic())
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0_linear, g1_linear, g2])
+    tracer = al.Tracer(galaxies=[g0_linear, g1_linear, g2])
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
@@ -343,7 +343,7 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
     )
     galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0_no_light, galaxy_pix_0])
+    tracer = al.Tracer(galaxies=[g0_no_light, galaxy_pix_0])
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
@@ -360,7 +360,7 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
 
     galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[g0, g0_linear, g2, galaxy_pix_0, galaxy_pix_1]
     )
 
@@ -400,7 +400,7 @@ def test__model_visibilities_of_planes_list(interferometer_7):
     galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
     galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[g0, g1_linear, galaxy_pix_0, galaxy_pix_1]
     )
 

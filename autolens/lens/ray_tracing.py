@@ -54,6 +54,34 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
         self.run_time_dict = run_time_dict
 
+    @classmethod
+    def from_planes(
+            cls,
+            planes : List[Plane],
+            cosmology: ag.cosmo.LensingCosmology,
+            run_time_dict: Optional[Dict] = None,
+    ) -> "Tracer":
+        """
+        Create the tracer from a list of planes, where each plane is a collection of galaxies at the same redshift.
+
+        This method unpacks all galaxies from the input planes and creates a new list of galaxies, which is input
+        into the init method of the tracer.
+
+        Parameters
+        ----------
+        planes
+            The list of planes which make up the gravitational lensing ray-tracing system.
+        cosmology
+            The cosmology used to perform ray-tracing calculations.
+        run_time_dict
+            A dictionary of information on the run-time of the tracer, including the total time and time spent on
+            different calculations.
+        """
+        galaxies = []
+        for plane in planes:
+            galaxies.extend(plane.galaxies)
+        return cls(galaxies=galaxies, cosmology=cosmology, run_time_dict=run_time_dict)
+
     @property
     def planes(self):
         return ag.util.plane.planes_via_galaxies_from(
