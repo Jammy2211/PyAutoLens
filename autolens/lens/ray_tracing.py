@@ -20,28 +20,34 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         run_time_dict: Optional[Dict] = None,
     ):
         """
-        Ray-tracer for a lens system with any number of planes.
+        Performs gravitational lensing ray-tracing calculations based on an input list of galaxies and a cosmology.
 
-        The redshift of these planes are specified by the redshits of the galaxies; there is a unique plane redshift \
-        for every unique galaxy redshift (galaxies with identical redshifts are put in the same plane).
+        The tracer first creates a series of planes (using the `Plane` object), where each plane is a collection of
+        galaxies at the same redshift.
 
-        To perform multi-plane ray-tracing, a cosmology must be supplied so that deflection-angles can be rescaled \
-        according to the lens-geometry of the multi-plane system. All galaxies input to the tracer must therefore \
-        have redshifts.
+        The redshifts of these planes are determined by the redshifts of the galaxies, such that there is a unique
+        plane redshift for every unique galaxy redshift (galaxies with identical redshifts are put in the same plane).
 
-        This tracer has only one grid (see gridStack) which is used for ray-tracing.
+        Gravitational lensing calculations are then performed individually for each plane and combined to produce the
+        correct overall lensing calculation. This includes the calculations like the deflection angles, create
+        images of the galaxies at different planes, and the overall lensed image of all galaxies.
+
+        Multi-plane ray-tracing work natively, whereby the redshifts of the planes are used to perform multi-plane
+        ray-tracing calculations. This uses the input cosmology so that deflection-angles are rescaled according to
+        the lens-geometry of the multi-plane system.
+
+        The `Tracer` object is also the core of the lens modeling API, whereby a model tracer is created via
+        the `PyAutoFit` `af.Model` object.
 
         Parameters
         ----------
-        galaxies : [Galaxy]
-            The list of galaxies in the ray-tracing calculation.
-        image_plane_grid : grid_stacks.GridStack
-            The image-plane grid which is traced. (includes the grid, sub-grid, blurring-grid, etc.).
-        border : masks.GridBorder
-            The border of the grid, which is used to relocate demagnified traced pixels to the \
-            source-plane borders.
-        cosmology : astropy.cosmology
-            The cosmology of the ray-tracing calculation.
+        galaxies
+            The list of galaxies which make up the gravitational lensing ray-tracing system.
+        cosmology
+            The cosmology used to perform ray-tracing calculations.
+        run_time_dict
+            A dictionary of information on the run-time of the tracer, including the total time and time spent on
+            different calculations.
         """
         self.galaxies = galaxies
         self.cosmology = cosmology
