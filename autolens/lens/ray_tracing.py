@@ -22,7 +22,10 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         """
         Performs gravitational lensing ray-tracing calculations based on an input list of galaxies and a cosmology.
 
-        The tracer first creates a series of planes (using the `Plane` object), where each plane is a collection of
+        The tracer first orders the input galaxies in ascending order of redshift, meaning that the input list of
+        galaxies will be a different order to the tracer's if the input list is not in ascending redshift order.
+
+        The tracer then creates a series of planes (using the `Plane` object), where each plane is a collection of
         galaxies at the same redshift.
 
         The redshifts of these planes are determined by the redshifts of the galaxies, such that there is a unique
@@ -98,38 +101,56 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     @classmethod
     def sliced_tracer_from(
         cls,
-        lens_galaxies,
-        line_of_sight_galaxies,
-        source_galaxies,
-        planes_between_lenses,
+        lens_galaxies : List[ag.Galaxy],
+        line_of_sight_galaxies : List[ag.Galaxy],
+        source_galaxies : List[ag.Galaxy],
+        planes_between_lenses : List[int],
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):
         """
-        Ray-tracer for a lens system with any number of planes.
+        Returns a tracer where the lens system is split into planes with specified redshift distances between them.
 
-        The redshift of these planes are specified by the input parameters *lens_redshifts* and
-         *slices_between_main_planes*. Every galaxy is placed in its closest plane in redshift-space.
+        This is used for ray-tracing systems with many galaxies at different redshifts (e.g. hundreds or more). If
+        each galaxy redshift is treated indepedently, this would require many planes to be created, and the multi-plane
+        ray-tracing calculation would be computationally slow.
 
-        To perform multi-plane ray-tracing, a cosmology must be supplied so that deflection-angles can be rescaled \
-        according to the lens-geometry of the multi-plane system. All galaxies input to the tracer must therefore \
-        have redshifts.
+        To speed the calculation up, the galaxies are grouped into planes with redshifts separated by the inputs.
+        To achieve this, the galaxies have their redshifts reassigned from their original values to the nearest
+        value of a sliced plane redshift. This ensures that every galaxy is in a subset of planes.
 
-        This tracer has only one grid (see gridStack) which is used for ray-tracing.
+        The redshifts of the planes are determines as follows:
+
+        - Use the redshifts of the lens galaxies to determine the redshifts of the planes, where a lens galaxy is
+        expected to have a large mass and thus contribute to a significant portion of the overall lensing. This ensures
+        the main lens galaxies have a redshift and plane to themselves, ensuring calculation accuracy.
+
+        - Use the redshift of the source galaxies to determine the redshift of the source plane, ensuring the source
+        galaxies also have a dedicated redshift and plane for calculation accuracy.
+
+        - Create N planes between Earth and the first lens galaxy, the lens galaxy and the next lens galaxy (and so on)
+        up to the source galaxy. The number of planes between each set of galaxies is specified by the input
+        `planes_between_lenses`, where for a lens / source system `planes_between_lenses=[2,3]` would mean there are 2
+        planes between Earth and the lens galaxy and 3 planes between the lens and source galaxy.
+
+        - The `line_of_sight_galaxies` are placed in the planes corresponding to their closest redshift.
 
         Parameters
         ----------
-        lens_galaxies : [Galaxy]
-            The list of galaxies in the ray-tracing calculation.
-        image_plane_grid : grid_stacks.GridStack
-            The image-plane grid which is traced. (includes the grid, sub-grid, blurring-grid, etc.).
-        planes_between_lenses : [int]
-            The number of slices between each main plane. The first entry in this list determines the number of slices \
-            between Earth (redshift 0.0) and main plane 0, the next between main planes 0 and 1, etc.
-        border : masks.GridBorder
-            The border of the grid, which is used to relocate demagnified traced pixels to the \
-            source-plane borders.
-        cosmology : astropy.cosmology
-            The cosmology of the ray-tracing calculation.
+        lens_galaxies
+            The lens galaxies in the ray-tracing calculation. Most use cases will have only one lens galaxy, but the
+            API supports multiple lens galaxies (e.g. double Einstein ring systems).
+        line_of_sight_galaxies
+            The galaxies in the line-of-sight to the primary lens galaxy, which may have many different redshifts
+            and therefore create computational expensive multi-plane ray-tracing calculations without the plane
+            grouping provided by this method.
+        source_galaxies
+            The source galaxies in the ray-tracing calculation. The API only supports one source galaxy (input multiple
+            lens galaxies to build a multi-plane system).
+        planes_between_lenses
+            The number of slices between each main plane. The first entry in this list determines the number of slices
+            between Earth (redshift 0.0) and the first lens galaxy, the next between the lens and source, etc.
+        cosmology
+            The cosmology used to perform ray-tracing calculations.
         """
 
         lens_redshifts = ag.util.plane.ordered_plane_redshifts_from(
@@ -142,11 +163,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             source_plane_redshift=source_galaxies[0].redshift,
         )
 
-        galaxies_in_planes = ag.util.plane.galaxies_in_redshift_ordered_planes_from(
-            galaxies=lens_galaxies + line_of_sight_galaxies,
-            plane_redshifts=plane_redshifts,
-        )
-
         plane_redshifts.append(source_galaxies[0].redshift)
 
         galaxies = lens_galaxies + line_of_sight_galaxies + source_galaxies
@@ -156,19 +172,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                 map(lambda z: abs(z - galaxy.redshift), plane_redshifts)
             )
             galaxy.redshift = plane_redshifts[redshift_differences.index(min(redshift_differences))]
-
-
-        # galaxies_in_planes.append(source_galaxies)
-        #
-        # planes = []
-        #
-        # for plane_index in range(0, len(plane_redshifts)):
-        #     planes.append(
-        #         ag.Plane(
-        #             redshift=plane_redshifts[plane_index],
-        #             galaxies=galaxies_in_planes[plane_index],
-        #         )
-        #     )
 
         return Tracer(galaxies=galaxies, cosmology=cosmology)
 
