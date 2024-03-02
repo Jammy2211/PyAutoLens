@@ -49,7 +49,8 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             A dictionary of information on the run-time of the tracer, including the total time and time spent on
             different calculations.
         """
-        self.galaxies = galaxies
+        self.galaxies = sorted(galaxies, key=lambda galaxy: galaxy.redshift)
+
         self.cosmology = cosmology
 
         self.run_time_dict = run_time_dict
