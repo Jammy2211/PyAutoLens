@@ -148,19 +148,29 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         )
 
         plane_redshifts.append(source_galaxies[0].redshift)
-        galaxies_in_planes.append(source_galaxies)
 
-        planes = []
+        galaxies = lens_galaxies + line_of_sight_galaxies + source_galaxies
 
-        for plane_index in range(0, len(plane_redshifts)):
-            planes.append(
-                ag.Plane(
-                    redshift=plane_redshifts[plane_index],
-                    galaxies=galaxies_in_planes[plane_index],
-                )
+        for galaxy in galaxies:
+            redshift_differences = list(
+                map(lambda z: abs(z - galaxy.redshift), plane_redshifts)
             )
+            galaxy.redshift = plane_redshifts[redshift_differences.index(min(redshift_differences))]
 
-        return Tracer.from_planes(planes=planes, cosmology=cosmology)
+
+        # galaxies_in_planes.append(source_galaxies)
+        #
+        # planes = []
+        #
+        # for plane_index in range(0, len(plane_redshifts)):
+        #     planes.append(
+        #         ag.Plane(
+        #             redshift=plane_redshifts[plane_index],
+        #             galaxies=galaxies_in_planes[plane_index],
+        #         )
+        #     )
+
+        return Tracer(galaxies=galaxies, cosmology=cosmology)
 
     def has(self, cls: Type) -> bool:
         return any(map(lambda plane: plane.has(cls=cls), self.planes))

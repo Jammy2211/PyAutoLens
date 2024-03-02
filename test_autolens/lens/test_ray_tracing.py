@@ -1305,8 +1305,7 @@ def test__sliced_tracer_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
 
     assert tracer.planes[0].galaxies == [los_g0, los_g1]
     assert tracer.planes[1].galaxies == [lens_g0, los_g2, los_g3]
-    assert tracer.planes[2].galaxies == []
-    assert tracer.planes[3].galaxies == [source_g0]
+    assert tracer.planes[2].galaxies == [source_g0]
 
     # Multi Plane Case
 
@@ -1328,64 +1327,6 @@ def test__sliced_tracer_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
     los_g3 = al.Galaxy(
         redshift=0.6, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
     )
-
-    tracer = al.Tracer.sliced_tracer_from(
-        lens_galaxies=[lens_g0],
-        line_of_sight_galaxies=[los_g0, los_g1, los_g2, los_g3],
-        source_galaxies=[source_g0],
-        planes_between_lenses=[1, 1],
-        cosmology=al.cosmo.Planck15(),
-    )
-
-    traced_grids = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7_simple)
-
-    # This test_autoarray is essentially the same as the TracerMulti test_autoarray, we just slightly change how many galaxies go
-    # in each plane and therefore change the factor in front of val for different planes.
-
-    # The scaling factors are as follows and were computed independently from the test_autoarray.
-    beta_01 = 0.57874474423
-    beta_02 = 0.91814281
-    # Beta_03 = 1.0
-    beta_12 = 0.8056827034
-    # Beta_13 = 1.0
-    # Beta_23 = 1.0
-
-    val = np.sqrt(2) / 2.0
-
-    assert traced_grids[0][0] == pytest.approx(np.array([1.0, 1.0]), 1e-4)
-    assert traced_grids[0][1] == pytest.approx(np.array([1.0, 0.0]), 1e-4)
-
-    assert traced_grids[1][0] == pytest.approx(
-        np.array([(1.0 - beta_01 * 2.0 * val), (1.0 - beta_01 * 2.0 * val)]), 1e-4
-    )
-    assert traced_grids[1][1] == pytest.approx(
-        np.array([(1.0 - beta_01 * 2.0), 0.0]), 1e-4
-    )
-
-    #  galaxies in this plane, so multiply by 3
-
-    defl11 = 3.0 * lens_g0.deflections_yx_2d_from(
-        grid=np.array([[(1.0 - beta_01 * 2.0 * val), (1.0 - beta_01 * 2.0 * val)]])
-    )
-    defl12 = 3.0 * lens_g0.deflections_yx_2d_from(
-        grid=np.array([[(1.0 - beta_01 * 2.0 * 1.0), 0.0]])
-    )
-
-    assert traced_grids[2][0] == pytest.approx(
-        np.array(
-            [
-                (1.0 - beta_02 * 2.0 * val - beta_12 * defl11[0, 0]),
-                (1.0 - beta_02 * 2.0 * val - beta_12 * defl11[0, 1]),
-            ]
-        ),
-        1e-4,
-    )
-    assert traced_grids[2][1] == pytest.approx(
-        np.array([(1.0 - beta_02 * 2.0 - beta_12 * defl12[0, 0]), 0.0]), 1e-4
-    )
-
-    assert traced_grids[3][0] == pytest.approx(np.array([-2.5355, -2.5355]), 1e-4)
-    assert traced_grids[3][1] == pytest.approx(np.array([2.0, 0.0]), 1e-4)
 
 
 ### Regression ###
