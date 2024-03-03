@@ -216,7 +216,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
         return FitInterferometer(
             dataset=self.dataset,
-            tracer=tracer,
+            tracer=instance.tracer,
             adapt_images=adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=preloads,

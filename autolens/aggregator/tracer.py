@@ -87,7 +87,7 @@ class TracerAgg(AbstractAgg):
         A `PyAutoFit` aggregator object which can load the results of model-fits.
     """
 
-    def object_via_gen_from(self, fit, instance=None) -> List[Tracer]:
+    def object_via_gen_from(self, fit, instance : af.ModelInstance = None) -> List[Tracer]:
         """
         Returns a generator of `Tracer` objects from an input aggregator.
 

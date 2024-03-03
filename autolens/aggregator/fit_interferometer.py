@@ -2,7 +2,6 @@ from typing import Optional, List
 
 import autofit as af
 import autoarray as aa
-import autogalaxy as ag
 
 from autogalaxy.aggregator.interferometer import _interferometer_from
 from autogalaxy.aggregator.abstract import AbstractAgg
@@ -16,7 +15,7 @@ from autolens.aggregator.tracer import _tracer_from
 
 def _fit_interferometer_from(
     fit: af.Fit,
-    galaxies: List[ag.Galaxy],
+    instance: af.ModelInstance = None,
     real_space_mask: Optional[aa.Mask2D] = None,
     settings_dataset: aa.SettingsInterferometer = None,
     settings_inversion: aa.SettingsInversion = None,
@@ -64,7 +63,7 @@ def _fit_interferometer_from(
         real_space_mask=real_space_mask,
         settings_dataset=settings_dataset,
     )
-    tracer_list = _tracer_from(fit=fit, galaxies=galaxies)
+    tracer_list = _tracer_from(fit=fit, instance=instance)
 
     adapt_images_list = agg_util.adapt_images_from(fit=fit)
 
@@ -150,7 +149,7 @@ class FitInterferometerAgg(AbstractAgg):
         self.use_preloaded_grid = use_preloaded_grid
         self.real_space_mask = real_space_mask
 
-    def object_via_gen_from(self, fit, galaxies) -> FitInterferometer:
+    def object_via_gen_from(self, fit, instance: af.ModelInstance = None) -> List[FitInterferometer]:
         """
         Returns a generator of `FitInterferometer` objects from an input aggregator.
 
@@ -165,7 +164,7 @@ class FitInterferometerAgg(AbstractAgg):
         """
         return _fit_interferometer_from(
             fit=fit,
-            galaxies=galaxies,
+            instance=instance,
             settings_dataset=self.settings_dataset,
             settings_inversion=self.settings_inversion,
             use_preloaded_grid=self.use_preloaded_grid,

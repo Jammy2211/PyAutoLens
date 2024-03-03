@@ -136,8 +136,8 @@ def make_adapt_galaxy_name_image_dict_7x7():
     )
 
     adapt_galaxy_name_image_dict = {
-        "('galaxies', 'lens')": image_0,
-        "('galaxies', 'source')": image_1,
+        "('tracer', 'galaxies', 'lens')": image_0,
+        "('tracer', 'galaxies', 'source')": image_1,
     }
 
     return adapt_galaxy_name_image_dict
