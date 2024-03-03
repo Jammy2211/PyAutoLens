@@ -15,7 +15,7 @@ from autolens.aggregator.tracer import _tracer_from
 
 def _fit_interferometer_from(
     fit: af.Fit,
-    instance: af.ModelInstance = None,
+    instance: Optional[af.ModelInstance] = None,
     real_space_mask: Optional[aa.Mask2D] = None,
     settings_dataset: aa.SettingsInterferometer = None,
     settings_inversion: aa.SettingsInversion = None,
@@ -47,8 +47,9 @@ def _fit_interferometer_from(
     ----------
     fit
         A `PyAutoFit` `Fit` object which contains the results of a model-fit as an entry in a sqlite database.
-    galaxies
-        A list of galaxies corresponding to a sample of a non-linear search and model-fit.
+    instance
+        A manual instance that overwrites the max log likelihood instance in fit (e.g. for drawing the instance
+        randomly from the PDF).
     settings_dataset
         Optionally overwrite the `SettingsInterferometer` of the `Interferometer` object that is created from the fit.
     settings_inversion
@@ -149,7 +150,7 @@ class FitInterferometerAgg(AbstractAgg):
         self.use_preloaded_grid = use_preloaded_grid
         self.real_space_mask = real_space_mask
 
-    def object_via_gen_from(self, fit, instance: af.ModelInstance = None) -> List[FitInterferometer]:
+    def object_via_gen_from(self, fit, instance: Optional[af.ModelInstance] = None) -> List[FitInterferometer]:
         """
         Returns a generator of `FitInterferometer` objects from an input aggregator.
 
@@ -159,8 +160,9 @@ class FitInterferometerAgg(AbstractAgg):
         ----------
         fit
             A `PyAutoFit` `Fit` object which contains the results of a model-fit as an entry in a sqlite database.
-        galaxies
-            A list of galaxies corresponding to a sample of a non-linear search and model-fit.
+    instance
+        A manual instance that overwrites the max log likelihood instance in fit (e.g. for drawing the instance
+        randomly from the PDF).
         """
         return _fit_interferometer_from(
             fit=fit,
