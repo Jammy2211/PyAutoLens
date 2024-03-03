@@ -57,10 +57,11 @@ def aggregator_from(database_file, analysis, model, samples):
 @pytest.fixture(name="model")
 def make_model():
     return af.Collection(
+        tracer=af.Model(al.Tracer,
         galaxies=af.Collection(
             lens=af.Model(al.Galaxy, redshift=0.5, light=al.lp.Sersic),
             source=af.Model(al.Galaxy, redshift=1.0, light=al.lp.Sersic),
-        )
+        ))
     )
 
 
@@ -70,6 +71,9 @@ def make_samples(model):
     galaxy_1 = al.Galaxy(redshift=1.0, light=al.lp.Sersic())
 
     tracer = al.Tracer(galaxies=[galaxy_0, galaxy_1])
+
+    instance = af.ModelInstance()
+    instance.tracer = tracer
 
     parameters = [model.prior_count * [1.0], model.prior_count * [10.0]]
 
@@ -84,6 +88,6 @@ def make_samples(model):
     return al.m.MockSamples(
         model=model,
         sample_list=sample_list,
-        max_log_likelihood_instance=tracer,
+        max_log_likelihood_instance=instance,
         prior_means=[1.0] * model.prior_count,
     )
