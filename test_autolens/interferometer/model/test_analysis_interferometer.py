@@ -12,7 +12,11 @@ directory = path.dirname(path.realpath(__file__))
 
 
 def test__make_result__result_interferometer_is_returned(interferometer_7):
-    model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
+    model = af.Collection(
+        tracer=af.Model(
+            al.Tracer, galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5))
+        )
+    )
 
     instance = model.instance_from_prior_medians()
 
@@ -37,7 +41,9 @@ def test__make_result__result_interferometer_is_returned(interferometer_7):
 def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(interferometer_7):
     lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.Sersic(intensity=0.1))
 
-    model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
+    model = af.Collection(
+        tracer=af.Model(al.Tracer, galaxies=af.Collection(lens=lens_galaxy))
+    )
 
     analysis = al.AnalysisInterferometer(dataset=interferometer_7)
 
@@ -51,9 +57,12 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(interferome
 
 def test__positions__resample__raises_exception(interferometer_7, mask_2d_7x7):
     model = af.Collection(
-        galaxies=af.Collection(
-            lens=al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph()),
-            source=al.Galaxy(redshift=1.0),
+        tracer=af.Model(
+            al.Tracer,
+            galaxies=af.Collection(
+                lens=al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph()),
+                source=al.Galaxy(redshift=1.0),
+            ),
         )
     )
 
@@ -104,7 +113,7 @@ def test__positions__likelihood_overwrite__changes_likelihood(
         dataset=interferometer_7
     )
     log_likelihood_penalty = positions_likelihood.log_likelihood_penalty_from(
-        tracer=tracer
+        tracer=instance.tracer
     )
 
     assert analysis_log_likelihood == pytest.approx(

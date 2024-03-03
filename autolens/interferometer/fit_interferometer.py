@@ -73,6 +73,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
             settings_inversion.use_w_tilde = False
 
         self.tracer = tracer
+        self.tracer.run_time_dict = run_time_dict
 
         self.adapt_images = adapt_images
 

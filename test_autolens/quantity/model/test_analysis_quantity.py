@@ -8,13 +8,11 @@ from autolens.quantity.model.result import ResultQuantity
 directory = path.dirname(path.realpath(__file__))
 
 
-def test__make_result__result_quantity_is_returned(
-    dataset_quantity_7x7_array_2d
-):
+def test__make_result__result_quantity_is_returned(dataset_quantity_7x7_array_2d):
     model = af.Collection(
-        tracer=af.Model(al.Tracer,
-                        galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5))
-                        )
+        tracer=af.Model(
+            al.Tracer, galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5))
+        )
     )
     analysis = al.AnalysisQuantity(
         dataset=dataset_quantity_7x7_array_2d, func_str="convergence_2d_from"
@@ -26,12 +24,15 @@ def test__make_result__result_quantity_is_returned(
 
     assert isinstance(result, ResultQuantity)
 
+
 def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
-    dataset_quantity_7x7_array_2d
+    dataset_quantity_7x7_array_2d,
 ):
     galaxy = al.Galaxy(redshift=0.5, light=al.mp.Isothermal(einstein_radius=1.0))
 
-    model = af.Collection(tracer=af.Model(al.Tracer, galaxies=af.Collection(galaxy=galaxy)))
+    model = af.Collection(
+        tracer=af.Model(al.Tracer, galaxies=af.Collection(galaxy=galaxy))
+    )
 
     analysis = al.AnalysisQuantity(
         dataset=dataset_quantity_7x7_array_2d, func_str="convergence_2d_from"

@@ -16,7 +16,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def __init__(
         self,
         galaxies: List[ag.Galaxy],
-        #  cosmology: ag.cosmo.wrap.Planck15 = ag.cosmo.wrap.Planck15(),
+        cosmology: ag.cosmo.wrap.Planck15 = ag.cosmo.wrap.Planck15(),
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -57,7 +57,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         """
         self.galaxies = sorted(galaxies, key=lambda galaxy: galaxy.redshift)
 
-        #        self.cosmology = cosmology
+        self.cosmology = cosmology
 
         self.run_time_dict = run_time_dict
 
@@ -72,10 +72,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             )
 
             self.galaxies.subhalo.mass.centre = tuple(subhalo_centre.in_list[0])
-
-    @property
-    def cosmology(self):
-        return ag.cosmo.wrap.Planck15()
 
     @classmethod
     def from_planes(

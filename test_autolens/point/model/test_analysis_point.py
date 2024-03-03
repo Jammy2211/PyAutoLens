@@ -7,13 +7,16 @@ from autolens.point.model.result import ResultPoint
 
 directory = path.dirname(path.realpath(__file__))
 
+
 def test__make_result__result_imaging_is_returned(point_dict):
     model = af.Collection(
-        tracer=af.Model(al.Tracer,
-        galaxies=af.Collection(
-            lens=al.Galaxy(redshift=0.5, point_0=al.ps.Point(centre=(0.0, 0.0)))
+        tracer=af.Model(
+            al.Tracer,
+            galaxies=af.Collection(
+                lens=al.Galaxy(redshift=0.5, point_0=al.ps.Point(centre=(0.0, 0.0)))
+            ),
         )
-    ))
+    )
 
     search = al.m.MockSearch(name="test_search")
 
@@ -24,6 +27,7 @@ def test__make_result__result_imaging_is_returned(point_dict):
     result = search.fit(model=model, analysis=analysis)
 
     assert isinstance(result, ResultPoint)
+
 
 def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
     positions_x2, positions_x2_noise_map
@@ -37,11 +41,13 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
     point_dict = al.PointDict(point_dataset_list=[point_dataset])
 
     model = af.Collection(
-        tracer=af.Model(al.Tracer,
-        galaxies=af.Collection(
-            lens=al.Galaxy(redshift=0.5, point_0=al.ps.Point(centre=(0.0, 0.0)))
+        tracer=af.Model(
+            al.Tracer,
+            galaxies=af.Collection(
+                lens=al.Galaxy(redshift=0.5, point_0=al.ps.Point(centre=(0.0, 0.0)))
+            ),
         )
-    ))
+    )
 
     solver = al.m.MockPointSolver(model_positions=positions_x2)
 
@@ -80,6 +86,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
     assert fit_positions.chi_squared == 2.0
     assert fit_positions.log_likelihood == analysis_log_likelihood
 
+
 def test__figure_of_merit__includes_fit_fluxes(
     positions_x2, positions_x2_noise_map, fluxes_x2, fluxes_x2_noise_map
 ):
@@ -94,15 +101,17 @@ def test__figure_of_merit__includes_fit_fluxes(
     point_dict = al.PointDict(point_dataset_list=[point_dataset])
 
     model = af.Collection(
-        tracer=af.Model(al.Tracer,
-        galaxies=af.Collection(
-            lens=al.Galaxy(
-                redshift=0.5,
-                sis=al.mp.IsothermalSph(einstein_radius=1.0),
-                point_0=al.ps.PointFlux(flux=1.0),
-            )
+        tracer=af.Model(
+            al.Tracer,
+            galaxies=af.Collection(
+                lens=al.Galaxy(
+                    redshift=0.5,
+                    sis=al.mp.IsothermalSph(einstein_radius=1.0),
+                    point_0=al.ps.PointFlux(flux=1.0),
+                )
+            ),
         )
-    ))
+    )
 
     solver = al.m.MockPointSolver(model_positions=positions_x2)
 
