@@ -52,9 +52,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
     instance = model.instance_from_unit_vector([])
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    tracer = analysis.tracer_via_instance_from(instance=instance)
-
-    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=instance.tracer)
 
     assert fit.log_likelihood == analysis_log_likelihood
 
@@ -85,16 +83,16 @@ def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x
     lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph())
     source = al.Galaxy(redshift=1.0, light=al.lp.SersicSph())
 
-    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+    model = af.Collection(
+    tracer=af.Model(al.Tracer, galaxies=af.Collection(lens=lens, source=source))
+)
 
     instance = model.instance_from_unit_vector([])
 
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    tracer = analysis.tracer_via_instance_from(instance=instance)
-
-    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=instance.tracer)
 
     assert fit.log_likelihood == pytest.approx(analysis_log_likelihood, 1.0e-4)
     assert analysis_log_likelihood == pytest.approx(-6258.043397009, 1.0e-4)
@@ -112,7 +110,7 @@ def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x
         dataset=masked_imaging_7x7
     )
     log_likelihood_penalty = positions_likelihood.log_likelihood_penalty_from(
-        tracer=tracer
+        tracer=instance.tracer
     )
 
     assert analysis_log_likelihood == pytest.approx(
@@ -130,7 +128,9 @@ def test__profile_log_likelihood_function(masked_imaging_7x7):
     lens = al.Galaxy(redshift=0.5, light=al.lp.Sersic(intensity=0.1))
     source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+    model = af.Collection(
+    tracer=af.Model(al.Tracer, galaxies=af.Collection(lens=lens, source=source))
+)
 
     instance = model.instance_from_unit_vector([])
 

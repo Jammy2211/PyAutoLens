@@ -134,7 +134,7 @@ class PositionsLHResample(AbstractPositionsLH):
         analysis
             The analysis class from which the log likliehood function is called.
         """
-        tracer = analysis.tracer_via_instance_from(instance=instance)
+        tracer = instance.tracer
 
         if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
             return
@@ -286,7 +286,7 @@ class PositionsLHPenalty(AbstractPositionsLH):
         analysis
             The analysis class from which the log likliehood function is called.
         """
-        tracer = analysis.tracer_via_instance_from(instance=instance)
+        tracer = instance.tracer
 
         if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
             return

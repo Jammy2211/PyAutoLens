@@ -152,17 +152,13 @@ class AnalysisImaging(AnalysisDataset):
             The fit of the plane to the imaging dataset, which includes the log likelihood.
         """
 
-        tracer = self.tracer_via_instance_from(
-            instance=instance, run_time_dict=run_time_dict
-        )
-
         adapt_images = self.adapt_images_via_instance_from(instance=instance)
 
         preloads = preload_overwrite or self.preloads
 
         return FitImaging(
             dataset=self.dataset,
-            tracer=tracer,
+            tracer=instance.tracer,
             adapt_images=adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=preloads,
@@ -396,6 +392,9 @@ class AnalysisImaging(AnalysisDataset):
         Two dictionaries, the profiling dictionary and info dictionary, which contain the profiling times of the
         `log_likelihood_function` and information on the model and dataset used to perform the profiling.
         """
+
+        instance.tracer.run_time_dict = {}
+
         run_time_dict, info_dict = super().profile_log_likelihood_function(
             instance=instance,
         )

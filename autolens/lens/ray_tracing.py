@@ -15,8 +15,8 @@ from autolens.lens import ray_tracing_util
 class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def __init__(
         self,
-        galaxies : List[ag.Galaxy],
-        cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
+        galaxies: List[ag.Galaxy],
+        cosmology : ag.cosmo.wrap.Planck15 = ag.cosmo.wrap.Planck15(),
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -42,6 +42,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         The `Tracer` object is also the core of the lens modeling API, whereby a model tracer is created via
         the `PyAutoFit` `af.Model` object.
 
+        If the instance has a subhalo, the centre of the subhalo is updated based on the redshift of subhalo, lens
+        and source so that its centre is in the same location relative to the ray-tracing.
+
         Parameters
         ----------
         galaxies
@@ -58,12 +61,24 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
         self.run_time_dict = run_time_dict
 
+        # TODO : Integration test
+
+        if hasattr(galaxies, "subhalo"):
+            subhalo_centre = ray_tracing_util.grid_2d_at_redshift_from(
+                galaxies=galaxies,
+                redshift=galaxies.subhalo.redshift,
+                grid=aa.Grid2DIrregular(values=[galaxies.subhalo.mass.centre]),
+                cosmology=self.cosmology,
+            )
+
+            galaxies.subhalo.mass.centre = tuple(subhalo_centre.in_list[0])
+
     @classmethod
     def from_planes(
-            cls,
-            planes : List[Plane],
-            cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
-            run_time_dict: Optional[Dict] = None,
+        cls,
+        planes: List[Plane],
+        cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
+        run_time_dict: Optional[Dict] = None,
     ) -> "Tracer":
         """
         Create the tracer from a list of planes, where each plane is a collection of galaxies at the same redshift.
@@ -101,10 +116,10 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     @classmethod
     def sliced_tracer_from(
         cls,
-        lens_galaxies : List[ag.Galaxy],
-        line_of_sight_galaxies : List[ag.Galaxy],
-        source_galaxies : List[ag.Galaxy],
-        planes_between_lenses : List[int],
+        lens_galaxies: List[ag.Galaxy],
+        line_of_sight_galaxies: List[ag.Galaxy],
+        source_galaxies: List[ag.Galaxy],
+        planes_between_lenses: List[int],
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):
         """
@@ -171,7 +186,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             redshift_differences = list(
                 map(lambda z: abs(z - galaxy.redshift), plane_redshifts)
             )
-            galaxy.redshift = plane_redshifts[redshift_differences.index(min(redshift_differences))]
+            galaxy.redshift = plane_redshifts[
+                redshift_differences.index(min(redshift_differences))
+            ]
 
         return Tracer(galaxies=galaxies, cosmology=cosmology)
 

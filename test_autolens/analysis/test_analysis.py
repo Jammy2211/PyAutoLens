@@ -14,7 +14,8 @@ directory = path.dirname(path.realpath(__file__))
 
 
 def test__tracer_for_instance(analysis_imaging_7x7):
-    model = af.Collection(
+
+    model = af.Collection(tracer=af.Model(al.Tracer,
         galaxies=af.Collection(
             lens=al.Galaxy(
                 redshift=0.5,
@@ -30,10 +31,10 @@ def test__tracer_for_instance(analysis_imaging_7x7):
                 mass=al.mp.IsothermalSph(einstein_radius=0.2),
             )
         ),
-    )
+    ),)
 
     instance = model.instance_from_unit_vector([])
-    tracer = analysis_imaging_7x7.tracer_via_instance_from(instance=instance)
+    tracer = instance.tracer
 
     assert tracer.galaxies[0].redshift == 0.5
     assert tracer.galaxies[0].light.intensity == 2.0
@@ -57,9 +58,8 @@ def test__tracer_for_instance__subhalo_redshift_rescale_used(analysis_imaging_7x
     )
 
     instance = model.instance_from_unit_vector([])
-    tracer = analysis_imaging_7x7.tracer_via_instance_from(instance=instance)
 
-    assert tracer.galaxies[0].mass.centre == pytest.approx((0.1, 0.2), 1.0e-4)
+    assert instance.tracer.galaxies[0].mass.centre == pytest.approx((0.1, 0.2), 1.0e-4)
 
     model = af.Collection(
         galaxies=af.Collection(
@@ -73,9 +73,10 @@ def test__tracer_for_instance__subhalo_redshift_rescale_used(analysis_imaging_7x
     )
 
     instance = model.instance_from_unit_vector([])
-    tracer = analysis_imaging_7x7.tracer_via_instance_from(instance=instance)
 
-    assert tracer.galaxies[1].mass.centre == pytest.approx((-0.19959, -0.39919), 1.0e-4)
+    assert instance.tracer.galaxies[1].mass.centre == pytest.approx(
+        (-0.19959, -0.39919), 1.0e-4
+    )
 
 
 def test__relocate_pix_border__determines_if_border_pixel_relocation_is_used(
@@ -144,7 +145,9 @@ def test__modify_before_fit__inversion_no_positions_likelihood__raises_exception
 
     source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+    model = af.Collection(
+        tracer=af.Model(al.Tracer, galaxies=af.Collection(lens=lens, source=source))
+    )
 
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
@@ -171,8 +174,7 @@ def test__check_preloads(masked_imaging_7x7):
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
     instance = model.instance_from_unit_vector([])
-    tracer = analysis.tracer_via_instance_from(instance=instance)
-    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=instance.tracer)
 
     analysis.preloads.check_via_fit(fit=fit)
 
@@ -190,7 +192,9 @@ def test__save_results__tracer_output_to_json(analysis_imaging_7x7):
     lens = al.Galaxy(redshift=0.5)
     source = al.Galaxy(redshift=1.0)
 
-    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+    model = af.Collection(
+        tracer=af.Model(al.Tracer, galaxies=af.Collection(lens=lens, source=source))
+    )
 
     tracer = al.Tracer(galaxies=[lens, source])
 

@@ -44,9 +44,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(interferome
     instance = model.instance_from_unit_vector([])
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    tracer = analysis.tracer_via_instance_from(instance=instance)
-
-    fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
+    fit = al.FitInterferometer(dataset=interferometer_7, tracer=instance.tracer)
 
     assert fit.log_likelihood == analysis_log_likelihood
 
@@ -79,16 +77,16 @@ def test__positions__likelihood_overwrite__changes_likelihood(
     lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph())
     source = al.Galaxy(redshift=1.0, light=al.lp.SersicSph())
 
-    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+    model = af.Collection(
+        tracer=af.Model(al.Tracer, galaxies=af.Collection(lens=lens, source=source))
+    )
 
     analysis = al.AnalysisInterferometer(dataset=interferometer_7)
 
     instance = model.instance_from_unit_vector([])
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    tracer = analysis.tracer_via_instance_from(instance=instance)
-
-    fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
+    fit = al.FitInterferometer(dataset=interferometer_7, tracer=instance.tracer)
 
     assert fit.log_likelihood == analysis_log_likelihood
     assert analysis_log_likelihood == pytest.approx(-127914.36273, 1.0e-4)
@@ -124,7 +122,9 @@ def test__profile_log_likelihood_function(interferometer_7):
     lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph())
     source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+    model = af.Collection(
+        tracer=af.Model(al.Tracer, galaxies=af.Collection(lens=lens, source=source))
+    )
 
     instance = model.instance_from_unit_vector([])
 

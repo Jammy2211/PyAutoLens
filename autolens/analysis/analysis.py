@@ -59,63 +59,6 @@ class AnalysisLensing:
         self.cosmology = cosmology
         self.positions_likelihood = positions_likelihood
 
-    def tracer_via_instance_from(
-        self,
-        instance: af.ModelInstance,
-        run_time_dict: Optional[Dict] = None,
-        tracer_cls=Tracer,
-    ) -> Tracer:
-        """
-        Create a `Tracer` from the galaxies contained in a model instance.
-
-        If PyAutoFit's profiling tools are used with the analysis class, this function may receive a `run_time_dict`
-        which times how long each set of the model-fit takes to perform.
-
-        Parameters
-        ----------
-        instance
-            An instance of the model that is fitted to the data by this analysis (whose parameters may have been set
-            via a non-linear search).
-
-        Returns
-        -------
-        Tracer
-            An instance of the Tracer class that is used to then fit the dataset.
-        """
-        if hasattr(instance, "perturb"):
-            instance.galaxies.subhalo = instance.perturb
-
-        # TODO : Need to think about how we do this without building it into the model attribute names.
-        # TODO : A Subhalo class that extends the Galaxy class maybe?
-
-        if hasattr(instance.galaxies, "subhalo"):
-            subhalo_centre = ray_tracing_util.grid_2d_at_redshift_from(
-                galaxies=instance.galaxies,
-                redshift=instance.galaxies.subhalo.redshift,
-                grid=aa.Grid2DIrregular(values=[instance.galaxies.subhalo.mass.centre]),
-                cosmology=self.cosmology,
-            )
-
-            instance.galaxies.subhalo.mass.centre = tuple(subhalo_centre.in_list[0])
-
-        if hasattr(instance, "clumps"):
-            return Tracer(
-                galaxies=instance.galaxies + instance.clumps,
-                cosmology=self.cosmology,
-                run_time_dict=run_time_dict,
-            )
-
-        if hasattr(instance, "cosmology"):
-            cosmology = instance.cosmology
-        else:
-            cosmology = self.cosmology
-
-        return tracer_cls(
-            galaxies=instance.galaxies,
-            cosmology=cosmology,
-            run_time_dict=run_time_dict,
-        )
-
     def log_likelihood_positions_overwrite_from(
         self, instance: af.ModelInstance
     ) -> Optional[float]:

@@ -14,7 +14,6 @@ from autolens.analysis.analysis import AnalysisDataset
 from autolens.analysis.preloads import Preloads
 from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
-from autolens.lens.ray_tracing import Tracer
 from autolens.interferometer.model.result import ResultInterferometer
 from autolens.interferometer.model.visualizer import VisualizerInterferometer
 from autolens.interferometer.fit_interferometer import FitInterferometer
@@ -210,10 +209,6 @@ class AnalysisInterferometer(AnalysisDataset):
         FitInterferometer
             The fit of the plane to the interferometer dataset, which includes the log likelihood.
         """
-
-        tracer = self.tracer_via_instance_from(
-            instance=instance, run_time_dict=run_time_dict
-        )
 
         adapt_images = self.adapt_images_via_instance_from(instance=instance)
 

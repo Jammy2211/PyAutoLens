@@ -236,9 +236,7 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
     # Normal light + Linear Light PRofiles + Pixelization + Regularizaiton
 
     galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization)
-    tracer = al.Tracer(
-        galaxies=[g0, g0_linear, g2, galaxy_pix_0, galaxy_pix_1]
-    )
+    tracer = al.Tracer(galaxies=[g0, g0_linear, g2, galaxy_pix_0, galaxy_pix_1])
 
     fit = al.FitInterferometer(
         dataset=interferometer_7_grid,
@@ -360,9 +358,7 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
 
     galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer = al.Tracer(
-        galaxies=[g0, g0_linear, g2, galaxy_pix_0, galaxy_pix_1]
-    )
+    tracer = al.Tracer(galaxies=[g0, g0_linear, g2, galaxy_pix_0, galaxy_pix_1])
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
@@ -400,9 +396,7 @@ def test__model_visibilities_of_planes_list(interferometer_7):
     galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
     galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer = al.Tracer(
-        galaxies=[g0, g1_linear, galaxy_pix_0, galaxy_pix_1]
-    )
+    tracer = al.Tracer(galaxies=[g0, g1_linear, galaxy_pix_0, galaxy_pix_1])
 
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 

@@ -50,13 +50,11 @@ class TestAnalysisPoint:
         instance = model.instance_from_unit_vector([])
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-        tracer = analysis.tracer_via_instance_from(instance=instance)
-
         fit_positions = al.FitPositionsImage(
             name="point_0",
             positions=positions_x2,
             noise_map=positions_x2_noise_map,
-            tracer=tracer,
+            tracer=instance.tracer,
             point_solver=solver,
         )
 
@@ -74,7 +72,7 @@ class TestAnalysisPoint:
             name="point_0",
             positions=positions_x2,
             noise_map=positions_x2_noise_map,
-            tracer=tracer,
+            tracer=instance.tracer,
             point_solver=solver,
         )
 
@@ -113,13 +111,11 @@ class TestAnalysisPoint:
 
         analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-        tracer = analysis.tracer_via_instance_from(instance=instance)
-
         fit_positions = al.FitPositionsImage(
             name="point_0",
             positions=positions_x2,
             noise_map=positions_x2_noise_map,
-            tracer=tracer,
+            tracer=instance.tracer,
             point_solver=solver,
         )
 
@@ -128,7 +124,7 @@ class TestAnalysisPoint:
             fluxes=fluxes_x2,
             noise_map=fluxes_x2_noise_map,
             positions=positions_x2,
-            tracer=tracer,
+            tracer=instance.tracer,
         )
 
         assert (

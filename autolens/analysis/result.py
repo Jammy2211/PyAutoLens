@@ -23,7 +23,7 @@ class Result(AgResultDataset):
         """
         An instance of a `Tracer` corresponding to the maximum log likelihood model inferred by the non-linear search.
         """
-        return self.analysis.tracer_via_instance_from(instance=self.instance)
+        return self.instance.tracer
 
     @property
     def max_log_likelihood_positions_threshold(self) -> float:
