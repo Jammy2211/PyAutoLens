@@ -192,11 +192,7 @@ class ResultDataset(Result):
 
         If a dataset is fitted the adapt images of the adapt image must first be associated with each galaxy.
         """
-        instance = self.analysis.instance_with_associated_adapt_images_from(
-            instance=self.instance
-        )
-
-        return self.analysis.tracer_via_instance_from(instance=instance)
+        return self.instance.tracer
 
     @property
     def positions(self):

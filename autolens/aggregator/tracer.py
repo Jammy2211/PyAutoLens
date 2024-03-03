@@ -3,13 +3,14 @@ from typing import List, Optional
 
 import autofit as af
 
-from autogalaxy.aggregator.abstract import AbstractAgg
 from autolens.lens.ray_tracing import Tracer
 
 logger = logging.getLogger(__name__)
 
 
-def _tracer_from(fit: af.Fit, instance : Optional[af.ModelInstance] = None) -> List[Tracer]:
+def _tracer_from(
+    fit: af.Fit, instance: Optional[af.ModelInstance] = None
+) -> List[Tracer]:
     """
     Returns a list of `Tracer` objects from a `PyAutoFit` sqlite database `Fit` object.
 
@@ -56,7 +57,7 @@ def _tracer_from(fit: af.Fit, instance : Optional[af.ModelInstance] = None) -> L
     return [tracer]
 
 
-class TracerAgg(AbstractAgg):
+class TracerAgg(af.AbstractAgg):
     """
     Interfaces with an `PyAutoFit` aggregator object to create instances of `Tracer` objects from the results
     of a model-fit.
@@ -88,7 +89,9 @@ class TracerAgg(AbstractAgg):
         A `PyAutoFit` aggregator object which can load the results of model-fits.
     """
 
-    def object_via_gen_from(self, fit, instance : Optional[af.ModelInstance] = None) -> List[Tracer]:
+    def object_via_gen_from(
+        self, fit, instance: Optional[af.ModelInstance] = None
+    ) -> List[Tracer]:
         """
         Returns a generator of `Tracer` objects from an input aggregator.
 

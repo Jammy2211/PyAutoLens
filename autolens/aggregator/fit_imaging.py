@@ -2,9 +2,6 @@ from typing import Optional, List
 
 import autofit as af
 import autoarray as aa
-import autogalaxy as ag
-
-from autogalaxy.aggregator.abstract import AbstractAgg
 
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.analysis.preloads import Preloads
@@ -97,7 +94,7 @@ def _fit_imaging_from(
     return fit_dataset_list
 
 
-class FitImagingAgg(AbstractAgg):
+class FitImagingAgg(af.AbstractAgg):
     def __init__(
         self,
         aggregator: af.Aggregator,
@@ -150,7 +147,9 @@ class FitImagingAgg(AbstractAgg):
         self.settings_inversion = settings_inversion
         self.use_preloaded_grid = use_preloaded_grid
 
-    def object_via_gen_from(self, fit, instance: Optional[af.ModelInstance] = None) -> List[FitImaging]:
+    def object_via_gen_from(
+        self, fit, instance: Optional[af.ModelInstance] = None
+    ) -> List[FitImaging]:
         """
         Returns a generator of `FitImaging` objects from an input aggregator.
 

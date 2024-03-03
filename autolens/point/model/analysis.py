@@ -82,21 +82,15 @@ class AnalysisPoint(AgAnalysis, AnalysisLensing):
             raise exc.FitException from e
 
     def fit_from(self, instance, run_time_dict: Optional[Dict] = None) -> FitPointDict:
-        tracer = self.tracer_via_instance_from(
-            instance=instance, run_time_dict=run_time_dict
-        )
-
         return FitPointDict(
             point_dict=self.point_dict,
-            tracer=tracer,
+            tracer=instance.tracer,
             point_solver=self.solver,
             run_time_dict=run_time_dict,
         )
 
     def visualize(self, paths, instance, during_analysis):
-        tracer = self.tracer_via_instance_from(instance=instance)
-
-        visualizer = Visualizer(visualize_path=paths.image_path)
+        pass
 
     def make_result(
         self,

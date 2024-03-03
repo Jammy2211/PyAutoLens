@@ -57,11 +57,13 @@ def aggregator_from(database_file, analysis, model, samples):
 @pytest.fixture(name="model")
 def make_model():
     return af.Collection(
-        tracer=af.Model(al.Tracer,
-        galaxies=af.Collection(
-            lens=af.Model(al.Galaxy, redshift=0.5, light=al.lp.Sersic),
-            source=af.Model(al.Galaxy, redshift=1.0, light=al.lp.Sersic),
-        ))
+        tracer=af.Model(
+            al.Tracer,
+            galaxies=af.Collection(
+                lens=af.Model(al.Galaxy, redshift=0.5, light=al.lp.Sersic),
+                source=af.Model(al.Galaxy, redshift=1.0, light=al.lp.Sersic),
+            ),
+        )
     )
 
 

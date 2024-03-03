@@ -393,8 +393,6 @@ class AnalysisImaging(AnalysisDataset):
         `log_likelihood_function` and information on the model and dataset used to perform the profiling.
         """
 
-        instance.tracer.run_time_dict = {}
-
         run_time_dict, info_dict = super().profile_log_likelihood_function(
             instance=instance,
         )

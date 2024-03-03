@@ -15,7 +15,11 @@ directory = path.dirname(path.realpath(__file__))
 
 
 def test__make_result__result_imaging_is_returned(masked_imaging_7x7):
-    model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
+
+    model = af.Collection(
+        tracer=af.Model(al.Tracer,
+        galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
+    )
 
     instance = model.instance_from_prior_medians()
 
@@ -46,7 +50,11 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
 ):
     lens = al.Galaxy(redshift=0.5, light=al.lp.Sersic(intensity=0.1))
 
-    model = af.Collection(galaxies=af.Collection(lens=lens))
+    model = af.Collection(
+        tracer=af.Model(al.Tracer,
+        galaxies=af.Collection(lens=lens)
+        )
+    )
 
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
     instance = model.instance_from_unit_vector([])
@@ -59,11 +67,12 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
 
 def test__positions__resample__raises_exception(masked_imaging_7x7):
     model = af.Collection(
-        galaxies=af.Collection(
-            lens=al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph()),
-            source=al.Galaxy(redshift=1.0),
-        )
-    )
+        tracer=af.Model(al.Tracer,
+            galaxies=af.Collection(
+                lens=al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph()),
+                source=al.Galaxy(redshift=1.0),
+            )
+    ))
 
     positions_likelihood = al.PositionsLHResample(
         positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01
@@ -129,8 +138,8 @@ def test__profile_log_likelihood_function(masked_imaging_7x7):
     source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     model = af.Collection(
-    tracer=af.Model(al.Tracer, galaxies=af.Collection(lens=lens, source=source))
-)
+        tracer=af.Model(al.Tracer, galaxies=af.Collection(lens=lens, source=source))
+    )
 
     instance = model.instance_from_unit_vector([])
 

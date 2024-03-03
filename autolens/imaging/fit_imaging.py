@@ -75,6 +75,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         )
 
         self.tracer = tracer
+        self.tracer.run_time_dict = run_time_dict
 
         self.adapt_images = adapt_images
         self.settings_inversion = settings_inversion
