@@ -16,7 +16,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def __init__(
         self,
         galaxies: List[ag.Galaxy],
-        cosmology : ag.cosmo.wrap.Planck15 = ag.cosmo.wrap.Planck15(),
+        cosmology: ag.cosmo.wrap.Planck15 = ag.cosmo.wrap.Planck15(),
         run_time_dict: Optional[Dict] = None,
     ):
         """

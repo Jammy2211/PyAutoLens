@@ -13,47 +13,18 @@ from autolens import exc
 directory = path.dirname(path.realpath(__file__))
 
 
-def test__tracer_for_instance(analysis_imaging_7x7):
-
-    model = af.Collection(tracer=af.Model(al.Tracer,
-        galaxies=af.Collection(
-            lens=al.Galaxy(
-                redshift=0.5,
-                light=al.lp.SersicSph(intensity=2.0),
-                mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
-            ),
-            source=al.Galaxy(redshift=1.0),
-        ),
-        clumps=af.Collection(
-            clump=al.Galaxy(
-                redshift=0.5,
-                light=al.lp.SersicSph(intensity=0.1),
-                mass=al.mp.IsothermalSph(einstein_radius=0.2),
-            )
-        ),
-    ),)
-
-    instance = model.instance_from_unit_vector([])
-    tracer = instance.tracer
-
-    assert tracer.galaxies[0].redshift == 0.5
-    assert tracer.galaxies[0].light.intensity == 2.0
-    assert tracer.galaxies[0].mass.centre == pytest.approx((0.0, 0.0), 1.0e-4)
-    assert tracer.galaxies[0].mass.einstein_radius == 1.0
-    assert tracer.galaxies[1].redshift == 0.5
-    assert tracer.galaxies[1].light.intensity == 0.1
-    assert tracer.galaxies[1].mass.einstein_radius == 0.2
-
-
-def test__tracer_for_instance__subhalo_redshift_rescale_used(analysis_imaging_7x7):
+def test__tracer_instance__subhalo_redshift_rescale_used(analysis_imaging_7x7):
     model = af.Collection(
-        galaxies=af.Collection(
-            lens=al.Galaxy(
-                redshift=0.5,
-                mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
+        tracer=af.Model(
+            al.Tracer,
+            galaxies=af.Collection(
+                lens=al.Galaxy(
+                    redshift=0.5,
+                    mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
+                ),
+                subhalo=al.Galaxy(redshift=0.25, mass=al.mp.NFWSph(centre=(0.1, 0.2))),
+                source=al.Galaxy(redshift=1.0),
             ),
-            subhalo=al.Galaxy(redshift=0.25, mass=al.mp.NFWSph(centre=(0.1, 0.2))),
-            source=al.Galaxy(redshift=1.0),
         )
     )
 
@@ -62,13 +33,16 @@ def test__tracer_for_instance__subhalo_redshift_rescale_used(analysis_imaging_7x
     assert instance.tracer.galaxies[0].mass.centre == pytest.approx((0.1, 0.2), 1.0e-4)
 
     model = af.Collection(
-        galaxies=af.Collection(
-            lens=al.Galaxy(
-                redshift=0.5,
-                mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
+        tracer=af.Model(
+            al.Tracer,
+            galaxies=af.Collection(
+                lens=al.Galaxy(
+                    redshift=0.5,
+                    mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
+                ),
+                subhalo=al.Galaxy(redshift=0.75, mass=al.mp.NFWSph(centre=(0.1, 0.2))),
+                source=al.Galaxy(redshift=1.0),
             ),
-            subhalo=al.Galaxy(redshift=0.75, mass=al.mp.NFWSph(centre=(0.1, 0.2))),
-            source=al.Galaxy(redshift=1.0),
         )
     )
 
@@ -88,11 +62,14 @@ def test__relocate_pix_border__determines_if_border_pixel_relocation_is_used(
     )
 
     model = af.Collection(
-        galaxies=af.Collection(
-            lens=al.Galaxy(
-                redshift=0.5, mass=al.mp.IsothermalSph(einstein_radius=100.0)
+        tracer=af.Model(
+            al.Tracer,
+            galaxies=af.Collection(
+                lens=al.Galaxy(
+                    redshift=0.5, mass=al.mp.IsothermalSph(einstein_radius=100.0)
+                ),
+                source=al.Galaxy(redshift=1.0, pixelization=pixelization),
             ),
-            source=al.Galaxy(redshift=1.0, pixelization=pixelization),
         )
     )
 
@@ -169,7 +146,9 @@ def test__check_preloads(masked_imaging_7x7):
 
     lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.Sersic(intensity=0.1))
 
-    model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
+    model = af.Collection(
+        tracer=af.Model(al.Tracer, galaxies=af.Collection(lens=lens_galaxy))
+    )
 
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
