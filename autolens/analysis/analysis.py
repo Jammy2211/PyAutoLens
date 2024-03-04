@@ -243,7 +243,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLensing):
 
         image_mesh_list = []
 
-        for galaxy in result.instance.tracer.galaxies:
+        for galaxy in result.instance.galaxies:
             pixelization_list = galaxy.cls_list_from(cls=aa.Pixelization)
 
             for pixelization in pixelization_list:

@@ -43,7 +43,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
 
     fit = al.FitQuantity(
         dataset=dataset_quantity_7x7_array_2d,
-        tracer=instance.tracer,
+        tracer=instance,
         func_str="convergence_2d_from",
     )
 
@@ -51,7 +51,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
 
     fit = al.FitQuantity(
         dataset=dataset_quantity_7x7_array_2d,
-        tracer=instance.tracer,
+        tracer=instance,
         func_str="potential_2d_from",
     )
 

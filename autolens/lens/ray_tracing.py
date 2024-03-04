@@ -55,23 +55,21 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             A dictionary of information on the run-time of the tracer, including the total time and time spent on
             different calculations.
         """
-        self.galaxies = sorted(galaxies, key=lambda galaxy: galaxy.redshift)
-
-        self.cosmology = cosmology
-
-        self.run_time_dict = run_time_dict
-
-        # TODO : Integration test
-
         if hasattr(galaxies, "subhalo"):
             subhalo_centre = ray_tracing_util.grid_2d_at_redshift_from(
                 galaxies=galaxies,
                 redshift=galaxies.subhalo.redshift,
                 grid=aa.Grid2DIrregular(values=[galaxies.subhalo.mass.centre]),
-                cosmology=self.cosmology,
+                cosmology=cosmology,
             )
 
-            self.galaxies.subhalo.mass.centre = tuple(subhalo_centre.in_list[0])
+            galaxies.subhalo.mass.centre = tuple(subhalo_centre.in_list[0])
+
+        self.galaxies = sorted(galaxies, key=lambda galaxy: galaxy.redshift)
+
+        self.cosmology = cosmology
+
+        self.run_time_dict = run_time_dict
 
     @classmethod
     def from_planes(

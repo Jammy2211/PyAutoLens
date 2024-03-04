@@ -75,7 +75,7 @@ def make_samples(model):
     tracer = al.Tracer(galaxies=[galaxy_0, galaxy_1])
 
     instance = af.ModelInstance()
-    instance.tracer = tracer
+    instance = tracer
 
     parameters = [model.prior_count * [1.0], model.prior_count * [10.0]]
 

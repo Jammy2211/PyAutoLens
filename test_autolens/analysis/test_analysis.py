@@ -30,7 +30,7 @@ def test__tracer_instance__subhalo_redshift_rescale_used(analysis_imaging_7x7):
 
     instance = model.instance_from_unit_vector([])
 
-    assert instance.tracer.galaxies[0].mass.centre == pytest.approx((0.1, 0.2), 1.0e-4)
+    assert instance.galaxies[0].mass.centre == pytest.approx((0.1, 0.2), 1.0e-4)
 
     model = af.Collection(
         tracer=af.Model(
@@ -48,7 +48,7 @@ def test__tracer_instance__subhalo_redshift_rescale_used(analysis_imaging_7x7):
 
     instance = model.instance_from_unit_vector([])
 
-    assert instance.tracer.galaxies[1].mass.centre == pytest.approx(
+    assert instance.galaxies[1].mass.centre == pytest.approx(
         (-0.19959, -0.39919), 1.0e-4
     )
 
@@ -153,7 +153,7 @@ def test__check_preloads(masked_imaging_7x7):
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
     instance = model.instance_from_unit_vector([])
-    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=instance.tracer)
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=instance)
 
     analysis.preloads.check_via_fit(fit=fit)
 

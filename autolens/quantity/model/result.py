@@ -52,7 +52,7 @@ class ResultQuantity(Result):
 
         If a dataset is fitted the adapt images of the adapt image must first be associated with each galaxy.
         """
-        return self.instance.tracer
+        return self.instance
 
     @property
     def max_log_likelihood_fit(self) -> ag.FitQuantity:

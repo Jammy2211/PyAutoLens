@@ -60,7 +60,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         name="point_0",
         positions=positions_x2,
         noise_map=positions_x2_noise_map,
-        tracer=instance.tracer,
+        tracer=instance,
         point_solver=solver,
     )
 
@@ -78,7 +78,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         name="point_0",
         positions=positions_x2,
         noise_map=positions_x2_noise_map,
-        tracer=instance.tracer,
+        tracer=instance,
         point_solver=solver,
     )
 
@@ -125,7 +125,7 @@ def test__figure_of_merit__includes_fit_fluxes(
         name="point_0",
         positions=positions_x2,
         noise_map=positions_x2_noise_map,
-        tracer=instance.tracer,
+        tracer=instance,
         point_solver=solver,
     )
 
@@ -134,7 +134,7 @@ def test__figure_of_merit__includes_fit_fluxes(
         fluxes=fluxes_x2,
         noise_map=fluxes_x2_noise_map,
         positions=positions_x2,
-        tracer=instance.tracer,
+        tracer=instance,
     )
 
     assert (
@@ -154,7 +154,7 @@ def test__figure_of_merit__includes_fit_fluxes(
         name="point_0",
         positions=positions_x2,
         noise_map=positions_x2_noise_map,
-        tracer=instance.tracer,
+        tracer=instance,
         point_solver=solver,
     )
 
@@ -163,7 +163,7 @@ def test__figure_of_merit__includes_fit_fluxes(
         fluxes=fluxes_x2,
         noise_map=fluxes_x2_noise_map,
         positions=positions_x2,
-        tracer=instance.tracer,
+        tracer=instance,
     )
 
     assert fit_positions.residual_map.in_list == [1.0, 1.0]

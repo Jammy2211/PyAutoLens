@@ -84,7 +84,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLensing):
     def fit_from(self, instance, run_time_dict: Optional[Dict] = None) -> FitPointDict:
         return FitPointDict(
             point_dict=self.point_dict,
-            tracer=instance.tracer,
+            tracer=instance,
             point_solver=self.solver,
             run_time_dict=run_time_dict,
         )

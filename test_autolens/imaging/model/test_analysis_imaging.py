@@ -60,7 +60,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
     instance = model.instance_from_unit_vector([])
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=instance.tracer)
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=instance)
 
     assert fit.log_likelihood == analysis_log_likelihood
 
@@ -101,7 +101,7 @@ def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=instance.tracer)
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=instance)
 
     assert fit.log_likelihood == pytest.approx(analysis_log_likelihood, 1.0e-4)
     assert analysis_log_likelihood == pytest.approx(-6258.043397009, 1.0e-4)
@@ -119,7 +119,7 @@ def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x
         dataset=masked_imaging_7x7
     )
     log_likelihood_penalty = positions_likelihood.log_likelihood_penalty_from(
-        tracer=instance.tracer
+        tracer=instance
     )
 
     assert analysis_log_likelihood == pytest.approx(

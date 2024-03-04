@@ -50,7 +50,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(interferome
     instance = model.instance_from_unit_vector([])
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    fit = al.FitInterferometer(dataset=interferometer_7, tracer=instance.tracer)
+    fit = al.FitInterferometer(dataset=interferometer_7, tracer=instance)
 
     assert fit.log_likelihood == analysis_log_likelihood
 
@@ -95,7 +95,7 @@ def test__positions__likelihood_overwrite__changes_likelihood(
     instance = model.instance_from_unit_vector([])
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    fit = al.FitInterferometer(dataset=interferometer_7, tracer=instance.tracer)
+    fit = al.FitInterferometer(dataset=interferometer_7, tracer=instance)
 
     assert fit.log_likelihood == analysis_log_likelihood
     assert analysis_log_likelihood == pytest.approx(-127914.36273, 1.0e-4)
@@ -113,7 +113,7 @@ def test__positions__likelihood_overwrite__changes_likelihood(
         dataset=interferometer_7
     )
     log_likelihood_penalty = positions_likelihood.log_likelihood_penalty_from(
-        tracer=instance.tracer
+        tracer=instance
     )
 
     assert analysis_log_likelihood == pytest.approx(

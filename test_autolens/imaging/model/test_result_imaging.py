@@ -13,7 +13,7 @@ def test___linear_light_profiles_in_result(analysis_imaging_7x7):
     galaxies.galaxy = al.Galaxy(redshift=0.5, bulge=al.lp_linear.Sersic())
 
     instance = af.ModelInstance()
-    instance.tracer = al.Tracer(galaxies=galaxies)
+    instance = al.Tracer(galaxies=galaxies)
 
     samples = al.m.MockSamples(max_log_likelihood_instance=instance)
 

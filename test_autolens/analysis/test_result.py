@@ -24,7 +24,7 @@ def test__max_log_likelihood_tracer(
     )
 
     instance = af.ModelInstance()
-    instance.tracer = tracer_x2_plane_7x7
+    instance = tracer_x2_plane_7x7
 
     samples = al.m.MockSamples(
         model=model,
@@ -62,7 +62,7 @@ def test__max_log_likelihood_positions_threshold(masked_imaging_7x7):
     )
 
     instance = af.ModelInstance()
-    instance.tracer = tracer
+    instance = tracer
 
     samples = al.m.MockSamples(max_log_likelihood_instance=instance)
 
@@ -83,7 +83,7 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
     tracer = al.Tracer(galaxies=[lens, source])
 
     instance = af.ModelInstance()
-    instance.tracer = tracer
+    instance = tracer
 
     samples = al.m.MockSamples(max_log_likelihood_instance=instance)
 
@@ -104,7 +104,7 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
     tracer = al.Tracer(galaxies=[lens, source_0, source_1])
 
     instance = af.ModelInstance()
-    instance.tracer = tracer
+    instance = tracer
 
     samples = al.m.MockSamples(max_log_likelihood_instance=instance)
 
@@ -123,7 +123,7 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
     tracer = al.Tracer(galaxies=[lens, source_0, source_1])
 
     instance = af.ModelInstance()
-    instance.tracer = tracer
+    instance = tracer
 
     samples = al.m.MockSamples(max_log_likelihood_instance=instance)
 
@@ -134,7 +134,7 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
     tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5)])
 
     instance = af.ModelInstance()
-    instance.tracer = tracer
+    instance = tracer
 
     samples = al.m.MockSamples(max_log_likelihood_instance=instance)
 
@@ -156,7 +156,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
     tracer = al.Tracer(galaxies=[lens, source])
 
     instance = af.ModelInstance()
-    instance.tracer = tracer
+    instance = tracer
 
     samples = al.m.MockSamples(max_log_likelihood_instance=instance)
 
@@ -177,7 +177,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
     tracer = al.Tracer(galaxies=[lens, source])
 
     instance = af.ModelInstance()
-    instance.tracer = tracer
+    instance = tracer
 
     samples = al.m.MockSamples(max_log_likelihood_instance=instance)
 
@@ -191,7 +191,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
     tracer = al.Tracer(galaxies=[lens, source])
 
     instance = af.ModelInstance()
-    instance.tracer = tracer
+    instance = tracer
 
     samples = al.m.MockSamples(max_log_likelihood_instance=instance)
 
@@ -217,7 +217,7 @@ def test__source_plane_centre(analysis_imaging_7x7):
     tracer = al.Tracer(galaxies=[lens, source])
 
     instance = af.ModelInstance()
-    instance.tracer = tracer
+    instance = tracer
 
     samples = al.m.MockSamples(max_log_likelihood_instance=instance)
 
@@ -251,7 +251,7 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
     tracer = al.Tracer(galaxies=[lens, source])
 
     instance = af.ModelInstance()
-    instance.tracer = tracer
+    instance = tracer
 
     samples = al.m.MockSamples(max_log_likelihood_instance=instance)
 
@@ -277,7 +277,7 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
     )
 
     instance = af.ModelInstance()
-    instance.tracer = tracer
+    instance = tracer
 
     samples = al.m.MockSamples(max_log_likelihood_instance=instance)
 
@@ -305,7 +305,7 @@ def test__positions_threshold_from(analysis_imaging_7x7):
     )
 
     instance = af.ModelInstance()
-    instance.tracer = tracer
+    instance = tracer
 
     samples = al.m.MockSamples(max_log_likelihood_instance=instance)
 
@@ -337,7 +337,7 @@ def test__positions_likelihood_from(analysis_imaging_7x7):
     )
 
     instance = af.ModelInstance()
-    instance.tracer = tracer
+    instance = tracer
 
     samples = al.m.MockSamples(max_log_likelihood_instance=instance)
 
@@ -403,8 +403,8 @@ def test___image_dict(analysis_imaging_7x7):
     tracer = al.Tracer(galaxies=[galaxies.lens, galaxies.source])
 
     instance = af.ModelInstance()
-    instance.tracer = tracer
-    instance.tracer.galaxies = galaxies
+    instance = tracer
+    instance.galaxies = galaxies
 
     result = ResultImaging(
         samples=al.m.MockSamples(max_log_likelihood_instance=instance),
@@ -416,7 +416,7 @@ def test___image_dict(analysis_imaging_7x7):
     assert isinstance(image_dict[str(("tracer", "galaxies", "lens"))], Array2D)
     assert isinstance(image_dict[str(("tracer", "galaxies", "source"))], Array2D)
 
-    result.instance.tracer.galaxies.lens = al.Galaxy(redshift=0.5)
+    result.instance.galaxies.lens = al.Galaxy(redshift=0.5)
 
     image_dict = result.model_image_galaxy_dict
 

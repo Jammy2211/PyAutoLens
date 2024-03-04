@@ -38,9 +38,9 @@ def _tracer_from(
     """
 
     if instance is not None:
-        tracer = instance.tracer
+        tracer = instance
     else:
-        tracer = fit.instance.tracer
+        tracer = fit.instance
 
     if len(fit.children) > 0:
         logger.info(

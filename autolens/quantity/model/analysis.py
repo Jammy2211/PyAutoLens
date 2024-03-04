@@ -73,7 +73,7 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
         """
 
         return FitQuantity(
-            dataset=self.dataset, tracer=instance.tracer, func_str=self.func_str
+            dataset=self.dataset, tracer=instance, func_str=self.func_str
         )
 
     def visualize(

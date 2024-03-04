@@ -23,7 +23,7 @@ class Result(AgResultDataset):
         """
         An instance of a `Tracer` corresponding to the maximum log likelihood model inferred by the non-linear search.
         """
-        return self.instance.tracer
+        return self.instance
 
     @property
     def max_log_likelihood_positions_threshold(self) -> float:
@@ -192,7 +192,7 @@ class ResultDataset(Result):
 
         If a dataset is fitted the adapt images of the adapt image must first be associated with each galaxy.
         """
-        return self.instance.tracer
+        return self.instance
 
     @property
     def positions(self):
