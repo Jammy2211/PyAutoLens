@@ -45,9 +45,7 @@ def make_tracer_x1_plane_7x7():
 def make_tracer_x2_plane_7x7():
     source_gal_x1_lp = al.Galaxy(redshift=1.0, light_profile_0=make_lp_0())
 
-    return al.Tracer(
-        galaxies=[make_gal_x1_mp(), make_gal_x1_lp(), source_gal_x1_lp]
-    )
+    return al.Tracer(galaxies=[make_gal_x1_mp(), make_gal_x1_lp(), source_gal_x1_lp])
 
 
 def make_tracer_x2_plane_inversion_7x7():
@@ -65,9 +63,7 @@ def make_tracer_x2_plane_inversion_7x7():
 def make_tracer_x2_plane_point():
     source_gal_x1_lp = al.Galaxy(redshift=1.0, point_0=al.ps.PointFlux())
 
-    return al.Tracer(
-        galaxies=[make_gal_x1_mp(), make_gal_x1_lp(), source_gal_x1_lp]
-    )
+    return al.Tracer(galaxies=[make_gal_x1_mp(), make_gal_x1_lp(), source_gal_x1_lp])
 
 
 def make_fit_imaging_x1_plane_7x7():

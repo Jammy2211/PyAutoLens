@@ -32,11 +32,6 @@ def make_tracer_dict():
         "type": "instance",
         "class_path": "autolens.lens.ray_tracing.Tracer",
         "arguments": {
-            "cosmology": {
-                "type": "instance",
-                "class_path": "autogalaxy.cosmology.wrap.Planck15",
-                "arguments": {},
-            },
             "run_time_dict": None,
             "galaxies": {
                 "type": "list",
@@ -45,15 +40,15 @@ def make_tracer_dict():
                         "type": "instance",
                         "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                         "arguments": {
-                            "label": None,
                             "redshift": 0.5,
+                            "label": "cls267",
                             "mass": {
                                 "type": "instance",
                                 "class_path": "autogalaxy.profiles.mass.total.isothermal.Isothermal",
                                 "arguments": {
-                                    "centre": (0.0, 0.0),
                                     "einstein_radius": 1.6,
                                     "ell_comps": (0.1, 0.05),
+                                    "centre": (0.0, 0.0),
                                 },
                             },
                         },
@@ -62,21 +57,26 @@ def make_tracer_dict():
                         "type": "instance",
                         "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                         "arguments": {
-                            "label": None,
                             "redshift": 1.0,
+                            "label": "cls267",
                             "disk": {
                                 "type": "instance",
                                 "class_path": "autogalaxy.profiles.light.standard.exponential.Exponential",
                                 "arguments": {
-                                    "centre": (0.3, 0.2),
-                                    "intensity": 0.05,
                                     "effective_radius": 0.5,
+                                    "intensity": 0.05,
                                     "ell_comps": (0.05, 0.25),
+                                    "centre": (0.3, 0.2),
                                 },
                             },
                         },
                     },
                 ],
+            },
+            "cosmology": {
+                "type": "instance",
+                "class_path": "autogalaxy.cosmology.wrap.Planck15",
+                "arguments": {},
             },
         },
     }

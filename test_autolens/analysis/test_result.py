@@ -26,7 +26,7 @@ def test__max_log_likelihood_tracer(
     samples = al.m.MockSamples(
         model=model,
         max_log_likelihood_instance=tracer_x2_plane_7x7,
-        prior_means=[1.0] * model.prior_count
+        prior_means=[1.0] * model.prior_count,
     )
 
     search = al.m.MockSearch(name="test_search_2", samples=samples)

@@ -6,9 +6,7 @@ import autolens as al
 def test__two_sets_of_positions__residuals_likelihood_correct():
     point_source = al.ps.PointSourceChi(centre=(0.0, 0.0))
     galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
-    tracer = al.Tracer(
-        galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source]
-    )
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source])
 
     positions = al.Grid2DIrregular([(0.0, 1.0), (0.0, 2.0)])
     noise_map = al.ArrayIrregular([0.5, 1.0])

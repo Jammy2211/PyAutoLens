@@ -86,9 +86,7 @@ def test__total_plane():
 
     assert tracer.total_planes == 1
 
-    tracer = al.Tracer(
-        galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
-    )
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)])
 
     assert tracer.total_planes == 2
 
@@ -524,9 +522,7 @@ def test__padded_image_2d_from(sub_grid_2d_7x7, grid_2d_iterate_7x7):
 
     padded_g2_image = g2.image_2d_from(grid=padded_grid)
 
-    tracer = al.Tracer(
-        galaxies=[g0, g1, g2], cosmology=al.cosmo.Planck15()
-    )
+    tracer = al.Tracer(galaxies=[g0, g1, g2], cosmology=al.cosmo.Planck15())
 
     padded_tracer_image = tracer.padded_image_2d_from(
         grid=sub_grid_2d_7x7, psf_shape_2d=(3, 3)
@@ -587,9 +583,7 @@ def test__galaxy_image_2d_dict_from(sub_grid_2d_7x7):
 
     g3_image = g3.image_2d_from(grid=source_grid_2d_7x7)
 
-    tracer = al.Tracer(
-        galaxies=[g3, g1, g0, g2], cosmology=al.cosmo.Planck15()
-    )
+    tracer = al.Tracer(galaxies=[g3, g1, g0, g2], cosmology=al.cosmo.Planck15())
 
     galaxy_image_2d_dict = tracer.galaxy_image_2d_dict_from(grid=sub_grid_2d_7x7)
 
@@ -700,18 +694,14 @@ def test__convergence_2d_from(sub_grid_2d_7x7):
 
     # No Galaxy with mass profile
 
-    tracer = al.Tracer(
-        galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)]
-    )
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)])
 
     assert (
         tracer.convergence_2d_from(grid=sub_grid_2d_7x7).binned.native
         == np.zeros(shape=(7, 7))
     ).all()
 
-    tracer = al.Tracer(
-        galaxies=[al.Galaxy(redshift=0.1), al.Galaxy(redshift=0.2)]
-    )
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.1), al.Galaxy(redshift=0.2)])
 
     assert (
         tracer.convergence_2d_from(grid=sub_grid_2d_7x7).binned.native
@@ -746,18 +736,14 @@ def test__potential_2d_from(sub_grid_2d_7x7):
 
     # No Galaxy with mass profile
 
-    tracer = al.Tracer(
-        galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)]
-    )
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)])
 
     assert (
         tracer.potential_2d_from(grid=sub_grid_2d_7x7).binned.native
         == np.zeros(shape=(7, 7))
     ).all()
 
-    tracer = al.Tracer(
-        galaxies=[al.Galaxy(redshift=0.1), al.Galaxy(redshift=0.2)]
-    )
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.1), al.Galaxy(redshift=0.2)])
 
     assert (
         tracer.potential_2d_from(grid=sub_grid_2d_7x7).binned.native
@@ -798,9 +784,7 @@ def test__deflections_yx_2d_from(sub_grid_2d_7x7):
 
     # No Galaxy With Mass Profile
 
-    tracer = al.Tracer(
-        galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)]
-    )
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)])
 
     tracer_deflections = tracer.deflections_of_planes_summed_from(grid=sub_grid_2d_7x7)
 
@@ -830,9 +814,7 @@ def test__deflections_between_planes_from(sub_grid_2d_7x7_simple, gal_x1_mp):
 
     # No Mass Profile Case
 
-    tracer = al.Tracer(
-        galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)]
-    )
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)])
 
     traced_deflections_between_planes = tracer.deflections_between_planes_from(
         grid=sub_grid_2d_7x7_simple, plane_i=0, plane_j=0
@@ -946,9 +928,7 @@ def test__traced_grid_2d_list_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
     g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=0.2))
     g2 = al.Galaxy(redshift=2.0, light_profile=al.lp.Sersic(intensity=0.3))
 
-    tracer = al.Tracer(
-        galaxies=[g0, g1, g2], cosmology=al.cosmo.Planck15()
-    )
+    tracer = al.Tracer(galaxies=[g0, g1, g2], cosmology=al.cosmo.Planck15())
 
     plane_0 = al.Plane(galaxies=[g0])
     plane_1 = al.Plane(galaxies=[g1])
@@ -971,9 +951,7 @@ def test__traced_grid_2d_list_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
     g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=0.2))
     g2 = al.Galaxy(redshift=2.0, light_profile=al.lp.Sersic(intensity=0.3))
 
-    tracer = al.Tracer(
-        galaxies=[g0, g1, g2], cosmology=al.cosmo.Planck15()
-    )
+    tracer = al.Tracer(galaxies=[g0, g1, g2], cosmology=al.cosmo.Planck15())
 
     plane_0 = tracer.planes[0]
     plane_1 = tracer.planes[1]
@@ -998,9 +976,7 @@ def test__traced_grid_2d_list_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
     g3 = al.Galaxy(redshift=0.1, light_profile=al.lp.Sersic(intensity=0.4))
     g4 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=0.5))
 
-    tracer = al.Tracer(
-        galaxies=[g0, g1, g2, g3, g4], cosmology=al.cosmo.Planck15()
-    )
+    tracer = al.Tracer(galaxies=[g0, g1, g2, g3, g4], cosmology=al.cosmo.Planck15())
 
     plane_0 = al.Plane(galaxies=[g0, g3])
     plane_1 = al.Plane(galaxies=[g1, g4])
@@ -1025,9 +1001,7 @@ def test__traced_grid_2d_list_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
     g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=0.2))
     g2 = al.Galaxy(redshift=2.0)
 
-    tracer = al.Tracer(
-        galaxies=[g0, g1, g2], cosmology=al.cosmo.Planck15()
-    )
+    tracer = al.Tracer(galaxies=[g0, g1, g2], cosmology=al.cosmo.Planck15())
 
     plane_0 = al.Plane(galaxies=[g0])
     plane_1 = al.Plane(galaxies=[g1])
@@ -1101,9 +1075,7 @@ def test__extract_attribute():
 
 
 def test__extract_attributes_of_plane():
-
-    tracer = al.Tracer(galaxies=[
-        al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)])
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)])
 
     values = tracer.extract_attributes_of_planes(
         cls=al.mp.MassProfile, attr_name="value"

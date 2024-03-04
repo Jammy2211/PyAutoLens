@@ -98,7 +98,7 @@ def _fit_interferometer_from(
     return fit_dataset_list
 
 
-class FitInterferometerAgg(af.AbstractAgg):
+class FitInterferometerAgg(af.AggBase):
     def __init__(
         self,
         aggregator: af.Aggregator,

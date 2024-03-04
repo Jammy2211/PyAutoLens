@@ -15,7 +15,7 @@ from autolens.lens import ray_tracing_util
 class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def __init__(
         self,
-        galaxies : List[ag.Galaxy],
+        galaxies: List[ag.Galaxy],
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         run_time_dict: Optional[Dict] = None,
     ):
@@ -60,10 +60,10 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
     @classmethod
     def from_planes(
-            cls,
-            planes : List[Plane],
-            cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
-            run_time_dict: Optional[Dict] = None,
+        cls,
+        planes: List[Plane],
+        cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
+        run_time_dict: Optional[Dict] = None,
     ) -> "Tracer":
         """
         Create the tracer from a list of planes, where each plane is a collection of galaxies at the same redshift.
@@ -101,10 +101,10 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     @classmethod
     def sliced_tracer_from(
         cls,
-        lens_galaxies : List[ag.Galaxy],
-        line_of_sight_galaxies : List[ag.Galaxy],
-        source_galaxies : List[ag.Galaxy],
-        planes_between_lenses : List[int],
+        lens_galaxies: List[ag.Galaxy],
+        line_of_sight_galaxies: List[ag.Galaxy],
+        source_galaxies: List[ag.Galaxy],
+        planes_between_lenses: List[int],
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):
         """
@@ -171,7 +171,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             redshift_differences = list(
                 map(lambda z: abs(z - galaxy.redshift), plane_redshifts)
             )
-            galaxy.redshift = plane_redshifts[redshift_differences.index(min(redshift_differences))]
+            galaxy.redshift = plane_redshifts[
+                redshift_differences.index(min(redshift_differences))
+            ]
 
         return Tracer(galaxies=galaxies, cosmology=cosmology)
 

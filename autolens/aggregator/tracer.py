@@ -45,10 +45,7 @@ def _tracer_from(
     except AttributeError:
         cosmology = None
 
-    tracer = Tracer(
-        galaxies=instance.galaxies,
-        cosmology=cosmology
-    )
+    tracer = Tracer(galaxies=instance.galaxies, cosmology=cosmology)
 
     if len(fit.children) > 0:
         logger.info(
@@ -65,7 +62,7 @@ def _tracer_from(
     return [tracer]
 
 
-class TracerAgg(af.AbstractAgg):
+class TracerAgg(af.AggBase):
     """
     Interfaces with an `PyAutoFit` aggregator object to create instances of `Tracer` objects from the results
     of a model-fit.

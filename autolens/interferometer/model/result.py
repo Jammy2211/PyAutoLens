@@ -69,7 +69,7 @@ class ResultInterferometer(ResultDataset):
         """
         return self.max_log_likelihood_fit.dataset.real_space_mask
 
-    def adapt_images_from(self, use_model_images : bool = False) -> AdaptImages:
+    def adapt_images_from(self, use_model_images: bool = False) -> AdaptImages:
         """
         Returns the adapt-images which are used to make a pixelization's mesh and regularization adapt to the
         reconstructed galaxy's morphology.
@@ -90,7 +90,4 @@ class ResultInterferometer(ResultDataset):
             images of the galaxies are used.
         """
 
-        return AdaptImages.from_result(
-            result=self,
-            use_model_images=True
-        )
+        return AdaptImages.from_result(result=self, use_model_images=True)
