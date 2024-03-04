@@ -37,10 +37,18 @@ def _tracer_from(
         randomly from the PDF).
     """
 
-    if instance is not None:
-        tracer = instance
-    else:
-        tracer = fit.instance
+    if instance is None:
+        instance = fit.instance
+
+    try:
+        cosmology = instance.cosmology
+    except AttributeError:
+        cosmology = None
+
+    tracer = Tracer(
+        galaxies=instance.galaxies,
+        cosmology=cosmology
+    )
 
     if len(fit.children) > 0:
         logger.info(

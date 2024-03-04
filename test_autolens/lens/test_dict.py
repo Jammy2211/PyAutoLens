@@ -22,7 +22,7 @@ def make_tracer():
     source_galaxy = al.Galaxy(redshift=1.0, disk=disk)
 
     return al.Tracer(
-        galaxies=[lens_galaxy, source_galaxy], cosmology=al.cosmo.wrap.Planck15
+        galaxies=[lens_galaxy, source_galaxy], cosmology=al.cosmo.wrap.Planck15()
     )
 
 
@@ -33,9 +33,11 @@ def make_tracer_dict():
         "class_path": "autolens.lens.ray_tracing.Tracer",
         "arguments": {
             "cosmology": {
-                "type": "type",
+                "type": "instance",
                 "class_path": "autogalaxy.cosmology.wrap.Planck15",
+                "arguments": {},
             },
+            "run_time_dict": None,
             "galaxies": {
                 "type": "list",
                 "values": [
@@ -43,8 +45,8 @@ def make_tracer_dict():
                         "type": "instance",
                         "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                         "arguments": {
-                            "redshift": 0.5,
                             "label": None,
+                            "redshift": 0.5,
                             "mass": {
                                 "type": "instance",
                                 "class_path": "autogalaxy.profiles.mass.total.isothermal.Isothermal",
@@ -60,29 +62,27 @@ def make_tracer_dict():
                         "type": "instance",
                         "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                         "arguments": {
-                            "redshift": 1.0,
                             "label": None,
+                            "redshift": 1.0,
                             "disk": {
                                 "type": "instance",
                                 "class_path": "autogalaxy.profiles.light.standard.exponential.Exponential",
                                 "arguments": {
                                     "centre": (0.3, 0.2),
-                                    "ell_comps": (0.05, 0.25),
                                     "intensity": 0.05,
                                     "effective_radius": 0.5,
+                                    "ell_comps": (0.05, 0.25),
                                 },
                             },
                         },
                     },
                 ],
             },
-            "run_time_dict": None,
         },
     }
 
 
 def test__to_dict(tracer, tracer_dict):
-    print(to_dict(tracer))
     assert to_dict(tracer) == tracer_dict
 
 
