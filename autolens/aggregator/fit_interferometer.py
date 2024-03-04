@@ -2,10 +2,8 @@ from typing import Optional, List
 
 import autofit as af
 import autoarray as aa
-import autogalaxy as ag
 
 from autogalaxy.aggregator.interferometer import _interferometer_from
-from autogalaxy.aggregator.abstract import AbstractAgg
 
 from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.analysis.preloads import Preloads
@@ -16,7 +14,7 @@ from autolens.aggregator.tracer import _tracer_from
 
 def _fit_interferometer_from(
     fit: af.Fit,
-    galaxies: List[ag.Galaxy],
+    instance: Optional[af.ModelInstance] = None,
     real_space_mask: Optional[aa.Mask2D] = None,
     settings_dataset: aa.SettingsInterferometer = None,
     settings_inversion: aa.SettingsInversion = None,
@@ -48,8 +46,9 @@ def _fit_interferometer_from(
     ----------
     fit
         A `PyAutoFit` `Fit` object which contains the results of a model-fit as an entry in a sqlite database.
-    galaxies
-        A list of galaxies corresponding to a sample of a non-linear search and model-fit.
+    instance
+        A manual instance that overwrites the max log likelihood instance in fit (e.g. for drawing the instance
+        randomly from the PDF).
     settings_dataset
         Optionally overwrite the `SettingsInterferometer` of the `Interferometer` object that is created from the fit.
     settings_inversion
@@ -64,7 +63,7 @@ def _fit_interferometer_from(
         real_space_mask=real_space_mask,
         settings_dataset=settings_dataset,
     )
-    tracer_list = _tracer_from(fit=fit, galaxies=galaxies)
+    tracer_list = _tracer_from(fit=fit, instance=instance)
 
     adapt_images_list = agg_util.adapt_images_from(fit=fit)
 
@@ -99,7 +98,7 @@ def _fit_interferometer_from(
     return fit_dataset_list
 
 
-class FitInterferometerAgg(AbstractAgg):
+class FitInterferometerAgg(af.AbstractAgg):
     def __init__(
         self,
         aggregator: af.Aggregator,
@@ -150,22 +149,25 @@ class FitInterferometerAgg(AbstractAgg):
         self.use_preloaded_grid = use_preloaded_grid
         self.real_space_mask = real_space_mask
 
-    def object_via_gen_from(self, fit, galaxies) -> FitInterferometer:
+    def object_via_gen_from(
+        self, fit, instance: Optional[af.ModelInstance] = None
+    ) -> List[FitInterferometer]:
         """
-        Returns a generator of `FitInterferometer` objects from an input aggregator.
+            Returns a generator of `FitInterferometer` objects from an input aggregator.
 
-        See `__init__` for a description of how the `FitInterferometer` objects are created by this method.
+            See `__init__` for a description of how the `FitInterferometer` objects are created by this method.
 
-        Parameters
-        ----------
-        fit
-            A `PyAutoFit` `Fit` object which contains the results of a model-fit as an entry in a sqlite database.
-        galaxies
-            A list of galaxies corresponding to a sample of a non-linear search and model-fit.
+            Parameters
+            ----------
+            fit
+                A `PyAutoFit` `Fit` object which contains the results of a model-fit as an entry in a sqlite database.
+        instance
+            A manual instance that overwrites the max log likelihood instance in fit (e.g. for drawing the instance
+            randomly from the PDF).
         """
         return _fit_interferometer_from(
             fit=fit,
-            galaxies=galaxies,
+            instance=instance,
             settings_dataset=self.settings_dataset,
             settings_inversion=self.settings_inversion,
             use_preloaded_grid=self.use_preloaded_grid,
