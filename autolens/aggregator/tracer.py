@@ -43,7 +43,7 @@ def _tracer_from(
     try:
         cosmology = instance.cosmology
     except AttributeError:
-        cosmology = None
+        cosmology = fit.value(name="cosmology")
 
     tracer = Tracer(galaxies=instance.galaxies, cosmology=cosmology)
 
