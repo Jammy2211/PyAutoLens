@@ -3,6 +3,7 @@ import numpy as np
 from scipy.interpolate import griddata
 from typing import Dict, List, Optional, Type, Union
 
+import autofit as af
 import autoarray as aa
 import autogalaxy as ag
 
@@ -15,15 +16,16 @@ from autolens.lens import ray_tracing_util
 class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def __init__(
         self,
-        galaxies: List[ag.Galaxy],
+        galaxies: Union[List[ag.Galaxy], af.ModelInstance],
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         run_time_dict: Optional[Dict] = None,
     ):
         """
         Performs gravitational lensing ray-tracing calculations based on an input list of galaxies and a cosmology.
 
-        The tracer first orders the input galaxies in ascending order of redshift, meaning that the input list of
-        galaxies will be a different order to the tracer's if the input list is not in ascending redshift order.
+        The tracer stores the input galaxies in their input order, which may not be in ascending redshift order.
+        However, for all ray-tracing calculations, the tracer orders the input galaxies in ascending order of redshift,
+        as this is required for the multi-plane ray-tracing calculations.
 
         The tracer then creates a series of planes (using the `Plane` object), where each plane is a collection of
         galaxies at the same redshift.
@@ -52,7 +54,8 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             A dictionary of information on the run-time of the tracer, including the total time and time spent on
             different calculations.
         """
-        self.galaxies = sorted(galaxies, key=lambda galaxy: galaxy.redshift)
+
+        self.galaxies = galaxies
 
         self.cosmology = cosmology
 
@@ -89,9 +92,24 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         return cls(galaxies=galaxies, cosmology=cosmology, run_time_dict=run_time_dict)
 
     @property
+    def galaxies_ascending_redshift(self) -> List[ag.Galaxy]:
+        """
+        Returns the galaxies in the tracer in ascending redshift order.
+
+        Multi-plane ray tracing calculations begin from the first lowest redshift plane and perform calculations in
+        planes of increasing redshift. Thus, the galaxies are sorted by redshift in ascending order to aid this
+        calculation.
+
+        Returns
+        -------
+        The galaxies in the tracer in ascending redshift order.
+        """
+        return sorted(self.galaxies, key=lambda galaxy: galaxy.redshift)
+
+    @property
     def planes(self):
         return ag.util.plane.planes_via_galaxies_from(
-            galaxies=self.galaxies, run_time_dict=self.run_time_dict
+            galaxies=self.galaxies_ascending_redshift, run_time_dict=self.run_time_dict
         )
 
     @property
@@ -272,7 +290,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         """
         return ray_tracing_util.grid_2d_at_redshift_from(
             redshift=redshift,
-            galaxies=self.galaxies,
+            galaxies=self.galaxies_ascending_redshift,
             grid=grid,
             cosmology=self.cosmology,
         )

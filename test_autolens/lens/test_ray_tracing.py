@@ -1,11 +1,9 @@
-from astropy import cosmology as cosmo
 import numpy as np
 import pytest
-import os
 from os import path
-import shutil
 from skimage import measure
 
+import autofit as af
 import autolens as al
 from autoconf.dictable import from_json, output_to_json
 
@@ -204,27 +202,27 @@ def test__planes_indexes_with_inversion():
     assert tracer.plane_indexes_with_pixelizations == [2, 4]
 
 
-def test__galaxies__comes_in_plane_redshift_order(sub_grid_2d_7x7):
+def test__galaxies_ascending_redshift(sub_grid_2d_7x7):
     g0 = al.Galaxy(redshift=0.5)
     g1 = al.Galaxy(redshift=0.5)
 
     tracer = al.Tracer(galaxies=[g0, g1])
 
-    assert tracer.galaxies == [g0, g1]
+    assert tracer.galaxies_ascending_redshift == [g0, g1]
 
     g2 = al.Galaxy(redshift=1.0)
     g3 = al.Galaxy(redshift=1.0)
 
     tracer = al.Tracer(galaxies=[g0, g1, g2, g3])
 
-    assert tracer.galaxies == [g0, g1, g2, g3]
+    assert tracer.galaxies_ascending_redshift == [g0, g1, g2, g3]
 
     g4 = al.Galaxy(redshift=0.75)
     g5 = al.Galaxy(redshift=1.5)
 
     tracer = al.Tracer(galaxies=[g0, g1, g2, g3, g4, g5])
 
-    assert tracer.galaxies == [g0, g1, g4, g2, g3, g5]
+    assert tracer.galaxies_ascending_redshift == [g0, g1, g4, g2, g3, g5]
 
 
 ### Light Profiles ###
@@ -1561,6 +1559,27 @@ def test__grid_iterate_in__iterates_grid_result_correctly(gal_x1_mp):
     assert deflections[4, 0] == pytest.approx(deflections_sub_8[4, 0])
 
 
+### Instance ###
+
+def test__instance_into_tracer__retains_dictionary_access():
+    
+    model = af.Collection(
+        galaxies=af.Collection(
+            lens=al.Galaxy(
+                redshift=0.5,
+                light=al.lp.SersicSph(intensity=2.0),
+                mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
+            ),
+            source=al.Galaxy(redshift=1.0),
+        )
+    )
+
+    instance = model.instance_from_prior_medians()
+
+    tracer = al.Tracer(galaxies=instance.galaxies)
+
+    assert tracer.galaxies.lens.light.intensity == 2.0
+
 ### Dictable ###
 
 
@@ -1583,3 +1602,4 @@ def test__output_to_and_load_from_json():
     assert tracer_from_json.galaxies[0].redshift == 0.5
     assert tracer_from_json.galaxies[1].redshift == 1.0
     assert tracer_from_json.galaxies[0].mass_profile.einstein_radius == 1.0
+

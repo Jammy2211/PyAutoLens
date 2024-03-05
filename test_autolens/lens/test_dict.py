@@ -83,6 +83,7 @@ def make_tracer_dict():
 
 
 def test__to_dict(tracer, tracer_dict):
+    print(to_dict(tracer))
     assert to_dict(tracer) == tracer_dict
 
 
