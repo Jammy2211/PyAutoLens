@@ -202,14 +202,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         return len(self.plane_redshifts)
 
     @property
-    def image_plane(self) -> Plane:
-        return self.planes[0]
-
-    @property
-    def source_plane(self) -> Plane:
-        return self.planes[-1]
-
-    @property
     def all_planes_have_redshifts(self) -> bool:
         return None not in self.plane_redshifts
 
