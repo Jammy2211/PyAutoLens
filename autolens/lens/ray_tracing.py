@@ -203,7 +203,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
     @aa.grid_dec.grid_2d_to_structure_list
     def traced_grid_2d_list_from(
-        self, grid: aa.type.Grid2DLike, plane_index_limit=None
+        self, grid: aa.type.Grid2DLike, plane_index_limit : int = Optional[None]
     ) -> List[aa.type.Grid2DLike]:
         """
         Performs multi-plane ray tracing on a 2D grid of Cartesian (y,x) coordinates using the mass profiles of the

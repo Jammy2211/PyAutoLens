@@ -38,5 +38,6 @@ def test__planes():
 
     assert tracer.planes == [[g1, g1], [g2, g2], [g3]]
 
-### Has Attributes ###
+
+
 

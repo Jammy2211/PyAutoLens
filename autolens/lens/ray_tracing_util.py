@@ -5,7 +5,7 @@ import autogalaxy as ag
 
 
 def traced_grid_2d_list_from(
-    planes: List[ag.Plane],
+    planes: List[List[ag.Galaxy]],
     grid: aa.type.Grid2DLike,
     cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     plane_index_limit: int = None,
@@ -27,14 +27,14 @@ def traced_grid_2d_list_from(
     indexes are above this value are omitted from the calculation and not included in the returned list of grids (the
     size of this list is reduced accordingly).
 
-    For example, if `planes` has 3 `Plane` objects but `plane_index_limit=1`, the third plane (corresponding to
+    For example, if `planes` has 3 lists of galaxies, but `plane_index_limit=1`, the third plane (corresponding to
     index 2) will not be calculated. The `plane_index_limit` is often used to avoid uncessary ray tracing calculations
     of higher redshift planes whose galaxies do not have mass profile (and only have light profiles).
 
     Parameters
     ----------
     planes
-        The list of planes whose galaxies and mass profiles are used to perform multi-plane ray-tracing.
+        The list of lists of galaxies whose mass profiles are used to perform multi-plane ray-tracing.
     grid
         The 2D (y, x) coordinates on which multi-plane ray-tracing calculations are performed.
     cosmology
@@ -52,17 +52,17 @@ def traced_grid_2d_list_from(
     traced_grid_list = []
     traced_deflection_list = []
 
-    plane_redshifts = [plane.redshift for plane in planes]
+    redshift_list = [galaxies[0].redshift for galaxies in planes]
 
-    for plane_index, plane in enumerate(planes):
+    for plane_index, galaxies in enumerate(planes):
         scaled_grid = grid.copy()
 
         if plane_index > 0:
             for previous_plane_index in range(plane_index):
                 scaling_factor = cosmology.scaling_factor_between_redshifts_from(
-                    redshift_0=plane_redshifts[previous_plane_index],
-                    redshift_1=plane.redshift,
-                    redshift_final=plane_redshifts[-1],
+                    redshift_0=redshift_list[previous_plane_index],
+                    redshift_1=galaxies[0].redshift,
+                    redshift_final=redshift_list[-1],
                 )
 
                 scaled_deflections = (
@@ -77,7 +77,9 @@ def traced_grid_2d_list_from(
             if plane_index == plane_index_limit:
                 return traced_grid_list
 
-        traced_deflection_list.append(plane.deflections_yx_2d_from(grid=scaled_grid))
+        deflections_yx_2d = sum(map(lambda g: g.deflections_yx_2d_from(grid=scaled_grid), galaxies))
+
+        traced_deflection_list.append(deflections_yx_2d)
 
     return traced_grid_list
 
