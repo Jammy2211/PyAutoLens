@@ -85,11 +85,14 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     @property
     def planes(self):
 
-        galaxies_in_redshift_ordered_planes = [[] for i in range(len(self.plane_redshifts))]
+        planes = [[] for i in range(len(self.plane_redshifts))]
 
-        return ag.util.plane.planes_via_galaxies_from(
-            galaxies=self.galaxies_ascending_redshift, run_time_dict=self.run_time_dict
-        )
+        for galaxy in self.galaxies_ascending_redshift:
+
+            index = (np.abs(np.asarray(self.plane_redshifts) - galaxy.redshift)).argmin()
+            planes[index].append(galaxy)
+
+        return planes
 
     @classmethod
     def sliced_tracer_from(
