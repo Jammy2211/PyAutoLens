@@ -27,8 +27,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         However, for all ray-tracing calculations, the tracer orders the input galaxies in ascending order of redshift,
         as this is required for the multi-plane ray-tracing calculations.
 
-        The tracer then creates a series of planes (using the `Plane` object), where each plane is a collection of
-        galaxies at the same redshift.
+        The tracer then creates a series of planes, where each plane is a collection of galaxies at the same redshift.
 
         The redshifts of these planes are determined by the redshifts of the galaxies, such that there is a unique
         plane redshift for every unique galaxy redshift (galaxies with identical redshifts are put in the same plane).
@@ -61,36 +60,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
         self.run_time_dict = run_time_dict
 
-    @classmethod
-    def from_planes(
-        cls,
-        planes: List[Plane],
-        cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
-        run_time_dict: Optional[Dict] = None,
-    ) -> "Tracer":
-        """
-        Create the tracer from a list of planes, where each plane is a collection of galaxies at the same redshift.
-
-        This method unpacks all galaxies from the input planes and creates a new list of galaxies, which is input
-        into the init method of the tracer.
-
-        Parameters
-        ----------
-        planes
-            The list of planes which make up the gravitational lensing ray-tracing system.
-        cosmology
-            The cosmology used to perform ray-tracing calculations.
-        run_time_dict
-            A dictionary of information on the run-time of the tracer, including the total time and time spent on
-            different calculations.
-        """
-        galaxies = []
-        for plane in planes:
-            for galaxy in plane.galaxies:
-                galaxies.append(galaxy)
-
-        return cls(galaxies=galaxies, cosmology=cosmology, run_time_dict=run_time_dict)
-
     @property
     def galaxies_ascending_redshift(self) -> List[ag.Galaxy]:
         """
@@ -107,14 +76,20 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         return sorted(self.galaxies, key=lambda galaxy: galaxy.redshift)
 
     @property
+    def plane_redshifts(self) -> List[float]:
+
+        plane_redshifts = [galaxy.redshift for galaxy in self.galaxies_ascending_redshift]
+
+        return list(dict.fromkeys(plane_redshifts))
+
+    @property
     def planes(self):
+
+        galaxies_in_redshift_ordered_planes = [[] for i in range(len(self.plane_redshifts))]
+
         return ag.util.plane.planes_via_galaxies_from(
             galaxies=self.galaxies_ascending_redshift, run_time_dict=self.run_time_dict
         )
-
-    @property
-    def plane_redshifts(self):
-        return [plane.redshift for plane in self.planes]
 
     @classmethod
     def sliced_tracer_from(

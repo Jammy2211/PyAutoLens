@@ -56,6 +56,29 @@ def caustics_via_magnification_via_tracer_from(tracer, grid):
     return caustics
 
 
+### Planes ###
+
+
+def test__plane_redshifts():
+
+    g1 = al.Galaxy(redshift=1)
+    g2 = al.Galaxy(redshift=2)
+
+    tracer = al.Tracer(galaxies=[g1, g2])
+
+    assert tracer.plane_redshifts == [1, 2]
+
+
+# def test__planes():
+#
+#     g1 = al.Galaxy(redshift=1)
+#     g2 = al.Galaxy(redshift=2)
+#
+#     tracer = al.Tracer(galaxies=[g1, g2])
+#
+#     assert tracer.planes == [[g1], [g2]]
+
+
 ### Has Attributes ###
 
 
