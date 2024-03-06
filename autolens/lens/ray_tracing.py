@@ -201,9 +201,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def total_planes(self) -> int:
         return len(self.plane_redshifts)
 
-    def plane_with_galaxy(self, galaxy) -> Plane:
-        return [plane for plane in self.planes if galaxy in plane.galaxies][0]
-
     @aa.grid_dec.grid_2d_to_structure_list
     def traced_grid_2d_list_from(
         self, grid: aa.type.Grid2DLike, plane_index_limit=None

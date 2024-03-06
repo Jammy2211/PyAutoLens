@@ -132,16 +132,6 @@ def test__total_plane():
     assert tracer.total_planes == 2
 
 
-def test__plane_with_galaxy(sub_grid_2d_7x7):
-    g1 = al.Galaxy(redshift=1)
-    g2 = al.Galaxy(redshift=2)
-
-    tracer = al.Tracer(galaxies=[g1, g2])
-
-    assert tracer.plane_with_galaxy(g1).galaxies == [g1]
-    assert tracer.plane_with_galaxy(g2).galaxies == [g2]
-
-
 def test__upper_plane_index_with_light_profile():
     g0 = al.Galaxy(redshift=0.5)
     g1 = al.Galaxy(redshift=1.0)
