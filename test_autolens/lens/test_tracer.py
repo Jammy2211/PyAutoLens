@@ -285,6 +285,32 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes__multi_pla
     )
 
 
+def test__padded_image_2d_from(sub_grid_2d_7x7, grid_2d_iterate_7x7):
+
+    padded_grid = sub_grid_2d_7x7.padded_grid_from(kernel_shape_native=(3, 3))
+
+    g0 = al.Galaxy(redshift=0.1, light_profile=al.lp.Sersic(intensity=0.1))
+    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=0.2))
+    g2 = al.Galaxy(redshift=2.0, light_profile=al.lp.Sersic(intensity=0.3))
+
+    padded_g0_image = g0.image_2d_from(grid=padded_grid)
+
+    padded_g1_image = g1.image_2d_from(grid=padded_grid)
+
+    padded_g2_image = g2.image_2d_from(grid=padded_grid)
+
+    tracer = al.Tracer(galaxies=[g0, g1, g2], cosmology=al.cosmo.Planck15())
+
+    padded_tracer_image = tracer.padded_image_2d_from(
+        grid=sub_grid_2d_7x7, psf_shape_2d=(3, 3)
+    )
+
+    assert padded_tracer_image.shape_native == (9, 9)
+    assert padded_tracer_image == pytest.approx(
+        padded_g0_image + padded_g1_image + padded_g2_image, 1.0e-4
+    )
+
+
 def test__light_profile_snr__signal_to_noise_via_simulator_correct():
     background_sky_level = 10.0
     exposure_time = 300.0
