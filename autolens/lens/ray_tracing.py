@@ -347,6 +347,17 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
     @property
     def upper_plane_index_with_light_profile(self) -> int:
+        """
+        Returns the index of the highest redshift plane in the tracer which has a light profile.
+
+        When computing the image of a tracer, we only need to trace rays to the highest redshift plane which has a
+        light profile. This upper index is therefore used to do this, and ensure faster computation by avoiding
+        ray-tracing to planes which do not have light profiles.
+
+        Returns
+        -------
+        The index of the highest redshift plane in the tracer which has a light profile.
+        """
         return max(
             [
                 plane_index if any([galaxy.has(cls=ag.LightProfile) for galaxy in galaxies]) else 0
@@ -358,6 +369,44 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def image_2d_list_from(
         self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
     ) -> List[aa.Array2D]:
+        """
+        Returns a list of the 2D images for each plane from a 2D grid of Cartesian (y,x) coordinates.
+
+        The image of each plane is computed by summing the images of all galaxies in that plane. If a plane has no
+        galaxies, a numpy array of zeros is returned.
+
+        For example, if the tracer's planes contain galaxies at redshifts z=0.5, z=1.0 and z=2.0, and the galaxies
+        at redshifts z=0.5 and z=1.0 have light and mass profiles, the returned list of images will be the image of the
+        galaxies at z=0.5 and z=1.0, where the image at redshift z=1.0 will include the lensing effects of the galaxies
+        at z=0.5. The image at redshift z=2.0 will be a numpy array of zeros.
+
+        This function is used in the `autogalaxy.operate.image` package, to output images of the tracer
+        that have operations such as a 2D convolution or Fourier transform applied to them.
+
+        The images output by this function do not include instrument operations, such as PSF convolution (for imaging
+        data) or a Fourier transform (for interferometer data). However, inherited methods in the
+        `autogalaxy.operate.image` package can apply these operations to the images, which may have the `operated_only`
+        input passed to them. This is why this function includes the `operated_only` input.
+
+        If the `operated_only` input is included, the function omits light profiles which are parents of
+        the `LightProfileOperated` object, which signifies that the light profile represents emission that has
+        already had the instrument operations (e.g. PSF convolution, a Fourier transform) applied to it and therefore
+        that operation is not performed again.
+
+        See the `autogalaxy.profiles.light` package for details of how images are computed from a light
+        profile.
+
+        Parameters
+        ----------
+        grid
+            The 2D (y, x) coordinates where values of the image are evaluated.
+        operated_only
+            The returned list from this function contains all light profile images, and they are never operated on
+            (e.g. via the imaging PSF). However, inherited methods in the `autogalaxy.operate.image` package can
+            apply these operations to the images, which may have the `operated_only` input passed to them. This input
+            therefore is used to pass the `operated_only` input to these methods.
+        """
+
         traced_grid_list = self.traced_grid_2d_list_from(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
         )
@@ -383,6 +432,25 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def image_2d_from(
         self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
     ) -> aa.Array2D:
+        """
+        Returns the 2D image of this ray-tracing strong lens system from a 2D grid of Cartesian (y,x) coordinates.
+
+        This function first computed the image of each plane in the tracer, via the function `image_2d_list_from`. The
+        images are then summed to give the overall image of the tracer.
+
+        Refer to the function `image_2d_list_from` for a full description of the calculation and how the `operated_only`
+        input is used.
+
+        Parameters
+        ----------
+        grid
+            The 2D (y, x) coordinates where values of the image are evaluated.
+        operated_only
+            The returned list from this function contains all light profile images, and they are never operated on
+            (e.g. via the imaging PSF). However, inherited methods in the `autogalaxy.operate.image` package can
+            apply these operations to the images, which may have the `operated_only` input passed to them. This input
+            therefore is used to pass the `operated_only` input to these methods.
+        """
         return sum(self.image_2d_list_from(grid=grid, operated_only=operated_only))
 
     def image_2d_via_input_plane_image_from(
