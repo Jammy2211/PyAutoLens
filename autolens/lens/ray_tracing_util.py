@@ -99,6 +99,9 @@ def grid_2d_at_redshift_from(
     cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
 ) -> aa.type.Grid2DLike:
     """
+    Returns a ray-traced grid of 2D Cartesian (y,x) coordinates, which accounts for multi-plane ray-tracing, at a
+    specified input redshift which may be different to the redshifts of all planes.
+
     Given a list of galaxies whose redshifts define a multi-plane lensing system and an input grid of (y,x) arc-second
     coordinates (e.g. an image-plane grid), ray-trace the grid to an input redshift in of the multi-plane system.
 
@@ -110,11 +113,19 @@ def grid_2d_at_redshift_from(
     factors between planes (which are derived from their redshifts and angular diameter distances). It is these
     scaling factors that account for multi-plane ray tracing effects.
 
+    There are two ways the calculation may be performed:
+
+    1) If the input redshift is the same as the redshift of a plane in the multi-plane system, the grid is ray-traced
+    to that plane and the traced grid returned.
+
+    2) If the input redshift is not the same as the redshift of a plane in the multi-plane system, a plane is inserted
+    at this redshift and the grid is ray-traced to this plane.
+
     For example, the input list `galaxies` may contained three `Galaxy` objects at redshifts z=0.5, z=1.0 and z=2.0.
     We can input an image-plane grid and request that its coordinates are ray-traced to a plane at z=1.75 in this
-    multi-plane system. This will use the galaxy's at z=0.5 and z=1.0 to compute deflection angles, alongside
-    accounting for multi-plane lensing effects via the angular diameter distances between the different galaxy
-    redshifts.
+    multi-plane system. This will insert a plane at z=1.75 and use the galaxy's at z=0.5 and z=1.0 to compute
+    deflection angles, alongside accounting for multi-plane lensing effects via the angular diameter distances
+    between the different galaxy redshifts.
 
     Parameters
     ----------
@@ -128,17 +139,17 @@ def grid_2d_at_redshift_from(
         The cosmology used for ray-tracing from which angular diameter distances between planes are computed.
     """
 
-    plane_redshifts = ag.util.plane.ordered_plane_redshifts_from(galaxies=galaxies)
+    plane_redshifts = ag.util.plane.plane_redshifts_from(galaxies=galaxies)
 
     if redshift <= plane_redshifts[0]:
         return grid.copy()
 
-    planes = ag.util.plane.planes_via_galaxies_from(galaxies=galaxies)
+    planes = ag.util.plane.planes_from(galaxies=galaxies, plane_redshifts=plane_redshifts)
 
     plane_index_with_redshift = [
         plane_index
-        for plane_index, plane in enumerate(planes)
-        if plane.redshift == redshift
+        for plane_index, galaxies in enumerate(planes)
+        if galaxies[0].redshift == redshift
     ]
 
     if plane_index_with_redshift:
@@ -152,7 +163,7 @@ def grid_2d_at_redshift_from(
         if redshift < plane_redshift:
             plane_index_insert = plane_index
 
-    planes.insert(plane_index_insert, ag.Plane(redshift=redshift, galaxies=[]))
+    planes.insert(plane_index_insert, [ag.Galaxy(redshift=redshift)])
 
     traced_grid_list = traced_grid_2d_list_from(
         planes=planes, grid=grid, cosmology=cosmology

@@ -299,19 +299,44 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         self, grid: aa.type.Grid2DLike, redshift: float
     ) -> aa.type.Grid2DLike:
         """
-        For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \
-        the strong lens configuration.
+        Returns a ray-traced grid of 2D Cartesian (y,x) coordinates, which accounts for multi-plane ray-tracing, at a
+        specified input redshift which may be different to the redshifts of all planes.
 
-        This is performed using multi-plane ray-tracing and the existing redshifts and planes of the tracer. However, \
-        any redshift can be input even if a plane does not exist there, including redshifts before the first plane \
-        of the lens system.
+        Given a list of galaxies whose redshifts define a multi-plane lensing system and an input grid of (y,x) arc-second
+        coordinates (e.g. an image-plane grid), ray-trace the grid to an input redshift in of the multi-plane system.
+
+        This is performed using multi-plane ray-tracing and a list of galaxies which are converted into a list of planes
+        at a set of redshift. The galaxy mass profiles are used to compute deflection angles. Any redshift can be input
+        even if a plane does not exist there, including redshifts before the first plane of the lens system.
+
+        An input `AstroPy` cosmology object can change the cosmological model, which is used to compute the scaling
+        factors between planes (which are derived from their redshifts and angular diameter distances). It is these
+        scaling factors that account for multi-plane ray tracing effects.
+
+        There are two ways the calculation may be performed:
+
+        1) If the input redshift is the same as the redshift of a plane in the multi-plane system, the grid is ray-traced
+        to that plane and the traced grid returned.
+
+        2) If the input redshift is not the same as the redshift of a plane in the multi-plane system, a plane is inserted
+        at this redshift and the grid is ray-traced to this plane.
+
+        For example, the input list `galaxies` may contained three `Galaxy` objects at redshifts z=0.5, z=1.0 and z=2.0.
+        We can input an image-plane grid and request that its coordinates are ray-traced to a plane at z=1.75 in this
+        multi-plane system. This will insert a plane at z=1.75 and use the galaxy's at z=0.5 and z=1.0 to compute
+        deflection angles, alongside accounting for multi-plane lensing effects via the angular diameter distances
+        between the different galaxy redshifts.
 
         Parameters
         ----------
-        grid : ndsrray or aa.Grid2D
-            The image-plane grid which is traced to the redshift.
         redshift
-            The redshift the image-plane grid is traced to.
+            The redshift the input (image-plane) grid is traced too.
+        galaxies
+            A list of galaxies which make up a multi-plane strong lens ray-tracing system.
+        grid
+            The 2D (y, x) coordinates which is ray-traced to the input redshift.
+        cosmology
+            The cosmology used for ray-tracing from which angular diameter distances between planes are computed.
         """
         return ray_tracing_util.grid_2d_at_redshift_from(
             redshift=redshift,
