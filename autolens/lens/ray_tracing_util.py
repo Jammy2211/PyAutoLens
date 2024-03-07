@@ -144,7 +144,9 @@ def grid_2d_at_redshift_from(
     if redshift <= plane_redshifts[0]:
         return grid.copy()
 
-    planes = ag.util.plane.planes_from(galaxies=galaxies, plane_redshifts=plane_redshifts)
+    planes = ag.util.plane.planes_from(
+        galaxies=galaxies, plane_redshifts=plane_redshifts
+    )
 
     plane_index_with_redshift = [
         plane_index

@@ -7,7 +7,7 @@ import autofit as af
 import autoarray as aa
 import autogalaxy as ag
 
-from autogalaxy.plane.plane import Plane
+from autogalaxy.profiles.geometry_profiles import GeometryProfile
 from autogalaxy.profiles.light.snr import LightProfileSNR
 
 from autolens.lens import ray_tracing_util
@@ -336,7 +336,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         """
         return max(
             [
-                plane_index if any([galaxy.has(cls=ag.LightProfile) for galaxy in galaxies]) else 0
+                plane_index
+                if any([galaxy.has(cls=ag.LightProfile) for galaxy in galaxies])
+                else 0
                 for (plane_index, galaxies) in enumerate(self.planes)
             ]
         )
@@ -390,10 +392,19 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         image_2d_list = []
 
         for plane_index in range(len(traced_grid_list)):
-
             galaxies = self.planes[plane_index]
 
-            image_2d_list.append(sum([galaxy.image_2d_from(grid=traced_grid_list[plane_index], operated_only=operated_only) for galaxy in galaxies]))
+            image_2d_list.append(
+                sum(
+                    [
+                        galaxy.image_2d_from(
+                            grid=traced_grid_list[plane_index],
+                            operated_only=operated_only,
+                        )
+                        for galaxy in galaxies
+                    ]
+                )
+            )
 
         if self.upper_plane_index_with_light_profile < self.total_planes - 1:
             for plane_index in range(
@@ -552,10 +563,12 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         traced_grid_list = self.traced_grid_2d_list_from(grid=grid)
 
         for plane_index, galaxies in enumerate(self.planes):
-
-            image_2d_list = [galaxy.image_2d_from(
-                grid=traced_grid_list[plane_index], operated_only=operated_only
-            ) for galaxy in galaxies]
+            image_2d_list = [
+                galaxy.image_2d_from(
+                    grid=traced_grid_list[plane_index], operated_only=operated_only
+                )
+                for galaxy in galaxies
+            ]
 
             for galaxy_index, galaxy in enumerate(galaxies):
                 galaxy_image_2d_dict[galaxy] = image_2d_list[galaxy_index]
@@ -625,7 +638,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         grid
             The 2D (y, x) coordinates where values of the deflections are evaluated.
         """
-        return sum([galaxy.deflections_yx_2d_from(grid=grid) for galaxy in self.galaxies])
+        return sum(
+            [galaxy.deflections_yx_2d_from(grid=grid) for galaxy in self.galaxies]
+        )
 
     @aa.grid_dec.grid_2d_to_vector_yx
     @aa.grid_dec.grid_2d_to_structure
@@ -662,14 +677,14 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         """
         Returns the summed 2D convergence of all galaxies in the tracer from a 2D grid of Cartesian (y,x) coordinates.
 
-        The convergence of each plane is computed by summing the convergences of all galaxies in that plane. If a 
+        The convergence of each plane is computed by summing the convergences of all galaxies in that plane. If a
         plane has no galaxies, or if the galaxies in a plane has no mass profiles, a numpy array of zeros is returned.
 
         For example, if the tracer's planes contain galaxies at redshifts z=0.5, z=1.0 and z=2.0, and the galaxies
         at redshifts z=0.5 and z=1.0 have mass profiles, the returned convergence will be the sum of the convergences
         of the galaxies at z=0.5 and z=1.0.
 
-        The convergences of a tracer do not depend on ray-tracing between grids. This is why the convergence of the 
+        The convergences of a tracer do not depend on ray-tracing between grids. This is why the convergence of the
         tracer is the sum of the convergences of all planes, and does not need to account for multi-plane ray-tracing
         effects (in the way that deflection angles and images do).
 
@@ -687,14 +702,14 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         """
         Returns the summed 2D potential of all galaxies in the tracer from a 2D grid of Cartesian (y,x) coordinates.
 
-        The potential of each plane is computed by summing the potentials of all galaxies in that plane. If a 
+        The potential of each plane is computed by summing the potentials of all galaxies in that plane. If a
         plane has no galaxies, or if the galaxies in a plane has no mass profiles, a numpy array of zeros is returned.
 
         For example, if the tracer's planes contain galaxies at redshifts z=0.5, z=1.0 and z=2.0, and the galaxies
         at redshifts z=0.5 and z=1.0 have mass profiles, the returned potential will be the sum of the potentials
         of the galaxies at z=0.5 and z=1.0.
 
-        The potentials of a tracer do not depend on ray-tracing between grids. This is why the potential of the 
+        The potentials of a tracer do not depend on ray-tracing between grids. This is why the potential of the
         tracer is the sum of the potentials of all planes, and does not need to account for multi-plane ray-tracing
         effects (in the way that deflection angles and images do).
 
@@ -774,7 +789,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         """
         return any(plane.perform_inversion for plane in self.planes)
 
-    def extract_attribute(self, cls : Type, attr_name : str) -> Union[aa.ArrayIrregular, aa.Grid2DIrregular]:
+    def extract_attribute(
+        self, cls: Type, attr_name: str, filter_nones: Optional[bool] = False
+    ) -> List[Union[aa.ArrayIrregular, aa.Grid2DIrregular]]:
         """
         Returns an extracted attribute of a class in the tracer as a `ValueIrregular` or `Grid2DIrregular` object.
 
@@ -826,7 +843,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         elif isinstance(attributes[0], tuple):
             return aa.Grid2DIrregular(values=attributes)
 
-    def extract_attributes_of_planes(self, cls, attr_name, filter_nones=False):
+    def extract_attributes_of_planes(
+        self, cls: Type, attr_name: str, filter_nones: Optional[bool] = False
+    ) -> List[Union[aa.ArrayIrregular, aa.Grid2DIrregular]]:
         """
         Returns an extracted attribute of a class in the tracer as a list of `ValueIrregular` or `Grid2DIrregular`
         objects, where the indexes of the list correspond to the tracer's planes.
@@ -880,7 +899,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                 for plane in self.planes
             ]
 
-    def extract_attributes_of_galaxies(self, cls, attr_name, filter_nones=False):
+    def extract_attributes_of_galaxies(
+        self, cls: Type, attr_name: str, filter_nones: Optional[bool] = False
+    ) -> List[Union[aa.ArrayIrregular, aa.Grid2DIrregular]]:
         """
         Returns an attribute of a class in the tracer as a list of `ValueIrregular` or `Grid2DIrregular` objects, where
         the indexes of the list correspond to the tracer's galaxies. If a plane has multiple galaxies it will have a
@@ -944,7 +965,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                 for galaxy in self.galaxies
             ]
 
-    def extract_profile(self, profile_name):
+    def extract_profile(self, profile_name: str) -> GeometryProfile:
         """
         Returns a profile (e.g. a `LightProfile`, `MassProfile`, `Point`) from the tracer using the name of that
         component.
@@ -970,17 +991,25 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             except KeyError:
                 pass
 
-    def extract_plane_index_of_profile(self, profile_name):
+    def extract_plane_index_of_profile(self, profile_name: str) -> int:
         """
-        Returns the plane index of a  LightProfile`, `MassProfile` or `Point` from the `Tracer` using the name
-        of that component.
+        Returns the plane index of a profile (e.g. a `LightProfile`, `MassProfile`, `Point`) from the tracer using
+        the name of that component.
 
-        For example, if a tracer has two galaxies, `lens` and `source` with `LightProfile`'s name `light_0` and
-        `light_1`, the following:
+        For example, if a tracer has two galaxies named `lens` and `source`, where `lens` has a light profile
+        named `light_0` and `source` has a light profile named `light_1`, the input:
 
-        `tracer.extract_profile(profile_name="light_1")`
+            `tracer.extract_profile(profile_name="light_1")`
 
-        Would return `plane_index=1` given the profile is in the source plane.
+        Would return `plane_index=1` corresponding to the profile in the source plane.
+
+        This primarily used for point-source modeling, where the locations that the point-sources tracer to in
+        different planes must be paired to their corresponding point-source `Point` profile.
+
+        Parameters
+        ----------
+        profile_name
+            The name of the profile component in the tracer.
         """
         for plane_index, galaxies in enumerate(self.planes):
             for galaxy in galaxies:
