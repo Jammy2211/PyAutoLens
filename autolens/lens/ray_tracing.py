@@ -77,10 +77,27 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
     @property
     def plane_redshifts(self) -> List[float]:
+        """
+        Returns a list of plane redshifts from a list of galaxies, using the redshifts of the galaxies to determine the
+        unique redshifts of the planes.
 
-        plane_redshifts = [galaxy.redshift for galaxy in self.galaxies_ascending_redshift]
+        Each plane redshift corresponds to a unique redshift in the list of galaxies, such that the returned list of
+        redshifts contains no duplicate values. This means multiple galaxies at the same redshift are assigned to the
+        same plane.
 
-        return list(dict.fromkeys(plane_redshifts))
+        For example, if the input is three galaxies, two at redshift 1.0 and one at redshift 2.0, the returned list of
+        redshifts would be [1.0, 2.0].
+
+        Parameters
+        ----------
+        galaxies
+            The list of galaxies used to determine the unique redshifts of the planes.
+
+        Returns
+        -------
+        The list of unique redshifts of the planes.
+        """
+        return ag.util.plane.plane_redshifts_from(galaxies=self.galaxies_ascending_redshift)
 
     @property
     def planes(self):
