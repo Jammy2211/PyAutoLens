@@ -852,7 +852,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                 Grid2DIrregular(values=[(centre_y_0, centre_x_0), (centre_y_1, centre_x_1)])
             ]
 
-        If a profile does not have a certain entry, it is replaced with a None, although the nones can be removed
+        If a profile does not have a certain entry, it is replaced with a None. The Nones can be removed
         by setting `filter_nones=True`.
 
         The primary use of this function is to extract the attributes of profiles for visualization, for example
@@ -883,44 +883,53 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def extract_attributes_of_galaxies(self, cls, attr_name, filter_nones=False):
         """
         Returns an attribute of a class in the tracer as a list of `ValueIrregular` or `Grid2DIrregular` objects, where
-        the indexes of the list correspond to the tracer's galaxies. If a plane has multiple galaxies they are split
-        into separate indexes int he list.
+        the indexes of the list correspond to the tracer's galaxies. If a plane has multiple galaxies it will have a
+        list with each galaxy as an entry.
 
         For example, if a tracer has an image-plane with a galaxy with a light profile and a source-plane with a galaxy
-        with a light profile, the following:
+        with a light profile, the input:
 
-        `tracer.extract_attributes_of_galaxies(cls=LightProfile, name="axis_ratio")`
+            `tracer.extract_attributes_of_galaxies(cls=LightProfile, name="axis_ratio")`
 
-        would return:
+        Returns:
 
-        [ArrayIrregular(values=[axis_ratio_0]), ArrayIrregular(values=[axis_ratio_1])]
+            [ArrayIrregular(values=[axis_ratio_0]), ArrayIrregular(values=[axis_ratio_1])]
 
         If the image plane has two galaxies with a mass profile each and the source plane another galaxy with a
-        mass profile, the following:
+        mass profile, the input:
 
-        `tracer.extract_attributes_of_galaxies(cls=MassProfile, name="centres")`
+            `tracer.extract_attributes_of_galaxies(cls=MassProfile, name="centres")`
 
-        would return:
+        Returns:
 
-        [
-            Grid2DIrregular(values=[(centre_y_0, centre_x_0)]),
-            Grid2DIrregular(values=[(centre_y_0, centre_x_0)])
-            Grid2DIrregular(values=[(centre_y_0, centre_x_0)])
-        ]
+            [
+                Grid2DIrregular(values=[(centre_y_0, centre_x_0)]),
+                Grid2DIrregular(values=[(centre_y_0, centre_x_0)])
+                Grid2DIrregular(values=[(centre_y_0, centre_x_0)])
+            ]
 
         If the first galaxy in the image plane in the example above had two mass profiles as well as the galaxy in the
         source plane it would return:
 
-                [
-            Grid2DIrregular(values=[(centre_y_0, centre_x_0), (centre_y_1, centre_x_1)]),
-            Grid2DIrregular(values=[(centre_y_0, centre_x_0)])
-            Grid2DIrregular(values=[(centre_y_0, centre_x_0, (centre_y_1, centre_x_1))])
-        ]
+            [
+                Grid2DIrregular(values=[(centre_y_0, centre_x_0), (centre_y_1, centre_x_1)]),
+                Grid2DIrregular(values=[(centre_y_0, centre_x_0)])
+                Grid2DIrregular(values=[(centre_y_0, centre_x_0, (centre_y_1, centre_x_1))])
+            ]
 
-        If a Profile does not have a certain entry, it is replaced with a None, although the nones can be removed
+        If a profile does not have a certain entry, it is replaced with a None. The Nones can be removed
         by setting `filter_nones=True`.
 
-        This is used for visualization, for example plotting the centres of all mass profiles colored by their profile.
+        The primary use of this function is to extract the attributes of profiles for visualization, for example
+        plotting the centres of all mass profiles colored by their profile over the tracer's image.
+
+        Parameters
+        ----------
+        cls
+            The class type of object whose attribute is extracted (e.g. light profile, mass profile).
+        attr_name
+            The name of the attribute which is extracted from the class type (e.g. axis_ratio, centre).
+        filter_nones
         """
         if filter_nones:
             return [
