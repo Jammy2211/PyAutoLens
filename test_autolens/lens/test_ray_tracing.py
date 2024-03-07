@@ -60,7 +60,6 @@ def caustics_via_magnification_via_tracer_from(tracer, grid):
 
 
 def test__plane_redshifts():
-
     g1 = al.Galaxy(redshift=1)
     g2 = al.Galaxy(redshift=2)
 
@@ -1445,8 +1444,8 @@ def test__grid_iterate_in__iterates_grid_result_correctly(gal_x1_mp):
 
 ### Instance ###
 
+
 def test__instance_into_tracer__retains_dictionary_access():
-    
     model = af.Collection(
         galaxies=af.Collection(
             lens=al.Galaxy(
@@ -1463,6 +1462,7 @@ def test__instance_into_tracer__retains_dictionary_access():
     tracer = al.Tracer(galaxies=instance.galaxies)
 
     assert tracer.galaxies.lens.light.intensity == 2.0
+
 
 ### Dictable ###
 
@@ -1486,4 +1486,3 @@ def test__output_to_and_load_from_json():
     assert tracer_from_json.galaxies[0].redshift == 0.5
     assert tracer_from_json.galaxies[1].redshift == 1.0
     assert tracer_from_json.galaxies[0].mass_profile.einstein_radius == 1.0
-

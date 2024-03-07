@@ -97,19 +97,42 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         -------
         The list of unique redshifts of the planes.
         """
-        return ag.util.plane.plane_redshifts_from(galaxies=self.galaxies_ascending_redshift)
+        return ag.util.plane.plane_redshifts_from(
+            galaxies=self.galaxies_ascending_redshift
+        )
 
     @property
     def planes(self):
+        """
+        Returns a list of list of galaxies grouped into their planes, where planes contained all galaxies at the same
+        unique redshift.
 
-        planes = [[] for i in range(len(self.plane_redshifts))]
+        Each plane redshift corresponds to a unique redshift in the list of galaxies, such that the returned list of
+        redshifts contains no duplicate values. This means multiple galaxies at the same redshift are assigned to the
+        same plane.
 
-        for galaxy in self.galaxies_ascending_redshift:
+        If the plane redshifts are not input, the redshifts of the galaxies are used to determine the unique redshifts of
+        the planes.
 
-            index = (np.abs(np.asarray(self.plane_redshifts) - galaxy.redshift)).argmin()
-            planes[index].append(galaxy)
+        For example, if the input is three galaxies, two at redshift 1.0 and one at redshift 2.0, the returned list of
+        list of galaxies would be [[g1, g2], g3]].
 
-        return planes
+        Parameters
+        ----------
+        galaxies
+            The list of galaxies used to determine the unique redshifts of the planes.
+        plane_redshifts
+            The redshifts of the planes, which are used to group the galaxies into their respective planes. If not input,
+            the redshifts of the galaxies are used to determine the unique redshifts of the planes.
+
+        Returns
+        -------
+        The list of list of galaxies grouped into their planes.
+        """
+        return ag.util.plane.planes_from(
+            galaxies=self.galaxies_ascending_redshift,
+            plane_redshifts=self.plane_redshifts,
+        )
 
     @classmethod
     def sliced_tracer_from(
@@ -196,7 +219,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
     @aa.grid_dec.grid_2d_to_structure_list
     def traced_grid_2d_list_from(
-        self, grid: aa.type.Grid2DLike, plane_index_limit : int = Optional[None]
+        self, grid: aa.type.Grid2DLike, plane_index_limit: int = Optional[None]
     ) -> List[aa.type.Grid2DLike]:
         """
         Returns a ray-traced grid of 2D Cartesian (y,x) coordinates which accounts for multi-plane ray-tracing.

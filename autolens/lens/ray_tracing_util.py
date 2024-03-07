@@ -8,7 +8,7 @@ def traced_grid_2d_list_from(
     planes: List[List[ag.Galaxy]],
     grid: aa.type.Grid2DLike,
     cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
-    plane_index_limit: int = Optional[None]
+    plane_index_limit: int = Optional[None],
 ):
     """
     Returns a ray-traced grid of 2D Cartesian (y,x) coordinates which accounts for multi-plane ray-tracing.
@@ -83,7 +83,9 @@ def traced_grid_2d_list_from(
             if plane_index == plane_index_limit:
                 return traced_grid_list
 
-        deflections_yx_2d = sum(map(lambda g: g.deflections_yx_2d_from(grid=scaled_grid), galaxies))
+        deflections_yx_2d = sum(
+            map(lambda g: g.deflections_yx_2d_from(grid=scaled_grid), galaxies)
+        )
 
         traced_deflection_list.append(deflections_yx_2d)
 
