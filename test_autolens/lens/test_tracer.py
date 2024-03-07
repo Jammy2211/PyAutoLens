@@ -285,6 +285,40 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes__multi_pla
     )
 
 
+def test__light_profile_snr__signal_to_noise_via_simulator_correct():
+    background_sky_level = 10.0
+    exposure_time = 300.0
+
+    grid = al.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
+
+    mass = al.mp.IsothermalSph(einstein_radius=1.0)
+
+    sersic = al.lp_snr.Sersic(signal_to_noise_ratio=10.0, effective_radius=0.01)
+
+    tracer = al.Tracer(
+        galaxies=[
+            al.Galaxy(redshift=0.5, mass=mass),
+            al.Galaxy(redshift=1.0, light=sersic),
+        ]
+    )
+
+    psf = al.Kernel2D.no_mask(values=[[1.0]], pixel_scales=1.0)
+
+    simulator = al.SimulatorImaging(
+        psf=psf,
+        exposure_time=exposure_time,
+        noise_seed=1,
+        background_sky_level=background_sky_level,
+    )
+
+    dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
+
+    assert 8.0 < dataset.signal_to_noise_map.native[0, 1] < 12.0
+    assert 8.0 < dataset.signal_to_noise_map.native[1, 0] < 12.0
+    assert 8.0 < dataset.signal_to_noise_map.native[1, 2] < 12.0
+    assert 8.0 < dataset.signal_to_noise_map.native[2, 1] < 12.0
+
+
 def test__galaxy_image_2d_dict_from(sub_grid_2d_7x7):
     g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=1.0))
     g1 = al.Galaxy(
