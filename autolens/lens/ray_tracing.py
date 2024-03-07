@@ -373,7 +373,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         Returns a list of the 2D images for each plane from a 2D grid of Cartesian (y,x) coordinates.
 
         The image of each plane is computed by summing the images of all galaxies in that plane. If a plane has no
-        galaxies, a numpy array of zeros is returned.
+        galaxies, or if the galaxies in a plane has no light profiles, a numpy array of zeros is returned.
 
         For example, if the tracer's planes contain galaxies at redshifts z=0.5, z=1.0 and z=2.0, and the galaxies
         at redshifts z=0.5 and z=1.0 have light and mass profiles, the returned list of images will be the image of the
@@ -591,6 +591,29 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def deflections_yx_2d_from(
         self, grid: aa.type.Grid2DLike
     ) -> Union[aa.VectorYX2D, aa.VectorYX2DIrregular]:
+        """
+        Returns the 2D deflection angles of all galaxies in the tracer, from the image-plane to the source-plane,
+        accounting for multi-plane ray tracing and from a 2D grid of Cartesian (y,x) coordinates.
+
+        The multi-plane ray tracing calculations are performed in the function `traced_2d_grid_list_from` and its
+        sub-functions in the `ray_tracing_util` module. This includes performing recursive ray-tracing between planes
+        based on the planes redshifts and using the cosmological distances between them to scale the deflection angles.
+        Users should refer to these functions for details on how the ray-tracing is performed.
+
+        This function simply computes the corresponding multi-plane deflection angles by subtracting the image-plane
+        grid (e.g. before lensing) from the source-plane grid (e.g. after lensing).
+
+        If there is only one plane in the tracer, the deflections are computed by summation of the deflections of all
+        galaxies in that plane. This is identical too, but computationally faster than, using the multi-plane
+        ray-tracing calculation.
+
+        See the `autogalaxy.profiles.mass` package for details of how deflections are computed from a mass profile.
+
+        Parameters
+        ----------
+        grid
+            The 2D (y, x) coordinates where values of the deflections are evaluated.
+        """
         if self.total_planes > 1:
             return self.deflections_between_planes_from(grid=grid)
         return self.deflections_of_planes_summed_from(grid=grid)
@@ -600,6 +623,32 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def deflections_of_planes_summed_from(
         self, grid: aa.type.Grid2DLike
     ) -> Union[aa.VectorYX2D, aa.VectorYX2DIrregular]:
+        """
+        Returns the summed 2D deflections angles of all galaxies in the tracer, not accounting for multi-plane ray
+        tracing, from a 2D grid of Cartesian (y,x) coordinates.
+
+        The deflections of each plane is computed by summing the deflections of all galaxies in that plane. If a
+        plane has no galaxies, or if the galaxies in a plane has no mass profiles, a numpy array of zeros is returned.
+
+        This calculation does not account for multi-plane ray-tracing effects, it is simply the sum of the deflections
+        of all galaxies. The function `deflections_between_planes_from` performs the calculation whilst
+        accounting for multi-plane ray-tracing effects.
+
+        For example, if the tracer's planes contain galaxies at redshifts z=0.5, z=1.0 and z=2.0, and the galaxies
+        at redshifts z=0.5 and z=1.0 have mass profiles, the returned deflections will be the sum of the deflections
+        of the galaxies at z=0.5 and z=1.0.
+
+        The deflections of a tracer do not depend on ray-tracing between grids. This is why the deflections of the
+        tracer is the sum of the deflections of all planes, and does not need to account for multi-plane ray-tracing
+        effects (in the way that deflection angles and images do).
+
+        See the `autogalaxy.profiles.mass` package for details of how deflections are computed from a mass profile.
+
+        Parameters
+        ----------
+        grid
+            The 2D (y, x) coordinates where values of the deflections are evaluated.
+        """
         return sum([galaxy.deflections_yx_2d_from(grid=grid) for galaxy in self.galaxies])
 
     @aa.grid_dec.grid_2d_to_vector_yx
@@ -607,16 +656,79 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def deflections_between_planes_from(
         self, grid: aa.type.Grid2DLike, plane_i=0, plane_j=-1
     ) -> Union[aa.VectorYX2D, aa.VectorYX2DIrregular]:
+        """
+        Returns the summed 2D deflections angles between two input planes in the tracer, accounting for multi-plane
+        ray tracing, from a 2D grid of Cartesian (y,x) coordinates.
+
+        The multi-plane ray tracing calculations are performed in the function `traced_2d_grid_list_from` and its
+        sub-functions in the `ray_tracing_util` module. This includes performing recursive ray-tracing between planes
+        based on the planes redshifts and using the cosmological distances between them to scale the deflection angles.
+        Users should refer to these functions for details on how the ray-tracing is performed.
+
+        This function simply computes the corresponding multi-plane deflection angles by subtracting the grid
+        of index `plane_i` to that of index `plane_j`. The default inputs subtract the image-plane grid `plane_i=0`
+        (e.g. before lensing) from the source-plane grid `plane_j=-1` (e.g. after lensing).
+
+        See the `autogalaxy.profiles.mass` package for details of how deflections are computed from a mass profile.
+
+        Parameters
+        ----------
+        grid
+            The 2D (y, x) coordinates where values of the deflections are evaluated.
+        """
+
         traced_grids_list = self.traced_grid_2d_list_from(grid=grid)
 
         return traced_grids_list[plane_i] - traced_grids_list[plane_j]
 
     @aa.grid_dec.grid_2d_to_structure
     def convergence_2d_from(self, grid: aa.type.Grid2DLike) -> aa.Array2D:
+        """
+        Returns the summed 2D convergence of all galaxies in the tracer from a 2D grid of Cartesian (y,x) coordinates.
+
+        The convergence of each plane is computed by summing the convergences of all galaxies in that plane. If a 
+        plane has no galaxies, or if the galaxies in a plane has no mass profiles, a numpy array of zeros is returned.
+
+        For example, if the tracer's planes contain galaxies at redshifts z=0.5, z=1.0 and z=2.0, and the galaxies
+        at redshifts z=0.5 and z=1.0 have mass profiles, the returned convergence will be the sum of the convergences
+        of the galaxies at z=0.5 and z=1.0.
+
+        The convergences of a tracer do not depend on ray-tracing between grids. This is why the convergence of the 
+        tracer is the sum of the convergences of all planes, and does not need to account for multi-plane ray-tracing
+        effects (in the way that deflection angles and images do).
+
+        See the `autogalaxy.profiles.mass` package for details of how convergences are computed from a mass profile.
+
+        Parameters
+        ----------
+        grid
+            The 2D (y, x) coordinates where values of the convergence are evaluated.
+        """
         return sum([galaxy.convergence_2d_from(grid=grid) for galaxy in self.galaxies])
 
     @aa.grid_dec.grid_2d_to_structure
     def potential_2d_from(self, grid: aa.type.Grid2DLike) -> aa.Array2D:
+        """
+        Returns the summed 2D potential of all galaxies in the tracer from a 2D grid of Cartesian (y,x) coordinates.
+
+        The potential of each plane is computed by summing the potentials of all galaxies in that plane. If a 
+        plane has no galaxies, or if the galaxies in a plane has no mass profiles, a numpy array of zeros is returned.
+
+        For example, if the tracer's planes contain galaxies at redshifts z=0.5, z=1.0 and z=2.0, and the galaxies
+        at redshifts z=0.5 and z=1.0 have mass profiles, the returned potential will be the sum of the potentials
+        of the galaxies at z=0.5 and z=1.0.
+
+        The potentials of a tracer do not depend on ray-tracing between grids. This is why the potential of the 
+        tracer is the sum of the potentials of all planes, and does not need to account for multi-plane ray-tracing
+        effects (in the way that deflection angles and images do).
+
+        See the `autogalaxy.profiles.mass` package for details of how potentials are computed from a mass profile.
+
+        Parameters
+        ----------
+        grid
+            The 2D (y, x) coordinates where values of the potential are evaluated.
+        """
         return sum([galaxy.potential_2d_from(grid=grid) for galaxy in self.galaxies])
 
     @property
