@@ -345,13 +345,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             cosmology=self.cosmology,
         )
 
-    @aa.grid_dec.grid_2d_to_structure
-    @aa.profile_func
-    def image_2d_from(
-        self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
-    ) -> aa.Array2D:
-        return sum(self.image_2d_list_from(grid=grid, operated_only=operated_only))
-
     @aa.grid_dec.grid_2d_to_structure_list
     def image_2d_list_from(
         self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
@@ -374,6 +367,13 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                 image_2d_list.append(np.zeros(shape=image_2d_list[0].shape))
 
         return image_2d_list
+
+    @aa.grid_dec.grid_2d_to_structure
+    @aa.profile_func
+    def image_2d_from(
+        self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
+    ) -> aa.Array2D:
+        return sum(self.image_2d_list_from(grid=grid, operated_only=operated_only))
 
     def image_2d_via_input_plane_image_from(
         self,
