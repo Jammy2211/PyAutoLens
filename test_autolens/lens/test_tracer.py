@@ -10,6 +10,23 @@ from autoconf.dictable import from_json, output_to_json
 grid_simple = al.Grid2DIrregular(values=[(1.0, 2.0)])
 
 
+def test__has():
+    gal_lp = al.Galaxy(redshift=0.5, light_profile=al.LightProfile())
+    gal_mp = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph())
+
+    tracer = al.Tracer(galaxies=[gal_mp, gal_mp])
+
+    assert tracer.has(cls=al.LightProfile) is False
+
+    tracer = al.Tracer(galaxies=[gal_lp, gal_lp])
+
+    assert tracer.has(cls=al.LightProfile) is True
+
+    tracer = al.Tracer(galaxies=[gal_lp, gal_mp])
+
+    assert tracer.has(cls=al.LightProfile) is True
+
+
 def test__plane_redshifts():
     g1 = al.Galaxy(redshift=1)
     g2 = al.Galaxy(redshift=2)

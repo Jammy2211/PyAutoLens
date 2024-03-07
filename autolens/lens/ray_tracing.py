@@ -271,30 +271,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             plane_index_limit=plane_index_limit,
         )
 
-    def has(self, cls: Type) -> bool:
-        return any(map(lambda plane: plane.has(cls=cls), self.planes))
-
-    def cls_list_from(self, cls: Type) -> List:
-        """
-        Returns a list of objects in the tracer which are an instance of the input `cls`.
-
-        For example:
-
-        - If the input is `cls=ag.LightProfile`, a list containing all light profiles in the tracer is returned.
-
-        Returns
-        -------
-            The list of objects in the tracer that inherit from input `cls`.
-        """
-        cls_list = []
-
-        for galaxy in self.galaxies:
-            if galaxy.has(cls=cls):
-                for cls_galaxy in galaxy.cls_list_from(cls=cls):
-                    cls_list.append(cls_galaxy)
-
-        return cls_list
-
     def grid_2d_at_redshift_from(
         self, grid: aa.type.Grid2DLike, redshift: float
     ) -> aa.type.Grid2DLike:
@@ -730,6 +706,47 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             The 2D (y, x) coordinates where values of the potential are evaluated.
         """
         return sum([galaxy.potential_2d_from(grid=grid) for galaxy in self.galaxies])
+
+    def has(self, cls: Type) -> bool:
+        """
+        Returns a bool specifying whether this tracer has a galaxy with a certain class type.
+
+        For example, for the input `cls=ag.LightProfile`, this function returns True if any galaxy in the tracer has a
+        light profile and false if no galaxy has a light profile.
+
+        This function is used to check for mass profiles and specific types of profiles, like the linear light profile.
+
+        Parameters
+        ----------
+        cls
+            The class type of the galaxy which is checked for in the tracer.
+
+        Returns
+        -------
+        True if any galaxy in the tracer has the input class type, else False.
+        """
+        return any(map(lambda galaxy: galaxy.has(cls=cls), self.galaxies))
+
+    def cls_list_from(self, cls: Type) -> List:
+        """
+        Returns a list of objects in the tracer which are an instance of the input `cls`.
+
+        For example:
+
+        - If the input is `cls=ag.LightProfile`, a list containing all light profiles in the tracer is returned.
+
+        Returns
+        -------
+            The list of objects in the tracer that inherit from input `cls`.
+        """
+        cls_list = []
+
+        for galaxy in self.galaxies:
+            if galaxy.has(cls=cls):
+                for cls_galaxy in galaxy.cls_list_from(cls=cls):
+                    cls_list.append(cls_galaxy)
+
+        return cls_list
 
     @property
     def plane_indexes_with_pixelizations(self):
