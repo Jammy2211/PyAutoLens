@@ -266,77 +266,6 @@ def test__traced_grid_2d_list_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
 ### Light Profiles ###
 
 
-def test__image_2d_from__x1_plane__single_plane_tracer(sub_grid_2d_7x7):
-    g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=1.0))
-    g1 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=2.0))
-    g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=3.0))
-
-    image_plane = al.Plane(galaxies=[g0, g1, g2])
-
-    tracer = al.Tracer(galaxies=[g0, g1, g2])
-
-    image_plane_image = image_plane.image_2d_from(grid=sub_grid_2d_7x7)
-
-    tracer_image = tracer.image_2d_from(grid=sub_grid_2d_7x7)
-
-    assert tracer_image.shape_native == (7, 7)
-    assert (tracer_image == image_plane_image).all()
-
-    g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=1.0))
-    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=2.0))
-
-    image_plane = al.Plane(galaxies=[g0])
-    source_plane = al.Plane(galaxies=[g1])
-
-    tracer = al.Tracer(galaxies=[g0, g1])
-
-    image = image_plane.image_2d_from(
-        grid=sub_grid_2d_7x7
-    ) + source_plane.image_2d_from(grid=sub_grid_2d_7x7)
-
-    tracer_image = tracer.image_2d_from(grid=sub_grid_2d_7x7)
-
-    assert tracer_image.shape_native == (7, 7)
-    assert image == pytest.approx(tracer_image, 1.0e-4)
-
-    g0 = al.Galaxy(
-        redshift=0.5,
-        light_profile=al.lp.Sersic(intensity=1.0),
-        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
-    )
-    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=2.0))
-
-    image_plane = al.Plane(galaxies=[g0])
-
-    source_plane_grid = image_plane.traced_grid_from(grid=sub_grid_2d_7x7)
-
-    source_plane = al.Plane(galaxies=[g1])
-
-    tracer = al.Tracer(galaxies=[g0, g1])
-
-    image = image_plane.image_2d_from(
-        grid=sub_grid_2d_7x7
-    ) + source_plane.image_2d_from(grid=source_plane_grid)
-
-    tracer_image = tracer.image_2d_from(grid=sub_grid_2d_7x7)
-
-    assert image == pytest.approx(tracer_image, 1.0e-4)
-
-    g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=1.0))
-    g1 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=2.0))
-    g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=3.0))
-
-    g0_image = g0.image_2d_from(grid=sub_grid_2d_7x7)
-
-    g1_image = g1.image_2d_from(grid=sub_grid_2d_7x7)
-
-    g2_image = g2.image_2d_from(grid=sub_grid_2d_7x7)
-
-    tracer = al.Tracer(galaxies=[g0, g1, g2])
-
-    tracer_image = tracer.image_2d_from(grid=sub_grid_2d_7x7)
-
-    assert tracer_image == pytest.approx(g0_image + g1_image + g2_image, 1.0e-4)
 
 
 def test__image_2d_from__operated_only_input(
@@ -415,34 +344,42 @@ def test__image_2d_list_from__operated_only_input(
     )
 
 
-def test__image_2d_via_input_plane_image_from__without_foreground_planes(
-    sub_grid_2d_7x7,
-):
-    g0 = al.Galaxy(
-        redshift=0.5,
-        mass=al.mp.IsothermalSph(einstein_radius=0.2),
-        light_profile=al.lp.Sersic(intensity=1.0),
+#
+def test__image_2d_list_from__plane_without_light_profile_is_zeros(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
+
+    # Planes without light profiles give zeros
+
+    g0 = al.Galaxy(redshift=0.1, light_profile=al.lp.Sersic(intensity=0.1))
+    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=0.2))
+    g2 = al.Galaxy(redshift=2.0)
+
+    tracer = al.Tracer(galaxies=[g0, g1, g2], cosmology=al.cosmo.Planck15())
+
+    tracer_image_of_planes = tracer.image_2d_list_from(grid=sub_grid_2d_7x7)
+
+    assert tracer_image_of_planes[2].shape_native == (7, 7)
+    assert (tracer_image_of_planes[2].binned.native == np.zeros((7, 7))).all()
+
+
+def test__image_2d_from__sum_of_individual_images(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
+
+    g0 = al.Galaxy(redshift=0.1, light_profile=al.lp.Sersic(intensity=0.1), mass=al.mp.IsothermalSph(einstein_radius=1.0))
+    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=0.2))
+
+    tracer = al.Tracer(galaxies=[g0, g1], cosmology=al.cosmo.Planck15())
+
+    traced_grid_2d_list_from = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)
+
+    image = (
+            g0.image_2d_from(grid=sub_grid_2d_7x7)
+            + g1.image_2d_from(grid=traced_grid_2d_list_from[1])
     )
-    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=2.0))
 
-    tracer = al.Tracer(galaxies=[g0, g1])
+    image_tracer = tracer.image_2d_from(grid=sub_grid_2d_7x7)
 
-    image_via_light_profile = tracer.image_2d_list_from(grid=sub_grid_2d_7x7)[-1]
+    assert image.shape_native == (7, 7)
+    assert image == pytest.approx(image_tracer, 1.0e-4)
 
-    plane_grid = al.Grid2D.uniform(shape_native=(20, 20), pixel_scales=0.5, sub_size=4)
-
-    plane_image = g1.image_2d_from(grid=plane_grid)
-
-    image_via_input_plane_image = tracer.image_2d_via_input_plane_image_from(
-        grid=sub_grid_2d_7x7,
-        plane_image=plane_image,
-        plane_index=-1,
-        include_other_planes=False,
-    )
-
-    assert image_via_light_profile.binned[0] == pytest.approx(
-        image_via_input_plane_image.binned[0], 1.0e-2
-    )
 
 
 def test__image_2d_via_input_plane_image_from__with_foreground_planes(sub_grid_2d_7x7):
@@ -473,7 +410,37 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes(sub_grid_2
     )
 
 
-#
+
+def test__image_2d_via_input_plane_image_from__without_foreground_planes(
+    sub_grid_2d_7x7,
+):
+    g0 = al.Galaxy(
+        redshift=0.5,
+        mass=al.mp.IsothermalSph(einstein_radius=0.2),
+        light_profile=al.lp.Sersic(intensity=1.0),
+    )
+    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=2.0))
+
+    tracer = al.Tracer(galaxies=[g0, g1])
+
+    image_via_light_profile = tracer.image_2d_list_from(grid=sub_grid_2d_7x7)[-1]
+
+    plane_grid = al.Grid2D.uniform(shape_native=(20, 20), pixel_scales=0.5, sub_size=4)
+
+    plane_image = g1.image_2d_from(grid=plane_grid)
+
+    image_via_input_plane_image = tracer.image_2d_via_input_plane_image_from(
+        grid=sub_grid_2d_7x7,
+        plane_image=plane_image,
+        plane_index=-1,
+        include_other_planes=False,
+    )
+
+    assert image_via_light_profile.binned[0] == pytest.approx(
+        image_via_input_plane_image.binned[0], 1.0e-2
+    )
+
+
 def test__image_2d_via_input_plane_image_from__with_foreground_planes__multi_plane(
     sub_grid_2d_7x7,
 ):
@@ -520,107 +487,6 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes__multi_pla
     assert image_via_light_profile.binned[0] == pytest.approx(
         image_via_input_plane_image.binned[0], 1.0e-2
     )
-
-
-def test__image_2d_from_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
-    g0 = al.Galaxy(redshift=0.1, light_profile=al.lp.Sersic(intensity=0.1))
-    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=0.2))
-    g2 = al.Galaxy(redshift=2.0, light_profile=al.lp.Sersic(intensity=0.3))
-
-    tracer = al.Tracer(galaxies=[g0, g1, g2], cosmology=al.cosmo.Planck15())
-
-    plane_0 = al.Plane(galaxies=[g0])
-    plane_1 = al.Plane(galaxies=[g1])
-    plane_2 = al.Plane(galaxies=[g2])
-
-    traced_grid_2d_list_from = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)
-
-    image = (
-            plane_0.image_2d_from(grid=sub_grid_2d_7x7)
-            + plane_1.image_2d_from(grid=traced_grid_2d_list_from[1])
-            + plane_2.image_2d_from(grid=traced_grid_2d_list_from[2])
-    )
-
-    tracer_image = tracer.image_2d_from(grid=sub_grid_2d_7x7)
-
-    assert image.shape_native == (7, 7)
-    assert image == pytest.approx(tracer_image, 1.0e-4)
-
-    g0 = al.Galaxy(redshift=0.1, light_profile=al.lp.Sersic(intensity=0.1))
-    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=0.2))
-    g2 = al.Galaxy(redshift=2.0, light_profile=al.lp.Sersic(intensity=0.3))
-
-    tracer = al.Tracer(galaxies=[g0, g1, g2], cosmology=al.cosmo.Planck15())
-
-    plane_0 = tracer.planes[0]
-    plane_1 = tracer.planes[1]
-    plane_2 = tracer.planes[2]
-
-    traced_grid_2d_list_from = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)
-
-    image = (
-            plane_0.image_2d_from(grid=sub_grid_2d_7x7)
-            + plane_1.image_2d_from(grid=traced_grid_2d_list_from[1])
-            + plane_2.image_2d_from(grid=traced_grid_2d_list_from[2])
-    )
-
-    tracer_image = tracer.image_2d_from(grid=sub_grid_2d_7x7)
-
-    assert image.shape_native == (7, 7)
-    assert image == pytest.approx(tracer_image, 1.0e-4)
-
-    g0 = al.Galaxy(redshift=0.1, light_profile=al.lp.Sersic(intensity=0.1))
-    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=0.2))
-    g2 = al.Galaxy(redshift=2.0, light_profile=al.lp.Sersic(intensity=0.3))
-    g3 = al.Galaxy(redshift=0.1, light_profile=al.lp.Sersic(intensity=0.4))
-    g4 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=0.5))
-
-    tracer = al.Tracer(galaxies=[g0, g1, g2, g3, g4], cosmology=al.cosmo.Planck15())
-
-    plane_0 = al.Plane(galaxies=[g0, g3])
-    plane_1 = al.Plane(galaxies=[g1, g4])
-    plane_2 = al.Plane(galaxies=[g2])
-
-    traced_grid_2d_list_from = tracer.traced_grid_2d_list_from(grid=sub_grid_2d_7x7)
-
-    image = (
-            plane_0.image_2d_from(grid=sub_grid_2d_7x7)
-            + plane_1.image_2d_from(grid=traced_grid_2d_list_from[1])
-            + plane_2.image_2d_from(grid=traced_grid_2d_list_from[2])
-    )
-
-    tracer_image = tracer.image_2d_from(grid=sub_grid_2d_7x7)
-
-    assert image.shape_native == (7, 7)
-    assert image == pytest.approx(tracer_image, 1.0e-4)
-
-    # Planes without light profiles give zeros
-
-    g0 = al.Galaxy(redshift=0.1, light_profile=al.lp.Sersic(intensity=0.1))
-    g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=0.2))
-    g2 = al.Galaxy(redshift=2.0)
-
-    tracer = al.Tracer(galaxies=[g0, g1, g2], cosmology=al.cosmo.Planck15())
-
-    plane_0 = al.Plane(galaxies=[g0])
-    plane_1 = al.Plane(galaxies=[g1])
-
-    plane_0_image = plane_0.image_2d_from(grid=sub_grid_2d_7x7)
-
-    plane_1_image = plane_1.image_2d_from(grid=sub_grid_2d_7x7)
-
-    tracer_image_of_planes = tracer.image_2d_list_from(grid=sub_grid_2d_7x7)
-
-    assert len(tracer_image_of_planes) == 3
-
-    assert tracer_image_of_planes[0].shape_native == (7, 7)
-    assert tracer_image_of_planes[0] == pytest.approx(plane_0_image, 1.0e-4)
-
-    assert tracer_image_of_planes[1].shape_native == (7, 7)
-    assert tracer_image_of_planes[1] == pytest.approx(plane_1_image, 1.0e-4)
-
-    assert tracer_image_of_planes[2].shape_native == (7, 7)
-    assert (tracer_image_of_planes[2].binned.native == np.zeros((7, 7))).all()
 
 
 
