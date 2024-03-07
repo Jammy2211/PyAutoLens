@@ -492,3 +492,223 @@ def test__deflections_yx_2d_from(sub_grid_2d_7x7):
 
     assert (tracer_deflections.binned.native[:, :, 0] == np.zeros(shape=(7, 7))).all()
     assert (tracer_deflections.binned.native[:, :, 1] == np.zeros(shape=(7, 7))).all()
+
+
+def test__extract_attribute():
+
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)])
+
+    values = tracer.extract_attribute(cls=al.mp.MassProfile, attr_name="value")
+
+    assert values == None
+
+    g0 = al.Galaxy(
+        redshift=0.5, mp_0=al.m.MockMassProfile(value=0.9, value1=(1.0, 1.0))
+    )
+    g1 = al.Galaxy(
+        redshift=0.5, mp_0=al.m.MockMassProfile(value=0.8, value1=(2.0, 2.0))
+    )
+
+    tracer = al.Tracer(galaxies=[g0, g1])
+
+    values = tracer.extract_attribute(cls=al.mp.MassProfile, attr_name="value")
+
+    assert values.in_list == [0.9, 0.8]
+
+    values = tracer.extract_attribute(cls=al.mp.MassProfile, attr_name="value1")
+
+    assert values.in_list == [(1.0, 1.0), (2.0, 2.0)]
+
+    g2 = al.Galaxy(
+        redshift=0.5,
+        mp_0=al.m.MockMassProfile(value=0.7),
+        mp_1=al.m.MockMassProfile(value=0.6),
+    )
+
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
+
+    values = tracer.extract_attribute(cls=al.mp.MassProfile, attr_name="value")
+
+    assert values.in_list == [0.9, 0.8, 0.7, 0.6]
+
+    tracer.extract_attribute(cls=al.mp.MassProfile, attr_name="incorrect_value")
+
+
+def test__extract_attributes_of_plane():
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)])
+
+    values = tracer.extract_attributes_of_planes(
+        cls=al.mp.MassProfile, attr_name="value"
+    )
+
+    assert values == [None, None]
+
+    g0 = al.Galaxy(
+        redshift=0.5, mp_0=al.m.MockMassProfile(value=0.9, value1=(1.0, 1.0))
+    )
+    g1 = al.Galaxy(
+        redshift=0.75, mp_0=al.m.MockMassProfile(value=0.8, value1=(2.0, 2.0))
+    )
+    g2 = al.Galaxy(
+        redshift=1.0,
+        mp_0=al.m.MockMassProfile(value=0.7),
+        mp_1=al.m.MockMassProfile(value=0.6),
+    )
+
+    tracer = al.Tracer(galaxies=[g0, g1])
+
+    values = tracer.extract_attributes_of_planes(
+        cls=al.mp.MassProfile, attr_name="value"
+    )
+
+    assert values[0].in_list == [0.9]
+    assert values[1].in_list == [0.8]
+
+    values = tracer.extract_attributes_of_planes(
+        cls=al.mp.MassProfile, attr_name="value1"
+    )
+
+    assert values[0].in_list == [(1.0, 1.0)]
+    assert values[1].in_list == [(2.0, 2.0)]
+
+    tracer = al.Tracer(galaxies=[g0, g1, al.Galaxy(redshift=0.25), g2])
+
+    values = tracer.extract_attributes_of_planes(
+        cls=al.mp.MassProfile, attr_name="value", filter_nones=False
+    )
+
+    assert values[0] == None
+    assert values[1] == 0.9
+    assert values[2] == 0.8
+    assert values[3].in_list == [0.7, 0.6]
+
+    values = tracer.extract_attributes_of_planes(
+        cls=al.mp.MassProfile, attr_name="value", filter_nones=True
+    )
+
+    assert values[0] == 0.9
+    assert values[1] == 0.8
+    assert values[2].in_list == [0.7, 0.6]
+
+    tracer.extract_attribute(cls=al.mp.MassProfile, attr_name="incorrect_value")
+
+
+def test__extract_attributes_of_galaxie():
+    g0 = al.Galaxy(
+        redshift=0.5, mp_0=al.m.MockMassProfile(value=0.9, value1=(1.0, 1.0))
+    )
+    g1 = al.Galaxy(
+        redshift=0.5, mp_0=al.m.MockMassProfile(value=0.8, value1=(2.0, 2.0))
+    )
+    g2 = al.Galaxy(
+        redshift=0.5,
+        mp_0=al.m.MockMassProfile(value=0.7),
+        mp_1=al.m.MockMassProfile(value=0.6),
+    )
+
+    plane_0 = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
+    plane_1 = al.Plane(galaxies=[al.Galaxy(redshift=1.0)], redshift=None)
+
+    tracer = al.Tracer.from_planes(planes=[plane_0, plane_1], cosmology=None)
+
+    values = tracer.extract_attributes_of_galaxies(
+        cls=al.mp.MassProfile, attr_name="value"
+    )
+
+    assert values == [None, None]
+
+    plane_0 = al.Plane(galaxies=[g0], redshift=None)
+    plane_1 = al.Plane(galaxies=[g1], redshift=None)
+
+    tracer = al.Tracer.from_planes(planes=[plane_0, plane_1], cosmology=None)
+
+    values = tracer.extract_attributes_of_galaxies(
+        cls=al.mp.MassProfile, attr_name="value"
+    )
+
+    assert values[0].in_list == [0.9]
+    assert values[1].in_list == [0.8]
+
+    values = tracer.extract_attributes_of_galaxies(
+        cls=al.mp.MassProfile, attr_name="value1"
+    )
+
+    assert values[0].in_list == [(1.0, 1.0)]
+    assert values[1].in_list == [(2.0, 2.0)]
+
+    plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)
+    plane_1 = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
+    plane_2 = al.Plane(galaxies=[g2], redshift=None)
+
+    tracer = al.Tracer.from_planes(planes=[plane_0, plane_1, plane_2], cosmology=None)
+
+    values = tracer.extract_attributes_of_galaxies(
+        cls=al.mp.MassProfile, attr_name="value", filter_nones=False
+    )
+
+    assert values[0].in_list == [0.9]
+    assert values[1].in_list == [0.8]
+    assert values[2] == None
+    assert values[3].in_list == [0.7, 0.6]
+
+    values = tracer.extract_attributes_of_galaxies(
+        cls=al.mp.MassProfile, attr_name="value", filter_nones=True
+    )
+
+    assert values[0].in_list == [0.9]
+    assert values[1].in_list == [0.8]
+    assert values[2].in_list == [0.7, 0.6]
+
+    tracer.extract_attribute(cls=al.mp.MassProfile, attr_name="incorrect_value")
+
+
+def test__extract_profile():
+    g0 = al.Galaxy(
+        redshift=0.5, mp_0=al.m.MockMassProfile(value=0.9, value1=(1.0, 1.0))
+    )
+    g1 = al.Galaxy(
+        redshift=0.5, mp_1=al.m.MockMassProfile(value=0.8, value1=(2.0, 2.0))
+    )
+    g2 = al.Galaxy(
+        redshift=1.0,
+        mp_2=al.m.MockMassProfile(value=0.7),
+        mp_3=al.m.MockMassProfile(value=0.6),
+    )
+
+    tracer = al.Tracer(galaxies=[g0, g1, g2], cosmology=None)
+
+    profile = tracer.extract_profile(profile_name="mp_0")
+
+    assert profile.value == 0.9
+
+    profile = tracer.extract_profile(profile_name="mp_3")
+
+    assert profile.value == 0.6
+
+
+def test__extract_plane_index_of_profile():
+    g0 = al.Galaxy(
+        redshift=0.5, mp_0=al.m.MockMassProfile(value=0.9, value1=(1.0, 1.0))
+    )
+    g1 = al.Galaxy(
+        redshift=0.75, mp_1=al.m.MockMassProfile(value=0.8, value1=(2.0, 2.0))
+    )
+    g2 = al.Galaxy(
+        redshift=1.0,
+        mp_2=al.m.MockMassProfile(value=0.7),
+        mp_3=al.m.MockMassProfile(value=0.6),
+    )
+
+    tracer = al.Tracer(galaxies=[g0, g1, g2], cosmology=None)
+
+    plane_index = tracer.extract_plane_index_of_profile(profile_name="mp_0")
+
+    assert plane_index == 0
+
+    plane_index = tracer.extract_plane_index_of_profile(profile_name="mp_1")
+
+    assert plane_index == 1
+
+    plane_index = tracer.extract_plane_index_of_profile(profile_name="mp_3")
+
+    assert plane_index == 2

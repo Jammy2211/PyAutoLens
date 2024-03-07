@@ -774,28 +774,36 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         """
         return any(plane.perform_inversion for plane in self.planes)
 
-    def extract_attribute(self, cls, attr_name):
+    def extract_attribute(self, cls : Type, attr_name : str) -> Union[aa.ArrayIrregular, aa.Grid2DIrregular]:
         """
-        Returns an attribute of a class in the tracer as a `ValueIrregular` or `Grid2DIrregular` object.
+        Returns an extracted attribute of a class in the tracer as a `ValueIrregular` or `Grid2DIrregular` object.
 
-        For example, if a tracer has an image-plane with a galaxy with two light profiles, the following:
+        For example, if a tracer has a galaxy with two light profiles, the input:
 
-        `tracer.extract_attribute(cls=LightProfile, name="axis_ratio")`
+           `tracer.extract_attribute(cls=LightProfile, name="axis_ratio")`
 
-        would return:
+        Returns
 
-        ArrayIrregular(values=[axis_ratio_0, axis_ratio_1])
+            `ArrayIrregular(values=[axis_ratio_0, axis_ratio_1])`
 
-        If the image plane has has two galaxies with two mass profiles and the source plane another galaxy with a
-        mass profile, the following:
+        If the image plane has two galaxies with two mass profiles and the source plane another galaxy with a
+        mass profile, the input:
 
-        `tracer.extract_attribute(cls=MassProfile, name="centre")`
+            `tracer.extract_attribute(cls=MassProfile, name="centre")`
 
-        would return:
+        Returns
 
-        GridIrregular2D(grid=[(centre_y_0, centre_x_0), (centre_y_1, centre_x_1), (centre_y_2, centre_x_2)])
+            GridIrregular2D(grid=[(centre_y_0, centre_x_0), (centre_y_1, centre_x_1), (centre_y_2, centre_x_2)])
 
-        This is used for visualization, for example plotting the centres of all mass profiles colored by their profile.
+        The primary use of this function is to extract the attributes of profiles for visualization, for example
+        plotting the centres of all mass profiles colored by their profile over the tracer's image.
+
+        Parameters
+        ----------
+        cls
+            The class type of object whose attribute is extracted (e.g. light profile, mass profile).
+        attr_name
+            The name of the attribute which is extracted from the class type (e.g. axis_ratio, centre).
         """
 
         def extract(value, name):
@@ -946,8 +954,8 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
         Would return `plane_index=1` given the profile is in the source plane.
         """
-        for plane_index, plane in enumerate(self.planes):
-            for galaxy in plane.galaxies:
+        for plane_index, galaxies in enumerate(self.planes):
+            for galaxy in galaxies:
                 if profile_name in galaxy.__dict__:
                     return plane_index
 
