@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import autoarray as aa
 import autogalaxy as ag
@@ -8,33 +8,39 @@ def traced_grid_2d_list_from(
     planes: List[List[ag.Galaxy]],
     grid: aa.type.Grid2DLike,
     cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
-    plane_index_limit: int = None,
+    plane_index_limit: int = Optional[None]
 ):
     """
-    Performs multi-plane ray tracing on a 2D grid of Cartesian (y,x) coordinates using the mass profiles of galaxies
-    contained within an input list of `Plane` objects.
+    Returns a ray-traced grid of 2D Cartesian (y,x) coordinates which accounts for multi-plane ray-tracing.
 
-    This function returns a list of 2D (y,x) grids, corresponding to each redshift in the input list of `Planes`. For
-    example, if the `planes` list contains three `Plane` objects with `redshift`'s z0.5, z=1.0 and z=2.0, the returned
-    list of traced grids will contain three entries corresponding to the input grid after ray-tracing to
+    This uses the redshifts and mass profiles of the galaxies contained within the tracer to perform the multi-plane
+    ray-tracing calculation.
+
+    This function returns a list of 2D (y,x) grids, corresponding to each redshift in the input list of planes. The
+    plane redshifts are determined from the redshifts of the galaxies in each plane, whereby there is a unique plane
+    at each redshift containing all galaxies at the same redshift.
+
+    For example, if the `planes` list contains three lists of galaxies with `redshift`'s z0.5, z=1.0 and z=2.0, the
+    returned list of traced grids will contain three entries corresponding to the input grid after ray-tracing to
     redshifts 0.5, 1.0 and 2.0.
 
     An input `AstroPy` cosmology object can change the cosmological model, which is used to compute the scaling
     factors between planes (which are derived from their redshifts and angular diameter distances). It is these
     scaling factors that account for multi-plane ray tracing effects.
 
-    The calculation can be terminated early by inputting a `plane_index_limit`, whereby all planes whose integer
-    indexes are above this value are omitted from the calculation and not included in the returned list of grids (the
-    size of this list is reduced accordingly).
+    The calculation can be terminated early by inputting a `plane_index_limit`. All planes whose integer indexes are
+    above this value are omitted from the calculation and not included in the returned list of grids (the size of
+    this list is reduced accordingly).
 
     For example, if `planes` has 3 lists of galaxies, but `plane_index_limit=1`, the third plane (corresponding to
-    index 2) will not be calculated. The `plane_index_limit` is often used to avoid uncessary ray tracing calculations
+    index 2) will not be calculated. The `plane_index_limit` is used to avoid uncessary ray tracing calculations
     of higher redshift planes whose galaxies do not have mass profile (and only have light profiles).
 
     Parameters
     ----------
-    planes
-        The list of lists of galaxies whose mass profiles are used to perform multi-plane ray-tracing.
+    galaxies
+        The galaxies whose mass profiles are used to perform multi-plane ray-tracing, where the list of galaxies
+        has an index for each plane, correspond to each unique redshift in the multi-plane system.
     grid
         The 2D (y, x) coordinates on which multi-plane ray-tracing calculations are performed.
     cosmology

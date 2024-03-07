@@ -206,11 +206,32 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         self, grid: aa.type.Grid2DLike, plane_index_limit : int = Optional[None]
     ) -> List[aa.type.Grid2DLike]:
         """
-        Performs multi-plane ray tracing on a 2D grid of Cartesian (y,x) coordinates using the mass profiles of the
-        galaxies and planes contained within the tracer.
+        Returns a ray-traced grid of 2D Cartesian (y,x) coordinates which accounts for multi-plane ray-tracing.
 
-        see `autolens.lens.ray_tracing.ray_tracing_util.traced_grid_2d_list_from()` for a full description of the
-        calculation.
+        This uses the redshifts and mass profiles of the galaxies contained within the tracer to perform the multi-plane
+        ray-tracing calculation.
+
+        This function returns a list of 2D (y,x) grids, corresponding to each redshift in the input list of planes. The
+        plane redshifts are determined from the redshifts of the galaxies in each plane, whereby there is a unique plane
+        at each redshift containing all galaxies at the same redshift.
+
+        For example, if the `planes` list contains three lists of galaxies with `redshift`'s z0.5, z=1.0 and z=2.0, the
+        returned list of traced grids will contain three entries corresponding to the input grid after ray-tracing to
+        redshifts 0.5, 1.0 and 2.0.
+
+        An input `AstroPy` cosmology object can change the cosmological model, which is used to compute the scaling
+        factors between planes (which are derived from their redshifts and angular diameter distances). It is these
+        scaling factors that account for multi-plane ray tracing effects.
+
+        The calculation can be terminated early by inputting a `plane_index_limit`. All planes whose integer indexes are
+        above this value are omitted from the calculation and not included in the returned list of grids (the size of
+        this list is reduced accordingly).
+
+        For example, if `planes` has 3 lists of galaxies, but `plane_index_limit=1`, the third plane (corresponding to
+        index 2) will not be calculated. The `plane_index_limit` is used to avoid uncessary ray tracing calculations
+        of higher redshift planes whose galaxies do not have mass profile (and only have light profiles).
+
+        see `autolens.lens.ray_tracing.ray_tracing_util.traced_grid_2d_list_from()` for the full calculation.
 
         Parameters
         ----------
@@ -223,7 +244,8 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         Returns
         -------
         traced_grid_list
-            A list of 2D (y,x) grids each of which are the input grid ray-traced to a redshift of the input list of planes.
+            A list of 2D (y,x) grids each of which are the input grid ray-traced to a redshift of the input list of
+            planes.
         """
 
         return ray_tracing_util.traced_grid_2d_list_from(
