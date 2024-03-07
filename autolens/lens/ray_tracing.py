@@ -946,14 +946,23 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
     def extract_profile(self, profile_name):
         """
-        Returns a `LightProfile`, `MassProfile` or `Point` from the `Tracer` using the name of that component.
+        Returns a profile (e.g. a `LightProfile`, `MassProfile`, `Point`) from the tracer using the name of that
+        component.
 
-        For example, if a tracer has two galaxies, `lens` and `source` with `LightProfile`'s name `light_0` and
-        `light_1`, the following:
+        For example, if a tracer has two galaxies named `lens` and `source`, where `lens` has a light profile
+        named `light_0` and `source` has a light profile named `light_1`, the input:
 
-        `tracer.extract_profile(profile_name="light_1")`
+            `tracer.extract_profile(profile_name="light_1")`
 
-        Would return the `LightProfile` of the source plane.
+        Return the light profile of the source galaxy.
+
+        This primarily used for point-source modeling, where the locations that the point-sources tracer to in
+        different planes must be paired to their corresponding point-source `Point` profile.
+
+        Parameters
+        ----------
+        profile_name
+            The name of the profile component in the tracer.
         """
         for galaxy in self.galaxies:
             try:
