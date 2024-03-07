@@ -393,3 +393,73 @@ def test__galaxy_image_2d_dict_from(sub_grid_2d_7x7):
     assert (galaxy_image_2d_dict[g1] == g1_image).all()
     assert (galaxy_image_2d_dict[g2] == g2_image).all()
     assert (galaxy_image_2d_dict[g3] == np.zeros(shape=(36,))).all()
+
+
+def test__convergence_2d_from(sub_grid_2d_7x7):
+
+    g0 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
+    g1 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=2.0))
+    g2 = al.Galaxy(redshift=1.0, mass_profile=al.mp.IsothermalSph(einstein_radius=3.0))
+
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
+
+    convergence = tracer.convergence_2d_from(grid=grid_simple)
+
+    assert convergence == pytest.approx(
+        1.34164079, 1.0e-4
+    )
+
+    # No Galaxy with mass profile
+
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)])
+
+    assert (
+        tracer.convergence_2d_from(grid=sub_grid_2d_7x7).binned.native
+        == np.zeros(shape=(7, 7))
+    ).all()
+
+
+def test__potential_2d_from(sub_grid_2d_7x7):
+    g0 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
+    g1 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=2.0))
+    g2 = al.Galaxy(redshift=1.0, mass_profile=al.mp.IsothermalSph(einstein_radius=3.0))
+
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
+
+    potential = tracer.potential_2d_from(grid=grid_simple)
+
+    assert potential == pytest.approx(
+        13.4164078, 1.0e-4
+    )
+
+    # No Galaxy with mass profile
+
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)])
+
+    assert (
+        tracer.potential_2d_from(grid=sub_grid_2d_7x7).binned.native
+        == np.zeros(shape=(7, 7))
+    ).all()
+
+
+def test__deflections_yx_2d_from(sub_grid_2d_7x7):
+    g0 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
+    g1 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=2.0))
+    g2 = al.Galaxy(redshift=1.0, mass_profile=al.mp.IsothermalSph(einstein_radius=3.0))
+
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
+
+    deflections = tracer.deflections_of_planes_summed_from(grid=grid_simple)
+
+    assert deflections[0] == pytest.approx(
+        (2.68328157, 5.36656315), 1.0e-4
+    )
+
+    # No Galaxy With Mass Profile
+
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)])
+
+    tracer_deflections = tracer.deflections_of_planes_summed_from(grid=sub_grid_2d_7x7)
+
+    assert (tracer_deflections.binned.native[:, :, 0] == np.zeros(shape=(7, 7))).all()
+    assert (tracer_deflections.binned.native[:, :, 1] == np.zeros(shape=(7, 7))).all()
