@@ -593,14 +593,14 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     ) -> Union[aa.VectorYX2D, aa.VectorYX2DIrregular]:
         if self.total_planes > 1:
             return self.deflections_between_planes_from(grid=grid)
-        return self.planes[0].deflections_yx_2d_from(grid=grid)
+        return self.deflections_of_planes_summed_from(grid=grid)
 
     @aa.grid_dec.grid_2d_to_vector_yx
     @aa.grid_dec.grid_2d_to_structure
     def deflections_of_planes_summed_from(
         self, grid: aa.type.Grid2DLike
     ) -> Union[aa.VectorYX2D, aa.VectorYX2DIrregular]:
-        return sum([plane.deflections_yx_2d_from(grid=grid) for plane in self.planes])
+        return sum([galaxy.deflections_yx_2d_from(grid=grid) for galaxy in self.galaxies])
 
     @aa.grid_dec.grid_2d_to_vector_yx
     @aa.grid_dec.grid_2d_to_structure
@@ -613,11 +613,11 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
     @aa.grid_dec.grid_2d_to_structure
     def convergence_2d_from(self, grid: aa.type.Grid2DLike) -> aa.Array2D:
-        return sum([plane.convergence_2d_from(grid=grid) for plane in self.planes])
+        return sum([galaxy.convergence_2d_from(grid=grid) for galaxy in self.galaxies])
 
     @aa.grid_dec.grid_2d_to_structure
     def potential_2d_from(self, grid: aa.type.Grid2DLike) -> aa.Array2D:
-        return sum([plane.potential_2d_from(grid=grid) for plane in self.planes])
+        return sum([galaxy.potential_2d_from(grid=grid) for galaxy in self.galaxies])
 
     @property
     def plane_indexes_with_pixelizations(self):

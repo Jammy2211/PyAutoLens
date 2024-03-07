@@ -455,6 +455,18 @@ def test__deflections_yx_2d_from(sub_grid_2d_7x7):
         (2.68328157, 5.36656315), 1.0e-4
     )
 
+    # Single plane case
+
+    g0 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
+
+    tracer = al.Tracer(galaxies=[g0])
+
+    deflections = tracer.deflections_of_planes_summed_from(grid=grid_simple)
+
+    assert deflections[0] == pytest.approx(
+        (0.4472135954999, 0.8944271909), 1.0e-4
+    )
+
     # No Galaxy With Mass Profile
 
     tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)])
