@@ -575,12 +575,13 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
         traced_grid_list = self.traced_grid_2d_list_from(grid=grid)
 
-        for plane_index, plane in enumerate(self.planes):
-            image_2d_list = plane.image_2d_list_from(
-                grid=traced_grid_list[plane_index], operated_only=operated_only
-            )
+        for plane_index, galaxies in enumerate(self.planes):
 
-            for galaxy_index, galaxy in enumerate(plane.galaxies):
+            image_2d_list = [galaxy.image_2d_from(
+                grid=traced_grid_list[plane_index], operated_only=operated_only
+            ) for galaxy in galaxies]
+
+            for galaxy_index, galaxy in enumerate(galaxies):
                 galaxy_image_2d_dict[galaxy] = image_2d_list[galaxy_index]
 
         return galaxy_image_2d_dict
