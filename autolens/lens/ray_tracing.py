@@ -345,6 +345,15 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             cosmology=self.cosmology,
         )
 
+    @property
+    def upper_plane_index_with_light_profile(self) -> int:
+        return max(
+            [
+                plane_index if any([galaxy.has(cls=ag.LightProfile) for galaxy in galaxies]) else 0
+                for (plane_index, galaxies) in enumerate(self.planes)
+            ]
+        )
+
     @aa.grid_dec.grid_2d_to_structure_list
     def image_2d_list_from(
         self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
@@ -353,12 +362,13 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
         )
 
-        image_2d_list = [
-            self.planes[plane_index].image_2d_from(
-                grid=traced_grid_list[plane_index], operated_only=operated_only
-            )
-            for plane_index in range(len(traced_grid_list))
-        ]
+        image_2d_list = []
+
+        for plane_index in range(len(traced_grid_list)):
+
+            galaxies = self.planes[plane_index]
+
+            image_2d_list.append(sum([galaxy.image_2d_from(grid=traced_grid_list[plane_index], operated_only=operated_only) for galaxy in galaxies]))
 
         if self.upper_plane_index_with_light_profile < self.total_planes - 1:
             for plane_index in range(
@@ -539,15 +549,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     @aa.grid_dec.grid_2d_to_structure
     def potential_2d_from(self, grid: aa.type.Grid2DLike) -> aa.Array2D:
         return sum([plane.potential_2d_from(grid=grid) for plane in self.planes])
-
-    @property
-    def upper_plane_index_with_light_profile(self) -> int:
-        return max(
-            [
-                plane_index if plane.has(cls=ag.LightProfile) else 0
-                for (plane_index, plane) in enumerate(self.planes)
-            ]
-        )
 
     @property
     def plane_indexes_with_pixelizations(self):
