@@ -68,3 +68,47 @@ def test__traced_grid_2d_list_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
     assert traced_grid_list[0][0] == pytest.approx((1.0, 2.0), 1.0e-4)
     assert traced_grid_list[-1][0] == pytest.approx((0.58194284, 1.16388568), 1.0e-4)
     assert len(traced_grid_list) == 2
+
+
+def test__grid_2d_at_redshift_from(sub_grid_2d_7x7):
+    g0 = al.Galaxy(
+        redshift=0.5,
+        mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
+    )
+    g1 = al.Galaxy(
+        redshift=0.75,
+        mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=2.0),
+    )
+    g2 = al.Galaxy(
+        redshift=1.5,
+        mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=3.0),
+    )
+    g3 = al.Galaxy(
+        redshift=1.0,
+        mass_profile=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=4.0),
+    )
+    g4 = al.Galaxy(redshift=2.0)
+
+    galaxies = [g0, g1, g2, g3, g4]
+
+    tracer = al.Tracer(galaxies=galaxies)
+
+    grid_at_redshift_via_util = al.util.ray_tracing.grid_2d_at_redshift_from(
+        galaxies=galaxies, grid=sub_grid_2d_7x7, redshift=0.5
+    )
+
+    grid_at_redshift = tracer.grid_2d_at_redshift_from(
+        grid=sub_grid_2d_7x7, redshift=0.5
+    )
+
+    assert grid_at_redshift == pytest.approx(grid_at_redshift_via_util, 1.0e-4)
+
+    grid_at_redshift_via_util = al.util.ray_tracing.grid_2d_at_redshift_from(
+        galaxies=galaxies, grid=sub_grid_2d_7x7, redshift=1.75
+    )
+
+    grid_at_redshift = tracer.grid_2d_at_redshift_from(
+        grid=sub_grid_2d_7x7, redshift=1.75
+    )
+
+    assert grid_at_redshift == pytest.approx(grid_at_redshift_via_util, 1.0e-4)

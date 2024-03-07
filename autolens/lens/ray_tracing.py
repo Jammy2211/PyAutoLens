@@ -173,30 +173,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
         return Tracer(galaxies=galaxies, cosmology=cosmology)
 
-    def has(self, cls: Type) -> bool:
-        return any(map(lambda plane: plane.has(cls=cls), self.planes))
-
-    def cls_list_from(self, cls: Type) -> List:
-        """
-        Returns a list of objects in the tracer which are an instance of the input `cls`.
-
-        For example:
-
-        - If the input is `cls=ag.LightProfile`, a list containing all light profiles in the tracer is returned.
-
-        Returns
-        -------
-            The list of objects in the tracer that inherit from input `cls`.
-        """
-        cls_list = []
-
-        for galaxy in self.galaxies:
-            if galaxy.has(cls=cls):
-                for cls_galaxy in galaxy.cls_list_from(cls=cls):
-                    cls_list.append(cls_galaxy)
-
-        return cls_list
-
     @property
     def total_planes(self) -> int:
         return len(self.plane_redshifts)
@@ -254,6 +230,30 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             cosmology=self.cosmology,
             plane_index_limit=plane_index_limit,
         )
+
+    def has(self, cls: Type) -> bool:
+        return any(map(lambda plane: plane.has(cls=cls), self.planes))
+
+    def cls_list_from(self, cls: Type) -> List:
+        """
+        Returns a list of objects in the tracer which are an instance of the input `cls`.
+
+        For example:
+
+        - If the input is `cls=ag.LightProfile`, a list containing all light profiles in the tracer is returned.
+
+        Returns
+        -------
+            The list of objects in the tracer that inherit from input `cls`.
+        """
+        cls_list = []
+
+        for galaxy in self.galaxies:
+            if galaxy.has(cls=cls):
+                for cls_galaxy in galaxy.cls_list_from(cls=cls):
+                    cls_list.append(cls_galaxy)
+
+        return cls_list
 
     def grid_2d_at_redshift_from(
         self, grid: aa.type.Grid2DLike, redshift: float
