@@ -530,7 +530,7 @@ def test__extract_attribute():
 
 
 def test__extract_attributes_of_plane():
-    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)])
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)])
 
     values = tracer.extract_attributes_of_planes(
         cls=al.mp.MassProfile, attr_name="value"
@@ -555,6 +555,8 @@ def test__extract_attributes_of_plane():
     values = tracer.extract_attributes_of_planes(
         cls=al.mp.MassProfile, attr_name="value"
     )
+
+    print(values)
 
     assert values[0].in_list == [0.9]
     assert values[1].in_list == [0.8]
@@ -588,7 +590,7 @@ def test__extract_attributes_of_plane():
     tracer.extract_attribute(cls=al.mp.MassProfile, attr_name="incorrect_value")
 
 
-def test__extract_attributes_of_galaxie():
+def test__extract_attributes_of_galaxies():
     g0 = al.Galaxy(
         redshift=0.5, mp_0=al.m.MockMassProfile(value=0.9, value1=(1.0, 1.0))
     )
@@ -601,10 +603,7 @@ def test__extract_attributes_of_galaxie():
         mp_1=al.m.MockMassProfile(value=0.6),
     )
 
-    plane_0 = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
-    plane_1 = al.Plane(galaxies=[al.Galaxy(redshift=1.0)], redshift=None)
-
-    tracer = al.Tracer.from_planes(planes=[plane_0, plane_1], cosmology=None)
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)])
 
     values = tracer.extract_attributes_of_galaxies(
         cls=al.mp.MassProfile, attr_name="value"
@@ -612,10 +611,7 @@ def test__extract_attributes_of_galaxie():
 
     assert values == [None, None]
 
-    plane_0 = al.Plane(galaxies=[g0], redshift=None)
-    plane_1 = al.Plane(galaxies=[g1], redshift=None)
-
-    tracer = al.Tracer.from_planes(planes=[plane_0, plane_1], cosmology=None)
+    tracer = al.Tracer(galaxies=[g0, g1])
 
     values = tracer.extract_attributes_of_galaxies(
         cls=al.mp.MassProfile, attr_name="value"
@@ -631,11 +627,7 @@ def test__extract_attributes_of_galaxie():
     assert values[0].in_list == [(1.0, 1.0)]
     assert values[1].in_list == [(2.0, 2.0)]
 
-    plane_0 = al.Plane(galaxies=[g0, g1], redshift=None)
-    plane_1 = al.Plane(galaxies=[al.Galaxy(redshift=0.5)], redshift=None)
-    plane_2 = al.Plane(galaxies=[g2], redshift=None)
-
-    tracer = al.Tracer.from_planes(planes=[plane_0, plane_1, plane_2], cosmology=None)
+    tracer = al.Tracer(galaxies=[g0, g1, al.Galaxy(redshift=0.5), g2])
 
     values = tracer.extract_attributes_of_galaxies(
         cls=al.mp.MassProfile, attr_name="value", filter_nones=False

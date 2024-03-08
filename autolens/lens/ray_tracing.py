@@ -890,14 +890,13 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         attribute_list = []
 
         for plane in self.planes:
+            for galaxy in plane:
+                attribute_list += [
+                    galaxy.extract_attribute(cls=cls, attr_name=attr_name)
+                ]
 
-            if filter_nones:
-
-                attribute_list.append([galaxy.extract_attribute(cls=cls, attr_name=attr_name) for galaxy in plane if galaxy.extract_attribute(cls=cls, attr_name=attr_name) is not None])
-
-            else:
-
-                attribute_list.append([galaxy.extract_attribute(cls=cls, attr_name=attr_name) for galaxy in plane])
+        if filter_nones:
+            return list(filter(None, attribute_list))
 
         return attribute_list
 
