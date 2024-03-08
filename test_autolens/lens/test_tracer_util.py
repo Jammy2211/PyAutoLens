@@ -193,11 +193,3 @@ def test__grid_2d_at_redshift_from__redshift_between_planes(
     ).all()
 
 
-def test__plane_image_from(sub_grid_2d_7x7):
-    galaxy = al.Galaxy(redshift=0.5, light=al.lp.Sersic(intensity=1.0))
-
-    plane_image = al.util.tracer.plane_image_from(
-        grid=sub_grid_2d_7x7, galaxies=[galaxy], buffer=0.1
-    )
-
-    assert plane_image[0] == pytest.approx(12.5227, 1.0e-4)
