@@ -54,7 +54,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             different calculations.
         """
 
-        self.galaxies = ag.Galaxies(galaxies=galaxies)
+        self.galaxies = galaxies=galaxies
 
         self.cosmology = cosmology
 
@@ -73,7 +73,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         -------
         The galaxies in the tracer in ascending redshift order.
         """
-        return ag.Galaxies(galaxies=sorted(self.galaxies, key=lambda galaxy: galaxy.redshift))
+        return sorted(self.galaxies, key=lambda galaxy: galaxy.redshift)
 
     @property
     def plane_redshifts(self) -> List[float]:
@@ -189,7 +189,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             The cosmology used to perform ray-tracing calculations.
         """
 
-        lens_redshifts = tracer_util.ordered_plane_redshifts_from(
+        lens_redshifts = tracer_util.plane_redshifts_from(
             galaxies=lens_galaxies
         )
 
