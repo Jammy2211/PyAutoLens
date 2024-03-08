@@ -908,3 +908,22 @@ def test__decorators__grid_iterate_in__iterates_grid_result_correctly(gal_x1_mp)
     deflections_sub_4 = tracer.deflections_yx_2d_from(grid=grid_sub_4).binned
 
     assert deflections[0, 0] == deflections_sub_4[0, 0]
+
+
+def test__instance_into_tracer__retains_dictionary_access():
+    model = af.Collection(
+        galaxies=af.Collection(
+            lens=al.Galaxy(
+                redshift=0.5,
+                light=al.lp.SersicSph(intensity=2.0),
+                mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
+            ),
+            source=al.Galaxy(redshift=1.0),
+        )
+    )
+
+    instance = model.instance_from_prior_medians()
+
+    tracer = al.Tracer(galaxies=instance.galaxies)
+
+    assert tracer.galaxies.lens.light.intensity == 2.0
