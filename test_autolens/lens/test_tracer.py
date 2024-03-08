@@ -758,7 +758,6 @@ def test__extract_plane_index_of_profile():
 
 
 def test__sliced_tracer_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
-
     lens_g0 = al.Galaxy(redshift=0.5)
     source_g0 = al.Galaxy(redshift=2.0)
     los_g0 = al.Galaxy(redshift=0.1)
@@ -780,7 +779,6 @@ def test__sliced_tracer_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
 
 
 def test__regression__centre_of_profile_in_right_place():
-
     grid = al.Grid2D.uniform(shape_native=(7, 7), pixel_scales=1.0)
 
     g0 = al.Galaxy(
@@ -872,6 +870,7 @@ def test__decorators__grid_iterate_in__iterates_array_result_correctly(gal_x1_lp
     image_sub_4 = tracer.image_2d_from(grid=grid_sub_4).binned
 
     assert image[0] == image_sub_4[0]
+
 
 def test__decorators__grid_iterate_in__method_returns_array_list__uses_highest_sub_size_of_iterate(
     gal_x1_lp,

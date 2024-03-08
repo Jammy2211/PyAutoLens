@@ -5,27 +5,13 @@ import pytest
 import autolens as al
 
 
-def test__xtraced_grid_2d_list_from(
-    sub_grid_2d_7x7_simple
-):
-    g0 = al.Galaxy(
-        redshift=2.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
-    )
-    g1 = al.Galaxy(
-        redshift=2.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
-    )
-    g2 = al.Galaxy(
-        redshift=0.1, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
-    )
-    g3 = al.Galaxy(
-        redshift=3.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
-    )
-    g4 = al.Galaxy(
-        redshift=1.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
-    )
-    g5 = al.Galaxy(
-        redshift=3.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
-    )
+def test__xtraced_grid_2d_list_from(sub_grid_2d_7x7_simple):
+    g0 = al.Galaxy(redshift=2.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
+    g1 = al.Galaxy(redshift=2.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
+    g2 = al.Galaxy(redshift=0.1, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
+    g3 = al.Galaxy(redshift=3.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
+    g4 = al.Galaxy(redshift=1.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
+    g5 = al.Galaxy(redshift=3.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
 
     galaxies = [g0, g1, g2, g3, g4, g5]
 
@@ -55,9 +41,7 @@ def test__xtraced_grid_2d_list_from(
     defl11 = g0.deflections_yx_2d_from(
         grid=np.array([[(1.0 - beta_01 * val), (1.0 - beta_01 * val)]])
     )
-    defl12 = g0.deflections_yx_2d_from(
-        grid=np.array([[(1.0 - beta_01 * 1.0), 0.0]])
-    )
+    defl12 = g0.deflections_yx_2d_from(grid=np.array([[(1.0 - beta_01 * 1.0), 0.0]]))
 
     assert traced_grid_list[2][0] == pytest.approx(
         np.array(
@@ -155,9 +139,8 @@ def test__grid_2d_at_redshift_from(sub_grid_2d_7x7):
 
     assert grid_at_redshift == pytest.approx(traced_grid_list[4], 1.0e-4)
 
-def test__grid_2d_at_redshift_from__redshift_between_planes(
-    sub_grid_2d_7x7
-):
+
+def test__grid_2d_at_redshift_from__redshift_between_planes(sub_grid_2d_7x7):
     sub_grid_2d_7x7[0] = np.array([[1.0, -1.0]])
     sub_grid_2d_7x7[1] = np.array([[1.0, 0.0]])
 
@@ -188,8 +171,4 @@ def test__grid_2d_at_redshift_from__redshift_between_planes(
         redshift=0.3,
     )
 
-    assert (
-        grid_at_redshift == sub_grid_2d_7x7.mask.derive_grid.all_false_sub_1
-    ).all()
-
-
+    assert (grid_at_redshift == sub_grid_2d_7x7.mask.derive_grid.all_false_sub_1).all()

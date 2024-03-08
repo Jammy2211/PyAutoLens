@@ -54,7 +54,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             different calculations.
         """
 
-        self.galaxies = galaxies=galaxies
+        self.galaxies = galaxies = galaxies
 
         self.cosmology = cosmology
 
@@ -189,9 +189,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             The cosmology used to perform ray-tracing calculations.
         """
 
-        lens_redshifts = tracer_util.plane_redshifts_from(
-            galaxies=lens_galaxies
-        )
+        lens_redshifts = tracer_util.plane_redshifts_from(galaxies=lens_galaxies)
 
         plane_redshifts = tracer_util.ordered_plane_redshifts_with_slicing_from(
             lens_redshifts=lens_redshifts,

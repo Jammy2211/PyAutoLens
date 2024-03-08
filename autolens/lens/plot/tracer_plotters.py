@@ -233,7 +233,6 @@ class TracerPlotter(Plotter):
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
         for plane_index in plane_indexes:
-
             galaxies_plotter = self.galaxies_plotter_from(plane_index=plane_index)
 
             if plane_index == 1:
@@ -432,5 +431,7 @@ class TracerPlotter(Plotter):
                 plane_image=True, title_suffix=f" Of Plane {plane_index}"
             )
 
-        self.mat_plot_2d.output.subplot_to_figure(auto_filename=f"subplot_galaxies_images")
+        self.mat_plot_2d.output.subplot_to_figure(
+            auto_filename=f"subplot_galaxies_images"
+        )
         self.close_subplot_figure()

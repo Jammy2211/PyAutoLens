@@ -5,7 +5,8 @@ from autoconf import conf
 import autoarray as aa
 import autogalaxy as ag
 
-def plane_redshifts_from(galaxies : List[ag.Galaxy]) -> List[float]:
+
+def plane_redshifts_from(galaxies: List[ag.Galaxy]) -> List[float]:
     """
     Returns a list of plane redshifts from a list of galaxies, using the redshifts of the galaxies to determine the
     unique redshifts of the planes.
@@ -34,7 +35,9 @@ def plane_redshifts_from(galaxies : List[ag.Galaxy]) -> List[float]:
     return list(dict.fromkeys(plane_redshifts))
 
 
-def planes_from(galaxies : List[ag.Galaxy], plane_redshifts : Optional[List[float]] = None) -> List[List[ag.Galaxy]]:
+def planes_from(
+    galaxies: List[ag.Galaxy], plane_redshifts: Optional[List[float]] = None
+) -> List[List[ag.Galaxy]]:
     """
     Returns a list of list of galaxies grouped into their planes, where planes contained all galaxies at the same
     unique redshift.
@@ -219,9 +222,7 @@ def grid_2d_at_redshift_from(
     if redshift <= plane_redshifts[0]:
         return grid.copy()
 
-    planes = planes_from(
-        galaxies=galaxies, plane_redshifts=plane_redshifts
-    )
+    planes = planes_from(galaxies=galaxies, plane_redshifts=plane_redshifts)
 
     plane_index_with_redshift = [
         plane_index
@@ -247,8 +248,6 @@ def grid_2d_at_redshift_from(
     )
 
     return traced_grid_list[plane_index_insert]
-
-
 
 
 def ordered_plane_redshifts_with_slicing_from(
