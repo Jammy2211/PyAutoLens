@@ -10,7 +10,7 @@ from autoarray.fit.plot.fit_imaging_plotters import FitImagingPlotterMeta
 
 from autolens.plot.abstract_plotters import Plotter
 from autolens.imaging.fit_imaging import FitImaging
-from autolens.lens.plot.ray_tracing_plotters import TracerPlotter
+from autolens.lens.plot.tracer_plotters import TracerPlotter
 
 
 class FitImagingPlotter(Plotter):

@@ -14,7 +14,7 @@ def make_visualizer_plotter_setup():
     return path.join("{}".format(directory), "files")
 
 
-def test__visualizes_ray_tracing__uses_configs(
+def test__visualizes_tracer__uses_configs(
     masked_imaging_7x7, tracer_x2_plane_7x7, include_2d_all, plot_path, plot_patch
 ):
     if os.path.exists(plot_path):
@@ -26,7 +26,7 @@ def test__visualizes_ray_tracing__uses_configs(
         tracer=tracer_x2_plane_7x7, grid=masked_imaging_7x7.grid, during_analysis=False
     )
 
-    plot_path = path.join(plot_path, "ray_tracing")
+    plot_path = path.join(plot_path, "tracer")
 
     assert path.join(plot_path, "subplot_plane_images.png") in plot_patch.paths
     assert path.join(plot_path, "image_2d.png") in plot_patch.paths

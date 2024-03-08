@@ -2,7 +2,7 @@ from typing import Optional
 
 import autoarray as aa
 
-from autolens.lens.ray_tracing import Tracer
+from autolens.lens.tracer import Tracer
 
 
 class AbstractFitPositionsSourcePlane:

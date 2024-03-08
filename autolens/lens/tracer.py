@@ -10,7 +10,7 @@ import autogalaxy as ag
 from autogalaxy.profiles.geometry_profiles import GeometryProfile
 from autogalaxy.profiles.light.snr import LightProfileSNR
 
-from autolens.lens import ray_tracing_util
+from autolens.lens import tracer_util
 
 
 class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
@@ -247,7 +247,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         index 2) will not be calculated. The `plane_index_limit` is used to avoid uncessary ray tracing calculations
         of higher redshift planes whose galaxies do not have mass profile (and only have light profiles).
 
-        see `autolens.lens.ray_tracing.ray_tracing_util.traced_grid_2d_list_from()` for the full calculation.
+        see `autolens.lens.tracer.tracer_util.traced_grid_2d_list_from()` for the full calculation.
 
         Parameters
         ----------
@@ -264,7 +264,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             planes.
         """
 
-        return ray_tracing_util.traced_grid_2d_list_from(
+        return tracer_util.traced_grid_2d_list_from(
             planes=self.planes,
             grid=grid,
             cosmology=self.cosmology,
@@ -314,7 +314,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         cosmology
             The cosmology used for ray-tracing from which angular diameter distances between planes are computed.
         """
-        return ray_tracing_util.grid_2d_at_redshift_from(
+        return tracer_util.grid_2d_at_redshift_from(
             redshift=redshift,
             galaxies=self.galaxies_ascending_redshift,
             grid=grid,
@@ -585,7 +585,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         accounting for multi-plane ray tracing and from a 2D grid of Cartesian (y,x) coordinates.
 
         The multi-plane ray tracing calculations are performed in the function `traced_2d_grid_list_from` and its
-        sub-functions in the `ray_tracing_util` module. This includes performing recursive ray-tracing between planes
+        sub-functions in the `tracer_util` module. This includes performing recursive ray-tracing between planes
         based on the planes redshifts and using the cosmological distances between them to scale the deflection angles.
         Users should refer to these functions for details on how the ray-tracing is performed.
 
@@ -652,7 +652,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         ray tracing, from a 2D grid of Cartesian (y,x) coordinates.
 
         The multi-plane ray tracing calculations are performed in the function `traced_2d_grid_list_from` and its
-        sub-functions in the `ray_tracing_util` module. This includes performing recursive ray-tracing between planes
+        sub-functions in the `tracer_util` module. This includes performing recursive ray-tracing between planes
         based on the planes redshifts and using the cosmological distances between them to scale the deflection angles.
         Users should refer to these functions for details on how the ray-tracing is performed.
 

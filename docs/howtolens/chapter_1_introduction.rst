@@ -22,10 +22,10 @@ The chapter contains the following tutorials:
 `Tutorial 4: Planes <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_4_planes.ipynb>`_
 - Grouping galaxies at a common redshift to form an image-plane and source-plane.
 
-`Tutorial 5: Ray Tracing <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_5_ray_tracing.ipynb>`_
+`Tutorial 5: Ray Tracing <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_5_tracer.ipynb>`_
 - Using Grids and galaxies to perform strong lens ray-tracing!
 
-`Tutorial 6: More Ray Tracing <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_6_more_ray_tracing.ipynb>`_
+`Tutorial 6: More Ray Tracing <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_6_more_tracer.ipynb>`_
 - Advanced strong lens ray-tracing.
 
 `Tutorial 7: Data <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_7_data.ipynb>`_

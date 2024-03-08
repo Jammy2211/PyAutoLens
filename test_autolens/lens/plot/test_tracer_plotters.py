@@ -13,7 +13,7 @@ def make_tracer_plotter_setup():
         "{}".format(path.dirname(path.realpath(__file__))),
         "files",
         "plots",
-        "ray_tracing",
+        "tracer",
     )
 
 

@@ -2,7 +2,7 @@ from typing import Dict, Optional
 
 from autolens.point.point_dataset import PointDict
 from autolens.point.point_solver import PointSolver
-from autolens.lens.ray_tracing import Tracer
+from autolens.lens.tracer import Tracer
 
 from autolens.point.fit_point.point_dataset import FitPointDataset
 

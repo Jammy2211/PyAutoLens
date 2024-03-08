@@ -13,7 +13,7 @@ class TestTracedGridListFrom:
 
         planes = al.util.plane.planes_via_galaxies_from(galaxies=galaxies)
 
-        traced_grid_list = al.util.ray_tracing.traced_grid_2d_list_from(
+        traced_grid_list = al.util.tracer.traced_grid_2d_list_from(
             planes=planes, grid=sub_grid_2d_7x7
         )
 
@@ -34,7 +34,7 @@ class TestTracedGridListFrom:
 
         planes = al.util.plane.planes_via_galaxies_from(galaxies=galaxies)
 
-        traced_grid_list = al.util.ray_tracing.traced_grid_2d_list_from(
+        traced_grid_list = al.util.tracer.traced_grid_2d_list_from(
             planes=planes, grid=sub_grid_2d_7x7_simple
         )
 
@@ -56,7 +56,7 @@ class TestTracedGridListFrom:
 
         planes = al.util.plane.planes_via_galaxies_from(galaxies=galaxies)
 
-        traced_grid_list = al.util.ray_tracing.traced_grid_2d_list_from(
+        traced_grid_list = al.util.tracer.traced_grid_2d_list_from(
             planes=planes, grid=sub_grid_2d_7x7_simple
         )
 
@@ -101,7 +101,7 @@ class TestTracedGridListFrom:
 
         planes = al.util.plane.planes_via_galaxies_from(galaxies=galaxies)
 
-        traced_grid_list = al.util.ray_tracing.traced_grid_2d_list_from(
+        traced_grid_list = al.util.tracer.traced_grid_2d_list_from(
             planes=planes, grid=sub_grid_2d_7x7_simple, cosmology=al.cosmo.Planck15()
         )
 
@@ -154,7 +154,7 @@ class TestTracedGridListFrom:
 
         planes = al.util.plane.planes_via_galaxies_from(galaxies=galaxies)
 
-        traced_grid_list = al.util.ray_tracing.traced_grid_2d_list_from(
+        traced_grid_list = al.util.tracer.traced_grid_2d_list_from(
             planes=planes, grid=sub_grid_2d_7x7_simple, plane_index_limit=0
         )
 
@@ -188,7 +188,7 @@ class TestTracedGridListFrom:
 
         planes = al.util.plane.planes_via_galaxies_from(galaxies=galaxies)
 
-        traced_grid_list = al.util.ray_tracing.traced_grid_2d_list_from(
+        traced_grid_list = al.util.tracer.traced_grid_2d_list_from(
             planes=planes,
             grid=sub_grid_2d_7x7_simple,
             plane_index_limit=1,
@@ -226,17 +226,17 @@ class TestGridAtRedshift:
         galaxies = [g0, g1]
         planes = al.util.plane.planes_via_galaxies_from(galaxies=galaxies)
 
-        grid_at_redshift = al.util.ray_tracing.grid_2d_at_redshift_from(
+        grid_at_redshift = al.util.tracer.grid_2d_at_redshift_from(
             galaxies=galaxies, grid=sub_grid_2d_7x7, redshift=0.5
         )
 
         assert (grid_at_redshift == sub_grid_2d_7x7).all()
 
-        grid_at_redshift = al.util.ray_tracing.grid_2d_at_redshift_from(
+        grid_at_redshift = al.util.tracer.grid_2d_at_redshift_from(
             galaxies=galaxies, grid=sub_grid_2d_7x7, redshift=1.0
         )
 
-        source_plane_grid = al.util.ray_tracing.traced_grid_2d_list_from(
+        source_plane_grid = al.util.tracer.traced_grid_2d_list_from(
             planes=planes, grid=sub_grid_2d_7x7
         )[1]
 
@@ -264,35 +264,35 @@ class TestGridAtRedshift:
         galaxies = [g0, g1, g2, g3, g4]
         planes = al.util.plane.planes_via_galaxies_from(galaxies=galaxies)
 
-        traced_grid_list = al.util.ray_tracing.traced_grid_2d_list_from(
+        traced_grid_list = al.util.tracer.traced_grid_2d_list_from(
             planes=planes, grid=sub_grid_2d_7x7
         )
 
-        grid_at_redshift = al.util.ray_tracing.grid_2d_at_redshift_from(
+        grid_at_redshift = al.util.tracer.grid_2d_at_redshift_from(
             galaxies=galaxies, grid=sub_grid_2d_7x7, redshift=0.5
         )
 
         assert grid_at_redshift == pytest.approx(traced_grid_list[0], 1.0e-4)
 
-        grid_at_redshift = al.util.ray_tracing.grid_2d_at_redshift_from(
+        grid_at_redshift = al.util.tracer.grid_2d_at_redshift_from(
             galaxies=galaxies, grid=sub_grid_2d_7x7, redshift=0.75
         )
 
         assert grid_at_redshift == pytest.approx(traced_grid_list[1], 1.0e-4)
 
-        grid_at_redshift = al.util.ray_tracing.grid_2d_at_redshift_from(
+        grid_at_redshift = al.util.tracer.grid_2d_at_redshift_from(
             galaxies=galaxies, grid=sub_grid_2d_7x7, redshift=1.0
         )
 
         assert grid_at_redshift == pytest.approx(traced_grid_list[2], 1.0e-4)
 
-        grid_at_redshift = al.util.ray_tracing.grid_2d_at_redshift_from(
+        grid_at_redshift = al.util.tracer.grid_2d_at_redshift_from(
             galaxies=galaxies, grid=sub_grid_2d_7x7, redshift=1.5
         )
 
         assert grid_at_redshift == pytest.approx(traced_grid_list[3], 1.0e-4)
 
-        grid_at_redshift = al.util.ray_tracing.grid_2d_at_redshift_from(
+        grid_at_redshift = al.util.tracer.grid_2d_at_redshift_from(
             galaxies=galaxies, grid=sub_grid_2d_7x7, redshift=2.0
         )
 
@@ -316,7 +316,7 @@ class TestGridAtRedshift:
 
         galaxies = [g0, g1, g2]
 
-        grid_at_redshift = al.util.ray_tracing.grid_2d_at_redshift_from(
+        grid_at_redshift = al.util.tracer.grid_2d_at_redshift_from(
             galaxies=galaxies, grid=sub_grid_2d_7x7, redshift=1.9
         )
 
@@ -339,7 +339,7 @@ class TestGridAtRedshift:
 
         galaxies = [g0, g1]
 
-        grid_at_redshift = al.util.ray_tracing.grid_2d_at_redshift_from(
+        grid_at_redshift = al.util.tracer.grid_2d_at_redshift_from(
             galaxies=galaxies,
             grid=sub_grid_2d_7x7.mask.derive_grid.all_false_sub_1,
             redshift=0.3,

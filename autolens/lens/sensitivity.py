@@ -7,7 +7,7 @@ from autofit.non_linear.grid.sensitivity.result import SensitivityResult
 import autofit as af
 import autoarray as aa
 
-from autolens.lens.ray_tracing import Tracer
+from autolens.lens.tracer import Tracer
 
 import autolens.plot as aplt
 

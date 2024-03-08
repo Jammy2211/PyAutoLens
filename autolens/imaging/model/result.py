@@ -2,7 +2,7 @@ import copy
 
 import autoarray as aa
 
-from autolens.lens.ray_tracing import Tracer
+from autolens.lens.tracer import Tracer
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.analysis.result import ResultDataset
 from autolens.analysis.preloads import Preloads

@@ -22,4 +22,4 @@ from autogalaxy.util import error_util as error
 from autogalaxy.plane import plane_util as plane
 from autogalaxy.analysis import chaining_util as chaining
 
-from autolens.lens import ray_tracing_util as ray_tracing
+from autolens.lens import tracer_util as tracer

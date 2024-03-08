@@ -82,7 +82,7 @@ from autogalaxy import convert
 from . import plot
 from . import aggregator as agg
 from .lens import subhalo
-from .lens.ray_tracing import Tracer
+from .lens.tracer import Tracer
 from .lens.to_inversion import TracerToInversion
 from .analysis.positions import PositionsLHResample
 from .analysis.positions import PositionsLHPenalty

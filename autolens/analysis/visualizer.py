@@ -8,8 +8,8 @@ from autogalaxy.analysis.visualizer import plot_setting
 
 from autogalaxy.analysis.visualizer import Visualizer as AgVisualizer
 
-from autolens.lens.ray_tracing import Tracer
-from autolens.lens.plot.ray_tracing_plotters import TracerPlotter
+from autolens.lens.tracer import Tracer
+from autolens.lens.plot.tracer_plotters import TracerPlotter
 
 
 class Visualizer(AgVisualizer):
@@ -33,7 +33,7 @@ class Visualizer(AgVisualizer):
         """
         Visualizes a `Tracer` object.
 
-        Images are output to the `image` folder of the `visualize_path` in a subfolder called `ray_tracing`. When
+        Images are output to the `image` folder of the `visualize_path` in a subfolder called `tracer`. When
         used with a non-linear search the `visualize_path` points to the search's results folder and this function
         visualizes the maximum log likelihood `Tracer` inferred by the search so far.
 
@@ -41,7 +41,7 @@ class Visualizer(AgVisualizer):
         angles) and a subplot of all these attributes on the same figure.
 
         The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
-        [ray_tracing] header.
+        [tracer] header.
 
         Parameters
         ----------
@@ -55,9 +55,9 @@ class Visualizer(AgVisualizer):
         """
 
         def should_plot(name):
-            return plot_setting(section="ray_tracing", name=name)
+            return plot_setting(section="tracer", name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="ray_tracing")
+        mat_plot_2d = self.mat_plot_2d_from(subfolders="tracer")
 
         tracer_plotter = TracerPlotter(
             tracer=tracer,
@@ -93,7 +93,7 @@ class Visualizer(AgVisualizer):
 
         if not during_analysis and should_plot("all_at_end_png"):
             mat_plot_2d = self.mat_plot_2d_from(
-                subfolders=path.join("ray_tracing", "end"),
+                subfolders=path.join("tracer", "end"),
             )
 
             tracer_plotter = TracerPlotter(
@@ -126,7 +126,7 @@ class Visualizer(AgVisualizer):
 
         if not during_analysis and should_plot("all_at_end_fits"):
             mat_plot_2d = self.mat_plot_2d_from(
-                subfolders=path.join("ray_tracing", "fits"), format="fits"
+                subfolders=path.join("tracer", "fits"), format="fits"
             )
 
             tracer_plotter = TracerPlotter(
@@ -159,7 +159,7 @@ class Visualizer(AgVisualizer):
         The visualization is an image of the strong lens with the positions overlaid.
 
         The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
-        [ray_tracing] header.
+        [tracer] header.
 
         Parameters
         ----------

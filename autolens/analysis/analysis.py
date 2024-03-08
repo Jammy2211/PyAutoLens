@@ -22,9 +22,9 @@ from autolens.analysis.preloads import Preloads
 from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
 from autolens.analysis.visualizer import Visualizer
-from autolens.lens.ray_tracing import Tracer
+from autolens.lens.tracer import Tracer
 
-from autolens.lens import ray_tracing_util
+from autolens.lens import tracer_util
 
 from autolens import exc
 
@@ -88,7 +88,7 @@ class AnalysisLensing:
         # TODO : A Subhalo class that extends the Galaxy class maybe?
 
         if hasattr(instance.galaxies, "subhalo"):
-            subhalo_centre = ray_tracing_util.grid_2d_at_redshift_from(
+            subhalo_centre = tracer_util.grid_2d_at_redshift_from(
                 galaxies=instance.galaxies,
                 redshift=instance.galaxies.subhalo.redshift,
                 grid=aa.Grid2DIrregular(values=[instance.galaxies.subhalo.mass.centre]),

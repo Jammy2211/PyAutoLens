@@ -10,7 +10,7 @@ import autogalaxy as ag
 from autogalaxy.abstract_fit import AbstractFitInversion
 
 from autolens.analysis.preloads import Preloads
-from autolens.lens.ray_tracing import Tracer
+from autolens.lens.tracer import Tracer
 from autolens.lens.to_inversion import TracerToInversion
 
 from autolens import exc

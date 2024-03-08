@@ -6,7 +6,7 @@ import autogalaxy.plot as aplt
 from autogalaxy.plot.mass_plotter import MassPlotter
 
 from autolens.plot.abstract_plotters import Plotter
-from autolens.lens.ray_tracing import Tracer
+from autolens.lens.tracer import Tracer
 
 from autolens import exc
 

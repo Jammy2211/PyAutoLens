@@ -3,7 +3,7 @@ from typing import List, Optional
 
 import autofit as af
 
-from autolens.lens.ray_tracing import Tracer
+from autolens.lens.tracer import Tracer
 
 logger = logging.getLogger(__name__)
 
