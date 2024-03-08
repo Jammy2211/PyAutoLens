@@ -78,6 +78,38 @@ def test__planes():
     assert tracer.planes == [[g1, g1], [g2, g2], [g3]]
 
 
+def test__upper_plane_index_with_light_profile():
+    g0 = al.Galaxy(redshift=0.5)
+    g1 = al.Galaxy(redshift=1.0)
+    g2 = al.Galaxy(redshift=2.0)
+    g3 = al.Galaxy(redshift=3.0)
+
+    g0_lp = al.Galaxy(redshift=0.5, light_profile=al.LightProfile())
+    g1_lp = al.Galaxy(redshift=1.0, light_profile=al.LightProfile())
+    g2_lp = al.Galaxy(redshift=2.0, light_profile=al.LightProfile())
+    g3_lp = al.Galaxy(redshift=3.0, light_profile=al.LightProfile())
+
+    tracer = al.Tracer(galaxies=[g1_lp])
+
+    assert tracer.upper_plane_index_with_light_profile == 0
+
+    tracer = al.Tracer(galaxies=[g0, g1_lp])
+
+    assert tracer.upper_plane_index_with_light_profile == 1
+
+    tracer = al.Tracer(galaxies=[g0_lp, g1_lp, g2_lp])
+
+    assert tracer.upper_plane_index_with_light_profile == 2
+
+    tracer = al.Tracer(galaxies=[g0_lp, g1, g2, g3_lp])
+
+    assert tracer.upper_plane_index_with_light_profile == 3
+
+    tracer = al.Tracer(galaxies=[g0_lp, g1, g2_lp, g3])
+
+    assert tracer.upper_plane_index_with_light_profile == 2
+
+
 def test__traced_grid_2d_list_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
     g0 = al.Galaxy(redshift=2.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
     g1 = al.Galaxy(redshift=2.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
