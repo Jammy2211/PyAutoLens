@@ -886,18 +886,20 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         filter_nones
             If True, None entries are removed from the list.
         """
-        if filter_nones:
-            return [
-                plane.extract_attribute(cls=cls, attr_name=attr_name)
-                for plane in self.planes
-                if plane.extract_attribute(cls=cls, attr_name=attr_name) is not None
-            ]
 
-        else:
-            return [
-                plane.extract_attribute(cls=cls, attr_name=attr_name)
-                for plane in self.planes
-            ]
+        attribute_list = []
+
+        for plane in self.planes:
+
+            if filter_nones:
+
+                attribute_list.append([galaxy.extract_attribute(cls=cls, attr_name=attr_name) for galaxy in plane if galaxy.extract_attribute(cls=cls, attr_name=attr_name) is not None])
+
+            else:
+
+                attribute_list.append([galaxy.extract_attribute(cls=cls, attr_name=attr_name) for galaxy in plane])
+
+        return attribute_list
 
     def extract_attributes_of_galaxies(
         self, cls: Type, attr_name: str, filter_nones: Optional[bool] = False

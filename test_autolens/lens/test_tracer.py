@@ -530,7 +530,7 @@ def test__extract_attribute():
 
 
 def test__extract_attributes_of_plane():
-    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=1.0)])
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)])
 
     values = tracer.extract_attributes_of_planes(
         cls=al.mp.MassProfile, attr_name="value"
