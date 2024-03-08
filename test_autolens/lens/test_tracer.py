@@ -721,3 +721,54 @@ def test__sliced_tracer_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
     assert tracer.planes[0] == [los_g0, los_g1]
     assert tracer.planes[1] == [lens_g0, los_g2, los_g3]
     assert tracer.planes[2] == [source_g0]
+
+
+def test__regression__centre_of_profile_in_right_place():
+
+    grid = al.Grid2D.uniform(shape_native=(7, 7), pixel_scales=1.0)
+
+    g0 = al.Galaxy(
+        redshift=0.5,
+        mass=al.mp.Isothermal(centre=(2.0, 1.0), einstein_radius=1.0),
+    )
+
+    tracer = al.Tracer(galaxies=[g0, al.Galaxy(redshift=1.0)])
+
+    convergence = tracer.convergence_2d_from(grid=grid)
+    max_indexes = np.unravel_index(
+        convergence.native.argmax(), convergence.shape_native
+    )
+    assert max_indexes == (1, 4)
+
+    potential = tracer.potential_2d_from(grid=grid)
+    max_indexes = np.unravel_index(potential.native.argmin(), potential.shape_native)
+    assert max_indexes == (1, 4)
+
+    deflections = tracer.deflections_yx_2d_from(grid=grid)
+    assert deflections.native[1, 4, 0] > 0
+    assert deflections.native[2, 4, 0] < 0
+    assert deflections.native[1, 4, 1] > 0
+    assert deflections.native[1, 3, 1] < 0
+
+    grid = al.Grid2DIterate.uniform(
+        shape_native=(7, 7),
+        pixel_scales=1.0,
+        fractional_accuracy=0.99,
+        sub_steps=[2, 4],
+    )
+
+    convergence = tracer.convergence_2d_from(grid=grid)
+    max_indexes = np.unravel_index(
+        convergence.native.argmax(), convergence.shape_native
+    )
+    assert max_indexes == (1, 4)
+
+    potential = tracer.potential_2d_from(grid=grid)
+    max_indexes = np.unravel_index(potential.native.argmin(), potential.shape_native)
+    assert max_indexes == (1, 4)
+
+    deflections = tracer.deflections_yx_2d_from(grid=grid)
+    assert deflections.native[1, 4, 0] >= -1e-8
+    assert deflections.native[2, 4, 0] <= 0
+    assert deflections.native[1, 4, 1] >= 0
+    assert deflections.native[1, 3, 1] <= 0
