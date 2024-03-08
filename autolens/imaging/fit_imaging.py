@@ -247,8 +247,8 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             for i in range(self.tracer.total_planes)
         ]
 
-        for plane_index, plane in enumerate(self.tracer.planes):
-            for galaxy in plane.galaxies:
+        for plane_index, galaxies in enumerate(self.tracer.planes):
+            for galaxy in galaxies:
                 model_images_of_planes_list[plane_index] += galaxy_model_image_dict[
                     galaxy
                 ]
