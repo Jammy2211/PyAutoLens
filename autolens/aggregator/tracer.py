@@ -1,18 +1,16 @@
 import logging
-from typing import List
+from typing import List, Optional
 
 import autofit as af
-import autogalaxy as ag
 
-from autogalaxy.aggregator.abstract import AbstractAgg
 from autolens.lens.ray_tracing import Tracer
-
-from autogalaxy.aggregator import agg_util
 
 logger = logging.getLogger(__name__)
 
 
-def _tracer_from(fit: af.Fit, galaxies: List[ag.Galaxy]) -> List[Tracer]:
+def _tracer_from(
+    fit: af.Fit, instance: Optional[af.ModelInstance] = None
+) -> List[Tracer]:
     """
     Returns a list of `Tracer` objects from a `PyAutoFit` sqlite database `Fit` object.
 
@@ -34,9 +32,20 @@ def _tracer_from(fit: af.Fit, galaxies: List[ag.Galaxy]) -> List[Tracer]:
     ----------
     fit
         A `PyAutoFit` `Fit` object which contains the results of a model-fit as an entry in a sqlite database.
-    galaxies
-        A list of galaxies corresponding to a sample of a non-linear search and model-fit.
+    instance
+        A manual instance that overwrites the max log likelihood instance in fit (e.g. for drawing the instance
+        randomly from the PDF).
     """
+
+    if instance is None:
+        instance = fit.instance
+
+    try:
+        cosmology = instance.cosmology
+    except AttributeError:
+        cosmology = fit.value(name="cosmology")
+
+    tracer = Tracer(galaxies=instance.galaxies, cosmology=cosmology)
 
     if len(fit.children) > 0:
         logger.info(
@@ -48,12 +57,12 @@ def _tracer_from(fit: af.Fit, galaxies: List[ag.Galaxy]) -> List[Tracer]:
             """
         )
 
-        return [Tracer.from_galaxies(galaxies=galaxies)] * len(fit.children)
+        return [tracer] * len(fit.children)
 
-    return [Tracer.from_galaxies(galaxies=galaxies)]
+    return [tracer]
 
 
-class TracerAgg(AbstractAgg):
+class TracerAgg(af.AggBase):
     """
     Interfaces with an `PyAutoFit` aggregator object to create instances of `Tracer` objects from the results
     of a model-fit.
@@ -85,7 +94,9 @@ class TracerAgg(AbstractAgg):
         A `PyAutoFit` aggregator object which can load the results of model-fits.
     """
 
-    def object_via_gen_from(self, fit, galaxies) -> List[Tracer]:
+    def object_via_gen_from(
+        self, fit, instance: Optional[af.ModelInstance] = None
+    ) -> List[Tracer]:
         """
         Returns a generator of `Tracer` objects from an input aggregator.
 
@@ -98,4 +109,4 @@ class TracerAgg(AbstractAgg):
         galaxies
             A list of galaxies corresponding to a sample of a non-linear search and model-fit.
         """
-        return _tracer_from(fit=fit, galaxies=galaxies)
+        return _tracer_from(fit=fit, instance=instance)

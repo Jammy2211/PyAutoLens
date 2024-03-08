@@ -190,7 +190,7 @@ model to create the appropriate strong lens system.
 
 .. code-block:: python
 
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[lens_galaxy, source_galaxy], cosmology=al.cosmo.Planck15()
     )
 
@@ -322,7 +322,7 @@ rings! The mass distribution of the first galaxy also has separate components fo
         ),
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy_0, lens_galaxy_1, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy_0, lens_galaxy_1, source_galaxy])
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
     tracer_plotter.set_title(label="Image of Complex Strong Lens System")
     tracer_plotter.figures_2d(image=True)

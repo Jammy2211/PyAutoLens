@@ -91,7 +91,7 @@ using an extended source will make it visibly clearer where the multiple images 
 
     source_galaxy = al.Galaxy(redshift=1.0, light=exponential_light_profile)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 We plot the image of our strongly lensed source galaxy.
 
@@ -120,7 +120,7 @@ Lets now treat this source as a point source, by setting up a source galaxy usin
 
     source_galaxy = al.Galaxy(redshift=1.0, point_0=point_source)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 Position Solving
 ----------------

@@ -1,10 +1,6 @@
-from astropy import cosmology as cosmo
 import numpy as np
 import pytest
-import os
 from os import path
-import shutil
-from skimage import measure
 
 import autolens as al
 
@@ -21,21 +17,18 @@ def test__operate_image__blurred_images_2d_via_psf_from__for_tracer_gives_list_o
     )
     g1 = al.Galaxy(redshift=1.0, light_profile=al.lp.Sersic(intensity=2.0))
 
-    plane_0 = al.Plane(redshift=0.5, galaxies=[g0])
-    plane_1 = al.Plane(redshift=1.0, galaxies=[g1])
-
-    blurred_image_0 = plane_0.blurred_image_2d_from(
+    blurred_image_0 = g0.blurred_image_2d_from(
         grid=sub_grid_2d_7x7, psf=psf_3x3, blurring_grid=blurring_grid_2d_7x7
     )
 
-    source_grid_2d_7x7 = plane_0.traced_grid_from(grid=sub_grid_2d_7x7)
-    source_blurring_grid_2d_7x7 = plane_0.traced_grid_from(grid=blurring_grid_2d_7x7)
+    source_grid_2d_7x7 = g0.traced_grid_from(grid=sub_grid_2d_7x7)
+    source_blurring_grid_2d_7x7 = g0.traced_grid_from(grid=blurring_grid_2d_7x7)
 
-    blurred_image_1 = plane_1.blurred_image_2d_from(
+    blurred_image_1 = g1.blurred_image_2d_from(
         grid=source_grid_2d_7x7, psf=psf_3x3, blurring_grid=source_blurring_grid_2d_7x7
     )
 
-    tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=al.cosmo.Planck15())
+    tracer = al.Tracer(galaxies=[g0, g1], cosmology=al.cosmo.Planck15())
 
     blurred_image = tracer.blurred_image_2d_from(
         grid=sub_grid_2d_7x7, psf=psf_3x3, blurring_grid=blurring_grid_2d_7x7
@@ -84,7 +77,9 @@ def test__operate_image__blurred_images_2d_via_convolver_from__for_tracer_gives_
         blurring_grid=source_blurring_grid_2d_7x7,
     )
 
-    tracer = al.Tracer(planes=[plane_0, plane_1], cosmology=al.cosmo.Planck15())
+    tracer = al.Tracer.from_planes(
+        planes=[plane_0, plane_1], cosmology=al.cosmo.Planck15()
+    )
 
     blurred_image = tracer.blurred_image_2d_from(
         grid=sub_grid_2d_7x7,
@@ -127,7 +122,7 @@ def test__operate_image__visibilities_of_planes_from_grid_and_transformer(
         grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
     )
 
-    tracer = al.Tracer(
+    tracer = al.Tracer.from_planes(
         planes=[plane_0, plane_1, plane_2], cosmology=al.cosmo.Planck15()
     )
 
@@ -185,9 +180,7 @@ def test__operate_image__galaxy_blurred_image_2d_dict_from(
         blurring_grid=source_blurring_grid_2d_7x7,
     )
 
-    tracer = al.Tracer.from_galaxies(
-        galaxies=[g3, g1, g0, g2], cosmology=al.cosmo.Planck15()
-    )
+    tracer = al.Tracer(galaxies=[g3, g1, g0, g2], cosmology=al.cosmo.Planck15())
 
     blurred_image_dict = tracer.galaxy_blurred_image_2d_dict_from(
         grid=sub_grid_2d_7x7,
@@ -232,9 +225,7 @@ def test__operate_image__galaxy_visibilities_dict_from_grid_and_transformer(
         grid=source_grid_2d_7x7, transformer=transformer_7x7_7
     )
 
-    tracer = al.Tracer.from_galaxies(
-        galaxies=[g3, g1, g0, g2], cosmology=al.cosmo.Planck15()
-    )
+    tracer = al.Tracer(galaxies=[g3, g1, g0, g2], cosmology=al.cosmo.Planck15())
 
     visibilities_dict = tracer.galaxy_visibilities_dict_from(
         grid=sub_grid_2d_7x7, transformer=transformer_7x7_7
@@ -257,10 +248,8 @@ def test__operate_lens__sums_individual_quantities():
     galaxy_0 = al.Galaxy(mass_profile_0=sis_0, mass_profile_1=sis_1, redshift=0.5)
     galaxy_1 = al.Galaxy(mass_profile_0=sis_2, mass_profile_1=sis_3, redshift=0.5)
 
-    plane = al.Plane(galaxies=[galaxy_0, galaxy_1])
-
     tracer = al.Tracer(
-        planes=[plane, al.Plane(redshift=1.0, galaxies=None)],
+        galaxies=[galaxy_0, galaxy_1],
         cosmology=al.cosmo.Planck15(),
     )
 

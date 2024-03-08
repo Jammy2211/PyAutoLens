@@ -118,7 +118,7 @@ Lets quickly set up the ``Tracer`` we'll use in this example.
         ),
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
     tracer_plotter = aplt.TracerPlotter(
         tracer=tracer, grid=real_space_mask.derive_grid.unmasked_sub_1
@@ -209,7 +209,7 @@ directly fitting the visibilities in the uv-plane.
 
     source_galaxy = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-    tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
     fit = al.FitInterferometer(
         dataset=dataset,

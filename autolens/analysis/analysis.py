@@ -63,7 +63,6 @@ class AnalysisLensing:
         self,
         instance: af.ModelInstance,
         run_time_dict: Optional[Dict] = None,
-        tracer_cls=Tracer,
     ) -> Tracer:
         """
         Create a `Tracer` from the galaxies contained in a model instance.
@@ -98,19 +97,12 @@ class AnalysisLensing:
 
             instance.galaxies.subhalo.mass.centre = tuple(subhalo_centre.in_list[0])
 
-        if hasattr(instance, "clumps"):
-            return Tracer.from_galaxies(
-                galaxies=instance.galaxies + instance.clumps,
-                cosmology=self.cosmology,
-                run_time_dict=run_time_dict,
-            )
-
         if hasattr(instance, "cosmology"):
             cosmology = instance.cosmology
         else:
             cosmology = self.cosmology
 
-        return tracer_cls.from_galaxies(
+        return Tracer(
             galaxies=instance.galaxies,
             cosmology=cosmology,
             run_time_dict=run_time_dict,

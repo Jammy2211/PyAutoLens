@@ -6,9 +6,7 @@ import autolens as al
 def test__two_sets_of_positions__residuals_likelihood_correct():
     point_source = al.ps.PointSourceChi(centre=(0.0, 0.0))
     galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
-    tracer = al.Tracer.from_galaxies(
-        galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source]
-    )
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source])
 
     positions = al.Grid2DIrregular([(0.0, 1.0), (0.0, 2.0)])
     noise_map = al.ArrayIrregular([0.5, 1.0])
@@ -30,7 +28,7 @@ def test__two_sets_of_positions__residuals_likelihood_correct():
         redshift=0.5, mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0)
     )
 
-    tracer = al.Tracer.from_galaxies(galaxies=[galaxy_mass, galaxy_point_source])
+    tracer = al.Tracer(galaxies=[galaxy_mass, galaxy_point_source])
 
     fit = al.FitPositionsSource(
         name="point_0", positions=positions, noise_map=noise_map, tracer=tracer
@@ -45,7 +43,7 @@ def test__multi_plane_position_solving():
     g1 = al.Galaxy(redshift=1.0, point_0=al.ps.Point(centre=(0.1, 0.1)))
     g2 = al.Galaxy(redshift=2.0, point_1=al.ps.Point(centre=(0.1, 0.1)))
 
-    tracer = al.Tracer.from_galaxies(galaxies=[g0, g1, g2])
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
 
     positions = al.Grid2DIrregular([(0.0, 1.0), (0.0, 2.0)])
     noise_map = al.ArrayIrregular([0.5, 1.0])

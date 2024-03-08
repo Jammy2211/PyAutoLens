@@ -100,7 +100,7 @@ below shows this in action:
     We create the strong lens using a Tracer, which uses the galaxies, their redshifts
     and an input cosmology to determine how light is deflected on its path to Earth.
     """
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[lens_galaxy, source_galaxy],
         cosmology = al.cosmo.Planck15()
     )

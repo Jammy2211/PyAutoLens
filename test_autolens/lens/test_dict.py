@@ -21,93 +21,69 @@ def make_tracer():
 
     source_galaxy = al.Galaxy(redshift=1.0, disk=disk)
 
-    return al.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy], cosmology=al.cosmo.wrap.Planck15
+    return al.Tracer(
+        galaxies=[lens_galaxy, source_galaxy], cosmology=al.cosmo.wrap.Planck15()
     )
 
 
 @pytest.fixture(name="tracer_dict")
 def make_tracer_dict():
     return {
+        "type": "instance",
+        "class_path": "autolens.lens.ray_tracing.Tracer",
         "arguments": {
-            "cosmology": {
-                "class_path": "autogalaxy.cosmology.wrap.Planck15",
-                "type": "type",
-            },
-            "planes": {
+            "run_time_dict": None,
+            "galaxies": {
                 "type": "list",
                 "values": [
                     {
-                        "arguments": {
-                            "galaxies": {
-                                "type": "list",
-                                "values": [
-                                    {
-                                        "arguments": {
-                                            "label": "cls267",
-                                            "mass": {
-                                                "arguments": {
-                                                    "centre": (0.0, 0.0),
-                                                    "einstein_radius": 1.6,
-                                                    "ell_comps": (0.1, 0.05),
-                                                },
-                                                "class_path": "autogalaxy.profiles.mass.total.isothermal.Isothermal",
-                                                "type": "instance",
-                                            },
-                                            "redshift": 0.5,
-                                        },
-                                        "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
-                                        "type": "instance",
-                                    }
-                                ],
-                            },
-                            "redshift": 0.5,
-                            "run_time_dict": None,
-                        },
-                        "class_path": "autogalaxy.plane.plane.Plane",
                         "type": "instance",
+                        "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
+                        "arguments": {
+                            "redshift": 0.5,
+                            "label": "cls267",
+                            "mass": {
+                                "type": "instance",
+                                "class_path": "autogalaxy.profiles.mass.total.isothermal.Isothermal",
+                                "arguments": {
+                                    "einstein_radius": 1.6,
+                                    "ell_comps": (0.1, 0.05),
+                                    "centre": (0.0, 0.0),
+                                },
+                            },
+                        },
                     },
                     {
-                        "arguments": {
-                            "galaxies": {
-                                "type": "list",
-                                "values": [
-                                    {
-                                        "arguments": {
-                                            "disk": {
-                                                "arguments": {
-                                                    "centre": (0.3, 0.2),
-                                                    "effective_radius": 0.5,
-                                                    "ell_comps": (0.05, 0.25),
-                                                    "intensity": 0.05,
-                                                },
-                                                "class_path": "autogalaxy.profiles.light.standard.exponential.Exponential",
-                                                "type": "instance",
-                                            },
-                                            "label": "cls267",
-                                            "redshift": 1.0,
-                                        },
-                                        "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
-                                        "type": "instance",
-                                    }
-                                ],
-                            },
-                            "redshift": 1.0,
-                            "run_time_dict": None,
-                        },
-                        "class_path": "autogalaxy.plane.plane.Plane",
                         "type": "instance",
+                        "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
+                        "arguments": {
+                            "redshift": 1.0,
+                            "label": "cls267",
+                            "disk": {
+                                "type": "instance",
+                                "class_path": "autogalaxy.profiles.light.standard.exponential.Exponential",
+                                "arguments": {
+                                    "effective_radius": 0.5,
+                                    "intensity": 0.05,
+                                    "ell_comps": (0.05, 0.25),
+                                    "centre": (0.3, 0.2),
+                                },
+                            },
+                        },
                     },
                 ],
             },
-            "run_time_dict": None,
+            "cosmology": {
+                "type": "instance",
+                "class_path": "autogalaxy.cosmology.wrap.Planck15",
+                "arguments": {},
+            },
         },
-        "class_path": "autolens.lens.ray_tracing.Tracer",
-        "type": "instance",
     }
 
 
 def test__to_dict(tracer, tracer_dict):
+    print(to_dict(tracer))
     assert to_dict(tracer) == tracer_dict
 
 

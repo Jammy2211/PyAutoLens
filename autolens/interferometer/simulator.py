@@ -45,7 +45,7 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
         5) Output the dataset to .fits format if a dataset_path and data_name are specified. Otherwise, return the simulated \
            imaging data instance."""
 
-        tracer = Tracer.from_galaxies(galaxies=galaxies)
+        tracer = Tracer(galaxies=galaxies)
 
         return self.via_tracer_from(tracer=tracer, grid=grid)
 

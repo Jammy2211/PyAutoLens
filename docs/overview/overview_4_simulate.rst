@@ -39,7 +39,7 @@ and checkout the appropriate example!
         ),
     )
 
-    tracer = al.Tracer.from_galaxies(
+    tracer = al.Tracer(
         galaxies=[lens_galaxy, source_galaxy], cosmology=al.cosmo.Planck15()
     )
 
