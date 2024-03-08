@@ -68,7 +68,7 @@ class TracerToInversion(ag.AbstractToInversion):
             )
 
         for plane_index, plane in enumerate(self.planes):
-            plane_to_inversion = ag.PlaneToInversion(
+            plane_to_inversion = ag.GalaxiesToInversion(
                 plane=plane,
                 dataset=self.dataset,
                 grid=traced_grids_of_planes_list[plane_index],
@@ -131,7 +131,7 @@ class TracerToInversion(ag.AbstractToInversion):
         image_plane_mesh_grid_list_of_planes = []
 
         for plane in self.planes:
-            plane_to_inversion = ag.PlaneToInversion(
+            plane_to_inversion = ag.GalaxiesToInversion(
                 plane=plane,
                 grid_pixelization=self.dataset.grid,
                 noise_map=self.noise_map,
@@ -204,7 +204,7 @@ class TracerToInversion(ag.AbstractToInversion):
 
         for plane_index, plane in enumerate(self.planes):
             if plane.has(cls=aa.Pixelization):
-                plane_to_inversion = ag.PlaneToInversion(
+                plane_to_inversion = ag.GalaxiesToInversion(
                     plane=plane,
                     grid_pixelization=traced_grids_of_planes_list[plane_index],
                     preloads=self.preloads,

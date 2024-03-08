@@ -152,4 +152,4 @@ plots:
     potential: false
     source_plane_image: true
     subplot_tracer: true
-    subplot_plane_images: true
+    subplot_galaxies_images: true

@@ -50,11 +50,11 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         cosmology
             The cosmology used to perform ray-tracing calculations.
         run_time_dict
-            A dictionary of information on the run-time of the tracer, including the total time and time spent on
+            A dictionary of information on the run-times of function calls, including the total time and time spent on
             different calculations.
         """
 
-        self.galaxies = galaxies
+        self.galaxies = ag.Galaxies(galaxies=galaxies)
 
         self.cosmology = cosmology
 
@@ -73,7 +73,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         -------
         The galaxies in the tracer in ascending redshift order.
         """
-        return sorted(self.galaxies, key=lambda galaxy: galaxy.redshift)
+        return ag.Galaxies(galaxies=sorted(self.galaxies, key=lambda galaxy: galaxy.redshift))
 
     @property
     def plane_redshifts(self) -> List[float]:
@@ -97,7 +97,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         -------
         The list of unique redshifts of the planes.
         """
-        return ag.util.plane.plane_redshifts_from(
+        return tracer_util.plane_redshifts_from(
             galaxies=self.galaxies_ascending_redshift
         )
 
@@ -129,7 +129,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         -------
         The list of list of galaxies grouped into their planes.
         """
-        return ag.util.plane.planes_from(
+        return tracer_util.planes_from(
             galaxies=self.galaxies_ascending_redshift,
             plane_redshifts=self.plane_redshifts,
         )
@@ -189,11 +189,11 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             The cosmology used to perform ray-tracing calculations.
         """
 
-        lens_redshifts = ag.util.plane.ordered_plane_redshifts_from(
+        lens_redshifts = tracer_util.ordered_plane_redshifts_from(
             galaxies=lens_galaxies
         )
 
-        plane_redshifts = ag.util.plane.ordered_plane_redshifts_with_slicing_from(
+        plane_redshifts = tracer_util.ordered_plane_redshifts_with_slicing_from(
             lens_redshifts=lens_redshifts,
             planes_between_lenses=planes_between_lenses,
             source_plane_redshift=source_galaxies[0].redshift,
@@ -358,13 +358,12 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         galaxies at z=0.5 and z=1.0, where the image at redshift z=1.0 will include the lensing effects of the galaxies
         at z=0.5. The image at redshift z=2.0 will be a numpy array of zeros.
 
-        This function is used in the `autogalaxy.operate.image` package, to output images of the tracer
-        that have operations such as a 2D convolution or Fourier transform applied to them.
-
         The images output by this function do not include instrument operations, such as PSF convolution (for imaging
-        data) or a Fourier transform (for interferometer data). However, inherited methods in the
-        `autogalaxy.operate.image` package can apply these operations to the images, which may have the `operated_only`
-        input passed to them. This is why this function includes the `operated_only` input.
+        data) or a Fourier transform (for interferometer data).
+
+        Inherited methods in the `autogalaxy.operate.image` package can apply these operations to the images.
+        These functions may have the `operated_only` input passed to them, which is why this function includes
+        the `operated_only` input.
 
         If the `operated_only` input is included, the function omits light profiles which are parents of
         the `LightProfileOperated` object, which signifies that the light profile represents emission that has
@@ -422,7 +421,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         """
         Returns the 2D image of this ray-tracing strong lens system from a 2D grid of Cartesian (y,x) coordinates.
 
-        This function first computed the image of each plane in the tracer, via the function `image_2d_list_from`. The
+        This function first computes the image of each plane in the tracer, via the function `image_2d_list_from`. The
         images are then summed to give the overall image of the tracer.
 
         Refer to the function `image_2d_list_from` for a full description of the calculation and how the `operated_only`
@@ -780,8 +779,8 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         """
         Returns a bool specifying whether this fit object performs an inversion.
 
-        This is based on whether any of the galaxies in the `model_obj` have a `Pixelization` or `LightProfileLinear`
-        object, in which case an inversion is performed.
+        This is based on whether any of the galaxies have a `Pixelization` or `LightProfileLinear` object, in which
+        case an inversion is performed.
 
         Returns
         -------

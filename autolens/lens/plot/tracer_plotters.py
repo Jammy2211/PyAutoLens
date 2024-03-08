@@ -1,6 +1,7 @@
 from typing import Optional, List
 
 import autoarray as aa
+import autogalaxy as ag
 import autogalaxy.plot as aplt
 
 from autogalaxy.plot.mass_plotter import MassPlotter
@@ -94,19 +95,19 @@ class TracerPlotter(Plotter):
             tracer=self.tracer, grid=self.grid, plane_index=plane_index
         )
 
-    def plane_plotter_from(self, plane_index: int) -> aplt.PlanePlotter:
+    def galaxies_plotter_from(self, plane_index: int) -> aplt.GalaxiesPlotter:
         """
-        Returns an `PlanePlotter` corresponding to a `Plane` in the `Tracer`.
+        Returns an `GalaxiesPlotter` corresponding to a `Plane` in the `Tracer`.
 
         Returns
         -------
         plane_index
-            The index of the plane in the `Tracer` used to make the `PlanePlotter`.
+            The index of the plane in the `Tracer` used to make the `GalaxiesPlotter`.
         """
         plane_grid = self.tracer.traced_grid_2d_list_from(grid=self.grid)[plane_index]
 
-        return aplt.PlanePlotter(
-            plane=self.tracer.planes[plane_index],
+        return aplt.GalaxiesPlotter(
+            galaxies=ag.Galaxies(galaxies=self.tracer.planes[plane_index]),
             grid=plane_grid,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.get_visuals_2d_of_plane(plane_index=plane_index),
@@ -232,7 +233,8 @@ class TracerPlotter(Plotter):
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
         for plane_index in plane_indexes:
-            plane_plotter = self.plane_plotter_from(plane_index=plane_index)
+
+            galaxies_plotter = self.galaxies_plotter_from(plane_index=plane_index)
 
             if plane_index == 1:
                 source_plane_title = True
@@ -240,7 +242,7 @@ class TracerPlotter(Plotter):
                 source_plane_title = False
 
             if plane_image:
-                plane_plotter.figures_2d(
+                galaxies_plotter.figures_2d(
                     plane_image=True,
                     zoom_to_brightest=zoom_to_brightest,
                     title_suffix=f" Of Plane {plane_index}",
@@ -249,7 +251,7 @@ class TracerPlotter(Plotter):
                 )
 
             if plane_grid:
-                plane_plotter.figures_2d(
+                galaxies_plotter.figures_2d(
                     plane_grid=True,
                     title_suffix=f" Of Plane {plane_index}",
                     filename_suffix=f"_of_plane_{plane_index}",
@@ -326,12 +328,12 @@ class TracerPlotter(Plotter):
 
         self.set_title(label="Lensed Source Image")
 
-        plane_plotter = self.plane_plotter_from(plane_index=final_plane_index)
+        galaxies_plotter = self.galaxies_plotter_from(plane_index=final_plane_index)
 
-        plane_plotter.visuals_2d.tangential_caustics = None
-        plane_plotter.visuals_2d.radial_caustics = None
+        galaxies_plotter.visuals_2d.tangential_caustics = None
+        galaxies_plotter.visuals_2d.radial_caustics = None
 
-        plane_plotter.figures_2d(
+        galaxies_plotter.figures_2d(
             image=True,
         )
 
@@ -394,8 +396,8 @@ class TracerPlotter(Plotter):
         self.open_subplot_figure(number_subplots=number_subplots)
 
         for plane_index in range(0, self.tracer.total_planes):
-            plane_plotter = self.plane_plotter_from(plane_index=plane_index)
-            plane_plotter.figures_2d(
+            galaxies_plotter = self.galaxies_plotter_from(plane_index=plane_index)
+            galaxies_plotter.figures_2d(
                 image=True, title_suffix=f" Of Plane {plane_index}"
             )
 
@@ -404,7 +406,7 @@ class TracerPlotter(Plotter):
         )
         self.close_subplot_figure()
 
-    def subplot_plane_images(self):
+    def subplot_galaxies_images(self):
         """
         Subplot of the image of every plane in its own plane.
 
@@ -416,19 +418,19 @@ class TracerPlotter(Plotter):
 
         self.open_subplot_figure(number_subplots=number_subplots)
 
-        plane_plotter = self.plane_plotter_from(plane_index=0)
-        plane_plotter.figures_2d(image=True, title_suffix=" Of Plane 0")
+        galaxies_plotter = self.galaxies_plotter_from(plane_index=0)
+        galaxies_plotter.figures_2d(image=True, title_suffix=" Of Plane 0")
 
         self.mat_plot_2d.subplot_index += 1
 
         for plane_index in range(1, self.tracer.total_planes):
-            plane_plotter = self.plane_plotter_from(plane_index=plane_index)
-            plane_plotter.figures_2d(
+            galaxies_plotter = self.galaxies_plotter_from(plane_index=plane_index)
+            galaxies_plotter.figures_2d(
                 image=True, title_suffix=f" Of Plane {plane_index}"
             )
-            plane_plotter.figures_2d(
+            galaxies_plotter.figures_2d(
                 plane_image=True, title_suffix=f" Of Plane {plane_index}"
             )
 
-        self.mat_plot_2d.output.subplot_to_figure(auto_filename=f"subplot_plane_images")
+        self.mat_plot_2d.output.subplot_to_figure(auto_filename=f"subplot_galaxies_images")
         self.close_subplot_figure()

@@ -28,7 +28,7 @@ def test__visualizes_tracer__uses_configs(
 
     plot_path = path.join(plot_path, "tracer")
 
-    assert path.join(plot_path, "subplot_plane_images.png") in plot_patch.paths
+    assert path.join(plot_path, "subplot_galaxies_images.png") in plot_patch.paths
     assert path.join(plot_path, "image_2d.png") in plot_patch.paths
     assert path.join(plot_path, "plane_image_of_plane_1.png") in plot_patch.paths
     assert path.join(plot_path, "convergence_2d.png") in plot_patch.paths

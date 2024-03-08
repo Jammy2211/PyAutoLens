@@ -3,9 +3,10 @@ import pytest
 from os import path
 from skimage import measure
 
+from autoconf.dictable import from_json, output_to_json
 import autofit as af
 import autolens as al
-from autoconf.dictable import from_json, output_to_json
+
 
 grid_simple = al.Grid2DIrregular(values=[(1.0, 2.0)])
 

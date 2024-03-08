@@ -66,8 +66,8 @@ class Visualizer(AgVisualizer):
             include_2d=self.include_2d,
         )
 
-        if should_plot("subplot_plane_images"):
-            tracer_plotter.subplot_plane_images()
+        if should_plot("subplot_galaxies_images"):
+            tracer_plotter.subplot_galaxies_images()
 
         tracer_plotter.figures_2d(
             image=should_plot("image"),
