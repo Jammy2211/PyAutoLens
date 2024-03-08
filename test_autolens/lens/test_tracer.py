@@ -699,3 +699,25 @@ def test__extract_plane_index_of_profile():
     plane_index = tracer.extract_plane_index_of_profile(profile_name="mp_3")
 
     assert plane_index == 2
+
+
+def test__sliced_tracer_from(sub_grid_2d_7x7, sub_grid_2d_7x7_simple):
+
+    lens_g0 = al.Galaxy(redshift=0.5)
+    source_g0 = al.Galaxy(redshift=2.0)
+    los_g0 = al.Galaxy(redshift=0.1)
+    los_g1 = al.Galaxy(redshift=0.2)
+    los_g2 = al.Galaxy(redshift=0.4)
+    los_g3 = al.Galaxy(redshift=0.6)
+
+    tracer = al.Tracer.sliced_tracer_from(
+        lens_galaxies=[lens_g0],
+        line_of_sight_galaxies=[los_g0, los_g1, los_g2, los_g3],
+        source_galaxies=[source_g0],
+        planes_between_lenses=[1, 1],
+        cosmology=al.cosmo.Planck15(),
+    )
+
+    assert tracer.planes[0] == [los_g0, los_g1]
+    assert tracer.planes[1] == [lens_g0, los_g2, los_g3]
+    assert tracer.planes[2] == [source_g0]
