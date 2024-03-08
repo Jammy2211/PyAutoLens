@@ -1,8 +1,79 @@
+import numpy as np
 from typing import List, Optional
 
+from autoconf import conf
 import autoarray as aa
 import autogalaxy as ag
 
+def plane_redshifts_from(galaxies : List[ag.Galaxy]) -> List[float]:
+    """
+    Returns a list of plane redshifts from a list of galaxies, using the redshifts of the galaxies to determine the
+    unique redshifts of the planes.
+
+    Each plane redshift corresponds to a unique redshift in the list of galaxies, such that the returned list of
+    redshifts contains no duplicate values. This means multiple galaxies at the same redshift are assigned to the
+    same plane.
+
+    For example, if the input is three galaxies, two at redshift 1.0 and one at redshift 2.0, the returned list of
+    redshifts would be [1.0, 2.0].
+
+    Parameters
+    ----------
+    galaxies
+        The list of galaxies used to determine the unique redshifts of the planes.
+
+    Returns
+    -------
+    The list of unique redshifts of the planes.
+    """
+
+    galaxies_ascending_redshift = sorted(galaxies, key=lambda galaxy: galaxy.redshift)
+
+    plane_redshifts = [galaxy.redshift for galaxy in galaxies_ascending_redshift]
+
+    return list(dict.fromkeys(plane_redshifts))
+
+
+def planes_from(galaxies : List[ag.Galaxy], plane_redshifts : Optional[List[float]] = None) -> List[List[ag.Galaxy]]:
+    """
+    Returns a list of list of galaxies grouped into their planes, where planes contained all galaxies at the same
+    unique redshift.
+
+    Each plane redshift corresponds to a unique redshift in the list of galaxies, such that the returned list of
+    redshifts contains no duplicate values. This means multiple galaxies at the same redshift are assigned to the
+    same plane.
+
+    If the plane redshifts are not input, the redshifts of the galaxies are used to determine the unique redshifts of
+    the planes.
+
+    For example, if the input is three galaxies, two at redshift 1.0 and one at redshift 2.0, the returned list of
+    list of galaxies would be [[g1, g2], g3]].
+
+    Parameters
+    ----------
+    galaxies
+        The list of galaxies used to determine the unique redshifts of the planes.
+    plane_redshifts
+        The redshifts of the planes, which are used to group the galaxies into their respective planes. If not input,
+        the redshifts of the galaxies are used to determine the unique redshifts of the planes.
+
+    Returns
+    -------
+    The list of list of galaxies grouped into their planes.
+    """
+
+    galaxies_ascending_redshift = sorted(galaxies, key=lambda galaxy: galaxy.redshift)
+
+    if plane_redshifts is None:
+        plane_redshifts = plane_redshifts_from(galaxies=galaxies_ascending_redshift)
+
+    planes = [[] for i in range(len(plane_redshifts))]
+
+    for galaxy in galaxies_ascending_redshift:
+        index = (np.abs(np.asarray(plane_redshifts) - galaxy.redshift)).argmin()
+        planes[index].append(galaxy)
+
+    return planes
 
 def traced_grid_2d_list_from(
     planes: List[List[ag.Galaxy]],
@@ -121,7 +192,7 @@ def grid_2d_at_redshift_from(
     2) If the input redshift is not the same as the redshift of a plane in the multi-plane system, a plane is inserted
     at this redshift and the grid is ray-traced to this plane.
 
-    For example, the input list `galaxies` may contained three `Galaxy` objects at redshifts z=0.5, z=1.0 and z=2.0.
+    For example, the input list `galaxies` may contained three `ag.Galaxy` objects at redshifts z=0.5, z=1.0 and z=2.0.
     We can input an image-plane grid and request that its coordinates are ray-traced to a plane at z=1.75 in this
     multi-plane system. This will insert a plane at z=1.75 and use the galaxy's at z=0.5 and z=1.0 to compute
     deflection angles, alongside accounting for multi-plane lensing effects via the angular diameter distances
@@ -139,12 +210,12 @@ def grid_2d_at_redshift_from(
         The cosmology used for ray-tracing from which angular diameter distances between planes are computed.
     """
 
-    plane_redshifts = ag.util.plane.plane_redshifts_from(galaxies=galaxies)
+    plane_redshifts = plane_redshifts_from(galaxies=galaxies)
 
     if redshift <= plane_redshifts[0]:
         return grid.copy()
 
-    planes = ag.util.plane.planes_from(
+    planes = planes_from(
         galaxies=galaxies, plane_redshifts=plane_redshifts
     )
 
@@ -172,3 +243,99 @@ def grid_2d_at_redshift_from(
     )
 
     return traced_grid_list[plane_index_insert]
+
+
+def plane_image_from(
+    galaxies: List[ag.Galaxy],
+    grid: aa.Grid2D,
+    buffer: float = 1.0e-2,
+    zoom_to_brightest: bool = True,
+) -> aa.Array2D:
+    """
+    Returns the plane image of a list of galaxies, by summing their individual images.
+
+    For lensing calculations performed by **PyAutoLens**, this function is used to return the unleensed image
+    source-plane galaxies.
+
+    By default, an adaptive grid is used to determine the grid that the images of the galaxies are computed on.
+    This grid adapts its dimensions to capture the brightest regions of the image, ensuring that visualization of
+    the plane-image is focused entirely on where the galaxies are brightest.
+
+    This adaptive grid is based on determining the size of the grid that contains all pixels with an
+    input % (typically 99%) of the total flux of the brightest pixel in the image.
+
+    The adaptive grid can be disabled such that the input grid is used to compute the image of the galaxies.
+
+    Parameters
+    ----------
+    galaxies
+        The list of galaxies whose images are summed to compute the plane image.
+    grid
+        The grid of (y,x) coordinates for which the image of the galaxies is computed on, or from which the adaptive
+        grid is derived.
+    buffer
+        The buffer around the adaptive grid that is used to ensure the image of the galaxies is not cut off.
+    zoom_to_brightest
+        If True, an adaptive grid is used to compute the image of the galaxies which zooms in on the brightest
+        regions of the image. If False, the input grid is used.
+
+    Returns
+    -------
+    The plane image of the galaxies, which is the sum of their individual images.
+    """
+
+    shape = grid.shape_native
+
+    if zoom_to_brightest:
+        try:
+            image = sum(map(lambda g: g.image_2d_from(grid=grid), galaxies))
+            image = image.native
+
+            zoom_percent = conf.instance["visualize"]["general"]["zoom"][
+                "plane_percent"
+            ]
+
+            fractional_value = np.max(image) * zoom_percent
+
+            fractional_bool = image > fractional_value
+
+            true_indices = np.argwhere(fractional_bool)
+
+            y_max_pix = np.min(true_indices[:, 0])
+            y_min_pix = np.max(true_indices[:, 0])
+            x_min_pix = np.min(true_indices[:, 1])
+            x_max_pix = np.max(true_indices[:, 1])
+
+            grid = grid.native
+
+            extent = (
+                grid[0, x_min_pix][1] - buffer,
+                grid[0, x_max_pix][1] + buffer,
+                grid[y_min_pix, 0][0] - buffer,
+                grid[y_max_pix, 0][0] + buffer,
+            )
+
+            extent = aa.util.geometry.extent_symmetric_from(extent=extent)
+
+            pixel_scales = (
+                float((extent[3] - extent[2]) / shape[0]),
+                float((extent[1] - extent[0]) / shape[1]),
+            )
+            origin = ((extent[3] + extent[2]) / 2.0, (extent[1] + extent[0]) / 2.0)
+
+            grid = aa.Grid2D.uniform(
+                shape_native=grid.shape_native,
+                pixel_scales=pixel_scales,
+                sub_size=1,
+                origin=origin,
+            )
+        except ValueError:
+            pass
+
+    image = sum(map(lambda g: g.image_2d_from(grid=grid), galaxies))
+
+    return aa.Array2D.no_mask(
+        values=image.native, pixel_scales=grid.pixel_scales, origin=grid.origin
+    )
+
+

@@ -19,7 +19,6 @@ from autoarray.inversion.inversion.interferometer import (
 )
 from autoarray.operators import transformer_util as transformer
 from autogalaxy.util import error_util as error
-from autogalaxy.plane import plane_util as plane
 from autogalaxy.analysis import chaining_util as chaining
 
 from autolens.lens import tracer_util as tracer
