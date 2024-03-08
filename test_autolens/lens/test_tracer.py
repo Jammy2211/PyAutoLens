@@ -927,3 +927,24 @@ def test__instance_into_tracer__retains_dictionary_access():
     tracer = al.Tracer(galaxies=instance.galaxies)
 
     assert tracer.galaxies.lens.light.intensity == 2.0
+
+
+def test__output_to_and_load_from_json():
+    json_file = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))), "files", "tracer.json"
+    )
+
+    g0 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
+    g1 = al.Galaxy(redshift=1.0)
+
+    tracer = al.Tracer(galaxies=[g0, g1], cosmology=al.cosmo.wrap.Planck15())
+
+    output_to_json(tracer, file_path=json_file)
+
+    tracer_from_json = from_json(file_path=json_file)
+
+    assert tracer_from_json.galaxies[0].redshift == 0.5
+    assert tracer_from_json.galaxies[1].redshift == 1.0
+    assert tracer_from_json.galaxies[0].mass_profile.einstein_radius == 1.0
+
+    assert isinstance(tracer_from_json.cosmology, al.cosmo.wrap.Planck15)
