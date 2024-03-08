@@ -27,6 +27,29 @@ def test__has():
     assert tracer.has(cls=al.LightProfile) is True
 
 
+def test__galaxies_ascending_redshift(sub_grid_2d_7x7):
+    g0 = al.Galaxy(redshift=0.5)
+    g1 = al.Galaxy(redshift=0.5)
+
+    tracer = al.Tracer(galaxies=[g0, g1])
+
+    assert tracer.galaxies_ascending_redshift == [g0, g1]
+
+    g2 = al.Galaxy(redshift=1.0)
+    g3 = al.Galaxy(redshift=1.0)
+
+    tracer = al.Tracer(galaxies=[g0, g1, g2, g3])
+
+    assert tracer.galaxies_ascending_redshift == [g0, g1, g2, g3]
+
+    g4 = al.Galaxy(redshift=0.75)
+    g5 = al.Galaxy(redshift=1.5)
+
+    tracer = al.Tracer(galaxies=[g0, g1, g2, g3, g4, g5])
+
+    assert tracer.galaxies_ascending_redshift == [g0, g1, g4, g2, g3, g5]
+
+
 def test__plane_redshifts():
     g1 = al.Galaxy(redshift=1)
     g2 = al.Galaxy(redshift=2)
