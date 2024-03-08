@@ -62,7 +62,7 @@ class Result(AgResultDataset):
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
         multiple-image positions.
         """
-        centre = self.max_log_likelihood_tracer.source_plane.extract_attribute(
+        centre = self.max_log_likelihood_tracer.planes[-1].extract_attribute(
             cls=ag.LightProfile, attr_name="centre"
         )
         if centre is not None:
