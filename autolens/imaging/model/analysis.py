@@ -278,8 +278,6 @@ class AnalysisImaging(AnalysisDataset):
                     inversion=fit.inversion, during_analysis=during_analysis
                 )
 
-        visualizer.visualize_contribution_maps(tracer=fit.tracer)
-
     def make_result(
         self,
         samples: af.SamplesPDF,

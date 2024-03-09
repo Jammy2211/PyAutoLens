@@ -53,7 +53,6 @@
     regularization_weights: false
   adapt:                                     # Settings for plots of adapt images used by adaptive pixelizations.
     images_of_galaxies: true
-    contribution_map_list: true
     model_image: true
   interferometer:                            # Settings for plots of interferometer datasets (e.g. InterferometerPlotter).
     amplitudes_vs_uv_distances: false

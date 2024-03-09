@@ -328,8 +328,6 @@ class AnalysisInterferometer(AnalysisDataset):
             except IndexError:
                 pass
 
-        visualizer.visualize_contribution_maps(tracer=fit.tracer)
-
     def make_result(
         self,
         samples: af.SamplesPDF,

@@ -123,7 +123,6 @@ class TracerPlotter(Plotter):
         deflections_y: bool = False,
         deflections_x: bool = False,
         magnification: bool = False,
-        contribution_map: bool = False,
     ):
         """
         Plots the individual attributes of the plotter's `Tracer` object in 2D, which are computed via the plotter's 2D
@@ -150,8 +149,6 @@ class TracerPlotter(Plotter):
             Whether to make a 2D plot (via `imshow`) of the x component of the deflection angles.
         magnification
             Whether to make a 2D plot (via `imshow`) of the magnification.
-        contribution_map
-            Whether to make a 2D plot (via `imshow`) of the contribution map.
         """
 
         if image:
@@ -173,15 +170,6 @@ class TracerPlotter(Plotter):
             deflections_x=deflections_x,
             magnification=magnification,
         )
-
-        if contribution_map:
-            self.mat_plot_2d.plot_array(
-                array=self.tracer.contribution_map,
-                visuals_2d=self.get_visuals_2d(),
-                auto_labels=aplt.AutoLabels(
-                    title="Contribution Map", filename="contribution_map_2d"
-                ),
-            )
 
     def plane_indexes_from(self, plane_index: Optional[int]) -> List[int]:
         """
@@ -266,7 +254,6 @@ class TracerPlotter(Plotter):
         deflections_y: bool = False,
         deflections_x: bool = False,
         magnification: bool = False,
-        contribution_map: bool = False,
         auto_filename: str = "subplot_tracer",
     ):
         """
@@ -294,8 +281,6 @@ class TracerPlotter(Plotter):
             Whether to include a 2D plot (via `imshow`) of the x component of the deflection angles.
         magnification
             Whether to include a 2D plot (via `imshow`) of the magnification.
-        contribution_map
-            Whether to include a 2D plot (via `imshow`) of the contribution map.
         auto_filename
             The default filename of the output subplot if written to hard-disk.
         """
@@ -308,7 +293,6 @@ class TracerPlotter(Plotter):
             deflections_y=deflections_y,
             deflections_x=deflections_x,
             magnification=magnification,
-            contribution_map=contribution_map,
             auto_labels=aplt.AutoLabels(filename=auto_filename),
         )
 

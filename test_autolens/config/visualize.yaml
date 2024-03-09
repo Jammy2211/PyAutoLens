@@ -118,7 +118,6 @@ plots:
     image: false
     potential: false
   adapt:
-    contribution_map_list: true
     images_of_galaxies: true
     model_image: true
   imaging:

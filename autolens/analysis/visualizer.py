@@ -222,39 +222,3 @@ class Visualizer(AgVisualizer):
             adapt_plotter.subplot_images_of_galaxies(
                 adapt_galaxy_name_image_dict=adapt_images.galaxy_image_dict
             )
-
-    def visualize_contribution_maps(self, tracer: Tracer):
-        """
-        Visualizes the contribution maps that are used for adapt features which adapt a model to the dataset it is
-        fitting.
-
-        Images are output to the `image` folder of the `visualize_path` in a subfolder called `adapt`. When
-        used with a non-linear search the `visualize_path` points to the search's results folder and this function
-        visualizes the maximum log likelihood contribution maps inferred by the search so far.
-
-        Visualization includes individual images of attributes of the adapt image (e.g. the contribution map of
-        each galaxy) and a subplot of all contribution maps on the same figure.
-
-        The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
-        [adapt] header.
-
-        Parameters
-        ----------
-        tracer
-            The maximum log likelihood `Tracer` of the non-linear search which is used to plot the contribution maps.
-        """
-
-        def should_plot(name):
-            return plot_setting(section="adapt", name=name)
-
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="adapt")
-
-        adapt_plotter = aplt.AdaptPlotter(
-            mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
-        )
-
-        if hasattr(tracer, "contribution_map_list"):
-            if should_plot("contribution_map_list"):
-                adapt_plotter.subplot_contribution_map_list(
-                    contribution_map_list_list=tracer.contribution_map_list
-                )
