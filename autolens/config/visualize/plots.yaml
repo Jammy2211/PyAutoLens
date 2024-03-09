@@ -85,7 +85,7 @@
     residual_map: false
     normalized_residual_map: false
   galaxies:                                  # Settings for plots of galaxies (e.g. GalaxiesPlotter).
-    subplot_galaxies: true                      # Plot subplot of all quantities in each plane (e.g. images, convergence)?
+    subplot_galaxies: true                      # Plot subplot of all quantities in each galaxies group (e.g. images, convergence)?
     all_at_end_png: true                     # Plot all individual plots listed below as .png (even if False)?
     all_at_end_fits: true                    # Plot all individual plots listed below as .fits (even if False)?
     all_at_end_pdf: false                    # Plot all individual plots listed below as publication-quality .pdf (even if False)?

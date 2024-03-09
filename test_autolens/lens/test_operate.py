@@ -21,8 +21,8 @@ def test__operate_image__blurred_images_2d_via_psf_from__for_tracer_gives_list_o
         grid=sub_grid_2d_7x7, psf=psf_3x3, blurring_grid=blurring_grid_2d_7x7
     )
 
-    source_grid_2d_7x7 = g0.traced_grid_from(grid=sub_grid_2d_7x7)
-    source_blurring_grid_2d_7x7 = g0.traced_grid_from(grid=blurring_grid_2d_7x7)
+    source_grid_2d_7x7 = g0.traced_grid_2d_from(grid=sub_grid_2d_7x7)
+    source_blurring_grid_2d_7x7 = g0.traced_grid_2d_from(grid=blurring_grid_2d_7x7)
 
     blurred_image_1 = g1.blurred_image_2d_from(
         grid=source_grid_2d_7x7, psf=psf_3x3, blurring_grid=source_blurring_grid_2d_7x7
@@ -65,8 +65,8 @@ def test__operate_image__blurred_images_2d_via_convolver_from__for_tracer_gives_
         blurring_grid=blurring_grid_2d_7x7,
     )
 
-    source_grid_2d_7x7 = g0.traced_grid_from(grid=sub_grid_2d_7x7)
-    source_blurring_grid_2d_7x7 = g0.traced_grid_from(grid=blurring_grid_2d_7x7)
+    source_grid_2d_7x7 = g0.traced_grid_2d_from(grid=sub_grid_2d_7x7)
+    source_blurring_grid_2d_7x7 = g0.traced_grid_2d_from(grid=blurring_grid_2d_7x7)
 
     blurred_image_1 = g1.blurred_image_2d_from(
         grid=source_grid_2d_7x7,
