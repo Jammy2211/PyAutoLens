@@ -72,7 +72,9 @@ jobs:
         pip3 install -r PyAutoArray/requirements.txt
         pip3 install -r PyAutoArray/optional_requirements.txt
         pip3 install -r PyAutoGalaxy/requirements.txt
+        pip3 install -r PyAutoGalaxy/optional_requirements.txt
         pip3 install -r PyAutoLens/requirements.txt
+        pip3 install -r PyAutoLens/optional_requirements.txt
     - name: Run tests
       run: |
         export ROOT_DIR=`pwd`

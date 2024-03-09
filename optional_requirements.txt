@@ -3,6 +3,6 @@ pylops>=1.10.0,<=1.18.3
 pynufft
 zeus-mcmc==2.5.4
 getdist==1.4
-jax>=0.4.13
-jaxlib>=0.4.13
+#jax>=0.4.13
+#jaxlib>=0.4.13
 ultranest==3.6.2
