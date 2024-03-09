@@ -13,7 +13,7 @@
     all_at_end_fits: true                    # Plot all individual plots listed below as .fits (even if False)?
     all_at_end_pdf: false                    # Plot all individual plots listed below as publication-quality .pdf (even if False)?
     subplot_of_planes: false                 # Plot subplot of the model-image, subtracted image and other quantities of each plane?
-    subplot_plane_images: false              # Plot subplot of the image of each plane in the model?
+    subplot_galaxies_images: false              # Plot subplot of the image of each plane in the model?
     data: false
     noise_map: false
     signal_to_noise_map: false
@@ -25,12 +25,12 @@
     subtracted_images_of_planes: false       # Plot individual plots of each plane's subtracted image?
     plane_images_of_planes: false            # Plot individual plots of each plane's image (e.g. in the source plane)?
   fit_imaging: {}                            # Settings for plots of fits to imaging datasets (e.g. FitImagingPlotter).
-  ray_tracing:                               # Settings for plots of tracers (e.g. TracerPlotter).
-    subplot_ray_tracing: true                # Plot subplot of all quantities in each tracer (e.g. images, convergence)?
+  tracer:                               # Settings for plots of tracers (e.g. TracerPlotter).
+    subplot_tracer: true                # Plot subplot of all quantities in each tracer (e.g. images, convergence)?
     all_at_end_png: true                     # Plot all individual plots listed below as .png (even if False)?
     all_at_end_fits: true                    # Plot all individual plots listed below as .fits (even if False)?
     all_at_end_pdf: false                    # Plot all individual plots listed below as publication-quality .pdf (even if False)?
-    subplot_plane_images: false              # Plot subplot of the image of each plane in the tracer?
+    subplot_galaxies_images: false              # Plot subplot of the image of each plane in the tracer?
     image: false                             # Plot image of the tracer (e.g. lens and lensed source in the image-plane)?
     source_plane_image: false                # Plot image of the tracer's source-plane?
     lens_image: false                        # Plot image of the foreground lens galaxy (log10)?
@@ -38,7 +38,7 @@
     potential: false                         # Plot image of the tracer's potential (log10)?
     deflections: false                       # Plot images of the tracer's y and x deflections?
     magnification: false                     # Plot image of the tracer's magnification?
-  galaxies:                                  # Settings for plots of galaxies (e.g GalaxyPlotter).
+  galaxies_1d:                                  # Settings for 1D plots of galaxies (e.g. GalaxiesPlotter).
     image: false
     convergence: false
     potential: false
@@ -84,8 +84,8 @@
     noise_map: false
     residual_map: false
     normalized_residual_map: false
-  plane:                                     # Settings for plots of planes (e.g. PlanePlotter).
-    subplot_plane: true                      # Plot subplot of all quantities in each plane (e.g. images, convergence)?
+  galaxies:                                  # Settings for plots of galaxies (e.g. GalaxiesPlotter).
+    subplot_galaxies: true                      # Plot subplot of all quantities in each galaxies group (e.g. images, convergence)?
     all_at_end_png: true                     # Plot all individual plots listed below as .png (even if False)?
     all_at_end_fits: true                    # Plot all individual plots listed below as .fits (even if False)?
     all_at_end_pdf: false                    # Plot all individual plots listed below as publication-quality .pdf (even if False)?

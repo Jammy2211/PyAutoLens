@@ -142,7 +142,7 @@ plots:
     subplot_inversion: true
   positions:
     image_with_positions: true
-  ray_tracing:
+  tracer:
     all_at_end_fits: true
     all_at_end_png: false
     convergence: true
@@ -151,5 +151,5 @@ plots:
     magnification: true
     potential: false
     source_plane_image: true
-    subplot_ray_tracing: true
-    subplot_plane_images: true
+    subplot_tracer: true
+    subplot_galaxies_images: true

@@ -6,7 +6,7 @@ from autogalaxy.exc import *
 
 class RayTracingException(af.exc.FitException):
     """
-    Raises exceptions associated with the `lens/ray_tracing.py` module and `Tracer` class.
+    Raises exceptions associated with the `lens/tracer.py` module and `Tracer` class.
 
     For example if the multiple image positions do not trace without a threshold of one another, in order to
     resample inaccurate mass models during a model-fit.

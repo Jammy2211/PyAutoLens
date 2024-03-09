@@ -7,7 +7,7 @@ from autolens.point.point_solver import PointSolver
 from autolens.point.fit_point.fluxes import FitFluxes
 from autolens.point.fit_point.positions_image import FitPositionsImage
 from autolens.point.fit_point.positions_source import FitPositionsSource
-from autolens.lens.ray_tracing import Tracer
+from autolens.lens.tracer import Tracer
 
 from autolens import exc
 

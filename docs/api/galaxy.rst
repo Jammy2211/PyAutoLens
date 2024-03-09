@@ -1,9 +1,9 @@
-=======================
-Galaxy / Plane / Tracer
-=======================
+===============
+Galaxy / Tracer
+===============
 
-Galaxy / Plane / Tracer
------------------------
+Galaxy / Tracer
+---------------
 
 .. currentmodule:: autolens
 
@@ -13,7 +13,7 @@ Galaxy / Plane / Tracer
    :recursive:
 
    Galaxy
-   Plane
+   Galaxies
    Tracer
 
 To treat the redshift of a galaxy as a free parameter in a model, the ``Redshift`` object must

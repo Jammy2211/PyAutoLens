@@ -51,13 +51,13 @@ from autogalaxy.analysis.adapt_images import AdaptImages
 from autogalaxy.gui.clicker import Clicker
 from autogalaxy.gui.scribbler import Scribbler
 from autogalaxy.galaxy.galaxy import Galaxy
+from autogalaxy.galaxy.galaxies import Galaxies
 from autogalaxy.galaxy.redshift import Redshift
 from autogalaxy.analysis.clump_model import ClumpModel
 from autogalaxy.analysis.clump_model import ClumpModelDisabled
 
 from autogalaxy.quantity.dataset_quantity import DatasetQuantity
 from autogalaxy.quantity.dataset_quantity import SettingsQuantity
-from autogalaxy.plane.plane import Plane
 from autogalaxy.profiles.geometry_profiles import EllProfile
 from autogalaxy.profiles import (
     point_sources as ps,
@@ -82,7 +82,7 @@ from autogalaxy import convert
 from . import plot
 from . import aggregator as agg
 from .lens import subhalo
-from .lens.ray_tracing import Tracer
+from .lens.tracer import Tracer
 from .lens.to_inversion import TracerToInversion
 from .analysis.positions import PositionsLHResample
 from .analysis.positions import PositionsLHPenalty

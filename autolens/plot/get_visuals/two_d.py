@@ -8,7 +8,7 @@ from autogalaxy.plot.get_visuals import one_d as gv1d
 from autogalaxy.plot.get_visuals import two_d as gv2d
 
 from autolens.imaging.fit_imaging import FitImaging
-from autolens.lens.ray_tracing import Tracer
+from autolens.lens.tracer import Tracer
 
 
 class GetVisuals2D(gv2d.GetVisuals2D):

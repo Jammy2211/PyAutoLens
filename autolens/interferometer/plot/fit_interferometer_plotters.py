@@ -6,8 +6,8 @@ import autogalaxy.plot as aplt
 from autoarray.fit.plot.fit_interferometer_plotters import FitInterferometerPlotterMeta
 
 from autolens.interferometer.fit_interferometer import FitInterferometer
-from autolens.lens.ray_tracing import Tracer
-from autolens.lens.plot.ray_tracing_plotters import TracerPlotter
+from autolens.lens.tracer import Tracer
+from autolens.lens.plot.tracer_plotters import TracerPlotter
 from autolens.plot.abstract_plotters import Plotter
 
 

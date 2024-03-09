@@ -2,7 +2,7 @@ import autoarray as aa
 import autogalaxy as ag
 
 from autogalaxy.quantity.dataset_quantity import DatasetQuantity
-from autolens.lens.ray_tracing import Tracer
+from autolens.lens.tracer import Tracer
 
 
 class FitQuantity(ag.FitQuantity):

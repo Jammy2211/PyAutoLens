@@ -52,8 +52,8 @@ How does PyAutoLens Work?
 
 A strong lens system can be quickly assembled from abstracted objects. A ``Galaxy`` object contains one or
 more ``LightProfile``'s and ``MassProfile``'s, which represent its two dimensional distribution of starlight and mass.
-``Galaxy``’s lie at a particular distance (redshift) from the observer, and are grouped into ``Plane``'s. Raytracing
-through multiple ``Plane``'s is achieved by passing them to a ``Tracer`` with an ``astropy`` Cosmology. By passing
+``Galaxy``’s lie at a particular distance (redshift) from the observer, and are grouped into planes. Ray tracing
+through multiple planess is achieved by passing them to a ``Tracer`` with an ``astropy`` Cosmology. By passing
 these objects a ``Grid2D`` strong lens sightlines are computed, including multi-plane ray-tracing. All of these
 objects are extensible, making it straightforward to compose highly customized lensing system. The example code
 below shows this in action:

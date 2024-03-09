@@ -10,7 +10,7 @@ import autogalaxy as ag
 from autogalaxy.abstract_fit import AbstractFitInversion
 
 from autolens.analysis.preloads import Preloads
-from autolens.lens.ray_tracing import Tracer
+from autolens.lens.tracer import Tracer
 from autolens.lens.to_inversion import TracerToInversion
 
 from autolens import exc
@@ -247,8 +247,8 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             for i in range(self.tracer.total_planes)
         ]
 
-        for plane_index, plane in enumerate(self.tracer.planes):
-            for galaxy in plane.galaxies:
+        for plane_index, galaxies in enumerate(self.tracer.planes):
+            for galaxy in galaxies:
                 model_images_of_planes_list[plane_index] += galaxy_model_image_dict[
                     galaxy
                 ]

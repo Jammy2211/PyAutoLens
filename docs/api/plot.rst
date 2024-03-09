@@ -36,7 +36,7 @@ Create figures and subplots showing quantities of standard **PyAutoLens** object
     GalaxyPlotter
     FitImagingPlotter
     FitInterferometerPlotter
-    PlanePlotter
+    GalaxiesPlotter
     AdaptPlotter
     FitImagingPlotter
     FitInterferometerPlotter

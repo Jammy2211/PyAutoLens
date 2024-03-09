@@ -13,7 +13,7 @@ from autogalaxy.analysis.result import ResultDataset as AgResultDataset
 from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
 from autolens.point.fit_point.max_separation import FitPositionsSourceMaxSeparation
-from autolens.lens.ray_tracing import Tracer
+from autolens.lens.tracer import Tracer
 from autolens.point.point_solver import PointSolver
 
 
@@ -62,7 +62,7 @@ class Result(AgResultDataset):
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
         multiple-image positions.
         """
-        centre = self.max_log_likelihood_tracer.source_plane.extract_attribute(
+        centre = self.max_log_likelihood_tracer.planes[-1].extract_attribute(
             cls=ag.LightProfile, attr_name="centre"
         )
         if centre is not None:

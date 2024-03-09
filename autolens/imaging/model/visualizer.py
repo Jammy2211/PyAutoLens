@@ -35,7 +35,7 @@ class VisualizerImaging(Visualizer):
             profiles).
         """
 
-        if plot_setting(section="ray_tracing", name="subplot_ray_tracing"):
+        if plot_setting(section="tracer", name="subplot_tracer"):
 
             mat_plot_2d = self.mat_plot_2d_from(subfolders="")
 

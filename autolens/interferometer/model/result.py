@@ -4,7 +4,7 @@ import autoarray as aa
 import autogalaxy as ag
 
 from autogalaxy.analysis.adapt_images import AdaptImages
-from autolens.lens.ray_tracing import Tracer
+from autolens.lens.tracer import Tracer
 from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.analysis.result import ResultDataset
 

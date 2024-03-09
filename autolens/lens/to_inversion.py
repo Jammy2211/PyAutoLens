@@ -67,9 +67,9 @@ class TracerToInversion(ag.AbstractToInversion):
                 traced_grids_of_planes_list
             )
 
-        for plane_index, plane in enumerate(self.planes):
-            plane_to_inversion = ag.PlaneToInversion(
-                plane=plane,
+        for plane_index, galaxies in enumerate(self.planes):
+            plane_to_inversion = ag.GalaxiesToInversion(
+                galaxies=galaxies,
                 dataset=self.dataset,
                 grid=traced_grids_of_planes_list[plane_index],
                 blurring_grid=traced_blurring_grids_of_planes_list[plane_index],
@@ -90,17 +90,17 @@ class TracerToInversion(ag.AbstractToInversion):
         return lp_linear_galaxy_dict_list
 
     def cls_pg_list_from(self, cls: Type) -> List:
-        return [plane.cls_list_from(cls=cls) for plane in self.planes]
+        return [galaxies.cls_list_from(cls=cls) for galaxies in self.planes]
 
     @cached_property
     def adapt_galaxy_image_pg_list(self) -> List:
         adapt_galaxy_image_pg_list = []
 
-        for plane in self.planes:
-            if plane.has(cls=aa.Pixelization):
+        for galaxies in self.planes:
+            if galaxies.has(cls=aa.Pixelization):
                 plane_image_list = []
 
-                galaxies_with_pixelization_list = plane.galaxies_with_cls_list_from(
+                galaxies_with_pixelization_list = galaxies.galaxies_with_cls_list_from(
                     cls=aa.Pixelization
                 )
 
@@ -130,16 +130,16 @@ class TracerToInversion(ag.AbstractToInversion):
 
         image_plane_mesh_grid_list_of_planes = []
 
-        for plane in self.planes:
-            plane_to_inversion = ag.PlaneToInversion(
-                plane=plane,
+        for galaxies in self.planes:
+            to_inversion = ag.GalaxiesToInversion(
+                galaxies=galaxies,
                 grid_pixelization=self.dataset.grid,
                 noise_map=self.noise_map,
                 adapt_images=self.adapt_images,
                 settings_inversion=self.settings_inversion,
             )
 
-            image_plane_mesh_grid_list = plane_to_inversion.image_plane_mesh_grid_list
+            image_plane_mesh_grid_list = to_inversion.image_plane_mesh_grid_list
             image_plane_mesh_grid_list_of_planes.append(image_plane_mesh_grid_list)
 
         return image_plane_mesh_grid_list_of_planes
@@ -160,7 +160,7 @@ class TracerToInversion(ag.AbstractToInversion):
 
         traced_mesh_grid_pg_list = []
 
-        for plane_index, plane in enumerate(self.planes):
+        for plane_index, galaxies in enumerate(self.planes):
             if image_plane_mesh_grid_pg_list[plane_index] is None:
                 traced_mesh_grid_pg_list.append(None)
             else:
@@ -202,10 +202,10 @@ class TracerToInversion(ag.AbstractToInversion):
             )
             image_plane_mesh_grid_list = self.preloads.image_plane_mesh_grid_list
 
-        for plane_index, plane in enumerate(self.planes):
-            if plane.has(cls=aa.Pixelization):
-                plane_to_inversion = ag.PlaneToInversion(
-                    plane=plane,
+        for plane_index, galaxies in enumerate(self.planes):
+            if galaxies.has(cls=aa.Pixelization):
+                to_inversion = ag.GalaxiesToInversion(
+                    galaxies=galaxies,
                     grid_pixelization=traced_grids_of_planes_list[plane_index],
                     preloads=self.preloads,
                     noise_map=self.noise_map,
@@ -213,7 +213,7 @@ class TracerToInversion(ag.AbstractToInversion):
                     settings_inversion=self.settings_inversion,
                 )
 
-                galaxies_with_pixelization_list = plane.galaxies_with_cls_list_from(
+                galaxies_with_pixelization_list = galaxies.galaxies_with_cls_list_from(
                     cls=aa.Pixelization
                 )
 
@@ -229,7 +229,7 @@ class TracerToInversion(ag.AbstractToInversion):
                     except AttributeError:
                         adapt_galaxy_image = None
 
-                    mapper = plane_to_inversion.mapper_from(
+                    mapper = to_inversion.mapper_from(
                         mesh=pixelization_list[plane_index][mapper_index].mesh,
                         regularization=pixelization_list[plane_index][
                             mapper_index

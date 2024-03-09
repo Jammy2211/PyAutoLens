@@ -87,7 +87,7 @@ from autogalaxy.imaging.plot.fit_imaging_plotters import FitImagingPlotter
 from autogalaxy.interferometer.plot.fit_interferometer_plotters import (
     FitInterferometerPlotter,
 )
-from autogalaxy.plane.plot.plane_plotters import PlanePlotter
+from autogalaxy.galaxy.plot.galaxies_plotters import GalaxiesPlotter
 from autogalaxy.galaxy.plot.adapt_plotters import AdaptPlotter
 
 from autolens.point.plot.point_dataset_plotters import PointDatasetPlotter
@@ -97,6 +97,6 @@ from autolens.interferometer.plot.fit_interferometer_plotters import (
     FitInterferometerPlotter,
 )
 from autolens.point.plot.fit_point_plotters import FitPointDatasetPlotter
-from autolens.lens.plot.ray_tracing_plotters import TracerPlotter
+from autolens.lens.plot.tracer_plotters import TracerPlotter
 from autolens.lens.subhalo import SubhaloPlotter
 from autolens.lens.sensitivity import SubhaloSensitivityPlotter

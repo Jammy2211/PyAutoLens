@@ -4,7 +4,7 @@ from typing import Optional
 import autoarray as aa
 import autogalaxy as ag
 
-from autolens.lens.ray_tracing import Tracer
+from autolens.lens.tracer import Tracer
 
 from autolens import exc
 

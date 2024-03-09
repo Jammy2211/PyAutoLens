@@ -13,7 +13,7 @@ def make_tracer_plotter_setup():
         "{}".format(path.dirname(path.realpath(__file__))),
         "files",
         "plots",
-        "ray_tracing",
+        "tracer",
     )
 
 
@@ -112,5 +112,5 @@ def test__tracer_sub_plot_output(
     tracer_plotter.subplot_tracer()
     assert path.join(plot_path, "subplot_tracer.png") in plot_patch.paths
 
-    tracer_plotter.subplot_plane_images()
-    assert path.join(plot_path, "subplot_plane_images.png") in plot_patch.paths
+    tracer_plotter.subplot_galaxies_images()
+    assert path.join(plot_path, "subplot_galaxies_images.png") in plot_patch.paths

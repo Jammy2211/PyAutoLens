@@ -19,20 +19,11 @@ The chapter contains the following tutorials:
 `Tutorial 3: galaxies <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_3_galaxies.ipynb>`_
 - Making galaxy objects out of light and mass profile.
 
-`Tutorial 4: Planes <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_4_planes.ipynb>`_
-- Grouping galaxies at a common redshift to form an image-plane and source-plane.
-
-`Tutorial 5: Ray Tracing <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_5_ray_tracing.ipynb>`_
+`Tutorial 4: Ray Tracing <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_5_ray_tracing.ipynb>`_
 - Using Grids and galaxies to perform strong lens ray-tracing!
 
-`Tutorial 6: More Ray Tracing <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_6_more_ray_tracing.ipynb>`_
+`Tutorial 5: More Ray Tracing <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_5_more_ray_tracing.ipynb>`_
 - Advanced strong lens ray-tracing.
 
-`Tutorial 7: Data <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_7_data.ipynb>`_
-- Loading and inspecting telescope imaging data of a strong lens.
-
-`Tutorial 8: Fitting <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_8_fitting.ipynb>`_
-- Fitting data with a strong lens model.
-
-`Tutorial 9: Summary <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_9_summary.ipynb>`_
+`Tutorial 8: Summary <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_8_summary.ipynb>`_
 - A summary of the chapter.
