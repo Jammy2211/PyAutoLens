@@ -524,11 +524,11 @@ mass its name ``mass`` defined when making the ``Model`` above is used).
 .. code-block:: python
 
     search_plotter = aplt.DynestyPlotter(samples=result.samples)
-    search_plotter.cornerplot()
+    search_plotter.corner()
 
 Here is an example of how a PDF estimated for a lens model appears:
 
-.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_3_modeling/cornerplot.png?raw=true
+.. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/docs/overview/images/overview_3_modeling/corner.png?raw=true
   :width: 600
   :alt: Alternative text
 
