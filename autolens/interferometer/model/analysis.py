@@ -331,6 +331,7 @@ class AnalysisInterferometer(AnalysisDataset):
     def make_result(
         self,
         samples: af.SamplesPDF,
+            search_internal = None
     ):
         """
         After the non-linear search is complete create its `Result`, which includes:
@@ -357,7 +358,7 @@ class AnalysisInterferometer(AnalysisDataset):
         ResultImaging
             The result of fitting the model to the imaging dataset, via a non-linear search.
         """
-        return ResultInterferometer(samples=samples, analysis=self)
+        return ResultInterferometer(samples=samples, analysis=self, search_internal=search_internal)
 
     def save_attributes(self, paths: af.DirectoryPaths):
         """

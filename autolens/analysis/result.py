@@ -1,13 +1,10 @@
 import os
-from os import path
 import numpy as np
-import json
 from typing import Optional, Union
 
 import autoarray as aa
 import autogalaxy as ag
 
-from autofit.non_linear.paths.abstract import AbstractPaths
 from autogalaxy.analysis.result import ResultDataset as AgResultDataset
 
 from autolens.analysis.positions import PositionsLHResample

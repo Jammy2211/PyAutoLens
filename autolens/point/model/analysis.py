@@ -101,8 +101,9 @@ class AnalysisPoint(AgAnalysis, AnalysisLensing):
     def make_result(
         self,
         samples: af.SamplesPDF,
+            search_internal = None,
     ):
-        return ResultPoint(samples=samples, analysis=self)
+        return ResultPoint(samples=samples, analysis=self, search_internal=search_internal)
 
     def save_attributes(self, paths: af.DirectoryPaths):
         self.point_dict.output_to_json(
