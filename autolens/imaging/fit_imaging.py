@@ -21,6 +21,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         self,
         dataset: aa.Imaging,
         tracer: Tracer,
+        sky: Optional[ag.LightProfile] = None,
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads: Preloads = Preloads(),
@@ -56,6 +57,8 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             The imaging dataset which is fitted by the galaxies in the tracer.
         tracer
             The tracer of galaxies whose light profile images are used to fit the imaging data.
+        sky
+            Model component used to represent the background sky emission in an image (e.g. a `Sky` light profile).
         adapt_images
             Contains the adapt-images which are used to make a pixelization's mesh and regularization adapt to the
             reconstructed galaxy's morphology.
@@ -71,9 +74,10 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         super().__init__(dataset=dataset, run_time_dict=run_time_dict)
         AbstractFitInversion.__init__(
-            self=self, model_obj=tracer, settings_inversion=settings_inversion
+            self=self, model_obj=tracer, sky=sky, settings_inversion=settings_inversion
         )
 
+        self.sky = sky
         self.tracer = tracer
 
         self.adapt_images = adapt_images
@@ -92,11 +96,17 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         if self.preloads.blurred_image is None:
 
+            if isinstance(self.sky, ag.lp.Sky):
+                image = self.sky.image_2d_from(grid=self.dataset.grid)
+            else:
+                image = np.zeros(self.dataset.shape_slim)
+
             return self.tracer.blurred_image_2d_from(
                 grid=self.dataset.grid,
                 convolver=self.dataset.convolver,
                 blurring_grid=self.dataset.blurring_grid,
-            )
+            ) + image
+
         return self.preloads.blurred_image
 
     @property
@@ -111,6 +121,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         return TracerToInversion(
             tracer=self.tracer,
+            sky=self.sky,
             dataset=self.dataset,
             data=self.profile_subtracted_image,
             noise_map=self.noise_map,
