@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 import pytest
 
@@ -229,6 +230,60 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
 
     assert fit.perform_inversion is True
     assert fit.figure_of_merit == pytest.approx(-341415.8258823, 1.0e-4)
+
+
+def test__fit__sky___handles_special_behaviour(masked_imaging_7x7):
+    masked_imaging_7x7 = copy.copy(masked_imaging_7x7)
+
+    masked_imaging_7x7.data -= 100.0
+
+    g0 = al.Galaxy(
+        redshift=0.5,
+        bulge=al.lp.Sersic(intensity=1.0),
+        disk=al.lp.Sersic(intensity=2.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
+    )
+
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
+
+    tracer = al.Tracer(galaxies=[g0, g1])
+
+    fit = al.FitImaging(
+        dataset=masked_imaging_7x7,
+        tracer=tracer,
+        sky=al.lp_linear.Sky(),
+        settings_inversion=al.SettingsInversion(use_positive_only_solver=False),
+    )
+
+    assert fit.perform_inversion is True
+    assert fit.figure_of_merit == pytest.approx(-733125.35694344, 1.0e-4)
+
+    sky = fit.sky_linear_light_profiles_to_light_profiles
+
+    assert sky.light_profile_list[0].intensity == pytest.approx(-737.44550397, 1.0e-4)
+    assert sky.light_profile_list[1].intensity == pytest.approx(737.44550397, 1.0e-4)
+
+    fit = al.FitImaging(
+        dataset=masked_imaging_7x7,
+        tracer=tracer,
+        sky=al.lp_linear.Sky(),
+        settings_inversion=al.SettingsInversion(use_positive_only_solver=True),
+    )
+
+    assert fit.perform_inversion is True
+    assert fit.figure_of_merit == pytest.approx(-733125.3569434, 1.0e-4)
+
+    sky = fit.sky_linear_light_profiles_to_light_profiles
+
+    assert sky.light_profile_list[0].intensity == pytest.approx(0.0, 1.0e-4)
+    assert sky.light_profile_list[1].intensity == pytest.approx(1474.891048, 1.0e-4)
+
+    fit = al.FitImaging(
+        dataset=masked_imaging_7x7, tracer=tracer, sky=al.lp.Sky(intensity=-99.0)
+    )
+
+    assert fit.perform_inversion is False
+    assert fit.figure_of_merit == pytest.approx(-2862836.077500, 1.0e-4)
 
 
 def test__galaxy_model_image_dict(masked_imaging_7x7):

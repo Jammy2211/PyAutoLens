@@ -467,7 +467,11 @@ class FitImagingPlotter(Plotter):
 
         self.set_title(label=None)
 
-        self.figures_2d(signal_to_noise_map=True)
+        try:
+            self.figures_2d(signal_to_noise_map=True)
+        except ValueError:
+            pass
+
         self.figures_2d(model_image=True)
 
         self.set_title(label="Lens Light Model Image")
