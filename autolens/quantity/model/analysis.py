@@ -127,7 +127,7 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
     def make_result(
         self,
         samples: af.SamplesPDF,
-        search_internal = None,
+        search_internal=None,
     ) -> ResultQuantity:
         """
         After the non-linear search is complete create its `ResultQuantity`, which includes:
@@ -156,4 +156,6 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
         ResultQuantity
             The result of fitting the model to the imaging dataset, via a non-linear search.
         """
-        return ResultQuantity(samples=samples, analysis=self, search_internal=search_internal)
+        return ResultQuantity(
+            samples=samples, analysis=self, search_internal=search_internal
+        )

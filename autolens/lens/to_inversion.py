@@ -6,7 +6,7 @@ import autoarray as aa
 import autogalaxy as ag
 
 from autoarray.inversion.inversion.factory import inversion_unpacked_from
-
+from autogalaxy.profiles.light.basis import Basis
 from autolens.analysis.preloads import Preloads
 
 
@@ -18,6 +18,7 @@ class TracerToInversion(ag.AbstractToInversion):
         data: Optional[Union[aa.Array2D, aa.Visibilities]] = None,
         noise_map: Optional[Union[aa.Array2D, aa.VisibilitiesNoiseMap]] = None,
         w_tilde: Optional[Union[aa.WTildeImaging, aa.WTildeInterferometer]] = None,
+        sky: Optional[Basis] = None,
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads=Preloads(),
@@ -30,6 +31,7 @@ class TracerToInversion(ag.AbstractToInversion):
             data=data,
             noise_map=noise_map,
             w_tilde=w_tilde,
+            sky=sky,
             adapt_images=adapt_images,
             settings_inversion=settings_inversion,
             preloads=preloads,
