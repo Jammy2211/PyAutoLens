@@ -56,11 +56,9 @@ by **PyAutoGalaxy**.
    :template: custom-class-template.rst
    :recursive:
 
-   DynestyPlotter
-   UltraNestPlotter
-   EmceePlotter
-   ZeusPlotter
-   PySwarmsPlotter
+   NestPlotter
+   MCMCPlotter
+   OptimizePlotter
 
 Plot Customization [aplt]
 -------------------------
