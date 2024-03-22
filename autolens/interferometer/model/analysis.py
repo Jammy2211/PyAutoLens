@@ -328,7 +328,13 @@ class AnalysisInterferometer(AnalysisDataset):
             except IndexError:
                 pass
 
-    def make_result(self, samples: af.SamplesPDF, search_internal=None):
+    def make_result(
+        self,
+        samples_summary: af.SamplesSummary,
+        paths: af.AbstractPaths,
+        samples: Optional[af.SamplesPDF] = None,
+        search_internal: Optional[object] = None,
+    ):
         """
         After the non-linear search is complete create its `Result`, which includes:
 
@@ -355,7 +361,11 @@ class AnalysisInterferometer(AnalysisDataset):
             The result of fitting the model to the imaging dataset, via a non-linear search.
         """
         return ResultInterferometer(
-            samples=samples, analysis=self, search_internal=search_internal
+            samples_summary=samples_summary,
+            paths=paths,
+            samples=samples,
+            analysis=self,
+            search_internal=search_internal
         )
 
     def save_attributes(self, paths: af.DirectoryPaths):
