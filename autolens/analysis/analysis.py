@@ -146,7 +146,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
         positions_likelihood: Optional[
             Union[PositionsLHResample, PositionsLHPenalty]
         ] = None,
-        adapt_images: Optional[ag.AdaptImages] = None,
+        adapt_image_maker: Optional[ag.AdaptImageMaker] = None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_inversion: aa.SettingsInversion = None,
         raise_inversion_positions_likelihood_exception: bool = True,
@@ -185,7 +185,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
 
         super().__init__(
             dataset=dataset,
-            adapt_images=adapt_images,
+            adapt_image_maker=adapt_image_maker,
             cosmology=cosmology,
             settings_inversion=settings_inversion,
         )
