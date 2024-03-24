@@ -48,6 +48,7 @@ from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
 from autogalaxy import cosmology as cosmo
 from autogalaxy.analysis.adapt_images import AdaptImages
+from autogalaxy.analysis.adapt_images import AdaptImageMaker
 from autogalaxy.gui.clicker import Clicker
 from autogalaxy.gui.scribbler import Scribbler
 from autogalaxy.galaxy.galaxy import Galaxy

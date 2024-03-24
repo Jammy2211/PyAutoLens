@@ -143,8 +143,10 @@ class Result(AgResultDataset):
             else positions
         )
 
+        tracer = Tracer(galaxies=self.max_log_likelihood_galaxies)
+
         positions_fits = FitPositionsSourceMaxSeparation(
-            positions=positions, noise_map=None, tracer=self.max_log_likelihood_tracer
+            positions=positions, noise_map=None, tracer=tracer
         )
 
         threshold = factor * np.max(
