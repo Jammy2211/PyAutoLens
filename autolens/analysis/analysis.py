@@ -1,11 +1,7 @@
-import dill
 import os
-import json
 import logging
 import numpy as np
-from os import path
-from scipy.stats import norm
-from typing import Dict, Optional, List, Union
+from typing import Dict, Optional, Union
 
 from autoconf import conf
 from autoconf.dictable import to_dict, output_to_json
@@ -21,7 +17,6 @@ from autolens.analysis.maker import FitMaker
 from autolens.analysis.preloads import Preloads
 from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
-from autolens.analysis.visualizer import Visualizer
 from autolens.lens.tracer import Tracer
 
 from autolens.lens import tracer_util
