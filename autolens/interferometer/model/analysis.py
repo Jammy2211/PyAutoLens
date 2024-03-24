@@ -10,7 +10,7 @@ import autogalaxy as ag
 
 from autoarray.exc import PixelizationException
 
-from autolens.analysis.analysis import AnalysisDataset
+from autolens.analysis.analysis.dataset import AnalysisDataset
 from autolens.analysis.preloads import Preloads
 from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
