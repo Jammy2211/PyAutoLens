@@ -238,7 +238,6 @@ def grid_2d_at_redshift_from(
         return traced_grid_list[plane_index_with_redshift[0]]
 
     for plane_index, plane_redshift in enumerate(plane_redshifts):
-        print(redshift, plane_redshift)
         if redshift > plane_redshift:
             plane_index_insert = plane_index+1
 
