@@ -132,14 +132,16 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
                 ]
             ):
                 raise exc.AnalysisException(
-                    "You have begun a model-fit which reconstructs the source using a pixelization.\n\n"
-                    "However, you have not input a `positions_likelihood` object.\n\n"
-                    "It is likely your model-fit will infer an inaccurate solution.\n\n "
-                    ""
-                    "Please read the following readthedocs page for a description of why this is, and how to set up"
-                    "a positions likelihood object:\n\n"
-                    ""
-                    "https://pyautolens.readthedocs.io/en/latest/general/demagnified_solutions.html"
+                    """
+                    You have begun a model-fit which reconstructs the source using a pixelization.
+                    However, you have not input a `positions_likelihood` object.
+                    It is likely your model-fit will infer an inaccurate solution.
+                    
+                    Please read the following readthedocs page for a description of why this is, and how to set up
+                    a positions likelihood object:
+                    
+                    https://pyautolens.readthedocs.io/en/latest/general/demagnified_solutions.html
+                    """
                 )
 
     @property
