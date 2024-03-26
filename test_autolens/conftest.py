@@ -391,6 +391,6 @@ def make_include_all():
     return fixtures.make_include_2d_all()
 
 
-@pytest.fixture(name="samples_with_result")
-def make_samples_with_result():
-    return fixtures.make_samples_with_result()
+@pytest.fixture(name="samples_summary_with_result")
+def make_samples_summary_with_result():
+    return fixtures.make_samples_summary_with_result()

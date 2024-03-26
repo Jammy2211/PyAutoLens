@@ -317,10 +317,10 @@ def test__positions_likelihood_from(analysis_imaging_7x7):
 
 
 def test__results_include_mask__available_as_property(
-    analysis_imaging_7x7, masked_imaging_7x7, samples_with_result
+    analysis_imaging_7x7, masked_imaging_7x7, samples_summary_with_result
 ):
     result = res.ResultDataset(
-        samples=samples_with_result,
+        samples=samples_summary_with_result,
         analysis=analysis_imaging_7x7,
     )
 
@@ -328,10 +328,10 @@ def test__results_include_mask__available_as_property(
 
 
 def test__results_include_positions__available_as_property(
-    analysis_imaging_7x7, masked_imaging_7x7, samples_with_result
+    analysis_imaging_7x7, masked_imaging_7x7, samples_summary_with_result
 ):
     result = res.ResultDataset(
-        samples=samples_with_result,
+        samples=samples_summary_with_result,
         analysis=analysis_imaging_7x7,
     )
 
@@ -346,7 +346,7 @@ def test__results_include_positions__available_as_property(
     )
 
     result = res.ResultDataset(
-        samples=samples_with_result,
+        samples=samples_summary_with_result,
         analysis=analysis,
     )
 
