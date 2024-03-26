@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 import autofit as af
 import autogalaxy as ag
@@ -6,13 +7,13 @@ import autogalaxy as ag
 from autogalaxy.quantity.model.visualizer import VisualizerQuantity
 
 from autolens.analysis.visualizer import Visualizer
-from autolens.analysis.analysis import AnalysisLensing
+from autolens.analysis.analysis.lens import AnalysisLens
 from autogalaxy.quantity.plot.fit_quantity_plotters import FitQuantityPlotter
 from autolens.quantity.model.result import ResultQuantity
 from autolens.quantity.fit_quantity import FitQuantity
 
 
-class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
+class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLens):
     def __init__(
         self,
         dataset: ag.DatasetQuantity,
@@ -51,7 +52,7 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
         """
         super().__init__(dataset=dataset, func_str=func_str, cosmology=cosmology)
 
-        AnalysisLensing.__init__(self=self, cosmology=cosmology)
+        AnalysisLens.__init__(self=self, cosmology=cosmology)
 
     def fit_quantity_for_instance(self, instance: af.ModelInstance) -> FitQuantity:
         """
@@ -126,8 +127,10 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
 
     def make_result(
         self,
-        samples: af.SamplesPDF,
-        search_internal=None,
+        samples_summary: af.SamplesSummary,
+        paths: af.AbstractPaths,
+        samples: Optional[af.SamplesPDF] = None,
+        search_internal: Optional[object] = None,
     ) -> ResultQuantity:
         """
         After the non-linear search is complete create its `ResultQuantity`, which includes:
@@ -157,5 +160,9 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
             The result of fitting the model to the imaging dataset, via a non-linear search.
         """
         return ResultQuantity(
-            samples=samples, analysis=self, search_internal=search_internal
+            samples_summary=samples_summary,
+            paths=paths,
+            samples=samples,
+            search_internal=search_internal,
+            analysis=self
         )

@@ -3,7 +3,7 @@ import numpy as np
 import autoarray as aa
 import autogalaxy as ag
 
-from autogalaxy.analysis.adapt_images import AdaptImages
+from autogalaxy.analysis.adapt_images.adapt_images import AdaptImages
 from autolens.lens.tracer import Tracer
 from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.analysis.result import ResultDataset

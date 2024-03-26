@@ -70,7 +70,7 @@ class TracerToInversion(ag.AbstractToInversion):
             )
 
         for plane_index, galaxies in enumerate(self.planes):
-            plane_to_inversion = ag.GalaxiesToInversion(
+            galaxies_to_inversion = ag.GalaxiesToInversion(
                 galaxies=galaxies,
                 sky=self.sky,
                 dataset=self.dataset,
@@ -82,7 +82,7 @@ class TracerToInversion(ag.AbstractToInversion):
             )
 
             lp_linear_galaxy_dict_of_plane = (
-                plane_to_inversion.lp_linear_func_list_galaxy_dict
+                galaxies_to_inversion.lp_linear_func_list_galaxy_dict
             )
 
             lp_linear_galaxy_dict_list = {

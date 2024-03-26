@@ -10,7 +10,7 @@ import autogalaxy as ag
 
 from autoarray.exc import PixelizationException
 
-from autolens.analysis.analysis import AnalysisDataset
+from autolens.analysis.analysis.dataset import AnalysisDataset
 from autolens.analysis.preloads import Preloads
 from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
@@ -33,7 +33,7 @@ class AnalysisInterferometer(AnalysisDataset):
         positions_likelihood: Optional[
             Union[PositionsLHResample, PositionsLHPenalty]
         ] = None,
-        adapt_images: Optional[ag.AdaptImages] = None,
+        adapt_image_maker: Optional[ag.AdaptImageMaker] = None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_inversion: aa.SettingsInversion = None,
         raise_inversion_positions_likelihood_exception: bool = True,
@@ -78,7 +78,7 @@ class AnalysisInterferometer(AnalysisDataset):
         super().__init__(
             dataset=dataset,
             positions_likelihood=positions_likelihood,
-            adapt_images=adapt_images,
+            adapt_image_maker=adapt_image_maker,
             cosmology=cosmology,
             settings_inversion=settings_inversion,
             raise_inversion_positions_likelihood_exception=raise_inversion_positions_likelihood_exception,
@@ -328,7 +328,13 @@ class AnalysisInterferometer(AnalysisDataset):
             except IndexError:
                 pass
 
-    def make_result(self, samples: af.SamplesPDF, search_internal=None):
+    def make_result(
+        self,
+        samples_summary: af.SamplesSummary,
+        paths: af.AbstractPaths,
+        samples: Optional[af.SamplesPDF] = None,
+        search_internal: Optional[object] = None,
+    ):
         """
         After the non-linear search is complete create its `Result`, which includes:
 
@@ -355,7 +361,11 @@ class AnalysisInterferometer(AnalysisDataset):
             The result of fitting the model to the imaging dataset, via a non-linear search.
         """
         return ResultInterferometer(
-            samples=samples, analysis=self, search_internal=search_internal
+            samples_summary=samples_summary,
+            paths=paths,
+            samples=samples,
+            analysis=self,
+            search_internal=search_internal
         )
 
     def save_attributes(self, paths: af.DirectoryPaths):

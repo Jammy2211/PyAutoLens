@@ -523,8 +523,8 @@ mass its name ``mass`` defined when making the ``Model`` above is used).
 
 .. code-block:: python
 
-    search_plotter = aplt.DynestyPlotter(samples=result.samples)
-    search_plotter.corner()
+    plotter = aplt.NestPlotter(samples=result.samples)
+    plotter.corner_cornerpy()
 
 Here is an example of how a PDF estimated for a lens model appears:
 
