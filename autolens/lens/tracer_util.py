@@ -239,7 +239,7 @@ def grid_2d_at_redshift_from(
 
     for plane_index, plane_redshift in enumerate(plane_redshifts):
         if redshift > plane_redshift:
-            plane_index_insert = plane_index+1
+            plane_index_insert = plane_index + 1
 
     planes.insert(plane_index_insert, [ag.Galaxy(redshift=redshift)])
 

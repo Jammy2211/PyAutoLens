@@ -133,7 +133,9 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
 
     samples_summary = al.m.MockSamplesSummary(max_log_likelihood_instance=tracer)
 
-    result = ResultImaging(samples_summary=samples_summary, analysis=analysis_imaging_7x7)
+    result = ResultImaging(
+        samples_summary=samples_summary, analysis=analysis_imaging_7x7
+    )
 
     assert (
         result.source_plane_inversion_centre.in_list[0]
@@ -151,7 +153,9 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
 
     samples_summary = al.m.MockSamplesSummary(max_log_likelihood_instance=tracer)
 
-    result = ResultImaging(samples_summary=samples_summary, analysis=analysis_imaging_7x7)
+    result = ResultImaging(
+        samples_summary=samples_summary, analysis=analysis_imaging_7x7
+    )
 
     assert result.source_plane_inversion_centre == None
 
@@ -162,7 +166,9 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
 
     samples_summary = al.m.MockSamplesSummary(max_log_likelihood_instance=tracer)
 
-    result = ResultImaging(samples_summary=samples_summary, analysis=analysis_imaging_7x7)
+    result = ResultImaging(
+        samples_summary=samples_summary, analysis=analysis_imaging_7x7
+    )
 
     assert result.source_plane_inversion_centre == None
 
@@ -185,7 +191,9 @@ def test__source_plane_centre(analysis_imaging_7x7):
 
     samples_summary = al.m.MockSamplesSummary(max_log_likelihood_instance=tracer)
 
-    result = ResultImaging(samples_summary=samples_summary, analysis=analysis_imaging_7x7)
+    result = ResultImaging(
+        samples_summary=samples_summary, analysis=analysis_imaging_7x7
+    )
 
     assert result.source_plane_centre.in_list[0] == pytest.approx(
         (-0.916666, -0.916666), 1.0e-4
@@ -216,7 +224,9 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
 
     samples_summary = al.m.MockSamplesSummary(max_log_likelihood_instance=tracer)
 
-    result = ResultImaging(samples_summary=samples_summary, analysis=analysis_imaging_7x7)
+    result = ResultImaging(
+        samples_summary=samples_summary, analysis=analysis_imaging_7x7
+    )
 
     multiple_images = result.image_plane_multiple_image_positions
 

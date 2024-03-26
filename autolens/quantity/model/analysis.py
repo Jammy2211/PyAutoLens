@@ -164,5 +164,5 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLens):
             paths=paths,
             samples=samples,
             search_internal=search_internal,
-            analysis=self
+            analysis=self,
         )
