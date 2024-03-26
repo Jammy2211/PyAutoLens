@@ -66,10 +66,6 @@ def make_model():
 
 @pytest.fixture(name="samples")
 def make_samples(model):
-    galaxy_0 = al.Galaxy(redshift=0.5, light=al.lp.Sersic(centre=(0.0, 1.0)))
-    galaxy_1 = al.Galaxy(redshift=1.0, light=al.lp.Sersic())
-
-    tracer = al.Tracer(galaxies=[galaxy_0, galaxy_1])
 
     parameters = [model.prior_count * [1.0], model.prior_count * [10.0]]
 
@@ -84,6 +80,5 @@ def make_samples(model):
     return al.m.MockSamples(
         model=model,
         sample_list=sample_list,
-        max_log_likelihood_instance=tracer,
         prior_means=[1.0] * model.prior_count,
     )
