@@ -7,13 +7,13 @@ import autogalaxy as ag
 from autogalaxy.quantity.model.visualizer import VisualizerQuantity
 
 from autolens.analysis.visualizer import Visualizer
-from autolens.analysis.analysis import AnalysisLensing
+from autolens.analysis.analysis.lens import AnalysisLens
 from autogalaxy.quantity.plot.fit_quantity_plotters import FitQuantityPlotter
 from autolens.quantity.model.result import ResultQuantity
 from autolens.quantity.fit_quantity import FitQuantity
 
 
-class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
+class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLens):
     def __init__(
         self,
         dataset: ag.DatasetQuantity,
@@ -52,7 +52,7 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLensing):
         """
         super().__init__(dataset=dataset, func_str=func_str, cosmology=cosmology)
 
-        AnalysisLensing.__init__(self=self, cosmology=cosmology)
+        AnalysisLens.__init__(self=self, cosmology=cosmology)
 
     def fit_quantity_for_instance(self, instance: af.ModelInstance) -> FitQuantity:
         """

@@ -3,9 +3,9 @@ from typing import Callable, Dict, Optional, Tuple
 import autofit as af
 import autogalaxy as ag
 
-from autogalaxy.analysis.analysis import Analysis as AgAnalysis
+from autogalaxy.analysis.analysis.analysis import Analysis as AgAnalysis
 
-from autolens.analysis.analysis import AnalysisLensing
+from autolens.analysis.analysis.lens import AnalysisLens
 from autolens.analysis.visualizer import Visualizer
 from autolens.point.point_dataset import PointDict
 from autolens.point.fit_point.point_dict import FitPointDict
@@ -23,7 +23,7 @@ except ModuleNotFoundError:
     NumbaException = ValueError
 
 
-class AnalysisPoint(AgAnalysis, AnalysisLensing):
+class AnalysisPoint(AgAnalysis, AnalysisLens):
     def __init__(
         self,
         point_dict: PointDict,
@@ -54,7 +54,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLensing):
 
         super().__init__(cosmology=cosmology)
 
-        AnalysisLensing.__init__(self=self, cosmology=cosmology)
+        AnalysisLens.__init__(self=self, cosmology=cosmology)
 
         self.point_dict = point_dict
 

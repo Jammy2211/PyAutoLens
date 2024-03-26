@@ -373,17 +373,9 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         return FitImaging(
             dataset=self.dataset,
             tracer=self.tracer,
+            sky=self.sky,
             adapt_images=self.adapt_images,
             settings_inversion=settings_inversion,
             preloads=preloads,
             run_time_dict=run_time_dict,
         )
-
-    @property
-    def rff(self):
-        return np.divide(
-                self.residual_map,
-                self.data,
-               # out=np.zeros_like(self.residual_map.native),
-               # where=np.asarray(self.mask.native) == 0,
-            )
