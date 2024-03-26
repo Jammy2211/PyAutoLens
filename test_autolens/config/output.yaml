@@ -1,0 +1,63 @@
+# Determines whether files saved by the search are output to the hard-disk. This is true both when saving to the
+# directory structure and when saving to database.
+
+# Files can be listed name: bool where the name is the name of the file without a suffix (e.g. model not model.json)
+# and bool is true or false.
+
+# If a given file is not listed then the default value is used.
+
+default: true # If true then files which are not explicitly listed here are output anyway. If false then they are not.
+
+### Samples ###
+
+# The `samples.csv`file contains every sampled value of every free parameter with its log likelihood and weight.
+
+# This file is often large, therefore disabling it can significantly reduce hard-disk space use.
+
+# `samples.csv` is used to perform marginalization, infer model parameter errors and do other analysis of the search
+# chains. Even if output of `samples.csv` is disabled, these tasks are still performed by the fit and output to
+# the `samples_summary.json` file. However, without a `samples.csv` file these types of tasks cannot be performed
+# after the fit is complete, for example via the database.
+
+samples: true
+
+# The `samples.csv` file contains every accepted sampled value of every free parameter with its log likelihood and
+# weight. For certain searches, the majority of samples have a very low weight, which has no numerical impact on the
+# results of the model-fit. However, these samples are still output to the `samples.csv` file, taking up hard-disk space
+# and slowing down analysis of the samples (e.g. via the database).
+
+# The `samples_weight_threshold` below specifies the threshold value of the weight such that samples with a weight
+# below this value are not output to the `samples.csv` file. This can be used to reduce the size of the `samples.csv`
+# file and speed up analysis of the samples.
+
+# Note that for many searches (e.g. MCMC) all samples have equal weight, and thus this threshold has no impact and
+# there is no simple way to save hard-disk space. However, for nested sampling, the majority of samples have a very
+# low weight and this threshold can be used to save hard-disk space.
+
+# Set value to empty (e.g. delete 1.0e-10 below) to disable this feature.
+
+samples_weight_threshold: 1.0e-10
+
+### Search Internal ###
+
+# The search internal folder which contains a saved state of the non-linear search, as a .pickle or .dill file.
+
+# If the entry below is false, the folder is still output during the model-fit, as it is required to resume the fit
+# from where it left off. Therefore, settings `false` below does not impact model-fitting checkpointing and resumption.
+# Instead, the search internal folder is deleted once the fit is completed.
+
+# The search internal folder file is often large, therefore deleting it after a fit is complete can significantly
+# reduce hard-disk space use.
+
+# The search internal representation (e.g. what you can load from the output .pickle file) may have additional
+# quantities specific to the non-linear search that you are interested in inspecting. Deleting the folder means this
+# information is list.
+
+search_internal: false
+
+# Other Files:
+
+covariance: false # `covariance.csv`: The [free parameters x free parameters] covariance matrix.
+data: true # `data.json`: The value of every data point in the data.
+noise_map: true # `noise_map.json`: The value of every RMS noise map value.
+
