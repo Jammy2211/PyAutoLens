@@ -36,8 +36,7 @@ profiling:
   perform: true
   repeats: 1
 test:
-  check_figure_of_merit_sanity: false
-  bypass_figure_of_merit_sanity: true
+  check_likelihood_function: false  # if True, when a search is resumed the likelihood of a previous sample is recalculated to ensure it is consistent with the previous run.
   check_preloads: false
   exception_override: false
   preloads_check_threshold: 1.0     # If the figure of merit of a fit with and without preloads is greater than this threshold, the check preload test fails and an exception raised for a model-fit. 
