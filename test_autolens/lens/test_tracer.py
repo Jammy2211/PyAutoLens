@@ -154,13 +154,38 @@ def test__grid_2d_at_redshift_from(sub_grid_2d_7x7):
 
     tracer = al.Tracer(galaxies=galaxies, cosmology=al.cosmo.Planck15())
 
+    galaxies_plus_extra = [g0, g1, g2, g3, g4, g5, al.Galaxy(redshift=0.5)]
+    tracer_plus_extra = al.Tracer(
+        galaxies=galaxies_plus_extra, cosmology=al.cosmo.Planck15()
+    )
+    grid_2d_list_from = tracer_plus_extra.traced_grid_2d_list_from(grid=grid_simple)
+
     grid_at_redshift = tracer.grid_2d_at_redshift_from(grid=grid_simple, redshift=0.5)
 
-    assert grid_at_redshift[0] == pytest.approx((9.73109691, 19.46219382), 1.0e-4)
+    assert grid_2d_list_from[1] == pytest.approx(grid_at_redshift, 1.0e-4)
+    assert grid_at_redshift[0] == pytest.approx((0.6273814, 1.2547628), 1.0e-4)
+
+    galaxies_plus_extra = [g0, g1, g2, g3, g4, g5, al.Galaxy(redshift=1.75)]
+    tracer_plus_extra = al.Tracer(
+        galaxies=galaxies_plus_extra, cosmology=al.cosmo.Planck15()
+    )
+    grid_2d_list_from = tracer_plus_extra.traced_grid_2d_list_from(grid=grid_simple)
 
     grid_at_redshift = tracer.grid_2d_at_redshift_from(grid=grid_simple, redshift=1.75)
 
-    assert grid_at_redshift[0] == pytest.approx((0.65903649, 1.31807298), 1.0e-4)
+    assert grid_2d_list_from[2] == pytest.approx(grid_at_redshift, 1.0e-4)
+    assert grid_at_redshift[0] == pytest.approx((0.27331481161, 0.5466296232), 1.0e-4)
+
+    galaxies_plus_extra = [g0, g1, g2, g3, g4, g5, al.Galaxy(redshift=2.0)]
+    tracer_plus_extra = al.Tracer(
+        galaxies=galaxies_plus_extra, cosmology=al.cosmo.Planck15()
+    )
+    grid_2d_list_from = tracer_plus_extra.traced_grid_2d_list_from(grid=grid_simple)
+
+    grid_at_redshift = tracer.grid_2d_at_redshift_from(grid=grid_simple, redshift=2.0)
+
+    assert grid_2d_list_from[2] == pytest.approx(grid_at_redshift, 1.0e-4)
+    assert grid_at_redshift[0] == pytest.approx((0.222772465, 0.445544931), 1.0e-4)
 
 
 def test__image_2d_list_from():

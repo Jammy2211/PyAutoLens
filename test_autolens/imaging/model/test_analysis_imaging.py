@@ -1,4 +1,3 @@
-import numpy as np
 from os import path
 import pytest
 
@@ -15,26 +14,12 @@ directory = path.dirname(path.realpath(__file__))
 
 
 def test__make_result__result_imaging_is_returned(masked_imaging_7x7):
+
     model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
-
-    instance = model.instance_from_prior_medians()
-
-    samples = al.m.MockSamples(
-        model=model,
-        max_log_likelihood_instance=instance,
-        prior_means=[1.0] * model.prior_count
-    )
-
-    search = al.m.MockSearch(name="test_search", samples=samples)
 
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
-    def modify_after_fit(
-        paths: af.DirectoryPaths, model: af.AbstractPriorModel, result: af.Result
-    ):
-        pass
-
-    analysis.modify_after_fit = modify_after_fit
+    search = al.m.MockSearch(name="test_search")
 
     result = search.fit(model=model, analysis=analysis)
 

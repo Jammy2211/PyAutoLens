@@ -9,7 +9,7 @@ import autogalaxy as ag
 
 from autoarray.exc import PixelizationException
 
-from autolens.analysis.analysis import AnalysisDataset
+from autolens.analysis.analysis.dataset import AnalysisDataset
 from autolens.analysis.preloads import Preloads
 from autolens.imaging.model.result import ResultImaging
 from autolens.imaging.model.visualizer import VisualizerImaging
@@ -283,8 +283,10 @@ class AnalysisImaging(AnalysisDataset):
 
     def make_result(
         self,
-        samples: af.SamplesPDF,
-        search_internal = None
+        samples_summary: af.SamplesSummary,
+        paths: af.AbstractPaths,
+        samples: Optional[af.SamplesPDF] = None,
+        search_internal: Optional[object] = None,
     ) -> ResultImaging:
         """
         After the non-linear search is complete create its `Result`, which includes:
@@ -311,7 +313,7 @@ class AnalysisImaging(AnalysisDataset):
         ResultImaging
             The result of fitting the model to the imaging dataset, via a non-linear search.
         """
-        return ResultImaging(samples=samples, analysis=self, search_internal=search_internal)
+        return ResultImaging(samples_summary=samples_summary, paths=paths, samples=samples, search_internal=search_internal, analysis=self)
 
     def save_attributes(self, paths: af.DirectoryPaths):
         """

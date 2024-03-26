@@ -238,8 +238,8 @@ def grid_2d_at_redshift_from(
         return traced_grid_list[plane_index_with_redshift[0]]
 
     for plane_index, plane_redshift in enumerate(plane_redshifts):
-        if redshift < plane_redshift:
-            plane_index_insert = plane_index
+        if redshift > plane_redshift:
+            plane_index_insert = plane_index + 1
 
     planes.insert(plane_index_insert, [ag.Galaxy(redshift=redshift)])
 

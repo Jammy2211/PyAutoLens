@@ -1,4 +1,3 @@
-import numpy as np
 import pytest
 
 import autofit as af
@@ -15,9 +14,9 @@ def test___linear_light_profiles_in_result(analysis_imaging_7x7):
     instance = af.ModelInstance()
     instance.galaxies = galaxies
 
-    samples = al.m.MockSamples(max_log_likelihood_instance=instance)
+    samples_summary = al.m.MockSamplesSummary(max_log_likelihood_instance=instance)
 
-    result = ResultImaging(samples=samples, analysis=analysis_imaging_7x7)
+    result = ResultImaging(samples_summary=samples_summary, analysis=analysis_imaging_7x7)
 
     assert not isinstance(
         result.max_log_likelihood_tracer.galaxies[0].bulge,

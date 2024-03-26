@@ -10,7 +10,7 @@ from autofit.tools.util import open_
 
 import autogalaxy as ag
 
-from autogalaxy.analysis.analysis import AnalysisDataset
+from autogalaxy.analysis.analysis.dataset import AnalysisDataset
 
 from autolens.lens.tracer import Tracer
 from autolens.point.fit_point.max_separation import FitPositionsSourceMaxSeparation
