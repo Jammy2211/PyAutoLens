@@ -61,7 +61,7 @@ def test__perfect_fit__chi_squared_0():
         noise_map_path=path.join(file_path, "noise_map.fits"),
         uv_wavelengths_path=path.join(file_path, "uv_wavelengths.fits"),
         real_space_mask=real_space_mask,
-        transformer_class=al.TransformerDFT
+        transformer_class=al.TransformerDFT,
     )
 
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])

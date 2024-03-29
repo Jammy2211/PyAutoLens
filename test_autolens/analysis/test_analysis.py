@@ -81,7 +81,6 @@ def test__tracer_for_instance__subhalo_redshift_rescale_used(analysis_imaging_7x
 def test__relocate_pix_border__determines_if_border_pixel_relocation_is_used(
     masked_imaging_7x7,
 ):
-
     masked_imaging_7x7.sub_size_pixelization = 2
 
     pixelization = al.Pixelization(

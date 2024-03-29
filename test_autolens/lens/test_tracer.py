@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 from os import path
-from skimage import measure
 
 from autoconf.dictable import from_json, output_to_json
 import autofit as af
@@ -389,7 +388,7 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes__multi_pla
     )
 
 
-def test__padded_image_2d_from(sub_grid_2d_7x7, grid_2d_iterate_7x7):
+def test__padded_image_2d_from(sub_grid_2d_7x7):
     padded_grid = sub_grid_2d_7x7.padded_grid_from(kernel_shape_native=(3, 3))
 
     g0 = al.Galaxy(redshift=0.1, light_profile=al.lp.Sersic(intensity=0.1))
@@ -829,11 +828,10 @@ def test__regression__centre_of_profile_in_right_place():
     assert deflections.native[1, 4, 1] > 0
     assert deflections.native[1, 3, 1] < 0
 
-    grid = al.Grid2DIterate.uniform(
+    grid = al.Grid2D.uniform(
         shape_native=(7, 7),
         pixel_scales=1.0,
-        fractional_accuracy=0.99,
-        sub_steps=[2, 4],
+        over_sample=al.OverSampleIterate(fractional_accuracy=0.99, sub_steps=[2, 4]),
     )
 
     convergence = tracer.convergence_2d_from(grid=grid)
@@ -866,7 +864,10 @@ def test__decorators__grid_iterate_in__iterates_array_result_correctly(gal_x1_lp
         origin=(0.001, 0.001),
     )
 
-    grid = al.Grid2DIterate.from_mask(mask=mask, fractional_accuracy=1.0, sub_steps=[2])
+    grid = al.Grid2D.from_mask(
+        mask=mask,
+        over_sample=al.OverSampleIterate(fractional_accuracy=1.0, sub_steps=[2]),
+    )
 
     tracer = al.Tracer(galaxies=[gal_x1_lp])
 
@@ -878,8 +879,9 @@ def test__decorators__grid_iterate_in__iterates_array_result_correctly(gal_x1_lp
 
     assert (image == image_sub_2).all()
 
-    grid = al.Grid2DIterate.from_mask(
-        mask=mask, fractional_accuracy=0.95, sub_steps=[2, 4, 8]
+    grid = al.Grid2D.from_mask(
+        mask=mask,
+        over_sample=al.OverSampleIterate(fractional_accuracy=0.95, sub_steps=[2, 4, 8]),
     )
 
     galaxy = al.Galaxy(
@@ -912,7 +914,10 @@ def test__decorators__grid_iterate_in__method_returns_array_list__uses_highest_s
         origin=(0.001, 0.001),
     )
 
-    grid = al.Grid2DIterate.from_mask(mask=mask, fractional_accuracy=1.0, sub_steps=[2])
+    grid = al.Grid2D.from_mask(
+        mask=mask,
+        over_sample=al.OverSampleIterate(fractional_accuracy=1.0, sub_steps=[2]),
+    )
 
     tracer = al.Tracer(galaxies=[gal_x1_lp])
 
@@ -924,8 +929,9 @@ def test__decorators__grid_iterate_in__method_returns_array_list__uses_highest_s
 
     assert (images[0] == image_sub_2).all()
 
-    grid = al.Grid2DIterate.from_mask(
-        mask=mask, fractional_accuracy=0.95, sub_steps=[2, 4, 8]
+    grid = al.Grid2D.from_mask(
+        mask=mask,
+        over_sample=al.OverSampleIterate(fractional_accuracy=0.95, sub_steps=[2, 4, 8]),
     )
 
     galaxy = al.Galaxy(
@@ -955,7 +961,10 @@ def test__decorators__grid_iterate_in__iterates_grid_result_correctly(gal_x1_mp)
         pixel_scales=(1.0, 1.0),
     )
 
-    grid = al.Grid2DIterate.from_mask(mask=mask, fractional_accuracy=1.0, sub_steps=[2])
+    grid = al.Grid2D.from_mask(
+        mask=mask,
+        over_sample=al.OverSampleIterate(fractional_accuracy=1.0, sub_steps=[2]),
+    )
 
     galaxy = al.Galaxy(
         redshift=0.5, mass=al.mp.Isothermal(centre=(0.08, 0.08), einstein_radius=1.0)
@@ -971,8 +980,9 @@ def test__decorators__grid_iterate_in__iterates_grid_result_correctly(gal_x1_mp)
 
     assert (deflections == deflections_sub_2).all()
 
-    grid = al.Grid2DIterate.from_mask(
-        mask=mask, fractional_accuracy=0.99, sub_steps=[2, 4, 8]
+    grid = al.Grid2D.from_mask(
+        mask=mask,
+        over_sample=al.OverSampleIterate(fractional_accuracy=0.99, sub_steps=[2, 4, 8]),
     )
 
     galaxy = al.Galaxy(
