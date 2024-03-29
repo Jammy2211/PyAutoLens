@@ -352,8 +352,7 @@ class AnalysisInterferometer(AnalysisDataset):
         Parameters
         ----------
         samples
-            A PyAutoFit object which contains the samples of the non-linear search, for example the chains of an MCMC
-            run of samples of the nested sampler.
+            The samples of the non-linear search, for example the MCMC chains.
 
         Returns
         -------
