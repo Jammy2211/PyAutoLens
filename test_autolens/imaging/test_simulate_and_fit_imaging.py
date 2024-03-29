@@ -57,6 +57,7 @@ def test__perfect_fit__chi_squared_0():
         noise_map_path=path.join(file_path, "noise_map.fits"),
         psf_path=path.join(file_path, "psf.fits"),
         pixel_scales=0.2,
+        sub_size=1
     )
 
     mask = al.Mask2D.circular(
@@ -64,9 +65,6 @@ def test__perfect_fit__chi_squared_0():
     )
 
     masked_dataset = dataset.apply_mask(mask=mask)
-    masked_dataset = masked_dataset.apply_settings(
-        settings=al.SettingsImaging(sub_size=1)
-    )
 
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
@@ -145,6 +143,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
     dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
+    dataset.sub_size = 1
     dataset.noise_map = al.Array2D.ones(
         shape_native=dataset.data.shape_native, pixel_scales=0.2
     )
@@ -154,9 +153,6 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
     )
 
     masked_dataset = dataset.apply_mask(mask=mask)
-    masked_dataset = masked_dataset.apply_settings(
-        settings=al.SettingsImaging(sub_size=1)
-    )
 
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
@@ -254,6 +250,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
+    dataset.sub_size = 1
     dataset.noise_map = al.Array2D.ones(
         shape_native=dataset.data.shape_native, pixel_scales=0.2
     )
@@ -263,9 +260,6 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     )
 
     masked_dataset = dataset.apply_mask(mask=mask)
-    masked_dataset = masked_dataset.apply_settings(
-        settings=al.SettingsImaging(sub_size=1)
-    )
 
     lens_galaxy_linear = al.Galaxy(
         redshift=0.5,
@@ -393,6 +387,7 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
     dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
+    dataset.sub_size = 2
     dataset.noise_map = al.Array2D.ones(
         shape_native=dataset.data.shape_native, pixel_scales=0.2
     )
@@ -401,9 +396,6 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
     )
 
     masked_dataset = dataset.apply_mask(mask=mask)
-    masked_dataset = masked_dataset.apply_settings(
-        settings=al.SettingsImaging(sub_size=2)
-    )
 
     lens_0 = al.Galaxy(
         redshift=0.1,

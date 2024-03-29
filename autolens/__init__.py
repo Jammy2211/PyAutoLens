@@ -1,10 +1,9 @@
 from autoconf.dictable import from_dict, from_json, output_to_json, to_dict
 from autoarray import preprocess
 from autoarray.dataset.imaging.w_tilde import WTildeImaging
-from autoarray.dataset.imaging.dataset import Imaging, SettingsImaging
+from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.interferometer.dataset import (
     Interferometer,
-    SettingsInterferometer,
 )
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D

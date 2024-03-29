@@ -61,9 +61,7 @@ def test__perfect_fit__chi_squared_0():
         noise_map_path=path.join(file_path, "noise_map.fits"),
         uv_wavelengths_path=path.join(file_path, "uv_wavelengths.fits"),
         real_space_mask=real_space_mask,
-    )
-    dataset = dataset.apply_settings(
-        settings=al.SettingsInterferometer(transformer_class=al.TransformerDFT)
+        transformer_class=al.TransformerDFT
     )
 
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
@@ -136,10 +134,6 @@ def test__simulate_interferometer_data_and_fit__known_likelihood():
 
     dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
-    dataset = dataset.apply_settings(
-        settings=al.SettingsInterferometer(transformer_class=al.TransformerDFT)
-    )
-
     fit = al.FitInterferometer(
         dataset=dataset,
         tracer=tracer,
@@ -180,12 +174,6 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
     )
 
     dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
-
-    dataset = dataset.apply_settings(
-        settings=al.SettingsInterferometer(
-            grid_class=al.Grid2D, transformer_class=al.TransformerDFT, sub_size=1
-        )
-    )
 
     fit = al.FitInterferometer(
         dataset=dataset,
@@ -289,12 +277,6 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixeli
     )
 
     dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
-
-    dataset = dataset.apply_settings(
-        settings=al.SettingsInterferometer(
-            grid_class=al.Grid2D, transformer_class=al.TransformerDFT, sub_size=1
-        )
-    )
 
     lens_galaxy_linear = al.Galaxy(
         redshift=0.5,

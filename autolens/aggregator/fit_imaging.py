@@ -15,7 +15,6 @@ from autolens.aggregator.tracer import _tracer_from
 def _fit_imaging_from(
     fit: af.Fit,
     instance: Optional[af.ModelInstance] = None,
-    settings_dataset: aa.SettingsImaging = None,
     settings_inversion: aa.SettingsInversion = None,
     use_preloaded_grid: bool = True,
 ) -> List[FitImaging]:
@@ -47,8 +46,6 @@ def _fit_imaging_from(
     instance
         A manual instance that overwrites the max log likelihood instance in fit (e.g. for drawing the instance
         randomly from the PDF).
-    settings_dataset
-        Optionally overwrite the `SettingsImaging` of the `Imaging` object that is created from the fit.
     settings_inversion
         Optionally overwrite the `SettingsInversion` of the `Inversion` object that is created from the fit.
     use_preloaded_grid
@@ -98,7 +95,6 @@ class FitImagingAgg(af.AggBase):
     def __init__(
         self,
         aggregator: af.Aggregator,
-        settings_dataset: Optional[aa.SettingsImaging] = None,
         settings_inversion: Optional[aa.SettingsInversion] = None,
         use_preloaded_grid: bool = True,
     ):
@@ -132,8 +128,6 @@ class FitImagingAgg(af.AggBase):
         ----------
         aggregator
             A `PyAutoFit` aggregator object which can load the results of model-fits.
-        settings_dataset
-            Optionally overwrite the `SettingsImaging` of the `Imaging` object that is created from the fit.
         settings_inversion
             Optionally overwrite the `SettingsInversion` of the `Inversion` object that is created from the fit.
         use_preloaded_grid
