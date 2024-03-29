@@ -26,7 +26,6 @@ logger.setLevel(level="INFO")
 
 
 class AnalysisInterferometer(AnalysisDataset):
-
     Result = ResultInterferometer
 
     def __init__(
