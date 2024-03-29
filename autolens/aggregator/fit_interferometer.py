@@ -38,7 +38,7 @@ def _fit_interferometer_from(
     method is instead used to load lists of the data, noise-map, PSF and mask and combine them into a list of
     `FitInterferometer` objects.
 
-    The settings of a pixelization of inversion can be overwritten by inputting a `settings_dataset` object, for
+    The settings of an inversion can be overwritten by inputting a `settings_inversion` object, for
     example if you want to use a grid with a different inversion solver.
 
     Parameters
@@ -58,7 +58,6 @@ def _fit_interferometer_from(
     dataset_list = _interferometer_from(
         fit=fit,
         real_space_mask=real_space_mask,
-        settings_dataset=settings_dataset,
     )
     tracer_list = _tracer_from(fit=fit, instance=instance)
 
@@ -138,7 +137,6 @@ class FitInterferometerAgg(af.AggBase):
         """
         super().__init__(aggregator=aggregator)
 
-        self.settings_dataset = settings_dataset
         self.settings_inversion = settings_inversion
         self.use_preloaded_grid = use_preloaded_grid
         self.real_space_mask = real_space_mask
@@ -162,7 +160,6 @@ class FitInterferometerAgg(af.AggBase):
         return _fit_interferometer_from(
             fit=fit,
             instance=instance,
-            settings_dataset=self.settings_dataset,
             settings_inversion=self.settings_inversion,
             use_preloaded_grid=self.use_preloaded_grid,
         )

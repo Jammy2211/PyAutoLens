@@ -19,7 +19,6 @@ class SubhaloAgg:
         """
 
         self.aggregator_grid_search = aggregator_grid_search
-        self.settings_dataset = settings_dataset
         self.settings_inversion = settings_inversion
         self.use_preloaded_grid = use_preloaded_grid
 

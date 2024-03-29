@@ -36,7 +36,7 @@ def _fit_imaging_from(
     is instead used to load lists of the data, noise-map, PSF and mask and combine them into a list of
     `FitImaging` objects.
 
-    The settings of a pixelization of inversion can be overwritten by inputting a `settings_dataset` object, for example
+    The settings of an inversion can be overwritten by inputting a `settings_inversion` object, for example
     if you want to use a grid with a different inversion solver.
 
     Parameters
@@ -54,7 +54,7 @@ def _fit_imaging_from(
         as the fit.
     """
 
-    dataset_list = _imaging_from(fit=fit, settings_dataset=settings_dataset)
+    dataset_list = _imaging_from(fit=fit)
 
     tracer_list = _tracer_from(fit=fit, instance=instance)
 
@@ -137,7 +137,6 @@ class FitImagingAgg(af.AggBase):
         """
         super().__init__(aggregator=aggregator)
 
-        self.settings_dataset = settings_dataset
         self.settings_inversion = settings_inversion
         self.use_preloaded_grid = use_preloaded_grid
 
@@ -160,7 +159,6 @@ class FitImagingAgg(af.AggBase):
         return _fit_imaging_from(
             fit=fit,
             instance=instance,
-            settings_dataset=self.settings_dataset,
             settings_inversion=self.settings_inversion,
             use_preloaded_grid=self.use_preloaded_grid,
         )
