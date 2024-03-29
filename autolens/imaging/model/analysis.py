@@ -351,16 +351,11 @@ class AnalysisImaging(AnalysisDataset):
         """
         super().save_attributes(paths=paths)
 
-        paths.save_fits(
-            name="psf",
-            hdu=self.dataset.psf.hdu_for_output,
-            prefix="dataset",
+        analysis = ag.AnalysisImaging(
+            dataset=self.dataset,
         )
-        paths.save_fits(
-            name="mask",
-            hdu=self.dataset.mask.hdu_for_output,
-            prefix="dataset",
-        )
+
+        analysis.save_attributes(paths=paths)
 
         if self.positions_likelihood is not None:
 
