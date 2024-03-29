@@ -14,7 +14,6 @@ from autolens.analysis.analysis.dataset import AnalysisDataset
 from autolens.analysis.preloads import Preloads
 from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
-from autolens.lens.tracer import Tracer
 from autolens.interferometer.model.result import ResultInterferometer
 from autolens.interferometer.model.visualizer import VisualizerInterferometer
 from autolens.interferometer.fit_interferometer import FitInterferometer
@@ -27,6 +26,9 @@ logger.setLevel(level="INFO")
 
 
 class AnalysisInterferometer(AnalysisDataset):
+
+    Result = ResultInterferometer
+
     def __init__(
         self,
         dataset,
@@ -327,46 +329,6 @@ class AnalysisInterferometer(AnalysisDataset):
                 )
             except IndexError:
                 pass
-
-    def make_result(
-        self,
-        samples_summary: af.SamplesSummary,
-        paths: af.AbstractPaths,
-        samples: Optional[af.SamplesPDF] = None,
-        search_internal: Optional[object] = None,
-    ):
-        """
-        After the non-linear search is complete create its `Result`, which includes:
-
-        - The samples of the non-linear search (E.g. MCMC chains, nested sampling samples) which are used to compute
-          the maximum likelihood model, posteriors and other properties.
-
-        - The model used to fit the data, which uses the samples to create specific instances of the model (e.g.
-          an instance of the maximum log likelihood model).
-
-        - The non-linear search used to perform the model fit.
-
-        The `ResultInterferometer` object contains a number of methods which use the above objects to create the max
-        log likelihood `Plane`, `FitInterferometer`, adapt-galaxy images,etc.
-
-        Parameters
-        ----------
-        samples
-            A PyAutoFit object which contains the samples of the non-linear search, for example the chains of an MCMC
-            run of samples of the nested sampler.
-
-        Returns
-        -------
-        ResultImaging
-            The result of fitting the model to the imaging dataset, via a non-linear search.
-        """
-        return ResultInterferometer(
-            samples_summary=samples_summary,
-            paths=paths,
-            samples=samples,
-            analysis=self,
-            search_internal=search_internal,
-        )
 
     def save_attributes(self, paths: af.DirectoryPaths):
         """
