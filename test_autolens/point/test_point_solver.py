@@ -714,7 +714,7 @@ class TestPositionSolver:
         assert positions[0] == pytest.approx(np.array([0.003125, -0.890625]), 1.0e-4)
         assert positions[3] == pytest.approx(np.array([-0.003125, 1.109375]), 1.0e-4)
 
-        grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=1)
+        grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 
         g0 = al.Galaxy(
             redshift=0.5,
@@ -741,7 +741,7 @@ class TestPositionSolver:
         assert coordinates.in_list[3] == pytest.approx((-1.028125, -0.003125), 1.0e-4)
 
     def test__positions_found_for_multi_plane_tracer(self):
-        grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05, sub_size=1)
+        grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 
         g0 = al.Galaxy(
             redshift=0.5,

@@ -92,7 +92,6 @@ class SimulatorImaging(aa.SimulatorImaging):
         grid = aa.Grid2D.uniform(
             shape_native=deflections.shape_native,
             pixel_scales=deflections.pixel_scales,
-            sub_size=1,
         )
 
         deflected_grid = grid - deflections.binned

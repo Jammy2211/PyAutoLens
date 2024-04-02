@@ -499,7 +499,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         plane_grid = aa.Grid2D.uniform(
             shape_native=plane_image.shape_native,
             pixel_scales=plane_image.pixel_scales,
-            sub_size=plane_image.sub_size,
         )
 
         traced_grid = self.traced_grid_2d_list_from(
@@ -1043,7 +1042,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             the emission.
         """
         grid = aa.Grid2D.uniform(
-            shape_native=grid.shape_native, pixel_scales=grid.pixel_scales, sub_size=1
+            shape_native=grid.shape_native, pixel_scales=grid.pixel_scales,
         )
 
         traced_grids_of_planes_list = self.traced_grid_2d_list_from(grid=grid)
