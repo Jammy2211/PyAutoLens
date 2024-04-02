@@ -167,8 +167,8 @@ def test__grid_2d_at_redshift_from__redshift_between_planes(sub_grid_2d_7x7):
 
     grid_at_redshift = al.util.tracer.grid_2d_at_redshift_from(
         galaxies=galaxies,
-        grid=sub_grid_2d_7x7.mask.derive_grid.all_false_sub_1,
+        grid=sub_grid_2d_7x7.mask.derive_grid.all_false,
         redshift=0.3,
     )
 
-    assert (grid_at_redshift == sub_grid_2d_7x7.mask.derive_grid.all_false_sub_1).all()
+    assert (grid_at_redshift == sub_grid_2d_7x7.mask.derive_grid.all_false).all()

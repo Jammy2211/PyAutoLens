@@ -188,7 +188,7 @@ class SubhaloSensitivityPlotter:
         plotter.set_title("Image")
         plotter.figure_2d()
 
-        grid = self.mask.derive_grid.unmasked_sub_1
+        grid = self.mask.derive_grid.unmasked
 
         visuals_2d = aplt.Visuals2D(
             mask=self.mask,
