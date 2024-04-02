@@ -235,7 +235,7 @@ def test__image_2d_list_from__plane_without_light_profile_is_zeros(
     tracer_image_of_planes = tracer.image_2d_list_from(grid=sub_grid_2d_7x7)
 
     assert tracer_image_of_planes[2].shape_native == (7, 7)
-    assert (tracer_image_of_planes[2].binned.native == np.zeros((7, 7))).all()
+    assert (tracer_image_of_planes[2].native == np.zeros((7, 7))).all()
 
 
 def test__image_2d_from__operated_only_input(
@@ -305,8 +305,8 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes(sub_grid_2
         include_other_planes=True,
     )
 
-    assert image_via_light_profile.binned[0] == pytest.approx(
-        image_via_input_plane_image.binned[0], 1.0e-2
+    assert image_via_light_profile[0] == pytest.approx(
+        image_via_input_plane_image[0], 1.0e-2
     )
 
 
@@ -335,8 +335,8 @@ def test__image_2d_via_input_plane_image_from__without_foreground_planes(
         include_other_planes=False,
     )
 
-    assert image_via_light_profile.binned[0] == pytest.approx(
-        image_via_input_plane_image.binned[0], 1.0e-2
+    assert image_via_light_profile[0] == pytest.approx(
+        image_via_input_plane_image[0], 1.0e-2
     )
 
 
@@ -370,8 +370,8 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes__multi_pla
         include_other_planes=True,
     )
 
-    assert image_via_light_profile.binned[0] == pytest.approx(
-        image_via_input_plane_image.binned[0], 1.0e-2
+    assert image_via_light_profile[0] == pytest.approx(
+        image_via_input_plane_image[0], 1.0e-2
     )
 
     plane_image = g1.image_2d_from(grid=plane_grid)
@@ -383,8 +383,8 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes__multi_pla
         include_other_planes=True,
     )
 
-    assert image_via_light_profile.binned[0] == pytest.approx(
-        image_via_input_plane_image.binned[0], 1.0e-2
+    assert image_via_light_profile[0] == pytest.approx(
+        image_via_input_plane_image[0], 1.0e-2
     )
 
 
@@ -513,7 +513,7 @@ def test__convergence_2d_from(sub_grid_2d_7x7):
     tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)])
 
     assert (
-        tracer.convergence_2d_from(grid=sub_grid_2d_7x7).binned.native
+        tracer.convergence_2d_from(grid=sub_grid_2d_7x7).native
         == np.zeros(shape=(7, 7))
     ).all()
 
@@ -534,7 +534,7 @@ def test__potential_2d_from(sub_grid_2d_7x7):
     tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)])
 
     assert (
-        tracer.potential_2d_from(grid=sub_grid_2d_7x7).binned.native
+        tracer.potential_2d_from(grid=sub_grid_2d_7x7).native
         == np.zeros(shape=(7, 7))
     ).all()
 
@@ -566,8 +566,8 @@ def test__deflections_yx_2d_from(sub_grid_2d_7x7):
 
     tracer_deflections = tracer.deflections_of_planes_summed_from(grid=sub_grid_2d_7x7)
 
-    assert (tracer_deflections.binned.native[:, :, 0] == np.zeros(shape=(7, 7))).all()
-    assert (tracer_deflections.binned.native[:, :, 1] == np.zeros(shape=(7, 7))).all()
+    assert (tracer_deflections.native[:, :, 0] == np.zeros(shape=(7, 7))).all()
+    assert (tracer_deflections.native[:, :, 1] == np.zeros(shape=(7, 7))).all()
 
 
 def test__extract_attribute():
@@ -875,7 +875,7 @@ def test__decorators__grid_iterate_in__iterates_array_result_correctly(gal_x1_lp
 
     mask_sub_2 = mask.mask_new_sub_size_from(mask=mask, sub_size=2)
     grid_sub_2 = al.Grid2D.from_mask(mask=mask_sub_2)
-    image_sub_2 = tracer.image_2d_from(grid=grid_sub_2).binned
+    image_sub_2 = tracer.image_2d_from(grid=grid_sub_2)
 
     assert (image == image_sub_2).all()
 
@@ -894,7 +894,7 @@ def test__decorators__grid_iterate_in__iterates_array_result_correctly(gal_x1_lp
 
     mask_sub_4 = mask.mask_new_sub_size_from(mask=mask, sub_size=4)
     grid_sub_4 = al.Grid2D.from_mask(mask=mask_sub_4)
-    image_sub_4 = tracer.image_2d_from(grid=grid_sub_4).binned
+    image_sub_4 = tracer.image_2d_from(grid=grid_sub_4)
 
     assert image[0] == image_sub_4[0]
 
@@ -925,7 +925,7 @@ def test__decorators__grid_iterate_in__method_returns_array_list__uses_highest_s
 
     mask_sub_2 = mask.mask_new_sub_size_from(mask=mask, sub_size=2)
     grid_sub_2 = al.Grid2D.from_mask(mask=mask_sub_2)
-    image_sub_2 = tracer.image_2d_from(grid=grid_sub_2).binned
+    image_sub_2 = tracer.image_2d_from(grid=grid_sub_2)
 
     assert (images[0] == image_sub_2).all()
 
@@ -944,7 +944,7 @@ def test__decorators__grid_iterate_in__method_returns_array_list__uses_highest_s
 
     mask_sub_8 = mask.mask_new_sub_size_from(mask=mask, sub_size=8)
     grid_sub_8 = al.Grid2D.from_mask(mask=mask_sub_8)
-    image_sub_8 = tracer.image_2d_from(grid=grid_sub_8).binned
+    image_sub_8 = tracer.image_2d_from(grid=grid_sub_8)
 
     assert images[0][4] == image_sub_8[4]
 
@@ -976,7 +976,7 @@ def test__decorators__grid_iterate_in__iterates_grid_result_correctly(gal_x1_mp)
 
     mask_sub_2 = mask.mask_new_sub_size_from(mask=mask, sub_size=2)
     grid_sub_2 = al.Grid2D.from_mask(mask=mask_sub_2)
-    deflections_sub_2 = tracer.deflections_yx_2d_from(grid=grid_sub_2).binned
+    deflections_sub_2 = tracer.deflections_yx_2d_from(grid=grid_sub_2)
 
     assert (deflections == deflections_sub_2).all()
 
@@ -995,7 +995,7 @@ def test__decorators__grid_iterate_in__iterates_grid_result_correctly(gal_x1_mp)
 
     mask_sub_4 = mask.mask_new_sub_size_from(mask=mask, sub_size=4)
     grid_sub_4 = al.Grid2D.from_mask(mask=mask_sub_4)
-    deflections_sub_4 = tracer.deflections_yx_2d_from(grid=grid_sub_4).binned
+    deflections_sub_4 = tracer.deflections_yx_2d_from(grid=grid_sub_4)
 
     assert deflections[0, 0] == deflections_sub_4[0, 0]
 

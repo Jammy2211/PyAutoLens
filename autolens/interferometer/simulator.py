@@ -27,7 +27,7 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
 
         image = tracer.image_2d_from(grid=grid)
 
-        return self.via_image_from(image=image.binned)
+        return self.via_image_from(image=image)
 
     def via_galaxies_from(self, galaxies, grid):
         """Simulate imaging data for this data, as follows:
@@ -55,7 +55,7 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
             pixel_scales=deflections.pixel_scales,
         )
 
-        deflected_grid = grid - deflections.binned
+        deflected_grid = grid - deflections
 
         image = sum(map(lambda g: g.image_2d_from(grid=deflected_grid), galaxies))
 

@@ -285,7 +285,7 @@ class PointSolver(AbstractPointSolver):
             distance_to_mass_profile_centre=distance_to_mass_profile_centre,
         )
 
-        self.grid = grid.binned
+        self.grid = grid
         self.pixel_scale_precision = pixel_scale_precision
 
     def refined_coordinates_from(
