@@ -283,7 +283,7 @@ def test__image_2d_from__sum_of_individual_images(
 
 
 def test__image_2d_via_input_plane_image_from__with_foreground_planes(grid_2d_7x7):
-    plane_grid = al.Grid2D.uniform(shape_native=(40, 40), pixel_scales=0.3, sub_size=4)
+    plane_grid = al.Grid2D.uniform(shape_native=(40, 40), pixel_scales=0.3)
 
     g0 = al.Galaxy(
         redshift=0.5,
@@ -326,7 +326,9 @@ def test__image_2d_via_input_plane_image_from__without_foreground_planes(
 
     plane_grid = al.Grid2D.uniform(shape_native=(20, 20), pixel_scales=0.5)
 
-    plane_image = g1.image_2d_from(grid=plane_grid)
+    plane_image = g1.image_2d_from(
+        grid=plane_grid,
+    )
 
     image_via_input_plane_image = tracer.image_2d_via_input_plane_image_from(
         grid=grid_2d_7x7,
