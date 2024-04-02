@@ -262,9 +262,9 @@ def make_gal_x1_lp():
 # Ray Tracing #
 
 
-@pytest.fixture(name="sub_grid_2d_7x7_simple")
-def make_sub_grid_2d_7x7_simple():
-    return fixtures.make_sub_grid_2d_7x7_simple()
+@pytest.fixture(name="grid_2d_7x7_simple")
+def make_grid_2d_7x7_simple():
+    return fixtures.make_grid_2d_7x7_simple()
 
 
 @pytest.fixture(name="tracer_x1_plane_7x7")

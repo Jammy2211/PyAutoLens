@@ -8,6 +8,10 @@ from autoarray.dataset.interferometer.dataset import (
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.convolver import Convolver
+from autoarray.operators.over_sample.uniform import OverSampleUniform  # noqa
+from autoarray.operators.over_sample.uniform import OverSampleUniformFunc  # noqa
+from autoarray.operators.over_sample.iterate import OverSampleIterate
+from autoarray.operators.over_sample.iterate import OverSampleIterateFunc
 from autoarray.inversion.pixelization import image_mesh
 from autoarray.inversion.pixelization import mesh
 from autoarray.inversion import regularization as reg

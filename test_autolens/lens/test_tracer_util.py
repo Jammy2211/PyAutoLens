@@ -5,7 +5,7 @@ import pytest
 import autolens as al
 
 
-def test__xtraced_grid_2d_list_from(sub_grid_2d_7x7_simple):
+def test__xtraced_grid_2d_list_from(grid_2d_7x7_simple):
     g0 = al.Galaxy(redshift=2.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
     g1 = al.Galaxy(redshift=2.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
     g2 = al.Galaxy(redshift=0.1, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
@@ -18,7 +18,7 @@ def test__xtraced_grid_2d_list_from(sub_grid_2d_7x7_simple):
     planes = al.util.tracer.planes_from(galaxies=galaxies)
 
     traced_grid_list = al.util.tracer.traced_grid_2d_list_from(
-        planes=planes, grid=sub_grid_2d_7x7_simple, cosmology=al.cosmo.Planck15()
+        planes=planes, grid=grid_2d_7x7_simple, cosmology=al.cosmo.Planck15()
     )
 
     # The scaling factors are as follows and were computed independently from the test_autoarray.
@@ -60,7 +60,7 @@ def test__xtraced_grid_2d_list_from(sub_grid_2d_7x7_simple):
 
     traced_grid_list = al.util.tracer.traced_grid_2d_list_from(
         planes=planes,
-        grid=sub_grid_2d_7x7_simple,
+        grid=grid_2d_7x7_simple,
         plane_index_limit=1,
         cosmology=al.cosmo.Planck15(),
     )
