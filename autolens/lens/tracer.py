@@ -406,7 +406,13 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             for plane_index in range(
                 self.upper_plane_index_with_light_profile, self.total_planes - 1
             ):
-                image_2d_list.append(aa.Array2D.zeros(shape_native=image_2d_list[0].shape_native, pixel_scales=grid.pixel_scales))
+
+                image_2d = aa.Array2D(
+                    values=np.zeros(shape=image_2d_list[0].shape_native),
+                    mask=image_2d_list[0].mask
+                )
+
+                image_2d_list.append(image_2d.slim)
 
 #        image_2d_list = [aa.Array2D(values=image_2d, mask=grid.mask) for image_2d in image_2d_list]
 

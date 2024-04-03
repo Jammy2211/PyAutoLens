@@ -541,7 +541,7 @@ def test__potential_2d_from(grid_2d_7x7):
     ).all()
 
 
-def test__deflections_yx_2d_from(grid_2d_7x7):
+def test__deflections_of_planes_summed_from(grid_2d_7x7):
     g0 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
     g1 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=2.0))
     g2 = al.Galaxy(redshift=1.0, mass_profile=al.mp.IsothermalSph(einstein_radius=3.0))
