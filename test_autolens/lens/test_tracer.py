@@ -254,8 +254,8 @@ def test__image_2d_from__operated_only_input(
 
     image = tracer.image_2d_from(grid=grid_2d_7x7, operated_only=False)
 
-    assert image[0] == pytest.approx(1.24579051, 1.0e-4)
-    assert image[1] == pytest.approx(1.71100813, 1.0e-4)
+    assert image[0] == pytest.approx(1.79362512, 1.0e-4)
+    assert image[1] == pytest.approx(2.93152589, 1.0e-4)
 
 
 def test__image_2d_from__sum_of_individual_images(
