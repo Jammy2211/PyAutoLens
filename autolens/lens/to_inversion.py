@@ -260,6 +260,7 @@ class TracerToInversion(ag.AbstractToInversion):
 
     @cached_property
     def inversion(self):
+
         inversion = inversion_unpacked_from(
             dataset=self.dataset,
             data=self.data,
