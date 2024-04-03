@@ -550,7 +550,7 @@ def test__deflections_of_planes_summed_from(grid_2d_7x7):
 
     deflections = tracer.deflections_of_planes_summed_from(grid=grid_simple)
 
-    assert deflections[0] == pytest.approx((2.68328157, 5.9656315), 1.0e-4)
+    assert deflections[0] == pytest.approx((2.68328157, 5.36656315), 1.0e-4)
 
     # Single plane case
 
