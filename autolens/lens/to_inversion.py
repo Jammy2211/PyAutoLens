@@ -45,7 +45,7 @@ class TracerToInversion(ag.AbstractToInversion):
     @cached_property
     @aa.profile_func
     def traced_grid_2d_list_of_inversion(self) -> List[aa.type.Grid2DLike]:
-        return self.tracer.traced_grid_2d_list_from(grid=self.dataset.grid_pixelization)
+        return self.tracer.traced_grid_2d_list_from(grid=self.dataset.grid_pixelization.over_sample_func.oversampled_grid)
 
     @cached_property
     def lp_linear_func_list_galaxy_dict(
@@ -209,6 +209,7 @@ class TracerToInversion(ag.AbstractToInversion):
         for plane_index, galaxies in enumerate(self.planes):
             if galaxies.has(cls=aa.Pixelization):
                 to_inversion = ag.GalaxiesToInversion(
+                    dataset=self.dataset,
                     galaxies=galaxies,
                     sky=self.sky,
                     grid_pixelization=traced_grids_of_planes_list[plane_index],

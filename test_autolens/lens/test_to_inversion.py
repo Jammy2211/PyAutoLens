@@ -105,7 +105,7 @@ def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
     assert lp_linear_func_list[2].light_profile_list[0] == lp_linear_4
 
 
-def test__cls_pg_list_from(sub_grid_2d_7x7):
+def test__cls_pg_list_from(grid_2d_7x7):
     mesh_0 = al.mesh.Rectangular(shape=(3, 3))
 
     pixelization_0 = al.Pixelization(mesh=mesh_0)
@@ -157,7 +157,7 @@ def test__cls_pg_list_from(sub_grid_2d_7x7):
     assert pixelization_list == [[]]
 
 
-def test__adapt_galaxy_image_pg_list(sub_grid_2d_7x7):
+def test__adapt_galaxy_image_pg_list(grid_2d_7x7):
     gal = al.Galaxy(redshift=0.5)
 
     tracer = al.Tracer(galaxies=[gal, gal])
@@ -437,7 +437,7 @@ def test__mapper_galaxy_dict(masked_imaging_7x7):
     assert mapper_galaxy_dict[mapper_list[1]] == galaxy_pix_1
 
 
-def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
+def test__inversion_imaging_from(grid_2d_7x7, masked_imaging_7x7):
     g_linear = al.Galaxy(redshift=0.5, light_linear=al.lp_linear.Sersic())
 
     tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), g_linear])
@@ -454,6 +454,15 @@ def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
     inversion = tracer_to_inversion.inversion
 
     assert inversion.reconstruction[0] == pytest.approx(0.002310, 1.0e-2)
+
+    imaging_7x7 = al.Imaging(
+        data=masked_imaging_7x7.unmasked.data,
+        noise_map=masked_imaging_7x7.unmasked.noise_map,
+        psf=masked_imaging_7x7.unmasked.psf,
+        over_sample_pixelization=al.OverSampleUniform(sub_size=1),
+    )
+
+    masked_imaging_7x7 = imaging_7x7.apply_mask(mask=grid_2d_7x7.mask)
 
     pixelization = al.Pixelization(
         mesh=al.mesh.Rectangular(shape=(3, 3)),
@@ -480,7 +489,7 @@ def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
     )
 
 
-def test__inversion_interferometer_from(sub_grid_2d_7x7, interferometer_7):
+def test__inversion_interferometer_from(grid_2d_7x7, interferometer_7):
     interferometer_7.data = al.Visibilities.ones(shape_slim=(7,))
 
     g_linear = al.Galaxy(redshift=0.5, light_linear=al.lp_linear.Sersic())
