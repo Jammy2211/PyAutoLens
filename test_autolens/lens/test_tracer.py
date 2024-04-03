@@ -238,9 +238,7 @@ def test__image_2d_list_from__plane_without_light_profile_is_zeros(
     assert (tracer_image_of_planes[2].native == np.zeros((7, 7))).all()
 
 
-def test__image_2d_from__operated_only_input(
-    grid_2d_7x7, lp_0, lp_operated_0, mp_0
-):
+def test__image_2d_from__operated_only_input(grid_2d_7x7, lp_0, lp_operated_0, mp_0):
     galaxy_0 = al.Galaxy(
         redshift=0.5, light=lp_0, light_operated=lp_operated_0, mass=mp_0
     )
@@ -258,9 +256,7 @@ def test__image_2d_from__operated_only_input(
     assert image[1] == pytest.approx(2.93152589, 1.0e-4)
 
 
-def test__image_2d_from__sum_of_individual_images(
-    grid_2d_7x7, grid_2d_7x7_simple
-):
+def test__image_2d_from__sum_of_individual_images(grid_2d_7x7, grid_2d_7x7_simple):
     g0 = al.Galaxy(
         redshift=0.1,
         light_profile=al.lp.Sersic(intensity=0.1),
@@ -345,7 +341,10 @@ def test__image_2d_via_input_plane_image_from__without_foreground_planes(
 def test__image_2d_via_input_plane_image_from__with_foreground_planes__multi_plane(
     grid_2d_7x7,
 ):
-    plane_grid = al.Grid2D.uniform(shape_native=(40, 40), pixel_scales=0.3,)
+    plane_grid = al.Grid2D.uniform(
+        shape_native=(40, 40),
+        pixel_scales=0.3,
+    )
 
     g0 = al.Galaxy(
         redshift=0.5,
@@ -515,8 +514,7 @@ def test__convergence_2d_from(grid_2d_7x7):
     tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)])
 
     assert (
-        tracer.convergence_2d_from(grid=grid_2d_7x7).native
-        == np.zeros(shape=(7, 7))
+        tracer.convergence_2d_from(grid=grid_2d_7x7).native == np.zeros(shape=(7, 7))
     ).all()
 
 
@@ -536,8 +534,7 @@ def test__potential_2d_from(grid_2d_7x7):
     tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), al.Galaxy(redshift=0.5)])
 
     assert (
-        tracer.potential_2d_from(grid=grid_2d_7x7).native
-        == np.zeros(shape=(7, 7))
+        tracer.potential_2d_from(grid=grid_2d_7x7).native == np.zeros(shape=(7, 7))
     ).all()
 
 
@@ -953,7 +950,6 @@ def test__decorators__grid_iterate_in__method_returns_array_list__uses_highest_s
     image_sub_8 = tracer.image_2d_from(grid=grid_sub_8)
 
     assert images[0][4] == image_sub_8[4]
-
 
 
 def test__instance_into_tracer__retains_dictionary_access():

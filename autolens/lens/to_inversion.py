@@ -45,7 +45,9 @@ class TracerToInversion(ag.AbstractToInversion):
     @cached_property
     @aa.profile_func
     def traced_grid_2d_list_of_inversion(self) -> List[aa.type.Grid2DLike]:
-        return self.tracer.traced_grid_2d_list_from(grid=self.dataset.grid_pixelization.over_sample_func.oversampled_grid)
+        return self.tracer.traced_grid_2d_list_from(
+            grid=self.dataset.grid_pixelization.over_sample_func.oversampled_grid
+        )
 
     @cached_property
     def lp_linear_func_list_galaxy_dict(
@@ -57,7 +59,7 @@ class TracerToInversion(ag.AbstractToInversion):
         lp_linear_galaxy_dict_list = {}
 
         traced_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
-            grid=self.dataset.grid
+            grid=self.dataset.grid#.over_sample_func.oversampled_grid
         )
 
         if self.dataset.blurring_grid is not None:
@@ -137,7 +139,7 @@ class TracerToInversion(ag.AbstractToInversion):
             to_inversion = ag.GalaxiesToInversion(
                 galaxies=galaxies,
                 sky=self.sky,
-                grid_pixelization=self.dataset.grid,
+                grid_pixelization=self.dataset.grid_pixelization,
                 noise_map=self.noise_map,
                 adapt_images=self.adapt_images,
                 settings_inversion=self.settings_inversion,
@@ -212,7 +214,7 @@ class TracerToInversion(ag.AbstractToInversion):
                     dataset=self.dataset,
                     galaxies=galaxies,
                     sky=self.sky,
-                    grid_pixelization=traced_grids_of_planes_list[plane_index],
+                    grid_pixelization=self.dataset.grid_pixelization,
                     preloads=self.preloads,
                     noise_map=self.noise_map,
                     adapt_images=self.adapt_images,
@@ -240,6 +242,7 @@ class TracerToInversion(ag.AbstractToInversion):
                         regularization=pixelization_list[plane_index][
                             mapper_index
                         ].regularization,
+                        source_plane_data_grid=traced_grids_of_planes_list[plane_index],
                         source_plane_mesh_grid=traced_mesh_grids_list_of_planes[
                             plane_index
                         ][mapper_index],

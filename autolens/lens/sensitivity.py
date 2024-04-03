@@ -249,9 +249,7 @@ class SubhaloSensitivityPlotter:
         plotter.set_title("Lensed Source Image (No Subhalo)")
         plotter.figure_2d()
 
-        residual_map = (
-            lensed_source_image - lensed_source_image_no_perturb
-        )
+        residual_map = lensed_source_image - lensed_source_image_no_perturb
 
         plotter = aplt.Array2DPlotter(
             array=residual_map,
