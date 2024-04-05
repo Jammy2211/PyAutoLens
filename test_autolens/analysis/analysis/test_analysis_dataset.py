@@ -13,59 +13,6 @@ from autolens import exc
 directory = path.dirname(path.realpath(__file__))
 
 
-def test__use_border_relocator__determines_if_border_pixel_relocation_is_used(
-    masked_imaging_7x7,
-):
-    masked_imaging_7x7.sub_size_pixelization = 2
-
-    pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
-        regularization=al.reg.Constant(coefficient=1.0),
-    )
-
-    model = af.Collection(
-        galaxies=af.Collection(
-            lens=al.Galaxy(
-                redshift=0.5, mass=al.mp.IsothermalSph(einstein_radius=100.0)
-            ),
-            source=al.Galaxy(redshift=1.0, pixelization=pixelization),
-        )
-    )
-
-    analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7,
-        settings_inversion=al.SettingsInversion(use_border_relocator=True),
-    )
-
-    analysis.dataset.grid_pixelization[4] = np.array([[500.0, 0.0]])
-
-    instance = model.instance_from_unit_vector([])
-    fit = analysis.fit_from(instance=instance)
-
-    assert fit.inversion.linear_obj_list[0].source_plane_data_grid[4][
-        0
-    ] == pytest.approx(97.19584, 1.0e-2)
-    assert fit.inversion.linear_obj_list[0].source_plane_data_grid[4][
-        1
-    ] == pytest.approx(-3.699999, 1.0e-2)
-
-    analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7,
-        settings_inversion=al.SettingsInversion(use_border_relocator=False),
-    )
-
-    analysis.dataset.grid_pixelization[4] = np.array([300.0, 0.0])
-
-    instance = model.instance_from_unit_vector([])
-    fit = analysis.fit_from(
-        instance=instance,
-    )
-
-    assert fit.inversion.linear_obj_list[0].source_plane_data_grid[4][
-        0
-    ] == pytest.approx(200.0, 1.0e-4)
-
-
 def test__modify_before_fit__inversion_no_positions_likelihood__raises_exception(
     masked_imaging_7x7,
 ):

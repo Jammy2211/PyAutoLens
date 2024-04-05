@@ -72,6 +72,7 @@ class TracerToInversion(ag.AbstractToInversion):
             )
 
         for plane_index, galaxies in enumerate(self.planes):
+
             galaxies_to_inversion = ag.GalaxiesToInversion(
                 galaxies=galaxies,
                 sky=self.sky,

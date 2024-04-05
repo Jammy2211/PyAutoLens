@@ -222,7 +222,7 @@ def test__image_2d_list_from():
 
 
 def test__image_2d_list_from__plane_without_light_profile_is_zeros(
-    grid_2d_7x7, grid_2d_7x7_simple
+    grid_2d_7x7,
 ):
     # Planes without light profiles give zeros
 

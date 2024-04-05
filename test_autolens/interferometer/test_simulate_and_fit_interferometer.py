@@ -53,7 +53,7 @@ def test__perfect_fit__chi_squared_0():
     )
 
     real_space_mask = al.Mask2D.all_false(
-        shape_native=(51, 51), pixel_scales=0.1, sub_size=2
+        shape_native=(51, 51), pixel_scales=0.1,
     )
 
     dataset = al.Interferometer.from_fits(

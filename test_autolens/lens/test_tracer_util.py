@@ -1,11 +1,10 @@
-from astropy import cosmology as cosmo
 import numpy as np
 import pytest
 
 import autolens as al
 
 
-def test__xtraced_grid_2d_list_from(grid_2d_7x7_simple):
+def test__traced_grid_2d_list_from(grid_2d_7x7_simple):
     g0 = al.Galaxy(redshift=2.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
     g1 = al.Galaxy(redshift=2.0, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
     g2 = al.Galaxy(redshift=0.1, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
@@ -39,9 +38,9 @@ def test__xtraced_grid_2d_list_from(grid_2d_7x7_simple):
     )
 
     defl11 = g0.deflections_yx_2d_from(
-        grid=np.array([[(1.0 - beta_01 * val), (1.0 - beta_01 * val)]])
+        grid=al.Grid2DIrregular([[(1.0 - beta_01 * val), (1.0 - beta_01 * val)]])
     )
-    defl12 = g0.deflections_yx_2d_from(grid=np.array([[(1.0 - beta_01 * 1.0), 0.0]]))
+    defl12 = g0.deflections_yx_2d_from(grid=al.Grid2DIrregular([[(1.0 - beta_01 * 1.0), 0.0]]))
 
     assert traced_grid_list[2][0] == pytest.approx(
         np.array(
@@ -141,8 +140,8 @@ def test__grid_2d_at_redshift_from(grid_2d_7x7):
 
 
 def test__grid_2d_at_redshift_from__redshift_between_planes(grid_2d_7x7):
-    grid_2d_7x7[0] = np.array([[1.0, -1.0]])
-    grid_2d_7x7[1] = np.array([[1.0, 0.0]])
+    grid_2d_7x7[0] = al.Grid2DIrregular([[1.0, -1.0]])
+    grid_2d_7x7[1] = al.Grid2DIrregular([[1.0, 0.0]])
 
     g0 = al.Galaxy(
         redshift=0.5,
