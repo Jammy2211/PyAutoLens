@@ -122,19 +122,18 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         dataset = aa.DatasetInterface(
             data=self.profile_subtracted_image,
             noise_map=self.noise_map,
-            mapper_tools=self.dataset.mapper_tools,
             convolver=self.dataset.convolver,
             w_tilde=self.w_tilde,
             grid=self.grid,
             grid_pixelization=self.dataset.grid_pixelization,
             blurring_grid=self.dataset.blurring_grid,
+            border_relocator=self.dataset.border_relocator,
         )
 
         return TracerToInversion(
             dataset=dataset,
             tracer=self.tracer,
             sky=self.sky,
-            w_tilde=self.w_tilde,
             adapt_images=self.adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=self.preloads,

@@ -8,10 +8,11 @@ from autoarray.dataset.interferometer.dataset import (
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.convolver import Convolver
-from autoarray.operators.over_sample.uniform import OverSampleUniform  # noqa
-from autoarray.operators.over_sample.uniform import OverSampleUniformFunc  # noqa
-from autoarray.operators.over_sample.iterate import OverSampleIterate
-from autoarray.operators.over_sample.iterate import OverSampleIterateFunc
+from autoarray.operators.over_sampling.uniform import OverSamplingUniform  # noqa
+from autoarray.operators.over_sampling.uniform import OverSamplerUniform  # noqa
+from autoarray.operators.over_sampling.iterate import OverSamplingIterate
+from autoarray.operators.over_sampling.iterate import OverSamplerIterate
+from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.pixelization import image_mesh
 from autoarray.inversion.pixelization import mesh
 from autoarray.inversion import regularization as reg
@@ -21,12 +22,6 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.pixelization.pixelization import Pixelization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.inversion.factory import inversion_from as Inversion
-from autoarray.inversion.inversion.factory import (
-    inversion_imaging_unpacked_from as InversionImaging,
-)
-from autoarray.inversion.inversion.factory import (
-    inversion_interferometer_unpacked_from as InversionInterferometer,
-)
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.mappers.factory import mapper_from as Mapper
@@ -39,7 +34,7 @@ from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.irregular_2d import Grid2DIrregularUniform
-from autoarray.operators.over_sample.iterate import OverSampleIterate
+from autoarray.operators.over_sampling.iterate import OverSamplingIterate
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
 from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay

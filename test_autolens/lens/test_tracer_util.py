@@ -40,7 +40,9 @@ def test__traced_grid_2d_list_from(grid_2d_7x7_simple):
     defl11 = g0.deflections_yx_2d_from(
         grid=al.Grid2DIrregular([[(1.0 - beta_01 * val), (1.0 - beta_01 * val)]])
     )
-    defl12 = g0.deflections_yx_2d_from(grid=al.Grid2DIrregular([[(1.0 - beta_01 * 1.0), 0.0]]))
+    defl12 = g0.deflections_yx_2d_from(
+        grid=al.Grid2DIrregular([[(1.0 - beta_01 * 1.0), 0.0]])
+    )
 
     assert traced_grid_list[2][0] == pytest.approx(
         np.array(

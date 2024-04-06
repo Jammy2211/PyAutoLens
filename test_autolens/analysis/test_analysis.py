@@ -81,7 +81,6 @@ def test__tracer_for_instance__subhalo_redshift_rescale_used(analysis_imaging_7x
 def test__use_border_relocator__determines_if_border_pixel_relocation_is_used(
     masked_imaging_7x7,
 ):
-
     pixelization = al.Pixelization(
         mesh=al.mesh.Rectangular(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
@@ -108,7 +107,7 @@ def test__use_border_relocator__determines_if_border_pixel_relocation_is_used(
 
     grid = fit.inversion.linear_obj_list[0].source_plane_data_grid
 
-    assert grid[2] == pytest.approx([-82.99114877,  52.81254922], 1.0e-4)
+    assert grid[2] == pytest.approx([-82.99114877, 52.81254922], 1.0e-4)
 
     analysis = al.AnalysisImaging(
         dataset=masked_imaging_7x7,
@@ -120,7 +119,7 @@ def test__use_border_relocator__determines_if_border_pixel_relocation_is_used(
 
     grid = fit.inversion.linear_obj_list[0].source_plane_data_grid
 
-    assert grid[2] == pytest.approx([-82.89544515,  52.7491249 ], 1.0e-4)
+    assert grid[2] == pytest.approx([-82.89544515, 52.7491249], 1.0e-4)
 
 
 def test__modify_before_fit__inversion_no_positions_likelihood__raises_exception(

@@ -107,12 +107,19 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
 
     @property
     def tracer_to_inversion(self) -> TracerToInversion:
-        return TracerToInversion(
-            tracer=self.tracer,
-            dataset=self.dataset,
+        dataset = aa.DatasetInterface(
             data=self.profile_subtracted_visibilities,
             noise_map=self.noise_map,
+            transformer=self.dataset.transformer,
             w_tilde=self.w_tilde,
+            grid=self.grid,
+            grid_pixelization=self.dataset.grid_pixelization,
+            border_relocator=self.dataset.border_relocator,
+        )
+
+        return TracerToInversion(
+            dataset=dataset,
+            tracer=self.tracer,
             adapt_images=self.adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=self.preloads,

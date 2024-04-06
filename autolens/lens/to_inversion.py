@@ -16,9 +16,6 @@ class TracerToInversion(ag.AbstractToInversion):
         self,
         dataset: Optional[Union[aa.Imaging, aa.Interferometer, aa.DatasetInterface]],
         tracer,
-        data: Optional[Union[aa.Array2D, aa.Visibilities]] = None,
-        noise_map: Optional[Union[aa.Array2D, aa.VisibilitiesNoiseMap]] = None,
-        w_tilde: Optional[Union[aa.WTildeImaging, aa.WTildeInterferometer]] = None,
         sky: Optional[Basis] = None,
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
@@ -29,9 +26,6 @@ class TracerToInversion(ag.AbstractToInversion):
 
         super().__init__(
             dataset=dataset,
-            data=data,
-            noise_map=noise_map,
-            w_tilde=w_tilde,
             sky=sky,
             adapt_images=adapt_images,
             settings_inversion=settings_inversion,
@@ -47,7 +41,7 @@ class TracerToInversion(ag.AbstractToInversion):
     @aa.profile_func
     def traced_grid_2d_list_of_inversion(self) -> List[aa.type.Grid2DLike]:
         return self.tracer.traced_grid_2d_list_from(
-            grid=self.dataset.grid_pixelization.over_sample_func.oversampled_grid
+            grid=self.dataset.grid_pixelization.over_sampler.oversampled_grid
         )
 
     @cached_property
@@ -60,7 +54,7 @@ class TracerToInversion(ag.AbstractToInversion):
         lp_linear_galaxy_dict_list = {}
 
         traced_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
-            grid=self.dataset.grid#.over_sample_func.oversampled_grid
+            grid=self.dataset.grid  # .over_sample_func.oversampled_grid
         )
 
         if self.dataset.blurring_grid is not None:
@@ -73,14 +67,20 @@ class TracerToInversion(ag.AbstractToInversion):
             )
 
         for plane_index, galaxies in enumerate(self.planes):
-
-            galaxies_to_inversion = ag.GalaxiesToInversion(
-                dataset=self.dataset,
-                galaxies=galaxies,
-                sky=self.sky,
+            dataset = aa.DatasetInterface(
+                data=self.dataset.data,
+                noise_map=self.dataset.noise_map,
+                convolver=self.convolver,
+                transformer=self.transformer,
+                w_tilde=self.dataset.w_tilde,
                 grid=traced_grids_of_planes_list[plane_index],
                 blurring_grid=traced_blurring_grids_of_planes_list[plane_index],
-                noise_map=self.noise_map,
+            )
+
+            galaxies_to_inversion = ag.GalaxiesToInversion(
+                dataset=dataset,
+                galaxies=galaxies,
+                sky=self.sky,
                 settings_inversion=self.settings_inversion,
                 adapt_images=self.adapt_images,
             )
@@ -139,10 +139,9 @@ class TracerToInversion(ag.AbstractToInversion):
 
         for galaxies in self.planes:
             to_inversion = ag.GalaxiesToInversion(
+                dataset=self.dataset,
                 galaxies=galaxies,
                 sky=self.sky,
-                grid_pixelization=self.dataset.grid_pixelization,
-                noise_map=self.noise_map,
                 adapt_images=self.adapt_images,
                 settings_inversion=self.settings_inversion,
             )
@@ -216,9 +215,7 @@ class TracerToInversion(ag.AbstractToInversion):
                     dataset=self.dataset,
                     galaxies=galaxies,
                     sky=self.sky,
-                    grid_pixelization=self.dataset.grid_pixelization,
                     preloads=self.preloads,
-                    noise_map=self.noise_map,
                     adapt_images=self.adapt_images,
                     settings_inversion=self.settings_inversion,
                 )
@@ -262,7 +259,6 @@ class TracerToInversion(ag.AbstractToInversion):
 
     @cached_property
     def inversion(self):
-
         inversion = inversion_from(
             dataset=self.dataset,
             linear_obj_list=self.linear_obj_list,
