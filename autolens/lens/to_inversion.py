@@ -5,7 +5,8 @@ from autoconf import cached_property
 import autoarray as aa
 import autogalaxy as ag
 
-from autoarray.inversion.inversion.factory import inversion_unpacked_from
+from autoarray.inversion.inversion.factory import inversion_from
+
 from autogalaxy.profiles.light.basis import Basis
 from autolens.analysis.preloads import Preloads
 
@@ -13,8 +14,8 @@ from autolens.analysis.preloads import Preloads
 class TracerToInversion(ag.AbstractToInversion):
     def __init__(
         self,
+        dataset: Optional[Union[aa.Imaging, aa.Interferometer, aa.DatasetInterface]],
         tracer,
-        dataset: Optional[Union[aa.Imaging, aa.Interferometer]] = None,
         data: Optional[Union[aa.Array2D, aa.Visibilities]] = None,
         noise_map: Optional[Union[aa.Array2D, aa.VisibilitiesNoiseMap]] = None,
         w_tilde: Optional[Union[aa.WTildeImaging, aa.WTildeInterferometer]] = None,
@@ -74,9 +75,9 @@ class TracerToInversion(ag.AbstractToInversion):
         for plane_index, galaxies in enumerate(self.planes):
 
             galaxies_to_inversion = ag.GalaxiesToInversion(
+                dataset=self.dataset,
                 galaxies=galaxies,
                 sky=self.sky,
-                dataset=self.dataset,
                 grid=traced_grids_of_planes_list[plane_index],
                 blurring_grid=traced_blurring_grids_of_planes_list[plane_index],
                 noise_map=self.noise_map,
@@ -262,11 +263,8 @@ class TracerToInversion(ag.AbstractToInversion):
     @cached_property
     def inversion(self):
 
-        inversion = inversion_unpacked_from(
+        inversion = inversion_from(
             dataset=self.dataset,
-            data=self.data,
-            noise_map=self.noise_map,
-            w_tilde=self.w_tilde,
             linear_obj_list=self.linear_obj_list,
             settings=self.settings_inversion,
             preloads=self.preloads,
