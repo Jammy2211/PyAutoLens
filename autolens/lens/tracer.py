@@ -342,7 +342,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         )
 
     def image_2d_list_from(
-        self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None,
+        self,
+        grid: aa.type.Grid2DLike,
+        operated_only: Optional[bool] = None,
     ) -> List[aa.Array2D]:
         """
         Returns a list of the 2D images for each plane from a 2D grid of Cartesian (y,x) coordinates.
@@ -409,22 +411,24 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             )
 
         if self.upper_plane_index_with_light_profile < self.total_planes - 1:
-
             if isinstance(grid, aa.Grid2D):
-                image_2d = aa.Array2D(values=np.zeros(shape=grid.shape[0]), mask=grid.mask)
+                image_2d = aa.Array2D(
+                    values=np.zeros(shape=grid.shape[0]), mask=grid.mask
+                )
             else:
                 image_2d = aa.ArrayIrregular(values=np.zeros(grid.shape[0]))
 
             for plane_index in range(
                 self.upper_plane_index_with_light_profile, self.total_planes - 1
             ):
-
                 image_2d_list.append(image_2d)
 
         return image_2d_list
 
     def _image_2d_list_via_over_sampling_uniform_from(
-            self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None,
+        self,
+        grid: aa.type.Grid2DLike,
+        operated_only: Optional[bool] = None,
     ) -> List[aa.Array2D]:
         """
         Returns a list of the 2D images for each plane from a 2D grid of Cartesian (y,x) coordinates.
@@ -473,15 +477,18 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         image_2d_binned_list = []
 
         for image_2d in image_2d_list:
-
-            image_2d_binned_list.append(grid.over_sampler.binned_array_2d_from(array=image_2d))
+            image_2d_binned_list.append(
+                grid.over_sampler.binned_array_2d_from(array=image_2d)
+            )
 
         return image_2d_binned_list
 
     @aa.grid_dec.to_array
     @aa.profile_func
     def image_2d_from(
-        self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None,
+        self,
+        grid: aa.type.Grid2DLike,
+        operated_only: Optional[bool] = None,
     ) -> aa.Array2D:
         """
         Returns the 2D image of this ray-tracing strong lens system from a 2D grid of Cartesian (y,x) coordinates.
@@ -511,7 +518,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         return sum(self.image_2d_list_from(grid=grid, operated_only=operated_only))
 
     def _image_2d_via_over_sampling_uniform_from(
-            self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None,
+        self,
+        grid: aa.type.Grid2DLike,
+        operated_only: Optional[bool] = None,
     ) -> List[aa.Array2D]:
         """
         Returns a list of the 2D images for each plane from a 2D grid of Cartesian (y,x) coordinates.
@@ -553,9 +562,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         grid_input = grid.over_sampler.over_sampled_grid
         grid_input.over_sampling = None
 
-        image_2d = self.image_2d_from(
-            grid=grid_input, operated_only=operated_only
-        )
+        image_2d = self.image_2d_from(grid=grid_input, operated_only=operated_only)
 
         return grid.over_sampler.binned_array_2d_from(array=image_2d)
 
@@ -624,8 +631,14 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             pixel_scales=plane_image.pixel_scales,
         )
 
+        grid_input = grid
+
+        if isinstance(grid, aa.Grid2D):
+            if isinstance(grid.over_sampling, aa.OverSamplingUniform):
+                grid_input = grid.over_sampler.over_sampled_grid
+
         traced_grid = self.traced_grid_2d_list_from(
-            grid=grid, plane_index_limit=plane_index
+            grid=grid_input, plane_index_limit=plane_index
         )[plane_index]
 
         image = griddata(
@@ -635,6 +648,10 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             fill_value=0.0,
             method="linear",
         )
+
+        if isinstance(grid, aa.Grid2D):
+            if isinstance(grid.over_sampling, aa.OverSamplingUniform):
+                image = grid.over_sampler.binned_array_2d_from(array=image)
 
         if include_other_planes:
             image_list = self.image_2d_list_from(grid=grid, operated_only=False)
@@ -676,9 +693,13 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         A dictionary associated every galaxy in the tracer with its corresponding 2D image.
         """
 
+        if isinstance(grid.over_sampling, aa.OverSamplingUniform):
+            grid_input = grid.over_sampler.over_sampled_grid
+            grid_input.over_sampling = None
+
         galaxy_image_2d_dict = dict()
 
-        traced_grid_list = self.traced_grid_2d_list_from(grid=grid)
+        traced_grid_list = self.traced_grid_2d_list_from(grid=grid_input)
 
         for plane_index, galaxies in enumerate(self.planes):
             image_2d_list = [
@@ -686,6 +707,11 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                     grid=traced_grid_list[plane_index], operated_only=operated_only
                 )
                 for galaxy in galaxies
+            ]
+
+            image_2d_list = [
+                grid.over_sampler.binned_array_2d_from(array=image_2d)
+                for image_2d in image_2d_list
             ]
 
             for galaxy_index, galaxy in enumerate(galaxies):

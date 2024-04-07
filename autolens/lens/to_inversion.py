@@ -63,16 +63,16 @@ class TracerToInversion(ag.AbstractToInversion):
                 grid=grid_input
             )
 
-            traced_grids_of_planes_list = [aa.Grid2DOverSampled(
-                grid=grid,
-                over_sampler=self.dataset.grid.over_sampler,
-                pixels_in_mask=self.dataset.mask.pixels_in_mask,
-            )
+            traced_grids_of_planes_list = [
+                aa.Grid2DOverSampled(
+                    grid=grid,
+                    over_sampler=self.dataset.grid.over_sampler,
+                    pixels_in_mask=self.dataset.mask.pixels_in_mask,
+                )
                 for grid in traced_grids_of_planes_list
             ]
 
         else:
-
             traced_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
                 grid=self.dataset.grid
             )

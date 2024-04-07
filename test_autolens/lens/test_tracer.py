@@ -309,6 +309,12 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes(grid_2d_7x
 def test__image_2d_via_input_plane_image_from__without_foreground_planes(
     grid_2d_7x7,
 ):
+    grid_2d_7x7 = al.Grid2D(
+        values=grid_2d_7x7,
+        mask=grid_2d_7x7.mask,
+        over_sampling=al.OverSamplingUniform(sub_size=2),
+    )
+
     g0 = al.Galaxy(
         redshift=0.5,
         mass=al.mp.IsothermalSph(einstein_radius=0.2),
@@ -320,7 +326,7 @@ def test__image_2d_via_input_plane_image_from__without_foreground_planes(
 
     image_via_light_profile = tracer.image_2d_list_from(grid=grid_2d_7x7)[-1]
 
-    plane_grid = al.Grid2D.uniform(shape_native=(20, 20), pixel_scales=0.5)
+    plane_grid = al.Grid2D.uniform(shape_native=(80, 80), pixel_scales=0.125)
 
     plane_image = g1.image_2d_from(
         grid=plane_grid,
@@ -448,7 +454,11 @@ def test__light_profile_snr__signal_to_noise_via_simulator_correct():
     assert 8.0 < dataset.signal_to_noise_map.native[2, 1] < 12.0
 
 
-def test__galaxy_image_2d_dict_from(grid_2d_7x7):
+def test__galaxy_image_2d_dict_from(grid_2d_7x7, mask_2d_7x7):
+    grid_2d_7x7 = al.Grid2D.from_mask(
+        mask=mask_2d_7x7, over_sampling=al.OverSamplingUniform(sub_size=2)
+    )
+
     g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=1.0))
     g1 = al.Galaxy(
         redshift=0.5,
@@ -464,12 +474,6 @@ def test__galaxy_image_2d_dict_from(grid_2d_7x7):
     g1_image = g1.image_2d_from(grid=grid_2d_7x7)
     g2_image = g2.image_2d_from(grid=grid_2d_7x7)
 
-    g1_deflections = g1.deflections_yx_2d_from(grid=grid_2d_7x7)
-
-    source_grid_2d_7x7 = grid_2d_7x7 - g1_deflections
-
-    g3_image = g3.image_2d_from(grid=source_grid_2d_7x7)
-
     tracer = al.Tracer(galaxies=[g3, g1, g0, g2], cosmology=al.cosmo.Planck15())
 
     galaxy_image_2d_dict = tracer.galaxy_image_2d_dict_from(grid=grid_2d_7x7)
@@ -477,7 +481,7 @@ def test__galaxy_image_2d_dict_from(grid_2d_7x7):
     assert (galaxy_image_2d_dict[g0] == g0_image).all()
     assert (galaxy_image_2d_dict[g1] == g1_image).all()
     assert (galaxy_image_2d_dict[g2] == g2_image).all()
-    assert (galaxy_image_2d_dict[g3] == g3_image).all()
+    assert galaxy_image_2d_dict[g3][0] == pytest.approx(4.429962294298565, 1.0e-4)
 
     galaxy_image_2d_dict = tracer.galaxy_image_2d_dict_from(
         grid=grid_2d_7x7, operated_only=True
@@ -486,7 +490,7 @@ def test__galaxy_image_2d_dict_from(grid_2d_7x7):
     assert (galaxy_image_2d_dict[g0] == np.zeros(shape=(9,))).all()
     assert (galaxy_image_2d_dict[g1] == np.zeros(shape=(9,))).all()
     assert (galaxy_image_2d_dict[g2] == np.zeros(shape=(9,))).all()
-    assert (galaxy_image_2d_dict[g3] == g3_image).all()
+    assert galaxy_image_2d_dict[g3][0] == pytest.approx(4.429962294298565, 1.0e-4)
 
     galaxy_image_2d_dict = tracer.galaxy_image_2d_dict_from(
         grid=grid_2d_7x7, operated_only=False
@@ -496,6 +500,7 @@ def test__galaxy_image_2d_dict_from(grid_2d_7x7):
     assert (galaxy_image_2d_dict[g1] == g1_image).all()
     assert (galaxy_image_2d_dict[g2] == g2_image).all()
     assert (galaxy_image_2d_dict[g3] == np.zeros(shape=(9,))).all()
+    assert galaxy_image_2d_dict[g2][0] == pytest.approx(0.5244575148617125, 1.0e-4)
 
 
 def test__convergence_2d_from(grid_2d_7x7):
