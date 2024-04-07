@@ -41,7 +41,7 @@ class TracerToInversion(ag.AbstractToInversion):
     @aa.profile_func
     def traced_grid_2d_list_of_inversion(self) -> List[aa.type.Grid2DLike]:
         return self.tracer.traced_grid_2d_list_from(
-            grid=self.dataset.grid_pixelization.over_sampler.oversampled_grid
+            grid=self.dataset.grid_pixelization.over_sampler.over_sampled_grid
         )
 
     @cached_property
@@ -53,9 +53,29 @@ class TracerToInversion(ag.AbstractToInversion):
 
         lp_linear_galaxy_dict_list = {}
 
-        traced_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
-            grid=self.dataset.grid  # .over_sample_func.oversampled_grid
-        )
+        perform_over_sampling = aa.perform_over_sampling_from(grid=self.dataset.grid)
+
+        if perform_over_sampling:
+            grid_input = self.dataset.grid.over_sampler.over_sampled_grid
+            grid_input.over_sampling = None
+
+            traced_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
+                grid=grid_input
+            )
+
+            traced_grids_of_planes_list = [aa.Grid2DOverSampled(
+                grid=grid,
+                over_sampler=self.dataset.grid.over_sampler,
+                pixels_in_mask=self.dataset.mask.pixels_in_mask,
+            )
+                for grid in traced_grids_of_planes_list
+            ]
+
+        else:
+
+            traced_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
+                grid=self.dataset.grid
+            )
 
         if self.dataset.blurring_grid is not None:
             traced_blurring_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(

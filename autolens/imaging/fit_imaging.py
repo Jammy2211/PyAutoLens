@@ -114,6 +114,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         """
         Returns the dataset's image with all blurred light profile images in the fit's tracer subtracted.
         """
+
         return self.image - self.blurred_image
 
     @property
