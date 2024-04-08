@@ -52,7 +52,6 @@ def over_sample(func):
 
         grid_input = grid
 
-
         if isinstance(grid, aa.Grid2D):
             if isinstance(grid.over_sampling, aa.OverSamplingUniform):
                 grid_input = grid.over_sampler.over_sampled_grid
@@ -77,7 +76,6 @@ def over_sample(func):
         return result
 
     return wrapper
-
 
 
 class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
