@@ -81,6 +81,8 @@ def test__tracer_for_instance__subhalo_redshift_rescale_used(analysis_imaging_7x
 def test__relocate_pix_border__determines_if_border_pixel_relocation_is_used(
     masked_imaging_7x7,
 ):
+    masked_imaging_7x7.sub_size_pixelization = 2
+
     pixelization = al.Pixelization(
         mesh=al.mesh.Rectangular(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
@@ -93,10 +95,6 @@ def test__relocate_pix_border__determines_if_border_pixel_relocation_is_used(
             ),
             source=al.Galaxy(redshift=1.0, pixelization=pixelization),
         )
-    )
-
-    masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
-        settings=al.SettingsImaging(sub_size_pixelization=2)
     )
 
     analysis = al.AnalysisImaging(

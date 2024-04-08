@@ -16,7 +16,6 @@ def _fit_interferometer_from(
     fit: af.Fit,
     instance: Optional[af.ModelInstance] = None,
     real_space_mask: Optional[aa.Mask2D] = None,
-    settings_dataset: aa.SettingsInterferometer = None,
     settings_inversion: aa.SettingsInversion = None,
     use_preloaded_grid: bool = True,
 ) -> List[FitInterferometer]:
@@ -39,7 +38,7 @@ def _fit_interferometer_from(
     method is instead used to load lists of the data, noise-map, PSF and mask and combine them into a list of
     `FitInterferometer` objects.
 
-    The settings of a pixelization of inversion can be overwritten by inputting a `settings_dataset` object, for
+    The settings of an inversion can be overwritten by inputting a `settings_inversion` object, for
     example if you want to use a grid with a different inversion solver.
 
     Parameters
@@ -49,8 +48,6 @@ def _fit_interferometer_from(
     instance
         A manual instance that overwrites the max log likelihood instance in fit (e.g. for drawing the instance
         randomly from the PDF).
-    settings_dataset
-        Optionally overwrite the `SettingsInterferometer` of the `Interferometer` object that is created from the fit.
     settings_inversion
         Optionally overwrite the `SettingsInversion` of the `Inversion` object that is created from the fit.
     use_preloaded_grid
@@ -61,7 +58,6 @@ def _fit_interferometer_from(
     dataset_list = _interferometer_from(
         fit=fit,
         real_space_mask=real_space_mask,
-        settings_dataset=settings_dataset,
     )
     tracer_list = _tracer_from(fit=fit, instance=instance)
 
@@ -102,7 +98,6 @@ class FitInterferometerAgg(af.AggBase):
     def __init__(
         self,
         aggregator: af.Aggregator,
-        settings_dataset: Optional[aa.SettingsInterferometer] = None,
         settings_inversion: Optional[aa.SettingsInversion] = None,
         use_preloaded_grid: bool = True,
         real_space_mask: Optional[aa.Mask2D] = None,
@@ -133,8 +128,6 @@ class FitInterferometerAgg(af.AggBase):
         ----------
         aggregator
             A `PyAutoFit` aggregator object which can load the results of model-fits.
-        settings_dataset
-            Optionally overwrite the `SettingsInterferometer` of the `Interferometer` object that is created from the fit.
         settings_inversion
             Optionally overwrite the `SettingsInversion` of the `Inversion` object that is created from the fit.
         use_preloaded_grid
@@ -144,7 +137,6 @@ class FitInterferometerAgg(af.AggBase):
         """
         super().__init__(aggregator=aggregator)
 
-        self.settings_dataset = settings_dataset
         self.settings_inversion = settings_inversion
         self.use_preloaded_grid = use_preloaded_grid
         self.real_space_mask = real_space_mask
@@ -168,7 +160,6 @@ class FitInterferometerAgg(af.AggBase):
         return _fit_interferometer_from(
             fit=fit,
             instance=instance,
-            settings_dataset=self.settings_dataset,
             settings_inversion=self.settings_inversion,
             use_preloaded_grid=self.use_preloaded_grid,
         )

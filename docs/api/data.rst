@@ -34,7 +34,6 @@ For datasets taken with a CCD (or similar imaging device), including objects whi
    :recursive:
 
    Imaging
-   SettingsImaging
    SimulatorImaging
    Kernel2D
    Convolver
@@ -50,7 +49,6 @@ a fast Fourier transform to map data to the uv-plane.
    :toctree: _autosummary
 
    Interferometer
-   SettingsInterferometer
    SimulatorInterferometer
    Visibilities
    TransformerDFT

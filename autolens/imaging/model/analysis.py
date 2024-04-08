@@ -282,7 +282,7 @@ class AnalysisImaging(AnalysisDataset):
                 visualizer.visualize_inversion(
                     inversion=fit.inversion, during_analysis=during_analysis
                 )
-
+                
     def save_attributes(self, paths: af.DirectoryPaths):
         """
         Before the non-linear search begins, this routine saves attributes of the `Analysis` object to the `pickles`
@@ -320,16 +320,11 @@ class AnalysisImaging(AnalysisDataset):
         """
         super().save_attributes(paths=paths)
 
-        paths.save_fits(
-            name="psf",
-            hdu=self.dataset.psf.hdu_for_output,
-            prefix="dataset",
+        analysis = ag.AnalysisImaging(
+            dataset=self.dataset,
         )
-        paths.save_fits(
-            name="mask",
-            hdu=self.dataset.mask.hdu_for_output,
-            prefix="dataset",
-        )
+
+        analysis.save_attributes(paths=paths)
 
         if self.positions_likelihood is not None:
 

@@ -26,7 +26,6 @@ logger.setLevel(level="INFO")
 
 
 class AnalysisInterferometer(AnalysisDataset):
-
     Result = ResultInterferometer
 
     def __init__(
@@ -367,15 +366,12 @@ class AnalysisInterferometer(AnalysisDataset):
         """
         super().save_attributes(paths=paths)
 
-        hdu = aa.util.array_2d.hdu_for_output_from(
-            array_2d=self.dataset.uv_wavelengths,
+        analysis = ag.AnalysisInterferometer(
+            dataset=self.dataset,
         )
-        paths.save_fits(name="uv_wavelengths", hdu=hdu, prefix="dataset")
-        paths.save_fits(
-            name="real_space_mask",
-            hdu=self.dataset.real_space_mask.hdu_for_output,
-            prefix="dataset",
-        )
+
+        analysis.save_attributes(paths=paths)
+
         if self.positions_likelihood is not None:
             paths.save_json(
                 name="positions",

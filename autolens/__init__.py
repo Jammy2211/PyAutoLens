@@ -1,10 +1,9 @@
 from autoconf.dictable import from_dict, from_json, output_to_json, to_dict
 from autoarray import preprocess
 from autoarray.dataset.imaging.w_tilde import WTildeImaging
-from autoarray.dataset.imaging.dataset import Imaging, SettingsImaging
+from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.interferometer.dataset import (
     Interferometer,
-    SettingsInterferometer,
 )
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
@@ -34,9 +33,9 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.grids.iterate_2d import Grid2DIterate
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.irregular_2d import Grid2DIrregularUniform
+from autoarray.structures.grids.over_sample.iterate import OverSampleIterate
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
 from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
@@ -58,7 +57,6 @@ from autogalaxy.analysis.clump_model import ClumpModel
 from autogalaxy.analysis.clump_model import ClumpModelDisabled
 
 from autogalaxy.quantity.dataset_quantity import DatasetQuantity
-from autogalaxy.quantity.dataset_quantity import SettingsQuantity
 from autogalaxy.profiles.geometry_profiles import EllProfile
 from autogalaxy.profiles import (
     point_sources as ps,

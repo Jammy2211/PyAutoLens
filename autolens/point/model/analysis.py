@@ -24,7 +24,6 @@ except ModuleNotFoundError:
 
 
 class AnalysisPoint(AgAnalysis, AnalysisLens):
-
     Result = ResultPoint
 
     def __init__(
