@@ -15,7 +15,8 @@ def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
     tracer = al.Tracer(galaxies=[galaxy_no_pix, galaxy_no_pix])
 
     tracer_to_inversion = al.TracerToInversion(
-        tracer=tracer, dataset=masked_imaging_7x7
+        dataset=masked_imaging_7x7,
+        tracer=tracer,
     )
 
     lp_linear_func_galaxy_dict = tracer_to_inversion.lp_linear_func_list_galaxy_dict
@@ -41,7 +42,7 @@ def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
     )
 
     tracer_to_inversion = al.TracerToInversion(
-        tracer=tracer, dataset=masked_imaging_7x7
+        dataset=masked_imaging_7x7, tracer=tracer
     )
 
     lp_linear_func_galaxy_dict = tracer_to_inversion.lp_linear_func_list_galaxy_dict
@@ -88,7 +89,8 @@ def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
     )
 
     tracer_to_inversion = al.TracerToInversion(
-        tracer=tracer, dataset=masked_imaging_7x7
+        dataset=masked_imaging_7x7,
+        tracer=tracer,
     )
 
     lp_linear_func_galaxy_dict = tracer_to_inversion.lp_linear_func_list_galaxy_dict
@@ -105,7 +107,7 @@ def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
     assert lp_linear_func_list[2].light_profile_list[0] == lp_linear_4
 
 
-def test__cls_pg_list_from(sub_grid_2d_7x7):
+def test__cls_pg_list_from(masked_imaging_7x7, grid_2d_7x7):
     mesh_0 = al.mesh.Rectangular(shape=(3, 3))
 
     pixelization_0 = al.Pixelization(mesh=mesh_0)
@@ -115,7 +117,9 @@ def test__cls_pg_list_from(sub_grid_2d_7x7):
 
     tracer = al.Tracer(galaxies=[galaxy_no_pix, galaxy_pix])
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+    tracer_to_inversion = al.TracerToInversion(
+        dataset=masked_imaging_7x7, tracer=tracer
+    )
 
     pixelization_list = tracer_to_inversion.cls_pg_list_from(cls=al.Pixelization)
 
@@ -138,7 +142,9 @@ def test__cls_pg_list_from(sub_grid_2d_7x7):
 
     tracer = al.Tracer(galaxies=[galaxy_pix_0, galaxy_pix_1, galaxy_pix_2])
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+    tracer_to_inversion = al.TracerToInversion(
+        dataset=masked_imaging_7x7, tracer=tracer
+    )
 
     pixelization_list = tracer_to_inversion.cls_pg_list_from(cls=al.Pixelization)
 
@@ -150,19 +156,23 @@ def test__cls_pg_list_from(sub_grid_2d_7x7):
 
     tracer = al.Tracer(galaxies=[galaxy_no_pix, galaxy_no_pix])
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+    tracer_to_inversion = al.TracerToInversion(
+        dataset=masked_imaging_7x7, tracer=tracer
+    )
 
     pixelization_list = tracer_to_inversion.cls_pg_list_from(cls=al.Pixelization)
 
     assert pixelization_list == [[]]
 
 
-def test__adapt_galaxy_image_pg_list(sub_grid_2d_7x7):
+def test__adapt_galaxy_image_pg_list(masked_imaging_7x7, grid_2d_7x7):
     gal = al.Galaxy(redshift=0.5)
 
     tracer = al.Tracer(galaxies=[gal, gal])
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+    tracer_to_inversion = al.TracerToInversion(
+        dataset=masked_imaging_7x7, tracer=tracer
+    )
 
     assert tracer_to_inversion.adapt_galaxy_image_pg_list == [[]]
 
@@ -174,7 +184,9 @@ def test__adapt_galaxy_image_pg_list(sub_grid_2d_7x7):
 
     tracer = al.Tracer(galaxies=[gal_pix, gal_pix])
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer)
+    tracer_to_inversion = al.TracerToInversion(
+        dataset=masked_imaging_7x7, tracer=tracer
+    )
 
     assert tracer_to_inversion.adapt_galaxy_image_pg_list == [[None, None]]
 
@@ -184,7 +196,9 @@ def test__adapt_galaxy_image_pg_list(sub_grid_2d_7x7):
 
     tracer = al.Tracer(galaxies=[gal_pix, gal])
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer, adapt_images=adapt_images)
+    tracer_to_inversion = al.TracerToInversion(
+        dataset=masked_imaging_7x7, tracer=tracer, adapt_images=adapt_images
+    )
 
     assert tracer_to_inversion.adapt_galaxy_image_pg_list == [[1]]
 
@@ -204,7 +218,9 @@ def test__adapt_galaxy_image_pg_list(sub_grid_2d_7x7):
 
     tracer = al.Tracer(galaxies=[gal0, gal1, gal2, gal_pix0, gal_pix1, gal_pix2])
 
-    tracer_to_inversion = al.TracerToInversion(tracer=tracer, adapt_images=adapt_images)
+    tracer_to_inversion = al.TracerToInversion(
+        dataset=masked_imaging_7x7, tracer=tracer, adapt_images=adapt_images
+    )
 
     assert tracer_to_inversion.adapt_galaxy_image_pg_list == [[], [1], [], [], [2, 3]]
 
@@ -222,7 +238,8 @@ def test__image_plane_mesh_grid_pg_list(masked_imaging_7x7):
     tracer = al.Tracer(galaxies=[galaxy_no_pix, galaxy_pix])
 
     tracer_to_inversion = al.TracerToInversion(
-        tracer=tracer, dataset=masked_imaging_7x7
+        dataset=masked_imaging_7x7,
+        tracer=tracer,
     )
 
     mesh_grids = tracer_to_inversion.image_plane_mesh_grid_pg_list
@@ -255,7 +272,8 @@ def test__image_plane_mesh_grid_pg_list(masked_imaging_7x7):
     )
 
     tracer_to_inversion = al.TracerToInversion(
-        tracer=tracer, dataset=masked_imaging_7x7
+        dataset=masked_imaging_7x7,
+        tracer=tracer,
     )
 
     mesh_grids = tracer_to_inversion.image_plane_mesh_grid_pg_list
@@ -298,7 +316,7 @@ def test__traced_mesh_grid_pg_list(masked_imaging_7x7):
     tracer = al.Tracer(galaxies=[galaxy_no_pix, galaxy_pix_0, galaxy_pix_1])
 
     tracer_to_inversion = al.TracerToInversion(
-        tracer=tracer, dataset=masked_imaging_7x7
+        dataset=masked_imaging_7x7, tracer=tracer
     )
 
     (
@@ -338,7 +356,7 @@ def test__traced_mesh_grid_pg_list(masked_imaging_7x7):
     )
 
     tracer_to_inversion = al.TracerToInversion(
-        tracer=tracer, dataset=masked_imaging_7x7
+        dataset=masked_imaging_7x7, tracer=tracer
     )
 
     (
@@ -362,7 +380,7 @@ def test__mapper_galaxy_dict(masked_imaging_7x7):
     tracer = al.Tracer(galaxies=[galaxy_no_pix, galaxy_no_pix])
 
     tracer_to_inversion = al.TracerToInversion(
-        tracer=tracer, dataset=masked_imaging_7x7
+        dataset=masked_imaging_7x7, tracer=tracer
     )
 
     mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict
@@ -387,7 +405,7 @@ def test__mapper_galaxy_dict(masked_imaging_7x7):
     )
 
     tracer_to_inversion = al.TracerToInversion(
-        tracer=tracer, dataset=masked_imaging_7x7
+        dataset=masked_imaging_7x7, tracer=tracer
     )
 
     mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict
@@ -423,7 +441,7 @@ def test__mapper_galaxy_dict(masked_imaging_7x7):
     )
 
     tracer_to_inversion = al.TracerToInversion(
-        tracer=tracer, dataset=masked_imaging_7x7
+        dataset=masked_imaging_7x7, tracer=tracer
     )
 
     mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict
@@ -437,17 +455,24 @@ def test__mapper_galaxy_dict(masked_imaging_7x7):
     assert mapper_galaxy_dict[mapper_list[1]] == galaxy_pix_1
 
 
-def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
+def test__inversion_imaging_from(grid_2d_7x7, masked_imaging_7x7):
+    dataset = al.DatasetInterface(
+        data=masked_imaging_7x7.data,
+        noise_map=masked_imaging_7x7.noise_map,
+        convolver=masked_imaging_7x7.convolver,
+        grid=masked_imaging_7x7.grid,
+        grid_pixelization=masked_imaging_7x7.grid_pixelization,
+        blurring_grid=masked_imaging_7x7.blurring_grid,
+        border_relocator=masked_imaging_7x7.border_relocator,
+    )
+
     g_linear = al.Galaxy(redshift=0.5, light_linear=al.lp_linear.Sersic())
 
     tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), g_linear])
 
     tracer_to_inversion = al.TracerToInversion(
+        dataset=dataset,
         tracer=tracer,
-        dataset=masked_imaging_7x7,
-        data=masked_imaging_7x7.data,
-        noise_map=masked_imaging_7x7.noise_map,
-        w_tilde=masked_imaging_7x7.w_tilde,
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
@@ -465,11 +490,8 @@ def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
     tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), g0])
 
     tracer_to_inversion = al.TracerToInversion(
+        dataset=dataset,
         tracer=tracer,
-        dataset=masked_imaging_7x7,
-        data=masked_imaging_7x7.data,
-        noise_map=masked_imaging_7x7.noise_map,
-        w_tilde=masked_imaging_7x7.w_tilde,
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
@@ -480,19 +502,26 @@ def test__inversion_imaging_from(sub_grid_2d_7x7, masked_imaging_7x7):
     )
 
 
-def test__inversion_interferometer_from(sub_grid_2d_7x7, interferometer_7):
+def test__inversion_interferometer_from(grid_2d_7x7, interferometer_7):
     interferometer_7.data = al.Visibilities.ones(shape_slim=(7,))
+
+    dataset = al.DatasetInterface(
+        data=interferometer_7.data,
+        noise_map=interferometer_7.noise_map,
+        transformer=interferometer_7.transformer,
+        grid=interferometer_7.grid,
+        grid_pixelization=interferometer_7.grid_pixelization,
+        blurring_grid=interferometer_7.blurring_grid,
+        border_relocator=interferometer_7.border_relocator,
+    )
 
     g_linear = al.Galaxy(redshift=0.5, light_linear=al.lp_linear.Sersic())
 
     tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), g_linear])
 
     tracer_to_inversion = al.TracerToInversion(
+        dataset=dataset,
         tracer=tracer,
-        dataset=interferometer_7,
-        data=interferometer_7.visibilities,
-        noise_map=interferometer_7.noise_map,
-        w_tilde=None,
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
@@ -510,11 +539,8 @@ def test__inversion_interferometer_from(sub_grid_2d_7x7, interferometer_7):
     tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), g0])
 
     tracer_to_inversion = al.TracerToInversion(
+        dataset=dataset,
         tracer=tracer,
-        dataset=interferometer_7,
-        data=interferometer_7.visibilities,
-        noise_map=interferometer_7.noise_map,
-        w_tilde=None,
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 

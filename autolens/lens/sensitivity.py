@@ -170,14 +170,14 @@ class SubhaloSensitivityPlotter:
 
         grid = aa.Grid2D.from_mask(mask=self.mask)
 
-        image = self.tracer_perturb.image_2d_from(grid=grid).binned
+        image = self.tracer_perturb.image_2d_from(grid=grid)
         lensed_source_image = self.tracer_perturb.image_2d_via_input_plane_image_from(
             grid=grid, plane_image=self.source_image
-        ).binned
+        )
         lensed_source_image_no_perturb = (
             self.tracer_no_perturb.image_2d_via_input_plane_image_from(
                 grid=grid, plane_image=self.source_image
-            ).binned
+            )
         )
 
         plotter = aplt.Array2DPlotter(
@@ -188,7 +188,7 @@ class SubhaloSensitivityPlotter:
         plotter.set_title("Image")
         plotter.figure_2d()
 
-        grid = self.mask.derive_grid.unmasked_sub_1
+        grid = self.mask.derive_grid.unmasked
 
         visuals_2d = aplt.Visuals2D(
             mask=self.mask,
@@ -217,7 +217,7 @@ class SubhaloSensitivityPlotter:
         )
 
         plotter = aplt.Array2DPlotter(
-            array=self.source_image.binned,
+            array=self.source_image,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=visuals_2d,
         )
@@ -225,7 +225,7 @@ class SubhaloSensitivityPlotter:
         plotter.figure_2d()
 
         plotter = aplt.Array2DPlotter(
-            array=self.tracer_perturb.convergence_2d_from(grid=grid).binned,
+            array=self.tracer_perturb.convergence_2d_from(grid=grid),
             mat_plot_2d=self.mat_plot_2d,
         )
         plotter.set_title("Convergence")
@@ -249,9 +249,7 @@ class SubhaloSensitivityPlotter:
         plotter.set_title("Lensed Source Image (No Subhalo)")
         plotter.figure_2d()
 
-        residual_map = (
-            lensed_source_image.binned - lensed_source_image_no_perturb.binned
-        )
+        residual_map = lensed_source_image - lensed_source_image_no_perturb
 
         plotter = aplt.Array2DPlotter(
             array=residual_map,

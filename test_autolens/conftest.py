@@ -91,16 +91,6 @@ def make_grid_2d_7x7():
     return fixtures.make_grid_2d_7x7()
 
 
-@pytest.fixture(name="sub_grid_2d_7x7")
-def make_sub_grid_2d_7x7():
-    return fixtures.make_sub_grid_2d_7x7()
-
-
-@pytest.fixture(name="grid_2d_iterate_7x7")
-def make_grid_2d_iterate_7x7():
-    return fixtures.make_grid_2d_iterate_7x7()
-
-
 @pytest.fixture(name="grid_2d_irregular_7x7")
 def make_grid_2d_irregular_7x7():
     return fixtures.make_grid_2d_irregular_7x7()
@@ -146,6 +136,11 @@ def make_masked_imaging_7x7():
     return fixtures.make_masked_imaging_7x7()
 
 
+@pytest.fixture(name="masked_imaging_7x7_sub_2")
+def make_masked_imaging_7x7_sub_2():
+    return fixtures.make_masked_imaging_7x7_sub_2()
+
+
 @pytest.fixture(name="masked_imaging_covariance_7x7")
 def make_masked_imaging_covariance_7x7():
     return fixtures.make_masked_imaging_covariance_7x7()
@@ -154,6 +149,11 @@ def make_masked_imaging_covariance_7x7():
 @pytest.fixture(name="masked_imaging_7x7_no_blur")
 def make_masked_imaging_7x7_no_blur():
     return fixtures.make_masked_imaging_7x7_no_blur()
+
+
+@pytest.fixture(name="masked_imaging_7x7_no_blur_sub_2")
+def make_masked_imaging_7x7_no_blur_sub_2():
+    return fixtures.make_masked_imaging_7x7_no_blur_sub_2()
 
 
 @pytest.fixture(name="visibilities_7")
@@ -262,9 +262,9 @@ def make_gal_x1_lp():
 # Ray Tracing #
 
 
-@pytest.fixture(name="sub_grid_2d_7x7_simple")
-def make_sub_grid_2d_7x7_simple():
-    return fixtures.make_sub_grid_2d_7x7_simple()
+@pytest.fixture(name="grid_2d_7x7_simple")
+def make_grid_2d_7x7_simple():
+    return fixtures.make_grid_2d_7x7_simple()
 
 
 @pytest.fixture(name="tracer_x1_plane_7x7")

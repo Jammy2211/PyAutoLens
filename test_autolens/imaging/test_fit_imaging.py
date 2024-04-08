@@ -232,6 +232,218 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
     assert fit.figure_of_merit == pytest.approx(-341415.8258823, 1.0e-4)
 
 
+def test__fit_figure_of_merit__sub_2(image_7x7, psf_3x3, noise_map_7x7, mask_2d_7x7, masked_imaging_covariance_7x7):
+
+    dataset = al.Imaging(
+        data=image_7x7,
+        psf=psf_3x3,
+        noise_map=noise_map_7x7,
+        over_sampling=al.OverSamplingUniform(sub_size=2),
+    )
+
+    masked_imaging_7x7 = dataset.apply_mask(
+        mask=mask_2d_7x7
+    )
+
+    g0 = al.Galaxy(
+        redshift=0.5,
+        bulge=al.lp.Sersic(intensity=1.0),
+        disk=al.lp.Sersic(intensity=2.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
+    )
+
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
+
+    tracer = al.Tracer(galaxies=[g0, g1])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert fit.perform_inversion is False
+    assert fit.figure_of_merit == pytest.approx(-41.60614104506, 1.0e-4)
+
+    basis = al.lp_basis.Basis(
+        light_profile_list=[
+            al.lp.Sersic(intensity=1.0),
+            al.lp.Sersic(intensity=2.0),
+        ]
+    )
+
+    g0 = al.Galaxy(
+        redshift=0.5, bulge=basis, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
+    )
+
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
+
+    tracer = al.Tracer(galaxies=[g0, g1])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert fit.perform_inversion is False
+    assert fit.figure_of_merit == pytest.approx(-41.60614104506277, 1.0e-4)
+
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
+
+    g0 = al.Galaxy(redshift=0.5, pixelization=pixelization)
+
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), g0])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert fit.perform_inversion is True
+    assert fit.figure_of_merit == pytest.approx(-22.90055550546802, 1.0e-4)
+
+    galaxy_light = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
+
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
+
+    galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
+
+    tracer = al.Tracer(galaxies=[galaxy_light, galaxy_pix])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert fit.perform_inversion is True
+    assert fit.figure_of_merit == pytest.approx(-23.0283022, 1.0e-4)
+
+    g0_linear = al.Galaxy(
+        redshift=0.5,
+        bulge=al.lp_linear.Sersic(sersic_index=1.0),
+        disk=al.lp_linear.Sersic(sersic_index=4.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
+    )
+
+    tracer = al.Tracer(galaxies=[g0_linear, g1])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert fit.perform_inversion is True
+    assert fit.figure_of_merit == pytest.approx(-18.47282483, 1.0e-4)
+
+    basis = al.lp_basis.Basis(
+        light_profile_list=[
+            al.lp_linear.Sersic(sersic_index=1.0),
+            al.lp_linear.Sersic(sersic_index=4.0),
+        ]
+    )
+
+    g0_linear = al.Galaxy(
+        redshift=0.5, bulge=basis, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
+    )
+
+    tracer = al.Tracer(galaxies=[g0_linear, g1])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert fit.perform_inversion is True
+    assert fit.figure_of_merit == pytest.approx(-18.4728248395, 1.0e-4)
+
+    basis = al.lp_basis.Basis(
+        light_profile_list=[
+            al.lp_linear.Sersic(sersic_index=1.0),
+            al.lp_linear.Sersic(sersic_index=4.0),
+        ],
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
+
+    g0_basis = al.Galaxy(
+        redshift=0.5, bulge=basis, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0)
+    )
+
+    tracer = al.Tracer(galaxies=[g0_basis, g1])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert fit.perform_inversion is True
+    assert fit.figure_of_merit == pytest.approx(-27.8563999226980, 1.0e-4)
+
+    tracer = al.Tracer(galaxies=[g0_linear, galaxy_pix])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert fit.perform_inversion is True
+    assert fit.figure_of_merit == pytest.approx(-22.79906, 1.0e-4)
+
+    g0_operated = al.Galaxy(
+        redshift=0.5,
+        bulge=al.lp.Sersic(intensity=1.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
+    )
+
+    g1_operated = al.Galaxy(redshift=1.0, bulge=al.lp_operated.Sersic(intensity=1.0))
+
+    tracer = al.Tracer(galaxies=[g0_operated, g1_operated])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert fit.perform_inversion is False
+    assert fit.figure_of_merit == pytest.approx(-51.32884812, 1.0e-4)
+
+    g0_linear_operated = al.Galaxy(
+        redshift=0.5,
+        bulge=al.lp_linear_operated.Sersic(sersic_index=1.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
+    )
+
+    g1_linear_operated = al.Galaxy(
+        redshift=1.0, bulge=al.lp_linear_operated.Sersic(sersic_index=4.0)
+    )
+
+    tracer = al.Tracer(galaxies=[g0_linear_operated, g1_linear_operated])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert fit.perform_inversion is True
+    assert fit.figure_of_merit == pytest.approx(-14.532352248, 1.0e-4)
+
+    g0 = al.Galaxy(
+        redshift=0.5,
+        bulge=al.lp.Sersic(intensity=1.0),
+        disk=al.lp.Sersic(intensity=2.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
+    )
+
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
+
+    tracer = al.Tracer(galaxies=[g0, g1])
+
+    fit = al.FitImaging(dataset=masked_imaging_covariance_7x7, tracer=tracer)
+
+    assert fit.perform_inversion is False
+    assert fit.figure_of_merit == pytest.approx(-3688191.0841, 1.0e-4)
+
+    pixelization = al.Pixelization(
+        image_mesh=al.image_mesh.KMeans(pixels=5),
+        mesh=al.mesh.Delaunay(),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
+
+    galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
+
+    tracer = al.Tracer(galaxies=[g0, galaxy_pix])
+
+    model_image = al.Array2D(
+        np.full(fill_value=5.0, shape=masked_imaging_7x7.mask.pixels_in_mask),
+        mask=masked_imaging_7x7.mask,
+    )
+
+    adapt_images = al.AdaptImages(
+        galaxy_image_dict={galaxy_pix: model_image},
+    )
+
+    fit = al.FitImaging(
+        dataset=masked_imaging_7x7, tracer=tracer, adapt_images=adapt_images
+    )
+
+    assert fit.perform_inversion is True
+    assert fit.figure_of_merit == pytest.approx(-23.8393703815, 1.0e-4)
+
+
 def test__fit__sky___handles_special_behaviour(masked_imaging_7x7):
     masked_imaging_7x7 = copy.copy(masked_imaging_7x7)
 
@@ -476,8 +688,7 @@ def test__subtracted_image_of_galaxies_dict(masked_imaging_7x7):
     )
 
 
-
-def test__model_images_of_planes_list(masked_imaging_7x7):
+def test__model_images_of_planes_list(masked_imaging_7x7_sub_2):
 
     g0 = al.Galaxy(
         redshift=0.5,
@@ -499,7 +710,7 @@ def test__model_images_of_planes_list(masked_imaging_7x7):
         galaxies=[g0, g1_linear, galaxy_pix_0, galaxy_pix_1]
     )
 
-    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer, settings_inversion=al.SettingsInversion(use_w_tilde=False))
+    fit = al.FitImaging(dataset=masked_imaging_7x7_sub_2, tracer=tracer, settings_inversion=al.SettingsInversion(use_w_tilde=False))
 
     assert fit.model_images_of_planes_list[0] == pytest.approx(
         fit.galaxy_model_image_dict[g0], 1.0e-4
@@ -513,8 +724,10 @@ def test__model_images_of_planes_list(masked_imaging_7x7):
         1.0e-4,
     )
 
+    assert fit.model_images_of_planes_list[2][0] == pytest.approx(1.56110288, 1.0e-4)
 
-def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur):
+
+def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur, masked_imaging_7x7_no_blur_sub_2):
 
     g0 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
 
@@ -529,6 +742,10 @@ def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur):
     assert fit.subtracted_images_of_planes_list[0].slim[0] == pytest.approx(0.200638, 1.0e-4)
     assert fit.subtracted_images_of_planes_list[1].slim[0] == pytest.approx(0.360511, 1.0e-4)
     assert fit.subtracted_images_of_planes_list[2].slim[0] == pytest.approx(0.520383, 1.0e-4)
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur_sub_2, tracer=tracer)
+
+    assert fit.subtracted_images_of_planes_list[2].slim[0] == pytest.approx(0.475542485138, 1.0e-4)
 
     g0 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
 

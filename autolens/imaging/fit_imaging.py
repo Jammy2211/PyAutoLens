@@ -114,18 +114,27 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         """
         Returns the dataset's image with all blurred light profile images in the fit's tracer subtracted.
         """
+
         return self.image - self.blurred_image
 
     @property
     def tracer_to_inversion(self) -> TracerToInversion:
 
-        return TracerToInversion(
-            tracer=self.tracer,
-            sky=self.sky,
-            dataset=self.dataset,
+        dataset = aa.DatasetInterface(
             data=self.profile_subtracted_image,
             noise_map=self.noise_map,
+            convolver=self.dataset.convolver,
             w_tilde=self.w_tilde,
+            grid=self.grid,
+            grid_pixelization=self.dataset.grid_pixelization,
+            blurring_grid=self.dataset.blurring_grid,
+            border_relocator=self.dataset.border_relocator,
+        )
+
+        return TracerToInversion(
+            dataset=dataset,
+            tracer=self.tracer,
+            sky=self.sky,
             adapt_images=self.adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=self.preloads,

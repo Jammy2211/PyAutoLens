@@ -7,7 +7,6 @@ from autolens.analysis.result import ResultDataset
 
 
 class ResultInterferometer(ResultDataset):
-
     @property
     def max_log_likelihood_fit(self) -> FitInterferometer:
         """

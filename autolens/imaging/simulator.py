@@ -36,7 +36,7 @@ class SimulatorImaging(aa.SimulatorImaging):
             grid=grid, psf_shape_2d=self.psf.shape_native
         )
 
-        dataset = self.via_image_from(image=image.binned)
+        dataset = self.via_image_from(image=image)
 
         return dataset.trimmed_after_convolution_from(
             kernel_shape=self.psf.shape_native
@@ -92,10 +92,9 @@ class SimulatorImaging(aa.SimulatorImaging):
         grid = aa.Grid2D.uniform(
             shape_native=deflections.shape_native,
             pixel_scales=deflections.pixel_scales,
-            sub_size=1,
         )
 
-        deflected_grid = grid - deflections.binned
+        deflected_grid = grid - deflections
 
         image = sum(map(lambda g: g.image_2d_from(grid=deflected_grid), galaxies))
 
@@ -134,7 +133,7 @@ class SimulatorImaging(aa.SimulatorImaging):
         image = tracer.image_2d_via_input_plane_image_from(
             grid=grid,
             plane_image=source_image
-        ).binned
+        )
 
         padded_image = image.padded_before_convolution_from(
             kernel_shape=self.psf.shape_native

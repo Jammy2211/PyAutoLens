@@ -1,5 +1,6 @@
 from abc import ABC
 import numpy as np
+from functools import wraps
 from scipy.interpolate import griddata
 from typing import Dict, List, Optional, Type, Union
 
@@ -11,6 +12,70 @@ from autogalaxy.profiles.geometry_profiles import GeometryProfile
 from autogalaxy.profiles.light.snr import LightProfileSNR
 
 from autolens.lens import tracer_util
+
+
+def over_sample(func):
+    """
+    Homogenize the inputs and outputs of functions that take 1D or 2D grids of coordinates and return a 1D ndarray
+    which is converted to an `Array2D`, `ArrayIrregular` or `Array1D` object.
+
+    Parameters
+    ----------
+    func
+        A function which computes a set of values from a 1D or 2D grid of coordinates.
+
+    Returns
+    -------
+        A function that has its outputs homogenized to `Array2D`, `ArrayIrregular` or `Array1D` objects.
+    """
+
+    @wraps(func)
+    def wrapper(
+        obj: object,
+        grid: Union[np.ndarray, aa.Grid2D, aa.Grid2DIrregular],
+        *args,
+        **kwargs,
+    ) -> Union[np.ndarray, aa.Array2D, aa.ArrayIrregular, List]:
+        """
+
+        Parameters
+        ----------
+        obj
+            An object whose function uses grid_like inputs to compute quantities at every coordinate on the grid.
+        grid
+            A grid_like object of coordinates on which the function values are evaluated.
+
+        Returns
+        -------
+            The function values evaluated on the grid with the same structure as the input grid_like object.
+        """
+
+        grid_input = grid
+
+        if isinstance(grid, aa.Grid2D):
+            if isinstance(grid.over_sampling, aa.OverSamplingUniform):
+                grid_input = grid.over_sampler.over_sampled_grid
+                grid_input.over_sampling = None
+
+        result = func(obj, grid_input, *args, **kwargs)
+
+        if isinstance(grid, aa.Grid2D):
+            if isinstance(grid.over_sampling, aa.OverSamplingUniform):
+                if isinstance(result, list):
+                    return [
+                        grid.over_sampler.binned_array_2d_from(array=result_i)
+                        for result_i in result
+                    ]
+                elif isinstance(result, dict):
+                    return {
+                        key: grid.over_sampler.binned_array_2d_from(array=result_i)
+                        for key, result_i in result.items()
+                    }
+                return grid.over_sampler.binned_array_2d_from(array=result)
+
+        return result
+
+    return wrapper
 
 
 class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
@@ -54,7 +119,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             different calculations.
         """
 
-        self.galaxies = galaxies = galaxies
+        self.galaxies = galaxies
 
         self.cosmology = cosmology
 
@@ -215,7 +280,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def total_planes(self) -> int:
         return len(self.plane_redshifts)
 
-    @aa.grid_dec.grid_2d_to_structure_list
+    @aa.grid_dec.to_grid
     def traced_grid_2d_list_from(
         self, grid: aa.type.Grid2DLike, plane_index_limit: int = Optional[None]
     ) -> List[aa.type.Grid2DLike]:
@@ -341,9 +406,11 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             ]
         )
 
-    @aa.grid_dec.grid_2d_to_structure_list
+    @over_sample
     def image_2d_list_from(
-        self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
+        self,
+        grid: aa.type.Grid2DLike,
+        operated_only: Optional[bool] = None,
     ) -> List[aa.Array2D]:
         """
         Returns a list of the 2D images for each plane from a 2D grid of Cartesian (y,x) coordinates.
@@ -404,17 +471,27 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             )
 
         if self.upper_plane_index_with_light_profile < self.total_planes - 1:
+            if isinstance(grid, aa.Grid2D):
+                image_2d = aa.Array2D(
+                    values=np.zeros(shape=grid.shape[0]), mask=grid.mask
+                )
+            else:
+                image_2d = aa.ArrayIrregular(values=np.zeros(grid.shape[0]))
+
             for plane_index in range(
                 self.upper_plane_index_with_light_profile, self.total_planes - 1
             ):
-                image_2d_list.append(np.zeros(shape=image_2d_list[0].shape))
+                image_2d_list.append(image_2d)
 
         return image_2d_list
 
-    @aa.grid_dec.grid_2d_to_structure
+    @over_sample
+    @aa.grid_dec.to_array
     @aa.profile_func
     def image_2d_from(
-        self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
+        self,
+        grid: aa.type.Grid2DLike,
+        operated_only: Optional[bool] = None,
     ) -> aa.Array2D:
         """
         Returns the 2D image of this ray-tracing strong lens system from a 2D grid of Cartesian (y,x) coordinates.
@@ -500,11 +577,16 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         plane_grid = aa.Grid2D.uniform(
             shape_native=plane_image.shape_native,
             pixel_scales=plane_image.pixel_scales,
-            sub_size=plane_image.sub_size,
         )
 
+        grid_input = grid
+
+        if isinstance(grid, aa.Grid2D):
+            if isinstance(grid.over_sampling, aa.OverSamplingUniform):
+                grid_input = grid.over_sampler.over_sampled_grid
+
         traced_grid = self.traced_grid_2d_list_from(
-            grid=grid, plane_index_limit=plane_index
+            grid=grid_input, plane_index_limit=plane_index
         )[plane_index]
 
         image = griddata(
@@ -514,6 +596,10 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             fill_value=0.0,
             method="linear",
         )
+
+        if isinstance(grid, aa.Grid2D):
+            if isinstance(grid.over_sampling, aa.OverSamplingUniform):
+                image = grid.over_sampler.binned_array_2d_from(array=image)
 
         if include_other_planes:
             image_list = self.image_2d_list_from(grid=grid, operated_only=False)
@@ -530,6 +616,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             mask=grid.mask,
         )
 
+    @over_sample
     def galaxy_image_2d_dict_from(
         self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
     ) -> Dict[ag.Galaxy, np.ndarray]:
@@ -572,8 +659,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
         return galaxy_image_2d_dict
 
-    @aa.grid_dec.grid_2d_to_vector_yx
-    @aa.grid_dec.grid_2d_to_structure
+    @aa.grid_dec.to_vector_yx
     def deflections_yx_2d_from(
         self, grid: aa.type.Grid2DLike
     ) -> Union[aa.VectorYX2D, aa.VectorYX2DIrregular]:
@@ -604,8 +690,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             return self.deflections_between_planes_from(grid=grid)
         return self.deflections_of_planes_summed_from(grid=grid)
 
-    @aa.grid_dec.grid_2d_to_vector_yx
-    @aa.grid_dec.grid_2d_to_structure
+    @aa.grid_dec.to_vector_yx
     def deflections_of_planes_summed_from(
         self, grid: aa.type.Grid2DLike
     ) -> Union[aa.VectorYX2D, aa.VectorYX2DIrregular]:
@@ -639,8 +724,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             [galaxy.deflections_yx_2d_from(grid=grid) for galaxy in self.galaxies]
         )
 
-    @aa.grid_dec.grid_2d_to_vector_yx
-    @aa.grid_dec.grid_2d_to_structure
+    @aa.grid_dec.to_vector_yx
     def deflections_between_planes_from(
         self, grid: aa.type.Grid2DLike, plane_i=0, plane_j=-1
     ) -> Union[aa.VectorYX2D, aa.VectorYX2DIrregular]:
@@ -669,7 +753,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
         return traced_grids_list[plane_i] - traced_grids_list[plane_j]
 
-    @aa.grid_dec.grid_2d_to_structure
+    @aa.grid_dec.to_array
     def convergence_2d_from(self, grid: aa.type.Grid2DLike) -> aa.Array2D:
         """
         Returns the summed 2D convergence of all galaxies in the tracer from a 2D grid of Cartesian (y,x) coordinates.
@@ -694,7 +778,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         """
         return sum([galaxy.convergence_2d_from(grid=grid) for galaxy in self.galaxies])
 
-    @aa.grid_dec.grid_2d_to_structure
+    @aa.grid_dec.to_array
     def potential_2d_from(self, grid: aa.type.Grid2DLike) -> aa.Array2D:
         """
         Returns the summed 2D potential of all galaxies in the tracer from a 2D grid of Cartesian (y,x) coordinates.
@@ -1047,7 +1131,8 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             the emission.
         """
         grid = aa.Grid2D.uniform(
-            shape_native=grid.shape_native, pixel_scales=grid.pixel_scales, sub_size=1
+            shape_native=grid.shape_native,
+            pixel_scales=grid.pixel_scales,
         )
 
         traced_grids_of_planes_list = self.traced_grid_2d_list_from(grid=grid)
