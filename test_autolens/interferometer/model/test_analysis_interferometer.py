@@ -1,5 +1,4 @@
 from os import path
-import numpy as np
 import pytest
 
 import autofit as af
@@ -14,12 +13,6 @@ directory = path.dirname(path.realpath(__file__))
 def test__make_result__result_interferometer_is_returned(interferometer_7):
     model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
-    instance = model.instance_from_prior_medians()
-
-    samples = al.m.MockSamples(max_log_likelihood_instance=instance)
-
-    search = al.m.MockSearch(name="test_search", samples=samples)
-
     analysis = al.AnalysisInterferometer(dataset=interferometer_7)
 
     def modify_after_fit(
@@ -28,6 +21,8 @@ def test__make_result__result_interferometer_is_returned(interferometer_7):
         pass
 
     analysis.modify_after_fit = modify_after_fit
+
+    search = al.m.MockSearch(name="test_search")
 
     result = search.fit(model=model, analysis=analysis)
 
