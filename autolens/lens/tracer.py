@@ -1,5 +1,6 @@
 from abc import ABC
 import numpy as np
+from functools import wraps
 from scipy.interpolate import griddata
 from typing import Dict, List, Optional, Type, Union
 
@@ -11,6 +12,72 @@ from autogalaxy.profiles.geometry_profiles import GeometryProfile
 from autogalaxy.profiles.light.snr import LightProfileSNR
 
 from autolens.lens import tracer_util
+
+
+def over_sample(func):
+    """
+    Homogenize the inputs and outputs of functions that take 1D or 2D grids of coordinates and return a 1D ndarray
+    which is converted to an `Array2D`, `ArrayIrregular` or `Array1D` object.
+
+    Parameters
+    ----------
+    func
+        A function which computes a set of values from a 1D or 2D grid of coordinates.
+
+    Returns
+    -------
+        A function that has its outputs homogenized to `Array2D`, `ArrayIrregular` or `Array1D` objects.
+    """
+
+    @wraps(func)
+    def wrapper(
+        obj: object,
+        grid: Union[np.ndarray, aa.Grid2D, aa.Grid2DIrregular],
+        *args,
+        **kwargs,
+    ) -> Union[np.ndarray, aa.Array2D, aa.ArrayIrregular, List]:
+        """
+
+        Parameters
+        ----------
+        obj
+            An object whose function uses grid_like inputs to compute quantities at every coordinate on the grid.
+        grid
+            A grid_like object of coordinates on which the function values are evaluated.
+
+        Returns
+        -------
+            The function values evaluated on the grid with the same structure as the input grid_like object.
+        """
+
+        grid_input = grid
+
+
+        if isinstance(grid, aa.Grid2D):
+            if isinstance(grid.over_sampling, aa.OverSamplingUniform):
+                grid_input = grid.over_sampler.over_sampled_grid
+                grid_input.over_sampling = None
+
+        result = func(obj, grid_input, *args, **kwargs)
+
+        if isinstance(grid, aa.Grid2D):
+            if isinstance(grid.over_sampling, aa.OverSamplingUniform):
+                if isinstance(result, list):
+                    return [
+                        grid.over_sampler.binned_array_2d_from(array=result_i)
+                        for result_i in result
+                    ]
+                elif isinstance(result, dict):
+                    return {
+                        key: grid.over_sampler.binned_array_2d_from(array=result_i)
+                        for key, result_i in result.items()
+                    }
+                return grid.over_sampler.binned_array_2d_from(array=result)
+
+        return result
+
+    return wrapper
+
 
 
 class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
@@ -341,6 +408,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             ]
         )
 
+    @over_sample
     def image_2d_list_from(
         self,
         grid: aa.type.Grid2DLike,
@@ -383,12 +451,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             therefore is used to pass the `operated_only` input to these methods.
         """
 
-        if isinstance(grid, aa.Grid2D):
-            if isinstance(grid.over_sampling, aa.OverSamplingUniform):
-                return self._image_2d_list_via_over_sampling_uniform_from(
-                    grid=grid, operated_only=operated_only
-                )
-
         traced_grid_list = self.traced_grid_2d_list_from(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
         )
@@ -425,64 +487,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
         return image_2d_list
 
-    def _image_2d_list_via_over_sampling_uniform_from(
-        self,
-        grid: aa.type.Grid2DLike,
-        operated_only: Optional[bool] = None,
-    ) -> List[aa.Array2D]:
-        """
-        Returns a list of the 2D images for each plane from a 2D grid of Cartesian (y,x) coordinates.
-
-        The image of each plane is computed by summing the images of all galaxies in that plane. If a plane has no
-        galaxies, or if the galaxies in a plane has no light profiles, a numpy array of zeros is returned.
-
-        For example, if the tracer's planes contain galaxies at redshifts z=0.5, z=1.0 and z=2.0, and the galaxies
-        at redshifts z=0.5 and z=1.0 have light and mass profiles, the returned list of images will be the image of the
-        galaxies at z=0.5 and z=1.0, where the image at redshift z=1.0 will include the lensing effects of the galaxies
-        at z=0.5. The image at redshift z=2.0 will be a numpy array of zeros.
-
-        The images output by this function do not include instrument operations, such as PSF convolution (for imaging
-        data) or a Fourier transform (for interferometer data).
-
-        Inherited methods in the `autogalaxy.operate.image` package can apply these operations to the images.
-        These functions may have the `operated_only` input passed to them, which is why this function includes
-        the `operated_only` input.
-
-        If the `operated_only` input is included, the function omits light profiles which are parents of
-        the `LightProfileOperated` object, which signifies that the light profile represents emission that has
-        already had the instrument operations (e.g. PSF convolution, a Fourier transform) applied to it and therefore
-        that operation is not performed again.
-
-        See the `autogalaxy.profiles.light` package for details of how images are computed from a light
-        profile.
-
-        Parameters
-        ----------
-        grid
-            The 2D (y, x) coordinates where values of the image are evaluated.
-        operated_only
-            The returned list from this function contains all light profile images, and they are never operated on
-            (e.g. via the imaging PSF). However, inherited methods in the `autogalaxy.operate.image` package can
-            apply these operations to the images, which may have the `operated_only` input passed to them. This input
-            therefore is used to pass the `operated_only` input to these methods.
-        """
-
-        grid_input = grid.over_sampler.over_sampled_grid
-        grid_input.over_sampling = None
-
-        image_2d_list = self.image_2d_list_from(
-            grid=grid_input, operated_only=operated_only
-        )
-
-        image_2d_binned_list = []
-
-        for image_2d in image_2d_list:
-            image_2d_binned_list.append(
-                grid.over_sampler.binned_array_2d_from(array=image_2d)
-            )
-
-        return image_2d_binned_list
-
+    @over_sample
     @aa.grid_dec.to_array
     @aa.profile_func
     def image_2d_from(
@@ -509,62 +514,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             apply these operations to the images, which may have the `operated_only` input passed to them. This input
             therefore is used to pass the `operated_only` input to these methods.
         """
-
-        if isinstance(grid.over_sampling, aa.OverSamplingUniform):
-            return self._image_2d_via_over_sampling_uniform_from(
-                grid=grid, operated_only=operated_only
-            )
-
         return sum(self.image_2d_list_from(grid=grid, operated_only=operated_only))
-
-    def _image_2d_via_over_sampling_uniform_from(
-        self,
-        grid: aa.type.Grid2DLike,
-        operated_only: Optional[bool] = None,
-    ) -> List[aa.Array2D]:
-        """
-        Returns a list of the 2D images for each plane from a 2D grid of Cartesian (y,x) coordinates.
-
-        The image of each plane is computed by summing the images of all galaxies in that plane. If a plane has no
-        galaxies, or if the galaxies in a plane has no light profiles, a numpy array of zeros is returned.
-
-        For example, if the tracer's planes contain galaxies at redshifts z=0.5, z=1.0 and z=2.0, and the galaxies
-        at redshifts z=0.5 and z=1.0 have light and mass profiles, the returned list of images will be the image of the
-        galaxies at z=0.5 and z=1.0, where the image at redshift z=1.0 will include the lensing effects of the galaxies
-        at z=0.5. The image at redshift z=2.0 will be a numpy array of zeros.
-
-        The images output by this function do not include instrument operations, such as PSF convolution (for imaging
-        data) or a Fourier transform (for interferometer data).
-
-        Inherited methods in the `autogalaxy.operate.image` package can apply these operations to the images.
-        These functions may have the `operated_only` input passed to them, which is why this function includes
-        the `operated_only` input.
-
-        If the `operated_only` input is included, the function omits light profiles which are parents of
-        the `LightProfileOperated` object, which signifies that the light profile represents emission that has
-        already had the instrument operations (e.g. PSF convolution, a Fourier transform) applied to it and therefore
-        that operation is not performed again.
-
-        See the `autogalaxy.profiles.light` package for details of how images are computed from a light
-        profile.
-
-        Parameters
-        ----------
-        grid
-            The 2D (y, x) coordinates where values of the image are evaluated.
-        operated_only
-            The returned list from this function contains all light profile images, and they are never operated on
-            (e.g. via the imaging PSF). However, inherited methods in the `autogalaxy.operate.image` package can
-            apply these operations to the images, which may have the `operated_only` input passed to them. This input
-            therefore is used to pass the `operated_only` input to these methods.
-        """
-
-        grid_input = grid.over_sampler.over_sampled_grid
-        grid_input.over_sampling = None
-
-        image_2d = self.image_2d_from(grid=grid_input, operated_only=operated_only)
-
-        return grid.over_sampler.binned_array_2d_from(array=image_2d)
 
     def image_2d_via_input_plane_image_from(
         self,
@@ -668,6 +618,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             mask=grid.mask,
         )
 
+    @over_sample
     def galaxy_image_2d_dict_from(
         self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
     ) -> Dict[ag.Galaxy, np.ndarray]:
@@ -693,13 +644,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         A dictionary associated every galaxy in the tracer with its corresponding 2D image.
         """
 
-        if isinstance(grid.over_sampling, aa.OverSamplingUniform):
-            grid_input = grid.over_sampler.over_sampled_grid
-            grid_input.over_sampling = None
-
         galaxy_image_2d_dict = dict()
 
-        traced_grid_list = self.traced_grid_2d_list_from(grid=grid_input)
+        traced_grid_list = self.traced_grid_2d_list_from(grid=grid)
 
         for plane_index, galaxies in enumerate(self.planes):
             image_2d_list = [
@@ -707,11 +654,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                     grid=traced_grid_list[plane_index], operated_only=operated_only
                 )
                 for galaxy in galaxies
-            ]
-
-            image_2d_list = [
-                grid.over_sampler.binned_array_2d_from(array=image_2d)
-                for image_2d in image_2d_list
             ]
 
             for galaxy_index, galaxy in enumerate(galaxies):

@@ -688,7 +688,7 @@ def test__subtracted_image_of_galaxies_dict(masked_imaging_7x7):
     )
 
 
-def test__model_images_of_planes_list(masked_imaging_7x7):
+def test__model_images_of_planes_list(masked_imaging_7x7_sub_2):
 
     g0 = al.Galaxy(
         redshift=0.5,
@@ -710,7 +710,7 @@ def test__model_images_of_planes_list(masked_imaging_7x7):
         galaxies=[g0, g1_linear, galaxy_pix_0, galaxy_pix_1]
     )
 
-    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer, settings_inversion=al.SettingsInversion(use_w_tilde=False))
+    fit = al.FitImaging(dataset=masked_imaging_7x7_sub_2, tracer=tracer, settings_inversion=al.SettingsInversion(use_w_tilde=False))
 
     assert fit.model_images_of_planes_list[0] == pytest.approx(
         fit.galaxy_model_image_dict[g0], 1.0e-4
@@ -724,8 +724,10 @@ def test__model_images_of_planes_list(masked_imaging_7x7):
         1.0e-4,
     )
 
+    assert fit.model_images_of_planes_list[2][0] == pytest.approx(1.56110288, 1.0e-4)
 
-def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur):
+
+def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur, masked_imaging_7x7_no_blur_sub_2):
 
     g0 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
 
@@ -740,6 +742,10 @@ def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur):
     assert fit.subtracted_images_of_planes_list[0].slim[0] == pytest.approx(0.200638, 1.0e-4)
     assert fit.subtracted_images_of_planes_list[1].slim[0] == pytest.approx(0.360511, 1.0e-4)
     assert fit.subtracted_images_of_planes_list[2].slim[0] == pytest.approx(0.520383, 1.0e-4)
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur_sub_2, tracer=tracer)
+
+    assert fit.subtracted_images_of_planes_list[2].slim[0] == pytest.approx(0.475542485138, 1.0e-4)
 
     g0 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
 
