@@ -24,6 +24,9 @@ except ModuleNotFoundError:
 
 
 class AnalysisPoint(AgAnalysis, AnalysisLens):
+
+    Result = ResultPoint
+
     def __init__(
         self,
         point_dict: PointDict,
@@ -97,21 +100,6 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         tracer = self.tracer_via_instance_from(instance=instance)
 
         visualizer = Visualizer(visualize_path=paths.image_path)
-
-    def make_result(
-        self,
-        samples_summary: af.SamplesSummary,
-        paths: af.AbstractPaths,
-        samples: Optional[af.SamplesPDF] = None,
-        search_internal: Optional[object] = None,
-    ):
-        return ResultPoint(
-            samples_summary=samples_summary,
-            paths=paths,
-            samples=samples,
-            search_internal=search_internal,
-            analysis=self,
-        )
 
     def save_attributes(self, paths: af.DirectoryPaths):
         self.point_dict.output_to_json(
