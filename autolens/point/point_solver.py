@@ -232,8 +232,8 @@ class AbstractPointSolver:
         )
 
         grid_within_distance_of_centre = grid_within_distance(
-            distances_1d=source_plane_distances,
-            grid_slim=grid,
+            distances_1d=np.asarray(source_plane_distances),
+            grid_slim=np.asarray(grid),
             within_distance=distance,
         )
 

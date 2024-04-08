@@ -150,18 +150,20 @@ def make_adapt_images_7x7():
 
 
 def make_analysis_imaging_7x7():
-    return al.AnalysisImaging(
+    analysis = al.AnalysisImaging(
         dataset=make_masked_imaging_7x7(),
         settings_inversion=aa.SettingsInversion(use_w_tilde=False),
-        adapt_images=make_adapt_images_7x7(),
     )
+    analysis._adapt_images = make_adapt_images_7x7()
+    return analysis
 
 
 def make_analysis_interferometer_7():
-    return al.AnalysisInterferometer(
-        dataset=make_interferometer_7(), adapt_images=make_adapt_images_7x7()
+    analysis = al.AnalysisInterferometer(
+        dataset=make_interferometer_7(),
     )
-
+    analysis._adapt_images = make_adapt_images_7x7()
+    return analysis
 
 def make_analysis_point_x2():
     return al.AnalysisPoint(
