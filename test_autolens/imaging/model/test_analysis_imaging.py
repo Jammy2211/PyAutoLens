@@ -19,13 +19,6 @@ def test__make_result__result_imaging_is_returned(masked_imaging_7x7):
 
     analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
 
-    def modify_after_fit(
-        paths: af.DirectoryPaths, model: af.AbstractPriorModel, result: af.Result
-    ):
-        pass
-
-    analysis.modify_after_fit = modify_after_fit
-
     search = al.m.MockSearch(name="test_search")
 
     result = search.fit(model=model, analysis=analysis)

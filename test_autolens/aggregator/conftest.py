@@ -66,7 +66,6 @@ def make_model():
 
 @pytest.fixture(name="samples")
 def make_samples(model):
-
     parameters = [model.prior_count * [1.0], model.prior_count * [10.0]]
 
     sample_list = Sample.from_lists(

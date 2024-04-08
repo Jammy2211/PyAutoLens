@@ -365,7 +365,7 @@ class AnalysisInterferometer(AnalysisDataset):
             paths=paths,
             samples=samples,
             analysis=self,
-            search_internal=search_internal
+            search_internal=search_internal,
         )
 
     def save_attributes(self, paths: af.DirectoryPaths):

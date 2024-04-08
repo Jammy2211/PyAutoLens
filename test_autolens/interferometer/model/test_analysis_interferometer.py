@@ -15,13 +15,6 @@ def test__make_result__result_interferometer_is_returned(interferometer_7):
 
     analysis = al.AnalysisInterferometer(dataset=interferometer_7)
 
-    def modify_after_fit(
-        paths: af.DirectoryPaths, model: af.AbstractPriorModel, result: af.Result
-    ):
-        pass
-
-    analysis.modify_after_fit = modify_after_fit
-
     search = al.m.MockSearch(name="test_search")
 
     result = search.fit(model=model, analysis=analysis)

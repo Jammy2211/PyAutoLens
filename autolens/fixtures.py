@@ -165,6 +165,7 @@ def make_analysis_interferometer_7():
     analysis._adapt_images = make_adapt_images_7x7()
     return analysis
 
+
 def make_analysis_point_x2():
     return al.AnalysisPoint(
         point_dict=make_point_dict(),
