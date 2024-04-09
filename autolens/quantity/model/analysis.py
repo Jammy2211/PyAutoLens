@@ -10,7 +10,6 @@ from autolens.quantity.fit_quantity import FitQuantity
 
 
 class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLens):
-
     Result = ResultQuantity
     Visualizer = VisualizerQuantity
 

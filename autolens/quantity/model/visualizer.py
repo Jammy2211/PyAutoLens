@@ -55,5 +55,7 @@ class VisualizerQuantity(af.Visualizer):
 
         plotter_interface = PlotterInterface(image_path=paths.image_path)
         plotter_interface.tracer(
-            tracer=fit.tracer, grid=analysis.dataset.grid, during_analysis=during_analysis
+            tracer=fit.tracer,
+            grid=analysis.dataset.grid,
+            during_analysis=during_analysis,
         )
