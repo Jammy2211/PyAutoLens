@@ -98,7 +98,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
     def visualize(self, paths, instance, during_analysis):
         tracer = self.tracer_via_instance_from(instance=instance)
 
-        plotter_interface = PlotterInterface(output_path=paths.image_path)
+        plotter_interface = PlotterInterface(image_path=paths.image_path)
 
     def save_attributes(self, paths: af.DirectoryPaths):
         self.point_dict.output_to_json(

@@ -28,7 +28,7 @@ class VisualizerInterferometer(af.Visualizer):
             the imaging data.
         """
 
-        plotter_interface = PlotterInterfaceInterferometer(output_path=paths.image_path)
+        plotter_interface = PlotterInterfaceInterferometer(image_path=paths.image_path)
 
         plotter_interface.interferometer(dataset=analysis.interferometer)
 
@@ -84,7 +84,7 @@ class VisualizerInterferometer(af.Visualizer):
 
         if analysis.positions_likelihood is not None:
             analysis.positions_likelihood.output_positions_info(
-                output_path=paths.output_path, tracer=fit.tracer
+                image_path=paths.image_path, tracer=fit.tracer
             )
 
         if fit.inversion is not None:
@@ -93,7 +93,7 @@ class VisualizerInterferometer(af.Visualizer):
             except exc.InversionException:
                 return
 
-        plotter_interface = PlotterInterfaceInterferometer(output_path=paths.image_path)
+        plotter_interface = PlotterInterfaceInterferometer(image_path=paths.image_path)
 
         try:
             plotter_interface.fit_interferometer(

@@ -21,7 +21,7 @@ def test__fit_imaging(
     if os.path.exists(plot_path):
         shutil.rmtree(plot_path)
 
-    plotter_interface = PlotterInterfaceImaging(output_path=plot_path)
+    plotter_interface = PlotterInterfaceImaging(image_path=plot_path)
 
     plotter_interface.fit_imaging(
         fit=fit_imaging_x2_plane_inversion_7x7, during_analysis=False
