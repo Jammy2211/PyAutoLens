@@ -12,6 +12,7 @@ from autoarray.exc import PixelizationException
 from autolens.analysis.analysis.dataset import AnalysisDataset
 from autolens.analysis.preloads import Preloads
 from autolens.imaging.model.result import ResultImaging
+from autolens.imaging.model.visualizer import VisualizerImaging
 from autolens.imaging.fit_imaging import FitImaging
 
 from autolens import exc
@@ -24,6 +25,7 @@ logger.setLevel(level="INFO")
 class AnalysisImaging(AnalysisDataset):
 
     Result = ResultImaging
+    Visualizer = VisualizerImaging
 
     def modify_before_fit(self, paths: af.DirectoryPaths, model: af.Collection):
         """

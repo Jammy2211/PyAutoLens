@@ -19,7 +19,7 @@ def test__fit_interferometer(
 ):
     plotter_interface = PlotterInterfaceInterferometer(output_path=plot_path)
 
-    plotter_interface.visualize_fit_interferometer(
+    plotter_interface.fit_interferometer(
         fit=fit_interferometer_x2_plane_7x7, during_analysis=True
     )
 

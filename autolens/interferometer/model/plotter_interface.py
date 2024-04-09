@@ -14,10 +14,10 @@ from autolens.analysis.plotter_interface import plot_setting
 class PlotterInterfaceInterferometer(PlotterInterface):
 
     @property
-    def imaging(self):
+    def interferometer(self):
         return AgPlotterInterfaceInterferometer.interferometer
 
-    def visualize_fit_interferometer(
+    def fit_interferometer(
         self,
         fit: FitInterferometer,
         during_analysis: bool,
