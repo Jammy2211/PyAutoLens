@@ -190,7 +190,7 @@ class AnalysisImaging(AnalysisDataset):
             the imaging data.
         """
 
-        plotter_interface = PlotterInterfaceImaging(visualize_path=paths.image_path)
+        plotter_interface = PlotterInterfaceImaging(output_path=paths.image_path)
 
         plotter_interface.visualize_imaging(dataset=self.dataset)
 
@@ -254,7 +254,7 @@ class AnalysisImaging(AnalysisDataset):
             except exc.InversionException:
                 return
 
-        plotter_interface = PlotterInterfaceImaging(visualize_path=paths.image_path)
+        plotter_interface = PlotterInterfaceImaging(output_path=paths.image_path)
 
         try:
             plotter_interface.visualize_fit_imaging(fit=fit, during_analysis=during_analysis)

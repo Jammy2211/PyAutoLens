@@ -17,7 +17,7 @@ def test__visualize_fit_interferometer__uses_configs(
     plot_path,
     plot_patch,
 ):
-    plotter_interface = PlotterInterfaceInterferometer(visualize_path=plot_path)
+    plotter_interface = PlotterInterfaceInterferometer(output_path=plot_path)
 
     plotter_interface.visualize_fit_interferometer(
         fit=fit_interferometer_x2_plane_7x7, during_analysis=True

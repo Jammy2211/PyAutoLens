@@ -115,12 +115,12 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLens):
 
         fit = self.fit_quantity_for_instance(instance=instance)
 
-        plotter_interface = PlotterInterfaceQuantity(visualize_path=paths.image_path)
+        plotter_interface = PlotterInterfaceQuantity(output_path=paths.image_path)
         plotter_interface.fit_quantity(
             fit=fit, fit_quanaity_plotter_cls=FitQuantityPlotter
         )
 
-        plotter_interface = PlotterInterface(visualize_path=paths.image_path)
+        plotter_interface = PlotterInterface(output_path=paths.image_path)
         plotter_interface.visualize_tracer(
             tracer=fit.tracer, grid=self.dataset.grid, during_analysis=during_analysis
         )

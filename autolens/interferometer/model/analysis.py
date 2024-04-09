@@ -245,7 +245,7 @@ class AnalysisInterferometer(AnalysisDataset):
             the imaging data.
         """
 
-        plotter_interface = PlotterInterfaceInterferometer(visualize_path=paths.image_path)
+        plotter_interface = PlotterInterfaceInterferometer(output_path=paths.image_path)
 
         plotter_interface.visualize_interferometer(dataset=self.interferometer)
 
@@ -304,7 +304,7 @@ class AnalysisInterferometer(AnalysisDataset):
             except exc.InversionException:
                 return
 
-        plotter_interface = PlotterInterfaceInterferometer(visualize_path=paths.image_path)
+        plotter_interface = PlotterInterfaceInterferometer(output_path=paths.image_path)
 
         try:
             plotter_interface.visualize_fit_interferometer(

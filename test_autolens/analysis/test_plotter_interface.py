@@ -20,7 +20,7 @@ def test__visualizes_tracer__uses_configs(
     if os.path.exists(plot_path):
         shutil.rmtree(plot_path)
 
-    plotter_interface = vis.PlotterInterface(visualize_path=plot_path)
+    plotter_interface = vis.PlotterInterface(output_path=plot_path)
 
     plotter_interface.visualize_tracer(
         tracer=tracer_x2_plane_7x7, grid=masked_imaging_7x7.grid, during_analysis=False
@@ -50,7 +50,7 @@ def test__visualizes_image_with_positions__uses_configs(
     if os.path.exists(plot_path):
         shutil.rmtree(plot_path)
 
-    plotter_interface = vis.PlotterInterface(visualize_path=plot_path)
+    plotter_interface = vis.PlotterInterface(output_path=plot_path)
 
     plotter_interface.visualize_image_with_positions(image=image_7x7, positions=positions_x2)
 

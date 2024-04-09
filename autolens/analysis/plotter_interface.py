@@ -23,7 +23,7 @@ class PlotterInterface(AgPlotterInterface):
 
     Parameters
     ----------
-    visualize_path
+    output_path
         The path on the hard-disk to the `image` folder of the non-linear searches results.
     """
 
@@ -33,8 +33,8 @@ class PlotterInterface(AgPlotterInterface):
         """
         Visualizes a `Tracer` object.
 
-        Images are output to the `image` folder of the `visualize_path` in a subfolder called `tracer`. When
-        used with a non-linear search the `visualize_path` points to the search's results folder and this function
+        Images are output to the `image` folder of the `output_path` in a subfolder called `tracer`. When
+        used with a non-linear search the `output_path` points to the search's results folder and this function
         visualizes the maximum log likelihood `Tracer` inferred by the search so far.
 
         Visualization includes individual images of attributes of the tracer (e.g. its image, convergence, deflection
@@ -153,8 +153,8 @@ class PlotterInterface(AgPlotterInterface):
         Visualizes the positions of a model-fit, where these positions are used to resample lens models where
         the positions to do trace within an input threshold of one another in the source-plane.
 
-        Images are output to the `image` folder of the `visualize_path` in a subfolder called `positions`. When
-        used with a non-linear search the `visualize_path` points to the search's results folder.
+        Images are output to the `image` folder of the `output_path` in a subfolder called `positions`. When
+        used with a non-linear search the `output_path` points to the search's results folder.
 
         The visualization is an image of the strong lens with the positions overlaid.
 
@@ -191,8 +191,8 @@ class PlotterInterface(AgPlotterInterface):
         """
         Visualizes the adapt-images and adapt image inferred by a model-fit.
 
-        Images are output to the `image` folder of the `visualize_path` in a subfolder called `adapt`. When
-        used with a non-linear search the `visualize_path` points to the search's results folder.
+        Images are output to the `image` folder of the `output_path` in a subfolder called `adapt`. When
+        used with a non-linear search the `output_path` points to the search's results folder.
 
         Visualization includes individual images of attributes of the adapt image (e.g. the adapt image) and
         a subplot of all galaxy images on the same figure.

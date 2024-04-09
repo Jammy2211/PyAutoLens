@@ -19,8 +19,8 @@ class PlotterInterfaceInterferometer(PlotterInterface):
         """
         Visualizes a `FitInterferometer` object, which fits an interferometer dataset.
 
-        Images are output to the `image` folder of the `visualize_path` in a subfolder called `fit`. When
-        used with a non-linear search the `visualize_path` points to the search's results folder.
+        Images are output to the `image` folder of the `output_path` in a subfolder called `fit`. When
+        used with a non-linear search the `output_path` points to the search's results folder.
 
         Visualization includes individual images of attributes of the `FitInterferometer` (e.g. the model data,
         residual map) and a subplot of all `FitInterferometer`'s images on the same figure.
