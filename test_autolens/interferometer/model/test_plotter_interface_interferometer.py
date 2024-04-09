@@ -11,7 +11,7 @@ def make_plotter_interface_plotter_setup():
     return path.join("{}".format(directory), "files")
 
 
-def test__visualize_fit_interferometer__uses_configs(
+def test__fit_interferometer(
     fit_interferometer_x2_plane_7x7,
     include_2d_all,
     plot_path,

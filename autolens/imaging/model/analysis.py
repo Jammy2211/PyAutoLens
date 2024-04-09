@@ -195,13 +195,13 @@ class AnalysisImaging(AnalysisDataset):
         plotter_interface.visualize_imaging(dataset=self.dataset)
 
         if self.positions_likelihood is not None:
-            plotter_interface.visualize_image_with_positions(
+            plotter_interface.image_with_positions(
                 image=self.dataset.data,
                 positions=self.positions_likelihood.positions,
             )
 
         if self.adapt_images is not None:
-            plotter_interface.visualize_adapt_images(
+            plotter_interface.adapt_images(
                 adapt_images=self.adapt_images
             )
 
@@ -257,7 +257,7 @@ class AnalysisImaging(AnalysisDataset):
         plotter_interface = PlotterInterfaceImaging(output_path=paths.image_path)
 
         try:
-            plotter_interface.visualize_fit_imaging(fit=fit, during_analysis=during_analysis)
+            plotter_interface.fit_imaging(fit=fit, during_analysis=during_analysis)
         except exc.InversionException:
             pass
 
@@ -271,7 +271,7 @@ class AnalysisImaging(AnalysisDataset):
             shape_native=shape_native
         )
 
-        plotter_interface.visualize_tracer(
+        plotter_interface.tracer(
             tracer=tracer, grid=grid, during_analysis=during_analysis
         )
         plotter_interface.visualize_galaxies(

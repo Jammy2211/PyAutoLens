@@ -250,13 +250,13 @@ class AnalysisInterferometer(AnalysisDataset):
         plotter_interface.visualize_interferometer(dataset=self.interferometer)
 
         if self.positions_likelihood is not None:
-            plotter_interface.visualize_image_with_positions(
+            plotter_interface.image_with_positions(
                 image=self.dataset.dirty_image,
                 positions=self.positions_likelihood.positions,
             )
 
         if self.adapt_images is not None:
-            plotter_interface.visualize_adapt_images(adapt_images=self.adapt_images)
+            plotter_interface.adapt_images(adapt_images=self.adapt_images)
 
     def visualize(self, paths: af.DirectoryPaths, instance, during_analysis):
         """
@@ -315,7 +315,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
         tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
-        plotter_interface.visualize_tracer(
+        plotter_interface.tracer(
             tracer=tracer, grid=fit.grid, during_analysis=during_analysis
         )
         plotter_interface.visualize_galaxies(

@@ -14,7 +14,7 @@ def make_plotter_interface_plotter_setup():
     return path.join("{}".format(directory), "files")
 
 
-def test__visualizes_tracer__uses_configs(
+def test__tracer(
     masked_imaging_7x7, tracer_x2_plane_7x7, include_2d_all, plot_path, plot_patch
 ):
     if os.path.exists(plot_path):
@@ -22,7 +22,7 @@ def test__visualizes_tracer__uses_configs(
 
     plotter_interface = vis.PlotterInterface(output_path=plot_path)
 
-    plotter_interface.visualize_tracer(
+    plotter_interface.tracer(
         tracer=tracer_x2_plane_7x7, grid=masked_imaging_7x7.grid, during_analysis=False
     )
 
@@ -44,7 +44,7 @@ def test__visualizes_tracer__uses_configs(
     assert convergence.shape == (7, 7)
 
 
-def test__visualizes_image_with_positions__uses_configs(
+def test__image_with_positions(
     image_7x7, positions_x2, include_2d_all, plot_path, plot_patch
 ):
     if os.path.exists(plot_path):
@@ -52,7 +52,7 @@ def test__visualizes_image_with_positions__uses_configs(
 
     plotter_interface = vis.PlotterInterface(output_path=plot_path)
 
-    plotter_interface.visualize_image_with_positions(image=image_7x7, positions=positions_x2)
+    plotter_interface.image_with_positions(image=image_7x7, positions=positions_x2)
 
     plot_path = path.join(plot_path, "positions")
 

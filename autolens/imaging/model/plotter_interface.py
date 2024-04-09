@@ -1,5 +1,7 @@
 from os import path
 
+from autogalaxy.imaging.model.plotter_interface import PlotterInterfaceImaging as AgPlotterInterfaceImaging
+
 from autolens.analysis.plotter_interface import PlotterInterface
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.imaging.plot.fit_imaging_plotters import FitImagingPlotter
@@ -8,7 +10,12 @@ from autolens.analysis.plotter_interface import plot_setting
 
 
 class PlotterInterfaceImaging(PlotterInterface):
-    def visualize_fit_imaging(
+
+    @property
+    def imaging(self):
+        return AgPlotterInterfaceImaging.imaging
+
+    def fit_imaging(
         self, fit: FitImaging, during_analysis: bool, subfolders: str = "fit_dataset"
     ):
         """

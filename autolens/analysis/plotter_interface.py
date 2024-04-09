@@ -1,7 +1,6 @@
 from os import path
 
 import autoarray as aa
-import autogalaxy as ag
 import autogalaxy.plot as aplt
 
 from autogalaxy.analysis.plotter_interface import plot_setting
@@ -27,7 +26,7 @@ class PlotterInterface(AgPlotterInterface):
         The path on the hard-disk to the `image` folder of the non-linear searches results.
     """
 
-    def visualize_tracer(
+    def tracer(
         self, tracer: Tracer, grid: aa.type.Grid2DLike, during_analysis: bool
     ):
         """
@@ -146,7 +145,7 @@ class PlotterInterface(AgPlotterInterface):
                 magnification=True,
             )
 
-    def visualize_image_with_positions(
+    def image_with_positions(
         self, image: aa.Array2D, positions: aa.Grid2DIrregular
     ):
         """
@@ -186,39 +185,3 @@ class PlotterInterface(AgPlotterInterface):
             image_plotter.set_filename("image_with_positions")
             if should_plot("image_with_positions"):
                 image_plotter.figure_2d()
-
-    def visualize_adapt_images(self, adapt_images: ag.AdaptImages):
-        """
-        Visualizes the adapt-images and adapt image inferred by a model-fit.
-
-        Images are output to the `image` folder of the `output_path` in a subfolder called `adapt`. When
-        used with a non-linear search the `output_path` points to the search's results folder.
-
-        Visualization includes individual images of attributes of the adapt image (e.g. the adapt image) and
-        a subplot of all galaxy images on the same figure.
-
-        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under the
-        [adapt] header.
-
-        Parameters
-        ----------
-        adapt_images
-            The adapt images (e.g. overall model image, individual galaxy images).
-        """
-
-        def should_plot(name):
-            return plot_setting(section="adapt", name=name)
-
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="adapt")
-
-        adapt_plotter = aplt.AdaptPlotter(
-            mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
-        )
-
-        if should_plot("model_image"):
-            adapt_plotter.figure_model_image(model_image=adapt_images.model_image)
-
-        if should_plot("images_of_galaxies"):
-            adapt_plotter.subplot_images_of_galaxies(
-                adapt_galaxy_name_image_dict=adapt_images.galaxy_image_dict
-            )
