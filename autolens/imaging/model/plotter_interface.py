@@ -1,13 +1,13 @@
 from os import path
 
-from autolens.analysis.visualizer import Visualizer
+from autolens.analysis.plotter_interface import PlotterInterface
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.imaging.plot.fit_imaging_plotters import FitImagingPlotter
 
-from autolens.analysis.visualizer import plot_setting
+from autolens.analysis.plotter_interface import plot_setting
 
 
-class VisualizerImaging(Visualizer):
+class PlotterInterfaceImaging(PlotterInterface):
     def visualize_fit_imaging(
         self, fit: FitImaging, during_analysis: bool, subfolders: str = "fit_dataset"
     ):
@@ -21,7 +21,7 @@ class VisualizerImaging(Visualizer):
         Visualization includes individual images of attributes of the `FitImaging` (e.g. the model data, residual map)
         and a subplot of all `FitImaging`'s images on the same figure.
 
-        The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
+        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under the
         [fit] header.
 
         Parameters

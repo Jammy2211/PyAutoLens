@@ -4,22 +4,22 @@ import autoarray as aa
 import autogalaxy as ag
 import autogalaxy.plot as aplt
 
-from autogalaxy.analysis.visualizer import plot_setting
+from autogalaxy.analysis.plotter_interface import plot_setting
 
-from autogalaxy.analysis.visualizer import Visualizer as AgVisualizer
+from autogalaxy.analysis.plotter_interface import PlotterInterface as AgPlotterInterface
 
 from autolens.lens.tracer import Tracer
 from autolens.lens.plot.tracer_plotters import TracerPlotter
 
 
-class Visualizer(AgVisualizer):
+class PlotterInterface(AgPlotterInterface):
     """
     Visualizes the maximum log likelihood model of a model-fit, including components of the model and fit objects.
 
-    The methods of the `Visualizer` are called throughout a non-linear search using the `Analysis`
+    The methods of the `PlotterInterface` are called throughout a non-linear search using the `Analysis`
     classes `visualize` method.
 
-    The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini`.
+    The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml`.
 
     Parameters
     ----------
@@ -40,7 +40,7 @@ class Visualizer(AgVisualizer):
         Visualization includes individual images of attributes of the tracer (e.g. its image, convergence, deflection
         angles) and a subplot of all these attributes on the same figure.
 
-        The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
+        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under the
         [tracer] header.
 
         Parameters
@@ -158,7 +158,7 @@ class Visualizer(AgVisualizer):
 
         The visualization is an image of the strong lens with the positions overlaid.
 
-        The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
+        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under the
         [tracer] header.
 
         Parameters
@@ -197,7 +197,7 @@ class Visualizer(AgVisualizer):
         Visualization includes individual images of attributes of the adapt image (e.g. the adapt image) and
         a subplot of all galaxy images on the same figure.
 
-        The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
+        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under the
         [adapt] header.
 
         Parameters

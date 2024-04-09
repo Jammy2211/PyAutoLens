@@ -4,9 +4,9 @@ from typing import Optional
 import autofit as af
 import autogalaxy as ag
 
-from autogalaxy.quantity.model.visualizer import VisualizerQuantity
+from autogalaxy.quantity.model.plotter_interface import PlotterInterfaceQuantity
 
-from autolens.analysis.visualizer import Visualizer
+from autolens.analysis.plotter_interface import PlotterInterface
 from autolens.analysis.analysis.lens import AnalysisLens
 from autogalaxy.quantity.plot.fit_quantity_plotters import FitQuantityPlotter
 from autolens.quantity.model.result import ResultQuantity
@@ -95,7 +95,7 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLens):
         - Images of the best-fit `FitQuantity`, including the model-image, residuals and chi-squared of its fit to
         the imaging data.
 
-        The images output by this function are customized using the file `config/visualize/plots.ini`.
+        The images output by this function are customized using the file `config/visualize/plots.yaml`.
 
         Parameters
         ----------
@@ -115,13 +115,13 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLens):
 
         fit = self.fit_quantity_for_instance(instance=instance)
 
-        visualizer = VisualizerQuantity(visualize_path=paths.image_path)
-        visualizer.visualize_fit_quantity(
+        plotter_interface = PlotterInterfaceQuantity(visualize_path=paths.image_path)
+        plotter_interface.fit_quantity(
             fit=fit, fit_quanaity_plotter_cls=FitQuantityPlotter
         )
 
-        visualizer = Visualizer(visualize_path=paths.image_path)
-        visualizer.visualize_tracer(
+        plotter_interface = PlotterInterface(visualize_path=paths.image_path)
+        plotter_interface.visualize_tracer(
             tracer=fit.tracer, grid=self.dataset.grid, during_analysis=during_analysis
         )
 

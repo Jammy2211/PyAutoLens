@@ -15,7 +15,7 @@ from autolens.analysis.preloads import Preloads
 from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
 from autolens.interferometer.model.result import ResultInterferometer
-from autolens.interferometer.model.visualizer import VisualizerInterferometer
+from autolens.interferometer.model.plotter_interface import PlotterInterfaceInterferometer
 from autolens.interferometer.fit_interferometer import FitInterferometer
 
 from autolens import exc
@@ -245,18 +245,18 @@ class AnalysisInterferometer(AnalysisDataset):
             the imaging data.
         """
 
-        visualizer = VisualizerInterferometer(visualize_path=paths.image_path)
+        plotter_interface = PlotterInterfaceInterferometer(visualize_path=paths.image_path)
 
-        visualizer.visualize_interferometer(dataset=self.interferometer)
+        plotter_interface.visualize_interferometer(dataset=self.interferometer)
 
         if self.positions_likelihood is not None:
-            visualizer.visualize_image_with_positions(
+            plotter_interface.visualize_image_with_positions(
                 image=self.dataset.dirty_image,
                 positions=self.positions_likelihood.positions,
             )
 
         if self.adapt_images is not None:
-            visualizer.visualize_adapt_images(adapt_images=self.adapt_images)
+            plotter_interface.visualize_adapt_images(adapt_images=self.adapt_images)
 
     def visualize(self, paths: af.DirectoryPaths, instance, during_analysis):
         """
@@ -277,7 +277,7 @@ class AnalysisInterferometer(AnalysisDataset):
         - If adapt features are used to scale the noise, a `FitInterferometer` with these features turned off may be
           output, to indicate how much these features are altering the dataset.
 
-        The images output by this function are customized using the file `config/visualize/plots.ini`.
+        The images output by this function are customized using the file `config/visualize/plots.yaml`.
 
         Parameters
         ----------
@@ -304,10 +304,10 @@ class AnalysisInterferometer(AnalysisDataset):
             except exc.InversionException:
                 return
 
-        visualizer = VisualizerInterferometer(visualize_path=paths.image_path)
+        plotter_interface = PlotterInterfaceInterferometer(visualize_path=paths.image_path)
 
         try:
-            visualizer.visualize_fit_interferometer(
+            plotter_interface.visualize_fit_interferometer(
                 fit=fit, during_analysis=during_analysis
             )
         except exc.InversionException:
@@ -315,15 +315,15 @@ class AnalysisInterferometer(AnalysisDataset):
 
         tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
-        visualizer.visualize_tracer(
+        plotter_interface.visualize_tracer(
             tracer=tracer, grid=fit.grid, during_analysis=during_analysis
         )
-        visualizer.visualize_galaxies(
+        plotter_interface.visualize_galaxies(
             galaxies=tracer.galaxies, grid=fit.grid, during_analysis=during_analysis
         )
         if fit.inversion is not None:
             try:
-                visualizer.visualize_inversion(
+                plotter_interface.visualize_inversion(
                     inversion=fit.inversion, during_analysis=during_analysis
                 )
             except IndexError:

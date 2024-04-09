@@ -4,12 +4,12 @@ from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.interferometer.plot.fit_interferometer_plotters import (
     FitInterferometerPlotter,
 )
-from autolens.analysis.visualizer import Visualizer
+from autolens.analysis.plotter_interface import PlotterInterface
 
-from autolens.analysis.visualizer import plot_setting
+from autolens.analysis.plotter_interface import plot_setting
 
 
-class VisualizerInterferometer(Visualizer):
+class PlotterInterfaceInterferometer(PlotterInterface):
     def visualize_fit_interferometer(
         self,
         fit: FitInterferometer,
@@ -25,7 +25,7 @@ class VisualizerInterferometer(Visualizer):
         Visualization includes individual images of attributes of the `FitInterferometer` (e.g. the model data,
         residual map) and a subplot of all `FitInterferometer`'s images on the same figure.
 
-        The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
+        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under the
         [fit] header.
 
         Parameters

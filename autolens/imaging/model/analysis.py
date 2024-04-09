@@ -12,7 +12,7 @@ from autoarray.exc import PixelizationException
 from autolens.analysis.analysis.dataset import AnalysisDataset
 from autolens.analysis.preloads import Preloads
 from autolens.imaging.model.result import ResultImaging
-from autolens.imaging.model.visualizer import VisualizerImaging
+from autolens.imaging.model.plotter_interface import PlotterInterfaceImaging
 from autolens.imaging.fit_imaging import FitImaging
 
 from autolens import exc
@@ -190,18 +190,18 @@ class AnalysisImaging(AnalysisDataset):
             the imaging data.
         """
 
-        visualizer = VisualizerImaging(visualize_path=paths.image_path)
+        plotter_interface = PlotterInterfaceImaging(visualize_path=paths.image_path)
 
-        visualizer.visualize_imaging(dataset=self.dataset)
+        plotter_interface.visualize_imaging(dataset=self.dataset)
 
         if self.positions_likelihood is not None:
-            visualizer.visualize_image_with_positions(
+            plotter_interface.visualize_image_with_positions(
                 image=self.dataset.data,
                 positions=self.positions_likelihood.positions,
             )
 
         if self.adapt_images is not None:
-            visualizer.visualize_adapt_images(
+            plotter_interface.visualize_adapt_images(
                 adapt_images=self.adapt_images
             )
 
@@ -226,7 +226,7 @@ class AnalysisImaging(AnalysisDataset):
         - The adapt-images of the model-fit showing how the galaxies are used to represent different galaxies in
           the dataset.
 
-        The images output by this function are customized using the file `config/visualize/plots.ini`.
+        The images output by this function are customized using the file `config/visualize/plots.yaml`.
 
         Parameters
         ----------
@@ -254,10 +254,10 @@ class AnalysisImaging(AnalysisDataset):
             except exc.InversionException:
                 return
 
-        visualizer = VisualizerImaging(visualize_path=paths.image_path)
+        plotter_interface = PlotterInterfaceImaging(visualize_path=paths.image_path)
 
         try:
-            visualizer.visualize_fit_imaging(fit=fit, during_analysis=during_analysis)
+            plotter_interface.visualize_fit_imaging(fit=fit, during_analysis=during_analysis)
         except exc.InversionException:
             pass
 
@@ -271,15 +271,15 @@ class AnalysisImaging(AnalysisDataset):
             shape_native=shape_native
         )
 
-        visualizer.visualize_tracer(
+        plotter_interface.visualize_tracer(
             tracer=tracer, grid=grid, during_analysis=during_analysis
         )
-        visualizer.visualize_galaxies(
+        plotter_interface.visualize_galaxies(
             galaxies=tracer.galaxies, grid=fit.grid, during_analysis=during_analysis
         )
         if fit.inversion is not None:
             if fit.inversion.has(cls=ag.AbstractMapper):
-                visualizer.visualize_inversion(
+                plotter_interface.visualize_inversion(
                     inversion=fit.inversion, during_analysis=during_analysis
                 )
                 

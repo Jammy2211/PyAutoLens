@@ -1,13 +1,13 @@
 from os import path
 
 import pytest
-from autolens.interferometer.model.visualizer import VisualizerInterferometer
+from autolens.interferometer.model.plotter_interface import PlotterInterfaceInterferometer
 
 directory = path.dirname(path.realpath(__file__))
 
 
 @pytest.fixture(name="plot_path")
-def make_visualizer_plotter_setup():
+def make_plotter_interface_plotter_setup():
     return path.join("{}".format(directory), "files")
 
 
@@ -17,9 +17,9 @@ def test__visualize_fit_interferometer__uses_configs(
     plot_path,
     plot_patch,
 ):
-    visualizer = VisualizerInterferometer(visualize_path=plot_path)
+    plotter_interface = PlotterInterfaceInterferometer(visualize_path=plot_path)
 
-    visualizer.visualize_fit_interferometer(
+    plotter_interface.visualize_fit_interferometer(
         fit=fit_interferometer_x2_plane_7x7, during_analysis=True
     )
 

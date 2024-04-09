@@ -4,13 +4,13 @@ from os import path
 
 import pytest
 import autolens as al
-from autolens.analysis import visualizer as vis
+from autolens.analysis import plotter_interface as vis
 
 directory = path.dirname(path.realpath(__file__))
 
 
 @pytest.fixture(name="plot_path")
-def make_visualizer_plotter_setup():
+def make_plotter_interface_plotter_setup():
     return path.join("{}".format(directory), "files")
 
 
@@ -20,9 +20,9 @@ def test__visualizes_tracer__uses_configs(
     if os.path.exists(plot_path):
         shutil.rmtree(plot_path)
 
-    visualizer = vis.Visualizer(visualize_path=plot_path)
+    plotter_interface = vis.PlotterInterface(visualize_path=plot_path)
 
-    visualizer.visualize_tracer(
+    plotter_interface.visualize_tracer(
         tracer=tracer_x2_plane_7x7, grid=masked_imaging_7x7.grid, during_analysis=False
     )
 
@@ -50,9 +50,9 @@ def test__visualizes_image_with_positions__uses_configs(
     if os.path.exists(plot_path):
         shutil.rmtree(plot_path)
 
-    visualizer = vis.Visualizer(visualize_path=plot_path)
+    plotter_interface = vis.PlotterInterface(visualize_path=plot_path)
 
-    visualizer.visualize_image_with_positions(image=image_7x7, positions=positions_x2)
+    plotter_interface.visualize_image_with_positions(image=image_7x7, positions=positions_x2)
 
     plot_path = path.join(plot_path, "positions")
 
