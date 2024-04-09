@@ -26,9 +26,7 @@ class PlotterInterface(AgPlotterInterface):
         The path on the hard-disk to the `image` folder of the non-linear searches results.
     """
 
-    def tracer(
-        self, tracer: Tracer, grid: aa.type.Grid2DLike, during_analysis: bool
-    ):
+    def tracer(self, tracer: Tracer, grid: aa.type.Grid2DLike, during_analysis: bool):
         """
         Visualizes a `Tracer` object.
 
@@ -145,9 +143,7 @@ class PlotterInterface(AgPlotterInterface):
                 magnification=True,
             )
 
-    def image_with_positions(
-        self, image: aa.Array2D, positions: aa.Grid2DIrregular
-    ):
+    def image_with_positions(self, image: aa.Array2D, positions: aa.Grid2DIrregular):
         """
         Visualizes the positions of a model-fit, where these positions are used to resample lens models where
         the positions to do trace within an input threshold of one another in the source-plane.

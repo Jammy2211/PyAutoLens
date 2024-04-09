@@ -1,7 +1,9 @@
 from os import path
 
 import pytest
-from autolens.interferometer.model.plotter_interface import PlotterInterfaceInterferometer
+from autolens.interferometer.model.plotter_interface import (
+    PlotterInterfaceInterferometer,
+)
 
 directory = path.dirname(path.realpath(__file__))
 

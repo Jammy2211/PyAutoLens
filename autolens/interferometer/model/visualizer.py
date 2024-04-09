@@ -7,7 +7,6 @@ from autogalaxy import exc
 
 
 class VisualizerInterferometer(af.Visualizer):
-
     @staticmethod
     def visualize_before_fit(
         analysis,
