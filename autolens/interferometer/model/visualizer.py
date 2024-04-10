@@ -84,7 +84,7 @@ class VisualizerInterferometer(af.Visualizer):
 
         if analysis.positions_likelihood is not None:
             analysis.positions_likelihood.output_positions_info(
-                image_path=paths.image_path, tracer=fit.tracer
+                image_path=paths.output_path, tracer=fit.tracer
             )
 
         if fit.inversion is not None:
