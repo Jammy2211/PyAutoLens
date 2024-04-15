@@ -85,7 +85,10 @@ class PlotterInterfaceImaging(PlotterInterface):
             fit_plotter.subplot_fit()
 
         if should_plot("subplot_fit_log10"):
-            fit_plotter.subplot_fit_log10()
+            try:
+                fit_plotter.subplot_fit_log10()
+            except ValueError:
+                pass
 
         if should_plot("subplot_of_planes"):
             fit_plotter.subplot_of_planes()
