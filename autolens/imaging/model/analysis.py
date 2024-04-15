@@ -25,6 +25,7 @@ logger.setLevel(level="INFO")
 class AnalysisImaging(AnalysisDataset):
 
     Result = ResultImaging
+    Visualizer = VisualizerImaging
 
     def modify_before_fit(self, paths: af.DirectoryPaths, model: af.Collection):
         """
@@ -174,115 +175,6 @@ class AnalysisImaging(AnalysisDataset):
             run_time_dict=run_time_dict,
         )
 
-    def visualize_before_fit(self, paths: af.DirectoryPaths, model: af.Collection):
-        """
-        PyAutoFit calls this function immediately before the non-linear search begins.
-
-        It visualizes objects which do not change throughout the model fit like the dataset.
-
-        Parameters
-        ----------
-        paths
-            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
-            visualization and the pickled objects used by the aggregator output by this function.
-        model
-            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
-            the imaging data.
-        """
-
-        visualizer = VisualizerImaging(visualize_path=paths.image_path)
-
-        visualizer.visualize_imaging(dataset=self.dataset)
-
-        if self.positions_likelihood is not None:
-            visualizer.visualize_image_with_positions(
-                image=self.dataset.data,
-                positions=self.positions_likelihood.positions,
-            )
-
-        if self.adapt_images is not None:
-            visualizer.visualize_adapt_images(
-                adapt_images=self.adapt_images
-            )
-
-    def visualize(
-        self,
-        paths: af.DirectoryPaths,
-        instance: af.ModelInstance,
-        during_analysis: bool,
-    ):
-        """
-        Output images of the maximum log likelihood model inferred by the model-fit. This function is called throughout
-        the non-linear search at regular intervals, and therefore provides on-the-fly visualization of how well the
-        model-fit is going.
-
-        The visualization performed by this function includes:
-
-        - Images of the best-fit `Tracer`, including the images of each of its galaxies.
-
-        - Images of the best-fit `FitImaging`, including the model-image, residuals and chi-squared of its fit to
-          the imaging data.
-
-        - The adapt-images of the model-fit showing how the galaxies are used to represent different galaxies in
-          the dataset.
-
-        The images output by this function are customized using the file `config/visualize/plots.ini`.
-
-        Parameters
-        ----------
-        paths
-            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
-            visualization, and the pickled objects used by the aggregator output by this function.
-        instance
-            An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
-            via a non-linear search).
-        during_analysis
-            If True the visualization is being performed midway through the non-linear search before it is finished,
-            which may change which images are output.
-        """
-
-        fit = self.fit_from(instance=instance)
-
-        if self.positions_likelihood is not None:
-            self.positions_likelihood.output_positions_info(
-                output_path=paths.output_path, tracer=fit.tracer
-            )
-
-        if fit.inversion is not None:
-            try:
-                fit.inversion.reconstruction
-            except exc.InversionException:
-                return
-
-        visualizer = VisualizerImaging(visualize_path=paths.image_path)
-
-        try:
-            visualizer.visualize_fit_imaging(fit=fit, during_analysis=during_analysis)
-        except exc.InversionException:
-            pass
-
-        tracer = fit.tracer_linear_light_profiles_to_light_profiles
-
-        extent = fit.data.extent_of_zoomed_array(buffer=0)
-        shape_native = fit.data.zoomed_around_mask(buffer=0).shape_native
-
-        grid = ag.Grid2D.from_extent(
-            extent=extent,
-            shape_native=shape_native
-        )
-
-        visualizer.visualize_tracer(
-            tracer=tracer, grid=grid, during_analysis=during_analysis
-        )
-        visualizer.visualize_galaxies(
-            galaxies=tracer.galaxies, grid=fit.grid, during_analysis=during_analysis
-        )
-        if fit.inversion is not None:
-            if fit.inversion.has(cls=ag.AbstractMapper):
-                visualizer.visualize_inversion(
-                    inversion=fit.inversion, during_analysis=during_analysis
-                )
-                
     def save_attributes(self, paths: af.DirectoryPaths):
         """
         Before the non-linear search begins, this routine saves attributes of the `Analysis` object to the `pickles`

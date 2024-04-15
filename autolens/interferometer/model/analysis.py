@@ -27,6 +27,7 @@ logger.setLevel(level="INFO")
 
 class AnalysisInterferometer(AnalysisDataset):
     Result = ResultInterferometer
+    Visualizer = VisualizerInterferometer
 
     def __init__(
         self,
@@ -228,106 +229,6 @@ class AnalysisInterferometer(AnalysisDataset):
             preloads=preloads,
             run_time_dict=run_time_dict,
         )
-
-    def visualize_before_fit(self, paths: af.DirectoryPaths, model: af.Collection):
-        """
-        PyAutoFit calls this function immediately before the non-linear search begins.
-
-        It visualizes objects which do not change throughout the model fit like the dataset.
-
-        Parameters
-        ----------
-        paths
-            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
-            visualization and the pickled objects used by the aggregator output by this function.
-        model
-            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
-            the imaging data.
-        """
-
-        visualizer = VisualizerInterferometer(visualize_path=paths.image_path)
-
-        visualizer.visualize_interferometer(dataset=self.interferometer)
-
-        if self.positions_likelihood is not None:
-            visualizer.visualize_image_with_positions(
-                image=self.dataset.dirty_image,
-                positions=self.positions_likelihood.positions,
-            )
-
-        if self.adapt_images is not None:
-            visualizer.visualize_adapt_images(adapt_images=self.adapt_images)
-
-    def visualize(self, paths: af.DirectoryPaths, instance, during_analysis):
-        """
-        Outputs images of the maximum log likelihood model inferred by the model-fit. This function is called
-        throughout the non-linear search at input intervals, and therefore provides on-the-fly visualization of how
-        well the model-fit is going.
-
-        The visualization performed by this function includes:
-
-        - Images of the best-fit `Tracer`, including the images of each of its galaxies.
-
-        - Images of the best-fit `FitInterferometer`, including the model-image, residuals and chi-squared of its fit
-          to the imaging data.
-
-        - The adapt-images of the model-fit showing how the galaxies are used to represent different galaxies in
-          the dataset.
-
-        - If adapt features are used to scale the noise, a `FitInterferometer` with these features turned off may be
-          output, to indicate how much these features are altering the dataset.
-
-        The images output by this function are customized using the file `config/visualize/plots.ini`.
-
-        Parameters
-        ----------
-        paths
-            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
-            visualization, and the pickled objects used by the aggregator output by this function.
-        instance
-            An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
-            via a non-linear search).
-        during_analysis
-            If True the visualization is being performed midway through the non-linear search before it is finished,
-            which may change which images are output.
-        """
-        fit = self.fit_from(instance=instance)
-
-        if self.positions_likelihood is not None:
-            self.positions_likelihood.output_positions_info(
-                output_path=paths.output_path, tracer=fit.tracer
-            )
-
-        if fit.inversion is not None:
-            try:
-                fit.inversion.reconstruction
-            except exc.InversionException:
-                return
-
-        visualizer = VisualizerInterferometer(visualize_path=paths.image_path)
-
-        try:
-            visualizer.visualize_fit_interferometer(
-                fit=fit, during_analysis=during_analysis
-            )
-        except exc.InversionException:
-            pass
-
-        tracer = fit.tracer_linear_light_profiles_to_light_profiles
-
-        visualizer.visualize_tracer(
-            tracer=tracer, grid=fit.grid, during_analysis=during_analysis
-        )
-        visualizer.visualize_galaxies(
-            galaxies=tracer.galaxies, grid=fit.grid, during_analysis=during_analysis
-        )
-        if fit.inversion is not None:
-            try:
-                visualizer.visualize_inversion(
-                    inversion=fit.inversion, during_analysis=during_analysis
-                )
-            except IndexError:
-                pass
 
     def save_attributes(self, paths: af.DirectoryPaths):
         """

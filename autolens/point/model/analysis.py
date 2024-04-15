@@ -6,7 +6,7 @@ import autogalaxy as ag
 from autogalaxy.analysis.analysis.analysis import Analysis as AgAnalysis
 
 from autolens.analysis.analysis.lens import AnalysisLens
-from autolens.analysis.visualizer import Visualizer
+from autolens.analysis.plotter_interface import PlotterInterface
 from autolens.point.point_dataset import PointDict
 from autolens.point.fit_point.point_dict import FitPointDict
 from autolens.point.model.result import ResultPoint
@@ -98,7 +98,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
     def visualize(self, paths, instance, during_analysis):
         tracer = self.tracer_via_instance_from(instance=instance)
 
-        visualizer = Visualizer(visualize_path=paths.image_path)
+        plotter_interface = PlotterInterface(image_path=paths.image_path)
 
     def save_attributes(self, paths: af.DirectoryPaths):
         self.point_dict.output_to_json(

@@ -1,154 +1,119 @@
-from os import path
+import autofit as af
 
-from autolens.interferometer.fit_interferometer import FitInterferometer
-from autolens.interferometer.plot.fit_interferometer_plotters import (
-    FitInterferometerPlotter,
+from autolens.interferometer.model.plotter_interface import (
+    PlotterInterfaceInterferometer,
 )
-from autolens.analysis.visualizer import Visualizer
-
-from autolens.analysis.visualizer import plot_setting
+from autogalaxy import exc
 
 
-class VisualizerInterferometer(Visualizer):
-    def visualize_fit_interferometer(
-        self,
-        fit: FitInterferometer,
-        during_analysis: bool,
-        subfolders: str = "fit_dataset",
+class VisualizerInterferometer(af.Visualizer):
+    @staticmethod
+    def visualize_before_fit(
+        analysis,
+        paths: af.AbstractPaths,
+        model: af.AbstractPriorModel,
     ):
         """
-        Visualizes a `FitInterferometer` object, which fits an interferometer dataset.
+        PyAutoFit calls this function immediately before the non-linear search begins.
 
-        Images are output to the `image` folder of the `visualize_path` in a subfolder called `fit`. When
-        used with a non-linear search the `visualize_path` points to the search's results folder.
-
-        Visualization includes individual images of attributes of the `FitInterferometer` (e.g. the model data,
-        residual map) and a subplot of all `FitInterferometer`'s images on the same figure.
-
-        The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
-        [fit] header.
+        It visualizes objects which do not change throughout the model fit like the dataset.
 
         Parameters
         ----------
-        fit
-            The maximum log likelihood `FitInterferometer` of the non-linear search which is used to plot the fit.
-        during_analysis
-            Whether visualization is performed during a non-linear search or once it is completed.
-        visuals_2d
-            An object containing attributes which may be plotted over the figure (e.g. the centres of mass and light
-            profiles).
+        paths
+            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            visualization and the pickled objects used by the aggregator output by this function.
+        model
+            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
+            the imaging data.
         """
 
-        def should_plot(name):
-            return plot_setting(section=["fit", "fit_interferometer"], name=name)
+        plotter_interface = PlotterInterfaceInterferometer(image_path=paths.image_path)
 
-        mat_plot_1d = self.mat_plot_1d_from(subfolders="")
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="")
+        plotter_interface.interferometer(dataset=analysis.interferometer)
 
-        fit_plotter = FitInterferometerPlotter(
-            fit=fit,
-            include_2d=self.include_2d,
-            mat_plot_1d=mat_plot_1d,
-            mat_plot_2d=mat_plot_2d,
+        if analysis.positions_likelihood is not None:
+            plotter_interface.image_with_positions(
+                image=analysis.dataset.dirty_image,
+                positions=analysis.positions_likelihood.positions,
+            )
+
+        if analysis.adapt_images is not None:
+            plotter_interface.adapt_images(adapt_images=analysis.adapt_images)
+
+    @staticmethod
+    def visualize(
+        analysis,
+        paths: af.DirectoryPaths,
+        instance: af.ModelInstance,
+        during_analysis: bool,
+    ):
+        """
+        Outputs images of the maximum log likelihood model inferred by the model-fit. This function is called
+        throughout the non-linear search at input intervals, and therefore provides on-the-fly visualization of how
+        well the model-fit is going.
+
+        The visualization performed by this function includes:
+
+        - Images of the best-fit `Tracer`, including the images of each of its galaxies.
+
+        - Images of the best-fit `FitInterferometer`, including the model-image, residuals and chi-squared of its fit
+          to the imaging data.
+
+        - The adapt-images of the model-fit showing how the galaxies are used to represent different galaxies in
+          the dataset.
+
+        - If adapt features are used to scale the noise, a `FitInterferometer` with these features turned off may be
+          output, to indicate how much these features are altering the dataset.
+
+        The images output by this function are customized using the file `config/visualize/plots.yaml`.
+
+        Parameters
+        ----------
+        paths
+            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            visualization, and the pickled objects used by the aggregator output by this function.
+        instance
+            An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
+            via a non-linear search).
+        during_analysis
+            If True the visualization is being performed midway through the non-linear search before it is finished,
+            which may change which images are output.
+        """
+        fit = analysis.fit_from(instance=instance)
+
+        if analysis.positions_likelihood is not None:
+            analysis.positions_likelihood.output_positions_info(
+                output_path=paths.output_path, tracer=fit.tracer
+            )
+
+        if fit.inversion is not None:
+            try:
+                fit.inversion.reconstruction
+            except exc.InversionException:
+                return
+
+        plotter_interface = PlotterInterfaceInterferometer(image_path=paths.image_path)
+
+        try:
+            plotter_interface.fit_interferometer(
+                fit=fit, during_analysis=during_analysis
+            )
+        except exc.InversionException:
+            pass
+
+        tracer = fit.tracer_linear_light_profiles_to_light_profiles
+
+        plotter_interface.tracer(
+            tracer=tracer, grid=fit.grid, during_analysis=during_analysis
         )
-
-        if should_plot("subplot_fit"):
-            fit_plotter.subplot_fit()
-
-        if should_plot("subplot_fit_dirty_images"):
-            fit_plotter.subplot_fit_dirty_images()
-
-        if should_plot("subplot_fit_real_space"):
-            fit_plotter.subplot_fit_real_space()
-
-        mat_plot_1d = self.mat_plot_1d_from(subfolders=subfolders)
-        mat_plot_2d = self.mat_plot_2d_from(subfolders=subfolders)
-
-        fit_plotter = FitInterferometerPlotter(
-            fit=fit,
-            include_2d=self.include_2d,
-            mat_plot_1d=mat_plot_1d,
-            mat_plot_2d=mat_plot_2d,
+        plotter_interface.galaxies(
+            galaxies=tracer.galaxies, grid=fit.grid, during_analysis=during_analysis
         )
-
-        fit_plotter.figures_2d(
-            data=should_plot("data"),
-            noise_map=should_plot("noise_map"),
-            signal_to_noise_map=should_plot("signal_to_noise_map"),
-            model_data=should_plot("model_data"),
-            residual_map_real=should_plot("residual_map"),
-            chi_squared_map_real=should_plot("chi_squared_map"),
-            normalized_residual_map_real=should_plot("normalized_residual_map"),
-            residual_map_imag=should_plot("residual_map"),
-            chi_squared_map_imag=should_plot("chi_squared_map"),
-            normalized_residual_map_imag=should_plot("normalized_residual_map"),
-            dirty_image=should_plot("data"),
-            dirty_noise_map=should_plot("noise_map"),
-            dirty_signal_to_noise_map=should_plot("signal_to_noise_map"),
-            dirty_model_image=should_plot("model_data"),
-            dirty_residual_map=should_plot("residual_map"),
-            dirty_normalized_residual_map=should_plot("normalized_residual_map"),
-            dirty_chi_squared_map=should_plot("chi_squared_map"),
-        )
-
-        if not during_analysis and should_plot("all_at_end_png"):
-            mat_plot_1d = self.mat_plot_1d_from(subfolders=path.join(subfolders, "end"))
-            mat_plot_2d = self.mat_plot_2d_from(subfolders=path.join(subfolders, "end"))
-
-            fit_plotter = FitInterferometerPlotter(
-                fit=fit,
-                include_2d=self.include_2d,
-                mat_plot_1d=mat_plot_1d,
-                mat_plot_2d=mat_plot_2d,
-            )
-
-            fit_plotter.figures_2d(
-                data=True,
-                noise_map=True,
-                signal_to_noise_map=True,
-                model_data=True,
-                residual_map_real=True,
-                chi_squared_map_real=True,
-                normalized_residual_map_real=True,
-                residual_map_imag=True,
-                chi_squared_map_imag=True,
-                normalized_residual_map_imag=True,
-                dirty_image=True,
-                dirty_noise_map=True,
-                dirty_signal_to_noise_map=True,
-                dirty_model_image=True,
-                dirty_residual_map=True,
-                dirty_normalized_residual_map=True,
-                dirty_chi_squared_map=True,
-            )
-
-            plane_index_max = len(fit.tracer.planes) - 1
-
-            fit_plotter.figures_2d_of_planes(
-                plane_index=plane_index_max, plane_image=True
-            )
-
-        if not during_analysis and should_plot("all_at_end_fits"):
-            mat_plot_2d = self.mat_plot_2d_from(
-                subfolders=path.join("fit_dataset", "fits"), format="fits"
-            )
-
-            fit_plotter = FitInterferometerPlotter(
-                fit=fit, include_2d=self.include_2d, mat_plot_2d=mat_plot_2d
-            )
-
-            fit_plotter.figures_2d(
-                dirty_image=True,
-                dirty_noise_map=True,
-                dirty_signal_to_noise_map=True,
-                dirty_model_image=True,
-                dirty_residual_map=True,
-                dirty_normalized_residual_map=True,
-                dirty_chi_squared_map=True,
-            )
-
-            plane_index_max = len(fit.tracer.planes) - 1
-
-            fit_plotter.figures_2d_of_planes(
-                plane_index=plane_index_max, plane_image=True
-            )
+        if fit.inversion is not None:
+            try:
+                plotter_interface.inversion(
+                    inversion=fit.inversion, during_analysis=during_analysis
+                )
+            except IndexError:
+                pass

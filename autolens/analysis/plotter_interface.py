@@ -1,46 +1,43 @@
 from os import path
 
 import autoarray as aa
-import autogalaxy as ag
 import autogalaxy.plot as aplt
 
-from autogalaxy.analysis.visualizer import plot_setting
+from autogalaxy.analysis.plotter_interface import plot_setting
 
-from autogalaxy.analysis.visualizer import Visualizer as AgVisualizer
+from autogalaxy.analysis.plotter_interface import PlotterInterface as AgPlotterInterface
 
 from autolens.lens.tracer import Tracer
 from autolens.lens.plot.tracer_plotters import TracerPlotter
 
 
-class Visualizer(AgVisualizer):
+class PlotterInterface(AgPlotterInterface):
     """
     Visualizes the maximum log likelihood model of a model-fit, including components of the model and fit objects.
 
-    The methods of the `Visualizer` are called throughout a non-linear search using the `Analysis`
+    The methods of the `PlotterInterface` are called throughout a non-linear search using the `Analysis`
     classes `visualize` method.
 
-    The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini`.
+    The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml`.
 
     Parameters
     ----------
-    visualize_path
+    image_path
         The path on the hard-disk to the `image` folder of the non-linear searches results.
     """
 
-    def visualize_tracer(
-        self, tracer: Tracer, grid: aa.type.Grid2DLike, during_analysis: bool
-    ):
+    def tracer(self, tracer: Tracer, grid: aa.type.Grid2DLike, during_analysis: bool):
         """
         Visualizes a `Tracer` object.
 
-        Images are output to the `image` folder of the `visualize_path` in a subfolder called `tracer`. When
-        used with a non-linear search the `visualize_path` points to the search's results folder and this function
+        Images are output to the `image` folder of the `image_path` in a subfolder called `tracer`. When
+        used with a non-linear search the `image_path` points to the search's results folder and this function
         visualizes the maximum log likelihood `Tracer` inferred by the search so far.
 
         Visualization includes individual images of attributes of the tracer (e.g. its image, convergence, deflection
         angles) and a subplot of all these attributes on the same figure.
 
-        The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
+        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under the
         [tracer] header.
 
         Parameters
@@ -146,19 +143,17 @@ class Visualizer(AgVisualizer):
                 magnification=True,
             )
 
-    def visualize_image_with_positions(
-        self, image: aa.Array2D, positions: aa.Grid2DIrregular
-    ):
+    def image_with_positions(self, image: aa.Array2D, positions: aa.Grid2DIrregular):
         """
         Visualizes the positions of a model-fit, where these positions are used to resample lens models where
         the positions to do trace within an input threshold of one another in the source-plane.
 
-        Images are output to the `image` folder of the `visualize_path` in a subfolder called `positions`. When
-        used with a non-linear search the `visualize_path` points to the search's results folder.
+        Images are output to the `image` folder of the `image_path` in a subfolder called `positions`. When
+        used with a non-linear search the `image_path` points to the search's results folder.
 
         The visualization is an image of the strong lens with the positions overlaid.
 
-        The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
+        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under the
         [tracer] header.
 
         Parameters
@@ -186,39 +181,3 @@ class Visualizer(AgVisualizer):
             image_plotter.set_filename("image_with_positions")
             if should_plot("image_with_positions"):
                 image_plotter.figure_2d()
-
-    def visualize_adapt_images(self, adapt_images: ag.AdaptImages):
-        """
-        Visualizes the adapt-images and adapt image inferred by a model-fit.
-
-        Images are output to the `image` folder of the `visualize_path` in a subfolder called `adapt`. When
-        used with a non-linear search the `visualize_path` points to the search's results folder.
-
-        Visualization includes individual images of attributes of the adapt image (e.g. the adapt image) and
-        a subplot of all galaxy images on the same figure.
-
-        The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
-        [adapt] header.
-
-        Parameters
-        ----------
-        adapt_images
-            The adapt images (e.g. overall model image, individual galaxy images).
-        """
-
-        def should_plot(name):
-            return plot_setting(section="adapt", name=name)
-
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="adapt")
-
-        adapt_plotter = aplt.AdaptPlotter(
-            mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
-        )
-
-        if should_plot("model_image"):
-            adapt_plotter.figure_model_image(model_image=adapt_images.model_image)
-
-        if should_plot("images_of_galaxies"):
-            adapt_plotter.subplot_images_of_galaxies(
-                adapt_galaxy_name_image_dict=adapt_images.galaxy_image_dict
-            )

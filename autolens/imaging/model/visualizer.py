@@ -1,134 +1,127 @@
-from os import path
+from autoarray import exc
 
-from autolens.analysis.visualizer import Visualizer
-from autolens.imaging.fit_imaging import FitImaging
-from autolens.imaging.plot.fit_imaging_plotters import FitImagingPlotter
+import autofit as af
+import autogalaxy as ag
 
-from autolens.analysis.visualizer import plot_setting
+from autolens.imaging.model.plotter_interface import PlotterInterfaceImaging
+from autolens import exc
 
+class VisualizerImaging(af.Visualizer):
 
-class VisualizerImaging(Visualizer):
-    def visualize_fit_imaging(
-        self, fit: FitImaging, during_analysis: bool, subfolders: str = "fit_dataset"
+    @staticmethod
+    def visualize_before_fit(
+        analysis,
+        paths: af.AbstractPaths,
+        model: af.AbstractPriorModel,
     ):
         """
-        Visualizes a `FitImaging` object, which fits an imaging dataset.
+        PyAutoFit calls this function immediately before the non-linear search begins.
 
-        Images are output to the `image` folder of the `visualize_path` in a subfolder called `fit`. When
-        used with a non-linear search the `visualize_path` points to the search's results folder and this function
-        visualizes the maximum log likelihood `FitImaging` inferred by the search so far.
-
-        Visualization includes individual images of attributes of the `FitImaging` (e.g. the model data, residual map)
-        and a subplot of all `FitImaging`'s images on the same figure.
-
-        The images output by the `Visualizer` are customized using the file `config/visualize/plots.ini` under the
-        [fit] header.
+        It visualizes objects which do not change throughout the model fit like the dataset.
 
         Parameters
         ----------
-        fit
-            The maximum log likelihood `FitImaging` of the non-linear search which is used to plot the fit.
-        during_analysis
-            Whether visualization is performed during a non-linear search or once it is completed.
-        visuals_2d
-            An object containing attributes which may be plotted over the figure (e.g. the centres of mass and light
-            profiles).
+        paths
+            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            visualization and the pickled objects used by the aggregator output by this function.
+        model
+            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
+            the imaging data.
         """
 
-        if plot_setting(section="tracer", name="subplot_tracer"):
+        plotter_interface = PlotterInterfaceImaging(image_path=paths.image_path)
 
-            mat_plot_2d = self.mat_plot_2d_from(subfolders="")
+        plotter_interface.imaging(dataset=analysis.dataset)
 
-            fit_plotter = FitImagingPlotter(
-                fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
+        if analysis.positions_likelihood is not None:
+            plotter_interface.image_with_positions(
+                image=analysis.dataset.data,
+                positions=analysis.positions_likelihood.positions,
             )
 
-            fit_plotter.subplot_tracer()
+        if analysis.adapt_images is not None:
+            plotter_interface.adapt_images(
+                adapt_images=analysis.adapt_images
+            )
 
-        def should_plot(name):
-            return plot_setting(section=["fit", "fit_imaging"], name=name)
+    @staticmethod
+    def visualize(
+        analysis,
+        paths: af.DirectoryPaths,
+        instance: af.ModelInstance,
+        during_analysis: bool,
+    ):
+        """
+        Output images of the maximum log likelihood model inferred by the model-fit. This function is called throughout
+        the non-linear search at regular intervals, and therefore provides on-the-fly visualization of how well the
+        model-fit is going.
 
-        mat_plot_2d = self.mat_plot_2d_from(subfolders=subfolders)
+        The visualization performed by this function includes:
 
-        fit_plotter = FitImagingPlotter(
-            fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
+        - Images of the best-fit `Tracer`, including the images of each of its galaxies.
+
+        - Images of the best-fit `FitImaging`, including the model-image, residuals and chi-squared of its fit to
+          the imaging data.
+
+        - The adapt-images of the model-fit showing how the galaxies are used to represent different galaxies in
+          the dataset.
+
+        The images output by this function are customized using the file `config/visualize/plots.yaml`.
+
+        Parameters
+        ----------
+        paths
+            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            visualization, and the pickled objects used by the aggregator output by this function.
+        instance
+            An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
+            via a non-linear search).
+        during_analysis
+            If True the visualization is being performed midway through the non-linear search before it is finished,
+            which may change which images are output.
+        """
+
+        fit = analysis.fit_from(instance=instance)
+
+        if analysis.positions_likelihood is not None:
+            analysis.positions_likelihood.output_positions_info(
+                output_path=paths.output_path, tracer=fit.tracer
+            )
+
+        if fit.inversion is not None:
+            try:
+                fit.inversion.reconstruction
+            except exc.InversionException:
+                return
+
+        plotter_interface = PlotterInterfaceImaging(image_path=paths.image_path)
+
+        try:
+            plotter_interface.fit_imaging(fit=fit, during_analysis=during_analysis)
+        except exc.InversionException:
+            pass
+
+        tracer = fit.tracer_linear_light_profiles_to_light_profiles
+
+        extent = fit.data.extent_of_zoomed_array(buffer=0)
+        shape_native = fit.data.zoomed_around_mask(buffer=0).shape_native
+
+        grid = ag.Grid2D.from_extent(
+            extent=extent,
+            shape_native=shape_native
         )
 
-        fit_plotter.figures_2d(
-            data=should_plot("data"),
-            noise_map=should_plot("noise_map"),
-            signal_to_noise_map=should_plot("signal_to_noise_map"),
-            model_image=should_plot("model_data"),
-            residual_map=should_plot("residual_map"),
-            chi_squared_map=should_plot("chi_squared_map"),
-            normalized_residual_map=should_plot("normalized_residual_map"),
+        plotter_interface.tracer(
+            tracer=tracer, grid=grid, during_analysis=during_analysis
         )
-
-        fit_plotter.figures_2d_of_planes(
-            subtracted_image=should_plot("subtracted_images_of_planes"),
-            model_image=should_plot("model_images_of_planes"),
-            plane_image=should_plot("plane_images_of_planes"),
+        plotter_interface.galaxies(
+            galaxies=tracer.galaxies, grid=fit.grid, during_analysis=during_analysis
         )
+        if fit.inversion is not None:
+            if fit.inversion.has(cls=ag.AbstractMapper):
+                plotter_interface.inversion(
+                    inversion=fit.inversion, during_analysis=during_analysis
+                )
 
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="")
 
-        fit_plotter = FitImagingPlotter(
-            fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
-        )
-
-        if should_plot("subplot_fit"):
-            fit_plotter.subplot_fit()
-
-        if should_plot("subplot_fit_log10"):
-            fit_plotter.subplot_fit_log10()
-
-        if should_plot("subplot_of_planes"):
-            fit_plotter.subplot_of_planes()
-
-        if not during_analysis and should_plot("all_at_end_png"):
-
-            mat_plot_2d = self.mat_plot_2d_from(
-                subfolders=path.join("fit_dataset", "end"),
-            )
-
-            fit_plotter = FitImagingPlotter(
-                fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
-            )
-
-            fit_plotter.figures_2d(
-                data=True,
-                noise_map=True,
-                signal_to_noise_map=True,
-                model_image=True,
-                residual_map=True,
-                normalized_residual_map=True,
-                chi_squared_map=True,
-            )
-
-            fit_plotter.figures_2d_of_planes(
-                subtracted_image=True, model_image=True, plane_image=True
-            )
-
-        if not during_analysis and should_plot("all_at_end_fits"):
-
-            mat_plot_2d = self.mat_plot_2d_from(
-                subfolders=path.join("fit_dataset", "fits"), format="fits"
-            )
-
-            fit_plotter = FitImagingPlotter(
-                fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
-            )
-
-            fit_plotter.figures_2d(
-                data=True,
-                noise_map=True,
-                signal_to_noise_map=True,
-                model_image=True,
-                residual_map=True,
-                normalized_residual_map=True,
-                chi_squared_map=True,
-            )
-
-            fit_plotter.figures_2d_of_planes(
-                subtracted_image=True, model_image=True, plane_image=True, interpolate_to_uniform=True
-            )
+     
