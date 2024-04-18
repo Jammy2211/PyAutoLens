@@ -215,7 +215,6 @@ class TracerToInversion(ag.AbstractToInversion):
 
     @cached_property
     def mapper_galaxy_dict(self) -> Dict[aa.AbstractMapper, ag.Galaxy]:
-
         if not self.has_mapper:
             return {}
 
