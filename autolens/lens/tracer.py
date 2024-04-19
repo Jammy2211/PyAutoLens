@@ -580,9 +580,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         galaxies at z=0.5 and z=1.0, where the image at redshift z=1.0 will include the lensing effects of the galaxies
         at z=0.5. The image at redshift z=2.0 will be a numpy array of zeros.
 
-        The `plane_index` input is used to return a specific image of a plane, as opposed to a list of images
-        of all planes. This can save on computational time when only the image of a specific plane is needed,
-        and is used to perform iterative over-sampling calculations.
+        The implementation of this function has to wrap a function in the iterative over sampler which performs the
+        iterative over-sampling calculation. This requires a function to be defined internally in this function
+        which meets the requirements of the over-sample.
 
         The images output by this function do not include instrument operations, such as PSF convolution (for imaging
         data) or a Fourier transform (for interferometer data).
@@ -602,11 +602,13 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         Parameters
         ----------
         grid
+            The 2D (y, x) coordinates where values of the image are evaluated, which has an iterative over-sampling
+            applied to it.
         operated_only
-
-        Returns
-        -------
-
+            The returned list from this function contains all light profile images, and they are never operated on
+            (e.g. via the imaging PSF). However, inherited methods in the `autogalaxy.operate.image` package can
+            apply these operations to the images, which may have the `operated_only` input passed to them. This input
+            therefore is used to pass the `operated_only` input to these methods.
         """
 
         image_2d_list = []
