@@ -221,6 +221,109 @@ def test__image_2d_list_from():
     assert len(image_list) == 3
 
 
+def test__image_2d_of_plane_from():
+    g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=1.0))
+    g1 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=2.0))
+    g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=3.0))
+
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
+
+    image = tracer.image_2d_of_plane_from(grid=grid_simple, plane_index=0)
+
+    assert image == pytest.approx(0.30276535, 1.0e-4)
+
+    g0 = al.Galaxy(
+        redshift=0.5,
+        light_profile=al.lp.Sersic(intensity=1.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
+    )
+    g1 = al.Galaxy(
+        redshift=1.0,
+        light_profile=al.lp.Sersic(intensity=2.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=2.0),
+    )
+    g2 = al.Galaxy(redshift=2.0, light_profile=al.lp.Sersic(intensity=3.0))
+
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
+
+    image = tracer.image_2d_of_plane_from(grid=grid_simple, plane_index=0)
+
+    assert image == pytest.approx(0.0504608, 1.0e-4)
+
+    image = tracer.image_2d_of_plane_from(grid=grid_simple, plane_index=1)
+
+    assert image == pytest.approx(0.2517025, 1.0e-4)
+
+    image = tracer.image_2d_of_plane_from(grid=grid_simple, plane_index=2)
+
+    assert image == pytest.approx(1.8611933, 1.0e-4)
+
+
+def test__image_2d_list_from__adaptive_iterate_sub_grid():
+    mask = al.Mask2D(
+        mask=[
+            [True, True, True, True, True],
+            [True, False, False, False, True],
+            [True, False, False, False, True],
+            [True, False, False, False, True],
+            [True, True, True, True, True],
+        ],
+        pixel_scales=(1.0, 1.0),
+    )
+
+    g0 = al.Galaxy(
+        redshift=0.5,
+        light_profile=al.lp.Sersic(intensity=1.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
+    )
+    g1 = al.Galaxy(
+        redshift=1.0,
+        light_profile=al.lp.Sersic(intensity=2.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=2.0),
+    )
+    g2 = al.Galaxy(redshift=2.0, light_profile=al.lp.Sersic(intensity=3.0))
+
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
+
+    def image_2d_list_from_sub_size(sub_size):
+        grid = al.Grid2D.from_mask(
+            mask=mask, over_sampling=al.OverSamplingUniform(sub_size=sub_size)
+        )
+
+        grid_oversampled = grid.over_sampler.over_sampled_grid
+        traced_grid_list = tracer.traced_grid_2d_list_from(grid=grid_oversampled)
+
+        image_g0 = g0.image_2d_from(grid=grid)
+        image_g1_oversampled = g1.image_2d_from(grid=traced_grid_list[1])
+        image_g1 = grid.over_sampler.binned_array_2d_from(array=image_g1_oversampled)
+
+        image_g2_oversampled = g2.image_2d_from(grid=traced_grid_list[2])
+        image_g2 = grid.over_sampler.binned_array_2d_from(array=image_g2_oversampled)
+
+        return [image_g0, image_g1, image_g2]
+
+    # These values are carefully chosen to make it so that the central pixel requires a sub_size of 4 after iterations
+    # whereas pixel 0 stops iteration at 2.
+
+    image_2d_sub_2_list = image_2d_list_from_sub_size(sub_size=2)
+    image_2d_sub_4_list = image_2d_list_from_sub_size(sub_size=4)
+
+    grid_iterate = al.Grid2D.from_mask(
+        mask=mask,
+        over_sampling=al.OverSamplingIterate(fractional_accuracy=0.7, sub_steps=[2, 4]),
+    )
+
+    image_2d_list = tracer.image_2d_list_from(grid=grid_iterate)
+
+    assert image_2d_list[0][4] == pytest.approx(image_2d_sub_4_list[0][4], 1.0e-4)
+    assert image_2d_list[1][4] == pytest.approx(image_2d_sub_4_list[1][4], 1.0e-4)
+    assert image_2d_list[2][4] == pytest.approx(image_2d_sub_4_list[2][4], 1.0e-4)
+
+    assert image_2d_list[0][0] == pytest.approx(image_2d_sub_2_list[0][0], 1.0e-4)
+    assert image_2d_list[1][0] == pytest.approx(image_2d_sub_2_list[1][0], 1.0e-4)
+    assert image_2d_list[2][0] == pytest.approx(image_2d_sub_2_list[2][0], 1.0e-4)
+
+
 def test__image_2d_list_from__plane_without_light_profile_is_zeros(
     grid_2d_7x7,
 ):

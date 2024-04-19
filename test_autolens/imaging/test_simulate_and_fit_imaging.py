@@ -79,6 +79,84 @@ def test__perfect_fit__chi_squared_0():
         shutil.rmtree(file_path)
 
 
+def test__perfect_fit__chi_squared_0__use_grid_iterate_to_simulate_and_fit():
+    over_sampling = al.OverSamplingIterate(fractional_accuracy=0.9999, sub_steps=[2, 4, 8])
+
+    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2,
+                             over_sampling=over_sampling)
+
+    psf = al.Kernel2D.from_gaussian(
+        shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
+    )
+
+    lens_galaxy = al.Galaxy(
+        redshift=0.5,
+        light=al.lp.Sersic(centre=(0.1, 0.1), intensity=0.1),
+        mass=al.mp.Isothermal(centre=(0.1, 0.1), einstein_radius=1.8),
+    )
+    source_galaxy = al.Galaxy(
+        redshift=1.0, light=al.lp.Exponential(centre=(0.1, 0.1), intensity=0.5)
+    )
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+
+    dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
+    dataset.noise_map = al.Array2D.ones(
+        shape_native=dataset.data.shape_native, pixel_scales=0.2
+    )
+
+    file_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))),
+        "data_temp",
+        "simulate_and_fit",
+    )
+
+    try:
+        shutil.rmtree(file_path)
+    except FileNotFoundError:
+        pass
+
+    if path.exists(file_path) is False:
+        os.makedirs(file_path)
+
+    dataset.output_to_fits(
+        data_path=path.join(file_path, "data.fits"),
+        noise_map_path=path.join(file_path, "noise_map.fits"),
+        psf_path=path.join(file_path, "psf.fits"),
+    )
+
+    dataset = al.Imaging.from_fits(
+        data_path=path.join(file_path, "data.fits"),
+        noise_map_path=path.join(file_path, "noise_map.fits"),
+        psf_path=path.join(file_path, "psf.fits"),
+        pixel_scales=0.2,
+        over_sampling=over_sampling
+    )
+
+    mask = al.Mask2D.circular(
+        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=0.8
+    )
+
+    masked_dataset = dataset.apply_mask(mask=mask)
+
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+
+    fit = al.FitImaging(dataset=masked_dataset, tracer=tracer)
+
+    # The value is actually not zero before the blurring grid assumes a sub_size=1
+    # and does not use the iterative grid, which has a small impact on the chi-squared
+
+    assert fit.chi_squared == pytest.approx(7.451891005452524e-05, 1e-4)
+
+    file_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))), "data_temp"
+    )
+
+    if path.exists(file_path) is True:
+        shutil.rmtree(file_path)
+
+
 def test__simulate_imaging_data_and_fit__known_likelihood():
 
     grid = al.Grid2D.uniform(shape_native=(31, 31), pixel_scales=0.2)

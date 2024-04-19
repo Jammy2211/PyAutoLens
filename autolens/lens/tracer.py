@@ -415,13 +415,18 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         """
         Returns a list of the 2D images for each plane from a 2D grid of Cartesian (y,x) coordinates.
 
-        The image of each plane is computed by summing the images of all galaxies in that plane. If a plane has no
-        galaxies, or if the galaxies in a plane has no light profiles, a numpy array of zeros is returned.
+        The image of each plane is computed by ray-tracing the grid using te mass profiles of each galaxies and then
+        summing the images of all galaxies in that plane. If a plane has no galaxies, or if the galaxies in a plane
+        has no light profiles, a numpy array of zeros is returned.
 
         For example, if the tracer's planes contain galaxies at redshifts z=0.5, z=1.0 and z=2.0, and the galaxies
         at redshifts z=0.5 and z=1.0 have light and mass profiles, the returned list of images will be the image of the
         galaxies at z=0.5 and z=1.0, where the image at redshift z=1.0 will include the lensing effects of the galaxies
         at z=0.5. The image at redshift z=2.0 will be a numpy array of zeros.
+
+        The `plane_index` input is used to return a specific image of a plane, as opposed to a list of images
+        of all planes. This can save on computational time when only the image of a specific plane is needed,
+        and is used to perform iterative over-sampling calculations.
 
         The images output by this function do not include instrument operations, such as PSF convolution (for imaging
         data) or a Fourier transform (for interferometer data).
@@ -448,6 +453,12 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             apply these operations to the images, which may have the `operated_only` input passed to them. This input
             therefore is used to pass the `operated_only` input to these methods.
         """
+
+        if hasattr(grid, "over_sampling"):
+            if isinstance(grid.over_sampling, aa.OverSamplingIterate):
+                return self.image_2d_list_over_sampled_from(
+                    grid=grid, operated_only=operated_only
+                )
 
         traced_grid_list = self.traced_grid_2d_list_from(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
@@ -482,6 +493,144 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                 self.upper_plane_index_with_light_profile, self.total_planes - 1
             ):
                 image_2d_list.append(image_2d)
+
+        return image_2d_list
+
+    @over_sample
+    def image_2d_of_plane_from(
+        self,
+        grid: aa.type.Grid2DLike,
+        plane_index: int,
+        operated_only: Optional[bool] = None,
+    ) -> aa.Array2D:
+        """
+        Returns a 2D image of an input plane from a 2D grid of Cartesian (y,x) coordinates.
+
+        The image of the plane is computed by ray-tracing the grid using te mass profiles of all galaxies before the
+        input plane and then summing the images of all galaxies in that plane. If a plane has no galaxies, or if the
+        galaxies in a plane, has no light profiles, a numpy array of zeros is returned.
+
+        For example, if the tracer's planes contain galaxies at redshifts z=0.5, z=1.0 and z=2.0, and the galaxies
+        at redshifts z=0.5 and z=1.0 have light and mass profiles, the returned image for `plane_index=1` will be the
+        image of the galaxy at z=1.0, where the image at redshift z=1.0 will include the lensing effects of the
+        galaxies at z=0.5. The image at redshift z=2.0 will be ignored.
+
+        The `plane_index` input specifies which plane the image os returned for. This calculation saves computational
+        time compared to `image_2d_list_from` when only the image of a specific plane is needed. It is also used to
+        perform iterative over-sampling calculations.
+
+        The images output by this function do not include instrument operations, such as PSF convolution (for imaging
+        data) or a Fourier transform (for interferometer data).
+
+        Inherited methods in the `autogalaxy.operate.image` package can apply these operations to the images.
+        These functions may have the `operated_only` input passed to them, which is why this function includes
+        the `operated_only` input.
+
+        If the `operated_only` input is included, the function omits light profiles which are parents of
+        the `LightProfileOperated` object, which signifies that the light profile represents emission that has
+        already had the instrument operations (e.g. PSF convolution, a Fourier transform) applied to it and therefore
+        that operation is not performed again.
+
+        See the `autogalaxy.profiles.light` package for details of how images are computed from a light
+        profile.
+
+        Parameters
+        ----------
+        grid
+            The 2D (y, x) coordinates where values of the image are evaluated.
+        plane_index
+            The plane index of the plane the image is computed.
+        operated_only
+            The returned list from this function contains all light profile images, and they are never operated on
+            (e.g. via the imaging PSF). However, inherited methods in the `autogalaxy.operate.image` package can
+            apply these operations to the images, which may have the `operated_only` input passed to them. This input
+            therefore is used to pass the `operated_only` input to these methods.
+        """
+
+        if not self.planes[plane_index].has(cls=ag.LightProfile):
+            if isinstance(grid, aa.Grid2D):
+                return aa.Array2D(values=np.zeros(shape=grid.shape[0]), mask=grid.mask)
+            else:
+                return aa.ArrayIrregular(values=np.zeros(grid.shape[0]))
+
+        traced_grid_list = self.traced_grid_2d_list_from(
+            grid=grid, plane_index_limit=plane_index
+        )
+
+        return sum(
+            [
+                galaxy.image_2d_from(
+                    grid=traced_grid_list[plane_index],
+                    operated_only=operated_only,
+                )
+                for galaxy in self.planes[plane_index]
+            ]
+        )
+
+    def image_2d_list_over_sampled_from(
+        self,
+        grid: aa.type.Grid2DLike,
+        operated_only: Optional[bool] = None,
+    ) -> List[aa.Array2D]:
+        """
+        Returns a list of the 2D images for each plane from a 2D grid of Cartesian (y,x) coordinates where adaptive
+        and iterative over-sampling is used to compute the image.
+
+        The image of each plane is computed by iteratively ray-tracing the grid using the mass profiles of each
+        galaxies and then summing the images of all galaxies in that plane, until a threshold level of accuracy
+        defined by the over-sampling grid is met. If a plane has no galaxies, or if the galaxies in a plane
+        has no light profiles, a numpy array of zeros is returned.
+
+        For example, if the tracer's planes contain galaxies at redshifts z=0.5, z=1.0 and z=2.0, and the galaxies
+        at redshifts z=0.5 and z=1.0 have light and mass profiles, the returned list of images will be the image of the
+        galaxies at z=0.5 and z=1.0, where the image at redshift z=1.0 will include the lensing effects of the galaxies
+        at z=0.5. The image at redshift z=2.0 will be a numpy array of zeros.
+
+        The implementation of this function has to wrap a function in the iterative over sampler which performs the
+        iterative over-sampling calculation. This requires a function to be defined internally in this function
+        which meets the requirements of the over-sample.
+
+        The images output by this function do not include instrument operations, such as PSF convolution (for imaging
+        data) or a Fourier transform (for interferometer data).
+
+        Inherited methods in the `autogalaxy.operate.image` package can apply these operations to the images.
+        These functions may have the `operated_only` input passed to them, which is why this function includes
+        the `operated_only` input.
+
+        If the `operated_only` input is included, the function omits light profiles which are parents of
+        the `LightProfileOperated` object, which signifies that the light profile represents emission that has
+        already had the instrument operations (e.g. PSF convolution, a Fourier transform) applied to it and therefore
+        that operation is not performed again.
+
+        See the `autogalaxy.profiles.light` package for details of how images are computed from a light
+        profile.
+
+        Parameters
+        ----------
+        grid
+            The 2D (y, x) coordinates where values of the image are evaluated, which has an iterative over-sampling
+            applied to it.
+        operated_only
+            The returned list from this function contains all light profile images, and they are never operated on
+            (e.g. via the imaging PSF). However, inherited methods in the `autogalaxy.operate.image` package can
+            apply these operations to the images, which may have the `operated_only` input passed to them. This input
+            therefore is used to pass the `operated_only` input to these methods.
+        """
+
+        image_2d_list = []
+
+        for plane_index in range(len(self.planes)):
+
+            def func(obj, grid, *args, **kwargs):
+                return self.image_2d_of_plane_from(
+                    grid=grid,
+                    operated_only=operated_only,
+                    plane_index=plane_index,
+                )
+
+            image_2d = grid.over_sampler.array_via_func_from(func=func, obj=self)
+
+            image_2d_list.append(image_2d)
 
         return image_2d_list
 
