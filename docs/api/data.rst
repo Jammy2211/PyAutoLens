@@ -19,7 +19,6 @@ grids of (y,x) Cartesian coordinates (which are used for evaluating light profil
    Mask2D
    Array2D
    Grid2D
-   Grid2DIterate
    Grid2DIrregular
 
 Imaging
@@ -53,6 +52,24 @@ a fast Fourier transform to map data to the uv-plane.
    Visibilities
    TransformerDFT
    TransformerNUFFT
+
+Over Sampling
+-------------
+
+Calculations using grids approximate a 2D line integral of the light in the galaxy which falls in each image-pixel.
+Different over sampling schemes can be used to efficiently approximate this integral and these objects can be
+applied to datasets to apply over sampling to their fit.
+
+.. currentmodule:: autolens
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-class-template.rst
+   :recursive:
+
+   OverSamplingUniform
+   OverSamplingIterate
+
 
 1D Data Structures
 ------------------
