@@ -131,6 +131,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             border_relocator=self.dataset.border_relocator,
         )
 
+
         return TracerToInversion(
             dataset=dataset,
             tracer=self.tracer,
@@ -138,6 +139,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             adapt_images=self.adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=self.preloads,
+            run_time_dict=self.run_time_dict
         )
 
     @cached_property

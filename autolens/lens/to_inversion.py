@@ -109,6 +109,7 @@ class TracerToInversion(ag.AbstractToInversion):
                 sky=self.sky,
                 settings_inversion=self.settings_inversion,
                 adapt_images=self.adapt_images,
+                run_time_dict=self.run_time_dict,
             )
 
             lp_linear_galaxy_dict_of_plane = (
@@ -170,6 +171,7 @@ class TracerToInversion(ag.AbstractToInversion):
                 sky=self.sky,
                 adapt_images=self.adapt_images,
                 settings_inversion=self.settings_inversion,
+                run_time_dict=self.run_time_dict,
             )
 
             image_plane_mesh_grid_list = to_inversion.image_plane_mesh_grid_list
@@ -247,6 +249,7 @@ class TracerToInversion(ag.AbstractToInversion):
                     preloads=self.preloads,
                     adapt_images=self.adapt_images,
                     settings_inversion=self.settings_inversion,
+                    run_time_dict=self.run_time_dict,
                 )
 
                 galaxies_with_pixelization_list = galaxies.galaxies_with_cls_list_from(

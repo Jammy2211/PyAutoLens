@@ -221,6 +221,57 @@ def test__image_2d_list_from():
     assert len(image_list) == 3
 
 
+def test__image_2d_list_from__adaptive_iterate_sub_grid():
+    mask = al.Mask2D(
+        mask=[
+            [True, True, True, True, True],
+            [True, False, False, False, True],
+            [True, False, False, False, True],
+            [True, False, False, False, True],
+            [True, True, True, True, True],
+        ],
+        pixel_scales=(1.0, 1.0),
+    )
+
+    grid_sub_4 = al.Grid2D.from_mask(
+        mask=mask, over_sampling=al.OverSamplingUniform(sub_size=4)
+    )
+
+    g0 = al.Galaxy(
+        redshift=0.5,
+        light_profile=al.lp.Sersic(intensity=1.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
+    )
+    g1 = al.Galaxy(
+        redshift=1.0,
+        light_profile=al.lp.Sersic(intensity=2.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=2.0),
+    )
+    # g2 = al.Galaxy(redshift=2.0, light_profile=al.lp.Sersic(intensity=3.0))
+
+    image_g0_sub_4 = g0.image_2d_from(grid=grid_sub_4)
+
+    grid_sub_4_oversampled = grid_sub_4.over_sampler.over_sampled_grid
+    deflections_sub_4 = g0.deflections_yx_2d_from(grid=grid_sub_4_oversampled)
+    traced_grid_sub_4 = grid_sub_4_oversampled - deflections_sub_4
+    image_g1_sub_4_oversampled = g1.image_2d_from(grid=traced_grid_sub_4)
+    image_g1_sub_4 = grid_sub_4.over_sampler.binned_array_2d_from(
+        array=image_g1_sub_4_oversampled
+    )
+
+    tracer = al.Tracer(galaxies=[g0, g1])
+
+    grid_iterate = al.Grid2D.from_mask(
+        mask=mask,
+        over_sampling=al.OverSamplingIterate(fractional_accuracy=1.0, sub_steps=[2, 4]),
+    )
+
+    image_2d_list = tracer.image_2d_list_from(grid=grid_sub_4)
+
+    assert image_2d_list[0] == pytest.approx(image_g0_sub_4, 1.0e-4)
+    assert image_2d_list[1] == pytest.approx(image_g1_sub_4, 1.0e-4)
+
+
 def test__image_2d_list_from__plane_without_light_profile_is_zeros(
     grid_2d_7x7,
 ):
