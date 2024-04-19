@@ -220,6 +220,55 @@ def test__image_2d_list_from():
     assert image_list[2][0] == pytest.approx(1.8611933, 1.0e-4)
     assert len(image_list) == 3
 
+def test__image_2d_of_plane_from():
+    g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=1.0))
+    g1 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=2.0))
+    g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=3.0))
+
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
+
+    image = tracer.image_2d_of_plane_from(
+        grid=grid_simple,
+        plane_index=0
+    )
+
+    assert image == pytest.approx(0.30276535, 1.0e-4)
+
+    g0 = al.Galaxy(
+        redshift=0.5,
+        light_profile=al.lp.Sersic(intensity=1.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
+    )
+    g1 = al.Galaxy(
+        redshift=1.0,
+        light_profile=al.lp.Sersic(intensity=2.0),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=2.0),
+    )
+    g2 = al.Galaxy(redshift=2.0, light_profile=al.lp.Sersic(intensity=3.0))
+
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
+
+    image = tracer.image_2d_of_plane_from(
+        grid=grid_simple,
+        plane_index=0
+    )
+
+    assert image == pytest.approx(0.0504608, 1.0e-4)
+
+    image = tracer.image_2d_of_plane_from(
+        grid=grid_simple,
+        plane_index=1
+    )
+
+    assert image == pytest.approx(0.2517025, 1.0e-4)
+
+    image = tracer.image_2d_of_plane_from(
+        grid=grid_simple,
+        plane_index=2
+    )
+
+    assert image == pytest.approx(1.8611933, 1.0e-4)
+
 
 def test__image_2d_list_from__adaptive_iterate_sub_grid():
     mask = al.Mask2D(
@@ -266,7 +315,7 @@ def test__image_2d_list_from__adaptive_iterate_sub_grid():
         over_sampling=al.OverSamplingIterate(fractional_accuracy=1.0, sub_steps=[2, 4]),
     )
 
-    image_2d_list = tracer.image_2d_list_from(grid=grid_sub_4)
+    image_2d_list = tracer.image_2d_list_from(grid=grid_iterate)
 
     assert image_2d_list[0] == pytest.approx(image_g0_sub_4, 1.0e-4)
     assert image_2d_list[1] == pytest.approx(image_g1_sub_4, 1.0e-4)
