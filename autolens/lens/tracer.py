@@ -454,11 +454,11 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             therefore is used to pass the `operated_only` input to these methods.
         """
 
-        if isinstance(grid.over_sampling, aa.OverSamplingIterate):
-            return self.image_2d_list_over_sampled_from(
-                grid=grid,
-                operated_only=operated_only
-            )
+        if hasattr(grid, "over_sampling"):
+            if isinstance(grid.over_sampling, aa.OverSamplingIterate):
+                return self.image_2d_list_over_sampled_from(
+                    grid=grid, operated_only=operated_only
+                )
 
         traced_grid_list = self.traced_grid_2d_list_from(
             grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
@@ -498,10 +498,10 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
     @over_sample
     def image_2d_of_plane_from(
-            self,
-            grid: aa.type.Grid2DLike,
-            plane_index: int,
-            operated_only: Optional[bool] = None,
+        self,
+        grid: aa.type.Grid2DLike,
+        plane_index: int,
+        operated_only: Optional[bool] = None,
     ) -> aa.Array2D:
         """
         Returns a 2D image of an input plane from a 2D grid of Cartesian (y,x) coordinates.
@@ -547,6 +547,12 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             therefore is used to pass the `operated_only` input to these methods.
         """
 
+        if not self.planes[plane_index].has(cls=ag.LightProfile):
+            if isinstance(grid, aa.Grid2D):
+                return aa.Array2D(values=np.zeros(shape=grid.shape[0]), mask=grid.mask)
+            else:
+                return aa.ArrayIrregular(values=np.zeros(grid.shape[0]))
+
         traced_grid_list = self.traced_grid_2d_list_from(
             grid=grid, plane_index_limit=plane_index
         )
@@ -562,9 +568,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         )
 
     def image_2d_list_over_sampled_from(
-            self,
-            grid: aa.type.Grid2DLike,
-            operated_only: Optional[bool] = None,
+        self,
+        grid: aa.type.Grid2DLike,
+        operated_only: Optional[bool] = None,
     ) -> List[aa.Array2D]:
         """
         Returns a list of the 2D images for each plane from a 2D grid of Cartesian (y,x) coordinates where adaptive
@@ -616,17 +622,13 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         for plane_index in range(len(self.planes)):
 
             def func(obj, grid, *args, **kwargs):
-
                 return self.image_2d_of_plane_from(
                     grid=grid,
                     operated_only=operated_only,
-                    plane_index=plane_index
+                    plane_index=plane_index,
                 )
 
-            image_2d = grid.over_sampler.array_via_func_from(
-                func=func,
-                obj=self
-            )
+            image_2d = grid.over_sampler.array_via_func_from(func=func, obj=self)
 
             image_2d_list.append(image_2d)
 
