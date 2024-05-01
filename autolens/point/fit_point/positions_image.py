@@ -1,11 +1,8 @@
-from functools import partial
 from typing import Optional
 
 import autoarray as aa
 import autogalaxy as ag
 
-from autolens.point.point_dataset import PointDict
-from autolens.point.point_dataset import PointDataset
 from autolens.point.point_solver import PointSolver
 from autolens.lens.tracer import Tracer
 

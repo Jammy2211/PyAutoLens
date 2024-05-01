@@ -17,14 +17,14 @@ def test__model_image__with_and_without_psf_blurring(
 
     fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
-    assert fit.model_image.slim == pytest.approx(
+    assert fit.model_data.slim == pytest.approx(
         np.array([2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]), 1.0e-4
     )
     assert fit.log_likelihood == pytest.approx(-14.6337, 1.0e-4)
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
-    assert fit.model_image.slim == pytest.approx(
+    assert fit.model_data.slim == pytest.approx(
         np.array([1.33, 1.16, 1.0, 1.16, 1.0, 1.0, 1.0, 1.0, 1.0]), 1.0e-1
     )
     assert fit.log_likelihood == pytest.approx(-14.52960, 1.0e-4)
@@ -497,7 +497,7 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
     )
     assert (fit.galaxy_model_image_dict[g2] == np.zeros(9)).all()
 
-    assert fit.model_image.native == pytest.approx(
+    assert fit.model_data.native == pytest.approx(
         fit.galaxy_model_image_dict[g0].native + fit.galaxy_model_image_dict[g1].native,
         1.0e-4,
     )
@@ -523,7 +523,7 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
     )
     assert (fit.galaxy_model_image_dict[g2] == np.zeros(9)).all()
 
-    assert fit.model_image == pytest.approx(
+    assert fit.model_data == pytest.approx(
         fit.galaxy_model_image_dict[g0_linear] + fit.galaxy_model_image_dict[g1_linear],
         1.0e-4,
     )
@@ -550,7 +550,7 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
         1.259965886, 1.0e-4
     )
 
-    assert fit.model_image == pytest.approx(
+    assert fit.model_data == pytest.approx(
         fit.galaxy_model_image_dict[galaxy_pix_0], 1.0e-4
     )
 

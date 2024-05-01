@@ -295,7 +295,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
                 if i != galaxy_index
             ]
 
-            subtracted_image = self.image - sum(other_planes_model_images)
+            subtracted_image = self.data - sum(other_planes_model_images)
 
             subtracted_images_of_planes_list.append(subtracted_image)
 
