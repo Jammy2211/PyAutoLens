@@ -23,8 +23,16 @@ class MockFitImaging(aa.m.MockFitImaging):
             blurred_image=blurred_image,
         )
 
+        self._grid = grid
         self.tracer = tracer
-        self.grid = grid
+
+    @property
+    def grid(self):
+
+        if self._grid is not None:
+            return self._grid
+
+        return super().grid
 
     @property
     def tracer_to_inversion(self) -> MockTracerToInversion:
