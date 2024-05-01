@@ -21,7 +21,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         self,
         dataset: aa.Imaging,
         tracer: Tracer,
-        sky: Optional[ag.LightProfile] = None,
+        dataset_model : Optional[aa.DatasetModel] = None,
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads: Preloads = Preloads(),
@@ -57,8 +57,8 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             The imaging dataset which is fitted by the galaxies in the tracer.
         tracer
             The tracer of galaxies whose light profile images are used to fit the imaging data.
-        sky
-            Model component used to represent the background sky emission in an image (e.g. a `Sky` light profile).
+        dataset_model
+            Attributes which allow for parts of a dataset to be treated as a model (e.g. the background sky level).
         adapt_images
             Contains the adapt-images which are used to make a pixelization's mesh and regularization adapt to the
             reconstructed galaxy's morphology.
@@ -72,12 +72,11 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             decorator take to run.
         """
 
-        super().__init__(dataset=dataset, run_time_dict=run_time_dict)
+        super().__init__(dataset=dataset, dataset_model=dataset_model, run_time_dict=run_time_dict)
         AbstractFitInversion.__init__(
-            self=self, model_obj=tracer, sky=sky, settings_inversion=settings_inversion
+            self=self, model_obj=tracer, settings_inversion=settings_inversion
         )
 
-        self.sky = sky
         self.tracer = tracer
 
         self.adapt_images = adapt_images
