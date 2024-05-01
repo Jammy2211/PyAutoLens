@@ -16,7 +16,6 @@ class TracerToInversion(ag.AbstractToInversion):
         self,
         dataset: Optional[Union[aa.Imaging, aa.Interferometer, aa.DatasetInterface]],
         tracer,
-        sky: Optional[Basis] = None,
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads=Preloads(),
@@ -26,7 +25,6 @@ class TracerToInversion(ag.AbstractToInversion):
 
         super().__init__(
             dataset=dataset,
-            sky=sky,
             adapt_images=adapt_images,
             settings_inversion=settings_inversion,
             preloads=preloads,
@@ -106,7 +104,6 @@ class TracerToInversion(ag.AbstractToInversion):
             galaxies_to_inversion = ag.GalaxiesToInversion(
                 dataset=dataset,
                 galaxies=galaxies,
-                sky=self.sky,
                 settings_inversion=self.settings_inversion,
                 adapt_images=self.adapt_images,
                 run_time_dict=self.run_time_dict,
@@ -168,7 +165,6 @@ class TracerToInversion(ag.AbstractToInversion):
             to_inversion = ag.GalaxiesToInversion(
                 dataset=self.dataset,
                 galaxies=galaxies,
-                sky=self.sky,
                 adapt_images=self.adapt_images,
                 settings_inversion=self.settings_inversion,
                 run_time_dict=self.run_time_dict,
@@ -245,7 +241,6 @@ class TracerToInversion(ag.AbstractToInversion):
                 to_inversion = ag.GalaxiesToInversion(
                     dataset=self.dataset,
                     galaxies=galaxies,
-                    sky=self.sky,
                     preloads=self.preloads,
                     adapt_images=self.adapt_images,
                     settings_inversion=self.settings_inversion,

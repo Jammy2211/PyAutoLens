@@ -95,16 +95,11 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         if self.preloads.blurred_image is None:
 
-            if isinstance(self.sky, ag.lp.Sky):
-                image = self.sky.image_2d_from(grid=self.dataset.grid)
-            else:
-                image = np.zeros(self.dataset.shape_slim)
-
             return self.tracer.blurred_image_2d_from(
                 grid=self.dataset.grid,
                 convolver=self.dataset.convolver,
                 blurring_grid=self.dataset.blurring_grid,
-            ) + image
+            )
 
         return self.preloads.blurred_image
 
@@ -114,7 +109,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         Returns the dataset's image with all blurred light profile images in the fit's tracer subtracted.
         """
 
-        return self.image - self.blurred_image
+        return self.data - self.blurred_image
 
     @property
     def tracer_to_inversion(self) -> TracerToInversion:
@@ -134,7 +129,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         return TracerToInversion(
             dataset=dataset,
             tracer=self.tracer,
-            sky=self.sky,
             adapt_images=self.adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=self.preloads,
@@ -383,7 +377,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         return FitImaging(
             dataset=self.dataset,
             tracer=self.tracer,
-            sky=self.sky,
+            dataset_model=self.dataset_model,
             adapt_images=self.adapt_images,
             settings_inversion=settings_inversion,
             preloads=preloads,
