@@ -105,8 +105,6 @@ class TestSimulatorInterferometer:
             image=tracer.image_2d_from(grid=grid)
         )
 
-        assert dataset.data == pytest.approx(
-            interferometer_via_image.data, 1.0e-4
-        )
+        assert dataset.data == pytest.approx(interferometer_via_image.data, 1.0e-4)
         assert (dataset.uv_wavelengths == interferometer_via_image.uv_wavelengths).all()
         assert (interferometer_via_image.noise_map == dataset.noise_map).all()

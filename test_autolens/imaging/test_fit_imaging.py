@@ -492,6 +492,27 @@ def test__fit__model_dataset__grid_offset__handles_special_behaviour(masked_imag
 
     assert fit.figure_of_merit == pytest.approx(-2849711.5317237, 1.0e-4)
 
+    g0_linear = al.Galaxy(
+        redshift=0.5,
+        bulge=al.lp_linear.Sersic(centre=(-1.0, -2.0), sersic_index=1.0),
+        disk=al.lp_linear.Sersic(centre=(-1.0, -2.0), sersic_index=4.0),
+        mass_profile=al.mp.IsothermalSph(centre=(-1.0, -2.0), einstein_radius=1.0),
+    )
+
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
+
+    galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
+
+    tracer = al.Tracer(galaxies=[g0_linear, galaxy_pix])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer,
+                        dataset_model=al.DatasetModel(grid_offset=(1.0, 2.0))
+                        )
+    assert fit.figure_of_merit == pytest.approx(-22.79906, 1.0e-4)
+
 
 def test__galaxy_model_image_dict(masked_imaging_7x7):
 

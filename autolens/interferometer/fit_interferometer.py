@@ -85,7 +85,9 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
 
         self.run_time_dict = run_time_dict
 
-        super().__init__(dataset=dataset, dataset_model=dataset_model, run_time_dict=run_time_dict)
+        super().__init__(
+            dataset=dataset, dataset_model=dataset_model, run_time_dict=run_time_dict
+        )
         AbstractFitInversion.__init__(
             self=self, model_obj=tracer, settings_inversion=settings_inversion
         )
