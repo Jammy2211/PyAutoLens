@@ -2,6 +2,8 @@ import copy
 import numpy as np
 from typing import Optional
 
+from autoconf import conf
+
 import autoarray as aa
 import autogalaxy.plot as aplt
 
@@ -584,15 +586,81 @@ class FitImagingPlotter(Plotter):
         self.include_2d._radial_critical_curves = include_radial_critical_curves_original
         self.mat_plot_2d.use_log10 = use_log10_original
 
-    def subplot_mappings_of_plane(self, plane_index: Optional[int] = None):
+    def subplot_mappings_of_plane(self, plane_index: Optional[int] = None, auto_filename: str = "subplot_mappings"):
 
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
         for plane_index in plane_indexes:
+            
+            pixelization_index = 0
 
-            inversion_plotter = self.inversion_plotter_of_plane(plane_index=plane_index)
+            inversion_plotter = self.inversion_plotter_of_plane(plane_index=0)
 
-            inversion_plotter.subplot_mappings(pixelization_index=0)
+            inversion_plotter.open_subplot_figure(number_subplots=8, subplot_shape=(2, 4))
+
+            inversion_plotter.figures_2d_of_pixelization(
+                pixelization_index=pixelization_index, data_subtracted=True
+            )
+
+            inversion_plotter.figures_2d_of_pixelization(
+                pixelization_index=pixelization_index, reconstructed_image=True
+            )
+
+            inversion_plotter = self.inversion_plotter_of_plane(plane_index=1)
+
+            inversion_plotter.figures_2d_of_pixelization(
+                pixelization_index=pixelization_index, reconstruction=True
+            )
+
+            inversion_plotter.set_title(label="Source Reconstruction (Unzoomed)")
+            inversion_plotter.figures_2d_of_pixelization(
+                pixelization_index=pixelization_index,
+                reconstruction=True,
+                zoom_to_brightest=False,
+            )
+            inversion_plotter.set_title(label=None)
+
+            total_pixels = conf.instance["visualize"]["general"]["inversion"][
+                "total_mappings_pixels"
+            ]
+
+            pix_indexes = inversion_plotter.inversion.brightest_reconstruction_pixel_list_from(
+                total_pixels=total_pixels
+            )
+
+            inversion_plotter.visuals_2d.pix_indexes = [
+                [index] for index in pix_indexes[pixelization_index]
+            ]
+
+            inversion_plotter = self.inversion_plotter_of_plane(plane_index=0)
+
+            inversion_plotter.figures_2d_of_pixelization(
+                pixelization_index=pixelization_index, data_subtracted=True
+            )
+
+            inversion_plotter.figures_2d_of_pixelization(
+                pixelization_index=pixelization_index, reconstructed_image=True
+            )
+
+            inversion_plotter = self.inversion_plotter_of_plane(plane_index=1)
+
+            inversion_plotter.figures_2d_of_pixelization(
+                pixelization_index=pixelization_index, reconstruction=True
+            )
+
+            inversion_plotter.set_title(label="Source Reconstruction (Unzoomed)")
+            inversion_plotter.figures_2d_of_pixelization(
+                pixelization_index=pixelization_index,
+                reconstruction=True,
+                zoom_to_brightest=False,
+            )
+            inversion_plotter.set_title(label=None)
+
+            inversion_plotter.mat_plot_2d.output.subplot_to_figure(
+                auto_filename=f"{auto_filename}_{pixelization_index}"
+            )
+
+            inversion_plotter.close_subplot_figure()
 
     def figures_2d(
         self,
