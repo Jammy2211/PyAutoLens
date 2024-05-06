@@ -584,6 +584,16 @@ class FitImagingPlotter(Plotter):
         self.include_2d._radial_critical_curves = include_radial_critical_curves_original
         self.mat_plot_2d.use_log10 = use_log10_original
 
+    def subplot_mappings_of_plane(self, plane_index: Optional[int] = None):
+
+        plane_indexes = self.plane_indexes_from(plane_index=plane_index)
+
+        for plane_index in plane_indexes:
+
+            inversion_plotter = self.inversion_plotter_of_plane(plane_index=plane_index)
+
+            inversion_plotter.subplot_mappings(pixelization_index=0)
+
     def figures_2d(
         self,
         data: bool = False,

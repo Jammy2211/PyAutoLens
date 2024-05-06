@@ -44,6 +44,7 @@
     potential: false
   inversion:                                 # Settings for plots of inversions (e.g. InversionPlotter).
     subplot_inversion: true                  # Plot subplot of all quantities in each inversion (e.g. reconstrucuted image, reconstruction)?
+    subplot_mappings: false                  # Plot subplot of the image-to-source pixels mappings of each pixelization?
     all_at_end_png: true                     # Plot all individual plots listed below as .png (even if False)?
     all_at_end_fits: true                    # Plot all individual plots listed below as .fits (even if False)?
     all_at_end_pdf: false                    # Plot all individual plots listed below as publication-quality .pdf (even if False)?
