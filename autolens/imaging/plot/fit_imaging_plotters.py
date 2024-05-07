@@ -596,53 +596,33 @@ class FitImagingPlotter(Plotter):
 
             inversion_plotter = self.inversion_plotter_of_plane(plane_index=0)
 
-            inversion_plotter.open_subplot_figure(number_subplots=8, subplot_shape=(2, 4))
+            inversion_plotter.open_subplot_figure(number_subplots=4)
 
             inversion_plotter.figures_2d_of_pixelization(
                 pixelization_index=pixelization_index, data_subtracted=True
             )
 
-            inversion_plotter.figures_2d_of_pixelization(
-                pixelization_index=pixelization_index, reconstructed_image=True
-            )
-
-            inversion_plotter = self.inversion_plotter_of_plane(plane_index=1)
-
-            inversion_plotter.figures_2d_of_pixelization(
-                pixelization_index=pixelization_index, reconstruction=True
-            )
-
-            inversion_plotter.set_title(label="Source Reconstruction (Unzoomed)")
-            inversion_plotter.figures_2d_of_pixelization(
-                pixelization_index=pixelization_index,
-                reconstruction=True,
-                zoom_to_brightest=False,
-            )
-            inversion_plotter.set_title(label=None)
-
             total_pixels = conf.instance["visualize"]["general"]["inversion"][
                 "total_mappings_pixels"
             ]
 
-            pix_indexes = inversion_plotter.inversion.brightest_reconstruction_pixel_list_from(
-                total_pixels=total_pixels
+            pix_indexes = inversion_plotter.inversion.brightest_pixel_list_from(
+                total_pixels=total_pixels, filter_neighbors=True
             )
 
             inversion_plotter.visuals_2d.pix_indexes = [
                 [index] for index in pix_indexes[pixelization_index]
             ]
 
-            inversion_plotter = self.inversion_plotter_of_plane(plane_index=0)
-
-            inversion_plotter.figures_2d_of_pixelization(
-                pixelization_index=pixelization_index, data_subtracted=True
-            )
-
             inversion_plotter.figures_2d_of_pixelization(
                 pixelization_index=pixelization_index, reconstructed_image=True
             )
 
-            inversion_plotter = self.inversion_plotter_of_plane(plane_index=1)
+            inversion_plotter = self.inversion_plotter_of_plane(plane_index=plane_index)
+
+            inversion_plotter.visuals_2d.pix_indexes = [
+                [index] for index in pix_indexes[pixelization_index]
+            ]
 
             inversion_plotter.figures_2d_of_pixelization(
                 pixelization_index=pixelization_index, reconstruction=True

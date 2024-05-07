@@ -232,6 +232,6 @@ class ResultDataset(Result):
         """
         if self.max_log_likelihood_fit.inversion is not None:
             if self.max_log_likelihood_fit.inversion.has(cls=aa.AbstractMapper):
-                return self.max_log_likelihood_fit.inversion.brightest_reconstruction_pixel_centre_list[
-                    0
-                ]
+                return (
+                    self.max_log_likelihood_fit.inversion.brightest_pixel_centre_list[0]
+                )
