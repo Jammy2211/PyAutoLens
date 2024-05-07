@@ -621,12 +621,6 @@ class FitImagingPlotter(Plotter):
                 pixelization_index=pixelization_index, reconstructed_image=True
             )
 
-            inversion_plotter = self.inversion_plotter_of_plane(plane_index=plane_index)
-
-            inversion_plotter.figures_2d_of_pixelization(
-                pixelization_index=pixelization_index, reconstruction=True
-            )
-
             self.visuals_2d.pix_indexes = [
                 [index] for index in pix_indexes[pixelization_index]
             ]
@@ -634,7 +628,6 @@ class FitImagingPlotter(Plotter):
             self.figures_2d_of_planes(
                 plane_index=plane_index,
                 plane_image=True,
-                zoom_to_brightest=True,
                 use_source_vmax=True
             )
 
