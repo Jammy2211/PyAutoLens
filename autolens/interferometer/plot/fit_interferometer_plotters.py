@@ -236,27 +236,31 @@ class FitInterferometerPlotter(Plotter):
                 [index] for index in pix_indexes[pixelization_index]
             ]
 
+            inversion_plotter.visuals_2d.tangential_critical_curves = None
+            inversion_plotter.visuals_2d.radial_critical_curves = None
+
             inversion_plotter.figures_2d_of_pixelization(
                 pixelization_index=pixelization_index, reconstructed_image=True
             )
 
-            inversion_plotter = self.inversion_plotter_of_plane(plane_index=plane_index)
-
-            inversion_plotter.visuals_2d.pix_indexes = [
+            self.visuals_2d.pix_indexes = [
                 [index] for index in pix_indexes[pixelization_index]
             ]
 
-            inversion_plotter.figures_2d_of_pixelization(
-                pixelization_index=pixelization_index, reconstruction=True
+            self.figures_2d_of_planes(
+                plane_index=plane_index,
+                plane_image=True,
             )
 
-            inversion_plotter.set_title(label="Source Reconstruction (Unzoomed)")
-            inversion_plotter.figures_2d_of_pixelization(
-                pixelization_index=pixelization_index,
-                reconstruction=True,
+            self.set_title(label="Source Reconstruction (Unzoomed)")
+            self.figures_2d_of_planes(
+                plane_index=plane_index,
+                plane_image=True,
                 zoom_to_brightest=False,
             )
-            inversion_plotter.set_title(label=None)
+            self.set_title(label=None)
+
+            self.visuals_2d.pix_indexes = None
 
             inversion_plotter.mat_plot_2d.output.subplot_to_figure(
                 auto_filename=f"{auto_filename}_{pixelization_index}"
