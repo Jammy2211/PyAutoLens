@@ -18,6 +18,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         self,
         dataset: aa.Interferometer,
         tracer: Tracer,
+        dataset_model: Optional[aa.DatasetModel] = None,
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads: Preloads = Preloads(),
@@ -54,6 +55,8 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
             The interforometer dataset which is fitted by the galaxies in the tracer.
         tracer
             The tracer of galaxies whose light profile images are used to fit the interferometer data.
+        dataset_model
+            Attributes which allow for parts of a dataset to be treated as a model (e.g. the background sky level).
         adapt_images
             Contains the adapt-images which are used to make a pixelization's mesh and regularization adapt to the
             reconstructed galaxy's morphology.
@@ -82,9 +85,9 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
 
         self.run_time_dict = run_time_dict
 
-        super().__init__(dataset=dataset, run_time_dict=run_time_dict)
+        super().__init__(dataset=dataset, dataset_model=dataset_model, run_time_dict=run_time_dict)
         AbstractFitInversion.__init__(
-            self=self, model_obj=tracer, sky=None, settings_inversion=settings_inversion
+            self=self, model_obj=tracer, settings_inversion=settings_inversion
         )
 
     @property
@@ -103,7 +106,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         Returns the interferometer dataset's visibilities with all transformed light profile images in the fit's
         tracer subtracted.
         """
-        return self.visibilities - self.profile_visibilities
+        return self.data - self.profile_visibilities
 
     @property
     def tracer_to_inversion(self) -> TracerToInversion:
@@ -219,7 +222,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         galaxy_model_visibilities_dict = self.galaxy_model_visibilities_dict
 
         model_visibilities_of_planes_list = [
-            aa.Visibilities.zeros(shape_slim=(self.dataset.visibilities.shape_slim,))
+            aa.Visibilities.zeros(shape_slim=(self.dataset.data.shape_slim,))
             for i in range(self.tracer.total_planes)
         ]
 
@@ -274,8 +277,9 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
             settings_inversion = self.settings_inversion
 
         return FitInterferometer(
-            dataset=self.interferometer,
+            dataset=self.dataset,
             tracer=self.tracer,
+            dataset_model=self.dataset_model,
             adapt_images=self.adapt_images,
             settings_inversion=settings_inversion,
             preloads=preloads,

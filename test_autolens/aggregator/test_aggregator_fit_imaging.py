@@ -28,6 +28,8 @@ def test__fit_imaging_randomly_drawn_via_pdf_gen_from(
             assert fit_list[0].tracer.galaxies[0].light.centre == (10.0, 10.0)
             assert fit_list[0].tracer.galaxies[1].redshift == 1.0
 
+            assert fit_list[0].dataset_model.background_sky_level == 10.0
+
     assert i == 2
 
     clean(database_file=database_file)

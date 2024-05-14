@@ -313,7 +313,7 @@ class AnalysisInterferometer(AnalysisDataset):
             instance=instance,
         )
 
-        info_dict["number_of_visibilities"] = self.dataset.visibilities.shape[0]
+        info_dict["number_of_visibilities"] = self.dataset.data.shape[0]
         info_dict["transformer_cls"] = self.dataset.transformer.__class__.__name__
 
         self.output_profiling_info(

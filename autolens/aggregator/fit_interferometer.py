@@ -4,6 +4,7 @@ import autofit as af
 import autoarray as aa
 
 from autogalaxy.aggregator.interferometer import _interferometer_from
+from autogalaxy.aggregator.dataset_model import _dataset_model_from
 
 from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.analysis.preloads import Preloads
@@ -60,6 +61,7 @@ def _fit_interferometer_from(
         real_space_mask=real_space_mask,
     )
     tracer_list = _tracer_from(fit=fit, instance=instance)
+    dataset_model_list = _dataset_model_from(fit=fit, instance=instance)
 
     adapt_images_list = agg_util.adapt_images_from(fit=fit)
 
@@ -71,8 +73,8 @@ def _fit_interferometer_from(
 
     fit_dataset_list = []
 
-    for dataset, tracer, adapt_images, mesh_grids_of_planes in zip(
-        dataset_list, tracer_list, adapt_images_list, mesh_grids_of_planes_list
+    for dataset, tracer, dataset_model, adapt_images, mesh_grids_of_planes in zip(
+        dataset_list, tracer_list, dataset_model_list, adapt_images_list, mesh_grids_of_planes_list
     ):
         preloads = agg_util.preloads_from(
             preloads_cls=Preloads,
@@ -85,6 +87,7 @@ def _fit_interferometer_from(
             FitInterferometer(
                 dataset=dataset,
                 tracer=tracer,
+                dataset_model=dataset_model,
                 adapt_images=adapt_images,
                 settings_inversion=settings_inversion,
                 preloads=preloads,

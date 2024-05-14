@@ -21,7 +21,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         self,
         dataset: aa.Imaging,
         tracer: Tracer,
-        sky: Optional[ag.LightProfile] = None,
+        dataset_model : Optional[aa.DatasetModel] = None,
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads: Preloads = Preloads(),
@@ -57,8 +57,8 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             The imaging dataset which is fitted by the galaxies in the tracer.
         tracer
             The tracer of galaxies whose light profile images are used to fit the imaging data.
-        sky
-            Model component used to represent the background sky emission in an image (e.g. a `Sky` light profile).
+        dataset_model
+            Attributes which allow for parts of a dataset to be treated as a model (e.g. the background sky level).
         adapt_images
             Contains the adapt-images which are used to make a pixelization's mesh and regularization adapt to the
             reconstructed galaxy's morphology.
@@ -72,12 +72,11 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             decorator take to run.
         """
 
-        super().__init__(dataset=dataset, run_time_dict=run_time_dict)
+        super().__init__(dataset=dataset, dataset_model=dataset_model, run_time_dict=run_time_dict)
         AbstractFitInversion.__init__(
-            self=self, model_obj=tracer, sky=sky, settings_inversion=settings_inversion
+            self=self, model_obj=tracer, settings_inversion=settings_inversion
         )
 
-        self.sky = sky
         self.tracer = tracer
 
         self.adapt_images = adapt_images
@@ -96,16 +95,11 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         if self.preloads.blurred_image is None:
 
-            if isinstance(self.sky, ag.lp.Sky):
-                image = self.sky.image_2d_from(grid=self.dataset.grid)
-            else:
-                image = np.zeros(self.dataset.shape_slim)
-
             return self.tracer.blurred_image_2d_from(
                 grid=self.dataset.grid,
                 convolver=self.dataset.convolver,
                 blurring_grid=self.dataset.blurring_grid,
-            ) + image
+            )
 
         return self.preloads.blurred_image
 
@@ -115,7 +109,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         Returns the dataset's image with all blurred light profile images in the fit's tracer subtracted.
         """
 
-        return self.image - self.blurred_image
+        return self.data - self.blurred_image
 
     @property
     def tracer_to_inversion(self) -> TracerToInversion:
@@ -135,7 +129,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         return TracerToInversion(
             dataset=dataset,
             tracer=self.tracer,
-            sky=self.sky,
             adapt_images=self.adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=self.preloads,
@@ -302,7 +295,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
                 if i != galaxy_index
             ]
 
-            subtracted_image = self.image - sum(other_planes_model_images)
+            subtracted_image = self.data - sum(other_planes_model_images)
 
             subtracted_images_of_planes_list.append(subtracted_image)
 
@@ -384,7 +377,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         return FitImaging(
             dataset=self.dataset,
             tracer=self.tracer,
-            sky=self.sky,
+            dataset_model=self.dataset_model,
             adapt_images=self.adapt_images,
             settings_inversion=settings_inversion,
             preloads=preloads,

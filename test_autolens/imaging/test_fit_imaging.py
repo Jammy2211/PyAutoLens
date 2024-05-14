@@ -17,14 +17,14 @@ def test__model_image__with_and_without_psf_blurring(
 
     fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
 
-    assert fit.model_image.slim == pytest.approx(
+    assert fit.model_data.slim == pytest.approx(
         np.array([2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]), 1.0e-4
     )
     assert fit.log_likelihood == pytest.approx(-14.6337, 1.0e-4)
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
-    assert fit.model_image.slim == pytest.approx(
+    assert fit.model_data.slim == pytest.approx(
         np.array([1.33, 1.16, 1.0, 1.16, 1.0, 1.0, 1.0, 1.0, 1.0]), 1.0e-1
     )
     assert fit.log_likelihood == pytest.approx(-14.52960, 1.0e-4)
@@ -461,41 +461,10 @@ def test__fit__sky___handles_special_behaviour(masked_imaging_7x7):
     tracer = al.Tracer(galaxies=[g0, g1])
 
     fit = al.FitImaging(
-        dataset=masked_imaging_7x7,
-        tracer=tracer,
-        sky=al.lp_linear.Sky(),
-        settings_inversion=al.SettingsInversion(use_positive_only_solver=False),
+        dataset=masked_imaging_7x7, tracer=tracer, dataset_model=al.DatasetModel(background_sky_level=5.0)
     )
 
-    assert fit.perform_inversion is True
-    assert fit.figure_of_merit == pytest.approx(-733125.35694344, 1.0e-4)
-
-    sky = fit.sky_linear_light_profiles_to_light_profiles
-
-    assert sky.light_profile_list[0].intensity == pytest.approx(-737.44550397, 1.0e-4)
-    assert sky.light_profile_list[1].intensity == pytest.approx(737.44550397, 1.0e-4)
-
-    fit = al.FitImaging(
-        dataset=masked_imaging_7x7,
-        tracer=tracer,
-        sky=al.lp_linear.Sky(),
-        settings_inversion=al.SettingsInversion(use_positive_only_solver=True),
-    )
-
-    assert fit.perform_inversion is True
-    assert fit.figure_of_merit == pytest.approx(-733125.3569434, 1.0e-4)
-
-    sky = fit.sky_linear_light_profiles_to_light_profiles
-
-    assert sky.light_profile_list[0].intensity == pytest.approx(0.0, 1.0e-4)
-    assert sky.light_profile_list[1].intensity == pytest.approx(1474.891048, 1.0e-4)
-
-    fit = al.FitImaging(
-        dataset=masked_imaging_7x7, tracer=tracer, sky=al.lp.Sky(intensity=-99.0)
-    )
-
-    assert fit.perform_inversion is False
-    assert fit.figure_of_merit == pytest.approx(-2862836.077500, 1.0e-4)
+    assert fit.figure_of_merit == pytest.approx(-3196962.5844406, 1.0e-4)
 
 
 def test__galaxy_model_image_dict(masked_imaging_7x7):
@@ -528,7 +497,7 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
     )
     assert (fit.galaxy_model_image_dict[g2] == np.zeros(9)).all()
 
-    assert fit.model_image.native == pytest.approx(
+    assert fit.model_data.native == pytest.approx(
         fit.galaxy_model_image_dict[g0].native + fit.galaxy_model_image_dict[g1].native,
         1.0e-4,
     )
@@ -554,7 +523,7 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
     )
     assert (fit.galaxy_model_image_dict[g2] == np.zeros(9)).all()
 
-    assert fit.model_image == pytest.approx(
+    assert fit.model_data == pytest.approx(
         fit.galaxy_model_image_dict[g0_linear] + fit.galaxy_model_image_dict[g1_linear],
         1.0e-4,
     )
@@ -581,7 +550,7 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
         1.259965886, 1.0e-4
     )
 
-    assert fit.model_image == pytest.approx(
+    assert fit.model_data == pytest.approx(
         fit.galaxy_model_image_dict[galaxy_pix_0], 1.0e-4
     )
 

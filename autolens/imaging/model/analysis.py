@@ -159,7 +159,7 @@ class AnalysisImaging(AnalysisDataset):
             instance=instance, run_time_dict=run_time_dict
         )
 
-        sky = self.sky_via_instance_from(instance=instance)
+        dataset_model = self.dataset_model_via_instance_from(instance=instance)
 
         adapt_images = self.adapt_images_via_instance_from(instance=instance)
 
@@ -168,7 +168,7 @@ class AnalysisImaging(AnalysisDataset):
         return FitImaging(
             dataset=self.dataset,
             tracer=tracer,
-            sky=sky,
+            dataset_model=dataset_model,
             adapt_images=adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=preloads,

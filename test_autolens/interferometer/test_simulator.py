@@ -30,7 +30,7 @@ class TestSimulatorInterferometer:
             image=tracer.image_2d_from(grid=grid)
         )
 
-        assert (dataset.data == interferometer_via_image.visibilities).all()
+        assert (dataset.data == interferometer_via_image.data).all()
         assert (dataset.uv_wavelengths == interferometer_via_image.uv_wavelengths).all()
         assert (dataset.noise_map == interferometer_via_image.noise_map).all()
 
@@ -61,7 +61,7 @@ class TestSimulatorInterferometer:
             image=tracer.image_2d_from(grid=grid)
         )
 
-        assert (dataset.data == interferometer_via_image.visibilities).all()
+        assert (dataset.data == interferometer_via_image.data).all()
         assert (interferometer_via_image.uv_wavelengths == dataset.uv_wavelengths).all()
         assert (dataset.noise_map == interferometer_via_image.noise_map).all()
 
@@ -106,7 +106,7 @@ class TestSimulatorInterferometer:
         )
 
         assert dataset.data == pytest.approx(
-            interferometer_via_image.visibilities, 1.0e-4
+            interferometer_via_image.data, 1.0e-4
         )
         assert (dataset.uv_wavelengths == interferometer_via_image.uv_wavelengths).all()
         assert (interferometer_via_image.noise_map == dataset.noise_map).all()
