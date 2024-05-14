@@ -96,9 +96,9 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         if self.preloads.blurred_image is None:
 
             return self.tracer.blurred_image_2d_from(
-                grid=self.dataset.grid,
+                grid=self.grid,
                 convolver=self.dataset.convolver,
-                blurring_grid=self.dataset.blurring_grid,
+                blurring_grid=self.blurring_grid,
             )
 
         return self.preloads.blurred_image
@@ -120,8 +120,8 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             convolver=self.dataset.convolver,
             w_tilde=self.w_tilde,
             grid=self.grid,
-            grid_pixelization=self.dataset.grid_pixelization,
-            blurring_grid=self.dataset.blurring_grid,
+            grid_pixelization=self.grid_pixelization,
+            blurring_grid=self.blurring_grid,
             border_relocator=self.dataset.border_relocator,
         )
 
@@ -167,10 +167,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         return self.blurred_image
 
     @property
-    def grid(self) -> aa.type.Grid2DLike:
-        return self.dataset.grid
-
-    @property
     def galaxy_model_image_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
         """
         A dictionary which associates every galaxy in the tracer with its `model_image`.
@@ -188,7 +184,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         galaxy_blurred_image_2d_dict = self.tracer.galaxy_blurred_image_2d_dict_from(
             grid=self.grid,
             convolver=self.dataset.convolver,
-            blurring_grid=self.dataset.blurring_grid,
+            blurring_grid=self.blurring_grid,
         )
 
         galaxy_linear_obj_image_dict = self.galaxy_linear_obj_data_dict_from(
@@ -257,7 +253,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         model_images_of_planes_list = [
             aa.Array2D(
-            values=np.zeros(self.dataset.grid.shape_slim), mask=self.dataset.mask
+            values=np.zeros(self.grid.shape_slim), mask=self.dataset.mask
             )
             for i in range(self.tracer.total_planes)
         ]
