@@ -588,6 +588,9 @@ class FitImagingPlotter(Plotter):
 
     def subplot_mappings_of_plane(self, plane_index: Optional[int] = None, auto_filename: str = "subplot_mappings"):
 
+        if not self.fit.inversion.has(cls=aa.Pixelization):
+            return
+
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
         for plane_index in plane_indexes:
