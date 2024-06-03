@@ -19,7 +19,8 @@ class TriangleSolver:
         Determine the image plane coordinates that are traced to be a source plane coordinate.
 
         This is performed efficiently by iteratively subdividing the image plane into triangles and checking if the
-        source plane coordinate is contained within the triangle. The triangles are subsampled to increase the resolution
+        source plane coordinate is contained within the triangle. The triangles are subsampled to increase the
+        resolution
 
         Parameters
         ----------
