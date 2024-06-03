@@ -26,7 +26,7 @@ def solver():
     return TriangleSolver(
         tracer=tracer,
         grid=grid,
-        min_pixel_scale=0.01,
+        target_pixel_scale=0.01,
     )
 
 
