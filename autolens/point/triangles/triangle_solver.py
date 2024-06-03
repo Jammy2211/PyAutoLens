@@ -1,19 +1,19 @@
 import math
-from typing import Tuple, List
+from typing import Tuple
 
-from autoarray import Grid2D
+from autoarray import Grid2D, Grid2DIrregular
 from autoarray.structures.triangles.subsample_triangles import SubsampleTriangles
 from autoarray.structures.triangles.triangles import Triangles
 from autoarray.type import Grid2DLike
-from autolens import Tracer
+from autogalaxy import OperateDeflections
 
 
 class TriangleSolver:
     def __init__(
         self,
-        tracer: Tracer,
+        lensing_obj: OperateDeflections,
         grid: Grid2D,
-        target_pixel_scale: float,
+        pixel_scale_precision: float,
     ):
         """
         Determine the image plane coordinates that are traced to be a source plane coordinate.
@@ -24,23 +24,23 @@ class TriangleSolver:
 
         Parameters
         ----------
-        tracer
+        lensing_obj
             A tracer describing the lensing system.
         grid
             The grid of image plane coordinates.
-        target_pixel_scale
+        pixel_scale_precision
             The target pixel scale of the image grid.
         """
-        self.tracer = tracer
+        self.lensing_obj = lensing_obj
         self.grid = grid
-        self.target_pixel_scale = target_pixel_scale
+        self.pixel_scale_precision = pixel_scale_precision
 
     @property
     def n_steps(self) -> int:
         """
         How many times should triangles be subdivided?
         """
-        return math.ceil(math.log2(self.grid.pixel_scale / self.target_pixel_scale))
+        return math.ceil(math.log2(self.grid.pixel_scale / self.pixel_scale_precision))
 
     def _source_plane_grid(self, grid: Grid2DLike) -> Grid2DLike:
         """
@@ -55,13 +55,11 @@ class TriangleSolver:
         -------
         The source plane grid computed by applying the deflections to the image plane grid.
         """
-        deflections = self.tracer.deflections_yx_2d_from(grid=grid)
+        deflections = self.lensing_obj.deflections_yx_2d_from(grid=grid)
         # noinspection PyTypeChecker
         return grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
 
-    def solve(
-        self, source_plane_coordinate: Tuple[float, float]
-    ) -> List[Tuple[float, float]]:
+    def solve(self, source_plane_coordinate: Tuple[float, float]) -> Grid2DIrregular:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
 
@@ -90,7 +88,7 @@ class TriangleSolver:
             )
             triangles = SubsampleTriangles(parent_triangles=kept_triangles)
 
-        return [triangle.mean for triangle in kept_triangles]
+        return Grid2DIrregular([triangle.mean for triangle in kept_triangles])
 
     def _filter_triangles(
         self,
