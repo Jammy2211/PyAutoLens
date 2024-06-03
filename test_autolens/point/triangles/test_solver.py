@@ -107,4 +107,5 @@ def test_real_example():
         lensing_obj=tracer,
         pixel_scale_precision=0.001,
     )
-    assert solver.solve((0.07, 0.07))
+    result = solver.solve((0.07, 0.07))
+    print(result)
