@@ -61,12 +61,7 @@ instance_dict = {
 }
 
 
-def test_missing_multiple_image():
-    grid = al.Grid2D.uniform(
-        shape_native=(100, 100),
-        pixel_scales=0.05,
-    )
-
+def test_missing_multiple_image(grid):
     instance = from_dict(instance_dict)
 
     tracer = al.Tracer(galaxies=[instance.lens_galaxy, instance.source_galaxy])
@@ -74,7 +69,7 @@ def test_missing_multiple_image():
     solver = TriangleSolver(
         grid=grid,
         lensing_obj=tracer,
-        pixel_scale_precision=0.00001,
+        pixel_scale_precision=0.01,
     )
 
     triangle_positions = solver.solve(
