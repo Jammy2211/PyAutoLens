@@ -69,7 +69,7 @@ def test_missing_multiple_image(grid):
     solver = TriangleSolver(
         grid=grid,
         lensing_obj=tracer,
-        pixel_scale_precision=0.01,
+        pixel_scale_precision=0.001,
     )
 
     triangle_positions = solver.solve(
