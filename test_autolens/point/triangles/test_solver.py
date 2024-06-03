@@ -9,7 +9,7 @@ from autolens.point.triangles.triangle_solver import TriangleSolver
 
 
 @pytest.fixture
-def solver():
+def solver(grid):
     tracer = al.Tracer(
         galaxies=[
             al.Galaxy(
@@ -20,10 +20,6 @@ def solver():
                 ),
             )
         ]
-    )
-    grid = al.Grid2D.uniform(
-        shape_native=(100, 100),
-        pixel_scales=0.05,
     )
 
     return TriangleSolver(
@@ -64,13 +60,11 @@ class NullTracer(al.Tracer):
 )
 def test_trivial(
     source_plane_coordinate: Tuple[float, float],
+    grid,
 ):
     solver = TriangleSolver(
         lensing_obj=NullTracer(),
-        grid=al.Grid2D.uniform(
-            shape_native=(100, 100),
-            pixel_scales=0.05,
-        ),
+        grid=grid,
         pixel_scale_precision=0.01,
     )
     (coordinates,) = solver.solve(
@@ -79,12 +73,7 @@ def test_trivial(
     assert coordinates == pytest.approx(source_plane_coordinate, abs=1.0e-2)
 
 
-def test_real_example():
-    grid = al.Grid2D.uniform(
-        shape_native=(100, 100),
-        pixel_scales=0.05,
-    )
-
+def test_real_example(grid):
     isothermal_mass_profile = al.mp.Isothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.6,
