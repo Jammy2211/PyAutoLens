@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import numpy as np
 import pytest
 
@@ -49,7 +51,20 @@ class NullTracer(al.Tracer):
         return np.zeros_like(grid)
 
 
-def test_trivial():
+@pytest.mark.parametrize(
+    "source_plane_coordinate",
+    [
+        (0.0, 0.0),
+        (0.0, 1.0),
+        (1.0, 1.0),
+        (0.5, 0.5),
+        (0.1, 0.1),
+        (-1.0, -1.0),
+    ],
+)
+def test_trivial(
+    source_plane_coordinate: Tuple[float, float],
+):
     solver = TriangleSolver(
         tracer=NullTracer(),
         grid=al.Grid2D.uniform(
@@ -59,6 +74,6 @@ def test_trivial():
         target_pixel_scale=0.01,
     )
     (coordinates,) = solver.solve(
-        source_plane_coordinate=(0.0, 0.0),
+        source_plane_coordinate=source_plane_coordinate,
     )
-    assert coordinates == pytest.approx((0.0, 0.0), abs=1.0e-3)
+    assert coordinates == pytest.approx(source_plane_coordinate, abs=1.0e-2)
