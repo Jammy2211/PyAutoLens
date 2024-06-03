@@ -1,3 +1,4 @@
+import math
 from typing import Tuple
 
 from autoarray import Grid2D
@@ -11,9 +12,15 @@ class TriangleSolver:
         self,
         tracer: Tracer,
         grid: Grid2D,
+        target_pixel_scale: float,
     ):
         self.tracer = tracer
         self.grid = grid
+        self.target_pixel_scale = target_pixel_scale
+
+    @property
+    def n_steps(self):
+        return math.ceil(math.log2(self.grid.pixel_scale / self.target_pixel_scale))
 
     def _source_plane_grid(self, grid: Grid2DLike):
         deflections = self.tracer.deflections_yx_2d_from(grid=grid)
