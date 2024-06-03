@@ -82,7 +82,7 @@ def test_trivial(
 def test_real_example():
     grid = al.Grid2D.uniform(
         shape_native=(100, 100),
-        pixel_scales=0.05,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
+        pixel_scales=0.05,
     )
 
     isothermal_mass_profile = al.mp.Isothermal(
@@ -108,4 +108,4 @@ def test_real_example():
         pixel_scale_precision=0.001,
     )
     result = solver.solve((0.07, 0.07))
-    print(result)
+    assert len(result) == 3
