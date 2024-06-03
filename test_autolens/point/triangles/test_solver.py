@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 
 import autolens as al
@@ -38,3 +39,26 @@ def test_solver(solver):
 
 def test_steps(solver):
     assert solver.n_steps == 3
+
+
+class NullTracer(al.Tracer):
+    def __init__(self):
+        super().__init__([])
+
+    def deflections_yx_2d_from(self, grid):
+        return np.zeros_like(grid)
+
+
+def test_trivial():
+    solver = TriangleSolver(
+        tracer=NullTracer(),
+        grid=al.Grid2D.uniform(
+            shape_native=(100, 100),
+            pixel_scales=0.05,
+        ),
+        target_pixel_scale=0.01,
+    )
+    (coordinates,) = solver.solve(
+        source_plane_coordinate=(0.0, 0.0),
+    )
+    assert coordinates == pytest.approx((0.0, 0.0), abs=1.0e-3)

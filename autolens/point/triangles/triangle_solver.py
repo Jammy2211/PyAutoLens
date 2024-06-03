@@ -37,7 +37,7 @@ class TriangleSolver:
             )
             triangles = SubsampleTriangles(parent_triangles=kept_triangles)
 
-        return triangles
+        return [triangle.mean for triangle in kept_triangles]
 
     def _filter_triangles(
         self,
