@@ -15,7 +15,7 @@ def solver():
             al.Galaxy(
                 redshift=0.5,
                 mass=ag.mp.Isothermal(
-                    centre=(2.0, 1.0),
+                    centre=(0.0, 0.0),
                     einstein_radius=1.0,
                 ),
             )
