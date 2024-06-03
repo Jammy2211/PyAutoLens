@@ -1,0 +1,83 @@
+from autoconf.dictable import from_dict
+import autolens as al
+from autolens.point.triangles.triangle_solver import TriangleSolver
+
+
+instance_dict = {
+    "type": "instance",
+    "class_path": "autofit.mapper.model.ModelInstance",
+    "arguments": {
+        "child_items": {
+            "type": "dict",
+            "arguments": {
+                "source_galaxy": {
+                    "type": "instance",
+                    "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
+                    "arguments": {
+                        "redshift": 1.0,
+                        "label": "cls6",
+                        "light": {
+                            "type": "instance",
+                            "class_path": "autogalaxy.profiles.light.standard.exponential.Exponential",
+                            "arguments": {
+                                "effective_radius": 0.1,
+                                "ell_comps": [0.4731722153284571, -0.27306667016189645],
+                                "centre": [-0.04829335038475, 0.02350935356045],
+                                "intensity": 0.1,
+                            },
+                        },
+                        "point_0": {
+                            "type": "instance",
+                            "class_path": "autogalaxy.profiles.point_source.PointSourceChi",
+                            "arguments": {
+                                "centre": [-0.04829335038475, 0.02350935356045]
+                            },
+                        },
+                    },
+                },
+                "lens_galaxy": {
+                    "type": "instance",
+                    "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
+                    "arguments": {
+                        "redshift": 0.5,
+                        "label": "cls6",
+                        "mass": {
+                            "type": "instance",
+                            "class_path": "autogalaxy.profiles.mass.total.isothermal.Isothermal",
+                            "arguments": {
+                                "ell_comps": [
+                                    0.05263157894736841,
+                                    3.2227547345982974e-18,
+                                ],
+                                "einstein_radius": 1.6,
+                                "centre": [0.0, 0.0],
+                            },
+                        },
+                    },
+                },
+            },
+        }
+    },
+}
+
+
+def test_missing_multiple_image():
+    grid = al.Grid2D.uniform(
+        shape_native=(100, 100),
+        pixel_scales=0.05,
+    )
+
+    instance = from_dict(instance_dict)
+
+    tracer = al.Tracer(galaxies=[instance.lens_galaxy, instance.source_galaxy])
+
+    solver = TriangleSolver(
+        grid=grid,
+        lensing_obj=tracer,
+        pixel_scale_precision=0.00001,
+    )
+
+    triangle_positions = solver.solve(
+        source_plane_coordinate=instance.source_galaxy.point_0.centre
+    )
+    print(triangle_positions)
