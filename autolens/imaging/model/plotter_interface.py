@@ -94,7 +94,10 @@ class PlotterInterfaceImaging(PlotterInterface):
             fit_plotter.subplot_of_planes()
 
         if plot_setting(section="inversion", name="subplot_mappings"):
-            fit_plotter.subplot_mappings_of_plane(plane_index=len(fit.tracer.planes) - 1)
+            try:
+                fit_plotter.subplot_mappings_of_plane(plane_index=len(fit.tracer.planes) - 1)
+            except IndexError:
+                pass
 
         if not during_analysis and should_plot("all_at_end_png"):
 
