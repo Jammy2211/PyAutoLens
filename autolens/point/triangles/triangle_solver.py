@@ -14,7 +14,6 @@ class TriangleSolver:
         lensing_obj: OperateDeflections,
         grid: Grid2D,
         pixel_scale_precision: float,
-        buffer: float = 0.02,
     ):
         """
         Determine the image plane coordinates that are traced to be a source plane coordinate.
@@ -31,14 +30,10 @@ class TriangleSolver:
             The grid of image plane coordinates.
         pixel_scale_precision
             The target pixel scale of the image grid.
-        buffer
-            The buffer to apply when checking if the source plane coordinate is contained within the triangle.
-            This is to account for curvature in the source plane.
         """
         self.lensing_obj = lensing_obj
         self.grid = grid
         self.pixel_scale_precision = pixel_scale_precision
-        self.buffer = buffer
 
     @property
     def n_steps(self) -> int:
@@ -68,6 +63,10 @@ class TriangleSolver:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
 
+        This is done by tiling the image plane with triangles and checking if the source plane coordinate is contained
+        within the triangle. The triangles are subsampled to increase the resolution with only the triangles that
+        contain the source plane coordinate and their neighbours being kept.
+
         Parameters
         ----------
         source_plane_coordinate
@@ -91,7 +90,12 @@ class TriangleSolver:
                 triangles=triangles,
                 source_plane_coordinate=source_plane_coordinate,
             )
-            triangles = SubsampleTriangles(parent_triangles=kept_triangles)
+            with_neighbourhood = {
+                triangle
+                for kept_triangle in kept_triangles
+                for triangle in kept_triangle.neighbourhood
+            }
+            triangles = SubsampleTriangles(parent_triangles=list(with_neighbourhood))
 
         return Grid2DIrregular([triangle.mean for triangle in kept_triangles])
 
@@ -123,7 +127,6 @@ class TriangleSolver:
         ):
             if source_triangle.contains(
                 point=source_plane_coordinate,
-                buffer=self.buffer,
             ):
                 kept_triangles.append(image_triangle)
 
