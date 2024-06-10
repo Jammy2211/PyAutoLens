@@ -63,6 +63,10 @@ class TriangleSolver:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
 
+        This is done by tiling the image plane with triangles and checking if the source plane coordinate is contained
+        within the triangle. The triangles are subsampled to increase the resolution with only the triangles that
+        contain the source plane coordinate and their neighbours being kept.
+
         Parameters
         ----------
         source_plane_coordinate
