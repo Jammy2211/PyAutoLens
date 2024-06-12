@@ -12,7 +12,7 @@ class FitPointDict(dict):
         self,
         point_dict: PointDict,
         tracer: Tracer,
-        point_solver: PointSolver,
+        solver: PointSolver,
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -42,7 +42,7 @@ class FitPointDict(dict):
             self[key] = FitPointDataset(
                 point_dataset=point_dataset,
                 tracer=tracer,
-                point_solver=point_solver,
+                point_solver=solver,
                 run_time_dict=run_time_dict,
             )
 

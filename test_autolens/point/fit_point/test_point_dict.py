@@ -22,7 +22,7 @@ def test__fits_dataset__positions_only():
     point_dict = al.PointDict(point_dataset_list=[point_dataset_0])
 
     fit = al.FitPointDict(
-        point_dict=point_dict, tracer=tracer, point_solver=point_solver
+        point_dict=point_dict, tracer=tracer, solver=point_solver
     )
 
     assert fit["point_0"].positions.log_likelihood == pytest.approx(-22.14472, 1.0e-4)
@@ -36,7 +36,7 @@ def test__fits_dataset__positions_only():
     point_dict = al.PointDict(point_dataset_list=[point_dataset_0, point_dataset_1])
 
     fit = al.FitPointDict(
-        point_dict=point_dict, tracer=tracer, point_solver=point_solver
+        point_dict=point_dict, tracer=tracer, solver=point_solver
     )
 
     assert fit["point_0"].positions.log_likelihood == pytest.approx(-22.14472, 1.0e-4)
@@ -72,7 +72,7 @@ def test__fits_dataset__positions_and_flux():
     point_dict = al.PointDict(point_dataset_list=[point_dataset_0])
 
     fit = al.FitPointDict(
-        point_dict=point_dict, tracer=tracer, point_solver=point_solver
+        point_dict=point_dict, tracer=tracer, solver=point_solver
     )
 
     assert fit["point_0"].positions.log_likelihood == pytest.approx(-22.14472, 1.0e-4)
@@ -93,7 +93,7 @@ def test__fits_dataset__positions_and_flux():
     point_dict = al.PointDict(point_dataset_list=[point_dataset_0, point_dataset_1])
 
     fit = al.FitPointDict(
-        point_dict=point_dict, tracer=tracer, point_solver=point_solver
+        point_dict=point_dict, tracer=tracer, solver=point_solver
     )
 
     assert fit["point_0"].positions.log_likelihood == pytest.approx(-22.14472, 1.0e-4)
@@ -134,7 +134,7 @@ def test__model_has_image_and_source_chi_squared__fits_both_correctly():
     point_dict = al.PointDict(point_dataset_list=[point_dataset_0, point_dataset_1])
 
     fit = al.FitPointDict(
-        point_dict=point_dict, tracer=tracer, point_solver=point_solver
+        point_dict=point_dict, tracer=tracer, solver=point_solver
     )
 
     assert isinstance(fit["point_0"].positions, al.FitPositionsImage)
