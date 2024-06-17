@@ -73,6 +73,10 @@ class AnalysisPointSource(af.Analysis, ABC):
         Compute the likelihood of the predicted coordinates.
         """
 
+    @staticmethod
+    def square_distance(coord1, coord2):
+        return (coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2
+
 
 class AnalysisAllToAllPointSource(AnalysisPointSource):
     def _log_likelihood_for_coordinates(
@@ -98,10 +102,7 @@ class AnalysisAllToAllPointSource(AnalysisPointSource):
             likelihood *= sum(
                 [
                     math.exp(
-                        -(
-                            (predicted[0] - observed[0]) ** 2
-                            + (predicted[1] - observed[1]) ** 2
-                        )
+                        -self.square_distance(predicted, observed)
                         / (2 * self.error**2)
                     )
                     for predicted in predicted_coordinates
@@ -122,22 +123,18 @@ class AnalysisClosestPointSource(AnalysisPointSource):
         predicted_coordinates = set(predicted_coordinates)
         observed_coordinates = set(self.observed_coordinates)
 
-        likelihood = 0.0
+        log_likelihood = 0.0
 
         while observed_coordinates:
             predicted, observed = min(
                 itertools.product(predicted_coordinates, observed_coordinates),
                 key=lambda x: self.square_distance(*x),
             )
-            likelihood += -self.square_distance(predicted, observed) / (
+            log_likelihood -= self.square_distance(predicted, observed) / (
                 2 * self.error**2
             )
 
             predicted_coordinates.remove(predicted)
             observed_coordinates.remove(observed)
 
-        return likelihood
-
-    @staticmethod
-    def square_distance(coord1, coord2):
-        return (coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2
+        return log_likelihood
