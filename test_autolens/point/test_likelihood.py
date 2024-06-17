@@ -42,12 +42,13 @@ def test_likelihood(grid, model):
 
 
 @pytest.mark.parametrize(
-    "observed, predicted, error, likelihood",
+    "observed, predicted, likelihood",
     [
-        ([(0.0, 0.0)], [(0.0, 0.0)], 0.1, 0.0),
-        ([(0.0, 0.0)], [(0.0, 0.1)], 0.1, -0.5),
-        ([(0.0, 0.0)], [(0.1, 0.0)], 0.1, -0.5),
-        ([(0.0, 0.0)], [(0.1, 0.1)], 0.1, -1.0),
+        ([(0.0, 0.0)], [(0.0, 0.0)], 0.0),
+        ([(0.0, 0.0)], [(0.0, 0.1)], -0.5),
+        ([(0.0, 0.0)], [(0.1, 0.0)], -0.5),
+        ([(0.0, 0.0)], [(0.1, 0.1)], -1.0),
+        ([(0.0, 0.0)], [(0.0, 0.0), (0.1, 0.1)], -0.378),
     ],
 )
 def test_likelihood__multiple_images(
@@ -55,14 +56,16 @@ def test_likelihood__multiple_images(
     model,
     observed,
     predicted,
-    error,
     likelihood,
 ):
     analysis = AnalysisAllToAllPointSource(
         coordinates=observed,
-        error=error,
+        error=0.1,
         grid=grid,
         pixel_scale_precision=0.025,
     )
 
-    assert analysis._log_likelihood_for_coordinates(predicted) == likelihood
+    assert analysis._log_likelihood_for_coordinates(predicted) == pytest.approx(
+        likelihood,
+        abs=0.01,
+    )
