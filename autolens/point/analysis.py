@@ -1,3 +1,4 @@
+import itertools
 import math
 from abc import ABC, abstractmethod
 from typing import List, Tuple
@@ -72,6 +73,10 @@ class AnalysisPointSource(af.Analysis, ABC):
         Compute the likelihood of the predicted coordinates.
         """
 
+    @staticmethod
+    def square_distance(coord1, coord2):
+        return (coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2
+
 
 class AnalysisAllToAllPointSource(AnalysisPointSource):
     def _log_likelihood_for_coordinates(
@@ -97,13 +102,60 @@ class AnalysisAllToAllPointSource(AnalysisPointSource):
             likelihood *= sum(
                 [
                     math.exp(
-                        (
-                            (predicted[0] - observed[0]) ** 2
-                            + (predicted[1] - observed[1]) ** 2
-                        )
+                        -self.square_distance(predicted, observed)
                         / (2 * self.error**2)
                     )
                     for predicted in predicted_coordinates
                 ]
             )
         return math.log(likelihood)
+
+
+class AnalysisClosestPointSource(AnalysisPointSource):
+    def _log_likelihood_for_coordinates(
+        self, predicted_coordinates: List[Tuple[float, float]]
+    ) -> float:
+        """
+        Compute the likelihood of the predicted coordinates by comparing the positions of
+        the observed and predicted coordinates.
+
+        This is done by pairing the closest predicted and observed coordinates.
+
+        Parameters
+        ----------
+        predicted_coordinates
+            The predicted multiple image coordinates of the point source.
+
+        Returns
+        -------
+        The log likelihood of the predicted coordinates.
+
+        Raises
+        ------
+        FitException
+            If the number of predicted coordinates is not equal to the number of observed coordinates.
+        """
+
+        if len(predicted_coordinates) != len(self.observed_coordinates):
+            raise af.exc.FitException(
+                "The number of predicted coordinates must be equal to the number of observed coordinates."
+            )
+
+        predicted_coordinates = set(predicted_coordinates)
+        observed_coordinates = set(self.observed_coordinates)
+
+        log_likelihood = 0.0
+
+        while observed_coordinates:
+            predicted, observed = min(
+                itertools.product(predicted_coordinates, observed_coordinates),
+                key=lambda x: self.square_distance(*x),
+            )
+            log_likelihood -= self.square_distance(predicted, observed) / (
+                2 * self.error**2
+            )
+
+            predicted_coordinates.remove(predicted)
+            observed_coordinates.remove(observed)
+
+        return log_likelihood
