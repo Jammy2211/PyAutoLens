@@ -113,7 +113,7 @@ class TriangleSolver:
 
         difference = len(means) - len(filtered_means)
         if difference > 0:
-            logger.info(
+            logger.debug(
                 f"Filtered one multiple-image with magnification below threshold."
             )
         elif difference > 1:
