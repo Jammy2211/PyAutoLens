@@ -71,6 +71,9 @@ class TriangleSolver:
         within the triangle. The triangles are subsampled to increase the resolution with only the triangles that
         contain the source plane coordinate and their neighbours being kept.
 
+        The means of the triangles  are then filtered to keep only those with an absolute magnification above the
+        threshold.
+
         Parameters
         ----------
         source_plane_coordinate
@@ -108,6 +111,18 @@ class TriangleSolver:
     def _filter_low_magnification(
         self, points: List[Tuple[float, float]]
     ) -> List[Tuple[float, float]]:
+        """
+        Filter the points to keep only those with an absolute magnification above the threshold.
+
+        Parameters
+        ----------
+        points
+            The points to filter.
+
+        Returns
+        -------
+        The points with an absolute magnification above the threshold.
+        """
         return [
             point
             for point, magnification in zip(
