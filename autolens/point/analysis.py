@@ -115,6 +115,27 @@ class AnalysisClosestPointSource(AnalysisPointSource):
     def _log_likelihood_for_coordinates(
         self, predicted_coordinates: List[Tuple[float, float]]
     ) -> float:
+        """
+        Compute the likelihood of the predicted coordinates by comparing the positions of
+        the observed and predicted coordinates.
+
+        This is done by pairing the closest predicted and observed coordinates.
+
+        Parameters
+        ----------
+        predicted_coordinates
+            The predicted multiple image coordinates of the point source.
+
+        Returns
+        -------
+        The log likelihood of the predicted coordinates.
+
+        Raises
+        ------
+        FitException
+            If the number of predicted coordinates is not equal to the number of observed coordinates.
+        """
+
         if len(predicted_coordinates) != len(self.observed_coordinates):
             raise af.exc.FitException(
                 "The number of predicted coordinates must be equal to the number of observed coordinates."
