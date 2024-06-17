@@ -1,3 +1,4 @@
+import logging
 import math
 from typing import Tuple, List
 
@@ -6,6 +7,9 @@ from autoarray.structures.triangles.subsample_triangles import SubsampleTriangle
 from autoarray.structures.triangles.triangles import Triangles
 from autoarray.type import Grid2DLike
 from autogalaxy import OperateDeflections
+
+
+logger = logging.getLogger(__name__)
 
 
 class TriangleSolver:
@@ -104,9 +108,16 @@ class TriangleSolver:
             }
             triangles = SubsampleTriangles(parent_triangles=list(with_neighbourhood))
 
-        return self._filter_low_magnification(
-            [triangle.mean for triangle in kept_triangles]
-        )
+        means = [triangle.mean for triangle in kept_triangles]
+        filtered_means = self._filter_low_magnification(points=means)
+
+        difference = len(means) - len(filtered_means)
+        if difference > 0:
+            logger.warning(
+                f"Filtered {difference} triangles with magnification below threshold."
+            )
+
+        return filtered_means
 
     def _filter_low_magnification(
         self, points: List[Tuple[float, float]]
