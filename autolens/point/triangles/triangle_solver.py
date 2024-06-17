@@ -1,5 +1,5 @@
 import math
-from typing import Tuple
+from typing import Tuple, List
 
 from autoarray import Grid2D, Grid2DIrregular
 from autoarray.structures.triangles.subsample_triangles import SubsampleTriangles
@@ -59,7 +59,9 @@ class TriangleSolver:
         # noinspection PyTypeChecker
         return grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
 
-    def solve(self, source_plane_coordinate: Tuple[float, float]) -> Grid2DIrregular:
+    def solve(
+        self, source_plane_coordinate: Tuple[float, float]
+    ) -> List[Tuple[float, float]]:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
 
@@ -97,7 +99,7 @@ class TriangleSolver:
             }
             triangles = SubsampleTriangles(parent_triangles=list(with_neighbourhood))
 
-        return Grid2DIrregular([triangle.mean for triangle in kept_triangles])
+        return [triangle.mean for triangle in kept_triangles]
 
     def _filter_triangles(
         self,
