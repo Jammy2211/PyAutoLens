@@ -69,3 +69,18 @@ def test_likelihood__multiple_images(
         likelihood,
         abs=0.01,
     )
+
+
+def test_swap_coordinates(grid):
+    analysis = AnalysisAllToAllPointSource(
+        coordinates=[(1.0, 2.0), (3.0, 4.0)],
+        error=0.1,
+        grid=grid,
+        pixel_scale_precision=0.025,
+    )
+
+    assert analysis._log_likelihood_for_coordinates(
+        [(1.0, 2.0), (3.0, 4.0)],
+    ) == analysis._log_likelihood_for_coordinates(
+        [(3.0, 4.0), (1.0, 2.0)],
+    )
