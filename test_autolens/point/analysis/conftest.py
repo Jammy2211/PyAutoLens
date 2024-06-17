@@ -19,7 +19,7 @@ def model():
         redshift=0.5,
         mass=al.mp.Isothermal,
     )
-    source = af.Model(al.ps.PointSourceChi)
+    source = af.Model(al.ps.Point)
 
     return af.Collection(
         lens=lens,
