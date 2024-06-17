@@ -97,7 +97,7 @@ class AnalysisAllToAllPointSource(AnalysisPointSource):
             likelihood *= sum(
                 [
                     math.exp(
-                        (
+                        -(
                             (predicted[0] - observed[0]) ** 2
                             + (predicted[1] - observed[1]) ** 2
                         )

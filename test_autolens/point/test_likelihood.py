@@ -39,3 +39,30 @@ def test_likelihood(grid, model):
     )
 
     assert analysis.log_likelihood_function(model.instance_from_prior_medians())
+
+
+@pytest.mark.parametrize(
+    "observed, predicted, error, likelihood",
+    [
+        ([(0.0, 0.0)], [(0.0, 0.0)], 0.1, 0.0),
+        ([(0.0, 0.0)], [(0.0, 0.1)], 0.1, -0.5),
+        ([(0.0, 0.0)], [(0.1, 0.0)], 0.1, -0.5),
+        ([(0.0, 0.0)], [(0.1, 0.1)], 0.1, -1.0),
+    ],
+)
+def test_likelihood__multiple_images(
+    grid,
+    model,
+    observed,
+    predicted,
+    error,
+    likelihood,
+):
+    analysis = AnalysisAllToAllPointSource(
+        coordinates=observed,
+        error=error,
+        grid=grid,
+        pixel_scale_precision=0.025,
+    )
+
+    assert analysis._log_likelihood_for_coordinates(predicted) == likelihood
