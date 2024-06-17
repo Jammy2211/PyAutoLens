@@ -1,10 +1,10 @@
-from autolens.point.analysis import AllToAllPointSourceAnalysis
+from autolens.point.analysis import AnalysisAllToAllPointSource
 import autolens as al
 import autofit as af
 
 
 def test_likelihood():
-    analysis = AllToAllPointSourceAnalysis(
+    analysis = AnalysisAllToAllPointSource(
         [
             (0.0, 0.0),
         ],

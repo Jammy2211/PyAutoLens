@@ -7,7 +7,7 @@ from autoarray import Grid2D
 from autolens.point.triangles.triangle_solver import TriangleSolver
 
 
-class PointSourceAnalysis(af.Analysis, ABC):
+class AnalysisPointSource(af.Analysis, ABC):
     def __init__(
         self,
         coordinates: List[Tuple[float, float]],
@@ -73,7 +73,7 @@ class PointSourceAnalysis(af.Analysis, ABC):
         """
 
 
-class AllToAllPointSourceAnalysis(PointSourceAnalysis):
+class AnalysisAllToAllPointSource(AnalysisPointSource):
     def _likelihood_for_coordinates(
         self, predicted_coordinates: List[Tuple[float, float]]
     ) -> float:
