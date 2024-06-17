@@ -38,6 +38,7 @@ def test_likelihood__multiple_images(
         error=0.1,
         grid=grid,
         pixel_scale_precision=0.025,
+        magnification_threshold=0.0,
     )
 
     assert analysis._log_likelihood_for_coordinates(predicted) == pytest.approx(
