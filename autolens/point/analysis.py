@@ -106,4 +106,4 @@ class AllToAllPointSourceAnalysis(PointSourceAnalysis):
                     for predicted in predicted_coordinates
                 ]
             )
-        return likelihood
+        return math.log(likelihood)
