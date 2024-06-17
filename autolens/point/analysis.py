@@ -15,6 +15,20 @@ class PointSourceAnalysis(af.Analysis, ABC):
         grid: Grid2D,
         pixel_scale_precision=0.025,
     ):
+        """
+        Abstract class for point source analysis.
+
+        Parameters
+        ----------
+        coordinates
+            The observed multiple image coordinates of the point source.
+        error
+            The error on the position of the observed coordinates.
+        grid
+            The grid of image plane coordinates.
+        pixel_scale_precision
+            The target pixel scale of the image grid. That is, how precisely the image plane is sampled.
+        """
         self.observed_coordinates = coordinates
         self.error = error
 
@@ -22,6 +36,21 @@ class PointSourceAnalysis(af.Analysis, ABC):
         self.pixel_scale_precision = pixel_scale_precision
 
     def log_likelihood_function(self, instance):
+        """
+        Compute the log likelihood of the model instance.
+
+        This is done by solving the position of the multiple images of the point source
+        in the image plane to a desired precision before comparing them to the observed coordinates.
+
+        Parameters
+        ----------
+        instance
+            The model instance. Must have a lens and source attribute.
+
+        Returns
+        -------
+        The log likelihood of the model instance.
+        """
         lens = instance.lens
 
         solver = TriangleSolver(
@@ -36,12 +65,33 @@ class PointSourceAnalysis(af.Analysis, ABC):
         return self._likelihood_for_coordinates(predicted_coordinates)
 
     @abstractmethod
-    def _likelihood_for_coordinates(self, predicted_coordinates):
-        pass
+    def _likelihood_for_coordinates(
+        self, predicted_coordinates: List[Tuple[float, float]]
+    ) -> float:
+        """
+        Compute the likelihood of the predicted coordinates.
+        """
 
 
 class AllToAllPointSourceAnalysis(PointSourceAnalysis):
-    def _likelihood_for_coordinates(self, predicted_coordinates):
+    def _likelihood_for_coordinates(
+        self, predicted_coordinates: List[Tuple[float, float]]
+    ) -> float:
+        """
+        Compute the likelihood of the predicted coordinates by comparing the positions of
+        the observed and predicted coordinates.
+
+        This is essentially the product over all possible pairings of observed and predicted coordinates.
+
+        Parameters
+        ----------
+        predicted_coordinates
+            The predicted multiple image coordinates of the point source.
+
+        Returns
+        -------
+        The likelihood of the predicted coordinates.
+        """
         likelihood = 1 / (len(predicted_coordinates) ** len(self.observed_coordinates))
         for observed in self.observed_coordinates:
             likelihood *= sum(
