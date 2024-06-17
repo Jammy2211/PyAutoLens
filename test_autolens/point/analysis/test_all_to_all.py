@@ -3,7 +3,7 @@ import pytest
 from autolens.point.analysis import AnalysisAllToAllPointSource
 
 
-def test_likelihood(grid, model):
+def test_log_likelihood(grid, model):
     analysis = AnalysisAllToAllPointSource(
         coordinates=[
             (0.0, 0.0),

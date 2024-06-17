@@ -1,3 +1,4 @@
+import itertools
 import math
 from abc import ABC, abstractmethod
 from typing import List, Tuple
@@ -107,3 +108,36 @@ class AnalysisAllToAllPointSource(AnalysisPointSource):
                 ]
             )
         return math.log(likelihood)
+
+
+class AnalysisClosestPointSource(AnalysisPointSource):
+    def _log_likelihood_for_coordinates(
+        self, predicted_coordinates: List[Tuple[float, float]]
+    ) -> float:
+        if len(predicted_coordinates) != len(self.observed_coordinates):
+            raise af.exc.FitException(
+                "The number of predicted coordinates must be equal to the number of observed coordinates."
+            )
+
+        predicted_coordinates = set(predicted_coordinates)
+        observed_coordinates = set(self.observed_coordinates)
+
+        likelihood = 0.0
+
+        while observed_coordinates:
+            predicted, observed = min(
+                itertools.product(predicted_coordinates, observed_coordinates),
+                key=lambda x: self.square_distance(*x),
+            )
+            likelihood += -self.square_distance(predicted, observed) / (
+                2 * self.error**2
+            )
+
+            predicted_coordinates.remove(predicted)
+            observed_coordinates.remove(observed)
+
+        return likelihood
+
+    @staticmethod
+    def square_distance(coord1, coord2):
+        return (coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2
