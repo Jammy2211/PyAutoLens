@@ -1,15 +1,12 @@
-from autogalaxy.profiles.point_sources import Point
-from autolens.point.analysis import Analysis
+from autolens.point.analysis import AllToAllPointSourceAnalysis
 import autolens as al
 import autofit as af
 
 
 def test_likelihood():
-    analysis = Analysis(
+    analysis = AllToAllPointSourceAnalysis(
         [
-            Point(
-                (0.0, 0.0),
-            )
+            (0.0, 0.0),
         ],
         0.1,
         al.Grid2D.uniform(
@@ -23,5 +20,4 @@ def test_likelihood():
     source = af.Model(al.ps.PointSourceChi)
 
     model = af.Collection(lens=lens, source=source)
-
-    analysis.log_likelihood_function(model.instance_from_prior_medians())
+    assert analysis.log_likelihood_function(model.instance_from_prior_medians())
