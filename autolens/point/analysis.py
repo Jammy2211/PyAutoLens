@@ -62,10 +62,10 @@ class AnalysisPointSource(af.Analysis, ABC):
         predicted_coordinates = solver.solve(
             source_plane_coordinate=source_plane_coordinates
         )
-        return self._likelihood_for_coordinates(predicted_coordinates)
+        return self._log_likelihood_for_coordinates(predicted_coordinates)
 
     @abstractmethod
-    def _likelihood_for_coordinates(
+    def _log_likelihood_for_coordinates(
         self, predicted_coordinates: List[Tuple[float, float]]
     ) -> float:
         """
@@ -74,7 +74,7 @@ class AnalysisPointSource(af.Analysis, ABC):
 
 
 class AnalysisAllToAllPointSource(AnalysisPointSource):
-    def _likelihood_for_coordinates(
+    def _log_likelihood_for_coordinates(
         self, predicted_coordinates: List[Tuple[float, float]]
     ) -> float:
         """
