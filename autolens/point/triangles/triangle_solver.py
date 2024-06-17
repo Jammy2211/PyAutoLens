@@ -14,6 +14,7 @@ class TriangleSolver:
         lensing_obj: OperateDeflections,
         grid: Grid2D,
         pixel_scale_precision: float,
+        magnification_threshold=0.1,
     ):
         """
         Determine the image plane coordinates that are traced to be a source plane coordinate.
@@ -34,6 +35,7 @@ class TriangleSolver:
         self.lensing_obj = lensing_obj
         self.grid = grid
         self.pixel_scale_precision = pixel_scale_precision
+        self.magnification_threshold = magnification_threshold
 
     @property
     def n_steps(self) -> int:
@@ -99,7 +101,24 @@ class TriangleSolver:
             }
             triangles = SubsampleTriangles(parent_triangles=list(with_neighbourhood))
 
-        return [triangle.mean for triangle in kept_triangles]
+        return self._filter_low_magnification(
+            [triangle.mean for triangle in kept_triangles]
+        )
+
+    def _filter_low_magnification(
+        self, points: List[Tuple[float, float]]
+    ) -> List[Tuple[float, float]]:
+        return [
+            point
+            for point, magnification in zip(
+                points,
+                self.lensing_obj.magnification_2d_via_hessian_from(
+                    grid=Grid2DIrregular(points),
+                    buffer=self.grid.pixel_scale,
+                ),
+            )
+            if abs(magnification) > self.magnification_threshold
+        ]
 
     def _filter_triangles(
         self,
