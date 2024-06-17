@@ -1,3 +1,4 @@
+import logging
 import math
 from typing import Tuple, List
 
@@ -8,12 +9,16 @@ from autoarray.type import Grid2DLike
 from autogalaxy import OperateDeflections
 
 
+logger = logging.getLogger(__name__)
+
+
 class TriangleSolver:
     def __init__(
         self,
         lensing_obj: OperateDeflections,
         grid: Grid2D,
         pixel_scale_precision: float,
+        magnification_threshold=0.1,
     ):
         """
         Determine the image plane coordinates that are traced to be a source plane coordinate.
@@ -34,6 +39,7 @@ class TriangleSolver:
         self.lensing_obj = lensing_obj
         self.grid = grid
         self.pixel_scale_precision = pixel_scale_precision
+        self.magnification_threshold = magnification_threshold
 
     @property
     def n_steps(self) -> int:
@@ -69,6 +75,9 @@ class TriangleSolver:
         within the triangle. The triangles are subsampled to increase the resolution with only the triangles that
         contain the source plane coordinate and their neighbours being kept.
 
+        The means of the triangles  are then filtered to keep only those with an absolute magnification above the
+        threshold.
+
         Parameters
         ----------
         source_plane_coordinate
@@ -99,7 +108,43 @@ class TriangleSolver:
             }
             triangles = SubsampleTriangles(parent_triangles=list(with_neighbourhood))
 
-        return [triangle.mean for triangle in kept_triangles]
+        means = [triangle.mean for triangle in kept_triangles]
+        filtered_means = self._filter_low_magnification(points=means)
+
+        difference = len(means) - len(filtered_means)
+        if difference > 0:
+            logger.warning(
+                f"Filtered {difference} triangles with magnification below threshold."
+            )
+
+        return filtered_means
+
+    def _filter_low_magnification(
+        self, points: List[Tuple[float, float]]
+    ) -> List[Tuple[float, float]]:
+        """
+        Filter the points to keep only those with an absolute magnification above the threshold.
+
+        Parameters
+        ----------
+        points
+            The points to filter.
+
+        Returns
+        -------
+        The points with an absolute magnification above the threshold.
+        """
+        return [
+            point
+            for point, magnification in zip(
+                points,
+                self.lensing_obj.magnification_2d_via_hessian_from(
+                    grid=Grid2DIrregular(points),
+                    buffer=self.grid.pixel_scale,
+                ),
+            )
+            if abs(magnification) > self.magnification_threshold
+        ]
 
     def _filter_triangles(
         self,

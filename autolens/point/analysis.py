@@ -15,6 +15,7 @@ class AnalysisPointSource(af.Analysis, ABC):
         error: float,
         grid: Grid2D,
         pixel_scale_precision=0.025,
+        magnification_threshold=0.1,
     ):
         """
         Abstract class for point source analysis.
@@ -35,6 +36,7 @@ class AnalysisPointSource(af.Analysis, ABC):
 
         self.grid = grid
         self.pixel_scale_precision = pixel_scale_precision
+        self.magnification_threshold = magnification_threshold
 
     def log_likelihood_function(self, instance):
         """
@@ -58,6 +60,7 @@ class AnalysisPointSource(af.Analysis, ABC):
             lensing_obj=lens,
             grid=self.grid,
             pixel_scale_precision=self.pixel_scale_precision,
+            magnification_threshold=self.magnification_threshold,
         )
         source_plane_coordinates = instance.source.centre
         predicted_coordinates = solver.solve(
@@ -97,6 +100,9 @@ class AnalysisAllToAllPointSource(AnalysisPointSource):
         -------
         The likelihood of the predicted coordinates.
         """
+        if len(predicted_coordinates) == 0:
+            raise af.exc.FitException("The number of predicted coordinates is zero.")
+
         likelihood = 1 / (len(predicted_coordinates) ** len(self.observed_coordinates))
         for observed in self.observed_coordinates:
             likelihood *= sum(
