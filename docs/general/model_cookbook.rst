@@ -31,7 +31,7 @@ source galaxy with a Sersic light profile:
 
     # Source:
 
-    bulge = af.Model(al.lp.Sersic)
+    bulge = af.Model(al.lp.SersicCore)
 
     source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
@@ -117,7 +117,7 @@ The API above can be easily extended to compose lens models where each galaxy ha
 
     # Source:
 
-    bulge = af.Model(al.lp.Sersic)
+    bulge = af.Model(al.lp.SersicCore)
     disk = af.Model(al.lp.Exponential)
 
     source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=disk)
@@ -155,13 +155,13 @@ The API can also be extended to compose lens models where there are multiple gal
 
     # Source 0:
 
-    bulge = af.Model(al.lp.Sersic)
+    bulge = af.Model(al.lp.SersicCore)
 
     source_0 = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
     # Source 1 :
 
-    bulge = af.Model(al.lp.Sersic)
+    bulge = af.Model(al.lp.SersicCore)
 
     source_1 = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
@@ -205,7 +205,7 @@ removing the comments reading Lens / Source / Overall Lens Model to make the cod
     source = af.Model(
         al.Galaxy,
         redshift=1.0,
-        bulge=al.lp.Sersic,
+        bulge=al.lp.SersicCore,
         disk=al.lp.Exponential
     )
 
@@ -237,9 +237,9 @@ We can customize the priors of the lens model component individual parameters as
         mass=mass,
     )
 
-    bulge = af.Model(al.lp.Sersic)
-
     # Source
+
+    bulge = af.Model(al.lp.Sersic)
 
     source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
     source.effective_radius = af.GaussianPrior(mean=0.1, sigma=0.05, lower_limit=0.0, upper_limit=1.0)
@@ -291,7 +291,7 @@ We can customize the lens model parameters in a number of different ways, as sho
 
     # Source:
 
-    bulge = af.Model(al.lp.Sersic)
+    bulge = af.Model(al.lp.SersicCore)
     disk = af.Model(al.lp.Exponential)
 
     source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=disk)

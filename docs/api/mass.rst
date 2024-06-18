@@ -66,8 +66,8 @@ Stellar [ag.mp]
    ExponentialSph
    DevVaucouleurs
    DevVaucouleursSph
-   SersicRadialGradient
-   SersicRadialGradientSph
+   SersicGradient
+   SersicGradientSph
    Chameleon
    ChameleonSph
 

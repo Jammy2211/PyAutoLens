@@ -55,8 +55,8 @@ radial_minimum:
     Sersic: 1.0e-08
     SersicCore: 1.0e-08
     SersicCoreSph: 1.0e-08
-    SersicRadialGradient: 1.0e-08
-    SersicRadialGradientSph: 1.0e-08
+    SersicGradient: 1.0e-08
+    SersicGradientSph: 1.0e-08
     SersicSph: 1.0e-08
     SphNFWTruncatedMCR: 1.0e-08
     gNFW: 1.0e-08
@@ -93,8 +93,8 @@ over_sampling:
     DevVaucouleursSph: [1.0]
     dPIE: [1.0]
     dPIESph: [1.0]
-    ExponentialRadialGradient: [1.0]
-    ExponentialRadialGradientSph: [1.0]
+    ExponentialGradient: [1.0]
+    ExponentialGradientSph: [1.0]
     ElsonFreeFall: [1.0]
     ElsonFreeFallSph: [1.0]
     Exponential: [1.0]
@@ -138,9 +138,9 @@ over_sampling:
     Sersic: [1.0]
     SersicCore: [1.0]
     SersicCoreSph: [1.0]
-    SersicRadialGradient: [1.0]
+    SersicGradient: [1.0]
     SersicSph: [1.0]
-    SersicRadialGradientSph: [1.0]
+    SersicGradientSph: [1.0]
     ShapeletCartesianSph: [1.0]
     ShapeletCartesian: [1.0]
     ShapeletPolarSph: [1.0]
@@ -157,8 +157,8 @@ over_sampling:
     DevVaucouleursSph: [1, 1]
     dPIE: [1, 1]
     dPIESph: [1, 1]
-    ExponentialRadialGradient: [1, 1]
-    ExponentialRadialGradientSph: [1, 1]
+    ExponentialGradient: [1, 1]
+    ExponentialGradientSph: [1, 1]
     ElsonFreeFall: [1, 1]
     ElsonFreeFallSph: [1, 1]
     Exponential: [1, 1]
@@ -202,9 +202,9 @@ over_sampling:
     Sersic: [1, 1]
     SersicCore: [1, 1]
     SersicCoreSph: [1, 1]
-    SersicRadialGradient: [1, 1]
+    SersicGradient: [1, 1]
     SersicSph: [1, 1]
-    SersicRadialGradientSph: [1, 1]
+    SersicGradientSph: [1, 1]
     ShapeletCartesianSph: [1, 1]
     ShapeletCartesian: [1, 1]
     ShapeletPolarSph: [1, 1]

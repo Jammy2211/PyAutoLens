@@ -109,7 +109,7 @@ Lets quickly set up the ``Tracer`` we'll use in this example.
 
     source_galaxy = al.Galaxy(
         redshift=1.0,
-        bulge=al.lp.Sersic(
+        bulge=al.lp.SersicCore(
             centre=(0.0, 0.0),
             ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
             intensity=0.3,
