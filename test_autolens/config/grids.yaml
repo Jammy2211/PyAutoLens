@@ -34,6 +34,7 @@ radial_minimum:
     ExponentialSph: 1.0e-08
     ExternalShear: 1.0e-08
     Gaussian: 1.0e-08
+    GaussianGradient: 1.0e-08
     GaussianSph: 1.0e-08
     Isothermal: 1.0e-08
     IsothermalCore: 1.0e-08
