@@ -63,6 +63,7 @@ from autogalaxy.profiles import (
     point_sources as ps,
     mass as mp,
     light_and_mass_profiles as lmp,
+    light_linear_and_mass_profiles as lmp_linear,
     scaling_relations as sr,
 )
 from autogalaxy.profiles.light.abstract import LightProfile
