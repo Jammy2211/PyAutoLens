@@ -50,7 +50,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
     assert fit.figure_of_merit == pytest.approx(-2859741.44762, 1.0e-4)
 
     basis = al.lp_basis.Basis(
-        light_profile_list=[
+        profile_list=[
             al.lp.Sersic(intensity=1.0),
             al.lp.Sersic(intensity=2.0),
         ]
@@ -114,7 +114,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
     assert fit.figure_of_merit == pytest.approx(-6741.83381, 1.0e-4)
 
     basis = al.lp_basis.Basis(
-        light_profile_list=[
+        profile_list=[
             al.lp_linear.Sersic(sersic_index=1.0),
             al.lp_linear.Sersic(sersic_index=4.0),
         ]
@@ -132,7 +132,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
     assert fit.figure_of_merit == pytest.approx(-6741.83381, 1.0e-4)
 
     basis = al.lp_basis.Basis(
-        light_profile_list=[
+        profile_list=[
             al.lp_linear.Sersic(sersic_index=1.0),
             al.lp_linear.Sersic(sersic_index=4.0),
         ],
@@ -262,7 +262,7 @@ def test__fit_figure_of_merit__sub_2(image_7x7, psf_3x3, noise_map_7x7, mask_2d_
     assert fit.figure_of_merit == pytest.approx(-41.60614104506, 1.0e-4)
 
     basis = al.lp_basis.Basis(
-        light_profile_list=[
+        profile_list=[
             al.lp.Sersic(intensity=1.0),
             al.lp.Sersic(intensity=2.0),
         ]
@@ -326,7 +326,7 @@ def test__fit_figure_of_merit__sub_2(image_7x7, psf_3x3, noise_map_7x7, mask_2d_
     assert fit.figure_of_merit == pytest.approx(-18.47282483, 1.0e-4)
 
     basis = al.lp_basis.Basis(
-        light_profile_list=[
+        profile_list=[
             al.lp_linear.Sersic(sersic_index=1.0),
             al.lp_linear.Sersic(sersic_index=4.0),
         ]
@@ -344,7 +344,7 @@ def test__fit_figure_of_merit__sub_2(image_7x7, psf_3x3, noise_map_7x7, mask_2d_
     assert fit.figure_of_merit == pytest.approx(-18.4728248395, 1.0e-4)
 
     basis = al.lp_basis.Basis(
-        light_profile_list=[
+        profile_list=[
             al.lp_linear.Sersic(sersic_index=1.0),
             al.lp_linear.Sersic(sersic_index=4.0),
         ],
@@ -442,6 +442,29 @@ def test__fit_figure_of_merit__sub_2(image_7x7, psf_3x3, noise_map_7x7, mask_2d_
 
     assert fit.perform_inversion is True
     assert fit.figure_of_merit == pytest.approx(-23.8393703815, 1.0e-4)
+
+
+def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging_covariance_7x7):
+
+    basis = al.lp_basis.Basis(
+        profile_list=[
+            al.lmp.Gaussian(intensity=1.0),
+            al.lmp.Gaussian(intensity=2.0),
+        ]
+    )
+
+    g0 = al.Galaxy(
+        redshift=0.5, bulge=basis,
+    )
+
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
+
+    tracer = al.Tracer(galaxies=[g0, g1])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert fit.perform_inversion is False
+    assert fit.figure_of_merit == pytest.approx(-99687.1003914, 1.0e-4)
 
 
 def test__fit__sky___handles_special_behaviour(masked_imaging_7x7):

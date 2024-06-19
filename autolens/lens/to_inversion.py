@@ -7,7 +7,7 @@ import autogalaxy as ag
 
 from autoarray.inversion.inversion.factory import inversion_from
 
-from autogalaxy.profiles.light.basis import Basis
+from autogalaxy.profiles.basis import Basis
 from autolens.analysis.preloads import Preloads
 
 
