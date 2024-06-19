@@ -66,7 +66,7 @@ def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
     lp_linear_3 = al.lp_linear.LightProfileLinear()
     lp_linear_4 = al.lp_linear.LightProfileLinear()
 
-    basis_0 = al.lp_basis.Basis(light_profile_list=[lp_linear_0, lp_linear_1])
+    basis_0 = al.lp_basis.Basis(profile_list=[lp_linear_0, lp_linear_1])
 
     galaxy_linear_0 = al.Galaxy(redshift=0.5, bulge=basis_0, mass=al.mp.IsothermalSph())
 
@@ -74,7 +74,7 @@ def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
 
     galaxy_linear_2 = al.Galaxy(redshift=2.0, lp_linear=lp_linear_2)
 
-    basis_1 = al.lp_basis.Basis(light_profile_list=[lp_linear_3, lp_linear_4])
+    basis_1 = al.lp_basis.Basis(profile_list=[lp_linear_3, lp_linear_4])
 
     galaxy_linear_3 = al.Galaxy(redshift=2.0, bulge=basis_1)
 
