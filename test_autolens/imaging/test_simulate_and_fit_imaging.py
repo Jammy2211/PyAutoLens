@@ -826,26 +826,3 @@ def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging
 
     if path.exists(file_path) is True:
         shutil.rmtree(file_path)
-
-    #
-    #
-    #
-    # basis = al.lp_basis.Basis(
-    #     profile_list=[
-    #         al.lmp.Gaussian(intensity=1.0),
-    #         al.lmp.Gaussian(intensity=2.0),
-    #     ]
-    # )
-    #
-    # g0 = al.Galaxy(
-    #     redshift=0.5, bulge=basis,
-    # )
-    #
-    # g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
-    #
-    # tracer = al.Tracer(galaxies=[g0, g1])
-    #
-    # fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
-    #
-    # assert fit.perform_inversion is False
-    # assert fit.figure_of_merit == pytest.approx(-99687.1003914, 1.0e-4)
