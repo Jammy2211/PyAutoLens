@@ -208,8 +208,9 @@ class FitInterferometerPlotter(Plotter):
         self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_fit")
         self.close_subplot_figure()
 
-    def subplot_mappings_of_plane(self, plane_index: Optional[int] = None, auto_filename: str = "subplot_mappings"):
-
+    def subplot_mappings_of_plane(
+        self, plane_index: Optional[int] = None, auto_filename: str = "subplot_mappings"
+    ):
         if self.fit.inversion is None:
             return
 

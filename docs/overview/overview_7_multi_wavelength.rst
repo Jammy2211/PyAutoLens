@@ -161,7 +161,7 @@ We compose an initial lens model as per usual.
 
     # Source:
 
-    bulge = af.Model(al.lp.Sersic)
+    bulge = af.Model(al.lp.SersicCore)
 
     source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 

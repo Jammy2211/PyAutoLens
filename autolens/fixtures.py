@@ -120,7 +120,7 @@ def make_fit_point_dict_x2_plane():
     return al.FitPointDict(
         point_dict=make_point_dict(),
         tracer=make_tracer_x2_plane_point(),
-        point_solver=make_point_solver(),
+        solver=make_point_solver(),
     )
 
 

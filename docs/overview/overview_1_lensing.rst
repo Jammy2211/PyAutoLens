@@ -264,16 +264,58 @@ Here is how they appear:
     :width: 600
     :alt: Alternative text
 
+Over Sampling
+-------------
+
+Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
+on a higher resolution grid than the image data to ensure the calculation is accurate. 
+
+For lensing calculations, the high magnification regions of a lensed source galaxy require especially high levels of 
+over sampling to ensure the lensed images are evaluated accurately.
+
+For a new user, the details of over-sampling are not important, therefore just be aware that calculations either:
+ 
+ (i) use adaptive over sampling for the foregorund lens's light, which ensures high accuracy across. 
+ (ii) use cored light profiles for the background source galaxy, where the core ensures low levels of over-sampling 
+ produce numerically accurate but fast to compute results.
+
+Once you are more experienced, you should read up on over-sampling in more detail via 
+the ``autogalaxy_workspace/*/guides/over_sampling.ipynb`` notebook.
+
+Log10
+-----
+
+The light and mass distributions of galaxies are closer to a log10 distribution than a linear one.
+
+This means that when we plot an image of a light profile, its appearance is better highlighted when we take the
+logarithm of its values and plot it in log10 space.
+
+The ``MatPlot2D`` object has an input ``use_log10``, which will do this automatically when we call the ``figures_2d`` method.
+Below, we can see that the image plotted now appears more clearly, with the outskirts of the light profile more visible.
+
+.. code-block:: python
+
+    galaxies_plotter = aplt.GalaxiesPlotter(
+        galaxies=galaxies,
+        grid=grid,
+        mat_plot_2d=aplt.MatPlot2D(use_log10=True),
+    )
+    galaxies_plotter.figures_2d(image=True)
+
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoGalaxy/main/docs/overview/images/galaxies/image_log10.png
+  :width: 400
+  :alt: Alternative text
+
 Extending Objects
 -----------------
 
-The **PyAutoLens** API has been designed such that all of the objects introduced above are extensible. `Galaxy`
-objects can take many `LightProfile`'s and `MassProfile`'s. `Tracer`' objects can take many `Galaxy`'s.
+The **PyAutoLens** API has been designed such that all of the objects introduced above are extensible. ``Galaxy``
+objects can take many ``LightProfile``'s and ``MassProfile``'s. ``Tracer``' objects can take many ``Galaxy``'s.
 
 If the galaxies are at different redshifts a strong lensing system with multiple lens planes will be created,
 performing complex multi-plane ray-tracing calculations.
 
-To finish, lets create a `Tracer` with 3 galaxies at 3 different redshifts, forming a system with two distinct Einstein
+To finish, lets create a ``Tracer`` with 3 galaxies at 3 different redshifts, forming a system with two distinct Einstein
 rings! The mass distribution of the first galaxy also has separate components for its stellar mass and dark matter.
 
 .. code-block:: python
@@ -313,7 +355,7 @@ rings! The mass distribution of the first galaxy also has separate components fo
 
     source_galaxy = al.Galaxy(
         redshift=2.0,
-        bulge=al.lp.Sersic(
+        bulge=al.lp.SersicCore(
             centre=(0.0, 0.0),
             ell_comps=(0.0, 0.111111),
             intensity=1.4,

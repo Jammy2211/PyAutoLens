@@ -160,7 +160,7 @@ code below shows how to setup and fit a lens model to a dataset:
 
     # Source:
 
-    disk = af.Model(al.lp.Sersic)
+    disk = af.Model(al.lp.SersicCore)
     source = af.Model(al.Galaxy, redshift=1.0, disk=disk)
 
     # Overall Lens Model:

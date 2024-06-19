@@ -98,7 +98,9 @@ class PlotterInterfaceInterferometer(PlotterInterface):
         )
 
         if plot_setting(section="inversion", name="subplot_mappings"):
-            fit_plotter.subplot_mappings_of_plane(plane_index=len(fit.tracer.planes) - 1)
+            fit_plotter.subplot_mappings_of_plane(
+                plane_index=len(fit.tracer.planes) - 1
+            )
 
         if not during_analysis and should_plot("all_at_end_png"):
             mat_plot_1d = self.mat_plot_1d_from(subfolders=path.join(subfolders, "end"))
