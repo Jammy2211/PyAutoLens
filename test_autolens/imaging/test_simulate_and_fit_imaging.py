@@ -820,6 +820,32 @@ def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging
 
     assert fit.chi_squared == pytest.approx(5.706423629698664e-05, 1e-4)
 
+    over_sampling = al.OverSamplingUniform(sub_size=8)
+
+    masked_dataset = masked_dataset.apply_over_sampling(
+        over_sampling=over_sampling
+    )
+
+    basis = al.lp_basis.Basis(
+        profile_list=[
+            al.lmp_linear.Gaussian(intensity=1.0, mass_to_light_ratio=3.0),
+            al.lmp_linear.Gaussian(intensity=2.0, mass_to_light_ratio=4.0),
+        ]
+    )
+
+    lens_galaxy = al.Galaxy(
+        redshift=0.5,
+        bulge=basis,
+    )
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+
+    fit = al.FitImaging(dataset=masked_dataset, tracer=tracer)
+
+    # The value is actually not zero before the blurring grid assumes a sub_size=1
+    # and does not use the iterative grid, which has a small impact on the chi-squared
+
+    assert fit.chi_squared == pytest.approx(3.295535243634485e-05, 1e-4)
+
     file_path = path.join(
         "{}".format(path.dirname(path.realpath(__file__))), "data_temp"
     )
