@@ -87,42 +87,6 @@ class AnalysisPointSource(af.Analysis, ABC):
         return self.square_distance(coord1, coord2) / (2 * self.error**2)
 
 
-class AnalysisAllToAllPointSource(AnalysisPointSource):
-    def _log_likelihood_for_coordinates(
-        self, predicted_coordinates: List[Tuple[float, float]]
-    ) -> float:
-        """
-        Compute the likelihood of the predicted coordinates by comparing the positions of
-        the observed and predicted coordinates.
-
-        This is essentially the product over all possible pairings of observed and predicted coordinates.
-
-        Parameters
-        ----------
-        predicted_coordinates
-            The predicted multiple image coordinates of the point source.
-
-        Returns
-        -------
-        The likelihood of the predicted coordinates.
-        """
-        if len(predicted_coordinates) == 0:
-            raise af.exc.FitException("The number of predicted coordinates is zero.")
-
-        likelihood = 1 / (len(predicted_coordinates) ** len(self.observed_coordinates))
-        for observed in self.observed_coordinates:
-            likelihood *= sum(
-                [
-                    math.exp(
-                        -self.square_distance(predicted, observed)
-                        / (2 * self.error**2)
-                    )
-                    for predicted in predicted_coordinates
-                ]
-            )
-        return math.log(likelihood)
-
-
 class AnalysisClosestPointSource(AnalysisPointSource):
     def _log_likelihood_for_coordinates(
         self, predicted_coordinates: List[Tuple[float, float]]
