@@ -269,7 +269,7 @@ class AnalysisMarginalizeOverAll(AnalysisPointSource):
         for observed in self.observed_coordinates:
             log_likelihood -= logsumexp(
                 [
-                    math.log(self.error_corrected_distance(predicted, observed))
+                    self.error_corrected_distance(predicted, observed)
                     for predicted in predicted_coordinates
                 ]
             )
