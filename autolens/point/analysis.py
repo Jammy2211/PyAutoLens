@@ -131,7 +131,9 @@ class AnalysisClosestPointSource(AnalysisPointSource):
         Compute the likelihood of the predicted coordinates by comparing the positions of
         the observed and predicted coordinates.
 
-        This is done by pairing the closest predicted and observed coordinates.
+        This is done by pairing the closest predicted and observed coordinates without allowing repeats.
+        That is, the first predicted coordinate is paired with the closest observed coordinate, the second
+        predicted coordinate is paired with the closest observed coordinate that has not been paired yet, and so on.
 
         Parameters
         ----------
