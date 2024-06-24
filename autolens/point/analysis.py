@@ -82,6 +82,9 @@ class AnalysisPointSource(af.Analysis, ABC):
     def square_distance(coord1, coord2):
         return (coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2
 
+    def error_corrected_distance(self, coord1, coord2):
+        return self.square_distance(coord1, coord2) / (2 * self.error**2)
+
 
 class AnalysisAllToAllPointSource(AnalysisPointSource):
     def _log_likelihood_for_coordinates(
@@ -204,8 +207,9 @@ class AnalysisBestNoRepeat(AnalysisPointSource):
         for i, j in zip(row_ind, col_ind):
             observed = self.observed_coordinates[i]
             predicted = predicted_coordinates[j]
-            log_likelihood -= self.square_distance(predicted, observed) / (
-                2 * self.error**2
+            log_likelihood -= self.error_corrected_distance(
+                observed,
+                predicted,
             )
 
         return 0.5 * log_likelihood
