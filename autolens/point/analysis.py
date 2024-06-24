@@ -177,6 +177,19 @@ class AnalysisBestMatch(AnalysisPointSource):
     def _log_likelihood_for_coordinates(
         self, predicted_coordinates: List[Tuple[float, float]]
     ) -> float:
+        """
+        Predict the log likelihood of the predicted coordinates by comparing each observed
+        multiple image to whichever predicted multiple image is closest, allowing for repeats.
+
+        Parameters
+        ----------
+        predicted_coordinates
+            The predicted multiple image coordinates of the point source.
+
+        Returns
+        -------
+        The log likelihood of the predicted coordinates.
+        """
         log_likelihood = math.log(1 / 2 * math.pi * self.error**2)
         for observed in self.observed_coordinates:
             distances = [
@@ -192,6 +205,22 @@ class AnalysisBestNoRepeat(AnalysisPointSource):
     def _log_likelihood_for_coordinates(
         self, predicted_coordinates: List[Tuple[float, float]]
     ) -> float:
+        """
+        Predict the log likelihood of the predicted coordinates by comparing each observed
+        multiple image to the closest predicted multiple image, without allowing for repeats.
+
+        That is, each predicted multiple image is used only once. The Hungarian algorithm
+        is used to find the best matching of predicted to observed coordinates.
+
+        Parameters
+        ----------
+        predicted_coordinates
+            The predicted multiple image coordinates of the point source.
+
+        Returns
+        -------
+        The log likelihood of the predicted coordinates.
+        """
         cost_matrix = np.linalg.norm(
             np.array(
                 self.observed_coordinates,
@@ -220,6 +249,20 @@ class AnalysisMarginalizeOverAll(AnalysisPointSource):
     def _log_likelihood_for_coordinates(
         self, predicted_coordinates: List[Tuple[float, float]]
     ) -> float:
+        """
+        Predict the log likelihood of the predicted coordinates by comparing each observed
+        multiple image to all predicted multiple images. Effectively, this marginalizes over
+        all possible pairings of observed and predicted coordinates.
+
+        Parameters
+        ----------
+        predicted_coordinates
+            The predicted multiple image coordinates of the point source.
+
+        Returns
+        -------
+        The log likelihood of the predicted coordinates.
+        """
         combinations = len(predicted_coordinates) ** len(self.observed_coordinates)
         log_likelihood = -math.log(combinations)
 
