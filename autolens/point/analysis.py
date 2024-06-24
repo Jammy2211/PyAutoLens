@@ -165,3 +165,18 @@ class AnalysisClosestPointSource(AnalysisPointSource):
             observed_coordinates.remove(observed)
 
         return log_likelihood
+
+
+class AnalysisBestMatch(AnalysisPointSource):
+    def _log_likelihood_for_coordinates(
+        self, predicted_coordinates: List[Tuple[float, float]]
+    ) -> float:
+        log_likelihood = math.log(1 / 2 * math.pi * self.error**2)
+        for observed in self.observed_coordinates:
+            distances = [
+                self.square_distance(predicted, observed)
+                for predicted in predicted_coordinates
+            ]
+            minimum_distance = min(distances)
+            log_likelihood -= minimum_distance / self.error**2
+        return 0.5 * log_likelihood
