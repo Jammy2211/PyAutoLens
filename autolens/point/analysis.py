@@ -8,6 +8,7 @@ from autoarray import Grid2D
 from autolens.point.triangles.triangle_solver import TriangleSolver
 import numpy as np
 from scipy.optimize import linear_sum_assignment
+from scipy.special import logsumexp
 
 
 class AnalysisPointSource(af.Analysis, ABC):
@@ -213,3 +214,21 @@ class AnalysisBestNoRepeat(AnalysisPointSource):
             )
 
         return 0.5 * log_likelihood
+
+
+class AnalysisMarginalizeOverAll(AnalysisPointSource):
+    def _log_likelihood_for_coordinates(
+        self, predicted_coordinates: List[Tuple[float, float]]
+    ) -> float:
+        combinations = len(predicted_coordinates) ** len(self.observed_coordinates)
+        log_likelihood = -math.log(combinations)
+
+        for observed in self.observed_coordinates:
+            log_likelihood -= logsumexp(
+                [
+                    math.log(self.error_corrected_distance(predicted, observed))
+                    for predicted in predicted_coordinates
+                ]
+            )
+
+        return log_likelihood
