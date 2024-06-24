@@ -1,10 +1,10 @@
 import pytest
 
-from autolens.point.analysis import AnalysisAllToAllPointSource
+from autolens.point.analysis import AnalysisMarginalizeOverAll
 
 
 def test_log_likelihood(grid, model):
-    analysis = AnalysisAllToAllPointSource(
+    analysis = AnalysisMarginalizeOverAll(
         coordinates=[
             (0.0, 0.0),
         ],
@@ -24,7 +24,7 @@ def test_log_likelihood(grid, model):
         ([(0.0, 0.0)], [(0.0, 0.1)], -0.5),
         ([(0.0, 0.0)], [(0.1, 0.0)], -0.5),
         ([(0.0, 0.0)], [(0.1, 0.1)], -1.0),
-        ([(0.0, 0.0)], [(0.0, 0.0), (0.1, 0.1)], -0.378),
+        ([(0.0, 0.0)], [(0.0, 0.0), (0.1, 0.1)], -2.00),
     ],
 )
 def test_likelihood__multiple_images(
@@ -34,7 +34,7 @@ def test_likelihood__multiple_images(
     predicted,
     likelihood,
 ):
-    analysis = AnalysisAllToAllPointSource(
+    analysis = AnalysisMarginalizeOverAll(
         coordinates=observed,
         error=0.1,
         grid=grid,
@@ -49,7 +49,7 @@ def test_likelihood__multiple_images(
 
 
 def test_swap_coordinates(grid):
-    analysis = AnalysisAllToAllPointSource(
+    analysis = AnalysisMarginalizeOverAll(
         coordinates=[(1.0, 2.0), (3.0, 4.0)],
         error=0.1,
         grid=grid,
@@ -57,7 +57,7 @@ def test_swap_coordinates(grid):
     )
 
     assert analysis._log_likelihood_for_coordinates(
-        [(1.0, 2.0), (3.0, 4.0)],
+        [(1.1, 2.1), (3.1, 4.1)],
     ) == analysis._log_likelihood_for_coordinates(
-        [(3.0, 4.0), (1.0, 2.0)],
+        [(3.1, 4.1), (1.1, 2.1)],
     )
