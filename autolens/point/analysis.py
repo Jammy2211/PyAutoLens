@@ -163,7 +163,7 @@ class AnalysisBestMatch(AnalysisPointSource):
                 for predicted in predicted_coordinates
             ]
             minimum_distance = min(distances)
-            log_likelihood -= minimum_distance / self.error**2
+            log_likelihood -= minimum_distance / (2 * self.error**2)
         return 0.5 * log_likelihood
 
 
