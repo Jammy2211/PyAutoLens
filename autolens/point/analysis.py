@@ -6,6 +6,8 @@ from typing import List, Tuple
 import autofit as af
 from autoarray import Grid2D
 from autolens.point.triangles.triangle_solver import TriangleSolver
+import numpy as np
+from scipy.optimize import linear_sum_assignment
 
 
 class AnalysisPointSource(af.Analysis, ABC):
@@ -179,4 +181,31 @@ class AnalysisBestMatch(AnalysisPointSource):
             ]
             minimum_distance = min(distances)
             log_likelihood -= minimum_distance / self.error**2
+        return 0.5 * log_likelihood
+
+
+class AnalysisBestNoRepeat(AnalysisPointSource):
+    def _log_likelihood_for_coordinates(
+        self, predicted_coordinates: List[Tuple[float, float]]
+    ) -> float:
+        cost_matrix = np.linalg.norm(
+            np.array(
+                self.observed_coordinates,
+            )[:, np.newaxis]
+            - np.array(
+                predicted_coordinates,
+            ),
+            axis=2,
+        )
+        row_ind, col_ind = linear_sum_assignment(cost_matrix)
+
+        log_likelihood = math.log(1 / 2 * math.pi * self.error**2)
+
+        for i, j in zip(row_ind, col_ind):
+            observed = self.observed_coordinates[i]
+            predicted = predicted_coordinates[j]
+            log_likelihood -= self.square_distance(predicted, observed) / (
+                2 * self.error**2
+            )
+
         return 0.5 * log_likelihood
