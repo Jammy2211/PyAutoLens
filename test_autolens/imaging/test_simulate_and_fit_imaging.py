@@ -131,7 +131,7 @@ def test__perfect_fit__chi_squared_0__use_grid_iterate_to_simulate_and_fit():
         noise_map_path=path.join(file_path, "noise_map.fits"),
         psf_path=path.join(file_path, "psf.fits"),
         pixel_scales=0.2,
-        over_sampling=over_sampling
+        over_sampling=al.OverSamplingDataset(uniform=over_sampling)
     )
 
     mask = al.Mask2D.circular(
@@ -492,8 +492,10 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
         data=dataset.data,
         psf=dataset.psf,
         noise_map=dataset.noise_map,
-        over_sampling=al.OverSamplingUniform(sub_size=2),
-        over_sampling_pixelization=al.OverSamplingUniform(sub_size=2),
+        over_sampling=al.OverSamplingDataset(
+            uniform=al.OverSamplingUniform(sub_size=2),
+            pixelization=al.OverSamplingUniform(sub_size=2)
+        )
     )
 
     masked_dataset = dataset.apply_mask(mask=mask)
@@ -803,9 +805,9 @@ def test__perfect_fit__chi_squared_0__non_uniform_over_sampling():
     )[-1]
 
     masked_dataset = masked_dataset.apply_over_sampling(
-        over_sampling_non_uniform=al.OverSamplingUniform.from_radial_bins(
+        over_sampling=al.OverSamplingDataset(non_uniform=al.OverSamplingUniform.from_radial_bins(
             grid=traced_grid, sub_size_list=[8, 2], radial_list=[0.3], centre_list=[source_galaxy.light.centre]
-        )
+        ))
     )
 
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
@@ -876,7 +878,7 @@ def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging
         noise_map_path=path.join(file_path, "noise_map.fits"),
         psf_path=path.join(file_path, "psf.fits"),
         pixel_scales=0.2,
-        over_sampling=over_sampling
+        over_sampling=al.OverSamplingDataset(uniform=over_sampling)
     )
 
     mask = al.Mask2D.circular(
@@ -908,7 +910,7 @@ def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging
     over_sampling = al.OverSamplingUniform(sub_size=8)
 
     masked_dataset = masked_dataset.apply_over_sampling(
-        over_sampling=over_sampling
+        al.OverSamplingDataset(uniform=over_sampling)
     )
 
     basis = al.lp_basis.Basis(

@@ -85,6 +85,20 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         self.preloads = preloads
 
     @property
+    def grid(self) -> aa.type.Grid2DLike:
+        grid = self.dataset.grid.subtracted_from(offset=self.dataset_model.grid_offset)
+
+        if self.dataset.over_sampling.non_uniform is None:
+            return grid
+
+        return aa.Grid2D(
+            values=grid,
+            mask=self.dataset.mask,
+            over_sampling=self.dataset.over_sampling.non_uniform,
+            over_sampling_non_uniform=self.dataset.over_sampling.non_uniform
+        )
+
+    @property
     def blurred_image(self) -> aa.Array2D:
         """
         Returns the image of all light profiles in the fit's tracer convolved with the imaging dataset's PSF.
