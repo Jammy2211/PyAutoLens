@@ -57,9 +57,13 @@ def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
     assert lp_linear_func_list[1].light_profile_list[0] == lp_linear_1
     assert lp_linear_func_list[2].light_profile_list[0] == lp_linear_2
 
-    traced_grid_list = tracer.traced_grid_2d_list_from(grid=masked_imaging_7x7.grid)
+    traced_grid_list = tracer.traced_grid_2d_list_from(
+        grid=masked_imaging_7x7.grids.uniform
+    )
 
-    assert lp_linear_func_list[0].grid == pytest.approx(masked_imaging_7x7.grid, 1.0e-4)
+    assert lp_linear_func_list[0].grid == pytest.approx(
+        masked_imaging_7x7.grids.uniform, 1.0e-4
+    )
     assert lp_linear_func_list[1].grid == pytest.approx(traced_grid_list[1], 1.0e-4)
     assert lp_linear_func_list[2].grid == pytest.approx(traced_grid_list[2], 1.0e-4)
 
@@ -456,14 +460,18 @@ def test__mapper_galaxy_dict(masked_imaging_7x7):
 
 
 def test__inversion_imaging_from(grid_2d_7x7, masked_imaging_7x7):
+    grids = al.GridsInterface(
+        uniform=masked_imaging_7x7.grids.uniform,
+        pixelization=masked_imaging_7x7.grids.pixelization,
+        blurring=masked_imaging_7x7.grids.blurring,
+        border_relocator=masked_imaging_7x7.grids.border_relocator,
+    )
+
     dataset = al.DatasetInterface(
         data=masked_imaging_7x7.data,
         noise_map=masked_imaging_7x7.noise_map,
+        grids=grids,
         convolver=masked_imaging_7x7.convolver,
-        grid=masked_imaging_7x7.grid,
-        grid_pixelization=masked_imaging_7x7.grid_pixelization,
-        blurring_grid=masked_imaging_7x7.blurring_grid,
-        border_relocator=masked_imaging_7x7.border_relocator,
     )
 
     g_linear = al.Galaxy(redshift=0.5, light_linear=al.lp_linear.Sersic())
@@ -505,14 +513,18 @@ def test__inversion_imaging_from(grid_2d_7x7, masked_imaging_7x7):
 def test__inversion_interferometer_from(grid_2d_7x7, interferometer_7):
     interferometer_7.data = al.Visibilities.ones(shape_slim=(7,))
 
+    grids = al.GridsInterface(
+        uniform=interferometer_7.grids.uniform,
+        pixelization=interferometer_7.grids.pixelization,
+        blurring=interferometer_7.grids.blurring,
+        border_relocator=interferometer_7.grids.border_relocator,
+    )
+
     dataset = al.DatasetInterface(
         data=interferometer_7.data,
         noise_map=interferometer_7.noise_map,
+        grids=grids,
         transformer=interferometer_7.transformer,
-        grid=interferometer_7.grid,
-        grid_pixelization=interferometer_7.grid_pixelization,
-        blurring_grid=interferometer_7.blurring_grid,
-        border_relocator=interferometer_7.border_relocator,
     )
 
     g_linear = al.Galaxy(redshift=0.5, light_linear=al.lp_linear.Sersic())

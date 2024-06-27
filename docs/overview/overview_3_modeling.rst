@@ -537,7 +537,7 @@ The result also contains the maximum log likelihood `Tracer` and `FitImaging` ob
 .. code-block:: python
 
     tracer_plotter = aplt.TracerPlotter(
-        tracer=result.max_log_likelihood_tracer, grid=dataset.grid
+        tracer=result.max_log_likelihood_tracer, grid=dataset.grids.uniform
     )
     tracer_plotter.subplot_tracer()
 

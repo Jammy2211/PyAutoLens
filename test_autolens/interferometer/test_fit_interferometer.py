@@ -176,7 +176,7 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
     )
 
     traced_grid_2d_list_from = tracer.traced_grid_2d_list_from(
-        grid=interferometer_7_grid.grid
+        grid=interferometer_7.grids.uniform
     )
 
     g0_image = g0.image_2d_from(grid=traced_grid_2d_list_from[0])
@@ -275,7 +275,7 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
     traced_grid_2d_list_from = tracer.traced_grid_2d_list_from(
-        grid=interferometer_7_grid.grid
+        grid=interferometer_7.grids.uniform
     )
 
     g0_profile_visibilities = g0.visibilities_from(

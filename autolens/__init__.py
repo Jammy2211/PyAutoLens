@@ -5,6 +5,8 @@ from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.interferometer.dataset import (
     Interferometer,
 )
+from autoarray.dataset.over_sampling import OverSamplingDataset
+from autoarray.dataset.grids import GridsInterface
 from autoarray.dataset.dataset_model import DatasetModel
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D

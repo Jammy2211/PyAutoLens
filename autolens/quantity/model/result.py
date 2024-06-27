@@ -43,7 +43,7 @@ class ResultQuantity(Result):
         """
         The masked 2D grid used by the dataset in the model-fit.
         """
-        return self.analysis.dataset.grid
+        return self.analysis.dataset.grids.uniform
 
     @property
     def max_log_likelihood_tracer(self) -> Tracer:

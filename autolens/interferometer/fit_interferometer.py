@@ -99,7 +99,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         transform to the sum of light profile images.
         """
         return self.tracer.visibilities_from(
-            grid=self.grid, transformer=self.dataset.transformer
+            grid=self.grids.uniform, transformer=self.dataset.transformer
         )
 
     @property
@@ -115,11 +115,9 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         dataset = aa.DatasetInterface(
             data=self.profile_subtracted_visibilities,
             noise_map=self.noise_map,
+            grids=self.grids,
             transformer=self.dataset.transformer,
             w_tilde=self.w_tilde,
-            grid=self.grid,
-            grid_pixelization=self.grid_pixelization,
-            border_relocator=self.dataset.border_relocator,
         )
 
         return TracerToInversion(
@@ -173,7 +171,9 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         For modeling, this dictionary is used to set up the `adapt_images` that adapt certain pixelizations to the
         data being fitted.
         """
-        galaxy_model_image_dict = self.tracer.galaxy_image_2d_dict_from(grid=self.grid)
+        galaxy_model_image_dict = self.tracer.galaxy_image_2d_dict_from(
+            grid=self.grids.uniform
+        )
 
         galaxy_linear_obj_image_dict = self.galaxy_linear_obj_data_dict_from(
             use_image=True
@@ -194,7 +194,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
           are solved for first via the inversion.
         """
         galaxy_model_visibilities_dict = self.tracer.galaxy_visibilities_dict_from(
-            grid=self.grid, transformer=self.dataset.transformer
+            grid=self.grids.uniform, transformer=self.dataset.transformer
         )
 
         galaxy_linear_obj_visibilities_dict = self.galaxy_linear_obj_data_dict_from(

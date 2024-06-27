@@ -120,7 +120,7 @@ class FitInterferometerPlotter(Plotter):
         """
         return TracerPlotter(
             tracer=self.tracer,
-            grid=self.fit.grid,
+            grid=self.fit.grids.uniform,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.visuals_2d,
             include_2d=self.include_2d,

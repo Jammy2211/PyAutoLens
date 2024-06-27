@@ -52,26 +52,40 @@ def over_sample(func):
 
         grid_input = grid
 
+        over_sampler_used = False
+
         if isinstance(grid, aa.Grid2D):
-            if isinstance(grid.over_sampling, aa.OverSamplingUniform):
-                grid_input = grid.over_sampler.over_sampled_grid
+            if (
+                grid.over_sampling_non_uniform is not None
+                and obj.upper_plane_index_with_light_profile > 0
+            ):
+                over_sampler = grid.over_sampling_non_uniform.over_sampler_from(
+                    mask=grid.mask
+                )
+                grid_input = over_sampler.over_sampled_grid
                 grid_input.over_sampling = None
+                over_sampler_used = True
+
+            elif isinstance(grid.over_sampling, aa.OverSamplingUniform):
+                over_sampler = grid.over_sampler
+                grid_input = over_sampler.over_sampled_grid
+                grid_input.over_sampling = None
+                over_sampler_used = True
 
         result = func(obj, grid_input, *args, **kwargs)
 
-        if isinstance(grid, aa.Grid2D):
-            if isinstance(grid.over_sampling, aa.OverSamplingUniform):
-                if isinstance(result, list):
-                    return [
-                        grid.over_sampler.binned_array_2d_from(array=result_i)
-                        for result_i in result
-                    ]
-                elif isinstance(result, dict):
-                    return {
-                        key: grid.over_sampler.binned_array_2d_from(array=result_i)
-                        for key, result_i in result.items()
-                    }
-                return grid.over_sampler.binned_array_2d_from(array=result)
+        if over_sampler_used:
+            if isinstance(result, list):
+                return [
+                    over_sampler.binned_array_2d_from(array=result_i)
+                    for result_i in result
+                ]
+            elif isinstance(result, dict):
+                return {
+                    key: over_sampler.binned_array_2d_from(array=result_i)
+                    for key, result_i in result.items()
+                }
+            return over_sampler.binned_array_2d_from(array=result)
 
         return result
 
