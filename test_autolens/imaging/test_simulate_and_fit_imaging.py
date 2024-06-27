@@ -272,9 +272,9 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
     assert fit_linear.figure_of_merit == pytest.approx(-45.02798, 1.0e-4)
 
     lens_galaxy_image = lens_galaxy.blurred_image_2d_from(
-        grid=masked_dataset.grid,
+        grid=masked_dataset.grids.uniform,
         convolver=masked_dataset.convolver,
-        blurring_grid=masked_dataset.blurring_grid,
+        blurring_grid=masked_dataset.grids.blurring,
     )
 
     assert fit_linear.galaxy_model_image_dict[lens_galaxy_linear] == pytest.approx(
@@ -284,9 +284,9 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
         lens_galaxy_image, 1.0e-4
     )
 
-    traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=masked_dataset.grid)
+    traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=masked_dataset.grids.uniform)
     traced_blurring_grid_2d_list = tracer.traced_grid_2d_list_from(
-        grid=masked_dataset.blurring_grid
+        grid=masked_dataset.grids.blurring
     )
 
     source_galaxy_image = source_galaxy.blurred_image_2d_from(
@@ -387,9 +387,9 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     assert fit_linear.figure_of_merit == pytest.approx(-84.04875317, 1.0e-4)
 
     lens_galaxy_image = lens_galaxy.blurred_image_2d_from(
-        grid=masked_dataset.grid,
+        grid=masked_dataset.grids.uniform,
         convolver=masked_dataset.convolver,
-        blurring_grid=masked_dataset.blurring_grid,
+        blurring_grid=masked_dataset.grids.blurring,
     )
 
     assert fit_linear.galaxy_model_image_dict[lens_galaxy_linear] == pytest.approx(
@@ -523,7 +523,6 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
-    print(fit_linear.inversion.reconstruction)
 
     assert fit_linear.inversion.reconstruction == pytest.approx(
         np.array(
@@ -534,13 +533,13 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
         ),
         1.0e-4,
     )
-    print(fit_linear.figure_of_merit)
+
     assert fit_linear.figure_of_merit == pytest.approx(-84.36224277776512, 1.0e-4)
 
     lens_galaxy_image = lens_galaxy.blurred_image_2d_from(
-        grid=masked_dataset.grid,
+        grid=masked_dataset.grids.uniform,
         convolver=masked_dataset.convolver,
-        blurring_grid=masked_dataset.blurring_grid,
+        blurring_grid=masked_dataset.grids.blurring,
     )
 
     assert fit_linear.galaxy_model_image_dict[lens_galaxy_linear] == pytest.approx(
@@ -801,7 +800,7 @@ def test__perfect_fit__chi_squared_0__non_uniform_over_sampling():
     masked_dataset = dataset.apply_mask(mask=mask)
 
     traced_grid = tracer.traced_grid_2d_list_from(
-        grid=masked_dataset.grid,
+        grid=masked_dataset.grids.uniform,
     )[-1]
 
     masked_dataset = masked_dataset.apply_over_sampling(

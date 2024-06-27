@@ -84,19 +84,19 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         self.preloads = preloads
 
-    @property
-    def grid(self) -> aa.type.Grid2DLike:
-        grid = self.dataset.grid.subtracted_from(offset=self.dataset_model.grid_offset)
-
-        if self.dataset.over_sampling.non_uniform is None:
-            return grid
-
-        return aa.Grid2D(
-            values=grid,
-            mask=self.dataset.mask,
-            over_sampling=self.dataset.over_sampling.non_uniform,
-            over_sampling_non_uniform=self.dataset.over_sampling.non_uniform
-        )
+    # @property
+    # def grid(self) -> aa.type.Grid2DLike:
+    #     grid = self.dataset.grid.subtracted_from(offset=self.dataset_model.grid_offset)
+    #
+    #     if self.dataset.over_sampling.non_uniform is None:
+    #         return grid
+    #
+    #     return aa.Grid2D(
+    #         values=grid,
+    #         mask=self.dataset.mask,
+    #         over_sampling=self.dataset.over_sampling.non_uniform,
+    #         over_sampling_non_uniform=self.dataset.over_sampling.non_uniform
+    #     )
 
     @property
     def blurred_image(self) -> aa.Array2D:
@@ -110,9 +110,9 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         if self.preloads.blurred_image is None:
 
             return self.tracer.blurred_image_2d_from(
-                grid=self.grid,
+                grid=self.grids.uniform,
                 convolver=self.dataset.convolver,
-                blurring_grid=self.blurring_grid,
+                blurring_grid=self.grids.blurring,
             )
 
         return self.preloads.blurred_image
@@ -131,14 +131,10 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         dataset = aa.DatasetInterface(
             data=self.profile_subtracted_image,
             noise_map=self.noise_map,
+            grids=self.grids,
             convolver=self.dataset.convolver,
             w_tilde=self.w_tilde,
-            grid=self.grid,
-            grid_pixelization=self.grid_pixelization,
-            blurring_grid=self.blurring_grid,
-            border_relocator=self.dataset.border_relocator,
         )
-
 
         return TracerToInversion(
             dataset=dataset,
@@ -196,9 +192,9 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         """
 
         galaxy_blurred_image_2d_dict = self.tracer.galaxy_blurred_image_2d_dict_from(
-            grid=self.grid,
+            grid=self.grids.uniform,
             convolver=self.dataset.convolver,
-            blurring_grid=self.blurring_grid,
+            blurring_grid=self.grids.blurring,
         )
 
         galaxy_linear_obj_image_dict = self.galaxy_linear_obj_data_dict_from(
@@ -267,7 +263,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         model_images_of_planes_list = [
             aa.Array2D(
-            values=np.zeros(self.grid.shape_slim), mask=self.dataset.mask
+            values=np.zeros(self.grids.uniform.shape_slim), mask=self.dataset.mask
             )
             for i in range(self.tracer.total_planes)
         ]
@@ -323,7 +319,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             exc.raise_linear_light_profile_in_unmasked()
 
         return self.tracer.unmasked_blurred_image_2d_from(
-            grid=self.grid, psf=self.dataset.psf
+            grid=self.grids.uniform, psf=self.dataset.psf
         )
 
     @property
@@ -339,7 +335,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             exc.raise_linear_light_profile_in_unmasked()
 
         return self.tracer.unmasked_blurred_image_2d_list_from(
-            grid=self.grid, psf=self.dataset.psf
+            grid=self.grids.uniform, psf=self.dataset.psf
         )
 
     @property

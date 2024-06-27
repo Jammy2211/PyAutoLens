@@ -104,7 +104,7 @@ data below.
 
 .. code-block:: python
 
-    grid_plotter = aplt.Grid2DPlotter(grid=dataset.grid)
+    grid_plotter = aplt.Grid2DPlotter(grid=dataset.grids.uniform)
     grid_plotter.set_title("Grid2D of Masked Dataset")
     grid_plotter.figure_2d()
 
@@ -161,7 +161,7 @@ the telescope optics when it is observed. It mimics this blurring effect via a 2
 
 .. code-block:: python
 
-    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=dataset.grid)
+    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=dataset.grids.uniform)
     tracer_plotter.set_title("Tracer`s Image")
     tracer_plotter.figures_2d(image=True)
 

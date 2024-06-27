@@ -115,7 +115,7 @@ class VisualizerImaging(af.Visualizer):
             tracer=tracer, grid=grid, during_analysis=during_analysis
         )
         plotter_interface.galaxies(
-            galaxies=tracer.galaxies, grid=fit.grid, during_analysis=during_analysis
+            galaxies=tracer.galaxies, grid=fit.grids.uniform, during_analysis=during_analysis
         )
         if fit.inversion is not None:
             if fit.inversion.has(cls=ag.AbstractMapper):
