@@ -755,7 +755,7 @@ def test__perfect_fit__chi_squared_0__non_uniform_over_sampling():
         mass=al.mp.Isothermal(centre=(0.1, 0.1), einstein_radius=0.3),
     )
     source_galaxy = al.Galaxy(
-        redshift=1.0, light=al.lp.Sersic(centre=(0.1, 0.1), intensity=0.5, sersic_index=1.0)
+        redshift=1.0, light=al.lp.Sersic(centre=(0.1, 0.1), intensity=0.5, sersic_index=1.2)
     )
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
@@ -804,7 +804,9 @@ def test__perfect_fit__chi_squared_0__non_uniform_over_sampling():
     )[-1]
 
     masked_dataset = masked_dataset.apply_over_sampling(
-        over_sampling=al.OverSamplingDataset(non_uniform=al.OverSamplingUniform.from_radial_bins(
+        over_sampling=al.OverSamplingDataset(
+            uniform=al.OverSamplingUniform(sub_size=1),
+            non_uniform=al.OverSamplingUniform.from_radial_bins(
             grid=traced_grid, sub_size_list=[8, 2], radial_list=[0.3], centre_list=[source_galaxy.light.centre]
         ))
     )

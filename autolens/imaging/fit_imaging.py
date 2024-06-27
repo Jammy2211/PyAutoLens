@@ -98,6 +98,29 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
     #         over_sampling_non_uniform=self.dataset.over_sampling.non_uniform
     #     )
 
+    @cached_property
+    def grids(self) -> aa.GridsInterface:
+
+        grids = super().grids
+
+        if grids.non_uniform is None:
+            return grids
+
+        uniform = aa.Grid2D(
+            values=grids.non_uniform,
+            mask=self.dataset.mask,
+            over_sampling=self.dataset.over_sampling.non_uniform,
+            over_sampling_non_uniform=self.dataset.over_sampling.non_uniform
+        )
+
+        return aa.GridsInterface(
+            uniform=uniform,
+            non_uniform=grids.non_uniform,
+            pixelization=grids.pixelization,
+            blurring=grids.blurring,
+            border_relocator=grids.border_relocator
+        )
+
     @property
     def blurred_image(self) -> aa.Array2D:
         """
