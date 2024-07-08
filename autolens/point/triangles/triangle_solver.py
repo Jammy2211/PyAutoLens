@@ -3,11 +3,11 @@ import math
 from typing import Tuple, List
 
 from autoarray import Grid2D, Grid2DIrregular
+from autoarray.structures.triangles.array import ArrayTriangles
 from autoarray.structures.triangles.subsample_triangles import SubsampleTriangles
 from autoarray.structures.triangles.triangles import Triangles
 from autoarray.type import Grid2DLike
 from autogalaxy import OperateDeflections
-
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +87,7 @@ class TriangleSolver:
         -------
         A list of image plane coordinates that are traced to the source plane coordinate.
         """
-        triangles = Triangles.for_grid(grid=self.grid)
+        triangles = ArrayTriangles.for_grid(grid=self.grid)
 
         if self.n_steps == 0:
             raise ValueError(
@@ -97,21 +97,13 @@ class TriangleSolver:
         kept_triangles = []
 
         for _ in range(self.n_steps):
-            kept_triangles = self._filter_triangles(
-                triangles=triangles,
-                source_plane_coordinate=source_plane_coordinate,
-            )
-            with_neighbourhood = {
-                triangle
-                for kept_triangle in kept_triangles
-                for triangle in kept_triangle.neighbourhood
-            }
-            triangles = SubsampleTriangles(parent_triangles=list(with_neighbourhood))
+            kept_triangles = triangles.containing(point=source_plane_coordinate)
+            with_neighbourhood = kept_triangles.neighborhood()
+            triangles = with_neighbourhood.up_sample()
 
-        means = [triangle.mean for triangle in kept_triangles]
-        filtered_means = self._filter_low_magnification(points=means)
+        filtered_means = self._filter_low_magnification(points=kept_triangles.means)
 
-        difference = len(means) - len(filtered_means)
+        difference = len(kept_triangles.means) - len(filtered_means)
         if difference > 0:
             logger.debug(
                 f"Filtered one multiple-image with magnification below threshold."
@@ -149,36 +141,3 @@ class TriangleSolver:
             )
             if abs(magnification) > self.magnification_threshold
         ]
-
-    def _filter_triangles(
-        self,
-        triangles: Triangles,
-        source_plane_coordinate: Tuple[float, float],
-    ):
-        """
-        Filter the triangles to keep only those that contain the source plane coordinate.
-
-        Parameters
-        ----------
-        triangles
-            A set of triangles that may contain the source plane coordinate.
-        source_plane_coordinate
-            The source plane coordinate to check if it is contained within the triangles.
-
-        Returns
-        -------
-        The triangles that contain the source plane coordinate.
-        """
-        source_plane_grid = self._source_plane_grid(grid=triangles.grid_2d)
-
-        kept_triangles = []
-        for image_triangle, source_triangle in zip(
-            triangles.triangles,
-            triangles.with_updated_grid(source_plane_grid),
-        ):
-            if source_triangle.contains(
-                point=source_plane_coordinate,
-            ):
-                kept_triangles.append(image_triangle)
-
-        return kept_triangles
