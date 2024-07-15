@@ -4,8 +4,6 @@ from typing import Tuple, List
 
 from autoarray import Grid2D, Grid2DIrregular
 from autoarray.structures.triangles.array import ArrayTriangles
-from autoarray.structures.triangles.subsample_triangles import SubsampleTriangles
-from autoarray.structures.triangles.triangles import Triangles
 from autoarray.type import Grid2DLike
 from autogalaxy import OperateDeflections
 
@@ -97,7 +95,10 @@ class TriangleSolver:
         kept_triangles = []
 
         for _ in range(self.n_steps):
-            kept_triangles = triangles.containing(point=source_plane_coordinate)
+            kept_triangles = self._filter_triangles(
+                triangles,
+                source_plane_coordinate,
+            )
             with_neighbourhood = kept_triangles.neighborhood()
             triangles = with_neighbourhood.up_sample()
 
@@ -141,3 +142,29 @@ class TriangleSolver:
             )
             if abs(magnification) > self.magnification_threshold
         ]
+
+    def _filter_triangles(
+        self,
+        triangles: ArrayTriangles,
+        source_plane_coordinate: Tuple[float, float],
+    ):
+        """
+        Filter the triangles to keep only those that contain the source plane coordinate.
+
+        Parameters
+        ----------
+        triangles
+            A set of triangles that may contain the source plane coordinate.
+        source_plane_coordinate
+            The source plane coordinate to check if it is contained within the triangles.
+
+        Returns
+        -------
+        The triangles that contain the source plane coordinate.
+        """
+        source_plane_grid = self._source_plane_grid(
+            grid=Grid2DIrregular(triangles.vertices)
+        )
+        source_triangles = triangles.with_vertices(source_plane_grid)
+        indexes = source_triangles.containing_indices(point=source_plane_coordinate)
+        return triangles.for_indexes(indexes=indexes)
