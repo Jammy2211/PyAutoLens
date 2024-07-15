@@ -37,7 +37,7 @@ def test_solver(solver):
 
 
 def test_steps(solver):
-    assert solver.n_steps == 3
+    assert solver.n_steps == 7
 
 
 class NullTracer(al.Tracer):
@@ -51,12 +51,13 @@ class NullTracer(al.Tracer):
 @pytest.mark.parametrize(
     "source_plane_coordinate",
     [
-        # (0.0, 0.0),
+        (0.0, 0.0),
         (0.0, 1.0),
-        # (1.0, 1.0),
-        # (0.5, 0.5),
-        # (0.1, 0.1),
-        # (-1.0, -1.0),
+        (1.0, 0.0),
+        (1.0, 1.0),
+        (0.5, 0.5),
+        (0.1, 0.1),
+        (-1.0, -1.0),
     ],
 )
 def test_trivial(
