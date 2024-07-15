@@ -1,6 +1,7 @@
 import logging
 import math
-from typing import Tuple, List
+from dataclasses import dataclass
+from typing import Tuple, List, Iterator
 
 from autoarray import Grid2D, Grid2DIrregular
 from autoarray.structures.triangles.array import ArrayTriangles
@@ -8,6 +9,14 @@ from autoarray.type import Grid2DLike
 from autogalaxy import OperateDeflections
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class Step:
+    initial_triangles: ArrayTriangles
+    filtered_triangles: ArrayTriangles
+    neighbourhood: ArrayTriangles
+    up_sampled: ArrayTriangles
 
 
 class TriangleSolver:
@@ -85,22 +94,14 @@ class TriangleSolver:
         -------
         A list of image plane coordinates that are traced to the source plane coordinate.
         """
-        triangles = ArrayTriangles.for_grid(grid=self.grid)
-
         if self.n_steps == 0:
             raise ValueError(
                 "The target pixel scale is too large to subdivide the triangles."
             )
 
-        kept_triangles = []
-
-        for _ in range(self.n_steps):
-            kept_triangles = self._filter_triangles(
-                triangles,
-                source_plane_coordinate,
-            )
-            with_neighbourhood = kept_triangles.neighborhood()
-            triangles = with_neighbourhood.up_sample()
+        steps = list(self.steps(source_plane_coordinate=source_plane_coordinate))
+        final_step = steps[-1]
+        kept_triangles = final_step.filtered_triangles
 
         filtered_means = self._filter_low_magnification(points=kept_triangles.means)
 
@@ -168,3 +169,21 @@ class TriangleSolver:
         source_triangles = triangles.with_vertices(source_plane_grid)
         indexes = source_triangles.containing_indices(point=source_plane_coordinate)
         return triangles.for_indexes(indexes=indexes)
+
+    def steps(self, source_plane_coordinate: Tuple[float, float]) -> Iterator[Step]:
+        triangles = ArrayTriangles.for_grid(grid=self.grid)
+
+        for _ in range(self.n_steps):
+            kept_triangles = self._filter_triangles(
+                triangles,
+                source_plane_coordinate,
+            )
+            with_neighbourhood = kept_triangles.neighborhood()
+            triangles = with_neighbourhood.up_sample()
+
+            yield Step(
+                initial_triangles=triangles,
+                filtered_triangles=kept_triangles,
+                neighbourhood=with_neighbourhood,
+                up_sampled=triangles,
+            )
