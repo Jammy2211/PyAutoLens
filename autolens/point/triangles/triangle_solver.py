@@ -13,6 +13,23 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class Step:
+    """
+    A step in the triangle solver algorithm.
+
+    Attributes
+    ----------
+    number
+        The number of the step.
+    initial_triangles
+        The triangles at the start of the step.
+    filtered_triangles
+        The triangles trace to triangles that contain the source plane coordinate.
+    neighbourhood
+        The neighbourhood of the filtered triangles.
+    up_sampled
+        The neighbourhood up-sampled to increase the resolution.
+    """
+
     number: int
     initial_triangles: ArrayTriangles
     filtered_triangles: ArrayTriangles
@@ -171,7 +188,22 @@ class TriangleSolver:
         indexes = source_triangles.containing_indices(point=source_plane_coordinate)
         return triangles.for_indexes(indexes=indexes)
 
-    def steps(self, source_plane_coordinate: Tuple[float, float]) -> Iterator[Step]:
+    def steps(
+        self,
+        source_plane_coordinate: Tuple[float, float],
+    ) -> Iterator[Step]:
+        """
+        Iterate over the steps of the triangle solver algorithm.
+
+        Parameters
+        ----------
+        source_plane_coordinate
+            The source plane coordinate to trace to the image plane.
+
+        Returns
+        -------
+        An iterator over the steps of the triangle solver algorithm.
+        """
         initial_triangles = ArrayTriangles.for_grid(grid=self.grid)
 
         for number in range(self.n_steps):
