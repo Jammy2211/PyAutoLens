@@ -101,4 +101,4 @@ def test_real_example(grid):
     for step in solver.steps((0.07, 0.07)):
         visualise(step)
     result = solver.solve((0.07, 0.07))
-    assert len(result) == 4
+    assert len(result) == 5
