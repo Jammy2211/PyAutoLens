@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class Step:
+    number: int
     initial_triangles: ArrayTriangles
     filtered_triangles: ArrayTriangles
     neighbourhood: ArrayTriangles
@@ -171,19 +172,22 @@ class TriangleSolver:
         return triangles.for_indexes(indexes=indexes)
 
     def steps(self, source_plane_coordinate: Tuple[float, float]) -> Iterator[Step]:
-        triangles = ArrayTriangles.for_grid(grid=self.grid)
+        initial_triangles = ArrayTriangles.for_grid(grid=self.grid)
 
-        for _ in range(self.n_steps):
+        for number in range(self.n_steps):
             kept_triangles = self._filter_triangles(
-                triangles,
+                initial_triangles,
                 source_plane_coordinate,
             )
-            with_neighbourhood = kept_triangles.neighborhood()
-            triangles = with_neighbourhood.up_sample()
+            neighbourhood = kept_triangles.neighborhood()
+            up_sampled = neighbourhood.up_sample()
 
             yield Step(
-                initial_triangles=triangles,
+                number=number,
+                initial_triangles=initial_triangles,
                 filtered_triangles=kept_triangles,
-                neighbourhood=with_neighbourhood,
-                up_sampled=triangles,
+                neighbourhood=neighbourhood,
+                up_sampled=up_sampled,
             )
+
+            initial_triangles = up_sampled

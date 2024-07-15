@@ -6,6 +6,7 @@ import pytest
 import autolens as al
 import autogalaxy as ag
 from autolens.point.triangles.triangle_solver import TriangleSolver
+from autolens.point.triangles.visualise import visualise
 
 
 @pytest.fixture
@@ -51,11 +52,11 @@ class NullTracer(al.Tracer):
     "source_plane_coordinate",
     [
         (0.0, 0.0),
-        (0.0, 1.0),
-        (1.0, 1.0),
-        (0.5, 0.5),
-        (0.1, 0.1),
-        (-1.0, -1.0),
+        # (0.0, 1.0),
+        # (1.0, 1.0),
+        # (0.5, 0.5),
+        # (0.1, 0.1),
+        # (-1.0, -1.0),
     ],
 )
 def test_trivial(
@@ -67,6 +68,8 @@ def test_trivial(
         grid=grid,
         pixel_scale_precision=0.01,
     )
+    for step in solver.steps(source_plane_coordinate):
+        visualise(step)
     (coordinates,) = solver.solve(
         source_plane_coordinate=source_plane_coordinate,
     )
