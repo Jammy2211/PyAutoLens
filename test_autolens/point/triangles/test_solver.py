@@ -6,7 +6,6 @@ import pytest
 import autolens as al
 import autogalaxy as ag
 from autolens.point.triangles.triangle_solver import TriangleSolver
-from autolens.point.triangles.visualise import visualise
 
 
 @pytest.fixture
@@ -98,7 +97,5 @@ def test_real_example(grid):
         lensing_obj=tracer,
         pixel_scale_precision=0.001,
     )
-    for step in solver.steps((0.07, 0.07)):
-        visualise(step)
     result = solver.solve((0.07, 0.07))
     assert len(result) == 5
