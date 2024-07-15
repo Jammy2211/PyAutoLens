@@ -69,8 +69,6 @@ def test_trivial(
         grid=grid,
         pixel_scale_precision=0.01,
     )
-    for step in solver.steps(source_plane_coordinate):
-        visualise(step)
     (coordinates,) = solver.solve(
         source_plane_coordinate=source_plane_coordinate,
     )
