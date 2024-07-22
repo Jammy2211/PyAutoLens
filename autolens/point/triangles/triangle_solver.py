@@ -226,7 +226,7 @@ class TriangleSolver:
         source_plane_grid = self._source_plane_grid(
             grid=Grid2DIrregular(triangles.vertices)
         )
-        source_triangles = triangles.with_vertices(source_plane_grid)
+        source_triangles = triangles.with_vertices(source_plane_grid.array)
         indexes = source_triangles.containing_indices(point=source_plane_coordinate)
         return triangles.for_indexes(indexes=indexes)
 
