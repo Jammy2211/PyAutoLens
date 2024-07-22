@@ -32,10 +32,10 @@ class Step:
     """
 
     number: int
-    initial_triangles: array.ArrayTriangles
-    filtered_triangles: array.ArrayTriangles
-    neighbourhood: array.ArrayTriangles
-    up_sampled: array.ArrayTriangles
+    initial_triangles: AbstractTriangles
+    filtered_triangles: AbstractTriangles
+    neighbourhood: AbstractTriangles
+    up_sampled: AbstractTriangles
 
 
 class TriangleSolver:
