@@ -5,6 +5,7 @@ from typing import Tuple, List, Iterator, Type
 
 from autoarray import Grid2D, Grid2DIrregular
 from autoarray.structures.triangles import array
+from autoarray.structures.triangles.abstract import AbstractTriangles
 from autoarray.type import Grid2DLike
 from autogalaxy import OperateDeflections
 
@@ -49,7 +50,7 @@ class TriangleSolver:
         x_max: float,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
-        ArrayTriangles: Type[array.ArrayTriangles] = array.ArrayTriangles,
+        ArrayTriangles: Type[AbstractTriangles] = array.ArrayTriangles,
     ):
         """
         Determine the image plane coordinates that are traced to be a source plane coordinate.
@@ -85,7 +86,7 @@ class TriangleSolver:
         grid: Grid2D,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
-        ArrayTriangles: Type[array.AbstractTriangles] = array.ArrayTriangles,
+        ArrayTriangles: Type[AbstractTriangles] = array.ArrayTriangles,
     ):
         scale = grid.pixel_scale
 
