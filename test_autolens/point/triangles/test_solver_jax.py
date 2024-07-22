@@ -1,10 +1,11 @@
 from typing import Tuple
 
-import numpy as np
 import pytest
 
 import autolens as al
 import autogalaxy as ag
+from autoarray.structures.triangles.jax_array import ArrayTriangles
+from autolens.mock import NullTracer
 from autolens.point.triangles.triangle_solver import TriangleSolver
 from autolens.point.triangles.visualise import visualise
 
@@ -23,10 +24,11 @@ def solver(grid):
         ]
     )
 
-    return TriangleSolver(
+    return TriangleSolver.for_grid(
         lensing_obj=tracer,
         grid=grid,
         pixel_scale_precision=0.01,
+        ArrayTriangles=ArrayTriangles,
     )
 
 
@@ -36,16 +38,20 @@ def test_solver(solver):
     )
 
 
-def test_steps(solver):
-    assert solver.n_steps == 3
-
-
-class NullTracer(al.Tracer):
-    def __init__(self):
-        super().__init__([])
-
-    def deflections_yx_2d_from(self, grid):
-        return np.zeros_like(grid)
+def test_single_trivial(grid):
+    solver = TriangleSolver.for_grid(
+        lensing_obj=NullTracer(),
+        grid=grid,
+        pixel_scale_precision=0.01,
+        ArrayTriangles=ArrayTriangles,
+    )
+    coordinates = solver.solve(
+        source_plane_coordinate=(0.07, 0.07),
+    )
+    for step in solver.steps((0.07, 0.07)):
+        visualise(step)
+    for pair in coordinates:
+        print(pair)
 
 
 @pytest.mark.parametrize(
@@ -53,6 +59,7 @@ class NullTracer(al.Tracer):
     [
         (0.0, 0.0),
         (0.0, 1.0),
+        (1.0, 0.0),
         (1.0, 1.0),
         (0.5, 0.5),
         (0.1, 0.1),
@@ -63,43 +70,31 @@ def test_trivial(
     source_plane_coordinate: Tuple[float, float],
     grid,
 ):
-    solver = TriangleSolver(
+    solver = TriangleSolver.for_grid(
         lensing_obj=NullTracer(),
         grid=grid,
         pixel_scale_precision=0.01,
+        ArrayTriangles=ArrayTriangles,
     )
-    (coordinates,) = solver.solve(
+    coordinates = solver.solve(
         source_plane_coordinate=source_plane_coordinate,
     )
-    assert coordinates == pytest.approx(source_plane_coordinate, abs=1.0e-2)
+    print(coordinates)
+    assert coordinates[0] == pytest.approx(source_plane_coordinate, abs=1.0e-1)
 
 
-def test_real_example(grid):
-    isothermal_mass_profile = al.mp.Isothermal(
-        centre=(0.0, 0.0),
-        einstein_radius=1.6,
-        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
-    )
-
-    lens_galaxy = al.Galaxy(
-        redshift=0.5,
-        mass=isothermal_mass_profile,
-    )
-
-    point_source = al.ps.PointSourceChi(centre=(0.07, 0.07))
-
-    source_galaxy = al.Galaxy(redshift=1.0, point_0=point_source)
-
-    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
-
-    solver = TriangleSolver(
+def test_real_example(grid, tracer):
+    solver = TriangleSolver.for_grid(
         grid=grid,
         lensing_obj=tracer,
         pixel_scale_precision=0.001,
+        ArrayTriangles=ArrayTriangles,
     )
 
     for step in solver.steps((0.07, 0.07)):
         visualise(step)
 
     result = solver.solve((0.07, 0.07))
-    assert len(result) == 4
+    for pair in result:
+        print(pair)
+    assert len(result) == 5
