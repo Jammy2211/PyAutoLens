@@ -208,7 +208,7 @@ class TriangleSolver:
 
     def _filter_triangles(
         self,
-        triangles: array.ArrayTriangles,
+        triangles: AbstractTriangles,
         source_plane_coordinate: Tuple[float, float],
     ):
         """

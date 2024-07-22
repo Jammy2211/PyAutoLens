@@ -90,4 +90,5 @@ def test_real_example(grid):
         pixel_scale_precision=0.001,
     )
     result = solver.solve((0.07, 0.07))
+    print(result)
     assert len(result) == 5

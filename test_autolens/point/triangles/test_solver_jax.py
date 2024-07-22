@@ -64,3 +64,32 @@ def test_trivial(
     )
     print(coordinates)
     assert coordinates[0] == pytest.approx(source_plane_coordinate, abs=1.0e-1)
+
+
+def test_real_example(grid):
+    isothermal_mass_profile = al.mp.Isothermal(
+        centre=(0.0, 0.0),
+        einstein_radius=1.6,
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+    )
+
+    lens_galaxy = al.Galaxy(
+        redshift=0.5,
+        mass=isothermal_mass_profile,
+    )
+
+    point_source = al.ps.PointSourceChi(centre=(0.07, 0.07))
+
+    source_galaxy = al.Galaxy(redshift=1.0, point_0=point_source)
+
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+
+    solver = TriangleSolver.for_grid(
+        grid=grid,
+        lensing_obj=tracer,
+        pixel_scale_precision=0.001,
+        ArrayTriangles=ArrayTriangles,
+    )
+    result = solver.solve((0.07, 0.07))
+    print(result)
+    assert len(result) == 5
