@@ -74,5 +74,6 @@ def test_real_example(grid, tracer):
         ArrayTriangles=ArrayTriangles,
     )
     result = solver.solve((0.07, 0.07))
-    print(result)
+    for pair in result:
+        print(pair)
     assert len(result) == 5

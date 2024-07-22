@@ -73,5 +73,6 @@ def test_real_example(grid, tracer):
         pixel_scale_precision=0.001,
     )
     result = solver.solve((0.07, 0.07))
-    print(result)
+    for r in result:
+        print(r)
     assert len(result) == 5
