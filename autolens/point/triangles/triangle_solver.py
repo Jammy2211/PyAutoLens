@@ -77,6 +77,7 @@ class TriangleSolver:
         self.magnification_threshold = magnification_threshold
         self.ArrayTriangles = ArrayTriangles
 
+    # noinspection PyPep8Naming
     @classmethod
     def for_grid(
         cls,
@@ -84,7 +85,7 @@ class TriangleSolver:
         grid: Grid2D,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
-        ArrayTriangles: Type[array.ArrayTriangles] = array.ArrayTriangles,
+        ArrayTriangles: Type[array.AbstractTriangles] = array.ArrayTriangles,
     ):
         scale = grid.pixel_scale
 

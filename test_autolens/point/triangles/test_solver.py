@@ -1,10 +1,10 @@
 from typing import Tuple
 
-import numpy as np
 import pytest
 
 import autolens as al
 import autogalaxy as ag
+from autolens.mock import NullTracer
 from autolens.point.triangles.triangle_solver import TriangleSolver
 
 
@@ -37,14 +37,6 @@ def test_solver(solver):
 
 def test_steps(solver):
     assert solver.n_steps == 7
-
-
-class NullTracer(al.Tracer):
-    def __init__(self):
-        super().__init__([])
-
-    def deflections_yx_2d_from(self, grid):
-        return np.zeros_like(grid)
 
 
 @pytest.mark.parametrize(

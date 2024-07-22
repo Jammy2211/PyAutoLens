@@ -1,8 +1,11 @@
+from typing import Tuple
+
 import pytest
 
 import autolens as al
 import autogalaxy as ag
 from autoarray.structures.triangles.jax_array import ArrayTriangles
+from autolens.mock import NullTracer
 from autolens.point.triangles.triangle_solver import TriangleSolver
 
 
@@ -32,3 +35,31 @@ def test_solver(solver):
     assert solver.solve(
         source_plane_coordinate=(0.0, 0.0),
     )
+
+
+@pytest.mark.parametrize(
+    "source_plane_coordinate",
+    [
+        (0.0, 0.0),
+        (0.0, 1.0),
+        (1.0, 0.0),
+        (1.0, 1.0),
+        (0.5, 0.5),
+        (0.1, 0.1),
+        (-1.0, -1.0),
+    ],
+)
+def test_trivial(
+    source_plane_coordinate: Tuple[float, float],
+    grid,
+):
+    solver = TriangleSolver.for_grid(
+        lensing_obj=NullTracer(),
+        grid=grid,
+        pixel_scale_precision=0.01,
+        ArrayTriangles=ArrayTriangles,
+    )
+    (coordinates,) = solver.solve(
+        source_plane_coordinate=source_plane_coordinate,
+    )
+    assert coordinates == pytest.approx(source_plane_coordinate, abs=1.0e-1)
