@@ -22,7 +22,7 @@ def solver(grid):
         ]
     )
 
-    return TriangleSolver(
+    return TriangleSolver.for_grid(
         lensing_obj=tracer,
         grid=grid,
         pixel_scale_precision=0.01,
@@ -63,7 +63,7 @@ def test_trivial(
     source_plane_coordinate: Tuple[float, float],
     grid,
 ):
-    solver = TriangleSolver(
+    solver = TriangleSolver.for_grid(
         lensing_obj=NullTracer(),
         grid=grid,
         pixel_scale_precision=0.01,
@@ -92,7 +92,7 @@ def test_real_example(grid):
 
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
-    solver = TriangleSolver(
+    solver = TriangleSolver.for_grid(
         grid=grid,
         lensing_obj=tracer,
         pixel_scale_precision=0.001,
