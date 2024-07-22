@@ -16,4 +16,4 @@ class NullTracer(Tracer):
         super().__init__([])
 
     def deflections_yx_2d_from(self, grid):
-        return np.zeros_like(grid)
+        return np.zeros_like(grid.array)

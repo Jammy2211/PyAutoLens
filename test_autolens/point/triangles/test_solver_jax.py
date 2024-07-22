@@ -59,7 +59,8 @@ def test_trivial(
         pixel_scale_precision=0.01,
         ArrayTriangles=ArrayTriangles,
     )
-    (coordinates,) = solver.solve(
+    coordinates = solver.solve(
         source_plane_coordinate=source_plane_coordinate,
     )
-    assert coordinates == pytest.approx(source_plane_coordinate, abs=1.0e-1)
+    print(coordinates)
+    assert coordinates[0] == pytest.approx(source_plane_coordinate, abs=1.0e-1)
