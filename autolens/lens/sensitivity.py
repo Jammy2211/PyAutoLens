@@ -5,6 +5,8 @@ from autofit.non_linear.grid.sensitivity.result import SensitivityResult
 import autofit as af
 import autoarray as aa
 
+from autoarray.plot.abstract_plotters import AbstractPlotter
+
 from autolens.lens.tracer import Tracer
 
 import autolens.plot as aplt
@@ -103,7 +105,7 @@ class SubhaloSensitivityResult(SensitivityResult):
         return self._array_2d_from(values=figures_of_merits)
 
 
-class SubhaloSensitivityPlotter:
+class SubhaloSensitivityPlotter(AbstractPlotter):
     def __init__(
         self,
         grid: aa.type.Grid2DLike,
@@ -111,7 +113,7 @@ class SubhaloSensitivityPlotter:
         tracer_perturb: Optional[Tracer] = None,
         tracer_no_perturb: Optional[Tracer] = None,
         source_image: Optional[aa.Array2D] = None,
-        result_sensitivity: Optional[SensitivityResult] = None,
+        result_sensitivity: Optional[SubhaloSensitivityResult] = None,
         mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
         visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
         include_2d: aplt.Include2D = aplt.Include2D(),
@@ -148,6 +150,11 @@ class SubhaloSensitivityPlotter:
         include_2d
             Specifies which attributes of the `MassProfile` are extracted and plotted as visuals for 2D plots.
         """
+
+        super().__init__(
+            mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
+        )
+
         self.grid = grid
         self.mask = mask
         self.tracer_perturb = tracer_perturb
@@ -267,3 +274,99 @@ class SubhaloSensitivityPlotter:
             auto_filename=f"subplot_lensed_images"
         )
         plotter.close_subplot_figure()
+
+    def set_auto_filename(
+        self, filename: str, use_log_evidences: Optional[bool] = None
+    ) -> bool:
+        """
+        If a subplot figure does not have an input filename, this function is used to set one automatically.
+
+        The filename is appended with a string that describes the figure of merit plotted, which is either the
+        log evidence or log likelihood.
+
+        Parameters
+        ----------
+        filename
+            The filename of the figure, e.g. 'subhalo_mass'
+        use_log_evidences
+            If `True`, figures which overlay the goodness-of-fit merit use the `log_evidence`, if `False` the
+            `log_likelihood` if used.
+
+        Returns
+        -------
+
+        """
+
+        if self.mat_plot_2d.output.filename is None:
+            if use_log_evidences is None:
+                figure_of_merit = ""
+            elif use_log_evidences:
+                figure_of_merit = "_log_evidence"
+            else:
+                figure_of_merit = "_log_likelihood"
+
+            self.set_filename(
+                filename=f"{filename}{figure_of_merit}",
+            )
+
+            return True
+
+        return False
+
+    def figure_figures_of_merit_grid(
+        self,
+        use_log_evidences: bool = True,
+        relative_to_value: float = 0.0,
+        remove_zeros: bool = True,
+        show_max_in_title: bool = True,
+    ):
+        """
+        Plot the results of the subhalo grid search, where the figures of merit (e.g. `log_evidence`) of the
+        grid search are plotted over the image of the lensed source galaxy.
+
+        The figures of merit can be customized to be relative to the lens model without a subhalo, or with zeros
+        rounded up to 0.0 to remove negative values. These produce easily to interpret and visually appealing
+        figure of merit overlays.
+
+        Parameters
+        ----------
+        use_log_evidences
+            If `True`, figures which overlay the goodness-of-fit merit use the `log_evidence`, if `False` the
+            `log_likelihood` if used.
+        relative_to_value
+            The value to subtract from every figure of merit, for example which will typically be that of the no
+            subhalo lens model so Bayesian model comparison can be easily performed.
+        remove_zeros
+            If `True`, the figure of merit array is altered so that all values below 0.0 and set to 0.0. For plotting
+            relative figures of merit for Bayesian model comparison, this is convenient to remove negative values
+            and produce a clearer visualization of the overlay.
+        show_max_in_title
+            Shows the maximum figure of merit value in the title of the figure, for easy reference.
+        """
+
+        reset_filename = self.set_auto_filename(
+            filename="subhalo_grid",
+            use_log_evidences=use_log_evidences,
+        )
+
+        array_overlay = self.result_subhalo_grid_search.figure_of_merit_array(
+            use_log_evidences=use_log_evidences,
+            relative_to_value=relative_to_value,
+            remove_zeros=remove_zeros,
+        )
+
+        visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
+            array_overlay=array_overlay,
+            mass_profile_centres=self.result_subhalo_grid_search.subhalo_centres_grid,
+        )
+
+        fit_plotter = self.fit_imaging_with_subhalo_plotter_from(visuals_2d=visuals_2d)
+
+        if show_max_in_title:
+            max_value = np.round(np.nanmax(array_overlay), 2)
+            fit_plotter.set_title(label=f"Image {max_value}")
+
+        fit_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
+
+        if reset_filename:
+            self.set_filename(filename=None)
