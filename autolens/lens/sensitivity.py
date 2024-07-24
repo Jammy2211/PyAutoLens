@@ -1,3 +1,4 @@
+import numpy as np
 from typing import Optional
 
 from autofit.non_linear.grid.sensitivity.result import SensitivityResult
@@ -5,7 +6,9 @@ from autofit.non_linear.grid.sensitivity.result import SensitivityResult
 import autofit as af
 import autoarray as aa
 
+
 from autoarray.plot.abstract_plotters import AbstractPlotter
+from autoarray.plot.auto_labels import AutoLabels
 
 from autolens.lens.tracer import Tracer
 
@@ -108,12 +111,12 @@ class SubhaloSensitivityResult(SensitivityResult):
 class SubhaloSensitivityPlotter(AbstractPlotter):
     def __init__(
         self,
-        grid: aa.type.Grid2DLike,
-        mask: aa.Mask2D,
+        mask: Optional[aa.Mask2D] = None,
         tracer_perturb: Optional[Tracer] = None,
         tracer_no_perturb: Optional[Tracer] = None,
         source_image: Optional[aa.Array2D] = None,
         result: Optional[SubhaloSensitivityResult] = None,
+        data_subtracted: Optional[aa.Array2D] = None,
         mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
         visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
         include_2d: aplt.Include2D = aplt.Include2D(),
@@ -155,12 +158,12 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
             mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
         )
 
-        self.grid = grid
         self.mask = mask
         self.tracer_perturb = tracer_perturb
         self.tracer_no_perturb = tracer_no_perturb
         self.source_image = source_image
         self.result = result
+        self.data_subtracted = data_subtracted
         self.mat_plot_2d = mat_plot_2d
         self.visuals_2d = visuals_2d
         self.include_2d = include_2d
@@ -313,10 +316,38 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
 
         return False
 
+    def subplot_figures_of_merit_grid(
+        self,
+        use_log_evidences: bool = True,
+        remove_zeros: bool = True,
+        show_max_in_title: bool = True,
+    ):
+        self.open_subplot_figure(number_subplots=1)
+
+        figures_of_merit = self.result.figure_of_merit_array(
+            use_log_evidences=use_log_evidences,
+            remove_zeros=remove_zeros,
+        )
+
+        if show_max_in_title:
+            max_value = np.round(np.nanmax(figures_of_merit), 2)
+            self.set_title(label=f"Sensitivity Map {max_value}")
+
+
+        self.mat_plot_2d.plot_array(
+            array=figures_of_merit,
+            visuals_2d=self.visuals_2d,
+            auto_labels=AutoLabels(title="Increase in Log Evidence"),
+        )
+
+        self.mat_plot_2d.output.subplot_to_figure(
+            auto_filename="sensitivity"
+        )
+        self.close_subplot_figure()
+
     def figure_figures_of_merit_grid(
         self,
         use_log_evidences: bool = True,
-        relative_to_value: float = 0.0,
         remove_zeros: bool = True,
         show_max_in_title: bool = True,
     ):
@@ -345,28 +376,30 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         """
 
         reset_filename = self.set_auto_filename(
-            filename="subhalo_grid",
+            filename="sensitivity",
             use_log_evidences=use_log_evidences,
         )
 
         array_overlay = self.result.figure_of_merit_array(
             use_log_evidences=use_log_evidences,
-            relative_to_value=relative_to_value,
             remove_zeros=remove_zeros,
         )
 
         visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
             array_overlay=array_overlay,
-            mass_profile_centres=self.result.subhalo_centres_grid,
         )
 
-        fit_plotter = self.fit_imaging_with_subhalo_plotter_from(visuals_2d=visuals_2d)
+        plotter = aplt.Array2DPlotter(
+            array=self.data_subtracted,
+            mat_plot_2d=self.mat_plot_2d,
+            visuals_2d=visuals_2d,
+        )
 
         if show_max_in_title:
             max_value = np.round(np.nanmax(array_overlay), 2)
-            fit_plotter.set_title(label=f"Image {max_value}")
+            plotter.set_title(label=f"Sensitivity Map {max_value}")
 
-        fit_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
+        plotter.figure_2d()
 
         if reset_filename:
             self.set_filename(filename=None)
