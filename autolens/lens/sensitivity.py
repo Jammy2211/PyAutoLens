@@ -1,7 +1,5 @@
 from typing import Optional
 
-import autofit as af
-
 from autofit.non_linear.grid.sensitivity.result import SensitivityResult
 
 import autofit as af
@@ -55,18 +53,12 @@ class SubhaloSensitivityResult(SensitivityResult):
         -------
         The 2D array of values, where the values are mapped from the input list of lists.
         """
-        # values_reshaped = [value for values in values.native for value in values]
+        values_reshaped = [value for values in values.native for value in values]
 
         y = [centre[0] for centre in self.physical_values]
         x = [centre[1] for centre in self.physical_values]
 
-        pixel_scales = [abs(centre[0] - centre[1]) for centre in self.physical_values]
-
-        print(self.physical_values)
-        print(y)
-        print(x)
-        print(pixel_scales)
-        bbb
+        pixel_scales = abs(x[0] - x[1])
 
         return aa.Array2D.from_yx_and_values(
             y=[centre[0] for centre in self.physical_values],
