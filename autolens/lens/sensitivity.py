@@ -349,7 +349,7 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
             use_log_evidences=use_log_evidences,
         )
 
-        array_overlay = self.result_subhalo_grid_search.figure_of_merit_array(
+        array_overlay = self.result.figure_of_merit_array(
             use_log_evidences=use_log_evidences,
             relative_to_value=relative_to_value,
             remove_zeros=remove_zeros,
@@ -357,7 +357,7 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
 
         visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
             array_overlay=array_overlay,
-            mass_profile_centres=self.result_subhalo_grid_search.subhalo_centres_grid,
+            mass_profile_centres=self.result.subhalo_centres_grid,
         )
 
         fit_plotter = self.fit_imaging_with_subhalo_plotter_from(visuals_2d=visuals_2d)
