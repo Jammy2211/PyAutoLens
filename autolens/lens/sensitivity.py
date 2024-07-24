@@ -15,7 +15,7 @@ import autolens.plot as aplt
 class SubhaloSensitivityResult(SensitivityResult):
     def __init__(
         self,
-        result_sensitivity: SensitivityResult,
+        result: SensitivityResult,
     ):
         """
         The results of a subhalo sensitivity mapping analysis, where dark matter halos are used to simulate many
@@ -23,15 +23,15 @@ class SubhaloSensitivityResult(SensitivityResult):
 
         Parameters
         ----------
-        result_sensitivity
+        result
             The results of a sensitivity mapping analysis where.
         """
 
         super().__init__(
-            samples=result_sensitivity.samples,
-            perturb_samples=result_sensitivity.perturb_samples,
-            physical_values=result_sensitivity.physical_values,
-            shape=result_sensitivity.shape,
+            samples=result.samples,
+            perturb_samples=result.perturb_samples,
+            physical_values=result.physical_values,
+            shape=result.shape,
         )
 
     def _array_2d_from(self, values) -> aa.Array2D:
@@ -113,7 +113,7 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         tracer_perturb: Optional[Tracer] = None,
         tracer_no_perturb: Optional[Tracer] = None,
         source_image: Optional[aa.Array2D] = None,
-        result_sensitivity: Optional[SubhaloSensitivityResult] = None,
+        result: Optional[SubhaloSensitivityResult] = None,
         mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
         visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
         include_2d: aplt.Include2D = aplt.Include2D(),
@@ -160,7 +160,7 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         self.tracer_perturb = tracer_perturb
         self.tracer_no_perturb = tracer_no_perturb
         self.source_image = source_image
-        self.result_sensitivity = result_sensitivity
+        self.result = result
         self.mat_plot_2d = mat_plot_2d
         self.visuals_2d = visuals_2d
         self.include_2d = include_2d
