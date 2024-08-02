@@ -30,6 +30,7 @@ class SubhaloSensitivityResult(SensitivityResult):
         super().__init__(
             samples=result_sensitivity.samples,
             perturb_samples=result_sensitivity.perturb_samples,
+            physical_values=result_sensitivity.physical_values,
             shape=result_sensitivity.shape,
         )
 
@@ -54,13 +55,24 @@ class SubhaloSensitivityResult(SensitivityResult):
         -------
         The 2D array of values, where the values are mapped from the input list of lists.
         """
-        values_reshaped = [value for values in values.native for value in values]
+        # values_reshaped = [value for values in values.native for value in values]
+
+        y = [centre[0] for centre in self.physical_values]
+        x = [centre[1] for centre in self.physical_values]
+
+        pixel_scales = [abs(centre[0] - centre[1]) for centre in self.physical_values]
+
+        print(self.physical_values)
+        print(y)
+        print(x)
+        print(pixel_scales)
+        bbb
 
         return aa.Array2D.from_yx_and_values(
-            y=[centre[0] for centre in self.physical_centres_lists],
-            x=[centre[1] for centre in self.physical_centres_lists],
+            y=[centre[0] for centre in self.physical_values],
+            x=[centre[1] for centre in self.physical_values],
             values=values_reshaped,
-            pixel_scales=self.physical_step_sizes,
+            pixel_scales=pixel_scales,
             shape_native=self.shape,
         )
 
