@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Optional
+from typing import List, Optional, Tuple
 
 import autofit as af
 import autoarray as aa
@@ -40,6 +40,31 @@ class SubhaloGridSearchResult(af.GridSearchResult):
             grid_priors=result.grid_priors,
         )
 
+    @property
+    def y(self) -> List[float]:
+        """
+        The y coordinates of the physical values of the subhalo grid, where each value is the centre of a grid cell.
+
+        These are the `centre` coordinates of the dark matter subhalo priors.
+        """
+        return [centre[0] for centre in self.physical_centres_lists]
+
+    @property
+    def x(self) -> List[float]:
+        """
+        The x coordinates of the physical values of the subhalo grid, where each value is the centre of a grid cell.
+
+        These are the `centre` coordinates of the dark matter subhalo priors.
+        """
+        return [centre[1] for centre in self.physical_centres_lists]
+
+    @property
+    def extent(self) -> Tuple[float, float, float, float]:
+        """
+        The extent of the sensitivity mapping grid, which is the minimum and maximum values of the x and y coordinates.
+        """
+        return (np.min(self.x), np.max(self.x), np.min(self.y), np.max(self.y))
+
     def _array_2d_from(self, values) -> aa.Array2D:
         """
         Returns an `Array2D` where the input values are reshaped from list of lists to a 2D array, which is
@@ -65,8 +90,8 @@ class SubhaloGridSearchResult(af.GridSearchResult):
         values_reshaped = [value for values in values.native for value in values]
 
         return aa.Array2D.from_yx_and_values(
-            y=[centre[0] for centre in self.physical_centres_lists],
-            x=[centre[1] for centre in self.physical_centres_lists],
+            y=self.y,
+            x=self.x,
             values=values_reshaped,
             pixel_scales=self.physical_step_sizes,
             shape_native=self.shape,
@@ -188,6 +213,22 @@ class SubhaloPlotter(AbstractPlotter):
 
         self.fit_imaging_with_subhalo = fit_imaging_with_subhalo
         self.fit_imaging_no_subhalo = fit_imaging_no_subhalo
+
+    def update_mat_plot_array_overlay(self, evidence_max):
+
+        evidence_half = evidence_max / 2.0
+
+        self.mat_plot_2d.array_overlay = aplt.ArrayOverlay(
+            alpha=0.6, vmin=0.0, vmax=evidence_max
+        )
+        self.mat_plot_2d.colorbar = aplt.Colorbar(
+            manual_tick_values=[0.0, evidence_half, evidence_max],
+            manual_tick_labels=[
+                0.0,
+                np.round(evidence_half, 1),
+                np.round(evidence_max, 1),
+            ],
+        )
 
     @property
     def fit_imaging_no_subhalo_plotter(self) -> FitImagingPlotter:
@@ -319,6 +360,8 @@ class SubhaloPlotter(AbstractPlotter):
             mass_profile_centres=self.result.subhalo_centres_grid,
         )
 
+        self.update_mat_plot_array_overlay(evidence_max=np.max(array_overlay))
+
         fit_plotter = self.fit_imaging_with_subhalo_plotter_from(visuals_2d=visuals_2d)
 
         if show_max_in_title:
@@ -346,6 +389,9 @@ class SubhaloPlotter(AbstractPlotter):
             array_overlay=array_overlay,
             mass_profile_centres=self.result.subhalo_centres_grid,
         )
+
+        self.update_mat_plot_array_overlay(evidence_max=np.max(array_overlay))
+        self.mat_plot_2d.colorbar.manual_log10 = True
 
         fit_plotter = self.fit_imaging_with_subhalo_plotter_from(visuals_2d=visuals_2d)
 

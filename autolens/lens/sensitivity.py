@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Optional
+from typing import Optional, List, Tuple
 
 from autofit.non_linear.grid.sensitivity.result import SensitivityResult
 
@@ -37,6 +37,31 @@ class SubhaloSensitivityResult(SensitivityResult):
             shape=result.shape,
         )
 
+    @property
+    def y(self) -> List[float]:
+        """
+        The y coordinates of the physical values of the sensitivity mapping grid.
+
+        These are the `centre` coordinates of the dark matter subhalos that are included in the simulated datasets.
+        """
+        return [centre[0] for centre in self.physical_values]
+
+    @property
+    def x(self) -> List[float]:
+        """
+        The x coordinates of the physical values of the sensitivity mapping grid.
+
+        These are the `centre` coordinates of the dark matter subhalos that are included in the simulated datasets.
+        """
+        return [centre[1] for centre in self.physical_values]
+
+    @property
+    def extent(self) -> Tuple[float, float, float, float]:
+        """
+        The extent of the sensitivity mapping grid, which is the minimum and maximum values of the x and y coordinates.
+        """
+        return (np.min(self.x), np.max(self.x), np.min(self.y), np.max(self.y))
+
     def _array_2d_from(self, values) -> aa.Array2D:
         """
         Returns an `Array2D` where the input values are reshaped from list of lists to a 2D array, which is
@@ -60,14 +85,11 @@ class SubhaloSensitivityResult(SensitivityResult):
         """
         values_reshaped = [value for values in values.native for value in values]
 
-        y = [centre[0] for centre in self.physical_values]
-        x = [centre[1] for centre in self.physical_values]
-
-        pixel_scales = abs(x[0] - x[1])
+        pixel_scales = abs(self.x[0] - self.x[1])
 
         return aa.Array2D.from_yx_and_values(
-            y=[centre[0] for centre in self.physical_values],
-            x=[centre[1] for centre in self.physical_values],
+            y=self.y,
+            x=self.x,
             values=values_reshaped,
             pixel_scales=pixel_scales,
             shape_native=self.shape,
@@ -167,6 +189,22 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         self.mat_plot_2d = mat_plot_2d
         self.visuals_2d = visuals_2d
         self.include_2d = include_2d
+
+    def update_mat_plot_array_overlay(self, evidence_max):
+
+        evidence_half = evidence_max / 2.0
+
+        self.mat_plot_2d.array_overlay = aplt.ArrayOverlay(
+            alpha=0.6, vmin=0.0, vmax=evidence_max
+        )
+        self.mat_plot_2d.colorbar = aplt.Colorbar(
+            manual_tick_values=[0.0, evidence_half, evidence_max],
+            manual_tick_labels=[
+                0.0,
+                np.round(evidence_half, 1),
+                np.round(evidence_max, 1),
+            ]
+        )
 
     def subplot_tracer_images(self):
         """
@@ -334,6 +372,8 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
             self.set_title(label=f"Sensitivity Map {max_value}")
 
 
+        self.update_mat_plot_array_overlay(evidence_max=np.max(figures_of_merit))
+
         self.mat_plot_2d.plot_array(
             array=figures_of_merit,
             visuals_2d=self.visuals_2d,
@@ -388,6 +428,8 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
             array_overlay=array_overlay,
         )
+
+        self.update_mat_plot_array_overlay(evidence_max=np.max(array_overlay))
 
         plotter = aplt.Array2DPlotter(
             array=self.data_subtracted,
