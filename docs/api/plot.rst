@@ -58,7 +58,7 @@ by **PyAutoGalaxy**.
 
    NestPlotter
    MCMCPlotter
-   OptimizePlotter
+   MLEPlotter
 
 Plot Customization [aplt]
 -------------------------

@@ -1,6 +1,6 @@
 from autofit.non_linear.plot.nest_plotters import NestPlotter
 from autofit.non_linear.plot.mcmc_plotters import MCMCPlotter
-from autofit.non_linear.plot.optimize_plotters import OptimizePlotter
+from autofit.non_linear.plot.mle_plotters import MLEPlotter
 
 from autoarray.plot.wrap.base import (
     Units,
