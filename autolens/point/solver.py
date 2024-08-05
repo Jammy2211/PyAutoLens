@@ -223,7 +223,7 @@ class PointSolver:
         An iterator over the steps of the triangle solver algorithm.
         """
 
-        extent = grid.geometry.extent
+        extent = Grid2DIrregular(values=grid).extent_with_buffer_from(buffer=0.0)
 
         initial_triangles = self.ArrayTriangles.for_limits_and_scale(
             y_min=extent[2],
