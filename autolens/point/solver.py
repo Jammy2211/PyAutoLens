@@ -1,7 +1,7 @@
 import logging
 import math
 from dataclasses import dataclass
-from typing import Tuple, List, Iterator, Type
+from typing import Tuple, List, Iterator, Type, Optional
 
 import autoarray as aa
 
@@ -111,7 +111,12 @@ class PointSolver:
         """
         return math.ceil(math.log2(self.scale / self.pixel_scale_precision))
 
-    def _source_plane_grid(self, tracer: Tracer, grid: aa.type.Grid2DLike) -> aa.type.Grid2DLike:
+    def _source_plane_grid(
+        self,
+        tracer: Tracer,
+        grid: aa.type.Grid2DLike,
+        source_plane_redshift: Optional[float] = None,
+    ) -> aa.type.Grid2DLike:
         """
         Calculate the source plane grid from the image plane grid.
 
@@ -124,12 +129,29 @@ class PointSolver:
         -------
         The source plane grid computed by applying the deflections to the image plane grid.
         """
-        deflections = tracer.deflections_yx_2d_from(grid=grid)
+
+        if source_plane_redshift is None:
+            source_plane_index = len(tracer.planes)
+
+        else:
+            source_plane_index = 0
+
+            for redshift in tracer.plane_redshifts:
+                if redshift == source_plane_redshift:
+                    break
+                source_plane_index += 1
+
+        deflections = tracer.deflections_between_planes_from(
+            grid=grid, plane_i=0, plane_j=source_plane_index
+        )
         # noinspection PyTypeChecker
         return grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
 
     def solve(
-        self, tracer: Tracer, source_plane_coordinate: Tuple[float, float]
+        self,
+        tracer: Tracer,
+        source_plane_coordinate: Tuple[float, float],
+        source_plane_redshift: Optional[float] = None,
     ) -> aa.Grid2DIrregular:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
@@ -155,11 +177,19 @@ class PointSolver:
                 "The target pixel scale is too large to subdivide the triangles."
             )
 
-        steps = list(self.steps(tracer=tracer,source_plane_coordinate=source_plane_coordinate))
+        steps = list(
+            self.steps(
+                tracer=tracer,
+                source_plane_coordinate=source_plane_coordinate,
+                source_plane_redshift=source_plane_redshift,
+            )
+        )
         final_step = steps[-1]
         kept_triangles = final_step.filtered_triangles
 
-        filtered_means = self._filter_low_magnification(tracer=tracer, points=kept_triangles.means)
+        filtered_means = self._filter_low_magnification(
+            tracer=tracer, points=kept_triangles.means
+        )
 
         difference = len(kept_triangles.means) - len(filtered_means)
         if difference > 0:
@@ -205,6 +235,7 @@ class PointSolver:
         tracer: Tracer,
         source_plane_coordinate: Tuple[float, float],
         triangles: aa.AbstractTriangles,
+        source_plane_redshift: Optional[float] = None,
     ):
         """
         Filter the triangles to keep only those that contain the source plane coordinate.
@@ -222,7 +253,8 @@ class PointSolver:
         """
         source_plane_grid = self._source_plane_grid(
             tracer=tracer,
-            grid=aa.Grid2DIrregular(triangles.vertices)
+            grid=aa.Grid2DIrregular(triangles.vertices),
+            source_plane_redshift=source_plane_redshift,
         )
         source_triangles = triangles.with_vertices(source_plane_grid.array)
         indexes = source_triangles.containing_indices(point=source_plane_coordinate)
@@ -232,6 +264,7 @@ class PointSolver:
         self,
         tracer: Tracer,
         source_plane_coordinate: Tuple[float, float],
+        source_plane_redshift: Optional[float] = None,
     ) -> Iterator[Step]:
         """
         Iterate over the steps of the triangle solver algorithm.
@@ -258,6 +291,7 @@ class PointSolver:
                 tracer=tracer,
                 source_plane_coordinate=source_plane_coordinate,
                 triangles=initial_triangles,
+                source_plane_redshift=source_plane_redshift,
             )
             neighbourhood = kept_triangles.neighborhood()
             up_sampled = neighbourhood.up_sample()

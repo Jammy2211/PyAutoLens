@@ -66,5 +66,3 @@ def test__subplot_dataset(point_dataset, include_2d_all, plot_path, plot_patch):
     point_dataset_plotter.subplot_dataset()
 
     assert path.join(plot_path, "subplot_dataset.png") in plot_patch.paths
-
-

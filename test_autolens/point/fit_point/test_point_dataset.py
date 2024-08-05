@@ -13,10 +13,7 @@ def test__fits_dataset__positions_only():
     noise_map = al.ArrayIrregular([0.5, 1.0])
     model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
 
-    point_solver = al.m.MockPointSolver(
-        tracer=tracer,
-        model_positions=model_positions
-    )
+    point_solver = al.m.MockPointSolver(tracer=tracer, model_positions=model_positions)
 
     dataset_0 = al.PointDataset(
         name="point_0", positions=positions, positions_noise_map=noise_map
@@ -51,10 +48,7 @@ def test__fits_dataset__positions_and_flux():
     fluxes = al.ArrayIrregular([1.0, 2.0])
     flux_noise_map = al.ArrayIrregular([3.0, 1.0])
 
-    solver = al.m.MockPointSolver(
-        tracer=tracer,
-        model_positions=model_positions
-    )
+    solver = al.m.MockPointSolver(tracer=tracer, model_positions=model_positions)
 
     dataset_0 = al.PointDataset(
         name="point_0",
@@ -68,7 +62,4 @@ def test__fits_dataset__positions_and_flux():
 
     assert fit.positions.log_likelihood == pytest.approx(-22.14472, 1.0e-4)
     assert fit.flux.log_likelihood == pytest.approx(-2.9920449, 1.0e-4)
-    assert (
-        fit.log_likelihood
-        == fit.positions.log_likelihood + fit.flux.log_likelihood
-    )
+    assert fit.log_likelihood == fit.positions.log_likelihood + fit.flux.log_likelihood

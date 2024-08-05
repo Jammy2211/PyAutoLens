@@ -1,11 +1,14 @@
+from typing import Optional
+
+
 class MockPointSolver:
-    def __init__(self, tracer, model_positions):
-        self.lensing_obj = tracer
+    def __init__(self, model_positions):
         self.model_positions = model_positions
 
-    @property
-    def tracer(self):
-        return self.lensing_obj
-
-    def solve(self, source_plane_coordinate):
+    def solve(
+        self,
+        tracer,
+        source_plane_coordinate,
+        source_plane_redshift: Optional[float] = None,
+    ):
         return self.model_positions

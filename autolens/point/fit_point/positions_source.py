@@ -36,9 +36,7 @@ class FitPositionsSource(aa.FitDataset):
         self.tracer = tracer
 
         self.profile = (
-            tracer.extract_profile(profile_name=name)
-            if profile is None
-            else profile
+            tracer.extract_profile(profile_name=name) if profile is None else profile
         )
 
         if self.profile is None:

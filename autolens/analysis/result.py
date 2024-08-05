@@ -168,7 +168,6 @@ class Result(AgResultDataset):
         use_resample=False,
         positions: Optional[aa.Grid2DIrregular] = None,
     ) -> Union[PositionsLHPenalty, PositionsLHResample]:
-
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
             return None
 

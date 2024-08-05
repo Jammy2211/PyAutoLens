@@ -29,7 +29,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         self,
         dataset: PointDataset,
         solver: PointSolver,
-        image = None,
+        image=None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):
         """
@@ -82,7 +82,9 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         except (AttributeError, ValueError, TypeError, NumbaException) as e:
             raise exc.FitException from e
 
-    def fit_from(self, instance, run_time_dict: Optional[Dict] = None) -> FitPointDataset:
+    def fit_from(
+        self, instance, run_time_dict: Optional[Dict] = None
+    ) -> FitPointDataset:
         tracer = self.tracer_via_instance_from(
             instance=instance, run_time_dict=run_time_dict
         )

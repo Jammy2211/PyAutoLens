@@ -2,7 +2,6 @@ import autolens as al
 
 
 def test__info():
-
     dataset = al.PointDataset(
         "name",
         positions=al.Grid2DIrregular([(1, 2)]),
@@ -13,4 +12,3 @@ def test__info():
 
     assert "name" in dataset.info
     assert "positions : Grid2DIrregular" in dataset.info
-

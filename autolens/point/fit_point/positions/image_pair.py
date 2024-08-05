@@ -4,6 +4,7 @@ import autoarray as aa
 import autogalaxy as ag
 
 from autolens.point.solver import PointSolver
+from autolens.lens.tracer import Tracer
 
 from autolens import exc
 
@@ -14,6 +15,7 @@ class FitPositionsImagePair(aa.FitDataset):
         name: str,
         positions: aa.Grid2DIrregular,
         noise_map: aa.ArrayIrregular,
+        tracer: Tracer,
         solver: PointSolver,
         profile: Optional[ag.ps.Point] = None,
     ):
@@ -33,14 +35,12 @@ class FitPositionsImagePair(aa.FitDataset):
 
         self.name = name
         self._noise_map = noise_map
+        self.tracer = tracer
+        self.solver = solver
 
         self.profile = (
-            solver.tracer.extract_profile(profile_name=name)
-            if profile is None
-            else profile
+            tracer.extract_profile(profile_name=name) if profile is None else profile
         )
-
-        self.solver = solver
 
         if self.profile is None:
             raise exc.PointExtractionException(
@@ -49,6 +49,12 @@ class FitPositionsImagePair(aa.FitDataset):
             )
 
         self.source_plane_coordinate = self.profile.centre
+        self.source_plane_index = self.tracer.extract_plane_index_of_profile(
+            profile_name=name
+        )
+        self.source_plane_redshift = self.tracer.planes[
+            self.source_plane_index
+        ].redshift
 
     @property
     def mask(self):
@@ -72,7 +78,9 @@ class FitPositionsImagePair(aa.FitDataset):
         """
 
         model_positions = self.solver.solve(
+            tracer=self.tracer,
             source_plane_coordinate=self.source_plane_coordinate,
+            source_plane_redshift=self.source_plane_redshift,
         )
 
         return model_positions.grid_of_closest_from(grid_pair=self.positions)

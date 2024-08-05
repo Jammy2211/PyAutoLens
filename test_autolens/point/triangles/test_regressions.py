@@ -72,7 +72,5 @@ def test_missing_multiple_image(grid):
     )
 
     triangle_positions = solver.solve(
-        tracer=tracer,
-        source_plane_coordinate=instance.source_galaxy.point_0.centre
+        tracer=tracer, source_plane_coordinate=instance.source_galaxy.point_0.centre
     )
-

@@ -10,7 +10,6 @@ from autolens.point.solver import PointSolver
 
 @pytest.fixture
 def solver(grid):
-
     return PointSolver.for_grid(
         grid=grid,
         pixel_scale_precision=0.01,
@@ -18,7 +17,6 @@ def solver(grid):
 
 
 def test_solver(solver):
-
     tracer = al.Tracer(
         galaxies=[
             al.Galaxy(
@@ -69,14 +67,10 @@ def test_trivial(
 
 
 def test_real_example(grid, tracer):
-
     solver = PointSolver.for_grid(
         grid=grid,
         pixel_scale_precision=0.001,
     )
-    result = solver.solve(
-        tracer=tracer,
-        source_plane_coordinate=(0.07, 0.07)
-    )
+    result = solver.solve(tracer=tracer, source_plane_coordinate=(0.07, 0.07))
 
     assert len(result) == 5
