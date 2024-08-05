@@ -171,7 +171,7 @@ Here is the subplot:
 Voronoi
 -------
 
-The pixelization mesh which tests have revealed performs best is the ``VoronoiNN`` object, which uses a Voronoi
+The pixelization mesh which tests have revealed performs best is the ``Voronoi`` object, which uses a Voronoi
 mesh with a technique called natural neighbour interpolation (full details are provided in the **HowToLens**
 tutorials).
 
