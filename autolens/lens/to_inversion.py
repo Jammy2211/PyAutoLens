@@ -97,6 +97,15 @@ class TracerToInversion(ag.AbstractToInversion):
                 blurring=traced_blurring_grids_of_planes_list[plane_index],
             )
 
+            dataset = aa.DatasetInterface(
+                data=self.dataset.data,
+                noise_map=self.dataset.noise_map,
+                grids=grids,
+                convolver=self.convolver,
+                transformer=self.transformer,
+                w_tilde=self.dataset.w_tilde,
+            )
+
             galaxies_to_inversion = ag.GalaxiesToInversion(
                 dataset=dataset,
                 galaxies=galaxies,
