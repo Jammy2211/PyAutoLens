@@ -180,7 +180,18 @@ class TriangleSolver:
                 f"Filtered {difference} multiple-images with magnification below threshold."
             )
 
-        return filtered_means
+        filtered_close = []
+
+        for mean in filtered_means:
+            if any(
+                np.linalg.norm(np.array(mean) - np.array(other))
+                <= self.pixel_scale_precision
+                for other in filtered_close
+            ):
+                continue
+            filtered_close.append(mean)
+
+        return filtered_close
 
     def _filter_low_magnification(
         self, points: List[Tuple[float, float]]
