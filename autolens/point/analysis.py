@@ -147,7 +147,7 @@ class AnalysisClosestPointSource(AnalysisPointSource):
                 "The number of predicted coordinates must be equal to the number of observed coordinates."
             )
 
-        predicted_coordinates = set(predicted_coordinates)
+        predicted_coordinates = set(map(tuple, predicted_coordinates))
         observed_coordinates = set(self.observed_coordinates)
 
         log_likelihood = 0.0
