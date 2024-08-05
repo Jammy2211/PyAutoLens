@@ -7,7 +7,6 @@ import autogalaxy as ag
 from autoarray.structures.triangles.array import ArrayTriangles
 from autolens.mock import NullTracer
 from autolens.point.triangles.triangle_solver import TriangleSolver
-from autolens.point.triangles.visualise import visualise
 
 
 @pytest.fixture
@@ -76,9 +75,6 @@ def test_real_example(grid, tracer):
         pixel_scale_precision=0.001,
         array_triangles_cls=ArrayTriangles,
     )
-
-    for step in solver.steps((0.07, 0.07)):
-        visualise(step)
 
     result = solver.solve((0.07, 0.07))
     for r in result:
