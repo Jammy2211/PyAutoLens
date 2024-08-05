@@ -44,7 +44,7 @@ class SubhaloSensitivityResult(SensitivityResult):
 
         These are the `centre` coordinates of the dark matter subhalos that are included in the simulated datasets.
         """
-        return self.physical_centres_lists_from(
+        return self.perturbed_physical_centres_list_from(
             path="perturbation.mass.centre.centre_0"
         )
     @property
@@ -54,7 +54,7 @@ class SubhaloSensitivityResult(SensitivityResult):
 
         These are the `centre` coordinates of the dark matter subhalos that are included in the simulated datasets.
         """
-        return self.physical_centres_lists_from(
+        return self.perturbed_physical_centres_list_from(
             path="perturbation.mass.centre.centre_1"
         )
 
@@ -91,7 +91,7 @@ class SubhaloSensitivityResult(SensitivityResult):
         pixel_scales = abs(self.x[0] - self.x[1])
 
         print(self.x)
-        print(self.physical_centres_lists_from(path="perturbation.mass.mass_at_200"))
+        print(self.perturbed_physical_centres_list_from(path="perturbation.mass.mass_at_200"))
         esdffdsfds
 
         return aa.Array2D.from_yx_and_values(
