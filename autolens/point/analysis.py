@@ -1,4 +1,3 @@
-import itertools
 import math
 from abc import ABC, abstractmethod
 from typing import List, Tuple
@@ -157,7 +156,6 @@ class AnalysisBestNoRepeat(AnalysisPointSource):
             )
 
         return 0.5 * log_likelihood
-
 
 
 class AnalysisMarginalizeOverAll(AnalysisPointSource):
