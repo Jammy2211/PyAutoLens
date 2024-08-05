@@ -38,16 +38,10 @@ class Step:
     up_sampled: AbstractTriangles
 
 
-class TriangleSolver:
+class PointSolver:
     # noinspection PyPep8Naming
     def __init__(
         self,
-        lensing_obj: OperateDeflections,
-        scale: float,
-        y_min: float,
-        y_max: float,
-        x_min: float,
-        x_max: float,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
         ArrayTriangles: Type[AbstractTriangles] = array.ArrayTriangles,
@@ -68,56 +62,18 @@ class TriangleSolver:
         ArrayTriangles
             The class to use for the triangles.
         """
-        self.lensing_obj = lensing_obj
-        self.scale = scale
-        self.y_min = y_min
-        self.y_max = y_max
-        self.x_min = x_min
-        self.x_max = x_max
+
         self.pixel_scale_precision = pixel_scale_precision
         self.magnification_threshold = magnification_threshold
         self.ArrayTriangles = ArrayTriangles
 
-    # noinspection PyPep8Naming
-    @classmethod
-    def for_grid(
-        cls,
-        lensing_obj: OperateDeflections,
-        grid: Grid2D,
-        pixel_scale_precision: float,
-        magnification_threshold=0.1,
-        ArrayTriangles: Type[AbstractTriangles] = array.ArrayTriangles,
-    ):
-        scale = grid.pixel_scale
-
-        y = grid[:, 0]
-        x = grid[:, 1]
-
-        y_min = y.min()
-        y_max = y.max()
-        x_min = x.min()
-        x_max = x.max()
-
-        return cls(
-            lensing_obj=lensing_obj,
-            scale=scale,
-            y_min=y_min,
-            y_max=y_max,
-            x_min=x_min,
-            x_max=x_max,
-            pixel_scale_precision=pixel_scale_precision,
-            magnification_threshold=magnification_threshold,
-            ArrayTriangles=ArrayTriangles,
-        )
-
-    @property
-    def n_steps(self) -> int:
+    def n_steps_from(self, pixel_scale) -> int:
         """
         How many times should triangles be subdivided?
         """
-        return math.ceil(math.log2(self.scale / self.pixel_scale_precision))
+        return math.ceil(math.log2(pixel_scale / self.pixel_scale_precision))
 
-    def _source_plane_grid(self, grid: Grid2DLike) -> Grid2DLike:
+    def _source_plane_grid(self, lensing_obj : OperateDeflections, grid: Grid2DLike) -> Grid2DLike:
         """
         Calculate the source plane grid from the image plane grid.
 
@@ -130,12 +86,15 @@ class TriangleSolver:
         -------
         The source plane grid computed by applying the deflections to the image plane grid.
         """
-        deflections = self.lensing_obj.deflections_yx_2d_from(grid=grid)
+        deflections = lensing_obj.deflections_yx_2d_from(grid=grid)
         # noinspection PyTypeChecker
         return grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
 
     def solve(
-        self, source_plane_coordinate: Tuple[float, float]
+        self,
+        lensing_obj : OperateDeflections,
+        grid : Grid2DLike,
+        source_plane_coordinate: Tuple[float, float]
     ) -> Grid2DIrregular:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
@@ -156,16 +115,24 @@ class TriangleSolver:
         -------
         A list of image plane coordinates that are traced to the source plane coordinate.
         """
-        if self.n_steps == 0:
+        if self.n_steps_from(pixel_scale=grid.pixel_scale) == 0:
             raise ValueError(
                 "The target pixel scale is too large to subdivide the triangles."
             )
 
-        steps = list(self.steps(source_plane_coordinate=source_plane_coordinate))
+        steps = list(self.steps(
+            lensing_obj=lensing_obj,
+            grid=grid,
+            source_plane_coordinate=source_plane_coordinate
+        ))
         final_step = steps[-1]
         kept_triangles = final_step.filtered_triangles
 
-        filtered_means = self._filter_low_magnification(points=kept_triangles.means)
+        filtered_means = self._filter_low_magnification(
+            lensing_obj=lensing_obj,
+            pixel_scale=grid.pixel_scale,
+            points=kept_triangles.means
+        )
 
         difference = len(kept_triangles.means) - len(filtered_means)
         if difference > 0:
@@ -180,7 +147,10 @@ class TriangleSolver:
         return Grid2DIrregular(values=filtered_means)
 
     def _filter_low_magnification(
-        self, points: List[Tuple[float, float]]
+        self,
+        lensing_obj: OperateDeflections,
+        pixel_scale: float,
+        points: List[Tuple[float, float]]
     ) -> List[Tuple[float, float]]:
         """
         Filter the points to keep only those with an absolute magnification above the threshold.
@@ -198,9 +168,9 @@ class TriangleSolver:
             point
             for point, magnification in zip(
                 points,
-                self.lensing_obj.magnification_2d_via_hessian_from(
+                lensing_obj.magnification_2d_via_hessian_from(
                     grid=Grid2DIrregular(points),
-                    buffer=self.scale,
+                    buffer=pixel_scale,
                 ),
             )
             if abs(magnification) > self.magnification_threshold
@@ -208,6 +178,7 @@ class TriangleSolver:
 
     def _filter_triangles(
         self,
+        lensing_obj: OperateDeflections,
         triangles: AbstractTriangles,
         source_plane_coordinate: Tuple[float, float],
     ):
@@ -226,6 +197,7 @@ class TriangleSolver:
         The triangles that contain the source plane coordinate.
         """
         source_plane_grid = self._source_plane_grid(
+            lensing_obj=lensing_obj,
             grid=Grid2DIrregular(triangles.vertices)
         )
         source_triangles = triangles.with_vertices(source_plane_grid.array)
@@ -234,6 +206,8 @@ class TriangleSolver:
 
     def steps(
         self,
+        lensing_obj: OperateDeflections,
+        grid: Grid2DLike,
         source_plane_coordinate: Tuple[float, float],
     ) -> Iterator[Step]:
         """
@@ -248,18 +222,22 @@ class TriangleSolver:
         -------
         An iterator over the steps of the triangle solver algorithm.
         """
+
+        extent = grid.geometry.extent
+
         initial_triangles = self.ArrayTriangles.for_limits_and_scale(
-            y_min=self.y_min,
-            y_max=self.y_max,
-            x_min=self.x_min,
-            x_max=self.x_max,
-            scale=self.scale,
+            y_min=extent[2],
+            y_max=extent[3],
+            x_min=extent[0],
+            x_max=extent[1],
+            scale=grid.pixel_scale,
         )
 
-        for number in range(self.n_steps):
+        for number in range(self.n_steps_from(pixel_scale=grid.pixel_scale)):
             kept_triangles = self._filter_triangles(
-                initial_triangles,
-                source_plane_coordinate,
+                lensing_obj=lensing_obj,
+                triangles=initial_triangles,
+                source_plane_coordinate=source_plane_coordinate,
             )
             neighbourhood = kept_triangles.neighborhood()
             up_sampled = neighbourhood.up_sample()

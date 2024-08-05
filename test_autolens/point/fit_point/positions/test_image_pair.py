@@ -85,7 +85,7 @@ def test__multi_plane_position_solving():
     positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
     noise_map = al.ArrayIrregular([0.5, 1.0])
 
-    point_solver = al.TriangleSolver(
+    point_solver = al.PointSolver(
         lensing_obj=tracer,
         grid=grid,
         pixel_scale_precision=0.01

@@ -11,7 +11,7 @@ from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
 from autolens.point.fit_point.max_separation import FitPositionsSourceMaxSeparation
 from autolens.lens.tracer import Tracer
-from autolens.point.triangles.triangle_solver import TriangleSolver
+from autolens.point.solver import PointSolver
 
 
 class Result(AgResultDataset):
@@ -89,8 +89,10 @@ class Result(AgResultDataset):
 
         grid = self.analysis.dataset.mask.derive_grid.all_false
 
-        solver = TriangleSolver(
-            grid=grid, pixel_scale_precision=0.001, distance_to_mass_profile_centre=0.05
+        solver = PointSolver.for_grid(
+            grid=grid,
+            lensing_obj=self.max_log_likelihood_tracer,
+            pixel_scale_precision=0.001,
         )
 
         multiple_images = solver.solve(
@@ -166,6 +168,7 @@ class Result(AgResultDataset):
         use_resample=False,
         positions: Optional[aa.Grid2DIrregular] = None,
     ) -> Union[PositionsLHPenalty, PositionsLHResample]:
+
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
             return None
 

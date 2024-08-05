@@ -5,11 +5,18 @@ import pytest
 import autolens as al
 import autogalaxy as ag
 from autolens.mock import NullTracer
-from autolens.point.triangles.triangle_solver import TriangleSolver
+from autolens.point.solver import PointSolver
 
 
 @pytest.fixture
-def solver(grid):
+def solver():
+    return PointSolver(
+        pixel_scale_precision=0.01,
+    )
+
+
+def test_solver_simple(solver, grid):
+
     tracer = al.Tracer(
         galaxies=[
             al.Galaxy(
@@ -22,15 +29,9 @@ def solver(grid):
         ]
     )
 
-    return TriangleSolver.for_grid(
+    assert solver.solve(
         lensing_obj=tracer,
         grid=grid,
-        pixel_scale_precision=0.01,
-    )
-
-
-def test_solver(solver):
-    assert solver.solve(
         source_plane_coordinate=(0.0, 0.0),
     )
 
@@ -55,7 +56,7 @@ def test_trivial(
     source_plane_coordinate: Tuple[float, float],
     grid,
 ):
-    solver = TriangleSolver.for_grid(
+    solver = PointSolver.for_grid(
         lensing_obj=NullTracer(),
         grid=grid,
         pixel_scale_precision=0.01,
@@ -67,7 +68,7 @@ def test_trivial(
 
 
 def test_real_example(grid, tracer):
-    solver = TriangleSolver.for_grid(
+    solver = PointSolver.for_grid(
         grid=grid,
         lensing_obj=tracer,
         pixel_scale_precision=0.001,

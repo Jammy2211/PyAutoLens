@@ -1,6 +1,6 @@
 from autoconf.dictable import from_dict
 import autolens as al
-from autolens.point.triangles.triangle_solver import TriangleSolver
+from autolens.point.solver import PointSolver
 
 
 instance_dict = {
@@ -66,7 +66,7 @@ def test_missing_multiple_image(grid):
 
     tracer = al.Tracer(galaxies=[instance.lens_galaxy, instance.source_galaxy])
 
-    solver = TriangleSolver.for_grid(
+    solver = PointSolver.for_grid(
         grid=grid,
         lensing_obj=tracer,
         pixel_scale_precision=0.001,

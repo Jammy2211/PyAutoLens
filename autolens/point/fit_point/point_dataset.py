@@ -3,9 +3,9 @@ from typing import Dict, Optional
 import autogalaxy as ag
 
 from autolens.point.point_dataset import PointDataset
-from autolens.point.triangles.triangle_solver import TriangleSolver
+from autolens.point.solver import PointSolver
 from autolens.point.fit_point.fluxes import FitFluxes
-from autolens.point.fit_point.positions_image import FitPositionsImagePair
+from autolens.point.fit_point.positions.image_pair import FitPositionsImagePair
 from autolens.point.fit_point.positions_source import FitPositionsSource
 from autolens.lens.tracer import Tracer
 
@@ -24,7 +24,7 @@ class FitPointDataset:
         self,
         point_dataset: PointDataset,
         tracer: Tracer,
-        point_solver: TriangleSolver,
+        point_solver: PointSolver,
         run_time_dict: Optional[Dict] = None,
     ):
         self.point_dataset = point_dataset

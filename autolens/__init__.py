@@ -104,8 +104,7 @@ from .point.fit_point.positions.image_pair import FitPositionsImagePair
 from .point.fit_point.positions_source import FitPositionsSource
 from .point.fit_point.max_separation import FitPositionsSourceMaxSeparation
 from .point.model.analysis import AnalysisPoint
-from .point.triangles.triangle_solver import TriangleSolver
-from .point.triangles.triangle_solver import TriangleSolver as MultipleImageSolver
+from .point.solver import PointSolver
 from .quantity.fit_quantity import FitQuantity
 from .quantity.model.analysis import AnalysisQuantity
 from . import exc

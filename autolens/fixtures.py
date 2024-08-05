@@ -29,11 +29,6 @@ def make_point_dataset():
     )
 
 
-def make_point_solver():
-    grid = al.Grid2D.uniform(shape_native=(10, 10), pixel_scales=0.5)
-    return al.TriangleSolver(grid=grid, pixel_scale_precision=0.25)
-
-
 def make_tracer_x1_plane_7x7():
     return al.Tracer(galaxies=[make_gal_x1_lp()])
 
@@ -105,10 +100,17 @@ def make_fit_interferometer_x2_plane_inversion_7x7():
 
 
 def make_fit_point_dataset_x2_plane():
+
+    point_solver = al.PointSolver.for_grid(
+        lensing_obj=make_tracer_x2_plane_point(),
+        grid=make_grid_2d_7x7(),
+        pixel_scale_precision=0.001,
+    )
+
     return al.FitPointDataset(
         point_dataset=make_point_dataset(),
         tracer=make_tracer_x2_plane_point(),
-        point_solver=make_point_solver(),
+        point_solver=point_solver
     )
 
 def make_adapt_galaxy_name_image_dict_7x7():

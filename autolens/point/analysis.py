@@ -4,7 +4,7 @@ from typing import List, Tuple
 
 import autofit as af
 from autoarray import Grid2D
-from autolens.point.triangles.triangle_solver import TriangleSolver
+from autolens.point.solver import PointSolver
 import numpy as np
 from scipy.optimize import linear_sum_assignment
 from scipy.special import logsumexp
@@ -58,7 +58,7 @@ class AnalysisPointSource(af.Analysis, ABC):
         """
         lens = instance.lens
 
-        solver = TriangleSolver.for_grid(
+        solver = PointSolver.for_grid(
             lensing_obj=lens,
             grid=self.grid,
             pixel_scale_precision=self.pixel_scale_precision,

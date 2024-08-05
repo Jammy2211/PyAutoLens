@@ -13,5 +13,5 @@ Point Sources
    PointDict
    FitPositionsImagePair
    FitFluxes
-   TriangleSolver
+   PointSolver
    AnalysisPoint
