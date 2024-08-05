@@ -5,6 +5,8 @@ from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.interferometer.dataset import (
     Interferometer,
 )
+from autoarray.dataset.over_sampling import OverSamplingDataset
+from autoarray.dataset.grids import GridsInterface
 from autoarray.dataset.dataset_model import DatasetModel
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
@@ -104,7 +106,7 @@ from .point.fit_point.positions_source import FitPositionsSource
 from .point.fit_point.max_separation import FitPositionsSourceMaxSeparation
 from .point.model.analysis import AnalysisPoint
 from .point.point_solver import PointSolver
-from .point.triangles.triangle_solver import TriangleSolver as MultipleImageSolver
+#from .point.triangles.triangle_solver import TriangleSolver as MultipleImageSolver
 from .quantity.fit_quantity import FitQuantity
 from .quantity.model.analysis import AnalysisQuantity
 from . import exc

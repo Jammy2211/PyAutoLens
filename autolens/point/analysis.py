@@ -159,6 +159,7 @@ class AnalysisBestNoRepeat(AnalysisPointSource):
         return 0.5 * log_likelihood
 
 
+
 class AnalysisMarginalizeOverAll(AnalysisPointSource):
     def _log_likelihood_for_coordinates(
         self, predicted_coordinates: List[Tuple[float, float]]

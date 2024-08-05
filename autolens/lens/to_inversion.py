@@ -7,7 +7,6 @@ import autogalaxy as ag
 
 from autoarray.inversion.inversion.factory import inversion_from
 
-from autogalaxy.profiles.basis import Basis
 from autolens.analysis.preloads import Preloads
 
 
@@ -45,7 +44,7 @@ class TracerToInversion(ag.AbstractToInversion):
     @aa.profile_func
     def traced_grid_2d_list_of_inversion(self) -> List[aa.type.Grid2DLike]:
         return self.tracer.traced_grid_2d_list_from(
-            grid=self.dataset.grid_pixelization.over_sampler.over_sampled_grid
+            grid=self.dataset.grids.pixelization.over_sampler.over_sampled_grid
         )
 
     @cached_property
@@ -57,10 +56,12 @@ class TracerToInversion(ag.AbstractToInversion):
 
         lp_linear_galaxy_dict_list = {}
 
-        perform_over_sampling = aa.perform_over_sampling_from(grid=self.dataset.grid)
+        perform_over_sampling = aa.perform_over_sampling_from(
+            grid=self.dataset.grids.uniform
+        )
 
         if perform_over_sampling:
-            grid_input = self.dataset.grid.over_sampler.over_sampled_grid
+            grid_input = self.dataset.grids.uniform.over_sampler.over_sampled_grid
             grid_input.over_sampling = None
 
             traced_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
@@ -70,7 +71,7 @@ class TracerToInversion(ag.AbstractToInversion):
             traced_grids_of_planes_list = [
                 aa.Grid2DOverSampled(
                     grid=grid,
-                    over_sampler=self.dataset.grid.over_sampler,
+                    over_sampler=self.dataset.grids.uniform.over_sampler,
                     pixels_in_mask=self.dataset.mask.pixels_in_mask,
                 )
                 for grid in traced_grids_of_planes_list
@@ -78,12 +79,12 @@ class TracerToInversion(ag.AbstractToInversion):
 
         else:
             traced_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
-                grid=self.dataset.grid
+                grid=self.dataset.grids.uniform
             )
 
-        if self.dataset.blurring_grid is not None:
+        if self.dataset.grids.blurring is not None:
             traced_blurring_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
-                grid=self.dataset.blurring_grid
+                grid=self.dataset.grids.blurring
             )
         else:
             traced_blurring_grids_of_planes_list = [None] * len(
@@ -91,14 +92,18 @@ class TracerToInversion(ag.AbstractToInversion):
             )
 
         for plane_index, galaxies in enumerate(self.planes):
+            grids = aa.GridsInterface(
+                uniform=traced_grids_of_planes_list[plane_index],
+                blurring=traced_blurring_grids_of_planes_list[plane_index],
+            )
+
             dataset = aa.DatasetInterface(
                 data=self.dataset.data,
                 noise_map=self.dataset.noise_map,
+                grids=grids,
                 convolver=self.convolver,
                 transformer=self.transformer,
                 w_tilde=self.dataset.w_tilde,
-                grid=traced_grids_of_planes_list[plane_index],
-                blurring_grid=traced_blurring_grids_of_planes_list[plane_index],
             )
 
             galaxies_to_inversion = ag.GalaxiesToInversion(

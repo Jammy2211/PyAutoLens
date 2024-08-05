@@ -1,10 +1,7 @@
-from typing import List, Union
-
 import autoarray as aa
 import autogalaxy as ag
 import autogalaxy.plot as aplt
 
-from autogalaxy.plot.get_visuals import one_d as gv1d
 from autogalaxy.plot.get_visuals import two_d as gv2d
 
 from autolens.imaging.fit_imaging import FitImaging
@@ -172,7 +169,7 @@ class GetVisuals2D(gv2d.GetVisuals2D):
         visuals_2d_via_mask = self.via_mask_from(mask=fit.mask)
 
         visuals_2d_via_tracer = self.via_tracer_from(
-            tracer=fit.tracer, grid=fit.grid, plane_index=0
+            tracer=fit.tracer, grid=fit.grids.uniform, plane_index=0
         )
 
         return visuals_2d_via_mask + visuals_2d_via_tracer

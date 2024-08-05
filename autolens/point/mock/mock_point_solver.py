@@ -1,7 +1,3 @@
-import autofit as af
-import autoarray as aa
-
-
 class MockPointSolver:
     def __init__(self, model_positions):
         self.model_positions = model_positions

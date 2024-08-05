@@ -23,7 +23,9 @@ def test__tracer(
     plotter_interface = vis.PlotterInterface(image_path=plot_path)
 
     plotter_interface.tracer(
-        tracer=tracer_x2_plane_7x7, grid=masked_imaging_7x7.grid, during_analysis=False
+        tracer=tracer_x2_plane_7x7,
+        grid=masked_imaging_7x7.grids.uniform,
+        during_analysis=False,
     )
 
     plot_path = path.join(plot_path, "tracer")

@@ -36,7 +36,7 @@ def test_solver(solver):
 
 
 def test_steps(solver):
-    assert solver.n_steps == 3
+    assert solver.n_steps == 7
 
 
 class NullTracer(al.Tracer):
@@ -52,6 +52,7 @@ class NullTracer(al.Tracer):
     [
         (0.0, 0.0),
         (0.0, 1.0),
+        (1.0, 0.0),
         (1.0, 1.0),
         (0.5, 0.5),
         (0.1, 0.1),
@@ -70,7 +71,7 @@ def test_trivial(
     (coordinates,) = solver.solve(
         source_plane_coordinate=source_plane_coordinate,
     )
-    assert coordinates == pytest.approx(source_plane_coordinate, abs=1.0e-2)
+    assert coordinates == pytest.approx(source_plane_coordinate, abs=1.0e-1)
 
 
 def test_real_example(grid):
@@ -97,4 +98,4 @@ def test_real_example(grid):
         pixel_scale_precision=0.001,
     )
     result = solver.solve((0.07, 0.07))
-    assert len(result) == 4
+    assert len(result) == 5

@@ -95,7 +95,7 @@ def test__use_border_relocator__determines_if_border_pixel_relocation_is_used(
         )
     )
 
-    masked_imaging_7x7.grid[4] = np.array([300.0, 0.0])
+    masked_imaging_7x7.grids.uniform[4] = np.array([300.0, 0.0])
 
     analysis = al.AnalysisImaging(
         dataset=masked_imaging_7x7,

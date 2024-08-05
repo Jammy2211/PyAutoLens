@@ -238,7 +238,7 @@ def test__fit_figure_of_merit__sub_2(image_7x7, psf_3x3, noise_map_7x7, mask_2d_
         data=image_7x7,
         psf=psf_3x3,
         noise_map=noise_map_7x7,
-        over_sampling=al.OverSamplingUniform(sub_size=2),
+        over_sampling=al.OverSamplingDataset(uniform=al.OverSamplingUniform(sub_size=2)),
     )
 
     masked_imaging_7x7 = dataset.apply_mask(
@@ -531,9 +531,9 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
     blurred_image_2d_list = tracer.blurred_image_2d_list_from(
-        grid=masked_imaging_7x7.grid,
+        grid=masked_imaging_7x7.grids.uniform,
         convolver=masked_imaging_7x7.convolver,
-        blurring_grid=masked_imaging_7x7.blurring_grid,
+        blurring_grid=masked_imaging_7x7.grids.blurring,
     )
 
     assert fit.galaxy_model_image_dict[g0] == pytest.approx(
@@ -646,20 +646,20 @@ def test__subtracted_image_of_galaxies_dict(masked_imaging_7x7):
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
     g0_image = g0.blurred_image_2d_from(
-        grid=masked_imaging_7x7.grid,
-        blurring_grid=masked_imaging_7x7.blurring_grid,
+        grid=masked_imaging_7x7.grids.uniform,
+        blurring_grid=masked_imaging_7x7.grids.blurring,
         convolver=masked_imaging_7x7.convolver
     )
 
     g1_image = g1.blurred_image_2d_from(
-        grid=masked_imaging_7x7.grid,
-        blurring_grid=masked_imaging_7x7.blurring_grid,
+        grid=masked_imaging_7x7.grids.uniform,
+        blurring_grid=masked_imaging_7x7.grids.blurring,
         convolver=masked_imaging_7x7.convolver
     )
 
     g2_image = g2.blurred_image_2d_from(
-        grid=masked_imaging_7x7.grid,
-        blurring_grid=masked_imaging_7x7.blurring_grid,
+        grid=masked_imaging_7x7.grids.uniform,
+        blurring_grid=masked_imaging_7x7.grids.blurring,
         convolver=masked_imaging_7x7.convolver
     )
 
@@ -688,9 +688,9 @@ def test__subtracted_image_of_galaxies_dict(masked_imaging_7x7):
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
     blurred_image_2d_list = tracer.blurred_image_2d_list_from(
-        grid=masked_imaging_7x7.grid,
+        grid=masked_imaging_7x7.grids.uniform,
         convolver=masked_imaging_7x7.convolver,
-        blurring_grid=masked_imaging_7x7.blurring_grid,
+        blurring_grid=masked_imaging_7x7.grids.blurring,
     )
 
     assert fit.subtracted_images_of_galaxies_dict[g0] == pytest.approx(
@@ -792,19 +792,19 @@ def test___unmasked_blurred_images(masked_imaging_7x7):
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
     blurred_images_of_planes = tracer.blurred_image_2d_list_from(
-        grid=masked_imaging_7x7.grid,
+        grid=masked_imaging_7x7.grids.uniform,
         convolver=masked_imaging_7x7.convolver,
-        blurring_grid=masked_imaging_7x7.blurring_grid,
+        blurring_grid=masked_imaging_7x7.grids.blurring,
     )
 
     unmasked_blurred_image = tracer.unmasked_blurred_image_2d_from(
-        grid=masked_imaging_7x7.grid, psf=masked_imaging_7x7.psf
+        grid=masked_imaging_7x7.grids.uniform, psf=masked_imaging_7x7.psf
     )
 
     assert (fit.unmasked_blurred_image == unmasked_blurred_image).all()
 
     unmasked_blurred_image_of_planes_list = tracer.unmasked_blurred_image_2d_list_from(
-        grid=masked_imaging_7x7.grid, psf=masked_imaging_7x7.psf
+        grid=masked_imaging_7x7.grids.uniform, psf=masked_imaging_7x7.psf
     )
 
     assert (

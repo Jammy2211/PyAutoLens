@@ -18,7 +18,7 @@ class ResultQuantity(Result):
 
     - The non-linear search used to perform the model fit.
 
-    This class contains a number of methods which use the above objects to create the max log likelihood `Plane`,
+    This class contains a number of methods which use the above objects to create the max log likelihood `Galaxies`,
     `FitQuantity`, etc.
 
     Parameters
@@ -43,7 +43,7 @@ class ResultQuantity(Result):
         """
         The masked 2D grid used by the dataset in the model-fit.
         """
-        return self.analysis.dataset.grid
+        return self.analysis.dataset.grids.uniform
 
     @property
     def max_log_likelihood_tracer(self) -> Tracer:

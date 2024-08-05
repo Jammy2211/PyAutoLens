@@ -1,5 +1,3 @@
-import copy
-
 import autoarray as aa
 
 from autolens.lens.tracer import Tracer

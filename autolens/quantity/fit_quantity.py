@@ -1,4 +1,3 @@
-import autoarray as aa
 import autogalaxy as ag
 
 from autogalaxy.quantity.dataset_quantity import DatasetQuantity

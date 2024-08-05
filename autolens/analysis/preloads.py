@@ -159,11 +159,11 @@ class Preloads(ag.Preloads):
         self.traced_grids_of_planes_for_inversion = None
 
         traced_grids_of_planes_0 = fit_0.tracer.traced_grid_2d_list_from(
-            grid=fit_0.grid_pixelization
+            grid=fit_0.grids.pixelization
         )
 
         traced_grids_of_planes_1 = fit_1.tracer.traced_grid_2d_list_from(
-            grid=fit_1.grid_pixelization
+            grid=fit_1.grids.pixelization
         )
 
         if traced_grids_of_planes_0[-1] is not None:
