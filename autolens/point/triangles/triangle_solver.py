@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Tuple, List, Iterator, Type
 
 import numpy as np
+from autofit.jax_wrapper import jit, register_pytree_node_class
 
 from autoarray import Grid2D, Grid2DIrregular
 
@@ -44,6 +45,7 @@ class Step:
     up_sampled: AbstractTriangles
 
 
+@register_pytree_node_class
 class TriangleSolver:
     # noinspection PyPep8Naming
     def __init__(
@@ -140,6 +142,7 @@ class TriangleSolver:
         # noinspection PyTypeChecker
         return grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
 
+    @jit
     def solve(
         self, source_plane_coordinate: Tuple[float, float]
     ) -> List[Tuple[float, float]]:
@@ -290,3 +293,29 @@ class TriangleSolver:
             )
 
             initial_triangles = up_sampled
+
+    def tree_flatten(self):
+        return (
+            self.lensing_obj,
+            self.scale,
+            self.y_min,
+            self.y_max,
+            self.x_min,
+            self.x_max,
+            self.pixel_scale_precision,
+            self.magnification_threshold,
+        ), self.array_triangles_cls
+
+    @classmethod
+    def tree_unflatten(cls, aux_data, children):
+        return cls(
+            lensing_obj=children[0],
+            scale=children[1],
+            y_min=children[2],
+            y_max=children[3],
+            x_min=children[4],
+            x_max=children[5],
+            pixel_scale_precision=children[6],
+            magnification_threshold=children[7],
+            array_triangles_cls=aux_data[0],
+        )

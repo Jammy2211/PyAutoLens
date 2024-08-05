@@ -4,6 +4,7 @@ import pytest
 
 import autolens as al
 import autogalaxy as ag
+from autofit import Model
 
 try:
     from autoarray.structures.triangles.jax_array import ArrayTriangles
@@ -80,6 +81,8 @@ def test_real_example(grid, tracer):
         pixel_scale_precision=0.001,
         array_triangles_cls=ArrayTriangles,
     )
+
+    Model.from_instance(tracer)
 
     result = solver.solve((0.07, 0.07))
     assert len(result) == 5
