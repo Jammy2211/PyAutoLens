@@ -1,7 +1,6 @@
 import numpy as np
 from typing import List, Optional
 
-from autoconf import conf
 import autoarray as aa
 import autogalaxy as ag
 

@@ -1,4 +1,3 @@
-import itertools
 import math
 from abc import ABC, abstractmethod
 from typing import List, Tuple
@@ -6,6 +5,9 @@ from typing import List, Tuple
 import autofit as af
 from autoarray import Grid2D
 from autolens.point.triangles.triangle_solver import TriangleSolver
+import numpy as np
+from scipy.optimize import linear_sum_assignment
+from scipy.special import logsumexp
 
 
 class AnalysisPointSource(af.Analysis, ABC):
@@ -80,52 +82,17 @@ class AnalysisPointSource(af.Analysis, ABC):
     def square_distance(coord1, coord2):
         return (coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2
 
+    def error_corrected_distance(self, coord1, coord2):
+        return self.square_distance(coord1, coord2) / (2 * self.error**2)
 
-class AnalysisAllToAllPointSource(AnalysisPointSource):
+
+class AnalysisBestMatch(AnalysisPointSource):
     def _log_likelihood_for_coordinates(
         self, predicted_coordinates: List[Tuple[float, float]]
     ) -> float:
         """
-        Compute the likelihood of the predicted coordinates by comparing the positions of
-        the observed and predicted coordinates.
-
-        This is essentially the product over all possible pairings of observed and predicted coordinates.
-
-        Parameters
-        ----------
-        predicted_coordinates
-            The predicted multiple image coordinates of the point source.
-
-        Returns
-        -------
-        The likelihood of the predicted coordinates.
-        """
-        if len(predicted_coordinates) == 0:
-            raise af.exc.FitException("The number of predicted coordinates is zero.")
-
-        likelihood = 1 / (len(predicted_coordinates) ** len(self.observed_coordinates))
-        for observed in self.observed_coordinates:
-            likelihood *= sum(
-                [
-                    math.exp(
-                        -self.square_distance(predicted, observed)
-                        / (2 * self.error**2)
-                    )
-                    for predicted in predicted_coordinates
-                ]
-            )
-        return math.log(likelihood)
-
-
-class AnalysisClosestPointSource(AnalysisPointSource):
-    def _log_likelihood_for_coordinates(
-        self, predicted_coordinates: List[Tuple[float, float]]
-    ) -> float:
-        """
-        Compute the likelihood of the predicted coordinates by comparing the positions of
-        the observed and predicted coordinates.
-
-        This is done by pairing the closest predicted and observed coordinates.
+        Predict the log likelihood of the predicted coordinates by comparing each observed
+        multiple image to whichever predicted multiple image is closest, allowing for repeats.
 
         Parameters
         ----------
@@ -135,33 +102,89 @@ class AnalysisClosestPointSource(AnalysisPointSource):
         Returns
         -------
         The log likelihood of the predicted coordinates.
-
-        Raises
-        ------
-        FitException
-            If the number of predicted coordinates is not equal to the number of observed coordinates.
         """
+        log_likelihood = math.log(1 / 2 * math.pi * self.error**2)
+        for observed in self.observed_coordinates:
+            distances = [
+                self.square_distance(predicted, observed)
+                for predicted in predicted_coordinates
+            ]
+            minimum_distance = min(distances)
+            log_likelihood -= minimum_distance / (2 * self.error**2)
+        return 0.5 * log_likelihood
 
-        if len(predicted_coordinates) != len(self.observed_coordinates):
-            raise af.exc.FitException(
-                "The number of predicted coordinates must be equal to the number of observed coordinates."
+
+class AnalysisBestNoRepeat(AnalysisPointSource):
+    def _log_likelihood_for_coordinates(
+        self, predicted_coordinates: List[Tuple[float, float]]
+    ) -> float:
+        """
+        Predict the log likelihood of the predicted coordinates by comparing each observed
+        multiple image to the closest predicted multiple image, without allowing for repeats.
+
+        That is, each predicted multiple image is used only once. The Hungarian algorithm
+        is used to find the best matching of predicted to observed coordinates.
+
+        Parameters
+        ----------
+        predicted_coordinates
+            The predicted multiple image coordinates of the point source.
+
+        Returns
+        -------
+        The log likelihood of the predicted coordinates.
+        """
+        cost_matrix = np.linalg.norm(
+            np.array(
+                self.observed_coordinates,
+            )[:, np.newaxis]
+            - np.array(
+                predicted_coordinates,
+            ),
+            axis=2,
+        )
+        row_ind, col_ind = linear_sum_assignment(cost_matrix)
+
+        log_likelihood = math.log(1 / 2 * math.pi * self.error**2)
+
+        for i, j in zip(row_ind, col_ind):
+            observed = self.observed_coordinates[i]
+            predicted = predicted_coordinates[j]
+            log_likelihood -= self.error_corrected_distance(
+                observed,
+                predicted,
             )
 
-        predicted_coordinates = set(map(tuple, predicted_coordinates))
-        observed_coordinates = set(self.observed_coordinates)
+        return 0.5 * log_likelihood
 
-        log_likelihood = 0.0
 
-        while observed_coordinates:
-            predicted, observed = min(
-                itertools.product(predicted_coordinates, observed_coordinates),
-                key=lambda x: self.square_distance(*x),
+class AnalysisMarginalizeOverAll(AnalysisPointSource):
+    def _log_likelihood_for_coordinates(
+        self, predicted_coordinates: List[Tuple[float, float]]
+    ) -> float:
+        """
+        Predict the log likelihood of the predicted coordinates by comparing each observed
+        multiple image to all predicted multiple images. Effectively, this marginalizes over
+        all possible pairings of observed and predicted coordinates.
+
+        Parameters
+        ----------
+        predicted_coordinates
+            The predicted multiple image coordinates of the point source.
+
+        Returns
+        -------
+        The log likelihood of the predicted coordinates.
+        """
+        combinations = len(predicted_coordinates) ** len(self.observed_coordinates)
+        log_likelihood = -math.log(combinations)
+
+        for observed in self.observed_coordinates:
+            log_likelihood -= logsumexp(
+                [
+                    self.error_corrected_distance(predicted, observed)
+                    for predicted in predicted_coordinates
+                ]
             )
-            log_likelihood -= self.square_distance(predicted, observed) / (
-                2 * self.error**2
-            )
-
-            predicted_coordinates.remove(predicted)
-            observed_coordinates.remove(observed)
 
         return log_likelihood

@@ -1,7 +1,5 @@
 import os
-import shutil
 from os import path
-from pathlib import Path
 
 import pytest
 from matplotlib import pyplot
