@@ -56,7 +56,7 @@ class AnalysisPointSource(af.Analysis, ABC):
         """
         lens = instance.lens
 
-        solver = TriangleSolver(
+        solver = TriangleSolver.for_grid(
             lensing_obj=lens,
             grid=self.grid,
             pixel_scale_precision=self.pixel_scale_precision,
@@ -147,7 +147,7 @@ class AnalysisClosestPointSource(AnalysisPointSource):
                 "The number of predicted coordinates must be equal to the number of observed coordinates."
             )
 
-        predicted_coordinates = set(predicted_coordinates)
+        predicted_coordinates = set(map(tuple, predicted_coordinates))
         observed_coordinates = set(self.observed_coordinates)
 
         log_likelihood = 0.0

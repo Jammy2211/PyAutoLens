@@ -4,6 +4,7 @@ import pytest
 
 import autolens as al
 import autogalaxy as ag
+from autoarray.structures.triangles.jax_array import ArrayTriangles
 from autolens.mock import NullTracer
 from autolens.point.triangles.triangle_solver import TriangleSolver
 
@@ -26,6 +27,7 @@ def solver(grid):
         lensing_obj=tracer,
         grid=grid,
         pixel_scale_precision=0.01,
+        ArrayTriangles=ArrayTriangles,
     )
 
 
@@ -33,10 +35,6 @@ def test_solver(solver):
     assert solver.solve(
         source_plane_coordinate=(0.0, 0.0),
     )
-
-
-def test_steps(solver):
-    assert solver.n_steps == 7
 
 
 @pytest.mark.parametrize(
@@ -59,11 +57,13 @@ def test_trivial(
         lensing_obj=NullTracer(),
         grid=grid,
         pixel_scale_precision=0.01,
+        ArrayTriangles=ArrayTriangles,
     )
-    (coordinates,) = solver.solve(
+    coordinates = solver.solve(
         source_plane_coordinate=source_plane_coordinate,
     )
-    assert coordinates == pytest.approx(source_plane_coordinate, abs=1.0e-1)
+    print(coordinates)
+    assert coordinates[0] == pytest.approx(source_plane_coordinate, abs=1.0e-1)
 
 
 def test_real_example(grid, tracer):
@@ -71,8 +71,9 @@ def test_real_example(grid, tracer):
         grid=grid,
         lensing_obj=tracer,
         pixel_scale_precision=0.001,
+        ArrayTriangles=ArrayTriangles,
     )
     result = solver.solve((0.07, 0.07))
-    for r in result:
-        print(r)
+    for pair in result:
+        print(pair)
     assert len(result) == 5

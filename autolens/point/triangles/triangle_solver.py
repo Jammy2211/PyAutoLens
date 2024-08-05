@@ -1,24 +1,56 @@
 import logging
 import math
-from typing import Tuple, List
+from dataclasses import dataclass
+from typing import Tuple, List, Iterator, Type
 
 from autoarray import Grid2D, Grid2DIrregular
-from autoarray.structures.triangles.subsample_triangles import SubsampleTriangles
-from autoarray.structures.triangles.triangles import Triangles
+from autoarray.structures.triangles import array
+from autoarray.structures.triangles.abstract import AbstractTriangles
 from autoarray.type import Grid2DLike
 from autogalaxy import OperateDeflections
-
 
 logger = logging.getLogger(__name__)
 
 
+@dataclass
+class Step:
+    """
+    A step in the triangle solver algorithm.
+
+    Attributes
+    ----------
+    number
+        The number of the step.
+    initial_triangles
+        The triangles at the start of the step.
+    filtered_triangles
+        The triangles trace to triangles that contain the source plane coordinate.
+    neighbourhood
+        The neighbourhood of the filtered triangles.
+    up_sampled
+        The neighbourhood up-sampled to increase the resolution.
+    """
+
+    number: int
+    initial_triangles: AbstractTriangles
+    filtered_triangles: AbstractTriangles
+    neighbourhood: AbstractTriangles
+    up_sampled: AbstractTriangles
+
+
 class TriangleSolver:
+    # noinspection PyPep8Naming
     def __init__(
         self,
         lensing_obj: OperateDeflections,
-        grid: Grid2D,
+        scale: float,
+        y_min: float,
+        y_max: float,
+        x_min: float,
+        x_max: float,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
+        ArrayTriangles: Type[AbstractTriangles] = array.ArrayTriangles,
     ):
         """
         Determine the image plane coordinates that are traced to be a source plane coordinate.
@@ -31,22 +63,59 @@ class TriangleSolver:
         ----------
         lensing_obj
             A tracer describing the lensing system.
-        grid
-            The grid of image plane coordinates.
         pixel_scale_precision
             The target pixel scale of the image grid.
+        ArrayTriangles
+            The class to use for the triangles.
         """
         self.lensing_obj = lensing_obj
-        self.grid = grid
+        self.scale = scale
+        self.y_min = y_min
+        self.y_max = y_max
+        self.x_min = x_min
+        self.x_max = x_max
         self.pixel_scale_precision = pixel_scale_precision
         self.magnification_threshold = magnification_threshold
+        self.ArrayTriangles = ArrayTriangles
+
+    # noinspection PyPep8Naming
+    @classmethod
+    def for_grid(
+        cls,
+        lensing_obj: OperateDeflections,
+        grid: Grid2D,
+        pixel_scale_precision: float,
+        magnification_threshold=0.1,
+        ArrayTriangles: Type[AbstractTriangles] = array.ArrayTriangles,
+    ):
+        scale = grid.pixel_scale
+
+        y = grid[:, 0]
+        x = grid[:, 1]
+
+        y_min = y.min()
+        y_max = y.max()
+        x_min = x.min()
+        x_max = x.max()
+
+        return cls(
+            lensing_obj=lensing_obj,
+            scale=scale,
+            y_min=y_min,
+            y_max=y_max,
+            x_min=x_min,
+            x_max=x_max,
+            pixel_scale_precision=pixel_scale_precision,
+            magnification_threshold=magnification_threshold,
+            ArrayTriangles=ArrayTriangles,
+        )
 
     @property
     def n_steps(self) -> int:
         """
         How many times should triangles be subdivided?
         """
-        return math.ceil(math.log2(self.grid.pixel_scale / self.pixel_scale_precision))
+        return math.ceil(math.log2(self.scale / self.pixel_scale_precision))
 
     def _source_plane_grid(self, grid: Grid2DLike) -> Grid2DLike:
         """
@@ -87,31 +156,18 @@ class TriangleSolver:
         -------
         A list of image plane coordinates that are traced to the source plane coordinate.
         """
-        triangles = Triangles.for_grid(grid=self.grid)
-
         if self.n_steps == 0:
             raise ValueError(
                 "The target pixel scale is too large to subdivide the triangles."
             )
 
-        kept_triangles = []
+        steps = list(self.steps(source_plane_coordinate=source_plane_coordinate))
+        final_step = steps[-1]
+        kept_triangles = final_step.filtered_triangles
 
-        for _ in range(self.n_steps):
-            kept_triangles = self._filter_triangles(
-                triangles=triangles,
-                source_plane_coordinate=source_plane_coordinate,
-            )
-            with_neighbourhood = {
-                triangle
-                for kept_triangle in kept_triangles
-                for triangle in kept_triangle.neighbourhood
-            }
-            triangles = SubsampleTriangles(parent_triangles=list(with_neighbourhood))
+        filtered_means = self._filter_low_magnification(points=kept_triangles.means)
 
-        means = [triangle.mean for triangle in kept_triangles]
-        filtered_means = self._filter_low_magnification(points=means)
-
-        difference = len(means) - len(filtered_means)
+        difference = len(kept_triangles.means) - len(filtered_means)
         if difference > 0:
             logger.debug(
                 f"Filtered one multiple-image with magnification below threshold."
@@ -144,7 +200,7 @@ class TriangleSolver:
                 points,
                 self.lensing_obj.magnification_2d_via_hessian_from(
                     grid=Grid2DIrregular(points),
-                    buffer=self.grid.pixel_scale,
+                    buffer=self.scale,
                 ),
             )
             if abs(magnification) > self.magnification_threshold
@@ -152,7 +208,7 @@ class TriangleSolver:
 
     def _filter_triangles(
         self,
-        triangles: Triangles,
+        triangles: AbstractTriangles,
         source_plane_coordinate: Tuple[float, float],
     ):
         """
@@ -169,16 +225,51 @@ class TriangleSolver:
         -------
         The triangles that contain the source plane coordinate.
         """
-        source_plane_grid = self._source_plane_grid(grid=triangles.grid_2d)
+        source_plane_grid = self._source_plane_grid(
+            grid=Grid2DIrregular(triangles.vertices)
+        )
+        source_triangles = triangles.with_vertices(source_plane_grid.array)
+        indexes = source_triangles.containing_indices(point=source_plane_coordinate)
+        return triangles.for_indexes(indexes=indexes)
 
-        kept_triangles = []
-        for image_triangle, source_triangle in zip(
-            triangles.triangles,
-            triangles.with_updated_grid(source_plane_grid),
-        ):
-            if source_triangle.contains(
-                point=source_plane_coordinate,
-            ):
-                kept_triangles.append(image_triangle)
+    def steps(
+        self,
+        source_plane_coordinate: Tuple[float, float],
+    ) -> Iterator[Step]:
+        """
+        Iterate over the steps of the triangle solver algorithm.
 
-        return kept_triangles
+        Parameters
+        ----------
+        source_plane_coordinate
+            The source plane coordinate to trace to the image plane.
+
+        Returns
+        -------
+        An iterator over the steps of the triangle solver algorithm.
+        """
+        initial_triangles = self.ArrayTriangles.for_limits_and_scale(
+            y_min=self.y_min,
+            y_max=self.y_max,
+            x_min=self.x_min,
+            x_max=self.x_max,
+            scale=self.scale,
+        )
+
+        for number in range(self.n_steps):
+            kept_triangles = self._filter_triangles(
+                initial_triangles,
+                source_plane_coordinate,
+            )
+            neighbourhood = kept_triangles.neighborhood()
+            up_sampled = neighbourhood.up_sample()
+
+            yield Step(
+                number=number,
+                initial_triangles=initial_triangles,
+                filtered_triangles=kept_triangles,
+                neighbourhood=neighbourhood,
+                up_sampled=up_sampled,
+            )
+
+            initial_triangles = up_sampled
