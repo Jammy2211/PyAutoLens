@@ -99,7 +99,7 @@ from .interferometer.model.analysis import AnalysisInterferometer
 from .point.point_dataset import PointDataset
 from .point.fit_point.point_dataset import FitPointDataset
 from .point.fit_point.fluxes import FitFluxes
-from .point.fit_point.positions_image import FitPositionsImage
+from .point.fit_point.positions.image_pair import FitPositionsImagePair
 from .point.fit_point.positions_source import FitPositionsSource
 from .point.fit_point.max_separation import FitPositionsSourceMaxSeparation
 from .point.model.analysis import AnalysisPoint

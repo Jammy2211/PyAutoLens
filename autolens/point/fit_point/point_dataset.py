@@ -5,7 +5,7 @@ import autogalaxy as ag
 from autolens.point.point_dataset import PointDataset
 from autolens.point.triangles.triangle_solver import TriangleSolver
 from autolens.point.fit_point.fluxes import FitFluxes
-from autolens.point.fit_point.positions_image import FitPositionsImage
+from autolens.point.fit_point.positions_image import FitPositionsImagePair
 from autolens.point.fit_point.positions_source import FitPositionsSource
 from autolens.lens.tracer import Tracer
 
@@ -44,7 +44,7 @@ class FitPointDataset:
                 )
 
             else:
-                self.positions = FitPositionsImage(
+                self.positions = FitPositionsImagePair(
                     name=point_dataset.name,
                     positions=point_dataset.positions,
                     noise_map=point_dataset.positions_noise_map,

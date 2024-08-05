@@ -9,7 +9,7 @@ from autolens.lens.tracer import Tracer
 from autolens import exc
 
 
-class FitPositionsImage(aa.FitDataset):
+class FitPositionsImagePair(aa.FitDataset):
     def __init__(
         self,
         name: str,

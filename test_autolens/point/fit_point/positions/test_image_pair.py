@@ -15,7 +15,7 @@ def test__two_sets_of_positions__residuals_likelihood_correct():
 
     point_solver = al.m.MockPointSolver(model_positions=model_positions)
 
-    fit = al.FitPositionsImage(
+    fit = al.FitPositionsImagePair(
         name="point_0",
         positions=positions,
         noise_map=noise_map,
@@ -55,7 +55,7 @@ def test__more_model_positions_than_data_positions__pairs_closest_positions():
 
     point_solver = al.m.MockPointSolver(model_positions=model_positions)
 
-    fit = al.FitPositionsImage(
+    fit = al.FitPositionsImagePair(
         name="point_0",
         positions=positions,
         noise_map=noise_map,
@@ -91,7 +91,7 @@ def test__multi_plane_position_solving():
         pixel_scale_precision=0.01
     )
 
-    fit_0 = al.FitPositionsImage(
+    fit_0 = al.FitPositionsImagePair(
         name="point_0",
         positions=positions,
         noise_map=noise_map,
@@ -99,7 +99,7 @@ def test__multi_plane_position_solving():
         point_solver=point_solver,
     )
 
-    fit_1 = al.FitPositionsImage(
+    fit_1 = al.FitPositionsImagePair(
         name="point_1",
         positions=positions,
         noise_map=noise_map,

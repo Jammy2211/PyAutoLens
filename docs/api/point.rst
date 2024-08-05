@@ -11,7 +11,7 @@ Point Sources
 
    PointDataset
    PointDict
-   FitPositionsImage
+   FitPositionsImagePair
    FitFluxes
    TriangleSolver
    AnalysisPoint
