@@ -16,7 +16,7 @@ def solver(grid):
     )
 
 
-def test_solver(solver):
+def test_solver_basic(solver):
     tracer = al.Tracer(
         galaxies=[
             al.Galaxy(
@@ -25,7 +25,10 @@ def test_solver(solver):
                     centre=(0.0, 0.0),
                     einstein_radius=1.0,
                 ),
-            )
+            ),
+            al.Galaxy(
+                redshift=1.0,
+            ),
         ]
     )
 

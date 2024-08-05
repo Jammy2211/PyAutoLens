@@ -130,16 +130,14 @@ class PointSolver:
         The source plane grid computed by applying the deflections to the image plane grid.
         """
 
-        if source_plane_redshift is None:
-            source_plane_index = len(tracer.planes)
+        source_plane_index = -1
 
-        else:
-            source_plane_index = 0
+        if source_plane_redshift is not None:
 
             for redshift in tracer.plane_redshifts:
+                source_plane_index += 1
                 if redshift == source_plane_redshift:
                     break
-                source_plane_index += 1
 
         deflections = tracer.deflections_between_planes_from(
             grid=grid, plane_i=0, plane_j=source_plane_index

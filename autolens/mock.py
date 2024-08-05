@@ -17,3 +17,8 @@ class NullTracer(Tracer):
 
     def deflections_yx_2d_from(self, grid):
         return np.zeros_like(grid.array)
+
+    def deflections_between_planes_from(
+        self, grid, plane_i=0, plane_j=-1
+    ):
+        return np.zeros_like(grid.array)
