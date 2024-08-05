@@ -2,7 +2,7 @@ import json
 import numpy as np
 import os
 from os import path
-from typing import List, Tuple, Dict, Optional, Union
+from typing import List, Tuple, Optional, Union
 
 import autoarray as aa
 

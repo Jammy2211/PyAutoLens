@@ -3,8 +3,6 @@ from os import path
 import pytest
 
 from autoconf import conf
-import autofit as af
-import autolens as al
 
 directory = path.dirname(path.realpath(__file__))
 

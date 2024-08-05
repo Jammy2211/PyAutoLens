@@ -86,6 +86,7 @@ from . import plot
 from . import aggregator as agg
 from .lens import subhalo
 from .lens.tracer import Tracer
+from .lens.sensitivity import SubhaloSensitivityResult
 from .lens.to_inversion import TracerToInversion
 from .analysis.positions import PositionsLHResample
 from .analysis.positions import PositionsLHPenalty

@@ -650,7 +650,7 @@ class FitImagingPlotter(Plotter):
 
                 inversion_plotter.close_subplot_figure()
 
-        except (IndexError, ValueError):
+        except (IndexError, AttributeError, ValueError):
 
             pass
 
