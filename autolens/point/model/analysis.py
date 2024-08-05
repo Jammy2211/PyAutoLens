@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Optional, Tuple
+from typing import Dict, Optional
 
 import autofit as af
 import autogalaxy as ag

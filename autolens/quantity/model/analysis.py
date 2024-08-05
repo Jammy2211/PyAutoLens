@@ -1,5 +1,3 @@
-from typing import Optional
-
 import autofit as af
 import autogalaxy as ag
 

@@ -1,10 +1,7 @@
-from typing import List, Union
-
 import autoarray as aa
 import autogalaxy as ag
 import autogalaxy.plot as aplt
 
-from autogalaxy.plot.get_visuals import one_d as gv1d
 from autogalaxy.plot.get_visuals import two_d as gv2d
 
 from autolens.imaging.fit_imaging import FitImaging

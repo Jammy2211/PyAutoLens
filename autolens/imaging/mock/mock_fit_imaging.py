@@ -1,7 +1,5 @@
 import autoarray as aa
 
-from autolens.lens.to_inversion import TracerToInversion
-
 from autolens.lens.mock.mock_to_inversion import MockTracerToInversion
 
 
