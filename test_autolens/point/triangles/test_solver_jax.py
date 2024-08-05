@@ -4,10 +4,18 @@ import pytest
 
 import autolens as al
 import autogalaxy as ag
-from autoarray.structures.triangles.jax_array import ArrayTriangles
+
+try:
+    from autoarray.structures.triangles.jax_array import ArrayTriangles
+except ImportError:
+    from autoarray.structures.triangles.array import ArrayTriangles
+
 from autolens.mock import NullTracer
 from autolens.point.triangles.triangle_solver import TriangleSolver
 from autolens.point.triangles.visualise import visualise
+
+
+pytest.importorskip("jax")
 
 
 @pytest.fixture
