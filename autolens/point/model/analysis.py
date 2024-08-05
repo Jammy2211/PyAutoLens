@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Optional, Tuple
+from typing import Dict, Optional
 
 import autofit as af
 import autogalaxy as ag
@@ -7,10 +7,9 @@ from autogalaxy.analysis.analysis.analysis import Analysis as AgAnalysis
 
 from autolens.analysis.analysis.lens import AnalysisLens
 from autolens.analysis.plotter_interface import PlotterInterface
-from autolens.point.point_dataset import PointDict
-from autolens.point.fit_point.point_dict import FitPointDict
+from autolens.point.fit_point.point_dataset import FitPointDataset
+from autolens.point.point_dataset import PointDataset
 from autolens.point.model.result import ResultPoint
-
 from autolens.point.point_solver import PointSolver
 
 from autolens import exc
@@ -28,9 +27,9 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
 
     def __init__(
         self,
-        point_dict: PointDict,
+        dataset: PointDataset,
         solver: PointSolver,
-        dataset=None,
+        image = None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):
         """
@@ -58,7 +57,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
 
         AnalysisLens.__init__(self=self, cosmology=cosmology)
 
-        self.point_dict = point_dict
+        self.dataset = dataset
 
         self.solver = solver
         self.dataset = dataset
@@ -83,15 +82,15 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         except (AttributeError, ValueError, TypeError, NumbaException) as e:
             raise exc.FitException from e
 
-    def fit_from(self, instance, run_time_dict: Optional[Dict] = None) -> FitPointDict:
+    def fit_from(self, instance, run_time_dict: Optional[Dict] = None) -> FitPointDataset:
         tracer = self.tracer_via_instance_from(
             instance=instance, run_time_dict=run_time_dict
         )
 
-        return FitPointDict(
-            point_dict=self.point_dict,
+        return FitPointDataset(
+            point_dataset=self.dataset,
             tracer=tracer,
-            solver=self.solver,
+            point_solver=self.solver,
             run_time_dict=run_time_dict,
         )
 

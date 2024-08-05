@@ -92,7 +92,7 @@ class TriangleSolver:
 
     def solve(
         self, source_plane_coordinate: Tuple[float, float]
-    ) -> List[Tuple[float, float]]:
+    ) -> Grid2DIrregular:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
 
@@ -133,7 +133,7 @@ class TriangleSolver:
                 f"Filtered {difference} multiple-images with magnification below threshold."
             )
 
-        return filtered_means
+        return Grid2DIrregular(values=filtered_means)
 
     def _filter_low_magnification(
         self, points: List[Tuple[float, float]]

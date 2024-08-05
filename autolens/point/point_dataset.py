@@ -65,126 +65,15 @@ class PointDataset:
         self.fluxes_noise_map = fluxes_noise_map
 
     @property
-    def dict(self) -> dict:
+    def info(self) -> str:
         """
         A dictionary representation of this instance.
 
         Arrays are represented as lists or lists of lists.
         """
-        return {
-            "name": self.name,
-            "positions": list(map(list, np.round(self.positions, 4))),
-            "positions_noise_map": list(self.positions_noise_map),
-            "fluxes": list(np.round(self.fluxes, 4))
-            if self.fluxes is not None
-            else None,
-            "fluxes_noise_map": list(self.fluxes_noise_map)
-            if self.fluxes_noise_map is not None
-            else None,
-        }
-
-    @classmethod
-    def from_dict(cls, dict_: dict) -> "PointDataset":
-        """
-        Create a point source dataset from a dictionary representation.
-
-        Parameters
-        ----------
-        dict_
-            A dictionary. Arrays are represented as lists or lists of lists.
-
-        Returns
-        -------
-        An instance
-        """
-        return cls(
-            name=dict_["name"],
-            positions=aa.Grid2DIrregular(dict_["positions"]),
-            positions_noise_map=aa.ArrayIrregular(dict_["positions_noise_map"]),
-            fluxes=aa.ArrayIrregular(dict_["fluxes"])
-            if dict_["fluxes"] is not None
-            else None,
-            fluxes_noise_map=aa.ArrayIrregular(dict_["fluxes_noise_map"])
-            if dict_["fluxes_noise_map"] is not None
-            else None,
-        )
-
-
-class PointDict(dict):
-    def __init__(self, point_dataset_list: List[PointDataset]):
-        """
-        A dictionary containing the entire point-source dataset, which could be many instances of
-        the `PointDataset` object.
-
-        This dictionary uses the `name` of the `PointDataset` to act as the key of every entry of the dictionary,
-        making it straight forward to access the attributes based on the dataset name.
-
-        Parameters
-        ----------
-        point_dataset_list
-            A list of all point-source datasets that are to be added to the point-source dictionary.
-
-        Returns
-        -------
-        Dict[PointDataset]
-            A dictionary where the keys are the `name` entries of each `PointDataset` and the values are
-            the corresponding instance of the `PointDataset` class.
-        """
-
-        super().__init__()
-
-        for point_dataset in point_dataset_list:
-            self[point_dataset.name] = point_dataset
-
-    @property
-    def positions_list(self):
-        return [point_dataset.positions for keys, point_dataset in self.items()]
-
-    @property
-    def dicts(self) -> List[dict]:
-        """
-        A list of dictionaries representing this collection of point source
-        datasets.
-        """
-        return [dataset.dict for dataset in self.values()]
-
-    @classmethod
-    def from_dicts(cls, dicts: List[dict]) -> List[PointDataset]:
-        """
-        Create an instance from a list of dictionaries.
-
-        Parameters
-        ----------
-        dicts
-            Dictionaries, each representing one point source dataset.
-
-        Returns
-        -------
-        A collection of point source datasets.
-        """
-        return cls(map(PointDataset.from_dict, dicts))
-
-    @classmethod
-    def from_json(cls, file_path):
-        with open(file_path) as infile:
-            dicts = json.load(infile)
-
-        return cls.from_dicts(dicts=dicts)
-
-    def output_to_json(self, file_path, overwrite=False):
-        file_dir = os.path.split(file_path)[0]
-
-        if not path.exists(file_dir):
-            os.makedirs(file_dir)
-
-        if overwrite and path.exists(file_path):
-            os.remove(file_path)
-        elif not overwrite and path.exists(file_path):
-            raise FileExistsError(
-                "The file ",
-                file_path,
-                " already exists. Set overwrite=True to overwrite this" "file",
-            )
-
-        with open(file_path, "w+") as f:
-            json.dump(self.dicts, f, indent=4)
+        info = f"name : {self.name}\n"
+        info += f"positions : {self.positions}\n"
+        info += f"positions_noise_map : {self.positions_noise_map}\n"
+        info += f"fluxes : {self.fluxes}\n"
+        info += f"fluxes_noise_map : {self.fluxes_noise_map}\n"
+        return info

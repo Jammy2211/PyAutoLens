@@ -29,10 +29,6 @@ def make_point_dataset():
     )
 
 
-def make_point_dict():
-    return al.PointDict(point_dataset_list=[make_point_dataset()])
-
-
 def make_point_solver():
     grid = al.Grid2D.uniform(shape_native=(10, 10), pixel_scales=0.5)
     return al.PointSolver(grid=grid, pixel_scale_precision=0.25)
@@ -114,15 +110,6 @@ def make_fit_point_dataset_x2_plane():
         tracer=make_tracer_x2_plane_point(),
         point_solver=make_point_solver(),
     )
-
-
-def make_fit_point_dict_x2_plane():
-    return al.FitPointDict(
-        point_dict=make_point_dict(),
-        tracer=make_tracer_x2_plane_point(),
-        solver=make_point_solver(),
-    )
-
 
 def make_adapt_galaxy_name_image_dict_7x7():
     image_0 = ag.Array2D(
