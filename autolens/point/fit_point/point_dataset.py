@@ -24,12 +24,12 @@ class FitPointDataset:
         self,
         dataset: PointDataset,
         tracer : Tracer,
-        point_solver: PointSolver,
+        solver: PointSolver,
         run_time_dict: Optional[Dict] = None,
     ):
         self.dataset = dataset
         self.tracer = tracer
-        self.point_solver = point_solver
+        self.solver = solver
         self.run_time_dict = run_time_dict
 
         profile = self.tracer.extract_profile(profile_name=dataset.name)
@@ -50,7 +50,7 @@ class FitPointDataset:
                     positions=dataset.positions,
                     noise_map=dataset.positions_noise_map,
                     tracer=tracer,
-                    solver=point_solver,
+                    solver=solver,
                     profile=profile,
                 )
 

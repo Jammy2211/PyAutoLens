@@ -29,7 +29,7 @@ def make_point_dataset():
     )
 
 
-def make_point_solver():
+def make_solver():
     grid = al.Grid2D.uniform(shape_native=(10, 10), pixel_scales=0.5)
     return al.PointSolver.for_grid(
         tracer=make_tracer_x2_plane_point(), grid=grid, pixel_scale_precision=0.25
@@ -110,7 +110,7 @@ def make_fit_point_dataset_x2_plane():
     return al.FitPointDataset(
         dataset=make_point_dataset(),
         tracer=make_tracer_x2_plane_point(),
-        point_solver=make_point_solver(),
+        solver=make_solver(),
     )
 
 

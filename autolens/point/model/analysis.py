@@ -92,7 +92,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         return FitPointDataset(
             dataset=self.dataset,
             tracer=tracer,
-            point_solver=self.solver,
+            solver=self.solver,
             run_time_dict=run_time_dict,
         )
 

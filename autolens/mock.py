@@ -8,7 +8,7 @@ from autolens import Tracer
 from autolens.imaging.mock.mock_fit_imaging import MockFitImaging  # noqa
 from autolens.lens.mock.mock_tracer import MockTracer  # noqa
 from autolens.lens.mock.mock_tracer import MockTracerPoint  # noqa
-from autolens.point.mock.mock_point_solver import MockPointSolver  # noqa
+from autolens.point.mock.mock_solver import MockPointSolver  # noqa
 
 
 class NullTracer(Tracer):
