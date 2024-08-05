@@ -23,14 +23,16 @@ class FitPointDataset:
     def __init__(
         self,
         dataset: PointDataset,
+        tracer : Tracer,
         point_solver: PointSolver,
         run_time_dict: Optional[Dict] = None,
     ):
         self.dataset = dataset
+        self.tracer = tracer
         self.point_solver = point_solver
         self.run_time_dict = run_time_dict
 
-        profile = point_solver.tracer.extract_profile(profile_name=dataset.name)
+        profile = self.tracer.extract_profile(profile_name=dataset.name)
 
         try:
             if isinstance(profile, ag.ps.PointSourceChi):
@@ -38,7 +40,7 @@ class FitPointDataset:
                     name=dataset.name,
                     positions=dataset.positions,
                     noise_map=dataset.positions_noise_map,
-                    tracer=point_solver.tracer,
+                    tracer=tracer,
                     profile=profile,
                 )
 
@@ -47,6 +49,7 @@ class FitPointDataset:
                     name=dataset.name,
                     positions=dataset.positions,
                     noise_map=dataset.positions_noise_map,
+                    tracer=tracer,
                     solver=point_solver,
                     profile=profile,
                 )
@@ -62,15 +65,12 @@ class FitPointDataset:
                 fluxes=dataset.fluxes,
                 noise_map=dataset.fluxes_noise_map,
                 positions=dataset.positions,
-                tracer=point_solver.tracer,
+                tracer=tracer,
             )
 
         except exc.PointExtractionException:
             self.flux = None
 
-    @property
-    def model_obj(self):
-        return self.point_solver.tracer
 
     @property
     def log_likelihood(self) -> float:
