@@ -267,26 +267,6 @@ class TriangleSolver:
             neighbourhood = kept_triangles.neighborhood()
             up_sampled = neighbourhood.up_sample()
 
-            def max_duplicate(triangles):
-                counter = Counter()
-                for triangle in triangles.triangles:
-                    if np.isnan(triangle).any():
-                        continue
-                    counter[
-                        tuple(
-                            sorted(
-                                (float(pair[0]), float(pair[1])) for pair in triangle
-                            )
-                        )
-                    ] += 1
-                return max(counter.values()), max(counter)
-
-            print(number)
-            print(f"kept_triangles = {max_duplicate(kept_triangles)}")
-            print(f"neighbourhood = {max_duplicate(neighbourhood)}")
-            print(f"up_sampled = {max_duplicate(up_sampled)}")
-            print()
-
             yield Step(
                 number=number,
                 initial_triangles=initial_triangles,
