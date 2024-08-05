@@ -38,22 +38,6 @@ def test_solver(solver):
     )
 
 
-def test_single_trivial(grid):
-    solver = TriangleSolver.for_grid(
-        lensing_obj=NullTracer(),
-        grid=grid,
-        pixel_scale_precision=0.01,
-        ArrayTriangles=ArrayTriangles,
-    )
-    coordinates = solver.solve(
-        source_plane_coordinate=(0.07, 0.07),
-    )
-    for step in solver.steps((0.07, 0.07)):
-        visualise(step)
-    for pair in coordinates:
-        print(pair)
-
-
 @pytest.mark.parametrize(
     "source_plane_coordinate",
     [
@@ -79,7 +63,6 @@ def test_trivial(
     coordinates = solver.solve(
         source_plane_coordinate=source_plane_coordinate,
     )
-    print(coordinates)
     assert coordinates[0] == pytest.approx(source_plane_coordinate, abs=1.0e-1)
 
 
@@ -95,6 +78,4 @@ def test_real_example(grid, tracer):
         visualise(step)
 
     result = solver.solve((0.07, 0.07))
-    for pair in result:
-        print(pair)
     assert len(result) == 5
