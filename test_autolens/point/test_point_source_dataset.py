@@ -11,9 +11,6 @@ def test__info():
         fluxes_noise_map=al.ArrayIrregular([3]),
     )
 
-    print(dataset.info)
-    dvdffds
-
-    assert dataset.dict == dataset_dict
-
+    assert "name" in dataset.info
+    assert "positions : Grid2DIrregular" in dataset.info
 
