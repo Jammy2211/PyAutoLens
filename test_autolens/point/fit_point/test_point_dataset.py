@@ -15,31 +15,24 @@ def test__fits_dataset__positions_only():
 
     point_solver = al.m.MockPointSolver(model_positions=model_positions)
 
-    point_dataset_0 = al.PointDataset(
+    dataset_0 = al.PointDataset(
         name="point_0", positions=positions, positions_noise_map=noise_map
     )
 
-    point_dict = al.PointDict(point_dataset_list=[point_dataset_0])
+    fit = al.FitPointDataset(point_dataset=dataset_0, tracer=tracer, point_solver=point_solver)
 
-    fit = al.FitPointDict(point_dict=point_dict, tracer=tracer, solver=point_solver)
+    assert fit.positions.log_likelihood == pytest.approx(-22.14472, 1.0e-4)
+    assert fit.flux == None
 
-    assert fit["point_0"].positions.log_likelihood == pytest.approx(-22.14472, 1.0e-4)
-    assert fit["point_0"].flux == None
-    assert fit.log_likelihood == fit["point_0"].positions.log_likelihood
-
-    point_dataset_1 = al.PointDataset(
+    dataset_1 = al.PointDataset(
         name="point_1", positions=positions, positions_noise_map=noise_map
     )
 
-    point_dict = al.PointDict(point_dataset_list=[point_dataset_0, point_dataset_1])
+    fit = al.FitPointDataset(point_dataset=dataset_1, tracer=tracer, point_solver=point_solver)
 
-    fit = al.FitPointDict(point_dict=point_dict, tracer=tracer, solver=point_solver)
-
-    assert fit["point_0"].positions.log_likelihood == pytest.approx(-22.14472, 1.0e-4)
-    assert fit["point_0"].flux == None
-    assert fit["point_1"].positions == None
-    assert fit["point_1"].flux == None
-    assert fit.log_likelihood == fit["point_0"].positions.log_likelihood
+    assert fit.flux == None
+    assert fit.positions == None
+    assert fit.flux == None
 
 
 def test__fits_dataset__positions_and_flux():
@@ -57,7 +50,7 @@ def test__fits_dataset__positions_and_flux():
 
     point_solver = al.m.MockPointSolver(model_positions=model_positions)
 
-    point_dataset_0 = al.PointDataset(
+    dataset_0 = al.PointDataset(
         name="point_0",
         positions=positions,
         positions_noise_map=noise_map,
@@ -65,9 +58,9 @@ def test__fits_dataset__positions_and_flux():
         fluxes_noise_map=flux_noise_map,
     )
 
-    point_dict = al.PointDict(point_dataset_list=[point_dataset_0])
+    point_dict = al.PointDict(dataset_list=[dataset_0])
 
-    fit = al.FitPointDict(point_dict=point_dict, tracer=tracer, solver=point_solver)
+    fit = al.FitPointDict(point_dict=point_dict, tracer=tracer, point_solver=point_solver)
 
     assert fit["point_0"].positions.log_likelihood == pytest.approx(-22.14472, 1.0e-4)
     assert fit["point_0"].flux.log_likelihood == pytest.approx(-2.9920449, 1.0e-4)
@@ -76,7 +69,7 @@ def test__fits_dataset__positions_and_flux():
         == fit["point_0"].positions.log_likelihood + fit["point_0"].flux.log_likelihood
     )
 
-    point_dataset_1 = al.PointDataset(
+    dataset_1 = al.PointDataset(
         name="point_1",
         positions=positions,
         positions_noise_map=noise_map,
@@ -84,9 +77,9 @@ def test__fits_dataset__positions_and_flux():
         fluxes_noise_map=flux_noise_map,
     )
 
-    point_dict = al.PointDict(point_dataset_list=[point_dataset_0, point_dataset_1])
+    point_dict = al.PointDict(dataset_list=[dataset_0, dataset_1])
 
-    fit = al.FitPointDict(point_dict=point_dict, tracer=tracer, solver=point_solver)
+    fit = al.FitPointDict(point_dict=point_dict, tracer=tracer, point_solver=point_solver)
 
     assert fit["point_0"].positions.log_likelihood == pytest.approx(-22.14472, 1.0e-4)
     assert fit["point_0"].flux.log_likelihood == pytest.approx(-2.9920449, 1.0e-4)
@@ -115,17 +108,17 @@ def test__model_has_image_and_source_chi_squared__fits_both_correctly():
 
     point_solver = al.m.MockPointSolver(model_positions=model_positions)
 
-    point_dataset_0 = al.PointDataset(
+    dataset_0 = al.PointDataset(
         name="point_0", positions=positions, positions_noise_map=noise_map
     )
 
-    point_dataset_1 = al.PointDataset(
+    dataset_1 = al.PointDataset(
         name="point_1", positions=positions, positions_noise_map=noise_map
     )
 
-    point_dict = al.PointDict(point_dataset_list=[point_dataset_0, point_dataset_1])
+    point_dict = al.PointDict(dataset_list=[dataset_0, dataset_1])
 
-    fit = al.FitPointDict(point_dict=point_dict, tracer=tracer, solver=point_solver)
+    fit = al.FitPointDict(point_dict=point_dict, tracer=tracer, point_solver=point_solver)
 
     assert isinstance(fit["point_0"].positions, al.FitPositionsImage)
     assert isinstance(fit["point_1"].positions, al.FitPositionsSource)
