@@ -58,7 +58,7 @@ class AnalysisPointSource(af.Analysis, ABC):
         """
         lens = instance.lens
 
-        solver = TriangleSolver(
+        solver = TriangleSolver.for_grid(
             lensing_obj=lens,
             grid=self.grid,
             pixel_scale_precision=self.pixel_scale_precision,

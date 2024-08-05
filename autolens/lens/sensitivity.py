@@ -1,11 +1,14 @@
-from typing import Optional
-
-import autofit as af
+import numpy as np
+from typing import Optional, List, Tuple
 
 from autofit.non_linear.grid.sensitivity.result import SensitivityResult
 
 import autofit as af
 import autoarray as aa
+
+
+from autoarray.plot.abstract_plotters import AbstractPlotter
+from autoarray.plot.auto_labels import AutoLabels
 
 from autolens.lens.tracer import Tracer
 
@@ -15,7 +18,7 @@ import autolens.plot as aplt
 class SubhaloSensitivityResult(SensitivityResult):
     def __init__(
         self,
-        result_sensitivity: SensitivityResult,
+        result: SensitivityResult,
     ):
         """
         The results of a subhalo sensitivity mapping analysis, where dark matter halos are used to simulate many
@@ -23,16 +26,44 @@ class SubhaloSensitivityResult(SensitivityResult):
 
         Parameters
         ----------
-        result_sensitivity
+        result
             The results of a sensitivity mapping analysis where.
         """
 
         super().__init__(
-            samples=result_sensitivity.samples,
-            perturb_samples=result_sensitivity.perturb_samples,
-            physical_values=result_sensitivity.physical_values,
-            shape=result_sensitivity.shape,
+            samples=result.samples,
+            perturb_samples=result.perturb_samples,
+            shape=result.shape,
         )
+
+    @property
+    def y(self) -> af.GridList:
+        """
+        The y coordinates of the physical values of the sensitivity mapping grid.
+
+        These are the `centre` coordinates of the dark matter subhalos that are included in the simulated datasets.
+        """
+        return self.perturbed_physical_centres_list_from(
+            path="perturb.mass.centre.centre_0"
+        )
+
+    @property
+    def x(self) -> af.GridList:
+        """
+        The x coordinates of the physical values of the sensitivity mapping grid.
+
+        These are the `centre` coordinates of the dark matter subhalos that are included in the simulated datasets.
+        """
+        return self.perturbed_physical_centres_list_from(
+            path="perturb.mass.centre.centre_1"
+        )
+
+    @property
+    def extent(self) -> Tuple[float, float, float, float]:
+        """
+        The extent of the sensitivity mapping grid, which is the minimum and maximum values of the x and y coordinates.
+        """
+        return (np.min(self.x), np.max(self.x), np.min(self.y), np.max(self.y))
 
     def _array_2d_from(self, values) -> aa.Array2D:
         """
@@ -55,24 +86,15 @@ class SubhaloSensitivityResult(SensitivityResult):
         -------
         The 2D array of values, where the values are mapped from the input list of lists.
         """
-        # values_reshaped = [value for values in values.native for value in values]
+        values_reshaped = [value for values in values.native for value in values]
 
-        y = [centre[0] for centre in self.physical_values]
-        x = [centre[1] for centre in self.physical_values]
-
-        pixel_scales = [abs(centre[0] - centre[1]) for centre in self.physical_values]
-
-        print(self.physical_values)
-        print(y)
-        print(x)
-        print(pixel_scales)
-        bbb
+        pixel_scales = abs(self.x[0] - self.x[1])
 
         return aa.Array2D.from_yx_and_values(
-            y=[centre[0] for centre in self.physical_values],
-            x=[centre[1] for centre in self.physical_values],
+            y=self.y.as_list,
+            x=self.x.as_list,
             values=values_reshaped,
-            pixel_scales=pixel_scales,
+            pixel_scales=(pixel_scales, pixel_scales),
             shape_native=self.shape,
         )
 
@@ -111,15 +133,15 @@ class SubhaloSensitivityResult(SensitivityResult):
         return self._array_2d_from(values=figures_of_merits)
 
 
-class SubhaloSensitivityPlotter:
+class SubhaloSensitivityPlotter(AbstractPlotter):
     def __init__(
         self,
-        grid: aa.type.Grid2DLike,
-        mask: aa.Mask2D,
+        mask: Optional[aa.Mask2D] = None,
         tracer_perturb: Optional[Tracer] = None,
         tracer_no_perturb: Optional[Tracer] = None,
         source_image: Optional[aa.Array2D] = None,
-        result_sensitivity: Optional[SensitivityResult] = None,
+        result: Optional[SubhaloSensitivityResult] = None,
+        data_subtracted: Optional[aa.Array2D] = None,
         mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
         visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
         include_2d: aplt.Include2D = aplt.Include2D(),
@@ -156,15 +178,35 @@ class SubhaloSensitivityPlotter:
         include_2d
             Specifies which attributes of the `MassProfile` are extracted and plotted as visuals for 2D plots.
         """
-        self.grid = grid
+
+        super().__init__(
+            mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
+        )
+
         self.mask = mask
         self.tracer_perturb = tracer_perturb
         self.tracer_no_perturb = tracer_no_perturb
         self.source_image = source_image
-        self.result_sensitivity = result_sensitivity
+        self.result = result
+        self.data_subtracted = data_subtracted
         self.mat_plot_2d = mat_plot_2d
         self.visuals_2d = visuals_2d
         self.include_2d = include_2d
+
+    def update_mat_plot_array_overlay(self, evidence_max):
+        evidence_half = evidence_max / 2.0
+
+        self.mat_plot_2d.array_overlay = aplt.ArrayOverlay(
+            alpha=0.6, vmin=0.0, vmax=evidence_max
+        )
+        self.mat_plot_2d.colorbar = aplt.Colorbar(
+            manual_tick_values=[0.0, evidence_half, evidence_max],
+            manual_tick_labels=[
+                0.0,
+                np.round(evidence_half, 1),
+                np.round(evidence_max, 1),
+            ],
+        )
 
     def subplot_tracer_images(self):
         """
@@ -275,3 +317,130 @@ class SubhaloSensitivityPlotter:
             auto_filename=f"subplot_lensed_images"
         )
         plotter.close_subplot_figure()
+
+    def set_auto_filename(
+        self, filename: str, use_log_evidences: Optional[bool] = None
+    ) -> bool:
+        """
+        If a subplot figure does not have an input filename, this function is used to set one automatically.
+
+        The filename is appended with a string that describes the figure of merit plotted, which is either the
+        log evidence or log likelihood.
+
+        Parameters
+        ----------
+        filename
+            The filename of the figure, e.g. 'subhalo_mass'
+        use_log_evidences
+            If `True`, figures which overlay the goodness-of-fit merit use the `log_evidence`, if `False` the
+            `log_likelihood` if used.
+
+        Returns
+        -------
+
+        """
+
+        if self.mat_plot_2d.output.filename is None:
+            if use_log_evidences is None:
+                figure_of_merit = ""
+            elif use_log_evidences:
+                figure_of_merit = "_log_evidence"
+            else:
+                figure_of_merit = "_log_likelihood"
+
+            self.set_filename(
+                filename=f"{filename}{figure_of_merit}",
+            )
+
+            return True
+
+        return False
+
+    def subplot_figures_of_merit_grid(
+        self,
+        use_log_evidences: bool = True,
+        remove_zeros: bool = True,
+        show_max_in_title: bool = True,
+    ):
+        self.open_subplot_figure(number_subplots=1)
+
+        figures_of_merit = self.result.figure_of_merit_array(
+            use_log_evidences=use_log_evidences,
+            remove_zeros=remove_zeros,
+        )
+
+        if show_max_in_title:
+            max_value = np.round(np.nanmax(figures_of_merit), 2)
+            self.set_title(label=f"Sensitivity Map {max_value}")
+
+        self.update_mat_plot_array_overlay(evidence_max=np.max(figures_of_merit))
+
+        self.mat_plot_2d.plot_array(
+            array=figures_of_merit,
+            visuals_2d=self.visuals_2d,
+            auto_labels=AutoLabels(title="Increase in Log Evidence"),
+        )
+
+        self.mat_plot_2d.output.subplot_to_figure(auto_filename="sensitivity")
+        self.close_subplot_figure()
+
+    def figure_figures_of_merit_grid(
+        self,
+        use_log_evidences: bool = True,
+        remove_zeros: bool = True,
+        show_max_in_title: bool = True,
+    ):
+        """
+        Plot the results of the subhalo grid search, where the figures of merit (e.g. `log_evidence`) of the
+        grid search are plotted over the image of the lensed source galaxy.
+
+        The figures of merit can be customized to be relative to the lens model without a subhalo, or with zeros
+        rounded up to 0.0 to remove negative values. These produce easily to interpret and visually appealing
+        figure of merit overlays.
+
+        Parameters
+        ----------
+        use_log_evidences
+            If `True`, figures which overlay the goodness-of-fit merit use the `log_evidence`, if `False` the
+            `log_likelihood` if used.
+        relative_to_value
+            The value to subtract from every figure of merit, for example which will typically be that of the no
+            subhalo lens model so Bayesian model comparison can be easily performed.
+        remove_zeros
+            If `True`, the figure of merit array is altered so that all values below 0.0 and set to 0.0. For plotting
+            relative figures of merit for Bayesian model comparison, this is convenient to remove negative values
+            and produce a clearer visualization of the overlay.
+        show_max_in_title
+            Shows the maximum figure of merit value in the title of the figure, for easy reference.
+        """
+
+        reset_filename = self.set_auto_filename(
+            filename="sensitivity",
+            use_log_evidences=use_log_evidences,
+        )
+
+        array_overlay = self.result.figure_of_merit_array(
+            use_log_evidences=use_log_evidences,
+            remove_zeros=remove_zeros,
+        )
+
+        visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
+            array_overlay=array_overlay,
+        )
+
+        self.update_mat_plot_array_overlay(evidence_max=np.max(array_overlay))
+
+        plotter = aplt.Array2DPlotter(
+            array=self.data_subtracted,
+            mat_plot_2d=self.mat_plot_2d,
+            visuals_2d=visuals_2d,
+        )
+
+        if show_max_in_title:
+            max_value = np.round(np.nanmax(array_overlay), 2)
+            plotter.set_title(label=f"Sensitivity Map {max_value}")
+
+        plotter.figure_2d()
+
+        if reset_filename:
+            self.set_filename(filename=None)

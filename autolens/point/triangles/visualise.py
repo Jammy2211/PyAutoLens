@@ -12,9 +12,9 @@ def add_triangles(triangles, color):
 def visualise(step: Step):
     plt.figure(figsize=(8, 8))
     add_triangles(step.initial_triangles, color="black")
-    add_triangles(step.filtered_triangles, color="blue")
     add_triangles(step.up_sampled, color="green")
     add_triangles(step.neighbourhood, color="red")
+    add_triangles(step.filtered_triangles, color="blue")
 
     plt.xlabel("X")
     plt.ylabel("Y")
