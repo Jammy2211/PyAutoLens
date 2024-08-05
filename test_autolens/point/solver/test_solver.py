@@ -77,7 +77,4 @@ def test_real_example(grid, tracer):
         source_plane_coordinate=(0.07, 0.07)
     )
 
-    for r in result:
-        print(r)
-
     assert len(result) == 5
