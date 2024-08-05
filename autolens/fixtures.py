@@ -110,7 +110,7 @@ def make_fit_interferometer_x2_plane_inversion_7x7():
 
 def make_fit_point_dataset_x2_plane():
     return al.FitPointDataset(
-        point_dataset=make_point_dataset(),
+        dataset=make_point_dataset(),
         tracer=make_tracer_x2_plane_point(),
         point_solver=make_point_solver(),
     )

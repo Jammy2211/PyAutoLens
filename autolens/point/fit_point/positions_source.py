@@ -15,7 +15,7 @@ class FitPositionsSource(aa.FitDataset):
         positions: aa.Grid2DIrregular,
         noise_map: aa.ArrayIrregular,
         tracer: Tracer,
-        point_profile: Optional[ag.ps.Point] = None,
+        profile: Optional[ag.ps.Point] = None,
     ):
         """
         A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
@@ -35,19 +35,19 @@ class FitPositionsSource(aa.FitDataset):
         self._noise_map = noise_map
         self.tracer = tracer
 
-        self.point_profile = (
+        self.profile = (
             tracer.extract_profile(profile_name=name)
-            if point_profile is None
-            else point_profile
+            if profile is None
+            else profile
         )
 
-        if self.point_profile is None:
+        if self.profile is None:
             raise exc.PointExtractionException(
                 f"For the point-source named {name} there was no matching point source profile "
                 f"in the tracer (make sure your tracer's point source name is the same the dataset name."
             )
 
-        self.source_plane_coordinate = self.point_profile.centre
+        self.source_plane_coordinate = self.profile.centre
 
     @property
     def mask(self):

@@ -22,35 +22,33 @@ except ModuleNotFoundError:
 class FitPointDataset:
     def __init__(
         self,
-        point_dataset: PointDataset,
-        tracer: Tracer,
+        dataset: PointDataset,
         point_solver: PointSolver,
         run_time_dict: Optional[Dict] = None,
     ):
-        self.point_dataset = point_dataset
-        self.tracer = tracer
+        self.dataset = dataset
+        self.point_solver = point_solver
         self.run_time_dict = run_time_dict
 
-        point_profile = tracer.extract_profile(profile_name=point_dataset.name)
+        profile = point_solver.tracer.extract_profile(profile_name=dataset.name)
 
         try:
-            if isinstance(point_profile, ag.ps.PointSourceChi):
+            if isinstance(profile, ag.ps.PointSourceChi):
                 self.positions = FitPositionsSource(
-                    name=point_dataset.name,
-                    positions=point_dataset.positions,
-                    noise_map=point_dataset.positions_noise_map,
-                    tracer=tracer,
-                    point_profile=point_profile,
+                    name=dataset.name,
+                    positions=dataset.positions,
+                    noise_map=dataset.positions_noise_map,
+                    tracer=point_solver.tracer,
+                    profile=profile,
                 )
 
             else:
                 self.positions = FitPositionsImagePair(
-                    name=point_dataset.name,
-                    positions=point_dataset.positions,
-                    noise_map=point_dataset.positions_noise_map,
+                    name=dataset.name,
+                    positions=dataset.positions,
+                    noise_map=dataset.positions_noise_map,
                     solver=point_solver,
-                    tracer=tracer,
-                    point_profile=point_profile,
+                    profile=profile,
                 )
 
         except exc.PointExtractionException:
@@ -60,11 +58,11 @@ class FitPointDataset:
 
         try:
             self.flux = FitFluxes(
-                name=point_dataset.name,
-                fluxes=point_dataset.fluxes,
-                noise_map=point_dataset.fluxes_noise_map,
-                positions=point_dataset.positions,
-                tracer=tracer,
+                name=dataset.name,
+                fluxes=dataset.fluxes,
+                noise_map=dataset.fluxes_noise_map,
+                positions=dataset.positions,
+                tracer=point_solver.tracer,
             )
 
         except exc.PointExtractionException:
@@ -72,7 +70,7 @@ class FitPointDataset:
 
     @property
     def model_obj(self):
-        return self.tracer
+        return self.point_solver.tracer
 
     @property
     def log_likelihood(self) -> float:

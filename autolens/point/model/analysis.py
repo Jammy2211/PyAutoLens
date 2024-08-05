@@ -88,7 +88,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         )
 
         return FitPointDataset(
-            point_dataset=self.dataset,
+            dataset=self.dataset,
             tracer=tracer,
             point_solver=self.solver,
             run_time_dict=run_time_dict,
