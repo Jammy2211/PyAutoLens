@@ -1,4 +1,3 @@
-import itertools
 import math
 from abc import ABC, abstractmethod
 from typing import List, Tuple
