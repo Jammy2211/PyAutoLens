@@ -191,7 +191,6 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         self.include_2d = include_2d
 
     def update_mat_plot_array_overlay(self, evidence_max):
-
         evidence_half = evidence_max / 2.0
 
         self.mat_plot_2d.array_overlay = aplt.ArrayOverlay(
@@ -203,7 +202,7 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
                 0.0,
                 np.round(evidence_half, 1),
                 np.round(evidence_max, 1),
-            ]
+            ],
         )
 
     def subplot_tracer_images(self):
@@ -371,7 +370,6 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
             max_value = np.round(np.nanmax(figures_of_merit), 2)
             self.set_title(label=f"Sensitivity Map {max_value}")
 
-
         self.update_mat_plot_array_overlay(evidence_max=np.max(figures_of_merit))
 
         self.mat_plot_2d.plot_array(
@@ -380,9 +378,7 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
             auto_labels=AutoLabels(title="Increase in Log Evidence"),
         )
 
-        self.mat_plot_2d.output.subplot_to_figure(
-            auto_filename="sensitivity"
-        )
+        self.mat_plot_2d.output.subplot_to_figure(auto_filename="sensitivity")
         self.close_subplot_figure()
 
     def figure_figures_of_merit_grid(

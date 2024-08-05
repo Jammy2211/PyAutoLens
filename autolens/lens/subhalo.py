@@ -47,7 +47,9 @@ class SubhaloGridSearchResult(af.GridSearchResult):
 
         These are the `centre` coordinates of the dark matter subhalo priors.
         """
-        return [centre[0] for centre in self.physical_centres_lists]
+        return self.physical_centres_lists_from(
+            path="galaxies.subhalo.mass.centre.centre_0"
+        )
 
     @property
     def x(self) -> List[float]:
@@ -56,7 +58,9 @@ class SubhaloGridSearchResult(af.GridSearchResult):
 
         These are the `centre` coordinates of the dark matter subhalo priors.
         """
-        return [centre[1] for centre in self.physical_centres_lists]
+        return self.physical_centres_lists_from(
+            path="galaxies.subhalo.mass.centre.centre_1"
+        )
 
     @property
     def extent(self) -> Tuple[float, float, float, float]:
@@ -215,7 +219,6 @@ class SubhaloPlotter(AbstractPlotter):
         self.fit_imaging_no_subhalo = fit_imaging_no_subhalo
 
     def update_mat_plot_array_overlay(self, evidence_max):
-
         evidence_half = evidence_max / 2.0
 
         self.mat_plot_2d.array_overlay = aplt.ArrayOverlay(
