@@ -3,7 +3,7 @@ from typing import Optional
 import autoarray as aa
 import autogalaxy as ag
 
-from autolens.point.point_solver import PointSolver
+from autolens.point.triangles.triangle_solver import TriangleSolver
 from autolens.lens.tracer import Tracer
 
 from autolens import exc
@@ -16,7 +16,7 @@ class FitPositionsImage(aa.FitDataset):
         positions: aa.Grid2DIrregular,
         noise_map: aa.ArrayIrregular,
         tracer: Tracer,
-        point_solver: PointSolver,
+        point_solver: TriangleSolver,
         point_profile: Optional[ag.ps.Point] = None,
     ):
         """

@@ -10,7 +10,7 @@ from autolens.analysis.plotter_interface import PlotterInterface
 from autolens.point.fit_point.point_dataset import FitPointDataset
 from autolens.point.point_dataset import PointDataset
 from autolens.point.model.result import ResultPoint
-from autolens.point.point_solver import PointSolver
+from autolens.point.triangles.triangle_solver import TriangleSolver
 
 from autolens import exc
 
@@ -28,7 +28,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
     def __init__(
         self,
         dataset: PointDataset,
-        solver: PointSolver,
+        solver: TriangleSolver,
         image = None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):

@@ -11,7 +11,7 @@ from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
 from autolens.point.fit_point.max_separation import FitPositionsSourceMaxSeparation
 from autolens.lens.tracer import Tracer
-from autolens.point.point_solver import PointSolver
+from autolens.point.triangles.triangle_solver import TriangleSolver
 
 
 class Result(AgResultDataset):
@@ -89,7 +89,7 @@ class Result(AgResultDataset):
 
         grid = self.analysis.dataset.mask.derive_grid.all_false
 
-        solver = PointSolver(
+        solver = TriangleSolver(
             grid=grid, pixel_scale_precision=0.001, distance_to_mass_profile_centre=0.05
         )
 

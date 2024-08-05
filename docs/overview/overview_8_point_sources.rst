@@ -131,11 +131,11 @@ directly to the location (0.07", 0.07"), the centre of the `Point` object above,
 
 This is often referred to as 'solving the lens equation' in the literature.
 
-This is an iterative problem that requires us to use the `PointSolver`.
+This is an iterative problem that requires us to use the `TriangleSolver`.
 
 .. code-block:: python
 
-    solver = al.PointSolver(
+    solver = al.TriangleSolver(
         grid=grid,
         pixel_scale_precision=0.001,
         upscale_factor=2,
