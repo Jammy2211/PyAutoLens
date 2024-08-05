@@ -35,7 +35,7 @@ class FitPositionsImagePair(aa.FitDataset):
         self._noise_map = noise_map
 
         self.profile = (
-            solver.lensing_obj.extract_profile(profile_name=name)
+            solver.tracer.extract_profile(profile_name=name)
             if profile is None
             else profile
         )

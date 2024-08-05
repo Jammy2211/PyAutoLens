@@ -91,7 +91,7 @@ class Result(AgResultDataset):
 
         solver = PointSolver.for_grid(
             grid=grid,
-            lensing_obj=self.max_log_likelihood_tracer,
+            tracer=self.max_log_likelihood_tracer,
             pixel_scale_precision=0.001,
         )
 

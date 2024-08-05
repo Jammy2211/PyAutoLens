@@ -59,7 +59,7 @@ class AnalysisPointSource(af.Analysis, ABC):
         lens = instance.lens
 
         solver = PointSolver.for_grid(
-            lensing_obj=lens,
+            tracer=lens,
             grid=self.grid,
             pixel_scale_precision=self.pixel_scale_precision,
             magnification_threshold=self.magnification_threshold,

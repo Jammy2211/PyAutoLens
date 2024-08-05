@@ -3,11 +3,11 @@ import math
 from dataclasses import dataclass
 from typing import Tuple, List, Iterator, Type
 
-from autoarray import Grid2D, Grid2DIrregular
+import autoarray as aa
+
 from autoarray.structures.triangles import array
-from autoarray.structures.triangles.abstract import AbstractTriangles
-from autoarray.type import Grid2DLike
-from autogalaxy import OperateDeflections
+
+from autolens.lens.tracer import Tracer
 
 logger = logging.getLogger(__name__)
 
@@ -32,17 +32,16 @@ class Step:
     """
 
     number: int
-    initial_triangles: AbstractTriangles
-    filtered_triangles: AbstractTriangles
-    neighbourhood: AbstractTriangles
-    up_sampled: AbstractTriangles
+    initial_triangles: aa.AbstractTriangles
+    filtered_triangles: aa.AbstractTriangles
+    neighbourhood: aa.AbstractTriangles
+    up_sampled: aa.AbstractTriangles
 
 
 class PointSolver:
     # noinspection PyPep8Naming
     def __init__(
         self,
-        lensing_obj: OperateDeflections,
         scale: float,
         y_min: float,
         y_max: float,
@@ -50,7 +49,7 @@ class PointSolver:
         x_max: float,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
-        ArrayTriangles: Type[AbstractTriangles] = array.ArrayTriangles,
+        ArrayTriangles: Type[aa.AbstractTriangles] = array.ArrayTriangles,
     ):
         """
         Determine the image plane coordinates that are traced to be a source plane coordinate.
@@ -61,14 +60,11 @@ class PointSolver:
 
         Parameters
         ----------
-        lensing_obj
-            A tracer describing the lensing system.
         pixel_scale_precision
             The target pixel scale of the image grid.
         ArrayTriangles
             The class to use for the triangles.
         """
-        self.lensing_obj = lensing_obj
         self.scale = scale
         self.y_min = y_min
         self.y_max = y_max
@@ -82,11 +78,10 @@ class PointSolver:
     @classmethod
     def for_grid(
         cls,
-        lensing_obj: OperateDeflections,
-        grid: Grid2D,
+        grid: aa.Grid2D,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
-        ArrayTriangles: Type[AbstractTriangles] = array.ArrayTriangles,
+        ArrayTriangles: Type[aa.AbstractTriangles] = array.ArrayTriangles,
     ):
         scale = grid.pixel_scale
 
@@ -99,7 +94,6 @@ class PointSolver:
         x_max = x.max()
 
         return cls(
-            lensing_obj=lensing_obj,
             scale=scale,
             y_min=y_min,
             y_max=y_max,
@@ -117,7 +111,7 @@ class PointSolver:
         """
         return math.ceil(math.log2(self.scale / self.pixel_scale_precision))
 
-    def _source_plane_grid(self, grid: Grid2DLike) -> Grid2DLike:
+    def _source_plane_grid(self, tracer: Tracer, grid: aa.type.Grid2DLike) -> aa.type.Grid2DLike:
         """
         Calculate the source plane grid from the image plane grid.
 
@@ -130,13 +124,13 @@ class PointSolver:
         -------
         The source plane grid computed by applying the deflections to the image plane grid.
         """
-        deflections = self.lensing_obj.deflections_yx_2d_from(grid=grid)
+        deflections = tracer.deflections_yx_2d_from(grid=grid)
         # noinspection PyTypeChecker
         return grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
 
     def solve(
-        self, source_plane_coordinate: Tuple[float, float]
-    ) -> Grid2DIrregular:
+        self, tracer: Tracer, source_plane_coordinate: Tuple[float, float]
+    ) -> aa.Grid2DIrregular:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
 
@@ -161,11 +155,11 @@ class PointSolver:
                 "The target pixel scale is too large to subdivide the triangles."
             )
 
-        steps = list(self.steps(source_plane_coordinate=source_plane_coordinate))
+        steps = list(self.steps(tracer=tracer,source_plane_coordinate=source_plane_coordinate))
         final_step = steps[-1]
         kept_triangles = final_step.filtered_triangles
 
-        filtered_means = self._filter_low_magnification(points=kept_triangles.means)
+        filtered_means = self._filter_low_magnification(tracer=tracer, points=kept_triangles.means)
 
         difference = len(kept_triangles.means) - len(filtered_means)
         if difference > 0:
@@ -177,10 +171,10 @@ class PointSolver:
                 f"Filtered {difference} multiple-images with magnification below threshold."
             )
 
-        return Grid2DIrregular(values=filtered_means)
+        return aa.Grid2DIrregular(values=filtered_means)
 
     def _filter_low_magnification(
-        self, points: List[Tuple[float, float]]
+        self, tracer: Tracer, points: List[Tuple[float, float]]
     ) -> List[Tuple[float, float]]:
         """
         Filter the points to keep only those with an absolute magnification above the threshold.
@@ -198,8 +192,8 @@ class PointSolver:
             point
             for point, magnification in zip(
                 points,
-                self.lensing_obj.magnification_2d_via_hessian_from(
-                    grid=Grid2DIrregular(points),
+                tracer.magnification_2d_via_hessian_from(
+                    grid=aa.Grid2DIrregular(points),
                     buffer=self.scale,
                 ),
             )
@@ -208,8 +202,9 @@ class PointSolver:
 
     def _filter_triangles(
         self,
-        triangles: AbstractTriangles,
+        tracer: Tracer,
         source_plane_coordinate: Tuple[float, float],
+        triangles: aa.AbstractTriangles,
     ):
         """
         Filter the triangles to keep only those that contain the source plane coordinate.
@@ -226,7 +221,8 @@ class PointSolver:
         The triangles that contain the source plane coordinate.
         """
         source_plane_grid = self._source_plane_grid(
-            grid=Grid2DIrregular(triangles.vertices)
+            tracer=tracer,
+            grid=aa.Grid2DIrregular(triangles.vertices)
         )
         source_triangles = triangles.with_vertices(source_plane_grid.array)
         indexes = source_triangles.containing_indices(point=source_plane_coordinate)
@@ -234,6 +230,7 @@ class PointSolver:
 
     def steps(
         self,
+        tracer: Tracer,
         source_plane_coordinate: Tuple[float, float],
     ) -> Iterator[Step]:
         """
@@ -258,8 +255,9 @@ class PointSolver:
 
         for number in range(self.n_steps):
             kept_triangles = self._filter_triangles(
-                initial_triangles,
-                source_plane_coordinate,
+                tracer=tracer,
+                source_plane_coordinate=source_plane_coordinate,
+                triangles=initial_triangles,
             )
             neighbourhood = kept_triangles.neighborhood()
             up_sampled = neighbourhood.up_sample()

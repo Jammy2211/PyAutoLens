@@ -68,7 +68,7 @@ def test_missing_multiple_image(grid):
 
     solver = PointSolver.for_grid(
         grid=grid,
-        lensing_obj=tracer,
+        tracer=tracer,
         pixel_scale_precision=0.001,
     )
 
