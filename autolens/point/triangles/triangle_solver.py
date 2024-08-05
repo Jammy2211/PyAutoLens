@@ -1,15 +1,40 @@
 import logging
 import math
-from typing import Tuple, List
+from dataclasses import dataclass
+from typing import Tuple, List, Iterator
 
 from autoarray import Grid2D, Grid2DIrregular
-from autoarray.structures.triangles.subsample_triangles import SubsampleTriangles
-from autoarray.structures.triangles.triangles import Triangles
+from autoarray.structures.triangles.array import ArrayTriangles
 from autoarray.type import Grid2DLike
 from autogalaxy import OperateDeflections
 
-
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class Step:
+    """
+    A step in the triangle solver algorithm.
+
+    Attributes
+    ----------
+    number
+        The number of the step.
+    initial_triangles
+        The triangles at the start of the step.
+    filtered_triangles
+        The triangles trace to triangles that contain the source plane coordinate.
+    neighbourhood
+        The neighbourhood of the filtered triangles.
+    up_sampled
+        The neighbourhood up-sampled to increase the resolution.
+    """
+
+    number: int
+    initial_triangles: ArrayTriangles
+    filtered_triangles: ArrayTriangles
+    neighbourhood: ArrayTriangles
+    up_sampled: ArrayTriangles
 
 
 class TriangleSolver:
@@ -87,31 +112,18 @@ class TriangleSolver:
         -------
         A list of image plane coordinates that are traced to the source plane coordinate.
         """
-        triangles = Triangles.for_grid(grid=self.grid)
-
         if self.n_steps == 0:
             raise ValueError(
                 "The target pixel scale is too large to subdivide the triangles."
             )
 
-        kept_triangles = []
+        steps = list(self.steps(source_plane_coordinate=source_plane_coordinate))
+        final_step = steps[-1]
+        kept_triangles = final_step.filtered_triangles
 
-        for _ in range(self.n_steps):
-            kept_triangles = self._filter_triangles(
-                triangles=triangles,
-                source_plane_coordinate=source_plane_coordinate,
-            )
-            with_neighbourhood = {
-                triangle
-                for kept_triangle in kept_triangles
-                for triangle in kept_triangle.neighbourhood
-            }
-            triangles = SubsampleTriangles(parent_triangles=list(with_neighbourhood))
+        filtered_means = self._filter_low_magnification(points=kept_triangles.means)
 
-        means = [triangle.mean for triangle in kept_triangles]
-        filtered_means = self._filter_low_magnification(points=means)
-
-        difference = len(means) - len(filtered_means)
+        difference = len(kept_triangles.means) - len(filtered_means)
         if difference > 0:
             logger.debug(
                 f"Filtered one multiple-image with magnification below threshold."
@@ -152,7 +164,7 @@ class TriangleSolver:
 
     def _filter_triangles(
         self,
-        triangles: Triangles,
+        triangles: ArrayTriangles,
         source_plane_coordinate: Tuple[float, float],
     ):
         """
@@ -169,16 +181,45 @@ class TriangleSolver:
         -------
         The triangles that contain the source plane coordinate.
         """
-        source_plane_grid = self._source_plane_grid(grid=triangles.grid_2d)
+        source_plane_grid = self._source_plane_grid(
+            grid=Grid2DIrregular(triangles.vertices)
+        )
+        source_triangles = triangles.with_vertices(source_plane_grid)
+        indexes = source_triangles.containing_indices(point=source_plane_coordinate)
+        return triangles.for_indexes(indexes=indexes)
 
-        kept_triangles = []
-        for image_triangle, source_triangle in zip(
-            triangles.triangles,
-            triangles.with_updated_grid(source_plane_grid),
-        ):
-            if source_triangle.contains(
-                point=source_plane_coordinate,
-            ):
-                kept_triangles.append(image_triangle)
+    def steps(
+        self,
+        source_plane_coordinate: Tuple[float, float],
+    ) -> Iterator[Step]:
+        """
+        Iterate over the steps of the triangle solver algorithm.
 
-        return kept_triangles
+        Parameters
+        ----------
+        source_plane_coordinate
+            The source plane coordinate to trace to the image plane.
+
+        Returns
+        -------
+        An iterator over the steps of the triangle solver algorithm.
+        """
+        initial_triangles = ArrayTriangles.for_grid(grid=self.grid)
+
+        for number in range(self.n_steps):
+            kept_triangles = self._filter_triangles(
+                initial_triangles,
+                source_plane_coordinate,
+            )
+            neighbourhood = kept_triangles.neighborhood()
+            up_sampled = neighbourhood.up_sample()
+
+            yield Step(
+                number=number,
+                initial_triangles=initial_triangles,
+                filtered_triangles=kept_triangles,
+                neighbourhood=neighbourhood,
+                up_sampled=up_sampled,
+            )
+
+            initial_triangles = up_sampled
