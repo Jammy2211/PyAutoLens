@@ -2,12 +2,15 @@ import logging
 import math
 from dataclasses import dataclass
 from typing import Tuple, List, Iterator, Type
-from collections import Counter
 
 import numpy as np
 
 from autoarray import Grid2D, Grid2DIrregular
-from autoarray.structures.triangles import array
+
+try:
+    from autoarray.structures.triangles.jax_array import ArrayTriangles
+except ImportError:
+    from autoarray.structures.triangles.array import ArrayTriangles
 from autoarray.structures.triangles.abstract import AbstractTriangles
 from autoarray.type import Grid2DLike
 from autogalaxy import OperateDeflections
@@ -53,7 +56,7 @@ class TriangleSolver:
         x_max: float,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
-        ArrayTriangles: Type[AbstractTriangles] = array.ArrayTriangles,
+        array_triangles_cls: Type[AbstractTriangles] = ArrayTriangles,
     ):
         """
         Determine the image plane coordinates that are traced to be a source plane coordinate.
@@ -68,7 +71,7 @@ class TriangleSolver:
             A tracer describing the lensing system.
         pixel_scale_precision
             The target pixel scale of the image grid.
-        ArrayTriangles
+        array_triangles_cls
             The class to use for the triangles.
         """
         self.lensing_obj = lensing_obj
@@ -79,7 +82,7 @@ class TriangleSolver:
         self.x_max = x_max
         self.pixel_scale_precision = pixel_scale_precision
         self.magnification_threshold = magnification_threshold
-        self.ArrayTriangles = ArrayTriangles
+        self.array_triangles_cls = array_triangles_cls
 
     # noinspection PyPep8Naming
     @classmethod
@@ -89,7 +92,7 @@ class TriangleSolver:
         grid: Grid2D,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
-        ArrayTriangles: Type[AbstractTriangles] = array.ArrayTriangles,
+        array_triangles_cls: Type[AbstractTriangles] = ArrayTriangles,
     ):
         scale = grid.pixel_scale
 
@@ -110,7 +113,7 @@ class TriangleSolver:
             x_max=x_max,
             pixel_scale_precision=pixel_scale_precision,
             magnification_threshold=magnification_threshold,
-            ArrayTriangles=ArrayTriangles,
+            array_triangles_cls=array_triangles_cls,
         )
 
     @property
@@ -191,7 +194,7 @@ class TriangleSolver:
                 continue
             filtered_close.append(mean)
 
-        return filtered_close
+        return [pair for pair in filtered_close if not np.isnan(pair).all()]
 
     def _filter_low_magnification(
         self, points: List[Tuple[float, float]]
@@ -262,7 +265,7 @@ class TriangleSolver:
         -------
         An iterator over the steps of the triangle solver algorithm.
         """
-        initial_triangles = self.ArrayTriangles.for_limits_and_scale(
+        initial_triangles = self.array_triangles_cls.for_limits_and_scale(
             y_min=self.y_min,
             y_max=self.y_max,
             x_min=self.x_min,

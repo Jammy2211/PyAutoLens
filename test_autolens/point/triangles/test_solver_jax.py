@@ -36,7 +36,7 @@ def solver(grid):
         lensing_obj=tracer,
         grid=grid,
         pixel_scale_precision=0.01,
-        ArrayTriangles=ArrayTriangles,
+        array_triangles_cls=ArrayTriangles,
     )
 
 
@@ -66,7 +66,7 @@ def test_trivial(
         lensing_obj=NullTracer(),
         grid=grid,
         pixel_scale_precision=0.01,
-        ArrayTriangles=ArrayTriangles,
+        array_triangles_cls=ArrayTriangles,
     )
     coordinates = solver.solve(
         source_plane_coordinate=source_plane_coordinate,
@@ -79,7 +79,7 @@ def test_real_example(grid, tracer):
         grid=grid,
         lensing_obj=tracer,
         pixel_scale_precision=0.001,
-        ArrayTriangles=ArrayTriangles,
+        array_triangles_cls=ArrayTriangles,
     )
 
     for step in solver.steps((0.07, 0.07)):

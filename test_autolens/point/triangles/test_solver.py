@@ -4,6 +4,7 @@ import pytest
 
 import autolens as al
 import autogalaxy as ag
+from autoarray.structures.triangles.array import ArrayTriangles
 from autolens.mock import NullTracer
 from autolens.point.triangles.triangle_solver import TriangleSolver
 from autolens.point.triangles.visualise import visualise
@@ -60,6 +61,7 @@ def test_trivial(
         lensing_obj=NullTracer(),
         grid=grid,
         pixel_scale_precision=0.01,
+        array_triangles_cls=ArrayTriangles,
     )
     (coordinates,) = solver.solve(
         source_plane_coordinate=source_plane_coordinate,
@@ -72,6 +74,7 @@ def test_real_example(grid, tracer):
         grid=grid,
         lensing_obj=tracer,
         pixel_scale_precision=0.001,
+        array_triangles_cls=ArrayTriangles,
     )
 
     for step in solver.steps((0.07, 0.07)):
