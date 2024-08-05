@@ -66,12 +66,13 @@ def test_missing_multiple_image(grid):
 
     tracer = al.Tracer(galaxies=[instance.lens_galaxy, instance.source_galaxy])
 
-    solver = PointSolver(
+    solver = PointSolver.for_grid(
+        grid=grid,
+        lensing_obj=tracer,
         pixel_scale_precision=0.001,
     )
 
     triangle_positions = solver.solve(
-        lensing_obj=tracer,
-        grid=grid,
         source_plane_coordinate=instance.source_galaxy.point_0.centre
     )
+

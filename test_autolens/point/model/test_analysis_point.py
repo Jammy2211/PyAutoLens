@@ -53,7 +53,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         positions=positions_x2,
         noise_map=positions_x2_noise_map,
         tracer=tracer,
-        point_solver=solver,
+        solver=solver,
     )
 
     assert fit_positions.chi_squared == 0.0
@@ -71,7 +71,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
         positions=positions_x2,
         noise_map=positions_x2_noise_map,
         tracer=tracer,
-        point_solver=solver,
+        solver=solver,
     )
 
     assert fit_positions.residual_map.in_list == [1.0, 1.0]
@@ -114,7 +114,7 @@ def test__figure_of_merit__includes_fit_fluxes(
         positions=positions_x2,
         noise_map=positions_x2_noise_map,
         tracer=tracer,
-        point_solver=solver,
+        solver=solver,
     )
 
     fit_fluxes = al.FitFluxes(
@@ -143,7 +143,7 @@ def test__figure_of_merit__includes_fit_fluxes(
         positions=positions_x2,
         noise_map=positions_x2_noise_map,
         tracer=tracer,
-        point_solver=solver,
+        solver=solver,
     )
 
     fit_fluxes = al.FitFluxes(

@@ -48,7 +48,7 @@ class FitPointDataset:
                     name=point_dataset.name,
                     positions=point_dataset.positions,
                     noise_map=point_dataset.positions_noise_map,
-                    point_solver=point_solver,
+                    solver=point_solver,
                     tracer=tracer,
                     point_profile=point_profile,
                 )

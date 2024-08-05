@@ -4,7 +4,6 @@ import autoarray as aa
 import autogalaxy as ag
 
 from autolens.point.solver import PointSolver
-from autolens.lens.tracer import Tracer
 
 from autolens import exc
 
@@ -15,9 +14,8 @@ class FitPositionsImagePair(aa.FitDataset):
         name: str,
         positions: aa.Grid2DIrregular,
         noise_map: aa.ArrayIrregular,
-        tracer: Tracer,
-        point_solver: PointSolver,
-        point_profile: Optional[ag.ps.Point] = None,
+        solver: PointSolver,
+        profile: Optional[ag.ps.Point] = None,
     ):
         """
         A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
@@ -35,23 +33,22 @@ class FitPositionsImagePair(aa.FitDataset):
 
         self.name = name
         self._noise_map = noise_map
-        self.tracer = tracer
 
-        self.point_profile = (
-            tracer.extract_profile(profile_name=name)
-            if point_profile is None
-            else point_profile
+        self.profile = (
+            solver.lensing_obj.extract_profile(profile_name=name)
+            if profile is None
+            else profile
         )
 
-        self.point_solver = point_solver
+        self.solver = solver
 
-        if self.point_profile is None:
+        if self.profile is None:
             raise exc.PointExtractionException(
                 f"For the point-source named {name} there was no matching point source profile "
                 f"in the tracer (make sure your tracer's point source name is the same the dataset name."
             )
 
-        self.source_plane_coordinate = self.point_profile.centre
+        self.source_plane_coordinate = self.profile.centre
 
     @property
     def mask(self):
@@ -73,17 +70,9 @@ class FitPositionsImagePair(aa.FitDataset):
         It if common for many more image-plane positions to be computed than actual positions in the dataset. In this
         case, each data point is paired with its closest model position.
         """
-        if len(self.tracer.planes) > 2:
-            upper_plane_index = self.tracer.extract_plane_index_of_profile(
-                profile_name=self.name
-            )
-        else:
-            upper_plane_index = None
 
-        model_positions = self.point_solver.solve(
-            lensing_obj=self.tracer,
+        model_positions = self.solver.solve(
             source_plane_coordinate=self.source_plane_coordinate,
-            upper_plane_index=upper_plane_index,
         )
 
         return model_positions.grid_of_closest_from(grid_pair=self.positions)

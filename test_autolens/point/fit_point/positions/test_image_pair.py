@@ -13,14 +13,16 @@ def test__two_sets_of_positions__residuals_likelihood_correct():
     noise_map = al.ArrayIrregular([0.5, 1.0])
     model_positions = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
 
-    point_solver = al.m.MockPointSolver(model_positions=model_positions)
+    point_solver = al.m.MockPointSolver(
+        tracer=tracer,
+        model_positions=model_positions
+    )
 
     fit = al.FitPositionsImagePair(
         name="point_0",
         positions=positions,
         noise_map=noise_map,
-        tracer=tracer,
-        point_solver=point_solver,
+        solver=point_solver,
     )
 
     assert fit.model_positions.in_list == [(3.0, 1.0), (2.0, 3.0)]
@@ -53,14 +55,16 @@ def test__more_model_positions_than_data_positions__pairs_closest_positions():
         [(3.0, 1.0), (2.0, 3.0), (1.0, 0.0), (0.0, 1.0)]
     )
 
-    point_solver = al.m.MockPointSolver(model_positions=model_positions)
+    point_solver = al.m.MockPointSolver(
+        tracer=tracer,
+        model_positions=model_positions
+    )
 
     fit = al.FitPositionsImagePair(
         name="point_0",
         positions=positions,
         noise_map=noise_map,
-        tracer=tracer,
-        point_solver=point_solver,
+        solver=point_solver,
     )
 
     assert fit.model_positions.in_list == [(1.0, 0.0), (2.0, 3.0)]
@@ -85,7 +89,7 @@ def test__multi_plane_position_solving():
     positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
     noise_map = al.ArrayIrregular([0.5, 1.0])
 
-    point_solver = al.PointSolver(
+    point_solver = al.PointSolver.for_grid(
         lensing_obj=tracer,
         grid=grid,
         pixel_scale_precision=0.01
@@ -95,16 +99,14 @@ def test__multi_plane_position_solving():
         name="point_0",
         positions=positions,
         noise_map=noise_map,
-        tracer=tracer,
-        point_solver=point_solver,
+        solver=point_solver,
     )
 
     fit_1 = al.FitPositionsImagePair(
         name="point_1",
         positions=positions,
         noise_map=noise_map,
-        tracer=tracer,
-        point_solver=point_solver,
+        solver=point_solver,
     )
 
     scaling_factor = tracer.cosmology.scaling_factor_between_redshifts_from(
