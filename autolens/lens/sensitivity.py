@@ -33,7 +33,7 @@ class SubhaloSensitivityResult(SensitivityResult):
         super().__init__(
             samples=result.samples,
             perturb_samples=result.perturb_samples,
-            physical_values=result.physical_values,
+       #     physical_values=result.physical_values,
             shape=result.shape,
         )
 
@@ -44,8 +44,9 @@ class SubhaloSensitivityResult(SensitivityResult):
 
         These are the `centre` coordinates of the dark matter subhalos that are included in the simulated datasets.
         """
-        return [centre[0] for centre in self.physical_values]
-
+        return self.physical_centres_lists_from(
+            path="perturbation.mass.centre.centre_0"
+        )
     @property
     def x(self) -> List[float]:
         """
@@ -53,7 +54,9 @@ class SubhaloSensitivityResult(SensitivityResult):
 
         These are the `centre` coordinates of the dark matter subhalos that are included in the simulated datasets.
         """
-        return [centre[1] for centre in self.physical_values]
+        return self.physical_centres_lists_from(
+            path="perturbation.mass.centre.centre_1"
+        )
 
     @property
     def extent(self) -> Tuple[float, float, float, float]:
@@ -86,6 +89,10 @@ class SubhaloSensitivityResult(SensitivityResult):
         values_reshaped = [value for values in values.native for value in values]
 
         pixel_scales = abs(self.x[0] - self.x[1])
+
+        print(self.x)
+        print(self.physical_centres_lists_from(path="perturbation.mass.mass_at_200"))
+        esdffdsfds
 
         return aa.Array2D.from_yx_and_values(
             y=self.y,

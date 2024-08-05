@@ -108,7 +108,7 @@ from .point.fit_point.max_separation import FitPositionsSourceMaxSeparation
 from .point.model.analysis import AnalysisPoint
 from .point.point_solver import PointSolver
 
-# from .point.triangles.triangle_solver import TriangleSolver as MultipleImageSolver
+from .point.triangles.triangle_solver import TriangleSolver as MultipleImageSolver
 from .quantity.fit_quantity import FitQuantity
 from .quantity.model.analysis import AnalysisQuantity
 from . import exc
