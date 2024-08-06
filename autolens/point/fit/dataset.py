@@ -2,13 +2,13 @@ from typing import Dict, Optional
 
 import autogalaxy as ag
 
-from autolens.point.point_dataset import PointDataset
+from autolens.point.dataset import PointDataset
 from autolens.point.solver import PointSolver
-from autolens.point.fit_point.fluxes import FitFluxes
-from autolens.point.fit_point.positions.image.pair_repeat import (
+from autolens.point.fit.fluxes import FitFluxes
+from autolens.point.fit.positions.image.pair_repeat import (
     FitPositionsImagePairRepeat,
 )
-from autolens.point.fit_point.positions.source.separations import FitPositionsSource
+from autolens.point.fit.positions.source.separations import FitPositionsSource
 from autolens.lens.tracer import Tracer
 
 from autolens import exc
@@ -64,7 +64,7 @@ class FitPointDataset:
         try:
             self.flux = FitFluxes(
                 name=dataset.name,
-                dataset=dataset.fluxes,
+                data=dataset.fluxes,
                 noise_map=dataset.fluxes_noise_map,
                 positions=dataset.positions,
                 tracer=tracer,

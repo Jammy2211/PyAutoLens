@@ -1,6 +1,6 @@
 import autogalaxy.plot as aplt
 
-from autolens.point.point_dataset import PointDataset
+from autolens.point.dataset import PointDataset
 from autolens.plot.abstract_plotters import Plotter
 
 

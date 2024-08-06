@@ -4,7 +4,7 @@ import autoarray as aa
 import autogalaxy as ag
 
 from autolens.lens.tracer import Tracer
-from autolens.point.fit_point.positions.abstract import AbstractFitPositions
+from autolens.point.fit.positions.abstract import AbstractFitPositions
 
 
 class FitPositionsSource(AbstractFitPositions):

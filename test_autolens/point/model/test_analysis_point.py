@@ -122,7 +122,7 @@ def test__figure_of_merit__includes_fit_fluxes(
 
     fit_fluxes = al.FitFluxes(
         name="point_0",
-        dataset=fluxes_x2,
+        data=fluxes_x2,
         noise_map=fluxes_x2_noise_map,
         positions=positions_x2,
         tracer=tracer,
@@ -151,7 +151,7 @@ def test__figure_of_merit__includes_fit_fluxes(
 
     fit_fluxes = al.FitFluxes(
         name="point_0",
-        dataset=fluxes_x2,
+        data=fluxes_x2,
         noise_map=fluxes_x2_noise_map,
         positions=positions_x2,
         tracer=tracer,

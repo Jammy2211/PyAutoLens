@@ -9,55 +9,47 @@ from autolens.lens.tracer import Tracer
 from autolens import exc
 
 
-class FitFluxes(aa.FitDataset):
+class FitFluxes(aa.AbstractFit):
     def __init__(
         self,
         name: str,
-        dataset: aa.ArrayIrregular,
+        data: aa.ArrayIrregular,
         noise_map: aa.ArrayIrregular,
-        positions: aa.Grid2DIrregular,
+        positions : aa.Grid2DIrregular,
         tracer: Tracer,
-        point_profile: Optional[ag.ps.Point] = None,
+        profile: Optional[ag.ps.PointSourceChi] = None,
     ):
-        super().__init__(dataset=dataset)
-
-        self.tracer = tracer
-
-        self._noise_map = noise_map
 
         self.name = name
+        self._data = data
+        self._noise_map = noise_map
         self.positions = positions
+        self.tracer = tracer
 
-        self.point_profile = (
-            tracer.extract_profile(profile_name=name)
-            if point_profile is None
-            else point_profile
+        self.profile = (
+            tracer.extract_profile(profile_name=name) if profile is None else profile
         )
 
-        if self.point_profile is None:
+        if self.profile is None:
             raise exc.PointExtractionException(
                 f"For the point-source named {name} there was no matching point source profile "
                 f"in the tracer (make sure your tracer's point source name is the same the dataset name."
             )
 
-        elif not hasattr(self.point_profile, "flux"):
+        elif not hasattr(self.profile, "flux"):
             raise exc.PointExtractionException(
                 f"For the point-source named {name} the extracted point source was the "
-                f"class {self.point_profile.__class__.__name__} and therefore does "
+                f"class {self.profile.__class__.__name__} and therefore does "
                 f"not contain a flux component."
             )
 
     @property
-    def mask(self):
-        return None
+    def data(self):
+        return self._data
 
     @property
     def noise_map(self):
         return self._noise_map
-
-    @property
-    def fluxes(self) -> aa.ArrayIrregular:
-        return self.dataset
 
     @property
     def deflections_func(self):
@@ -90,7 +82,8 @@ class FitFluxes(aa.FitDataset):
         """
         return abs(
             self.tracer.magnification_2d_via_hessian_from(
-                grid=self.positions, deflections_func=self.deflections_func
+                grid=self.positions,
+                deflections_func=self.deflections_func
             )
         )
 
@@ -104,7 +97,7 @@ class FitFluxes(aa.FitDataset):
         """
         return aa.ArrayIrregular(
             values=[
-                magnification * self.point_profile.flux
+                magnification * self.profile.flux
                 for magnification in self.magnifications
             ]
         )

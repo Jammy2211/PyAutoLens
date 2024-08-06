@@ -9,19 +9,19 @@ def test__one_set_of_fluxes__residuals_likelihood_correct():
         profile=al.ps.PointFlux(flux=2.0), magnification=al.ArrayIrregular([2.0, 2.0])
     )
 
-    dataset = al.ArrayIrregular([1.0, 2.0])
+    data = al.ArrayIrregular([1.0, 2.0])
     noise_map = al.ArrayIrregular([3.0, 1.0])
     positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
 
     fit = al.FitFluxes(
         name="point_0",
-        dataset=dataset,
+        data=data,
         noise_map=noise_map,
         positions=positions,
         tracer=tracer,
     )
 
-    assert fit.dataset.in_list == [1.0, 2.0]
+    assert fit.data.in_list == [1.0, 2.0]
     assert fit.noise_map.in_list == [3.0, 1.0]
     assert fit.model_fluxes.in_list == [4.0, 4.0]
     assert fit.residual_map.in_list == [-3.0, -2.0]
@@ -37,13 +37,13 @@ def test__use_real_tracer(gal_x1_mp):
     galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
     tracer = al.Tracer(galaxies=[gal_x1_mp, galaxy_point_source])
 
-    dataset = al.ArrayIrregular([1.0, 2.0])
+    data = al.ArrayIrregular([1.0, 2.0])
     noise_map = al.ArrayIrregular([3.0, 1.0])
     positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
 
     fit = al.FitFluxes(
         name="point_0",
-        dataset=dataset,
+        data=data,
         noise_map=noise_map,
         positions=positions,
         tracer=tracer,
@@ -60,13 +60,13 @@ def test__multi_plane_calculation(gal_x1_mp):
 
     tracer = al.Tracer(galaxies=[g0, g1, g2])
 
-    dataset = al.ArrayIrregular([1.0])
+    data = al.ArrayIrregular([1.0])
     noise_map = al.ArrayIrregular([3.0])
     positions = al.Grid2DIrregular([(2.0, 0.0)])
 
     fit_0 = al.FitFluxes(
         name="point_0",
-        dataset=dataset,
+        data=data,
         noise_map=noise_map,
         positions=positions,
         tracer=tracer,
@@ -84,7 +84,7 @@ def test__multi_plane_calculation(gal_x1_mp):
 
     fit_1 = al.FitFluxes(
         name="point_1",
-        dataset=dataset,
+        data=data,
         noise_map=noise_map,
         positions=positions,
         tracer=tracer,

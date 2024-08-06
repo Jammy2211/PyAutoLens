@@ -7,8 +7,8 @@ from autogalaxy.analysis.analysis.analysis import Analysis as AgAnalysis
 
 from autolens.analysis.analysis.lens import AnalysisLens
 from autolens.analysis.plotter_interface import PlotterInterface
-from autolens.point.fit_point.point_dataset import FitPointDataset
-from autolens.point.point_dataset import PointDataset
+from autolens.point.fit.dataset import FitPointDataset
+from autolens.point.dataset import PointDataset
 from autolens.point.model.result import ResultPoint
 from autolens.point.solver import PointSolver
 

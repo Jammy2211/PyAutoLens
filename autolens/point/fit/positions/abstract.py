@@ -3,7 +3,6 @@ from typing import Optional, Tuple
 import autoarray as aa
 import autogalaxy as ag
 
-from autolens.point.solver import PointSolver
 from autolens.lens.tracer import Tracer
 
 from autolens import exc
