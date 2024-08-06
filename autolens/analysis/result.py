@@ -91,12 +91,11 @@ class Result(AgResultDataset):
 
         solver = PointSolver.for_grid(
             grid=grid,
-            tracer=self.max_log_likelihood_tracer,
             pixel_scale_precision=0.001,
         )
 
         multiple_images = solver.solve(
-            lensing_obj=self.max_log_likelihood_tracer,
+            tracer=self.max_log_likelihood_tracer,
             source_plane_coordinate=self.source_plane_centre.in_list[0],
         )
 
