@@ -14,7 +14,7 @@ class AbstractFitPositionsImagePair:
     def __init__(
         self,
         name: str,
-        positions: aa.Grid2DIrregular,
+        data: aa.Grid2DIrregular,
         noise_map: aa.ArrayIrregular,
         tracer: Tracer,
         solver: PointSolver,
@@ -26,16 +26,15 @@ class AbstractFitPositionsImagePair:
 
         Parameters
         ----------
-        positions : Grid2DIrregular
+        data : Grid2DIrregular
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
         noise_value
             The noise-value assumed when computing the log likelihood.
         """
 
-        super().__init__(dataset=positions)
-
         self.name = name
-        self._noise_map = noise_map
+        self.data = data
+        self.noise_map = noise_map
         self.tracer = tracer
         self.solver = solver
 
@@ -91,3 +90,18 @@ class AbstractFitPositionsImagePair:
         The redshift of the plane containing the point-source galaxy.
         """
         return self.tracer.planes[self.source_plane_index].redshift
+
+    @staticmethod
+    def square_distance(coord1, coord2):
+        return (coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2
+
+    @property
+    def model_data(self) -> aa.Grid2DIrregular:
+        """
+        Returns the model positions, which are computed via the point solver.
+        """
+        return self.solver.solve(
+            tracer=self.tracer,
+            source_plane_coordinate=self.source_plane_coordinate,
+            source_plane_redshift=self.source_plane_redshift,
+        )

@@ -13,13 +13,13 @@ class FitFluxes(aa.FitDataset):
     def __init__(
         self,
         name: str,
-        fluxes: aa.ArrayIrregular,
+        dataset: aa.ArrayIrregular,
         noise_map: aa.ArrayIrregular,
         positions: aa.Grid2DIrregular,
         tracer: Tracer,
         point_profile: Optional[ag.ps.Point] = None,
     ):
-        super().__init__(dataset=fluxes)
+        super().__init__(dataset=dataset)
 
         self.tracer = tracer
 

@@ -52,7 +52,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
 
     fit_positions = al.FitPositionsImagePairRepeat(
         name="point_0",
-        positions=positions_x2,
+        data=positions_x2,
         noise_map=positions_x2_noise_map,
         tracer=tracer,
         solver=solver,
@@ -70,7 +70,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
 
     fit_positions = al.FitPositionsImagePairRepeat(
         name="point_0",
-        positions=positions_x2,
+        data=positions_x2,
         noise_map=positions_x2_noise_map,
         tracer=tracer,
         solver=solver,
@@ -114,7 +114,7 @@ def test__figure_of_merit__includes_fit_fluxes(
 
     fit_positions = al.FitPositionsImagePairRepeat(
         name="point_0",
-        positions=positions_x2,
+        data=positions_x2,
         noise_map=positions_x2_noise_map,
         tracer=tracer,
         solver=solver,
@@ -122,7 +122,7 @@ def test__figure_of_merit__includes_fit_fluxes(
 
     fit_fluxes = al.FitFluxes(
         name="point_0",
-        fluxes=fluxes_x2,
+        dataset=fluxes_x2,
         noise_map=fluxes_x2_noise_map,
         positions=positions_x2,
         tracer=tracer,
@@ -143,7 +143,7 @@ def test__figure_of_merit__includes_fit_fluxes(
 
     fit_positions = al.FitPositionsImagePairRepeat(
         name="point_0",
-        positions=positions_x2,
+        data=positions_x2,
         noise_map=positions_x2_noise_map,
         tracer=tracer,
         solver=solver,
@@ -151,7 +151,7 @@ def test__figure_of_merit__includes_fit_fluxes(
 
     fit_fluxes = al.FitFluxes(
         name="point_0",
-        fluxes=fluxes_x2,
+        dataset=fluxes_x2,
         noise_map=fluxes_x2_noise_map,
         positions=positions_x2,
         tracer=tracer,

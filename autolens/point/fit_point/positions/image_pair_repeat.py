@@ -14,7 +14,7 @@ class FitPositionsImagePairRepeat(AbstractFitPositionsImagePair):
     def __init__(
         self,
         name: str,
-        positions: aa.Grid2DIrregular,
+        data: aa.Grid2DIrregular,
         noise_map: aa.ArrayIrregular,
         tracer: Tracer,
         solver: PointSolver,
@@ -26,7 +26,7 @@ class FitPositionsImagePairRepeat(AbstractFitPositionsImagePair):
 
         Parameters
         ----------
-        positions : Grid2DIrregular
+        data : Grid2DIrregular
             The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
         noise_value
             The noise-value assumed when computing the log likelihood.
@@ -34,7 +34,7 @@ class FitPositionsImagePairRepeat(AbstractFitPositionsImagePair):
 
         super().__init__(
             name=name,
-            positions=positions,
+            data=data,
             noise_map=noise_map,
             tracer=tracer,
             solver=solver,
@@ -42,43 +42,19 @@ class FitPositionsImagePairRepeat(AbstractFitPositionsImagePair):
         )
 
     @property
-    def mask(self):
-        return None
-
-    @property
-    def noise_map(self):
-        return self._noise_map
-
-    @property
-    def positions(self) -> aa.Grid2DIrregular:
-        return self.dataset
-
-    @property
-    def model_data(self) -> aa.Grid2DIrregular:
-        """
-        Returns the model positions, which are computed via the point solver.
-
-        It if common for many more image-plane positions to be computed than actual positions in the dataset. In this
-        case, each data point is paired with its closest model position.
-        """
-
-        model_positions = self.solver.solve(
-            tracer=self.tracer,
-            source_plane_coordinate=self.source_plane_coordinate,
-            source_plane_redshift=self.source_plane_redshift,
-        )
-
-        return model_positions.grid_of_closest_from(grid_pair=self.positions)
-
-    @property
-    def model_positions(self) -> aa.Grid2DIrregular:
-        return self.model_data
-
-    @property
     def residual_map(self) -> aa.ArrayIrregular:
-        residual_positions = self.positions - self.model_positions
 
-        return residual_positions.distances_to_coordinate_from(coordinate=(0.0, 0.0))
+        residual_map = []
+
+        for position in self.data:
+
+            distances = [
+                self.square_distance(model_position, position)
+                for model_position in self.model_data
+            ]
+            residual_map.append(min(distances))
+
+        return aa.ArrayIrregular(values=residual_map)
 
     @property
     def chi_squared(self) -> float:
