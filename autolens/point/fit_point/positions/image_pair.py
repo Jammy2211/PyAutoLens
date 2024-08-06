@@ -3,13 +3,14 @@ from typing import Optional
 import autoarray as aa
 import autogalaxy as ag
 
+from autolens.point.fit_point.positions.abstract import AbstractFitPositionsImagePair
 from autolens.point.solver import PointSolver
 from autolens.lens.tracer import Tracer
 
 from autolens import exc
 
 
-class FitPositionsImagePair(aa.FitDataset):
+class FitPositionsImagePairRepeat(AbstractFitPositionsImagePair):
     def __init__(
         self,
         name: str,
@@ -31,30 +32,14 @@ class FitPositionsImagePair(aa.FitDataset):
             The noise-value assumed when computing the log likelihood.
         """
 
-        super().__init__(dataset=positions)
-
-        self.name = name
-        self._noise_map = noise_map
-        self.tracer = tracer
-        self.solver = solver
-
-        self.profile = (
-            tracer.extract_profile(profile_name=name) if profile is None else profile
+        super().__init__(
+            name=name,
+            positions=positions,
+            noise_map=noise_map,
+            tracer=tracer,
+            solver=solver,
+            profile=profile,
         )
-
-        if self.profile is None:
-            raise exc.PointExtractionException(
-                f"For the point-source named {name} there was no matching point source profile "
-                f"in the tracer (make sure your tracer's point source name is the same the dataset name."
-            )
-
-        self.source_plane_coordinate = self.profile.centre
-        self.source_plane_index = self.tracer.extract_plane_index_of_profile(
-            profile_name=name
-        )
-        self.source_plane_redshift = self.tracer.planes[
-            self.source_plane_index
-        ].redshift
 
     @property
     def mask(self):

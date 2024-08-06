@@ -50,7 +50,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
 
     tracer = analysis.tracer_via_instance_from(instance=instance)
 
-    fit_positions = al.FitPositionsImagePair(
+    fit_positions = al.FitPositionsImagePairRepeat(
         name="point_0",
         positions=positions_x2,
         noise_map=positions_x2_noise_map,
@@ -68,7 +68,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
 
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    fit_positions = al.FitPositionsImagePair(
+    fit_positions = al.FitPositionsImagePairRepeat(
         name="point_0",
         positions=positions_x2,
         noise_map=positions_x2_noise_map,
@@ -112,7 +112,7 @@ def test__figure_of_merit__includes_fit_fluxes(
 
     tracer = analysis.tracer_via_instance_from(instance=instance)
 
-    fit_positions = al.FitPositionsImagePair(
+    fit_positions = al.FitPositionsImagePairRepeat(
         name="point_0",
         positions=positions_x2,
         noise_map=positions_x2_noise_map,
@@ -141,7 +141,7 @@ def test__figure_of_merit__includes_fit_fluxes(
     instance = model.instance_from_unit_vector([])
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    fit_positions = al.FitPositionsImagePair(
+    fit_positions = al.FitPositionsImagePairRepeat(
         name="point_0",
         positions=positions_x2,
         noise_map=positions_x2_noise_map,

@@ -5,7 +5,7 @@ import autogalaxy as ag
 from autolens.point.point_dataset import PointDataset
 from autolens.point.solver import PointSolver
 from autolens.point.fit_point.fluxes import FitFluxes
-from autolens.point.fit_point.positions.image_pair import FitPositionsImagePair
+from autolens.point.fit_point.positions.image_pair import FitPositionsImagePairRepeat
 from autolens.point.fit_point.positions_source import FitPositionsSource
 from autolens.lens.tracer import Tracer
 
@@ -45,7 +45,7 @@ class FitPointDataset:
                 )
 
             else:
-                self.positions = FitPositionsImagePair(
+                self.positions = FitPositionsImagePairRepeat(
                     name=dataset.name,
                     positions=dataset.positions,
                     noise_map=dataset.positions_noise_map,
