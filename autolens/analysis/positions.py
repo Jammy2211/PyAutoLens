@@ -13,7 +13,7 @@ import autogalaxy as ag
 from autogalaxy.analysis.analysis.dataset import AnalysisDataset
 
 from autolens.lens.tracer import Tracer
-from autolens.point.fit_point.max_separation import FitPositionsSourceMaxSeparation
+from autolens.point.fit_point.positions.source.max_separation import FitPositionsSourceMaxSeparation
 
 from autolens import exc
 
@@ -76,10 +76,10 @@ class AbstractPositionsLH:
 
         """
         positions_fit = FitPositionsSourceMaxSeparation(
-            positions=self.positions, noise_map=None, tracer=tracer
+            data=self.positions, noise_map=None, tracer=tracer
         )
 
-        distances = positions_fit.positions.distances_to_coordinate_from(
+        distances = positions_fit.data.distances_to_coordinate_from(
             coordinate=(0.0, 0.0)
         )
 
@@ -140,7 +140,7 @@ class PositionsLHResample(AbstractPositionsLH):
             return
 
         positions_fit = FitPositionsSourceMaxSeparation(
-            positions=self.positions, noise_map=None, tracer=tracer
+            data=self.positions, noise_map=None, tracer=tracer
         )
 
         if not positions_fit.max_separation_within_threshold(self.threshold):
@@ -263,7 +263,7 @@ class PositionsLHPenalty(AbstractPositionsLH):
             return
 
         positions_fit = FitPositionsSourceMaxSeparation(
-            positions=self.positions, noise_map=None, tracer=tracer
+            data=self.positions, noise_map=None, tracer=tracer
         )
 
         if not positions_fit.max_separation_within_threshold(self.threshold):

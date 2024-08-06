@@ -5,10 +5,10 @@ import autogalaxy as ag
 from autolens.point.point_dataset import PointDataset
 from autolens.point.solver import PointSolver
 from autolens.point.fit_point.fluxes import FitFluxes
-from autolens.point.fit_point.positions.image_pair_repeat import (
+from autolens.point.fit_point.positions.image.pair_repeat import (
     FitPositionsImagePairRepeat,
 )
-from autolens.point.fit_point.positions_source import FitPositionsSource
+from autolens.point.fit_point.positions.source.separations import FitPositionsSource
 from autolens.lens.tracer import Tracer
 
 from autolens import exc
@@ -40,7 +40,7 @@ class FitPointDataset:
             if isinstance(profile, ag.ps.PointSourceChi):
                 self.positions = FitPositionsSource(
                     name=dataset.name,
-                    positions=dataset.positions,
+                    data=dataset.positions,
                     noise_map=dataset.positions_noise_map,
                     tracer=tracer,
                     profile=profile,

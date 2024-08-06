@@ -9,14 +9,13 @@ from autolens.lens.tracer import Tracer
 from autolens import exc
 
 
-class AbstractFitPositionsImagePair(aa.AbstractFit):
+class AbstractFitPositions(aa.AbstractFit):
     def __init__(
         self,
         name: str,
         data: aa.Grid2DIrregular,
         noise_map: aa.ArrayIrregular,
         tracer: Tracer,
-        solver: PointSolver,
         profile: Optional[ag.ps.Point] = None,
     ):
         """
@@ -35,7 +34,6 @@ class AbstractFitPositionsImagePair(aa.AbstractFit):
         self._data = data
         self._noise_map = noise_map
         self.tracer = tracer
-        self.solver = solver
 
         self.profile = (
             tracer.extract_profile(profile_name=name) if profile is None else profile
@@ -97,18 +95,3 @@ class AbstractFitPositionsImagePair(aa.AbstractFit):
         The redshift of the plane containing the point-source galaxy.
         """
         return self.tracer.planes[self.source_plane_index].redshift
-
-    @staticmethod
-    def square_distance(coord1, coord2):
-        return (coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2
-
-    @property
-    def model_data(self) -> aa.Grid2DIrregular:
-        """
-        Returns the model positions, which are computed via the point solver.
-        """
-        return self.solver.solve(
-            tracer=self.tracer,
-            source_plane_coordinate=self.source_plane_coordinate,
-            source_plane_redshift=self.source_plane_redshift,
-        )

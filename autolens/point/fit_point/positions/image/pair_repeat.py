@@ -2,7 +2,7 @@ import numpy as np
 
 import autoarray as aa
 
-from autolens.point.fit_point.positions.abstract import AbstractFitPositionsImagePair
+from autolens.point.fit_point.positions.image.abstract import AbstractFitPositionsImagePair
 
 
 class FitPositionsImagePairRepeat(AbstractFitPositionsImagePair):

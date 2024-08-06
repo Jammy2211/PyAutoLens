@@ -3,10 +3,10 @@ from scipy.optimize import linear_sum_assignment
 
 import autoarray as aa
 
-from autolens.point.fit_point.positions.abstract import AbstractFitPositionsImagePair
+from autolens.point.fit_point.positions.image.abstract import AbstractFitPositionsImagePair
 
 
-class FitPositionsImagePairAll(AbstractFitPositionsImagePair):
+class FitPositionsImagePair(AbstractFitPositionsImagePair):
     """
     A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
     their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
@@ -20,32 +20,28 @@ class FitPositionsImagePairAll(AbstractFitPositionsImagePair):
     """
 
     @property
-    def noise_map(self):
-
-        noise_map = []
-
-        for i in range(len(self.data)):
-            for j in range(len(self.model_data)):
-                noise_map.append(self._noise_map[i])
-
-        return aa.ArrayIrregular(values=noise_map)
-
-    @property
     def residual_map(self) -> aa.ArrayIrregular:
-
-        combinations = len(self.model_data) ** len(self.data)
-
         residual_map = []
 
-        for model_data in self.model_data:
-            for data in self.data:
+        cost_matrix = np.linalg.norm(
+            np.array(
+                self.data,
+            )[:, np.newaxis]
+            - np.array(
+                self.model_data,
+            ),
+            axis=2,
+        )
 
-                distance = np.sqrt(
-                    self.square_distance(
-                        data, model_data
-                    )
+        data_indexes, model_indexes = linear_sum_assignment(cost_matrix)
+
+        for data_index, model_index in zip(data_indexes, model_indexes):
+            distance = np.sqrt(
+                self.square_distance(
+                    self.data[data_index], self.model_data[model_index]
                 )
+            )
 
-                residual_map.append(distance)
+            residual_map.append(distance)
 
         return aa.ArrayIrregular(values=residual_map)

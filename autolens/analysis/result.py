@@ -9,7 +9,7 @@ from autogalaxy.analysis.result import ResultDataset as AgResultDataset
 
 from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
-from autolens.point.fit_point.max_separation import FitPositionsSourceMaxSeparation
+from autolens.point.fit_point.positions.source.max_separation import FitPositionsSourceMaxSeparation
 from autolens.lens.tracer import Tracer
 from autolens.point.solver import PointSolver
 
@@ -43,7 +43,7 @@ class Result(AgResultDataset):
 
         """
         positions_fits = FitPositionsSourceMaxSeparation(
-            positions=self.analysis.positions_likelihood.positions,
+            data=self.analysis.positions_likelihood.positions,
             noise_map=None,
             tracer=self.max_log_likelihood_tracer,
         )
@@ -147,7 +147,7 @@ class Result(AgResultDataset):
         tracer = Tracer(galaxies=self.max_log_likelihood_galaxies)
 
         positions_fits = FitPositionsSourceMaxSeparation(
-            positions=positions, noise_map=None, tracer=tracer
+            data=positions, noise_map=None, tracer=tracer
         )
 
         threshold = factor * np.max(
