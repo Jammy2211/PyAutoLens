@@ -40,7 +40,7 @@ class AnalysisPointSource(af.Analysis, ABC):
         self.pixel_scale_precision = pixel_scale_precision
         self.magnification_threshold = magnification_threshold
 
-    def log_likelihood_function(self, instance):
+    def log_likelihood_function(self, tracer, source_plane_coordinate):
         """
         Compute the log likelihood of the model instance.
 
@@ -56,17 +56,14 @@ class AnalysisPointSource(af.Analysis, ABC):
         -------
         The log likelihood of the model instance.
         """
-        lens = instance.lens
-
         solver = PointSolver.for_grid(
-            tracer=lens,
             grid=self.grid,
             pixel_scale_precision=self.pixel_scale_precision,
             magnification_threshold=self.magnification_threshold,
         )
-        source_plane_coordinates = instance.source.centre
         predicted_coordinates = solver.solve(
-            source_plane_coordinate=source_plane_coordinates
+            source_plane_coordinate=source_plane_coordinate,
+            tracer=tracer,
         )
         return self._log_likelihood_for_coordinates(predicted_coordinates)
 
