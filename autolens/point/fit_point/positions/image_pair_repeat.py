@@ -8,8 +8,6 @@ from autolens.point.fit_point.positions.abstract import AbstractFitPositionsImag
 from autolens.point.solver import PointSolver
 from autolens.lens.tracer import Tracer
 
-from autolens import exc
-
 
 class FitPositionsImagePairRepeat(AbstractFitPositionsImagePair):
     def __init__(
