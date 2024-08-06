@@ -20,14 +20,25 @@ class FitPositionsImagePairAll(AbstractFitPositionsImagePair):
     """
 
     @property
+    def noise_map(self):
+
+        noise_map = []
+
+        for i in range(len(self.data)):
+            for j in range(len(self.model_data)):
+                noise_map.append(self._noise_map[i])
+
+        return aa.ArrayIrregular(values=noise_map)
+
+    @property
     def residual_map(self) -> aa.ArrayIrregular:
 
         combinations = len(self.model_data) ** len(self.data)
 
         residual_map = []
 
-        for data in self.data:
-            for model_data in self.model_data:
+        for model_data in self.model_data:
+            for data in self.data:
 
                 distance = np.sqrt(
                     self.square_distance(
