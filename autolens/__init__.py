@@ -102,6 +102,7 @@ from .point.fit_point.point_dataset import FitPointDataset
 from .point.fit_point.fluxes import FitFluxes
 from .point.fit_point.positions.abstract import AbstractFitPositionsImagePair
 from .point.fit_point.positions.image_pair import FitPositionsImagePair
+from .point.fit_point.positions.image_pair_all import FitPositionsImagePairAll
 from .point.fit_point.positions.image_pair_repeat import FitPositionsImagePairRepeat
 from .point.fit_point.positions_source import FitPositionsSource
 from .point.fit_point.max_separation import FitPositionsSourceMaxSeparation
