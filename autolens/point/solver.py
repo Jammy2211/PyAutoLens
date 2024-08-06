@@ -133,7 +133,6 @@ class PointSolver:
         source_plane_index = -1
 
         if source_plane_redshift is not None:
-
             for redshift in tracer.plane_redshifts:
                 source_plane_index += 1
                 if redshift == source_plane_redshift:

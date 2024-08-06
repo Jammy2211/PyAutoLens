@@ -28,7 +28,7 @@ def test__fits_dataset__positions_only():
         name="point_1", positions=positions, positions_noise_map=noise_map
     )
 
-    fit = al.FitPointDataset(dataset=dataset_1, tracer=tracer,solver=solver)
+    fit = al.FitPointDataset(dataset=dataset_1, tracer=tracer, solver=solver)
 
     assert fit.flux == None
     assert fit.positions == None

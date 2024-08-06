@@ -1,3 +1,4 @@
+import numpy as np
 from typing import Optional
 
 import autoarray as aa
@@ -43,16 +44,14 @@ class FitPositionsImagePairRepeat(AbstractFitPositionsImagePair):
 
     @property
     def residual_map(self) -> aa.ArrayIrregular:
-
         residual_map = []
 
         for position in self.data:
-
             distances = [
                 self.square_distance(model_position, position)
                 for model_position in self.model_data
             ]
-            residual_map.append(min(distances))
+            residual_map.append(np.sqrt(min(distances)))
 
         return aa.ArrayIrregular(values=residual_map)
 

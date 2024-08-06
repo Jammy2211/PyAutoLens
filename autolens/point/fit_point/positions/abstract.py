@@ -9,8 +9,7 @@ from autolens.lens.tracer import Tracer
 from autolens import exc
 
 
-class AbstractFitPositionsImagePair:
-
+class AbstractFitPositionsImagePair(aa.AbstractFit):
     def __init__(
         self,
         name: str,
@@ -33,8 +32,8 @@ class AbstractFitPositionsImagePair:
         """
 
         self.name = name
-        self.data = data
-        self.noise_map = noise_map
+        self._data = data
+        self._noise_map = noise_map
         self.tracer = tracer
         self.solver = solver
 
@@ -47,6 +46,14 @@ class AbstractFitPositionsImagePair:
                 f"For the point-source named {name} there was no matching point source profile "
                 f"in the tracer (make sure your tracer's point source name is the same the dataset name."
             )
+
+    @property
+    def data(self):
+        return self._data
+
+    @property
+    def noise_map(self):
+        return self._noise_map
 
     @property
     def source_plane_coordinate(self) -> Tuple[float, float]:

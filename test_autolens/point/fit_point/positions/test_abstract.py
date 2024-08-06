@@ -2,6 +2,7 @@ import pytest
 
 import autolens as al
 
+
 def test__multi_plane_position_solving():
     grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 
@@ -35,7 +36,7 @@ def test__multi_plane_position_solving():
     scaling_factor = tracer.cosmology.scaling_factor_between_redshifts_from(
         redshift_0=0.5, redshift_1=1.0, redshift_final=2.0
     )
-    
+
     assert fit_0.model_data[0, 0] == pytest.approx(
         scaling_factor * fit_1.model_data[0, 0], 1.0e-1
     )
