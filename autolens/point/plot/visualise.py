@@ -1,7 +1,7 @@
-from .triangle_solver import Step
 from matplotlib import pyplot as plt
 import numpy as np
 
+from autolens.point.solver import Step
 
 def add_triangles(triangles, color):
     for triangle in triangles:
