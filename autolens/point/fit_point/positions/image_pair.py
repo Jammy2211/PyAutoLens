@@ -1,11 +1,12 @@
 import numpy as np
+from scipy.optimize import linear_sum_assignment
 
 import autoarray as aa
 
 from autolens.point.fit_point.positions.abstract import AbstractFitPositionsImagePair
 
 
-class FitPositionsImagePairRepeat(AbstractFitPositionsImagePair):
+class FitPositionsImagePair(AbstractFitPositionsImagePair):
     """
     A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
     their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
@@ -22,11 +23,25 @@ class FitPositionsImagePairRepeat(AbstractFitPositionsImagePair):
     def residual_map(self) -> aa.ArrayIrregular:
         residual_map = []
 
-        for position in self.data:
-            distances = [
-                self.square_distance(model_position, position)
-                for model_position in self.model_data
-            ]
-            residual_map.append(np.sqrt(min(distances)))
+        cost_matrix = np.linalg.norm(
+            np.array(
+                self.data,
+            )[:, np.newaxis]
+            - np.array(
+                self.model_data,
+            ),
+            axis=2,
+        )
+
+        data_indexes, model_indexes = linear_sum_assignment(cost_matrix)
+
+        for data_index, model_index in zip(data_indexes, model_indexes):
+            distance = np.sqrt(
+                self.square_distance(
+                    self.data[data_index], self.model_data[model_index]
+                )
+            )
+
+            residual_map.append(distance)
 
         return aa.ArrayIrregular(values=residual_map)
