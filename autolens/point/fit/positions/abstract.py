@@ -3,6 +3,7 @@ from typing import Optional, Tuple
 import autoarray as aa
 import autogalaxy as ag
 
+from autolens.point.solver import PointSolver
 from autolens.lens.tracer import Tracer
 
 from autolens import exc
@@ -15,6 +16,7 @@ class AbstractFitPositions(aa.AbstractFit):
         data: aa.Grid2DIrregular,
         noise_map: aa.ArrayIrregular,
         tracer: Tracer,
+        solver: PointSolver,
         profile: Optional[ag.ps.Point] = None,
     ):
         """
@@ -33,6 +35,7 @@ class AbstractFitPositions(aa.AbstractFit):
         self._data = data
         self._noise_map = noise_map
         self.tracer = tracer
+        self.solver = solver
 
         self.profile = (
             tracer.extract_profile(profile_name=name) if profile is None else profile

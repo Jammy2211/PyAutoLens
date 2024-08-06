@@ -5,6 +5,7 @@ import autogalaxy as ag
 
 from autolens.lens.tracer import Tracer
 from autolens.point.fit.positions.abstract import AbstractFitPositions
+from autolens.point.solver import PointSolver
 
 
 class FitPositionsSource(AbstractFitPositions):
@@ -14,6 +15,7 @@ class FitPositionsSource(AbstractFitPositions):
         data: aa.Grid2DIrregular,
         noise_map: aa.ArrayIrregular,
         tracer: Tracer,
+        solver: PointSolver,
         profile: Optional[ag.ps.Point] = None,
     ):
         """
@@ -33,6 +35,7 @@ class FitPositionsSource(AbstractFitPositions):
             data=data,
             noise_map=noise_map,
             tracer=tracer,
+            solver=solver,
             profile=profile,
         )
 

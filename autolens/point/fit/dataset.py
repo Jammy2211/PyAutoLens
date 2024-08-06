@@ -1,17 +1,11 @@
-from typing import Dict, Optional
+from typing import Callable, Dict, Optional
 
-import autogalaxy as ag
 
 from autolens.point.dataset import PointDataset
 from autolens.point.solver import PointSolver
 from autolens.point.fit.fluxes import FitFluxes
-from autolens.point.fit.positions.image.pair_repeat import (
-    FitPositionsImagePairRepeat,
-)
-from autolens.point.fit.positions.source.separations import FitPositionsSource
 from autolens.lens.tracer import Tracer
 
-from autolens.point.fit.positions.abstract import AbstractFitPositions
 from autolens.point.fit.positions.image.pair import FitPositionsImagePair
 from autolens import exc
 
@@ -29,7 +23,7 @@ class FitPointDataset:
         dataset: PointDataset,
         tracer: Tracer,
         solver: PointSolver,
-        fit_positions_cls : AbstractFitPositions = FitPositionsImagePair,
+        fit_positions_cls = FitPositionsImagePair,
         run_time_dict: Optional[Dict] = None,
     ):
         self.dataset = dataset

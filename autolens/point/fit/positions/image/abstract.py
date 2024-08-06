@@ -35,10 +35,9 @@ class AbstractFitPositionsImagePair(AbstractFitPositions):
             data=data,
             noise_map=noise_map,
             tracer=tracer,
+            solver=solver,
             profile=profile,
         )
-
-        self.solver = solver
 
     @staticmethod
     def square_distance(coord1, coord2):
