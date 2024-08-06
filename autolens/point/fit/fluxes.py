@@ -17,7 +17,7 @@ class FitFluxes(aa.AbstractFit):
         noise_map: aa.ArrayIrregular,
         positions : aa.Grid2DIrregular,
         tracer: Tracer,
-        profile: Optional[ag.ps.PointSourceChi] = None,
+        profile: Optional[ag.ps.Point] = None,
     ):
 
         self.name = name

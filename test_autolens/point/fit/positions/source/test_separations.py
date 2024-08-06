@@ -4,7 +4,7 @@ import autolens as al
 
 
 def test__two_sets_of_positions__residuals_likelihood_correct():
-    point_source = al.ps.PointSourceChi(centre=(0.0, 0.0))
+    point_source = al.ps.Point(centre=(0.0, 0.0))
     galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
     tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source])
 

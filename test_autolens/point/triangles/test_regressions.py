@@ -28,7 +28,7 @@ instance_dict = {
                         },
                         "point_0": {
                             "type": "instance",
-                            "class_path": "autogalaxy.profiles.point_source.PointSourceChi",
+                            "class_path": "autogalaxy.profiles.point_source.Point",
                             "arguments": {
                                 "centre": [-0.04829335038475, 0.02350935356045]
                             },

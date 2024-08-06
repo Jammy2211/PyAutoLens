@@ -8,9 +8,9 @@ class PointDataset:
         self,
         name: str,
         positions: Union[aa.Grid2DIrregular, List[List], List[Tuple]],
-        positions_noise_map: Union[aa.ArrayIrregular, List[float]],
+        positions_noise_map: Union[float, aa.ArrayIrregular, List[float]],
         fluxes: Optional[Union[aa.ArrayIrregular, List[float]]] = None,
-        fluxes_noise_map: Optional[Union[aa.ArrayIrregular, List[float]]] = None,
+        fluxes_noise_map: Optional[Union[float, aa.ArrayIrregular, List[float]]] = None,
     ):
         """
         A collection of the data component that can be used for point-source model-fitting, for example fitting the
@@ -43,6 +43,9 @@ class PointDataset:
 
         self.positions = positions
 
+        if isinstance(positions_noise_map, float):
+            positions_noise_map = aa.ArrayIrregular(values=len(positions) * [positions_noise_map])
+
         if not isinstance(positions_noise_map, aa.ArrayIrregular):
             positions_noise_map = aa.ArrayIrregular(values=positions_noise_map)
 
@@ -53,6 +56,9 @@ class PointDataset:
                 fluxes = aa.ArrayIrregular(values=fluxes)
 
         self.fluxes = fluxes
+
+        if isinstance(fluxes_noise_map, float):
+            fluxes_noise_map = aa.ArrayIrregular(values=len(fluxes) * [fluxes_noise_map])
 
         if fluxes_noise_map is not None:
             if not isinstance(fluxes_noise_map, aa.ArrayIrregular):

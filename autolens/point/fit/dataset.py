@@ -60,6 +60,10 @@ class FitPointDataset:
             self.flux = None
 
     @property
+    def model_obj(self):
+        return self.tracer
+
+    @property
     def log_likelihood(self) -> float:
         log_likelihood_positions = (
             self.positions.log_likelihood if self.positions is not None else 0.0

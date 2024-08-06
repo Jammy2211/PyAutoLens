@@ -8,7 +8,7 @@ from autogalaxy.analysis.analysis.analysis import Analysis as AgAnalysis
 from autolens.analysis.analysis.lens import AnalysisLens
 from autolens.analysis.plotter_interface import PlotterInterface
 from autolens.point.fit.positions.abstract import AbstractFitPositions
-from autolens.point.fit.positions.image.pair import FitPositionsImagePair
+from autolens.point.fit.positions.image.pair_repeat import FitPositionsImagePairRepeat
 from autolens.point.fit.dataset import FitPointDataset
 from autolens.point.dataset import PointDataset
 from autolens.point.model.result import ResultPoint
@@ -31,7 +31,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         self,
         dataset: PointDataset,
         solver: PointSolver,
-        fit_positions_cls : AbstractFitPositions = FitPositionsImagePair,
+        fit_positions_cls : AbstractFitPositions = FitPositionsImagePairRepeat,
         image=None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):
@@ -107,6 +107,9 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         plotter_interface = PlotterInterface(image_path=paths.image_path)
 
     def save_attributes(self, paths: af.DirectoryPaths):
-        self.point_dict.output_to_json(
-            file_path=paths._files_path / "point_dict.json", overwrite=True
+
+        ag.output_to_json(
+            obj=self.dataset,
+            file_path=paths._files_path / "dataset.json",
         )
+
