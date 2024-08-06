@@ -7,6 +7,8 @@ from autogalaxy.analysis.analysis.analysis import Analysis as AgAnalysis
 
 from autolens.analysis.analysis.lens import AnalysisLens
 from autolens.analysis.plotter_interface import PlotterInterface
+from autolens.point.fit.positions.abstract import AbstractFitPositions
+from autolens.point.fit.positions.image.pair import FitPositionsImagePair
 from autolens.point.fit.dataset import FitPointDataset
 from autolens.point.dataset import PointDataset
 from autolens.point.model.result import ResultPoint
@@ -29,6 +31,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         self,
         dataset: PointDataset,
         solver: PointSolver,
+        fit_positions_cls : AbstractFitPositions = FitPositionsImagePair,
         image=None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):
@@ -60,6 +63,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         self.dataset = dataset
 
         self.solver = solver
+        self.fit_positions_cls = fit_positions_cls
         self.dataset = dataset
 
     def log_likelihood_function(self, instance):
@@ -93,6 +97,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
             dataset=self.dataset,
             tracer=tracer,
             solver=self.solver,
+            fit_positions_cls=self.fit_positions_cls,
             run_time_dict=run_time_dict,
         )
 

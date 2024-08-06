@@ -11,6 +11,8 @@ from autolens.point.fit.positions.image.pair_repeat import (
 from autolens.point.fit.positions.source.separations import FitPositionsSource
 from autolens.lens.tracer import Tracer
 
+from autolens.point.fit.positions.abstract import AbstractFitPositions
+from autolens.point.fit.positions.image.pair import FitPositionsImagePair
 from autolens import exc
 
 try:
@@ -27,6 +29,7 @@ class FitPointDataset:
         dataset: PointDataset,
         tracer: Tracer,
         solver: PointSolver,
+        fit_positions_cls : AbstractFitPositions = FitPositionsImagePair,
         run_time_dict: Optional[Dict] = None,
     ):
         self.dataset = dataset
@@ -36,30 +39,19 @@ class FitPointDataset:
 
         profile = self.tracer.extract_profile(profile_name=dataset.name)
 
+        self.fit_positions_cls = fit_positions_cls
+
         try:
-            if isinstance(profile, ag.ps.PointSourceChi):
-                self.positions = FitPositionsSource(
-                    name=dataset.name,
-                    data=dataset.positions,
-                    noise_map=dataset.positions_noise_map,
-                    tracer=tracer,
-                    profile=profile,
-                )
-
-            else:
-                self.positions = FitPositionsImagePairRepeat(
-                    name=dataset.name,
-                    data=dataset.positions,
-                    noise_map=dataset.positions_noise_map,
-                    tracer=tracer,
-                    solver=solver,
-                    profile=profile,
-                )
-
+            self.positions = self.fit_positions_cls(
+                name=dataset.name,
+                data=dataset.positions,
+                noise_map=dataset.positions_noise_map,
+                tracer=tracer,
+                solver=solver,
+                profile=profile,
+            )
         except exc.PointExtractionException:
             self.positions = None
-        except (AttributeError, NumbaException) as e:
-            raise exc.FitException from e
 
         try:
             self.flux = FitFluxes(
