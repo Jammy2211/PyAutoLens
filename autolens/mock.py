@@ -8,7 +8,7 @@ from autolens import Tracer
 from autolens.imaging.mock.mock_fit_imaging import MockFitImaging  # noqa
 from autolens.lens.mock.mock_tracer import MockTracer  # noqa
 from autolens.lens.mock.mock_tracer import MockTracerPoint  # noqa
-from autolens.point.mock.mock_point_solver import MockPointSolver  # noqa
+from autolens.point.mock.mock_solver import MockPointSolver  # noqa
 
 
 class NullTracer(Tracer):
@@ -16,4 +16,7 @@ class NullTracer(Tracer):
         super().__init__([])
 
     def deflections_yx_2d_from(self, grid):
+        return np.zeros_like(grid.array)
+
+    def deflections_between_planes_from(self, grid, plane_i=0, plane_j=-1):
         return np.zeros_like(grid.array)

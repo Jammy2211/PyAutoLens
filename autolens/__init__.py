@@ -97,18 +97,17 @@ from .imaging.model.analysis import AnalysisImaging
 from .interferometer.simulator import SimulatorInterferometer
 from .interferometer.fit_interferometer import FitInterferometer
 from .interferometer.model.analysis import AnalysisInterferometer
-from .point.point_dataset import PointDataset
-from .point.point_dataset import PointDict
-from .point.fit_point.point_dict import FitPointDict
-from .point.fit_point.point_dataset import FitPointDataset
-from .point.fit_point.fluxes import FitFluxes
-from .point.fit_point.positions_image import FitPositionsImage
-from .point.fit_point.positions_source import FitPositionsSource
-from .point.fit_point.max_separation import FitPositionsSourceMaxSeparation
+from .point.dataset import PointDataset
+from .point.fit.dataset import FitPointDataset
+from .point.fit.fluxes import FitFluxes
+from .point.fit.positions.image.abstract import AbstractFitPositionsImagePair
+from .point.fit.positions.image.pair import FitPositionsImagePair
+from .point.fit.positions.image.pair_all import FitPositionsImagePairAll
+from .point.fit.positions.image.pair_repeat import FitPositionsImagePairRepeat
+from .point.fit.positions.source.separations import FitPositionsSource
+from .point.fit.positions.source.max_separation import FitPositionsSourceMaxSeparation
 from .point.model.analysis import AnalysisPoint
-from .point.point_solver import PointSolver
-
-from .point.triangles.triangle_solver import TriangleSolver as MultipleImageSolver
+from .point.solver import PointSolver
 from .quantity.fit_quantity import FitQuantity
 from .quantity.model.analysis import AnalysisQuantity
 from . import exc

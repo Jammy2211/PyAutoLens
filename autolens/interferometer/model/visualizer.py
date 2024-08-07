@@ -35,7 +35,7 @@ class VisualizerInterferometer(af.Visualizer):
         if analysis.positions_likelihood is not None:
             plotter_interface.image_with_positions(
                 image=analysis.dataset.dirty_image,
-                positions=analysis.positions_likelihood.positions,
+                positions=analysis.positions_likelihood.data,
             )
 
         if analysis.adapt_images is not None:

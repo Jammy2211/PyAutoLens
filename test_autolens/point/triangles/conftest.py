@@ -23,7 +23,7 @@ def tracer():
         mass=isothermal_mass_profile,
     )
 
-    point_source = al.ps.PointSourceChi(centre=(0.07, 0.07))
+    point_source = al.ps.Point(centre=(0.07, 0.07))
 
     source_galaxy = al.Galaxy(redshift=1.0, point_0=point_source)
 

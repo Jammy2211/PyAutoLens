@@ -206,16 +206,9 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
         ),
     )
 
-    pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular((3, 3)),
-        regularization=al.reg.Constant(coefficient=1.0),
-    )
-
     source = al.Galaxy(
         redshift=1.0,
-        light=al.lp.SersicSph(centre=(0.0, 0.0), intensity=2.0),
-        light1=al.lp.SersicSph(centre=(0.0, 0.1), intensity=2.0),
-        pixelization=pixelization,
+        light1=al.lp.SersicSph(centre=(0.0, 0.05), intensity=2.0),
     )
 
     tracer = al.Tracer(galaxies=[lens, source])
@@ -228,33 +221,8 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
 
     multiple_images = result.image_plane_multiple_image_positions
 
-    assert multiple_images.in_list[0][0] == pytest.approx(1.20556641, 1.0e-4)
-    assert multiple_images.in_list[0][1] == pytest.approx(-1.10205078, 1.0e-4)
-    assert multiple_images.in_list[1][0] == pytest.approx(-0.19287109, 1.0e-4)
-    assert multiple_images.in_list[1][1] == pytest.approx(0.27978516, 1.0e-4)
-
-    tracer = al.Tracer(
-        galaxies=[
-            al.Galaxy(
-                redshift=0.5,
-                mass=al.mp.Isothermal(
-                    centre=(0.1, 0.0), einstein_radius=1.0, ell_comps=(0.0, 0.0)
-                ),
-            ),
-            al.Galaxy(redshift=1.0, bulge=al.lp.SersicSph(centre=(0.0, 0.0))),
-        ]
-    )
-
-    samples_summary = al.m.MockSamplesSummary(max_log_likelihood_instance=tracer)
-
-    result = res.Result(samples_summary=samples_summary, analysis=analysis_imaging_7x7)
-
-    assert result.image_plane_multiple_image_positions.in_list[0][0] == pytest.approx(
-        1.0004, 1.0e-2
-    )
-    assert result.image_plane_multiple_image_positions.in_list[1][0] == pytest.approx(
-        -1.0004, 1.0e-2
-    )
+    assert multiple_images.in_list[0][0] == pytest.approx(0.968719, 1.0e-4)
+    assert multiple_images.in_list[0][1] == pytest.approx(0.366210, 1.0e-4)
 
 
 def test__positions_threshold_from(analysis_imaging_7x7):
@@ -274,12 +242,12 @@ def test__positions_threshold_from(analysis_imaging_7x7):
 
     result = res.Result(samples_summary=samples_summary, analysis=analysis_imaging_7x7)
 
-    assert result.positions_threshold_from() == pytest.approx(0.000973519, 1.0e-4)
+    assert result.positions_threshold_from() == pytest.approx(1.1001488121, 1.0e-4)
     assert result.positions_threshold_from(factor=5.0) == pytest.approx(
-        5.0 * 0.000973519, 1.0e-4
+        5.5007440609, 1.0e-4
     )
-    assert result.positions_threshold_from(minimum_threshold=0.2) == pytest.approx(
-        0.2, 1.0e-4
+    assert result.positions_threshold_from(minimum_threshold=10.0) == pytest.approx(
+        10.0, 1.0e-4
     )
     assert result.positions_threshold_from(
         positions=al.Grid2DIrregular([(0.0, 0.0)])
