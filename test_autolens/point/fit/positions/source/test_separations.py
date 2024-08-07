@@ -12,7 +12,7 @@ def test__two_sets_of_positions__residuals_likelihood_correct():
     noise_map = al.ArrayIrregular([0.5, 1.0])
 
     fit = al.FitPositionsSource(
-        name="point_0", data=positions, noise_map=noise_map, tracer=tracer
+        name="point_0", data=positions, noise_map=noise_map, tracer=tracer, solver=None
     )
 
     assert fit.model_data.in_list == [(0.0, 1.0), (0.0, 2.0)]
@@ -31,7 +31,7 @@ def test__two_sets_of_positions__residuals_likelihood_correct():
     tracer = al.Tracer(galaxies=[galaxy_mass, galaxy_point_source])
 
     fit = al.FitPositionsSource(
-        name="point_0", data=positions, noise_map=noise_map, tracer=tracer
+        name="point_0", data=positions, noise_map=noise_map, tracer=tracer, solver=None
     )
 
     assert fit.model_data.in_list == [(0.0, 0.0), (0.0, 1.0)]
@@ -51,7 +51,7 @@ def test__multi_plane_position_solving():
     traced_grids = tracer.traced_grid_2d_list_from(grid=positions)
 
     fit_0 = al.FitPositionsSource(
-        name="point_0", data=positions, noise_map=noise_map, tracer=tracer
+        name="point_0", data=positions, noise_map=noise_map, tracer=tracer, solver=None
     )
 
     assert fit_0.model_data[0, 1] == pytest.approx(0.326054, 1.0e-1)
@@ -60,7 +60,7 @@ def test__multi_plane_position_solving():
     assert (fit_0.model_data == traced_grids[1]).all()
 
     fit_1 = al.FitPositionsSource(
-        name="point_1", data=positions, noise_map=noise_map, tracer=tracer
+        name="point_1", data=positions, noise_map=noise_map, tracer=tracer, solver=None
     )
 
     assert (fit_1.model_data == traced_grids[2]).all()

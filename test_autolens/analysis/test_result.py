@@ -224,6 +224,7 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
     assert multiple_images.in_list[0][0] == pytest.approx(0.968719, 1.0e-4)
     assert multiple_images.in_list[0][1] == pytest.approx(0.366210, 1.0e-4)
 
+
 def test__positions_threshold_from(analysis_imaging_7x7):
     tracer = al.Tracer(
         galaxies=[

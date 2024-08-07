@@ -9,7 +9,9 @@ from autogalaxy.analysis.result import ResultDataset as AgResultDataset
 
 from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
-from autolens.point.fit.positions.source.max_separation import FitPositionsSourceMaxSeparation
+from autolens.point.fit.positions.source.max_separation import (
+    FitPositionsSourceMaxSeparation,
+)
 from autolens.lens.tracer import Tracer
 from autolens.point.solver import PointSolver
 

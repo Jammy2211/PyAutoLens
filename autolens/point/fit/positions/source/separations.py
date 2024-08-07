@@ -15,7 +15,7 @@ class FitPositionsSource(AbstractFitPositions):
         data: aa.Grid2DIrregular,
         noise_map: aa.ArrayIrregular,
         tracer: Tracer,
-        solver: PointSolver,
+        solver: Optional[PointSolver],
         profile: Optional[ag.ps.Point] = None,
     ):
         """
@@ -54,9 +54,7 @@ class FitPositionsSource(AbstractFitPositions):
                 grid=self.data, plane_i=0, plane_j=self.source_plane_index
             )
 
-        return self.data.grid_2d_via_deflection_grid_from(
-            deflection_grid=deflections
-        )
+        return self.data.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
 
     @property
     def residual_map(self) -> aa.ArrayIrregular:

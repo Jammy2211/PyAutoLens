@@ -23,7 +23,7 @@ class FitPointDataset:
         dataset: PointDataset,
         tracer: Tracer,
         solver: PointSolver,
-        fit_positions_cls = FitPositionsImagePair,
+        fit_positions_cls=FitPositionsImagePair,
         run_time_dict: Optional[Dict] = None,
     ):
         self.dataset = dataset

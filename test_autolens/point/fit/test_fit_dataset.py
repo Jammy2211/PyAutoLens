@@ -34,6 +34,7 @@ def test__fit_dataset__positions_only():
     assert fit.positions == None
     assert fit.flux == None
 
+
 def test__fit_dataset__all_positions_classes():
     point_source = al.ps.Point(centre=(0.1, 0.1))
     galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
@@ -54,7 +55,7 @@ def test__fit_dataset__all_positions_classes():
         dataset=dataset_0,
         tracer=tracer,
         solver=solver,
-        fit_positions_cls=al.FitPositionsImagePair
+        fit_positions_cls=al.FitPositionsImagePair,
     )
 
     assert fit.positions.log_likelihood == pytest.approx(-22.14472, 1.0e-4)
@@ -63,7 +64,7 @@ def test__fit_dataset__all_positions_classes():
         dataset=dataset_0,
         tracer=tracer,
         solver=solver,
-        fit_positions_cls=al.FitPositionsImagePairRepeat
+        fit_positions_cls=al.FitPositionsImagePairRepeat,
     )
 
     assert fit.positions.log_likelihood == pytest.approx(-22.14472, 1.0e-4)
@@ -72,7 +73,7 @@ def test__fit_dataset__all_positions_classes():
         dataset=dataset_0,
         tracer=tracer,
         solver=solver,
-        fit_positions_cls=al.FitPositionsImagePairAll
+        fit_positions_cls=al.FitPositionsImagePairAll,
     )
 
     assert fit.positions.log_likelihood == pytest.approx(-47.78945977, 1.0e-4)
@@ -81,10 +82,11 @@ def test__fit_dataset__all_positions_classes():
         dataset=dataset_0,
         tracer=tracer,
         solver=solver,
-        fit_positions_cls=al.FitPositionsSource
+        fit_positions_cls=al.FitPositionsSource,
     )
 
     assert fit.positions.log_likelihood == pytest.approx(-12.9947298, 1.0e-4)
+
 
 def test__fit_dataset__positions_and_flux():
     point_source = al.ps.PointFlux(centre=(0.1, 0.1), flux=2.0)

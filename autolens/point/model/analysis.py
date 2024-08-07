@@ -31,7 +31,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         self,
         dataset: PointDataset,
         solver: PointSolver,
-        fit_positions_cls : AbstractFitPositions = FitPositionsImagePairRepeat,
+        fit_positions_cls=FitPositionsImagePairRepeat,
         image=None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):
@@ -107,9 +107,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         plotter_interface = PlotterInterface(image_path=paths.image_path)
 
     def save_attributes(self, paths: af.DirectoryPaths):
-
         ag.output_to_json(
             obj=self.dataset,
             file_path=paths._files_path / "dataset.json",
         )
-

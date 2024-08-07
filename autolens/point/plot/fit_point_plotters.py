@@ -37,9 +37,7 @@ class FitPointDatasetPlotter(AbstractPlotter):
         if positions:
             visuals_2d = self.get_visuals_2d()
 
-            visuals_2d += visuals_2d.__class__(
-                positions=self.fit.positions.model_data
-            )
+            visuals_2d += visuals_2d.__class__(positions=self.fit.positions.model_data)
 
             self.mat_plot_2d.plot_grid(
                 grid=self.fit.dataset.positions,

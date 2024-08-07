@@ -44,7 +44,9 @@ class PointDataset:
         self.positions = positions
 
         if isinstance(positions_noise_map, float):
-            positions_noise_map = aa.ArrayIrregular(values=len(positions) * [positions_noise_map])
+            positions_noise_map = aa.ArrayIrregular(
+                values=len(positions) * [positions_noise_map]
+            )
 
         if not isinstance(positions_noise_map, aa.ArrayIrregular):
             positions_noise_map = aa.ArrayIrregular(values=positions_noise_map)
@@ -58,7 +60,9 @@ class PointDataset:
         self.fluxes = fluxes
 
         if isinstance(fluxes_noise_map, float):
-            fluxes_noise_map = aa.ArrayIrregular(values=len(fluxes) * [fluxes_noise_map])
+            fluxes_noise_map = aa.ArrayIrregular(
+                values=len(fluxes) * [fluxes_noise_map]
+            )
 
         if fluxes_noise_map is not None:
             if not isinstance(fluxes_noise_map, aa.ArrayIrregular):

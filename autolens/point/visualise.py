@@ -3,6 +3,7 @@ import numpy as np
 
 from autolens.point.solver import Step
 
+
 def add_triangles(triangles, color):
     for triangle in triangles:
         triangle = np.append(triangle, [triangle[0]], axis=0)

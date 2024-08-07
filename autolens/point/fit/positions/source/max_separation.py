@@ -32,9 +32,7 @@ class FitPositionsSourceMaxSeparation:
 
         self.data = data
         self.noise_map = noise_map
-        self.source_plane_positions = tracer.traced_grid_2d_list_from(grid=data)[
-            -1
-        ]
+        self.source_plane_positions = tracer.traced_grid_2d_list_from(grid=data)[-1]
 
     @property
     def furthest_separations_of_source_plane_positions(self) -> aa.ArrayIrregular:
@@ -64,4 +62,3 @@ class FitPositionsSourceMaxSeparation:
 
     def max_separation_within_threshold(self, threshold) -> bool:
         return self.max_separation_of_source_plane_positions <= threshold
-

@@ -26,7 +26,7 @@ def test__three_sets_of_positions__model_is_repeated__does_not_double_count():
     print(fit.residual_map)
 
     assert fit.model_data.in_list == [(4.0, 0.0), (3.0, 0.0), (0.0, 0.0)]
-    assert fit.residual_map.in_list == [2., 3., 4., 1., 2., 3., 2., 1., 0.]
+    assert fit.residual_map.in_list == [2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 2.0, 1.0, 0.0]
 
     print(fit.noise_map)
     print(fit.normalized_residual_map)

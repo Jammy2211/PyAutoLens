@@ -15,11 +15,10 @@ class FitFluxes(aa.AbstractFit):
         name: str,
         data: aa.ArrayIrregular,
         noise_map: aa.ArrayIrregular,
-        positions : aa.Grid2DIrregular,
+        positions: aa.Grid2DIrregular,
         tracer: Tracer,
         profile: Optional[ag.ps.Point] = None,
     ):
-
         self.name = name
         self._data = data
         self._noise_map = noise_map
@@ -82,8 +81,7 @@ class FitFluxes(aa.AbstractFit):
         """
         return abs(
             self.tracer.magnification_2d_via_hessian_from(
-                grid=self.positions,
-                deflections_func=self.deflections_func
+                grid=self.positions, deflections_func=self.deflections_func
             )
         )
 
