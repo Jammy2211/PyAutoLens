@@ -87,7 +87,17 @@ class TracerToInversion(ag.AbstractToInversion):
         return self.tracer.planes
 
     @property
-    def has_mapper(self):
+    def has_mapper(self) -> bool:
+        """
+        Checks whether the tracer has a pixelization, which is required to set up the inversion.
+
+        This function is used to ensure computation run time is not wasted performing certain calculations if they are
+        not needed because the tracer does not have a pixelization.
+
+        Returns
+        -------
+        Does the tracer have a pixelization.
+        """
         for galaxies in self.planes:
             if galaxies.has(cls=aa.Pixelization):
                 return True
