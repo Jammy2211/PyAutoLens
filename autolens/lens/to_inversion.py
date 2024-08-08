@@ -20,6 +20,44 @@ class TracerToInversion(ag.AbstractToInversion):
         preloads=Preloads(),
         run_time_dict: Optional[Dict] = None,
     ):
+        """
+        Interfaces a dataset and tracer with the inversion module, to setup a linear algebra calculation.
+
+        The tracer's galaxies may contain linear light profiles whose `intensity` values are solved for via linear
+        algebra in order to best-fit the data. In this case, this class extracts the linear light profiles of all
+        galaxies, performs ray-tracing and computes their images and passes them to the `inversion` module such that
+        they become  the `mapping_matrix` used in the linear algebra calculation.
+
+        The galaxies may also contain pixelizations, which use a mesh (e.g. a Voronoi mesh) and regularization scheme
+        to reconstruct the galaxy's light. This class extracts all pixelizations, performs ray-tracing and uses the
+        pixelizations to set up `Mapper` objects which pair the dataset and pixelization to again set up the
+        appropriate `mapping_matrix` and other linear algebra matrices (e.g. the `regularization_matrix`).
+
+        This class does not perform the inversion or compute any of the linear algebra matrices itself. Instead,
+        it acts as an interface between the dataset and galaxies and the inversion module, extracting the
+        necessary information from galaxies and passing it to the inversion module.
+
+        The tracer's galaxies may also contain standard light profiles which have an input `intensity` which is not
+        solved for via linear algebra. These profiles should have already been evaluated and subtracted from the
+        dataset before the inversion is performed. This is how an inversion is set up in the fit
+        modules (e.g. `FitImaging`).
+
+        Parameters
+        ----------
+        dataset
+            The dataset containing the data which the inversion is performed on.
+        tracer
+            The tracer whose galaxies are fitted to the dataset via the inversion.
+        adapt_images
+            Images which certain pixelizations use to adapt their properties to the dataset, for example congregating
+            the pixelization's pixels to the brightest regions of the image.
+        settings_inversion
+            The settings of the inversion, which controls how the linear algebra calculation is performed.
+        preloads
+            Preloads of the inversion, which are used to speed up the linear algebra calculation.
+        run_time_dict
+            A dictionary of run-time values used to compute the inversion, for example the noise-map normalization.
+        """
         self.tracer = tracer
 
         super().__init__(
@@ -31,7 +69,21 @@ class TracerToInversion(ag.AbstractToInversion):
         )
 
     @property
-    def planes(self):
+    def planes(self) -> List[List[ag.Galaxy]]:
+        """
+        The planes object of a tracer is a list of list of galaxies grouped into their planes, where planes
+        contained all galaxies at the same unique redshift.
+
+        The planes are used to set up the inversion, whereby linear light profiles and pixelizations are extracted
+        and grouped based on the plane they are in.
+
+        The reason for this is that ray-tracking is performed on a plane-by-plane basis, therefore using planes
+        makes it more straight forward to extract the appropriate traced grid for each galaxy.
+
+        Returns
+        -------
+        The planes of the tracer, which are used to set up the inversion.
+        """
         return self.tracer.planes
 
     @property
