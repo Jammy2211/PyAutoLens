@@ -151,6 +151,7 @@ class FitImagingPlotter(Plotter):
         use_source_vmax: bool = False,
         zoom_to_brightest: bool = True,
         interpolate_to_uniform: bool = False,
+        remove_critical_caustic : bool = True
     ):
         """
         Plots images representing each individual `Plane` in the fit's `Tracer` in 2D, which are computed via the
@@ -186,15 +187,20 @@ class FitImagingPlotter(Plotter):
         interpolate_to_uniform
             If `True`, the mapper's reconstruction is interpolated to a uniform grid before plotting, for example
             meaning that an irregular Delaunay grid can be plotted as a uniform grid.
+        remove_critical_caustic
+            Whether to remove critical curves and caustics from the plot.
         """
 
         visuals_2d = self.get_visuals_2d()
 
         visuals_2d_no_critical_caustic = self.get_visuals_2d()
-        visuals_2d_no_critical_caustic.tangential_critical_curves = None
-        visuals_2d_no_critical_caustic.radial_critical_curves = None
-        visuals_2d_no_critical_caustic.tangential_caustics = None
-        visuals_2d_no_critical_caustic.radial_caustics = None
+
+        if remove_critical_caustic:
+
+            visuals_2d_no_critical_caustic.tangential_critical_curves = None
+            visuals_2d_no_critical_caustic.radial_critical_curves = None
+            visuals_2d_no_critical_caustic.tangential_caustics = None
+            visuals_2d_no_critical_caustic.radial_caustics = None
 
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
