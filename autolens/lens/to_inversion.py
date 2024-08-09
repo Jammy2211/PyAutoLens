@@ -105,6 +105,20 @@ class TracerToInversion(ag.AbstractToInversion):
     @cached_property
     @aa.profile_func
     def traced_grid_2d_list_of_inversion(self) -> List[aa.type.Grid2DLike]:
+        """
+        Returns a list of the traced grids of the inversion.
+
+        For a standard two-plane lens system (e.g. a lens galaxy and source galaxy), assuming the lens galaxy
+        has linear light profiles and source galaxy has a pixelization, this function would return an image-plane
+        grid which has not been lensed and a source-plane grid which has been lensed.
+
+        This function is short and could be called where it is used, however it is used in multiple functions
+        and therefore is cached to ensure it is not recalculated multiple times.
+
+        Returns
+        -------
+        The traced grids of the inversion, which are cached for efficiency.
+        """
         return self.tracer.traced_grid_2d_list_from(
             grid=self.dataset.grids.pixelization.over_sampler.over_sampled_grid
         )
