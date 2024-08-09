@@ -230,7 +230,23 @@ class TracerToInversion(ag.AbstractToInversion):
 
         return lp_linear_galaxy_dict_list
 
-    def cls_pg_list_from(self, cls: Type) -> List:
+    def cls_pg_list_from(self, cls: Type) -> List[List]:
+        """
+        Returns a list of list objects in the tracer, where each inner list corresponds to a single plane,
+        which are an instance of the input `cls`.
+
+        This function is used to extract all pixelizations or regularizations from the tracer, which because they
+        are grouped by plane make it straight forward to pair them with the appropriate ray-traced grid.
+
+        Parameters
+        ----------
+        cls
+            The type of class that a list of instances of this class in the galaxy are returned for.
+
+        Returns
+        -------
+            The list of list of objects in the galaxy grouped by plane that inherit from input `cls`.
+        """
         return [galaxies.cls_list_from(cls=cls) for galaxies in self.planes]
 
     @cached_property
