@@ -353,7 +353,7 @@ class TracerToInversion(ag.AbstractToInversion):
 
     @cached_property
     @aa.profile_func
-    def traced_mesh_grid_pg_list(self) -> Tuple[List[List], List[List]]:
+    def traced_mesh_grid_pg_list(self) -> List[List]:
         """
         Returns a list of lists of traced mesh grids, where each inner list corresponds to a single plane.
 
@@ -400,7 +400,7 @@ class TracerToInversion(ag.AbstractToInversion):
 
                 traced_mesh_grid_pg_list.append(traced_mesh_grids_list)
 
-        return traced_mesh_grid_pg_list, image_plane_mesh_grid_pg_list
+        return traced_mesh_grid_pg_list
 
     @cached_property
     def mapper_galaxy_dict(self) -> Dict[aa.AbstractMapper, ag.Galaxy]:
@@ -440,10 +440,8 @@ class TracerToInversion(ag.AbstractToInversion):
             )
 
         if self.preloads.traced_mesh_grids_list_of_planes is None:
-            (
-                traced_mesh_grids_list_of_planes,
-                image_plane_mesh_grid_list,
-            ) = self.traced_mesh_grid_pg_list
+            traced_mesh_grids_list_of_planes = self.traced_mesh_grid_pg_list
+            image_plane_mesh_grid_list = self.image_plane_mesh_grid_pg_list
         else:
             traced_mesh_grids_list_of_planes = (
                 self.preloads.traced_mesh_grids_list_of_planes
