@@ -369,7 +369,7 @@ class TracerToInversion(ag.AbstractToInversion):
         ray-traced grid.
 
         The notation `_pg_` stands for `plane galaxy`, and indicates that the objects are grouped by plane
-        
+
         Returns
         -------
             The list of lists of traced mesh grids grouped by plane.
@@ -404,6 +404,29 @@ class TracerToInversion(ag.AbstractToInversion):
 
     @cached_property
     def mapper_galaxy_dict(self) -> Dict[aa.AbstractMapper, ag.Galaxy]:
+        """
+        Returns a dictionary associating each `Mapper` object with the galaxy it belongs to.
+
+        The docstring of the function `mapper_from` in PyAutoGalaxy describes the `Mapper` object in detail, and is used
+        in this function to create the `Mapper` objects which are associated with the galaxies.
+
+        This function begins by extracting all galaxies with pixelizations, determining which have an image mesh
+        (see `image_plane_mesh_grid_pg_list`), which require an adapt image (see `adapt_galaxy_image_pg_list`), and
+        ray tracing these image-plane mesh grids to the source-plane (see `traced_mesh_grid_pg_list`).
+
+        The tag `_pg_` stands for `plane galaxy`, and indicates that the objects are grouped by plane after being
+        extracted from galaxies in the tracer. Because all of these objects are grouped by plane, it makes it
+        straight forward for this function to pair them with the appropriate ray-traced grid and input them into
+        the mapper of that plane.
+
+        This function essentially finds all galaxies with pixelizations, performs all necessary calculations to
+        set up the `Mapper` objects (e.g. compute the `image_plane_mesh_grid`), and then associates each `Mapper`
+        with the galaxy it belongs to.
+
+        Returns
+        -------
+        A dictionary associating each `Mapper` object with the galaxy it belongs to.
+        """
         if not self.has_mapper:
             return {}
 
