@@ -318,7 +318,7 @@ class TracerToInversion(ag.AbstractToInversion):
         Returns a list of lists of image-plane mesh grids, where each inner list corresponds to a single plane.
 
         Certain pixelizations (e.g. the `VoronoiMagnification`) begin by placing what will become its the
-        source-pixel centres in the image-plane. This is done by calculating the centres in the image-planem
+        source-pixel centres in the image-plane. This is done by calculating the centres in the image-plane
         using an `image_mesh` object, and then ray-tracing these centres to the source-plane.
 
         This function computes the image-plane mesh grids for each plane, and returns them as a list of lists
@@ -355,9 +355,24 @@ class TracerToInversion(ag.AbstractToInversion):
     @aa.profile_func
     def traced_mesh_grid_pg_list(self) -> Tuple[List[List], List[List]]:
         """
-        Ray-trace the sparse image plane grid used to define the source-pixel centres by calculating the deflection
-        angles at (y,x) coordinate on the grid from the galaxy mass profiles and then ray-trace them from the
-        image-plane to the source plane.
+        Returns a list of lists of traced mesh grids, where each inner list corresponds to a single plane.
+
+        Certain pixelizations (e.g. the `VoronoiMagnification`) begin by placing what will become its the
+        source-pixel centres in the image-plane. This is done by calculating the centres in the image-plane
+        using an `image_mesh` object, and then ray-tracing these centres to the source-plane.
+
+        This function then uses the tracer to ray-trace these image-plane mesh grids to the source-plane, returning
+        their grid of coordinates in the source-plane (e.g. after they have been lensed). These ray traced grids
+        are input into the inversion to ensure the source reconstruction occurs in the source-plane.
+
+        By grouping the traced mesh grids by plane, it makes it straight forward to pair them with the appropriate
+        ray-traced grid.
+
+        The notation `_pg_` stands for `plane galaxy`, and indicates that the objects are grouped by plane
+        
+        Returns
+        -------
+            The list of lists of traced mesh grids grouped by plane.
         """
         if self.preloads.image_plane_mesh_grid_pg_list is None:
             image_plane_mesh_grid_pg_list = self.image_plane_mesh_grid_pg_list
