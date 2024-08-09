@@ -262,7 +262,7 @@ class TracerToInversion(ag.AbstractToInversion):
         An adapt image is an image that certain pixelizations use to adapt their properties to the dataset, for example
         congregating the pixelization's pixels to the brightest regions of the image.
 
-        By grouping the adapt images by plane, it makes it straight forward to pair them with the appropriate ray-traced
+        By grouping adapt images by plane, it makes it straight forward to pair them with the appropriate ray-traced
         grid.
 
         The notation `_pg_` stands for `plane galaxy`, and indicates that the objects are grouped by plane
@@ -315,9 +315,24 @@ class TracerToInversion(ag.AbstractToInversion):
     @aa.profile_func
     def image_plane_mesh_grid_pg_list(self) -> List[List]:
         """
-        Specific pixelizations, like the `VoronoiMagnification`, begin by determining what will become its the
-        source-pixel centres by calculating them  in the image-plane. The `VoronoiBrightnessImage` pixelization
-        performs a KMeans clustering.
+        Returns a list of lists of image-plane mesh grids, where each inner list corresponds to a single plane.
+
+        Certain pixelizations (e.g. the `VoronoiMagnification`) begin by placing what will become its the
+        source-pixel centres in the image-plane. This is done by calculating the centres in the image-planem
+        using an `image_mesh` object, and then ray-tracing these centres to the source-plane.
+
+        This function computes the image-plane mesh grids for each plane, and returns them as a list of lists
+        grouped by plane.
+
+        By grouping the image-plane mesh grids by plane, it makes it straight forward to pair them with the appropriate
+        ray-traced grid.
+
+        The notation `_pg_` stands for `plane galaxy`, and indicates that the objects are grouped by plane
+        after being extracted from galaxies in the tracer.
+
+        Returns
+        -------
+            The list of lists of image-plane mesh grids grouped by plane.
         """
 
         image_plane_mesh_grid_list_of_planes = []
