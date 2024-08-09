@@ -498,6 +498,24 @@ class TracerToInversion(ag.AbstractToInversion):
 
     @cached_property
     def inversion(self):
+        """
+        Returns an inversion object from the dataset, galaxies and inversion settings.
+
+        The inversion uses all linear light profiles and pixelizations of the galaxies in the tracer to fit the data,
+        fully accounting for ray tracing.
+
+        It solves for the linear light profile intensities and pixelization mesh pixel values via linear algebra,
+        finding the solution which best fits the data after regularization is applied.
+
+        The `TracerToInversion` object acts as an interface between the dataset and tracer and the inversion module,
+        with many of its functions required to set up the inputs to the inversion object, primarily
+        the `linear_obj_list` and `linear_obj_galaxy_dict` properties.
+
+        Returns
+        -------
+        The inversion object which fits the dataset using the tracer.
+        """
+
         inversion = inversion_from(
             dataset=self.dataset,
             linear_obj_list=self.linear_obj_list,
