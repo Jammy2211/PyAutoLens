@@ -127,6 +127,35 @@ class TracerToInversion(ag.AbstractToInversion):
     def lp_linear_func_list_galaxy_dict(
         self,
     ) -> Dict[ag.LightProfileLinearObjFuncList, ag.Galaxy]:
+        """
+        Returns a dictionary associating each list of linear light profiles with the galaxy they belong to.
+
+        You should first refer to the docstring of the `cls_light_profile_func_list_galaxy_dict_from` method in the
+        parent project PyAutoGalaxy for a description of this method.
+
+        In brief, this method iterates over all galaxies and their light profiles, extracting their linear light
+        profiles and for each galaxy grouping them into a `LightProfileLinearObjFuncList` object, which is associated
+        with the galaxy via the dictionary. It also extracts linear light profiles from `Basis` objects and makes this
+        associated.
+
+        When extracting the linear light profiles, ray-tracing is also performed to ensure that each grid input
+        into the linear light profile corresponds to the grid for the plane the galaxy is in, derived from the
+        galaxy's redshift.
+
+        This function also handles some aspects of over-sampling, because the implementation of adaptive
+        over-sampling in a tracer is quite confusing. My hope is that this will be removed in the future,
+        so just try ignore it for now.
+
+        The `LightProfileLinearObjFuncList` object contains the attributes (e.g. the data `grid` after ray tracing,
+        `light_profiles`) and functionality (e.g. a `mapping_matrix` method) that are required to perform the inversion.
+
+        This function first creates a dictionary of linear light profiles associated with each galaxy for each plane,
+        and then does the same for all `Basis` objects. The two dictionaries are then combined and returned.
+
+        Returns
+        -------
+        A dictionary associating each list of linear light profiles and basis objects with the galaxy they belong to.
+        """
         if not self.tracer.perform_inversion:
             return {}
 
