@@ -1,5 +1,7 @@
 from typing import Dict, List, Optional, Tuple, Type, Union
 
+import numpy as np
+
 from autoconf import cached_property
 
 import autoarray as aa
@@ -232,11 +234,14 @@ class TracerToInversion(ag.AbstractToInversion):
 
     def cls_pg_list_from(self, cls: Type) -> List[List]:
         """
-        Returns a list of list objects in the tracer, where each inner list corresponds to a single plane,
-        which are an instance of the input `cls`.
+        Returns a list of lists of objects in the tracer which are an instance of the input `cls`, where each inner
+        list corresponds to a single plane,
 
-        This function is used to extract all pixelizations or regularizations from the tracer, which because they
-        are grouped by plane make it straight forward to pair them with the appropriate ray-traced grid.
+        By grouping the objects extracted from this function (e.g. pixelizations, regularizations) by plane, it makes
+        it straight forward to pair them with the appropriate ray-traced grid.
+
+        The notation `_pg_` stands for `plane galaxy`, and indicates that the objects are grouped by plane
+        after being extracted from galaxies in the tracer.
 
         Parameters
         ----------
@@ -245,12 +250,28 @@ class TracerToInversion(ag.AbstractToInversion):
 
         Returns
         -------
-            The list of list of objects in the galaxy grouped by plane that inherit from input `cls`.
+            The list of lists of objects that inherit from input `cls` in the galaxy grouped by plane.
         """
         return [galaxies.cls_list_from(cls=cls) for galaxies in self.planes]
 
     @cached_property
-    def adapt_galaxy_image_pg_list(self) -> List:
+    def adapt_galaxy_image_pg_list(self) -> List[List[np.ndarray]]:
+        """
+        Returns a list of lists of adapt images, where each inner list corresponds to a single plane.
+
+        An adapt image is an image that certain pixelizations use to adapt their properties to the dataset, for example
+        congregating the pixelization's pixels to the brightest regions of the image.
+
+        By grouping the adapt images by plane, it makes it straight forward to pair them with the appropriate ray-traced
+        grid.
+
+        The notation `_pg_` stands for `plane galaxy`, and indicates that the objects are grouped by plane
+        after being extracted from galaxies in the tracer.
+
+        Returns
+        -------
+            The list of lists of adapt images grouped by plane.
+        """
         adapt_galaxy_image_pg_list = []
 
         for galaxies in self.planes:
