@@ -304,7 +304,7 @@ class TriangleSolver:
             self.x_max,
             self.pixel_scale_precision,
             self.magnification_threshold,
-        ), self.array_triangles_cls
+        ), (self.array_triangles_cls,)
 
     @classmethod
     def tree_unflatten(cls, aux_data, children):
