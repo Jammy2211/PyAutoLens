@@ -295,8 +295,7 @@ class TriangleSolver:
             initial_triangles = up_sampled
 
     def tree_flatten(self):
-        return (
-            self.lensing_obj,
+        return (self.lensing_obj,), (
             self.scale,
             self.y_min,
             self.y_max,
@@ -304,18 +303,19 @@ class TriangleSolver:
             self.x_max,
             self.pixel_scale_precision,
             self.magnification_threshold,
-        ), (self.array_triangles_cls,)
+            self.array_triangles_cls,
+        )
 
     @classmethod
     def tree_unflatten(cls, aux_data, children):
         return cls(
             lensing_obj=children[0],
-            scale=children[1],
-            y_min=children[2],
-            y_max=children[3],
-            x_min=children[4],
-            x_max=children[5],
-            pixel_scale_precision=children[6],
-            magnification_threshold=children[7],
-            array_triangles_cls=aux_data[0],
+            scale=aux_data[0],
+            y_min=aux_data[1],
+            y_max=aux_data[2],
+            x_min=aux_data[3],
+            x_max=aux_data[4],
+            pixel_scale_precision=aux_data[5],
+            magnification_threshold=aux_data[6],
+            array_triangles_cls=aux_data[7],
         )
