@@ -3,6 +3,7 @@ from typing import Tuple
 import pytest
 
 import autolens as al
+import autofit as af
 import autogalaxy as ag
 
 try:
@@ -18,8 +19,8 @@ pytest.importorskip("jax")
 
 
 @pytest.fixture
-def solver(grid):
-    tracer = al.Tracer(
+def tracer():
+    return al.Tracer(
         galaxies=[
             al.Galaxy(
                 redshift=0.5,
@@ -31,6 +32,14 @@ def solver(grid):
         ]
     )
 
+
+@pytest.fixture(autouse=True)
+def register_tracer(tracer):
+    af.Model.from_instance(tracer)
+
+
+@pytest.fixture
+def solver(grid, tracer):
     return TriangleSolver.for_grid(
         lensing_obj=tracer,
         grid=grid,
