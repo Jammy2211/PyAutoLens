@@ -4,6 +4,7 @@ import pytest
 
 import autolens as al
 import autogalaxy as ag
+import autofit as af
 
 try:
     from autoarray.structures.triangles.jax_array import ArrayTriangles
@@ -15,6 +16,11 @@ from autolens.point.triangles.triangle_solver import TriangleSolver
 
 
 pytest.importorskip("jax")
+
+
+@pytest.fixture(autouse=True)
+def register(tracer):
+    af.Model.from_instance(tracer)
 
 
 @pytest.fixture
