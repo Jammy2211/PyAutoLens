@@ -5,11 +5,11 @@ import autoarray as aa
 from autolens.lens.tracer import Tracer
 
 
-class AbstractFitPositionsSourcePlane:
+class FitPositionsSourceMaxSeparation:
     def __init__(
         self,
-        positions: aa.Grid2DIrregular,
-        noise_map: aa.ArrayIrregular,
+        data: aa.Grid2DIrregular,
+        noise_map: Optional[aa.ArrayIrregular],
         tracer: Tracer,
     ):
         """
@@ -21,7 +21,7 @@ class AbstractFitPositionsSourcePlane:
 
         Parameters
         ----------
-        positions : Grid2DIrregular
+        data : Grid2DIrregular
             The (y,x) arc-second coordinates of named positions which the log_likelihood is computed using. Positions
             are paired to galaxies in the `Tracer` using their names.
         tracer : Tracer
@@ -29,11 +29,10 @@ class AbstractFitPositionsSourcePlane:
         noise_value
             The noise-value assumed when computing the log likelihood.
         """
-        self.positions = positions
+
+        self.data = data
         self.noise_map = noise_map
-        self.source_plane_positions = tracer.traced_grid_2d_list_from(grid=positions)[
-            -1
-        ]
+        self.source_plane_positions = tracer.traced_grid_2d_list_from(grid=data)[-1]
 
     @property
     def furthest_separations_of_source_plane_positions(self) -> aa.ArrayIrregular:
@@ -63,23 +62,3 @@ class AbstractFitPositionsSourcePlane:
 
     def max_separation_within_threshold(self, threshold) -> bool:
         return self.max_separation_of_source_plane_positions <= threshold
-
-
-class FitPositionsSourceMaxSeparation(AbstractFitPositionsSourcePlane):
-    def __init__(
-        self,
-        positions: aa.Grid2DIrregular,
-        noise_map: Optional[aa.ArrayIrregular],
-        tracer: Tracer,
-    ):
-        """A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
-        their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
-
-        Parameters
-        ----------
-        positions : Grid2DIrregular
-            The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
-        noise_value
-            The noise-value assumed when computing the log likelihood.
-        """
-        super().__init__(positions=positions, noise_map=noise_map, tracer=tracer)

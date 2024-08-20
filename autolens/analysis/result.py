@@ -9,9 +9,11 @@ from autogalaxy.analysis.result import ResultDataset as AgResultDataset
 
 from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
-from autolens.point.fit_point.max_separation import FitPositionsSourceMaxSeparation
+from autolens.point.fit.positions.source.max_separation import (
+    FitPositionsSourceMaxSeparation,
+)
 from autolens.lens.tracer import Tracer
-from autolens.point.point_solver import PointSolver
+from autolens.point.solver import PointSolver
 
 
 class Result(AgResultDataset):
@@ -43,7 +45,7 @@ class Result(AgResultDataset):
 
         """
         positions_fits = FitPositionsSourceMaxSeparation(
-            positions=self.analysis.positions_likelihood.positions,
+            data=self.analysis.positions_likelihood.positions,
             noise_map=None,
             tracer=self.max_log_likelihood_tracer,
         )
@@ -89,12 +91,13 @@ class Result(AgResultDataset):
 
         grid = self.analysis.dataset.mask.derive_grid.all_false
 
-        solver = PointSolver(
-            grid=grid, pixel_scale_precision=0.001, distance_to_mass_profile_centre=0.05
+        solver = PointSolver.for_grid(
+            grid=grid,
+            pixel_scale_precision=0.001,
         )
 
         multiple_images = solver.solve(
-            lensing_obj=self.max_log_likelihood_tracer,
+            tracer=self.max_log_likelihood_tracer,
             source_plane_coordinate=self.source_plane_centre.in_list[0],
         )
 
@@ -146,7 +149,7 @@ class Result(AgResultDataset):
         tracer = Tracer(galaxies=self.max_log_likelihood_galaxies)
 
         positions_fits = FitPositionsSourceMaxSeparation(
-            positions=positions, noise_map=None, tracer=tracer
+            data=positions, noise_map=None, tracer=tracer
         )
 
         threshold = factor * np.max(

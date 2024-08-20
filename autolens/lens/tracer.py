@@ -181,7 +181,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         )
 
     @property
-    def planes(self):
+    def planes(self) -> List[List[ag.Galaxy]]:
         """
         Returns a list of list of galaxies grouped into their planes, where planes contained all galaxies at the same
         unique redshift.

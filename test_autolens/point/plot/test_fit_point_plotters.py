@@ -41,7 +41,7 @@ def test__fit_point_quantities_are_output(
 
     plot_patch.paths = []
 
-    fit_point_dataset_x2_plane.point_dataset.fluxes = None
+    fit_point_dataset_x2_plane.dataset.fluxes = None
 
     fit_point_plotter = aplt.FitPointDatasetPlotter(
         fit=fit_point_dataset_x2_plane,

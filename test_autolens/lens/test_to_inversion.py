@@ -323,10 +323,7 @@ def test__traced_mesh_grid_pg_list(masked_imaging_7x7):
         dataset=masked_imaging_7x7, tracer=tracer
     )
 
-    (
-        traced_mesh_grids_list_of_planes,
-        image_plane_mesh_grid_list,
-    ) = tracer_to_inversion.traced_mesh_grid_pg_list
+    traced_mesh_grids_list_of_planes = tracer_to_inversion.traced_mesh_grid_pg_list
 
     assert traced_mesh_grids_list_of_planes[0] == None
     assert traced_mesh_grids_list_of_planes[1][0] == pytest.approx(
@@ -363,10 +360,7 @@ def test__traced_mesh_grid_pg_list(masked_imaging_7x7):
         dataset=masked_imaging_7x7, tracer=tracer
     )
 
-    (
-        traced_mesh_grids_list_of_planes,
-        image_plane_mesh_grid_list,
-    ) = tracer_to_inversion.traced_mesh_grid_pg_list
+    traced_mesh_grids_list_of_planes = tracer_to_inversion.traced_mesh_grid_pg_list
 
     traced_grid_pix_0 = tracer.traced_grid_2d_list_from(grid=np.array([[1.0, 0.0]]))[2]
     traced_grid_pix_1 = tracer.traced_grid_2d_list_from(grid=np.array([[2.0, 0.0]]))[4]
