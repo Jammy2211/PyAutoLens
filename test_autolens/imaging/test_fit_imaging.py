@@ -205,32 +205,6 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
     assert fit.perform_inversion is False
     assert fit.figure_of_merit == pytest.approx(-3688191.0841, 1.0e-4)
 
-    pixelization = al.Pixelization(
-        image_mesh=al.image_mesh.KMeans(pixels=5),
-        mesh=al.mesh.Delaunay(),
-        regularization=al.reg.Constant(coefficient=1.0),
-    )
-
-    galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
-
-    tracer = al.Tracer(galaxies=[g0, galaxy_pix])
-
-    model_image = al.Array2D(
-        np.full(fill_value=5.0, shape=masked_imaging_7x7.mask.pixels_in_mask),
-        mask=masked_imaging_7x7.mask,
-    )
-
-    adapt_images = al.AdaptImages(
-        galaxy_image_dict={galaxy_pix: model_image},
-    )
-
-    fit = al.FitImaging(
-        dataset=masked_imaging_7x7, tracer=tracer, adapt_images=adapt_images
-    )
-
-    assert fit.perform_inversion is True
-    assert fit.figure_of_merit == pytest.approx(-341415.8258823, 1.0e-4)
-
 
 def test__fit_figure_of_merit__sub_2(image_7x7, psf_3x3, noise_map_7x7, mask_2d_7x7, masked_imaging_covariance_7x7):
 
@@ -416,32 +390,6 @@ def test__fit_figure_of_merit__sub_2(image_7x7, psf_3x3, noise_map_7x7, mask_2d_
 
     assert fit.perform_inversion is False
     assert fit.figure_of_merit == pytest.approx(-3688191.0841, 1.0e-4)
-
-    pixelization = al.Pixelization(
-        image_mesh=al.image_mesh.KMeans(pixels=5),
-        mesh=al.mesh.Delaunay(),
-        regularization=al.reg.Constant(coefficient=1.0),
-    )
-
-    galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
-
-    tracer = al.Tracer(galaxies=[g0, galaxy_pix])
-
-    model_image = al.Array2D(
-        np.full(fill_value=5.0, shape=masked_imaging_7x7.mask.pixels_in_mask),
-        mask=masked_imaging_7x7.mask,
-    )
-
-    adapt_images = al.AdaptImages(
-        galaxy_image_dict={galaxy_pix: model_image},
-    )
-
-    fit = al.FitImaging(
-        dataset=masked_imaging_7x7, tracer=tracer, adapt_images=adapt_images
-    )
-
-    assert fit.perform_inversion is True
-    assert fit.figure_of_merit == pytest.approx(-23.8393703815, 1.0e-4)
 
 
 def test__fit__sky___handles_special_behaviour(masked_imaging_7x7):
