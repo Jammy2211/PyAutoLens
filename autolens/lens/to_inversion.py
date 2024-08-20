@@ -98,7 +98,7 @@ class TracerToInversion(ag.AbstractToInversion):
 
         Returns
         -------
-        Does the tracer have a pixelization.
+        True if the tracer has a pixelization, False if not.
         """
         for galaxies in self.planes:
             if galaxies.has(cls=aa.Pixelization):
