@@ -1,38 +1,26 @@
 import pytest
 
-import autolens as al
-import autogalaxy as ag
+from autolens.mock import NullTracer
 from autolens.point.solver.circle_solver import CircleSolver
-from autolens.point.visualise import visualise
 
 
 @pytest.fixture
 def solver(grid):
     return CircleSolver.for_grid(
         grid=grid,
-        pixel_scale_precision=0.001,
+        pixel_scale_precision=0.01,
     )
 
 
 def test_solver_basic(solver):
-    tracer = al.Tracer(
-        galaxies=[
-            al.Galaxy(
-                redshift=0.5,
-                mass=ag.mp.Isothermal(
-                    centre=(0.0, 0.0),
-                    einstein_radius=1.0,
-                ),
-            ),
-            al.Galaxy(
-                redshift=1.0,
-            ),
-        ]
-    )
-
-    for step in solver.steps(
-        tracer=tracer,
+    result = solver.solve(
+        tracer=NullTracer(),
         source_plane_coordinate=(0.0, 0.0),
         radius=0.01,
-    ):
-        visualise(step)
+    )
+    assert list(map(tuple, result)) == [
+        (-0.012003766846269881, 0.0078125),
+        (-0.0029826688901819823, -0.0078125),
+        (0.015059527021993818, -0.0078125),
+        (0.010548978043949867, 0.015625),
+    ]
