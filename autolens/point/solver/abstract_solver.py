@@ -7,10 +7,12 @@ from typing import Tuple, List, Iterator, Type, Optional
 import autoarray as aa
 
 import numpy as np
-from autofit.jax_wrapper import jit, register_pytree_node_class
+from autofit.jax_wrapper import jit, register_pytree_node_class, use_jax
 
 try:
-    from autoarray.structures.triangles.jax_array import ArrayTriangles
+    if use_jax:
+        from autoarray.structures.triangles.jax_array import ArrayTriangles
+    from autoarray.structures.triangles.array import ArrayTriangles
 except ImportError:
     from autoarray.structures.triangles.array import ArrayTriangles
 from autoarray.structures.triangles.abstract import AbstractTriangles
