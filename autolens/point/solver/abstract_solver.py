@@ -1,6 +1,7 @@
 import logging
 import math
-from dataclasses import dataclass
+from abc import ABC, abstractmethod
+
 from typing import Tuple, List, Iterator, Type, Optional
 
 import autoarray as aa
@@ -15,38 +16,13 @@ except ImportError:
 from autoarray.structures.triangles.abstract import AbstractTriangles
 
 from autolens.lens.tracer import Tracer
+from .step import Step
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class Step:
-    """
-    A step in the triangle solver algorithm.
-
-    Attributes
-    ----------
-    number
-        The number of the step.
-    initial_triangles
-        The triangles at the start of the step.
-    filtered_triangles
-        The triangles trace to triangles that contain the source plane coordinate.
-    neighbourhood
-        The neighbourhood of the filtered triangles.
-    up_sampled
-        The neighbourhood up-sampled to increase the resolution.
-    """
-
-    number: int
-    initial_triangles: aa.AbstractTriangles
-    filtered_triangles: aa.AbstractTriangles
-    neighbourhood: aa.AbstractTriangles
-    up_sampled: aa.AbstractTriangles
-
-
 @register_pytree_node_class
-class PointSolver:
+class AbstractSolver(ABC):
     # noinspection PyPep8Naming
     def __init__(
         self,
@@ -156,8 +132,8 @@ class PointSolver:
     def solve(
         self,
         tracer: Tracer,
-        source_plane_coordinate: Tuple[float, float],
         source_plane_redshift: Optional[float] = None,
+        **kwargs,
     ) -> aa.Grid2DIrregular:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
@@ -171,8 +147,10 @@ class PointSolver:
 
         Parameters
         ----------
-        source_plane_coordinate
-            The source plane coordinate to trace to the image plane.
+        tracer
+            The tracer to use to trace the image plane coordinates to the source plane.
+        source_plane_redshift
+            The redshift of the source plane.
 
         Returns
         -------
@@ -186,8 +164,8 @@ class PointSolver:
         steps = list(
             self.steps(
                 tracer=tracer,
-                source_plane_coordinate=source_plane_coordinate,
                 source_plane_redshift=source_plane_redshift,
+                **kwargs,
             )
         )
         final_step = steps[-1]
@@ -247,26 +225,15 @@ class PointSolver:
             if abs(magnification) > self.magnification_threshold
         ]
 
-    def _filter_triangles(
+    def _filtered_triangles(
         self,
         tracer: Tracer,
-        source_plane_coordinate: Tuple[float, float],
         triangles: aa.AbstractTriangles,
-        source_plane_redshift: Optional[float] = None,
+        source_plane_redshift,
+        **kwargs,
     ):
         """
-        Filter the triangles to keep only those that contain the source plane coordinate.
-
-        Parameters
-        ----------
-        triangles
-            A set of triangles that may contain the source plane coordinate.
-        source_plane_coordinate
-            The source plane coordinate to check if it is contained within the triangles.
-
-        Returns
-        -------
-        The triangles that contain the source plane coordinate.
+        Filter the triangles to keep only those that meet the solver condition
         """
         source_plane_grid = self._source_plane_grid(
             tracer=tracer,
@@ -274,22 +241,36 @@ class PointSolver:
             source_plane_redshift=source_plane_redshift,
         )
         source_triangles = triangles.with_vertices(source_plane_grid.array)
-        indexes = source_triangles.containing_indices(point=source_plane_coordinate)
-        return triangles.for_indexes(indexes=indexes)
+
+        return triangles.for_indexes(
+            indexes=self._filter_indexes(source_triangles, **kwargs)
+        )
+
+    @abstractmethod
+    def _filter_indexes(
+        self,
+        source_triangles: aa.AbstractTriangles,
+        **kwargs,
+    ) -> np.ndarray:
+        pass
 
     def steps(
         self,
         tracer: Tracer,
-        source_plane_coordinate: Tuple[float, float],
         source_plane_redshift: Optional[float] = None,
+        **kwargs,
     ) -> Iterator[Step]:
         """
         Iterate over the steps of the triangle solver algorithm.
 
         Parameters
         ----------
-        source_plane_coordinate
-            The source plane coordinate to trace to the image plane.
+        tracer
+            The tracer to use to trace the image plane coordinates to the source plane.
+        source_plane_redshift
+            The redshift of the source plane.
+        kwargs
+            Additional arguments to pass to the triangle filter.
 
         Returns
         -------
@@ -304,11 +285,11 @@ class PointSolver:
         )
 
         for number in range(self.n_steps):
-            kept_triangles = self._filter_triangles(
+            kept_triangles = self._filtered_triangles(
                 tracer=tracer,
-                source_plane_coordinate=source_plane_coordinate,
                 triangles=initial_triangles,
                 source_plane_redshift=source_plane_redshift,
+                **kwargs,
             )
             neighbourhood = kept_triangles.neighborhood()
             up_sampled = neighbourhood.up_sample()
