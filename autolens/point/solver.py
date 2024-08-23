@@ -12,7 +12,6 @@ try:
     from autoarray.structures.triangles.jax_array import ArrayTriangles
 except ImportError:
     from autoarray.structures.triangles.array import ArrayTriangles
-from autoarray.structures.triangles.abstract import AbstractTriangles
 
 from autolens.lens.tracer import Tracer
 
