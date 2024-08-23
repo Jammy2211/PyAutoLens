@@ -343,7 +343,7 @@ This gives an output of ~0.01 seconds.
 To estimate the expected overall run time of the model-fit we multiply the log likelihood evaluation time by an
 estimate of the number of iterations the non-linear search will perform.
 
-Estimating this quantity is more tricky, as it varies depending on the lens model complexity (e.g. number of parameters)
+Estimating this is tricky, as it depends on the lens model complexity (e.g. number of parameters)
 and the properties of the dataset and model being fitted.
 
 For this example, we conservatively estimate that the non-linear search will perform ~10000 iterations per free

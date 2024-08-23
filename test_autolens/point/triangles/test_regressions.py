@@ -1,6 +1,6 @@
 from autoconf.dictable import from_dict
 import autolens as al
-from autolens.point.triangles.triangle_solver import TriangleSolver
+from autolens.point.solver import PointSolver
 
 
 instance_dict = {
@@ -28,7 +28,7 @@ instance_dict = {
                         },
                         "point_0": {
                             "type": "instance",
-                            "class_path": "autogalaxy.profiles.point_source.PointSourceChi",
+                            "class_path": "autogalaxy.profiles.point_source.Point",
                             "arguments": {
                                 "centre": [-0.04829335038475, 0.02350935356045]
                             },
@@ -66,13 +66,11 @@ def test_missing_multiple_image(grid):
 
     tracer = al.Tracer(galaxies=[instance.lens_galaxy, instance.source_galaxy])
 
-    solver = TriangleSolver.for_grid(
+    solver = PointSolver.for_grid(
         grid=grid,
-        lensing_obj=tracer,
         pixel_scale_precision=0.001,
     )
 
     triangle_positions = solver.solve(
-        source_plane_coordinate=instance.source_galaxy.point_0.centre
+        tracer=tracer, source_plane_coordinate=instance.source_galaxy.point_0.centre
     )
-    print(triangle_positions)
