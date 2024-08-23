@@ -2,6 +2,7 @@ import pytest
 
 import autolens as al
 import autogalaxy as ag
+from autolens.point.solver.circle_solver import CircleSolver
 
 
 @pytest.fixture
@@ -31,4 +32,5 @@ def test_solver_basic(solver):
     assert solver.solve(
         tracer=tracer,
         source_plane_coordinate=(0.0, 0.0),
+        radius=0.1,
     )

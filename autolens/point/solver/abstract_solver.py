@@ -21,7 +21,6 @@ from .step import Step
 logger = logging.getLogger(__name__)
 
 
-@register_pytree_node_class
 class AbstractSolver(ABC):
     # noinspection PyPep8Naming
     def __init__(

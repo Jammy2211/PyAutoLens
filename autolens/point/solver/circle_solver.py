@@ -1,6 +1,4 @@
-import logging
-
-from typing import Tuple, List, Iterator, Optional
+from typing import Tuple, Iterator, Optional
 
 import numpy as np
 
@@ -9,32 +7,34 @@ import autoarray as aa
 from autofit.jax_wrapper import jit, register_pytree_node_class
 from .abstract_solver import AbstractSolver
 
-
 from autolens.lens.tracer import Tracer
 from .step import Step
 
-logger = logging.getLogger(__name__)
-
 
 @register_pytree_node_class
-class PointSolver(AbstractSolver):
+class CircleSolver(AbstractSolver):
     # noinspection PyMethodOverriding
     def _filter_indexes(
         self,
         source_triangles: aa.AbstractTriangles,
         source_plane_coordinate: Tuple[float, float],
+        radius: float,
     ) -> np.ndarray:
-        return source_triangles.containing_indices(point=source_plane_coordinate)
+        return source_triangles.containing_indices_circle(
+            center=source_plane_coordinate,
+            radius=radius,
+        )
 
     @jit
     def solve(
         self,
         tracer: Tracer,
         source_plane_coordinate: Tuple[float, float],
+        radius: float,
         source_plane_redshift: Optional[float] = None,
     ) -> aa.Grid2DIrregular:
         """
-        Solve for the image plane coordinates that are traced to the source plane coordinate.
+        Solve for the image plane coordinates that are traced to the a circle in the source plane.
 
         This is done by tiling the image plane with triangles and checking if the source plane coordinate is contained
         within the triangle. The triangles are subsampled to increase the resolution with only the triangles that
@@ -47,6 +47,8 @@ class PointSolver(AbstractSolver):
         ----------
         source_plane_coordinate
             The source plane coordinate to trace to the image plane.
+        radius
+            The radius of the circle.
         tracer
             The tracer that traces the image plane coordinates to the source plane
         source_plane_redshift
@@ -59,6 +61,7 @@ class PointSolver(AbstractSolver):
         return super().solve(
             tracer=tracer,
             source_plane_coordinate=source_plane_coordinate,
+            radius=radius,
             source_plane_redshift=source_plane_redshift,
         )
 
@@ -67,6 +70,7 @@ class PointSolver(AbstractSolver):
         self,
         tracer: Tracer,
         source_plane_coordinate: Tuple[float, float],
+        radius: float,
         source_plane_redshift: Optional[float] = None,
         **kwargs,
     ) -> Iterator[Step]:
@@ -78,6 +82,9 @@ class PointSolver(AbstractSolver):
         tracer
             The tracer that traces from the image plane to the source plane.
         source_plane_coordinate
+            The centre of the circle in the source plane.
+        radius
+            The radius of the circle
         source_plane_redshift
             The redshift of the source plane.
 
@@ -89,5 +96,6 @@ class PointSolver(AbstractSolver):
             tracer=tracer,
             source_plane_coordinate=source_plane_coordinate,
             source_plane_redshift=source_plane_redshift,
+            radius=radius,
             **kwargs,
         )
