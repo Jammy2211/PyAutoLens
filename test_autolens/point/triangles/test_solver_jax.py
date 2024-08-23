@@ -5,10 +5,14 @@ import pytest
 import autolens as al
 import autogalaxy as ag
 import autofit as af
+from autofit.jax_wrapper import use_jax
 from autolens import PointSolver
 
 try:
-    from autoarray.structures.triangles.jax_array import ArrayTriangles
+    if use_jax:
+        from autoarray.structures.triangles.jax_array import ArrayTriangles
+    else:
+        from autoarray.structures.triangles.array import ArrayTriangles
 except ImportError:
     from autoarray.structures.triangles.array import ArrayTriangles
 
