@@ -65,12 +65,8 @@ def test_solver(solver):
 def test_trivial(
     source_plane_coordinate: Tuple[float, float],
     grid,
+    solver,
 ):
-    solver = PointSolver.for_grid(
-        grid=grid,
-        pixel_scale_precision=0.01,
-        array_triangles_cls=ArrayTriangles,
-    )
     coordinates = solver.solve(
         NullTracer(),
         source_plane_coordinate=source_plane_coordinate,
