@@ -36,7 +36,7 @@ class VisualizerImaging(af.Visualizer):
         if analysis.positions_likelihood is not None:
             plotter_interface.image_with_positions(
                 image=analysis.dataset.data,
-                positions=analysis.positions_likelihood.data,
+                positions=analysis.positions_likelihood.positions,
             )
 
         if analysis.adapt_images is not None:
