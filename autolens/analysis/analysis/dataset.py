@@ -36,6 +36,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_inversion: aa.SettingsInversion = None,
         raise_inversion_positions_likelihood_exception: bool = True,
+        title_prefix: str = None,
     ):
         """
         Fits a lens model to a dataset via a non-linear search.
@@ -74,6 +75,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
             adapt_image_maker=adapt_image_maker,
             cosmology=cosmology,
             settings_inversion=settings_inversion,
+            title_prefix=title_prefix,
         )
 
         AnalysisLens.__init__(

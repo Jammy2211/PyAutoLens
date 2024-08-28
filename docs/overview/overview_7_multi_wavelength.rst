@@ -218,7 +218,7 @@ different intensities.
     for result in result_list:
 
         tracer_plotter = aplt.TracerPlotter(
-            tracer=result.max_log_likelihood_tracer, grid=result.grid
+            tracer=result.max_log_likelihood_tracer, grid=result.grids.uniform
         )
         tracer_plotter.subplot_tracer()
 
