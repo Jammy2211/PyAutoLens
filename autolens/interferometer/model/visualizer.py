@@ -29,8 +29,7 @@ class VisualizerInterferometer(af.Visualizer):
         """
 
         plotter_interface = PlotterInterfaceInterferometer(
-            image_path=paths.image_path,
-            title_prefix=analysis.title_prefix
+            image_path=paths.image_path, title_prefix=analysis.title_prefix
         )
 
         plotter_interface.interferometer(dataset=analysis.interferometer)
@@ -97,8 +96,7 @@ class VisualizerInterferometer(af.Visualizer):
                 return
 
         plotter_interface = PlotterInterfaceInterferometer(
-            image_path=paths.image_path,
-            title_prefix=analysis.title_prefix
+            image_path=paths.image_path, title_prefix=analysis.title_prefix
         )
 
         try:
