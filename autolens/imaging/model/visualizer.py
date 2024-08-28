@@ -29,7 +29,10 @@ class VisualizerImaging(af.Visualizer):
             the imaging data.
         """
 
-        plotter_interface = PlotterInterfaceImaging(image_path=paths.image_path)
+        plotter_interface = PlotterInterfaceImaging(
+            image_path=paths.image_path,
+            title_prefix=analysis.title_prefix
+        )
 
         plotter_interface.imaging(dataset=analysis.dataset)
 
@@ -94,7 +97,10 @@ class VisualizerImaging(af.Visualizer):
             except exc.InversionException:
                 return
 
-        plotter_interface = PlotterInterfaceImaging(image_path=paths.image_path)
+        plotter_interface = PlotterInterfaceImaging(
+            image_path=paths.image_path,
+            title_prefix=analysis.title_prefix
+        )
 
         try:
             plotter_interface.fit_imaging(fit=fit, during_analysis=during_analysis)
