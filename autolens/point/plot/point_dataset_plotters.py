@@ -75,7 +75,7 @@ class PointDatasetPlotter(Plotter):
         self,
         positions: bool = False,
         fluxes: bool = False,
-        auto_filename="subplot_dataset",
+        auto_filename="subplot_dataset_point",
     ):
         self._subplot_custom_plot(
             positions=positions,
