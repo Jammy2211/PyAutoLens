@@ -37,8 +37,8 @@ NFW:
       value: 0.2
   ell_comps_1:
     gaussian_limits:
-      lower: '-1.0'
-      upper: '1.0'
+      lower: -1.0
+      upper: 1.0
     lower_limit: -1.0
     mean: 0.0
     sigma: 0.3
@@ -241,8 +241,8 @@ gNFW:
       value: 0.2
   ell_comps_1:
     gaussian_limits:
-      lower: '-1.0'
-      upper: '1.0'
+      lower: -1.0
+      upper: 1.0
     lower_limit: -1.0
     mean: 0.0
     sigma: 0.3
