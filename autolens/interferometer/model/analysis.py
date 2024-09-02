@@ -237,7 +237,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
     def save_attributes(self, paths: af.DirectoryPaths):
         """
-         Before the non-linear search begins, this routine saves attributes of the `Analysis` object to the `pickles`
+         Before the non-linear search begins, this routine saves attributes of the `Analysis` object to the `files`
          folder such that they can be loaded after the analysis using PyAutoFit's database and aggregator tools.
 
          For this analysis, it uses the `AnalysisDataset` object's method to output the following:
