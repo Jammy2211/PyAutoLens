@@ -6,7 +6,7 @@ import autoarray as aa
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.analysis.preloads import Preloads
 
-from autogalaxy.aggregator.imaging import _imaging_from
+from autogalaxy.aggregator.imaging.imaging import _imaging_from
 from autogalaxy.aggregator.dataset_model import _dataset_model_from
 from autogalaxy.aggregator import agg_util
 

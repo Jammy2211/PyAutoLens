@@ -3,7 +3,7 @@ from typing import Optional, List
 import autofit as af
 import autoarray as aa
 
-from autogalaxy.aggregator.interferometer import _interferometer_from
+from autogalaxy.aggregator.interferometer.interferometer import _interferometer_from
 from autogalaxy.aggregator.dataset_model import _dataset_model_from
 
 from autolens.interferometer.fit_interferometer import FitInterferometer
