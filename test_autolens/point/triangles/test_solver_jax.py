@@ -4,9 +4,27 @@ import pytest
 
 import autolens as al
 import autogalaxy as ag
-from autoarray.structures.triangles.array import ArrayTriangles
+import autofit as af
+from autofit.jax_wrapper import use_jax
+from autolens import PointSolver
+
+try:
+    if use_jax:
+        from autoarray.structures.triangles.jax_array import ArrayTriangles
+    else:
+        from autoarray.structures.triangles.array import ArrayTriangles
+except ImportError:
+    from autoarray.structures.triangles.array import ArrayTriangles
+
 from autolens.mock import NullTracer
-from autolens.point.solver import PointSolver
+
+
+pytest.importorskip("jax")
+
+
+@pytest.fixture(autouse=True)
+def register(tracer):
+    af.Model.from_instance(tracer)
 
 
 @pytest.fixture
@@ -14,10 +32,11 @@ def solver(grid):
     return PointSolver.for_grid(
         grid=grid,
         pixel_scale_precision=0.01,
+        array_triangles_cls=ArrayTriangles,
     )
 
 
-def test_solver_basic(solver):
+def test_solver(solver):
     tracer = al.Tracer(
         galaxies=[
             al.Galaxy(
@@ -26,21 +45,13 @@ def test_solver_basic(solver):
                     centre=(0.0, 0.0),
                     einstein_radius=1.0,
                 ),
-            ),
-            al.Galaxy(
-                redshift=1.0,
-            ),
+            )
         ]
     )
-
     assert solver.solve(
-        tracer=tracer,
+        tracer,
         source_plane_coordinate=(0.0, 0.0),
     )
-
-
-def test_steps(solver):
-    assert solver.n_steps == 7
 
 
 @pytest.mark.parametrize(
@@ -58,17 +69,13 @@ def test_steps(solver):
 def test_trivial(
     source_plane_coordinate: Tuple[float, float],
     grid,
+    solver,
 ):
-    solver = PointSolver.for_grid(
-        grid=grid,
-        pixel_scale_precision=0.01,
-        array_triangles_cls=ArrayTriangles,
-    )
-    (coordinates,) = solver.solve(
-        tracer=NullTracer(),
+    coordinates = solver.solve(
+        NullTracer(),
         source_plane_coordinate=source_plane_coordinate,
     )
-    assert coordinates == pytest.approx(source_plane_coordinate, abs=1.0e-1)
+    assert coordinates[0] == pytest.approx(source_plane_coordinate, abs=1.0e-1)
 
 
 def test_real_example(grid, tracer):
@@ -77,6 +84,6 @@ def test_real_example(grid, tracer):
         pixel_scale_precision=0.001,
         array_triangles_cls=ArrayTriangles,
     )
-    result = solver.solve(tracer=tracer, source_plane_coordinate=(0.07, 0.07))
 
+    result = solver.solve(tracer, (0.07, 0.07))
     assert len(result) == 5

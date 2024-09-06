@@ -1,44 +1,29 @@
 import logging
 import math
-from dataclasses import dataclass
+from abc import ABC, abstractmethod
+
 from typing import Tuple, List, Iterator, Type, Optional
 
 import autoarray as aa
 
-from autoarray.structures.triangles import array
+import numpy as np
+from autofit.jax_wrapper import jit, use_jax
+
+try:
+    if use_jax:
+        from autoarray.structures.triangles.jax_array import ArrayTriangles
+    from autoarray.structures.triangles.array import ArrayTriangles
+except ImportError:
+    from autoarray.structures.triangles.array import ArrayTriangles
+from autoarray.structures.triangles.abstract import AbstractTriangles
 
 from autolens.lens.tracer import Tracer
+from .step import Step
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class Step:
-    """
-    A step in the triangle solver algorithm.
-
-    Attributes
-    ----------
-    number
-        The number of the step.
-    initial_triangles
-        The triangles at the start of the step.
-    filtered_triangles
-        The triangles trace to triangles that contain the source plane coordinate.
-    neighbourhood
-        The neighbourhood of the filtered triangles.
-    up_sampled
-        The neighbourhood up-sampled to increase the resolution.
-    """
-
-    number: int
-    initial_triangles: aa.AbstractTriangles
-    filtered_triangles: aa.AbstractTriangles
-    neighbourhood: aa.AbstractTriangles
-    up_sampled: aa.AbstractTriangles
-
-
-class PointSolver:
+class AbstractSolver(ABC):
     # noinspection PyPep8Naming
     def __init__(
         self,
@@ -49,7 +34,7 @@ class PointSolver:
         x_max: float,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
-        ArrayTriangles: Type[aa.AbstractTriangles] = array.ArrayTriangles,
+        array_triangles_cls: Type[AbstractTriangles] = ArrayTriangles,
     ):
         """
         Determine the image plane coordinates that are traced to be a source plane coordinate.
@@ -62,7 +47,7 @@ class PointSolver:
         ----------
         pixel_scale_precision
             The target pixel scale of the image grid.
-        ArrayTriangles
+        array_triangles_cls
             The class to use for the triangles.
         """
         self.scale = scale
@@ -72,7 +57,7 @@ class PointSolver:
         self.x_max = x_max
         self.pixel_scale_precision = pixel_scale_precision
         self.magnification_threshold = magnification_threshold
-        self.ArrayTriangles = ArrayTriangles
+        self.array_triangles_cls = array_triangles_cls
 
     # noinspection PyPep8Naming
     @classmethod
@@ -81,7 +66,7 @@ class PointSolver:
         grid: aa.Grid2D,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
-        ArrayTriangles: Type[aa.AbstractTriangles] = array.ArrayTriangles,
+        array_triangles_cls: Type[AbstractTriangles] = ArrayTriangles,
     ):
         scale = grid.pixel_scale
 
@@ -101,7 +86,7 @@ class PointSolver:
             x_max=x_max,
             pixel_scale_precision=pixel_scale_precision,
             magnification_threshold=magnification_threshold,
-            ArrayTriangles=ArrayTriangles,
+            array_triangles_cls=array_triangles_cls,
         )
 
     @property
@@ -111,8 +96,8 @@ class PointSolver:
         """
         return math.ceil(math.log2(self.scale / self.pixel_scale_precision))
 
+    @staticmethod
     def _source_plane_grid(
-        self,
         tracer: Tracer,
         grid: aa.type.Grid2DLike,
         source_plane_redshift: Optional[float] = None,
@@ -144,11 +129,12 @@ class PointSolver:
         # noinspection PyTypeChecker
         return grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
 
+    @jit
     def solve(
         self,
         tracer: Tracer,
-        source_plane_coordinate: Tuple[float, float],
         source_plane_redshift: Optional[float] = None,
+        **kwargs,
     ) -> aa.Grid2DIrregular:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
@@ -162,8 +148,10 @@ class PointSolver:
 
         Parameters
         ----------
-        source_plane_coordinate
-            The source plane coordinate to trace to the image plane.
+        tracer
+            The tracer to use to trace the image plane coordinates to the source plane.
+        source_plane_redshift
+            The redshift of the source plane.
 
         Returns
         -------
@@ -177,8 +165,8 @@ class PointSolver:
         steps = list(
             self.steps(
                 tracer=tracer,
-                source_plane_coordinate=source_plane_coordinate,
                 source_plane_redshift=source_plane_redshift,
+                **kwargs,
             )
         )
         final_step = steps[-1]
@@ -198,7 +186,20 @@ class PointSolver:
                 f"Filtered {difference} multiple-images with magnification below threshold."
             )
 
-        return aa.Grid2DIrregular(values=filtered_means)
+        filtered_close = []
+
+        for mean in filtered_means:
+            if any(
+                np.linalg.norm(np.array(mean) - np.array(other))
+                <= self.pixel_scale_precision
+                for other in filtered_close
+            ):
+                continue
+            filtered_close.append(mean)
+
+        return aa.Grid2DIrregular(
+            [pair for pair in filtered_close if not np.isnan(pair).all()]
+        )
 
     def _filter_low_magnification(
         self, tracer: Tracer, points: List[Tuple[float, float]]
@@ -227,26 +228,15 @@ class PointSolver:
             if abs(magnification) > self.magnification_threshold
         ]
 
-    def _filter_triangles(
+    def _filtered_triangles(
         self,
         tracer: Tracer,
-        source_plane_coordinate: Tuple[float, float],
         triangles: aa.AbstractTriangles,
-        source_plane_redshift: Optional[float] = None,
+        source_plane_redshift,
+        **kwargs,
     ):
         """
-        Filter the triangles to keep only those that contain the source plane coordinate.
-
-        Parameters
-        ----------
-        triangles
-            A set of triangles that may contain the source plane coordinate.
-        source_plane_coordinate
-            The source plane coordinate to check if it is contained within the triangles.
-
-        Returns
-        -------
-        The triangles that contain the source plane coordinate.
+        Filter the triangles to keep only those that meet the solver condition
         """
         source_plane_grid = self._source_plane_grid(
             tracer=tracer,
@@ -254,28 +244,42 @@ class PointSolver:
             source_plane_redshift=source_plane_redshift,
         )
         source_triangles = triangles.with_vertices(source_plane_grid.array)
-        indexes = source_triangles.containing_indices(point=source_plane_coordinate)
-        return triangles.for_indexes(indexes=indexes)
+
+        return triangles.for_indexes(
+            indexes=self._filter_indexes(source_triangles, **kwargs)
+        )
+
+    @abstractmethod
+    def _filter_indexes(
+        self,
+        source_triangles: aa.AbstractTriangles,
+        **kwargs,
+    ) -> np.ndarray:
+        pass
 
     def steps(
         self,
         tracer: Tracer,
-        source_plane_coordinate: Tuple[float, float],
         source_plane_redshift: Optional[float] = None,
+        **kwargs,
     ) -> Iterator[Step]:
         """
         Iterate over the steps of the triangle solver algorithm.
 
         Parameters
         ----------
-        source_plane_coordinate
-            The source plane coordinate to trace to the image plane.
+        tracer
+            The tracer to use to trace the image plane coordinates to the source plane.
+        source_plane_redshift
+            The redshift of the source plane.
+        kwargs
+            Additional arguments to pass to the triangle filter.
 
         Returns
         -------
         An iterator over the steps of the triangle solver algorithm.
         """
-        initial_triangles = self.ArrayTriangles.for_limits_and_scale(
+        initial_triangles = self.array_triangles_cls.for_limits_and_scale(
             y_min=self.y_min,
             y_max=self.y_max,
             x_min=self.x_min,
@@ -284,11 +288,11 @@ class PointSolver:
         )
 
         for number in range(self.n_steps):
-            kept_triangles = self._filter_triangles(
+            kept_triangles = self._filtered_triangles(
                 tracer=tracer,
-                source_plane_coordinate=source_plane_coordinate,
                 triangles=initial_triangles,
                 source_plane_redshift=source_plane_redshift,
+                **kwargs,
             )
             neighbourhood = kept_triangles.neighborhood()
             up_sampled = neighbourhood.up_sample()
@@ -302,3 +306,28 @@ class PointSolver:
             )
 
             initial_triangles = up_sampled
+
+    def tree_flatten(self):
+        return (), (
+            self.scale,
+            self.y_min,
+            self.y_max,
+            self.x_min,
+            self.x_max,
+            self.pixel_scale_precision,
+            self.magnification_threshold,
+            self.array_triangles_cls,
+        )
+
+    @classmethod
+    def tree_unflatten(cls, aux_data, children):
+        return cls(
+            scale=aux_data[0],
+            y_min=aux_data[1],
+            y_max=aux_data[2],
+            x_min=aux_data[3],
+            x_max=aux_data[4],
+            pixel_scale_precision=aux_data[5],
+            magnification_threshold=aux_data[6],
+            array_triangles_cls=aux_data[7],
+        )
