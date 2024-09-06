@@ -145,6 +145,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_inversion: aa.SettingsInversion = None,
         raise_inversion_positions_likelihood_exception: bool = True,
+        title_prefix: str = None,
     ):
         """
         Fits a lens model to a dataset via a non-linear search.
@@ -176,6 +177,9 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
             be inferred, in which case an Exception is raised before the model-fit begins to inform the user
             of this. This exception is not raised if this input is False, allowing the user to perform the model-fit
             anyway.
+        title_prefix
+            A string that is added before the title of all figures output by visualization, for example to
+            put the name of the dataset and galaxy in the title.
         """
 
         super().__init__(
@@ -183,6 +187,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
             adapt_image_maker=adapt_image_maker,
             cosmology=cosmology,
             settings_inversion=settings_inversion,
+            title_prefix=title_prefix,
         )
 
         AnalysisLens.__init__(

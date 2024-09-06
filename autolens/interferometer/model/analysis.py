@@ -39,6 +39,7 @@ class AnalysisInterferometer(AnalysisDataset):
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_inversion: aa.SettingsInversion = None,
         raise_inversion_positions_likelihood_exception: bool = True,
+        title_prefix: str = None,
     ):
         """
         Analysis classes are used by PyAutoFit to fit a model to a dataset via a non-linear search.
@@ -76,6 +77,9 @@ class AnalysisInterferometer(AnalysisDataset):
             be inferred, in which case an Exception is raised before the model-fit begins to inform the user
             of this. This exception is not raised if this input is False, allowing the user to perform the model-fit
             anyway.
+        title_prefix
+            A string that is added before the title of all figures output by visualization, for example to
+            put the name of the dataset and galaxy in the title.
         """
         super().__init__(
             dataset=dataset,
@@ -84,6 +88,7 @@ class AnalysisInterferometer(AnalysisDataset):
             cosmology=cosmology,
             settings_inversion=settings_inversion,
             raise_inversion_positions_likelihood_exception=raise_inversion_positions_likelihood_exception,
+            title_prefix=title_prefix,
         )
 
     @property
@@ -232,7 +237,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
     def save_attributes(self, paths: af.DirectoryPaths):
         """
-         Before the non-linear search begins, this routine saves attributes of the `Analysis` object to the `pickles`
+         Before the non-linear search begins, this routine saves attributes of the `Analysis` object to the `files`
          folder such that they can be loaded after the analysis using PyAutoFit's database and aggregator tools.
 
          For this analysis, it uses the `AnalysisDataset` object's method to output the following:

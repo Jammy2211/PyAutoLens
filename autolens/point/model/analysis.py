@@ -34,6 +34,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         fit_positions_cls=FitPositionsImagePairRepeat,
         image=None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
+        title_prefix: str = None,
     ):
         """
         The analysis performed for model-fitting a point-source dataset, for example fitting the point-sources of a
@@ -54,6 +55,9 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
             visualization.
         cosmology
             The cosmology of the ray-tracing calculation.
+        title_prefix
+            A string that is added before the title of all figures output by visualization, for example to
+            put the name of the dataset and galaxy in the title.
         """
 
         super().__init__(cosmology=cosmology)
@@ -64,7 +68,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
 
         self.solver = solver
         self.fit_positions_cls = fit_positions_cls
-        self.dataset = dataset
+        self.title_prefix = title_prefix
 
     def log_likelihood_function(self, instance):
         """

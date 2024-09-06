@@ -36,7 +36,7 @@ def plane_redshifts_from(galaxies: List[ag.Galaxy]) -> List[float]:
 
 def planes_from(
     galaxies: List[ag.Galaxy], plane_redshifts: Optional[List[float]] = None
-) -> List[List[ag.Galaxy]]:
+) -> List[ag.Galaxies]:
     """
     Returns a list of list of galaxies grouped into their planes, where planes contained all galaxies at the same
     unique redshift.

@@ -143,7 +143,7 @@ class AbstractSolver(ABC):
         within the triangle. The triangles are subsampled to increase the resolution with only the triangles that
         contain the source plane coordinate and their neighbours being kept.
 
-        The means of the triangles  are then filtered to keep only those with an absolute magnification above the
+        The means of the triangles are then filtered to keep only those with an absolute magnification above the
         threshold.
 
         Parameters

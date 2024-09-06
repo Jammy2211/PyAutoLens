@@ -26,6 +26,7 @@ label:
     intensity: I_{\rm b}
     kappa: \kappa
     kappa_s: \kappa_{\rm s}
+    log10m_vir: log_{\rm 10}(m_{vir})
     m: m
     mass: M
     mass_at_200: M_{\rm 200}
@@ -40,6 +41,7 @@ label:
     normalization_scale: n
     outer_coefficient: \lambda_{\rm 2}
     outer_slope: t_{\rm 2}
+    overdens: \Delta_{\rm vir}
     pixels: N_{\rm pix}
     radius_break: R_{\rm b}
     redshift: z

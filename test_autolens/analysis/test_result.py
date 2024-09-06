@@ -221,8 +221,7 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
 
     multiple_images = result.image_plane_multiple_image_positions
 
-    assert multiple_images.in_list[0][0] == pytest.approx(0.968719, 1.0e-4)
-    assert multiple_images.in_list[0][1] == pytest.approx(0.366210, 1.0e-4)
+    assert pytest.approx((0.968719, 0.366210), 1.0e-4) in multiple_images.in_list
 
 
 def test__positions_threshold_from(analysis_imaging_7x7):

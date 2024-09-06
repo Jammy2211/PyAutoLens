@@ -29,14 +29,17 @@ class VisualizerImaging(af.Visualizer):
             the imaging data.
         """
 
-        plotter_interface = PlotterInterfaceImaging(image_path=paths.image_path)
+        plotter_interface = PlotterInterfaceImaging(
+            image_path=paths.image_path,
+            title_prefix=analysis.title_prefix
+        )
 
         plotter_interface.imaging(dataset=analysis.dataset)
 
         if analysis.positions_likelihood is not None:
             plotter_interface.image_with_positions(
                 image=analysis.dataset.data,
-                positions=analysis.positions_likelihood.data,
+                positions=analysis.positions_likelihood.positions,
             )
 
         if analysis.adapt_images is not None:
@@ -94,7 +97,10 @@ class VisualizerImaging(af.Visualizer):
             except exc.InversionException:
                 return
 
-        plotter_interface = PlotterInterfaceImaging(image_path=paths.image_path)
+        plotter_interface = PlotterInterfaceImaging(
+            image_path=paths.image_path,
+            title_prefix=analysis.title_prefix
+        )
 
         try:
             plotter_interface.fit_imaging(fit=fit, during_analysis=during_analysis)
