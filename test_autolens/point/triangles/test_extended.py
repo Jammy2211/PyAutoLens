@@ -1,12 +1,13 @@
 import pytest
 
+from autoarray.structures.triangles.shape import Circle
 from autolens.mock import NullTracer
-from autolens.point.solver.circle_solver import CircleSolver
+from autolens.point.solver.abstract_solver import ShapeSolver
 
 
 @pytest.fixture
 def solver(grid):
-    return CircleSolver.for_grid(
+    return ShapeSolver.for_grid(
         grid=grid,
         pixel_scale_precision=0.01,
     )
@@ -15,8 +16,11 @@ def solver(grid):
 def test_solver_basic(solver):
     result = solver.solve(
         tracer=NullTracer(),
-        source_plane_coordinate=(0.0, 0.0),
-        radius=0.01,
+        shape=Circle(
+            0.0,
+            0.0,
+            radius=0.01,
+        ),
     )
     assert list(map(tuple, result)) == [
         (-0.012003766846269881, 0.0078125),

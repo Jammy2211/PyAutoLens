@@ -1,12 +1,13 @@
 import logging
 import math
-from abc import ABC, abstractmethod
 
 from typing import Tuple, List, Iterator, Type, Optional
 
 import autoarray as aa
 
 import numpy as np
+
+from autoarray.structures.triangles.shape import Shape
 from autofit.jax_wrapper import jit, use_jax
 
 try:
@@ -23,7 +24,7 @@ from .step import Step
 logger = logging.getLogger(__name__)
 
 
-class AbstractSolver(ABC):
+class ShapeSolver:
     # noinspection PyPep8Naming
     def __init__(
         self,
@@ -133,8 +134,8 @@ class AbstractSolver(ABC):
     def solve(
         self,
         tracer: Tracer,
+        shape: Shape,
         source_plane_redshift: Optional[float] = None,
-        **kwargs,
     ) -> aa.Grid2DIrregular:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
@@ -150,6 +151,8 @@ class AbstractSolver(ABC):
         ----------
         tracer
             The tracer to use to trace the image plane coordinates to the source plane.
+        shape
+            The shape in the source plane for which we want to identify the image plane coordinates.
         source_plane_redshift
             The redshift of the source plane.
 
@@ -165,8 +168,8 @@ class AbstractSolver(ABC):
         steps = list(
             self.steps(
                 tracer=tracer,
+                shape=shape,
                 source_plane_redshift=source_plane_redshift,
-                **kwargs,
             )
         )
         final_step = steps[-1]
@@ -233,7 +236,7 @@ class AbstractSolver(ABC):
         tracer: Tracer,
         triangles: aa.AbstractTriangles,
         source_plane_redshift,
-        **kwargs,
+        shape: Shape,
     ):
         """
         Filter the triangles to keep only those that meet the solver condition
@@ -245,23 +248,15 @@ class AbstractSolver(ABC):
         )
         source_triangles = triangles.with_vertices(source_plane_grid.array)
 
-        return triangles.for_indexes(
-            indexes=self._filter_indexes(source_triangles, **kwargs)
-        )
+        indexes = source_triangles.containing_indices(shape=shape)
 
-    @abstractmethod
-    def _filter_indexes(
-        self,
-        source_triangles: aa.AbstractTriangles,
-        **kwargs,
-    ) -> np.ndarray:
-        pass
+        return triangles.for_indexes(indexes=indexes)
 
     def steps(
         self,
         tracer: Tracer,
+        shape: Shape,
         source_plane_redshift: Optional[float] = None,
-        **kwargs,
     ) -> Iterator[Step]:
         """
         Iterate over the steps of the triangle solver algorithm.
@@ -272,8 +267,8 @@ class AbstractSolver(ABC):
             The tracer to use to trace the image plane coordinates to the source plane.
         source_plane_redshift
             The redshift of the source plane.
-        kwargs
-            Additional arguments to pass to the triangle filter.
+        shape
+            The shape in the source plane for which we want to identify the image plane coordinates.
 
         Returns
         -------
@@ -292,7 +287,7 @@ class AbstractSolver(ABC):
                 tracer=tracer,
                 triangles=initial_triangles,
                 source_plane_redshift=source_plane_redshift,
-                **kwargs,
+                shape=shape,
             )
             neighbourhood = kept_triangles.neighborhood()
             up_sampled = neighbourhood.up_sample()
