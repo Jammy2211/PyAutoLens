@@ -7,7 +7,7 @@ from typing import Tuple, List, Iterator, Type, Optional
 import autoarray as aa
 
 import numpy as np
-from autofit.jax_wrapper import jit, register_pytree_node_class, use_jax
+from autofit.jax_wrapper import jit, use_jax
 
 try:
     if use_jax:
@@ -96,8 +96,8 @@ class AbstractSolver(ABC):
         """
         return math.ceil(math.log2(self.scale / self.pixel_scale_precision))
 
+    @staticmethod
     def _source_plane_grid(
-        self,
         tracer: Tracer,
         grid: aa.type.Grid2DLike,
         source_plane_redshift: Optional[float] = None,
@@ -197,7 +197,9 @@ class AbstractSolver(ABC):
                 continue
             filtered_close.append(mean)
 
-        return [pair for pair in filtered_close if not np.isnan(pair).all()]
+        return aa.Grid2DIrregular(
+            [pair for pair in filtered_close if not np.isnan(pair).all()]
+        )
 
     def _filter_low_magnification(
         self, tracer: Tracer, points: List[Tuple[float, float]]
