@@ -6,7 +6,7 @@ import autoarray as aa
 from autoarray.structures.triangles.shape import Point
 
 from autofit.jax_wrapper import jit, register_pytree_node_class
-from .abstract_solver import ShapeSolver
+from .shape_solver import ShapeSolver
 
 
 from autolens.lens.tracer import Tracer
