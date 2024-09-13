@@ -14,15 +14,11 @@ def solver(grid):
 
 
 def test_solver_basic(solver):
-    result = solver.solve(
+    assert solver.find_magnification(
         tracer=NullTracer(),
         shape=Circle(
             0.0,
             0.0,
             radius=0.01,
         ),
-    )
-    assert list(map(tuple, result)) == [
-        (-0.0029826688901819823, -0.0078125),
-        (-0.0029826688901819823, 0.0078125),
-    ]
+    ) == pytest.approx(1.0, abs=0.01)

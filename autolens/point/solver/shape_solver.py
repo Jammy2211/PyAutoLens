@@ -24,7 +24,7 @@ from .step import Step
 logger = logging.getLogger(__name__)
 
 
-class ShapeSolver:
+class AbstractSolver:
     # noinspection PyPep8Naming
     def __init__(
         self,
@@ -131,12 +131,12 @@ class ShapeSolver:
         return grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
 
     @jit
-    def solve(
+    def solve_triangles(
         self,
         tracer: Tracer,
         shape: Shape,
         source_plane_redshift: Optional[float] = None,
-    ) -> aa.Grid2DIrregular:
+    ) -> AbstractTriangles:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
 
@@ -173,36 +173,7 @@ class ShapeSolver:
             )
         )
         final_step = steps[-1]
-        kept_triangles = final_step.filtered_triangles
-
-        filtered_means = self._filter_low_magnification(
-            tracer=tracer, points=kept_triangles.means
-        )
-
-        difference = len(kept_triangles.means) - len(filtered_means)
-        if difference > 0:
-            logger.debug(
-                f"Filtered one multiple-image with magnification below threshold."
-            )
-        elif difference > 1:
-            logger.warning(
-                f"Filtered {difference} multiple-images with magnification below threshold."
-            )
-
-        filtered_close = []
-
-        for mean in filtered_means:
-            if any(
-                np.linalg.norm(np.array(mean) - np.array(other))
-                <= self.pixel_scale_precision
-                for other in filtered_close
-            ):
-                continue
-            filtered_close.append(mean)
-
-        return aa.Grid2DIrregular(
-            [pair for pair in filtered_close if not np.isnan(pair).all()]
-        )
+        return final_step.filtered_triangles
 
     def _filter_low_magnification(
         self, tracer: Tracer, points: List[Tuple[float, float]]
@@ -326,3 +297,18 @@ class ShapeSolver:
             magnification_threshold=aux_data[6],
             array_triangles_cls=aux_data[7],
         )
+
+
+class ShapeSolver(AbstractSolver):
+    def find_magnification(
+        self,
+        tracer: Tracer,
+        shape: Shape,
+        source_plane_redshift: Optional[float] = None,
+    ) -> float:
+        kept_triangles = super().solve_triangles(
+            tracer=tracer,
+            shape=shape,
+            source_plane_redshift=source_plane_redshift,
+        )
+        return kept_triangles.area / shape.area
