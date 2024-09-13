@@ -306,6 +306,22 @@ class ShapeSolver(AbstractSolver):
         shape: Shape,
         source_plane_redshift: Optional[float] = None,
     ) -> float:
+        """
+        Find the magnification of the shape in the source plane.
+
+        Parameters
+        ----------
+        tracer
+            A tracer that traces the image plane to the source plane.
+        shape
+            The shape of an image plane pixel.
+        source_plane_redshift
+            The redshift of the source plane.
+
+        Returns
+        -------
+        The magnification of the shape in the source plane.
+        """
         kept_triangles = super().solve_triangles(
             tracer=tracer,
             shape=shape,
