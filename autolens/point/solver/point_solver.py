@@ -1,31 +1,22 @@
 import logging
-
-from typing import Tuple, List, Iterator, Optional
+from typing import Tuple, Optional
 
 import numpy as np
 
 import autoarray as aa
+from autoarray.structures.triangles.shape import Point
 
 from autofit.jax_wrapper import jit, register_pytree_node_class
-from .abstract_solver import AbstractSolver
+from .shape_solver import AbstractSolver
 
 
 from autolens.lens.tracer import Tracer
-from .step import Step
 
 logger = logging.getLogger(__name__)
 
 
 @register_pytree_node_class
 class PointSolver(AbstractSolver):
-    # noinspection PyMethodOverriding
-    def _filter_indexes(
-        self,
-        source_triangles: aa.AbstractTriangles,
-        source_plane_coordinate: Tuple[float, float],
-    ) -> np.ndarray:
-        return source_triangles.containing_indices(point=source_plane_coordinate)
-
     @jit
     def solve(
         self,
@@ -56,38 +47,36 @@ class PointSolver(AbstractSolver):
         -------
         A list of image plane coordinates that are traced to the source plane coordinate.
         """
-        return super().solve(
+        kept_triangles = super().solve_triangles(
             tracer=tracer,
-            source_plane_coordinate=source_plane_coordinate,
+            shape=Point(*source_plane_coordinate),
             source_plane_redshift=source_plane_redshift,
         )
+        filtered_means = self._filter_low_magnification(
+            tracer=tracer, points=kept_triangles.means
+        )
 
-    # noinspection PyMethodOverriding
-    def steps(
-        self,
-        tracer: Tracer,
-        source_plane_coordinate: Tuple[float, float],
-        source_plane_redshift: Optional[float] = None,
-        **kwargs,
-    ) -> Iterator[Step]:
-        """
-        Iterate over the steps of the triangle solver algorithm.
+        difference = len(kept_triangles.means) - len(filtered_means)
+        if difference > 0:
+            logger.debug(
+                f"Filtered one multiple-image with magnification below threshold."
+            )
+        elif difference > 1:
+            logger.warning(
+                f"Filtered {difference} multiple-images with magnification below threshold."
+            )
 
-        Parameters
-        ----------
-        tracer
-            The tracer that traces from the image plane to the source plane.
-        source_plane_coordinate
-        source_plane_redshift
-            The redshift of the source plane.
+        filtered_close = []
 
-        Returns
-        -------
-        An iterator over the steps of the triangle solver algorithm.
-        """
-        yield from super().steps(
-            tracer=tracer,
-            source_plane_coordinate=source_plane_coordinate,
-            source_plane_redshift=source_plane_redshift,
-            **kwargs,
+        for mean in filtered_means:
+            if any(
+                np.linalg.norm(np.array(mean) - np.array(other))
+                <= self.pixel_scale_precision
+                for other in filtered_close
+            ):
+                continue
+            filtered_close.append(mean)
+
+        return aa.Grid2DIrregular(
+            [pair for pair in filtered_close if not np.isnan(pair).all()]
         )

@@ -1,12 +1,13 @@
 import logging
 import math
-from abc import ABC, abstractmethod
 
 from typing import Tuple, List, Iterator, Type, Optional
 
 import autoarray as aa
 
 import numpy as np
+
+from autoarray.structures.triangles.shape import Shape
 from autofit.jax_wrapper import jit, use_jax
 
 try:
@@ -23,7 +24,7 @@ from .step import Step
 logger = logging.getLogger(__name__)
 
 
-class AbstractSolver(ABC):
+class AbstractSolver:
     # noinspection PyPep8Naming
     def __init__(
         self,
@@ -130,12 +131,12 @@ class AbstractSolver(ABC):
         return grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
 
     @jit
-    def solve(
+    def solve_triangles(
         self,
         tracer: Tracer,
+        shape: Shape,
         source_plane_redshift: Optional[float] = None,
-        **kwargs,
-    ) -> aa.Grid2DIrregular:
+    ) -> AbstractTriangles:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
 
@@ -150,6 +151,8 @@ class AbstractSolver(ABC):
         ----------
         tracer
             The tracer to use to trace the image plane coordinates to the source plane.
+        shape
+            The shape in the source plane for which we want to identify the image plane coordinates.
         source_plane_redshift
             The redshift of the source plane.
 
@@ -165,41 +168,12 @@ class AbstractSolver(ABC):
         steps = list(
             self.steps(
                 tracer=tracer,
+                shape=shape,
                 source_plane_redshift=source_plane_redshift,
-                **kwargs,
             )
         )
         final_step = steps[-1]
-        kept_triangles = final_step.filtered_triangles
-
-        filtered_means = self._filter_low_magnification(
-            tracer=tracer, points=kept_triangles.means
-        )
-
-        difference = len(kept_triangles.means) - len(filtered_means)
-        if difference > 0:
-            logger.debug(
-                f"Filtered one multiple-image with magnification below threshold."
-            )
-        elif difference > 1:
-            logger.warning(
-                f"Filtered {difference} multiple-images with magnification below threshold."
-            )
-
-        filtered_close = []
-
-        for mean in filtered_means:
-            if any(
-                np.linalg.norm(np.array(mean) - np.array(other))
-                <= self.pixel_scale_precision
-                for other in filtered_close
-            ):
-                continue
-            filtered_close.append(mean)
-
-        return aa.Grid2DIrregular(
-            [pair for pair in filtered_close if not np.isnan(pair).all()]
-        )
+        return final_step.filtered_triangles
 
     def _filter_low_magnification(
         self, tracer: Tracer, points: List[Tuple[float, float]]
@@ -233,7 +207,7 @@ class AbstractSolver(ABC):
         tracer: Tracer,
         triangles: aa.AbstractTriangles,
         source_plane_redshift,
-        **kwargs,
+        shape: Shape,
     ):
         """
         Filter the triangles to keep only those that meet the solver condition
@@ -245,23 +219,15 @@ class AbstractSolver(ABC):
         )
         source_triangles = triangles.with_vertices(source_plane_grid.array)
 
-        return triangles.for_indexes(
-            indexes=self._filter_indexes(source_triangles, **kwargs)
-        )
+        indexes = source_triangles.containing_indices(shape=shape)
 
-    @abstractmethod
-    def _filter_indexes(
-        self,
-        source_triangles: aa.AbstractTriangles,
-        **kwargs,
-    ) -> np.ndarray:
-        pass
+        return triangles.for_indexes(indexes=indexes)
 
     def steps(
         self,
         tracer: Tracer,
+        shape: Shape,
         source_plane_redshift: Optional[float] = None,
-        **kwargs,
     ) -> Iterator[Step]:
         """
         Iterate over the steps of the triangle solver algorithm.
@@ -272,8 +238,8 @@ class AbstractSolver(ABC):
             The tracer to use to trace the image plane coordinates to the source plane.
         source_plane_redshift
             The redshift of the source plane.
-        kwargs
-            Additional arguments to pass to the triangle filter.
+        shape
+            The shape in the source plane for which we want to identify the image plane coordinates.
 
         Returns
         -------
@@ -292,7 +258,7 @@ class AbstractSolver(ABC):
                 tracer=tracer,
                 triangles=initial_triangles,
                 source_plane_redshift=source_plane_redshift,
-                **kwargs,
+                shape=shape,
             )
             neighbourhood = kept_triangles.neighborhood()
             up_sampled = neighbourhood.up_sample()
@@ -331,3 +297,34 @@ class AbstractSolver(ABC):
             magnification_threshold=aux_data[6],
             array_triangles_cls=aux_data[7],
         )
+
+
+class ShapeSolver(AbstractSolver):
+    def find_magnification(
+        self,
+        tracer: Tracer,
+        shape: Shape,
+        source_plane_redshift: Optional[float] = None,
+    ) -> float:
+        """
+        Find the magnification of the shape in the source plane.
+
+        Parameters
+        ----------
+        tracer
+            A tracer that traces the image plane to the source plane.
+        shape
+            The shape of an image plane pixel.
+        source_plane_redshift
+            The redshift of the source plane.
+
+        Returns
+        -------
+        The magnification of the shape in the source plane.
+        """
+        kept_triangles = super().solve_triangles(
+            tracer=tracer,
+            shape=shape,
+            source_plane_redshift=source_plane_redshift,
+        )
+        return kept_triangles.area / shape.area
