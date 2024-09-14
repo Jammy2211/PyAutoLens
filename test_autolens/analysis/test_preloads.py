@@ -8,7 +8,11 @@ import autolens as al
 
 def test__set_traced_grids_of_planes():
 
-    grid = al.Grid2D.no_mask(values=np.array([[[1.0, 1.0]]]), pixel_scales=1.0)
+    grid = al.Grid2D.no_mask(
+        values=np.array([[[1.0, 1.0]]]),
+        pixel_scales=1.0,
+        over_sampling=al.OverSamplingUniform(sub_size=1)
+    )
 
     # traced grids is None so no Preloading.
 
@@ -28,8 +32,8 @@ def test__set_traced_grids_of_planes():
     tracer_0 = al.m.MockTracer(traced_grid_2d_list_from=[None, np.array([[1.0]])])
     tracer_1 = al.m.MockTracer(traced_grid_2d_list_from=[None, np.array([[2.0]])])
 
-    fit_0 = al.m.MockFitImaging(tracer=tracer_0)
-    fit_1 = al.m.MockFitImaging(tracer=tracer_1)
+    fit_0 = al.m.MockFitImaging(tracer=tracer_0, grid=grid)
+    fit_1 = al.m.MockFitImaging(tracer=tracer_1, grid=grid)
 
     preloads = al.Preloads(traced_grids_of_planes_for_inversion=1)
     preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
@@ -41,8 +45,8 @@ def test__set_traced_grids_of_planes():
     tracer_0 = al.m.MockTracer(traced_grid_2d_list_from=[None, np.array([[1.0]])])
     tracer_1 = al.m.MockTracer(traced_grid_2d_list_from=[None, np.array([[1.0]])])
 
-    fit_0 = al.m.MockFitImaging(tracer=tracer_0)
-    fit_1 = al.m.MockFitImaging(tracer=tracer_1)
+    fit_0 = al.m.MockFitImaging(tracer=tracer_0, grid=grid)
+    fit_1 = al.m.MockFitImaging(tracer=tracer_1, grid=grid)
 
     preloads = al.Preloads(traced_grids_of_planes_for_inversion=1)
     preloads.set_traced_grids_of_planes_for_inversion(fit_0=fit_0, fit_1=fit_1)
