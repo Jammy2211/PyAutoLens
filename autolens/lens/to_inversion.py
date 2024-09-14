@@ -475,6 +475,8 @@ class TracerToInversion(ag.AbstractToInversion):
                     except AttributeError:
                         adapt_galaxy_image = None
 
+                    print(traced_grids_of_planes_list[plane_index].shape)
+
                     mapper = to_inversion.mapper_from(
                         mesh=pixelization_list[plane_index][mapper_index].mesh,
                         regularization=pixelization_list[plane_index][

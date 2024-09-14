@@ -30,7 +30,15 @@ class MockFitImaging(aa.m.MockFitImaging):
         if self._grid is not None:
             return self._grid
 
-        return super().grid
+        return super().grids.uniform
+
+    @property
+    def grids(self) -> aa.GridsInterface:
+
+        return aa.GridsInterface(
+            uniform=self.grid,
+            pixelization=self.grid,
+        )
 
     @property
     def tracer_to_inversion(self) -> MockTracerToInversion:
