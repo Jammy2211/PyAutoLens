@@ -9,14 +9,23 @@ Firstly, brief one sentence descriptions of each feature are given, with more de
 links to the relevant workspace examples.
 
 **Pixelizations**: Reconstructing the source galaxy on a mesh of pixels, to capture extremely irregular structures like spiral arms.
+
 **Point Sources**: Modeling point sources (e.g. quasars) observed in the strong lens imaging data.
+
 **Interferometry**: Modeling of interferometer data (e.g. ALMA, LOFAR) directly in the uv-plane.
+
 **Multi Gaussian Expansion (MGE)**: Decomposing the lens galaxy into hundreds of Gaussians, for a clean lens subtraction.
+
 **Groups**: Modeling group-scale strong lenses with multiple lens galaxies and multiple source galaxies.
+
 **Multi-Wavelength**: Simultaneous analysis of imaging and / or interferometer datasets observed at different wavelengths.
+
 **Ellipse Fitting**: Fitting ellipses to determine a lens galaxy's ellipticity, position angle and centre.
+
 **Shapelets**: Decomposing a galaxy into a set of shapelet orthogonal basis functions, capturing more complex structures than simple light profiles.
+
 **Operated Light Profiles**: Assuming a light profile has already been convolved with the PSF, for when the PSF is a significant effect.
+
 **Sky Background**: Including the background sky in the model to ensure robust fits to the outskirts of galaxies.
 
 Pixelizations
@@ -30,7 +39,7 @@ reconstructed on a Voronoi mesh adapted to the source morphology, revealing it t
 galaxy:
 
 .. image:: https://github.com/Jammy2211/PyAutoLens/blob/main/files/imageaxis.png?raw=true
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 A complete overview of pixelized source reconstructions can be found
@@ -84,7 +93,7 @@ Interferometry
 Modeling of interferometer data from submillimeter (e.g. ALMA) and radio (e.g. LOFAR) observatories:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoGalaxy/main/paper/almacombined.png
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 Visibilities data is fitted directly in the uv-plane, circumventing issues that arise when fitting a dirty image
@@ -100,7 +109,7 @@ Multi Gaussian Expansion (MGE)
 An MGE decomposes the light of a galaxy into tens or hundreds of two dimensional Gaussians:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/mge.png
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 In the image above, 30 Gaussians are shown, where their sizes go from below the pixel scale (in order to resolve
@@ -125,7 +134,7 @@ The strong lenses we've discussed so far have just a single lens galaxy responsi
 strong lenses are systems where there two or more  lens galaxies deflecting one or more background sources:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/group.png
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 **PyAutoLens** has built in tools for modeling group-scale lenses, with no limit on the number of
@@ -142,11 +151,11 @@ Modeling imaging datasets observed at different wavelengths (e.g. HST F814W and 
 analysing imaging and interferometer data:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/g_image.png
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/r_image.png
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 The appearance of the strong changes as a function of wavelength, therefore multi-wavelength analysis means we can learn
@@ -164,7 +173,7 @@ Ellipse fitting is a technique which fits many ellipses to a galaxy's emission t
 angle and centre, without assuming a parametric form for its light (e.g. like a Seisc profile):
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/ellipse.png
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 This provides complementary information to parametric light profile fitting, for example giving insights on whether
@@ -184,7 +193,7 @@ Shapelets
 Shapelets are a set of orthogonal basis functions that can be combined the represent galaxy structures:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/shapelets.png
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 Scientific Applications include capturing symmetric structures in a galaxy which are more complex than a Sersic profile,

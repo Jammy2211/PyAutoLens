@@ -8,7 +8,10 @@ appears multiple times because its light is bent by the gravitational field of a
 
 Here is a schematic of a strong gravitational lens:
 
-![Schematic of Gravitational Lensing](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/schematic.jpg)
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/schematic.jpg
+  :width: 600
+  :alt: Alternative text
+
 **Credit: F. Courbin, S. G. Djorgovski, G. Meylan, et al., Caltech / EPFL / WMKO**
 https://www.astro.caltech.edu/~george/qsolens/
 
@@ -23,13 +26,11 @@ You'll see these imports in the majority of workspace examples.
 
 .. code:: python
 
-    # %matplotlib inline
+    import autolens as al
+    import autolens.plot as aplt
 
     import matplotlib.pyplot as plt
     from os import path
-
-    import autolens as al
-    import autolens.plot as aplt
 
 Lets illustrate a simple gravitational lensing calculation, creating an an image of a lensed galaxy using a
 light profile and mass profile.
@@ -55,7 +56,7 @@ We make and plot a uniform Cartesian grid:
 The ``Grid2D`` looks like this:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/0_grid.png
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 Light Profiles
@@ -111,7 +112,7 @@ for fits to large datasets.
     light_profile_plotter.figures_2d(image=True)
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/1_image_2d.png
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 Mass Profiles
@@ -152,11 +153,11 @@ The deflection angles are easily plotted using the **PyAutoLens** plot module.
     )
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/2_deflections_y_2d.png
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/2_deflections_x_2d.png
-  :width: 400
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/3_deflections_x_2d.png
+  :width: 600
   :alt: Alternative text
 
 Galaxy
@@ -205,15 +206,15 @@ The ``GalaxyPlotter`` object plots properties of the lens and source galaxies.
   :width: 400
   :alt: Alternative text
 
+.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/7_image_2d.png
+  :width: 400
+  :alt: Alternative text
+
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/5_deflections_y_2d.png
   :width: 400
   :alt: Alternative text
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/6_deflections_x_2d.png
-  :width: 400
-  :alt: Alternative text
-
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/7_image_2d.png
   :width: 400
   :alt: Alternative text
 
@@ -225,7 +226,7 @@ on a subplot.
     lens_galaxy_plotter.subplot_of_light_profiles(image=True)
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/8_subplot_image.png
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 Tracer
@@ -250,7 +251,7 @@ This is shown below, where the image of the tracer shows a distinct Einstein rin
     tracer_plotter.figures_2d(image=True)
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/9_image_2d.png
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 Units
@@ -336,7 +337,7 @@ the stellar components use a ``LightAndMassProfile`` via the ``lmp`` module.
     tracer_plotter.figures_2d(image=True)
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/10_image_2d.png
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 Simulating Data
@@ -413,7 +414,7 @@ import dataset attributes like the noise-map and PSF.
     dataset_plotter.figures_2d(data=True)
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/11_data.png
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 If you have come to **PyAutoLens** to perform interferometry, the API above is easily adapted to use 
@@ -457,7 +458,7 @@ and the plot axis automatically zooms in around the mask.
     dataset_plotter.figures_2d(data=True)
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/12_data.png
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 
@@ -681,7 +682,7 @@ Here is an example corner plot of the model-fit, which shows the probability den
 model:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/cornerplot.png
-  :width: 400
+  :width: 600
   :alt: Alternative text
 
 Wrap Up
