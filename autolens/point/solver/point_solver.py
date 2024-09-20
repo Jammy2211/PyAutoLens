@@ -56,6 +56,12 @@ class PointSolver(AbstractSolver):
         filtered_means = self._filter_low_magnification(
             tracer=tracer, points=kept_triangles.means
         )
+        if use_jax:
+            return aa.Grid2DIrregular([pair for pair in filtered_means])
+
+        filtered_means = [
+            pair for pair in filtered_means if not np.any(np.isnan(pair)).all()
+        ]
 
         difference = len(kept_triangles.means) - len(filtered_means)
         if difference > 0:
@@ -66,9 +72,6 @@ class PointSolver(AbstractSolver):
             logger.warning(
                 f"Filtered {difference} multiple-images with magnification below threshold."
             )
-
-        if use_jax:
-            return aa.Grid2DIrregular([pair for pair in filtered_means])
 
         filtered_close = []
 
