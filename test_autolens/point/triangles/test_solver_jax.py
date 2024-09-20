@@ -87,3 +87,14 @@ def test_real_example(grid, tracer):
 
     result = solver.solve(tracer, (0.07, 0.07))
     assert len(result) == 5
+
+
+def test_jax(grid):
+    solver = PointSolver.for_grid(
+        grid=grid,
+        pixel_scale_precision=0.001,
+        array_triangles_cls=ArrayTriangles,
+    )
+
+    result = solver.solve(NullTracer(), (0.07, 0.07))
+    assert len(result) == 1
