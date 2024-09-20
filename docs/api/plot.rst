@@ -83,7 +83,7 @@ visuals to figures.
 Matplot Lib Wrappers [aplt]
 ---------------------------
 
-Wrappers for every ``matplotlib`` function used by a ``Plotter``, allowing for detailed customizaiton of
+Wrappers for every ``matplotlib`` function used by a ``Plotter``, allowing for detailed customization of
 every figure and subplot.
 
 .. currentmodule:: autogalaxy.plot
