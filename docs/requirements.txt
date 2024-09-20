@@ -1,7 +1,7 @@
 autoconf
 numba
 pyprojroot==0.2.0
-sphinx==5.2.3
+sphinx
 furo
 myst-parser
 sphinx_copybutton

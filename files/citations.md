@@ -9,7 +9,7 @@ We use the lens modeling software `PyAutoLens` https://github.com/Jammy2211/PyAu
 This work uses the following software packages:
 
 - `Astropy` https://github.com/astropy/astropy [@astropy1] [@astropy2]
-- `Colossus` https://bitbucket.org/bdiemer/colossus/src/master/ [@colossus]
+- `Colossus` https://bitbucket.org/bdiemer/colossus/src/main/ [@colossus]
 - `corner.py` https://github.com/dfm/corner.py [@corner]
 - `dynesty` https://github.com/joshspeagle/dynesty [@dynesty] [@dynesty1] [@dynesty2] [@dynesty3] [@dynesty4]
 - `emcee` https://github.com/dfm/emcee [@emcee]

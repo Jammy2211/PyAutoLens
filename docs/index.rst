@@ -14,9 +14,9 @@ Getting Started
 
 The following links are useful for new starters:
 
-- `The PyAutoLens readthedocs <https://pyautolens.readthedocs.io/en/latest>`_, which includes `an installation guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ and an `overview of PyAutoLens's core features <https://pyautolens.readthedocs.io/en/latest/overview/overview_1_lensing.html>`_.
+- `The PyAutoLens readthedocs <https://pyautolens.readthedocs.io/en/latest>`_: which includes `an overview of PyAutoLens's core features <https://pyautolens.readthedocs.io/en/latest/overview/overview_1_introduction.html>`_, `a new user starting guide <https://pyautolens.readthedocs.io/en/latest/overview/overview_2_new_user_guide.html>`_ and `an installation guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_.
 
-- `The introduction Jupyter Notebook on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=introduction.ipynb>`_, where you can try **PyAutoLens** in a web browser (without installation).
+- `The introduction Jupyter Notebook on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=start_here.ipynb>`_, where you can try **PyAutoLens** in a web browser (without installation).
 
 - `The autolens_workspace GitHub repository <https://github.com/Jammy2211/autolens_workspace>`_, which includes example scripts and the HowToLens Jupyter notebook lectures.
 
@@ -199,7 +199,7 @@ datasets.
 
 For new **PyAutoLens** users, we recommend they start by
 `installing PyAutoLens <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ (if you haven't
-already!), read through the ``introduction.ipynb`` notebook on
+already!), read through the ``start_here.ipynb`` notebook on
 the `autolens_workspace <https://github.com/Jammy2211/autolens_workspace>`_ and take the
 `HowToLens Jupyter notebook lecture series <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_ on
 strong gravitational lensing.
@@ -209,15 +209,9 @@ strong gravitational lensing.
    :maxdepth: 1
    :hidden:
 
-   overview/overview_1_lensing
-   overview/overview_2_fit
-   overview/overview_3_modeling
-   overview/overview_4_simulate
-   overview/overview_5_pixelizations
-   overview/overview_6_interferometry
-   overview/overview_7_multi_wavelength
-   overview/overview_8_point_sources
-   overview/overview_9_groups
+   overview/overview_1_start_here
+   overview/overview_2_new_user_guide
+   overview/overview_3_features
 
 .. toctree::
    :caption: Installation:
@@ -272,13 +266,3 @@ strong gravitational lensing.
    api/point
    api/plot
    api/source
-
-.. toctree::
-   :caption: Advanced:
-   :maxdepth: 1
-   :hidden:
-
-   advanced/database
-   advanced/chaining
-   advanced/slam
-   advanced/graphical

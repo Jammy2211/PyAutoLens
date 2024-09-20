@@ -13,16 +13,6 @@ examples are for beginner or advanced users.
 
 New users should begin by checking out the following parts of the workspace.
 
-HowToLens
----------
-
-The **HowToLens** lecture series are a collection of Jupyter notebooks describing how to build a **PyAutoLens** model
-fitting project and giving illustrations of different statistical methods and techniques.
-
-Checkout the
-`tutorials section <file:///Users/Jammy/Code/PyAuto/PyAutoLens/docs/_build/tutorials/howtolens.html>`_ for a
-full description of the lectures and online examples of every notebook.
-
 Scripts / Notebooks
 -------------------
 
@@ -63,3 +53,13 @@ SLaM
 Advanced lens modeling pipelines that use the Source, Light and Mass (SLaM) approach to lens modeling.
 
 See `here <https://pyautolens.readthedocs.io/en/latest/advanced/slam.html>`_ for an overview.
+
+HowToLens
+---------
+
+The **HowToLens** lecture series are a collection of Jupyter notebooks describing how to build a **PyAutoLens** model
+fitting project and giving illustrations of different statistical methods and techniques.
+
+Checkout the
+`tutorials section <file:///Users/Jammy/Code/PyAuto/PyAutoLens/docs/_build/tutorials/howtolens.html>`_ for a
+full description of the lectures and online examples of every notebook.
