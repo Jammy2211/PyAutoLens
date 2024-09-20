@@ -97,4 +97,4 @@ def test_jax(grid):
     )
 
     result = solver.solve(NullTracer(), (0.07, 0.07))
-    assert len(result) == 1
+    assert len(result) == 10
