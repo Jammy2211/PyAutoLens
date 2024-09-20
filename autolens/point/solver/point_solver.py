@@ -53,9 +53,12 @@ class PointSolver(AbstractSolver):
             shape=Point(*source_plane_coordinate),
             source_plane_redshift=source_plane_redshift,
         )
-        filtered_means = self._filter_low_magnification(
-            tracer=tracer, points=kept_triangles.means
-        )
+        if use_jax:
+            filtered_means = kept_triangles.means
+        else:
+            filtered_means = self._filter_low_magnification(
+                tracer=tracer, points=kept_triangles.means
+            )
 
         difference = len(kept_triangles.means) - len(filtered_means)
         if difference > 0:
