@@ -5,8 +5,6 @@ from typing import Tuple, List, Iterator, Type, Optional
 
 import autoarray as aa
 
-import numpy as np
-
 from autoarray.structures.triangles.shape import Shape
 from autofit.jax_wrapper import jit, use_jax
 
@@ -36,6 +34,7 @@ class AbstractSolver:
         pixel_scale_precision: float,
         magnification_threshold=0.1,
         array_triangles_cls: Type[AbstractTriangles] = ArrayTriangles,
+        initial_triangles: Optional[AbstractTriangles] = None,
     ):
         """
         Determine the image plane coordinates that are traced to be a source plane coordinate.
@@ -58,7 +57,17 @@ class AbstractSolver:
         self.x_max = x_max
         self.pixel_scale_precision = pixel_scale_precision
         self.magnification_threshold = magnification_threshold
-        self.array_triangles_cls = array_triangles_cls
+
+        self.initial_triangles = (
+            initial_triangles
+            or array_triangles_cls.for_limits_and_scale(
+                y_min=self.y_min,
+                y_max=self.y_max,
+                x_min=self.x_min,
+                x_max=self.x_max,
+                scale=self.scale,
+            )
+        )
 
     # noinspection PyPep8Naming
     @classmethod
@@ -245,18 +254,11 @@ class AbstractSolver:
         -------
         An iterator over the steps of the triangle solver algorithm.
         """
-        initial_triangles = self.array_triangles_cls.for_limits_and_scale(
-            y_min=self.y_min,
-            y_max=self.y_max,
-            x_min=self.x_min,
-            x_max=self.x_max,
-            scale=self.scale,
-        )
-
+        initial_triangles = self.initial_triangles
         for number in range(self.n_steps):
             kept_triangles = self._filtered_triangles(
                 tracer=tracer,
-                triangles=initial_triangles,
+                triangles=self.initial_triangles,
                 source_plane_redshift=source_plane_redshift,
                 shape=shape,
             )
@@ -282,7 +284,7 @@ class AbstractSolver:
             self.x_max,
             self.pixel_scale_precision,
             self.magnification_threshold,
-            self.array_triangles_cls,
+            self.initial_triangles,
         )
 
     @classmethod
@@ -295,7 +297,8 @@ class AbstractSolver:
             x_max=aux_data[4],
             pixel_scale_precision=aux_data[5],
             magnification_threshold=aux_data[6],
-            array_triangles_cls=aux_data[7],
+            array_triangles_cls=type(aux_data[7]),
+            initial_triangles=aux_data[7],
         )
 
 
