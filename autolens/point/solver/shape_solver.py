@@ -6,7 +6,7 @@ from typing import Tuple, List, Iterator, Type, Optional
 import autoarray as aa
 
 from autoarray.structures.triangles.shape import Shape
-from autofit.jax_wrapper import jit, use_jax
+from autofit.jax_wrapper import jit, use_jax, numpy as np
 
 try:
     if use_jax:
@@ -199,17 +199,13 @@ class AbstractSolver:
         -------
         The points with an absolute magnification above the threshold.
         """
-        return [
-            point
-            for point, magnification in zip(
-                points,
-                tracer.magnification_2d_via_hessian_from(
-                    grid=aa.Grid2DIrregular(points),
-                    buffer=self.scale,
-                ),
-            )
-            if abs(magnification) > self.magnification_threshold
-        ]
+        points = np.array(points)
+        magnifications = tracer.magnification_2d_via_hessian_from(
+            grid=aa.Grid2DIrregular(points),
+            buffer=self.scale,
+        )
+        mask = np.abs(magnifications.array) > self.magnification_threshold
+        return np.where(mask[:, None], points, np.nan)
 
     def _filtered_triangles(
         self,
