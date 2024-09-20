@@ -258,7 +258,7 @@ class AbstractSolver:
         for number in range(self.n_steps):
             kept_triangles = self._filtered_triangles(
                 tracer=tracer,
-                triangles=self.initial_triangles,
+                triangles=initial_triangles,
                 source_plane_redshift=source_plane_redshift,
                 shape=shape,
             )
