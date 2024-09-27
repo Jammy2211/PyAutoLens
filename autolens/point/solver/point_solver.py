@@ -1,9 +1,10 @@
 import logging
 from typing import Tuple, Optional
 
-import numpy as np
+from autoarray.numpy_wrapper import np
 
 import autoarray as aa
+from autoarray.numpy_wrapper import use_jax
 from autoarray.structures.triangles.shape import Point
 
 from autofit.jax_wrapper import jit, register_pytree_node_class
@@ -55,6 +56,12 @@ class PointSolver(AbstractSolver):
         filtered_means = self._filter_low_magnification(
             tracer=tracer, points=kept_triangles.means
         )
+        if use_jax:
+            return aa.Grid2DIrregular([pair for pair in filtered_means])
+
+        filtered_means = [
+            pair for pair in filtered_means if not np.any(np.isnan(pair)).all()
+        ]
 
         difference = len(kept_triangles.means) - len(filtered_means)
         if difference > 0:

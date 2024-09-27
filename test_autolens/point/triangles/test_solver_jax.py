@@ -1,3 +1,4 @@
+import time
 from typing import Tuple
 
 import pytest
@@ -87,3 +88,22 @@ def test_real_example(grid, tracer):
 
     result = solver.solve(tracer, (0.07, 0.07))
     assert len(result) == 5
+
+
+def _test_jax(grid):
+    solver = PointSolver.for_grid(
+        grid=grid,
+        pixel_scale_precision=0.001,
+        array_triangles_cls=ArrayTriangles,
+    )
+
+    solver.solve(NullTracer(), (0.07, 0.07))
+
+    repeats = 1000
+    start = time.time()
+    for _ in range(repeats):
+        result = solver.solve(NullTracer(), (0.07, 0.07))
+
+    print(result)
+
+    print(f"Time taken: {(time.time() - start) / repeats}")
