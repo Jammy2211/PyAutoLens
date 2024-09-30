@@ -30,8 +30,6 @@ class FitPositionsImagePairAll(AbstractFitPositionsImagePair):
 
     @property
     def residual_map(self) -> aa.ArrayIrregular:
-        combinations = len(self.model_data) ** len(self.data)
-
         residual_map = []
 
         for model_data in self.model_data:

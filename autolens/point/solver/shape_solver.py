@@ -26,7 +26,7 @@ except ImportError:
 
 from autoarray.structures.triangles.abstract import AbstractTriangles
 
-from autolens.lens.tracer import Tracer
+from autogalaxy import OperateDeflections
 from .step import Step
 
 logger = logging.getLogger(__name__)
@@ -128,7 +128,7 @@ class AbstractSolver:
 
     @staticmethod
     def _source_plane_grid(
-        tracer: Tracer,
+        tracer: OperateDeflections,
         grid: aa.type.Grid2DLike,
         source_plane_redshift: Optional[float] = None,
     ) -> aa.type.Grid2DLike:
@@ -162,7 +162,7 @@ class AbstractSolver:
     @jit
     def solve_triangles(
         self,
-        tracer: Tracer,
+        tracer: OperateDeflections,
         shape: Shape,
         source_plane_redshift: Optional[float] = None,
     ) -> AbstractTriangles:
@@ -205,7 +205,7 @@ class AbstractSolver:
         return final_step.filtered_triangles
 
     def _filter_low_magnification(
-        self, tracer: Tracer, points: List[Tuple[float, float]]
+        self, tracer: OperateDeflections, points: List[Tuple[float, float]]
     ) -> List[Tuple[float, float]]:
         """
         Filter the points to keep only those with an absolute magnification above the threshold.
@@ -229,7 +229,7 @@ class AbstractSolver:
 
     def _filtered_triangles(
         self,
-        tracer: Tracer,
+        tracer: OperateDeflections,
         triangles: aa.AbstractTriangles,
         source_plane_redshift,
         shape: Shape,
@@ -250,7 +250,7 @@ class AbstractSolver:
 
     def steps(
         self,
-        tracer: Tracer,
+        tracer: OperateDeflections,
         shape: Shape,
         source_plane_redshift: Optional[float] = None,
     ) -> Iterator[Step]:
@@ -313,7 +313,7 @@ class AbstractSolver:
 class ShapeSolver(AbstractSolver):
     def find_magnification(
         self,
-        tracer: Tracer,
+        tracer: OperateDeflections,
         shape: Shape,
         source_plane_redshift: Optional[float] = None,
     ) -> float:

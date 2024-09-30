@@ -1,3 +1,4 @@
+from abc import ABC
 from typing import Optional, Tuple
 
 import autoarray as aa
@@ -9,7 +10,7 @@ from autolens.lens.tracer import Tracer
 from autolens import exc
 
 
-class AbstractFitPositions(aa.AbstractFit):
+class AbstractFitPositions(aa.AbstractFit, ABC):
     def __init__(
         self,
         name: str,

@@ -8,10 +8,9 @@ from autoarray.numpy_wrapper import use_jax
 from autoarray.structures.triangles.shape import Point
 
 from autofit.jax_wrapper import jit, register_pytree_node_class
+from autogalaxy import OperateDeflections
 from .shape_solver import AbstractSolver
 
-
-from autolens.lens.tracer import Tracer
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +20,7 @@ class PointSolver(AbstractSolver):
     @jit
     def solve(
         self,
-        tracer: Tracer,
+        tracer: OperateDeflections,
         source_plane_coordinate: Tuple[float, float],
         source_plane_redshift: Optional[float] = None,
     ) -> aa.Grid2DIrregular:

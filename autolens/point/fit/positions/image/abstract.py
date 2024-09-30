@@ -1,4 +1,5 @@
-from typing import Optional, Tuple
+from abc import ABC
+from typing import Optional
 
 import autoarray as aa
 import autogalaxy as ag
@@ -8,7 +9,7 @@ from autolens.point.fit.positions.abstract import AbstractFitPositions
 from autolens.lens.tracer import Tracer
 
 
-class AbstractFitPositionsImagePair(AbstractFitPositions):
+class AbstractFitPositionsImagePair(AbstractFitPositions, ABC):
     def __init__(
         self,
         name: str,
