@@ -6,14 +6,16 @@ from typing import Tuple, List, Iterator, Type, Optional
 import autoarray as aa
 
 from autoarray.structures.triangles.shape import Shape
-from autofit.jax_wrapper import jit, use_jax, numpy as np
+from autofit.jax_wrapper import jit, use_jax, numpy as np, register_pytree_node_class
 
 try:
     if use_jax:
         from autoarray.structures.triangles.jax_array import ArrayTriangles
-    from autoarray.structures.triangles.array import ArrayTriangles
+    else:
+        from autoarray.structures.triangles.array import ArrayTriangles
 except ImportError:
     from autoarray.structures.triangles.array import ArrayTriangles
+
 from autoarray.structures.triangles.abstract import AbstractTriangles
 
 from autolens.lens.tracer import Tracer
@@ -298,6 +300,7 @@ class AbstractSolver:
         )
 
 
+@register_pytree_node_class
 class ShapeSolver(AbstractSolver):
     def find_magnification(
         self,
