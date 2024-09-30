@@ -89,19 +89,38 @@ def test_real_example(grid, tracer):
 
 
 def _test_jax(grid):
-    solver = PointSolver.for_grid(
-        grid=grid,
-        pixel_scale_precision=0.001,
-        array_triangles_cls=ArrayTriangles,
-    )
+    sizes = (5, 10, 15, 20, 25, 30, 35, 40, 45, 50)
+    run_times = []
+    init_times = []
 
-    solver.solve(NullTracer(), (0.07, 0.07))
+    for size in sizes:
+        start = time.time()
+        solver = PointSolver.for_grid(
+            grid=grid,
+            pixel_scale_precision=0.001,
+            array_triangles_cls=ArrayTriangles,
+            max_containing_size=size,
+        )
 
-    repeats = 1000
-    start = time.time()
-    for _ in range(repeats):
-        result = solver.solve(NullTracer(), (0.07, 0.07))
+        solver.solve(NullTracer(), (0.07, 0.07))
 
-    print(result)
+        repeats = 100
 
-    print(f"Time taken: {(time.time() - start) / repeats}")
+        done_init_time = time.time()
+        init_time = done_init_time - start
+        for _ in range(repeats):
+            _ = solver.solve(NullTracer(), (0.07, 0.07))
+
+        # print(result)
+
+        init_times.append(init_time)
+
+        run_time = (time.time() - done_init_time) / repeats
+        run_times.append(run_time)
+
+        print(f"Time taken for {size}: {run_time} ({init_time} to init)")
+
+    from matplotlib import pyplot as plt
+
+    plt.plot(sizes, run_times)
+    plt.show()
