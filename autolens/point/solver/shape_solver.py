@@ -10,7 +10,10 @@ from autofit.jax_wrapper import jit, use_jax, numpy as np, register_pytree_node_
 
 try:
     if use_jax:
-        from autoarray.structures.triangles.jax_array import ArrayTriangles
+        from autoarray.structures.triangles.jax_array import (
+            ArrayTriangles,
+            MAX_CONTAINING_SIZE,
+        )
     else:
         from autoarray.structures.triangles.array import ArrayTriangles
 except ImportError:
@@ -59,7 +62,32 @@ class AbstractSolver:
         pixel_scale_precision: float,
         magnification_threshold=0.1,
         array_triangles_cls: Type[AbstractTriangles] = ArrayTriangles,
+        max_containing_size=MAX_CONTAINING_SIZE,
     ):
+        """
+        Create a solver for a given grid.
+
+        The grid defines the limits of the image plane and the pixel scale.
+
+        Parameters
+        ----------
+        grid
+            The grid to use.
+        pixel_scale_precision
+            The precision to which the triangles should be subdivided.
+        magnification_threshold
+            The threshold for the magnification under which multiple images are filtered.
+        array_triangles_cls
+            The class to use for the triangles. JAX is used implicitly if USE_JAX=1 and
+            jax is installed.
+        max_containing_size
+            Only applies to JAX. This is the maximum number of multiple images expected.
+            We need to know this in advance to allocate memory for the JAX array.
+
+        Returns
+        -------
+        The solver.
+        """
         scale = grid.pixel_scale
 
         y = grid[:, 0]
@@ -76,6 +104,7 @@ class AbstractSolver:
             x_min=x_min,
             x_max=x_max,
             scale=scale,
+            max_containing_size=max_containing_size,
         )
 
         return cls(
