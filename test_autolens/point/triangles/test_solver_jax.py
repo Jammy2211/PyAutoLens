@@ -16,7 +16,6 @@ except ImportError:
 
 from autolens.mock import NullTracer
 
-
 pytest.importorskip("jax")
 
 
@@ -35,16 +34,9 @@ def solver(grid):
 
 
 def test_solver(solver):
-    tracer = al.Tracer(
-        galaxies=[
-            al.Galaxy(
-                redshift=0.5,
-                mass=ag.mp.Isothermal(
-                    centre=(0.0, 0.0),
-                    einstein_radius=1.0,
-                ),
-            )
-        ]
+    tracer = ag.mp.Isothermal(
+        centre=(0.0, 0.0),
+        einstein_radius=1.0,
     )
     assert solver.solve(
         tracer,
