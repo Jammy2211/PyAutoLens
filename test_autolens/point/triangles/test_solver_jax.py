@@ -6,7 +6,7 @@ import pytest
 import autolens as al
 import autogalaxy as ag
 import autofit as af
-from autofit.jax_wrapper import use_jax
+import numpy as np
 from autolens import PointSolver
 
 try:
@@ -73,6 +73,7 @@ def test_trivial(
         NullTracer(),
         source_plane_coordinate=source_plane_coordinate,
     )
+    coordinates = coordinates.array[~np.isnan(coordinates.array).any(axis=1)]
     assert coordinates[0] == pytest.approx(source_plane_coordinate, abs=1.0e-1)
 
 
