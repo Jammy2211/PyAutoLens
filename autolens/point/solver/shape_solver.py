@@ -29,14 +29,9 @@ class AbstractSolver:
     def __init__(
         self,
         scale: float,
-        y_min: float,
-        y_max: float,
-        x_min: float,
-        x_max: float,
+        initial_triangles: AbstractTriangles,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
-        array_triangles_cls: Type[AbstractTriangles] = ArrayTriangles,
-        initial_triangles: Optional[AbstractTriangles] = None,
     ):
         """
         Determine the image plane coordinates that are traced to be a source plane coordinate.
@@ -49,27 +44,12 @@ class AbstractSolver:
         ----------
         pixel_scale_precision
             The target pixel scale of the image grid.
-        array_triangles_cls
-            The class to use for the triangles.
         """
         self.scale = scale
-        self.y_min = y_min
-        self.y_max = y_max
-        self.x_min = x_min
-        self.x_max = x_max
         self.pixel_scale_precision = pixel_scale_precision
         self.magnification_threshold = magnification_threshold
 
-        self.initial_triangles = (
-            initial_triangles
-            or array_triangles_cls.for_limits_and_scale(
-                y_min=self.y_min,
-                y_max=self.y_max,
-                x_min=self.x_min,
-                x_max=self.x_max,
-                scale=self.scale,
-            )
-        )
+        self.initial_triangles = initial_triangles
 
     # noinspection PyPep8Naming
     @classmethod
@@ -90,15 +70,19 @@ class AbstractSolver:
         x_min = x.min()
         x_max = x.max()
 
-        return cls(
-            scale=scale,
+        initial_triangles = array_triangles_cls.for_limits_and_scale(
             y_min=y_min,
             y_max=y_max,
             x_min=x_min,
             x_max=x_max,
+            scale=scale,
+        )
+
+        return cls(
+            scale=scale,
+            initial_triangles=initial_triangles,
             pixel_scale_precision=pixel_scale_precision,
             magnification_threshold=magnification_threshold,
-            array_triangles_cls=array_triangles_cls,
         )
 
     @property
@@ -276,10 +260,6 @@ class AbstractSolver:
     def tree_flatten(self):
         return (), (
             self.scale,
-            self.y_min,
-            self.y_max,
-            self.x_min,
-            self.x_max,
             self.pixel_scale_precision,
             self.magnification_threshold,
             self.initial_triangles,
@@ -289,14 +269,9 @@ class AbstractSolver:
     def tree_unflatten(cls, aux_data, children):
         return cls(
             scale=aux_data[0],
-            y_min=aux_data[1],
-            y_max=aux_data[2],
-            x_min=aux_data[3],
-            x_max=aux_data[4],
-            pixel_scale_precision=aux_data[5],
-            magnification_threshold=aux_data[6],
-            array_triangles_cls=type(aux_data[7]),
-            initial_triangles=aux_data[7],
+            pixel_scale_precision=aux_data[1],
+            magnification_threshold=aux_data[2],
+            initial_triangles=aux_data[3],
         )
 
 
