@@ -16,8 +16,13 @@ try:
         )
     else:
         from autoarray.structures.triangles.array import ArrayTriangles
+
+        MAX_CONTAINING_SIZE = None
+
 except ImportError:
     from autoarray.structures.triangles.array import ArrayTriangles
+
+    MAX_CONTAINING_SIZE = None
 
 from autoarray.structures.triangles.abstract import AbstractTriangles
 
