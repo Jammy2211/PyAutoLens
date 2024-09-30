@@ -3,7 +3,6 @@ from typing import Tuple
 
 import pytest
 
-import autolens as al
 import autogalaxy as ag
 import autofit as af
 import numpy as np
