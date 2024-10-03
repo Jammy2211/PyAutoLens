@@ -10,7 +10,6 @@ import autogalaxy as ag
 from autoarray.exc import PixelizationException
 
 from autolens.analysis.analysis.dataset import AnalysisDataset
-from autolens.analysis.preloads import Preloads
 from autolens.imaging.model.result import ResultImaging
 from autolens.imaging.model.visualizer import VisualizerImaging
 from autolens.imaging.fit_imaging import FitImaging
@@ -51,10 +50,6 @@ class AnalysisImaging(AnalysisDataset):
             the imaging data.
         """
         super().modify_before_fit(paths=paths, model=model)
-
-        if not paths.is_complete:
-
-            self.set_preloads(paths=paths, model=model)
 
         return self
 
@@ -127,7 +122,6 @@ class AnalysisImaging(AnalysisDataset):
     def fit_from(
         self,
         instance: af.ModelInstance,
-        preload_overwrite: Optional[Preloads] = None,
         run_time_dict: Optional[Dict] = None,
     ) -> FitImaging:
         """
@@ -141,8 +135,6 @@ class AnalysisImaging(AnalysisDataset):
         instance
             An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
             via a non-linear search).
-        preload_overwrite
-            If a `Preload` object is input this is used instead of the preloads stored as an attribute in the analysis.
         check_positions
             Whether the multiple image positions of the lensed source should be checked, i.e. whether they trace
             within the position threshold of one another in the source plane.
@@ -163,15 +155,12 @@ class AnalysisImaging(AnalysisDataset):
 
         adapt_images = self.adapt_images_via_instance_from(instance=instance)
 
-        preloads = preload_overwrite or self.preloads
-
         return FitImaging(
             dataset=self.dataset,
             tracer=tracer,
             dataset_model=dataset_model,
             adapt_images=adapt_images,
             settings_inversion=self.settings_inversion,
-            preloads=preloads,
             run_time_dict=run_time_dict,
         )
 

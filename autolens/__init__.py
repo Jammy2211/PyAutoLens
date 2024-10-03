@@ -42,6 +42,10 @@ from autoarray.operators.over_sampling.iterate import OverSamplingIterate
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
 from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
+from autoarray.structures.triangles.shape import Circle
+from autoarray.structures.triangles.shape import Triangle
+from autoarray.structures.triangles.shape import Square
+from autoarray.structures.triangles.shape import Polygon
 from autoarray.structures.vectors.uniform import VectorYX2D
 from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 from autoarray.structures.arrays.kernel_2d import Kernel2D
@@ -90,7 +94,6 @@ from .lens.sensitivity import SubhaloSensitivityResult
 from .lens.to_inversion import TracerToInversion
 from .analysis.positions import PositionsLHResample
 from .analysis.positions import PositionsLHPenalty
-from .analysis.preloads import Preloads
 from .imaging.simulator import SimulatorImaging
 from .imaging.fit_imaging import FitImaging
 from .imaging.model.analysis import AnalysisImaging
@@ -108,6 +111,7 @@ from .point.fit.positions.source.separations import FitPositionsSource
 from .point.fit.positions.source.max_separation import FitPositionsSourceMaxSeparation
 from .point.model.analysis import AnalysisPoint
 from .point.solver import PointSolver
+from .point.solver.shape_solver import ShapeSolver
 from .quantity.fit_quantity import FitQuantity
 from .quantity.model.analysis import AnalysisQuantity
 from . import exc

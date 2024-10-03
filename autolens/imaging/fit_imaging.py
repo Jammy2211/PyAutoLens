@@ -9,7 +9,6 @@ import autogalaxy as ag
 
 from autogalaxy.abstract_fit import AbstractFitInversion
 
-from autolens.analysis.preloads import Preloads
 from autolens.lens.tracer import Tracer
 from autolens.lens.to_inversion import TracerToInversion
 
@@ -24,7 +23,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         dataset_model : Optional[aa.DatasetModel] = None,
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
-        preloads: Preloads = Preloads(),
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -64,9 +62,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             reconstructed galaxy's morphology.
         settings_inversion
             Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
-        preloads
-            Contains preloaded calculations (e.g. linear algebra matrices) which can skip certain calculations in
-            the fit.
         run_time_dict
             A dictionary which if passed to the fit records how long function calls which have the `profile_func`
             decorator take to run.
@@ -81,8 +76,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         self.adapt_images = adapt_images
         self.settings_inversion = settings_inversion
-
-        self.preloads = preloads
 
     @cached_property
     def grids(self) -> aa.GridsInterface:
@@ -115,16 +108,11 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         For certain lens models the blurred image does not change (for example when all light profiles in the tracer
         are fixed in the lens model). For faster run-times the blurred image can be preloaded.
         """
-
-        if self.preloads.blurred_image is None:
-
-            return self.tracer.blurred_image_2d_from(
-                grid=self.grids.uniform,
-                convolver=self.dataset.convolver,
-                blurring_grid=self.grids.blurring,
-            )
-
-        return self.preloads.blurred_image
+        return self.tracer.blurred_image_2d_from(
+            grid=self.grids.uniform,
+            convolver=self.dataset.convolver,
+            blurring_grid=self.grids.blurring,
+        )
 
     @property
     def profile_subtracted_image(self) -> aa.Array2D:
@@ -150,7 +138,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             tracer=self.tracer,
             adapt_images=self.adapt_images,
             settings_inversion=self.settings_inversion,
-            preloads=self.preloads,
             run_time_dict=self.run_time_dict
         )
 

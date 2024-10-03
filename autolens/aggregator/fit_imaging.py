@@ -4,7 +4,6 @@ import autofit as af
 import autoarray as aa
 
 from autolens.imaging.fit_imaging import FitImaging
-from autolens.analysis.preloads import Preloads
 
 from autogalaxy.aggregator.imaging.imaging import _imaging_from
 from autogalaxy.aggregator.dataset_model import _dataset_model_from
@@ -17,7 +16,6 @@ def _fit_imaging_from(
     fit: af.Fit,
     instance: Optional[af.ModelInstance] = None,
     settings_inversion: aa.SettingsInversion = None,
-    use_preloaded_grid: bool = True,
 ) -> List[FitImaging]:
     """
     Returns a list of `FitImaging` object from a `PyAutoFit` sqlite database `Fit` object.
@@ -49,10 +47,6 @@ def _fit_imaging_from(
         randomly from the PDF).
     settings_inversion
         Optionally overwrite the `SettingsInversion` of the `Inversion` object that is created from the fit.
-    use_preloaded_grid
-        Certain pixelization's construct their mesh in the source-plane from a stochastic KMeans algorithm. This grid
-        may be output to hard-disk after the model-fit and loaded via the database to ensure the same grid is used
-        as the fit.
     """
 
     dataset_list = _imaging_from(fit=fit)
@@ -65,25 +59,14 @@ def _fit_imaging_from(
 
     settings_inversion = settings_inversion or fit.value(name="settings_inversion")
 
-    mesh_grids_of_planes_list = agg_util.mesh_grids_of_planes_list_from(
-        fit=fit, total_fits=len(dataset_list), use_preloaded_grid=use_preloaded_grid
-    )
-
     fit_dataset_list = []
 
-    for dataset, tracer, dataset_model, adapt_images, mesh_grids_of_planes in zip(
+    for dataset, tracer, dataset_model, adapt_images in zip(
         dataset_list,
         tracer_list,
         dataset_model_list,
         adapt_images_list,
-        mesh_grids_of_planes_list,
     ):
-        preloads = agg_util.preloads_from(
-            preloads_cls=Preloads,
-            use_preloaded_grid=use_preloaded_grid,
-            mesh_grids_of_planes=mesh_grids_of_planes,
-            use_w_tilde=False,
-        )
 
         fit_dataset_list.append(
             FitImaging(
@@ -92,7 +75,6 @@ def _fit_imaging_from(
                 dataset_model=dataset_model,
                 adapt_images=adapt_images,
                 settings_inversion=settings_inversion,
-                preloads=preloads,
             )
         )
 
