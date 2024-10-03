@@ -11,7 +11,6 @@ class SubhaloAgg:
         self,
         aggregator_grid_search: af.GridSearchAggregator,
         settings_inversion: Optional[aa.SettingsInversion] = None,
-        use_preloaded_grid: bool = True,
     ):
         """
         Wraps a PyAutoFit aggregator in order to create generators of fits to imaging data, corresponding to the
@@ -20,7 +19,6 @@ class SubhaloAgg:
 
         self.aggregator_grid_search = aggregator_grid_search
         self.settings_inversion = settings_inversion
-        self.use_preloaded_grid = use_preloaded_grid
 
         if len(aggregator_grid_search) == 0:
             raise exc.AggregatorException(

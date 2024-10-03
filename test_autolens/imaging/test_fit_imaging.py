@@ -790,50 +790,6 @@ def test__tracer_linear_light_profiles_to_light_profiles(masked_imaging_7x7):
     assert tracer.galaxies[2].bulge.intensity == pytest.approx(0.08393533428, 1.0e-4)
 
 
-def test__preloads__refit_with_new_preloads(masked_imaging_7x7):
-
-    g0 = al.Galaxy(
-        redshift=0.5,
-        bulge=al.lp.Sersic(intensity=1.0),
-        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
-    )
-
-    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(intensity=1.0))
-
-    tracer = al.Tracer(galaxies=[g0, g1])
-
-    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
-
-    refit = fit.refit_with_new_preloads(preloads=al.Preloads())
-
-    assert fit.figure_of_merit == refit.figure_of_merit
-
-    refit = fit.refit_with_new_preloads(
-        preloads=al.Preloads(blurred_image=fit.blurred_image + 1.0)
-    )
-
-    assert fit.figure_of_merit != refit.figure_of_merit
-
-
-def test__preloads__blurred_image_uses_preload_when_passed(masked_imaging_7x7_no_blur):
-
-    g0 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
-
-    tracer = al.Tracer(galaxies=[g0])
-
-    fit = al.FitImaging(dataset=masked_imaging_7x7_no_blur, tracer=tracer)
-
-    assert fit.blurred_image[0] == pytest.approx(0.15987, 1.0e-4)
-
-    blurred_image = np.array([2.0])
-    preloads = al.Preloads(blurred_image=blurred_image)
-
-    fit = al.FitImaging(
-        dataset=masked_imaging_7x7_no_blur, tracer=tracer, preloads=preloads
-    )
-
-    assert (fit.blurred_image == np.array([2.0])).all()
-
 
 def test__total_mappers(masked_imaging_7x7):
 
