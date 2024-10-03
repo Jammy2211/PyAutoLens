@@ -104,9 +104,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
     def blurred_image(self) -> aa.Array2D:
         """
         Returns the image of all light profiles in the fit's tracer convolved with the imaging dataset's PSF.
-
-        For certain lens models the blurred image does not change (for example when all light profiles in the tracer
-        are fixed in the lens model). For faster run-times the blurred image can be preloaded.
         """
         return self.tracer.blurred_image_2d_from(
             grid=self.grids.uniform,
@@ -344,44 +341,3 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         or `GalaxyPlotter` objects.
         """
         return self.model_obj_linear_light_profiles_to_light_profiles
-
-    def refit_with_new_preloads(
-        self,
-        preloads: Preloads,
-        settings_inversion: Optional[aa.SettingsInversion] = None,
-    ) -> "FitImaging":
-        """
-        Returns a new fit which uses the dataset, tracer and other objects of this fit, but uses a different set of
-        preloads input into this function.
-
-        This is used when setting up the preloads objects, to concisely test how using different preloads objects
-        changes the attributes of the fit.
-
-        Parameters
-        ----------
-        preloads
-            The new preloads which are used to refit the data using the
-        settings_inversion
-            Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
-
-        Returns
-        -------
-        A new fit which has used new preloads input into this function but the same dataset, tracer and other settings.
-        """
-        run_time_dict = {} if self.run_time_dict is not None else None
-
-        settings_inversion = (
-            self.settings_inversion
-            if settings_inversion is None
-            else settings_inversion
-        )
-
-        return FitImaging(
-            dataset=self.dataset,
-            tracer=self.tracer,
-            dataset_model=self.dataset_model,
-            adapt_images=self.adapt_images,
-            settings_inversion=settings_inversion,
-            preloads=preloads,
-            run_time_dict=run_time_dict,
-        )

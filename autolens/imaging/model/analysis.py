@@ -184,9 +184,6 @@ class AnalysisImaging(AnalysisDataset):
         - Its PSF.
         - Its mask.
         - The positions of the brightest pixels in the lensed source which are used to discard mass models.
-        - The preloaded image-plane source plane pixelization if used by the analysis. This ensures that differences in
-          the scikit-learn library do not lead to different pixelizations being computed if results are transferred from
-          a HPC to laptop.
 
         It is common for these attributes to be loaded by many of the template aggregator functions given in the
         `aggregator` modules. For example, when using the database tools to perform a fit, the default behaviour is for
@@ -227,7 +224,7 @@ class AnalysisImaging(AnalysisDataset):
         An `info_dict` is also created which stores information on aspects of the model and dataset that dictate
         run times, so the profiled times can be interpreted with this context.
 
-        The results of this profiling are then output to hard-disk in the `preloads` folder of the model-fit results,
+        The results of this profiling are then output to hard-disk in the `profiling` folder of the model-fit results,
         which they can be inspected to ensure run-times are as expected.
 
         Parameters

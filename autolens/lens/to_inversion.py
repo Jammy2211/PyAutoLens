@@ -422,28 +422,16 @@ class TracerToInversion(ag.AbstractToInversion):
 
         mapper_galaxy_dict = {}
 
-        if self.preloads.traced_grids_of_planes_for_inversion is None:
-            traced_grids_of_planes_list = self.traced_grid_2d_list_of_inversion
-        else:
-            traced_grids_of_planes_list = (
-                self.preloads.traced_grids_of_planes_for_inversion
-            )
+        traced_grids_of_planes_list = self.traced_grid_2d_list_of_inversion
 
-        if self.preloads.traced_mesh_grids_list_of_planes is None:
-            traced_mesh_grids_list_of_planes = self.traced_mesh_grid_pg_list
-            image_plane_mesh_grid_list = self.image_plane_mesh_grid_pg_list
-        else:
-            traced_mesh_grids_list_of_planes = (
-                self.preloads.traced_mesh_grids_list_of_planes
-            )
-            image_plane_mesh_grid_list = self.preloads.image_plane_mesh_grid_list
+        traced_mesh_grids_list_of_planes = self.traced_mesh_grid_pg_list
+        image_plane_mesh_grid_list = self.image_plane_mesh_grid_pg_list
 
         for plane_index, galaxies in enumerate(self.planes):
             if galaxies.has(cls=aa.Pixelization):
                 to_inversion = ag.GalaxiesToInversion(
                     dataset=self.dataset,
                     galaxies=galaxies,
-                    preloads=self.preloads,
                     adapt_images=self.adapt_images,
                     settings_inversion=self.settings_inversion,
                     run_time_dict=self.run_time_dict,
@@ -510,7 +498,6 @@ class TracerToInversion(ag.AbstractToInversion):
             dataset=self.dataset,
             linear_obj_list=self.linear_obj_list,
             settings=self.settings_inversion,
-            preloads=self.preloads,
             run_time_dict=self.tracer.run_time_dict,
         )
 

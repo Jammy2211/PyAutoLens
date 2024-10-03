@@ -86,7 +86,6 @@ class FitImagingAgg(af.AggBase):
         self,
         aggregator: af.Aggregator,
         settings_inversion: Optional[aa.SettingsInversion] = None,
-        use_preloaded_grid: bool = True,
     ):
         """
         Interfaces with an `PyAutoFit` aggregator object to create instances of `FitImaging` objects from the results
@@ -128,7 +127,6 @@ class FitImagingAgg(af.AggBase):
         super().__init__(aggregator=aggregator)
 
         self.settings_inversion = settings_inversion
-        self.use_preloaded_grid = use_preloaded_grid
 
     def object_via_gen_from(
         self, fit, instance: Optional[af.ModelInstance] = None
@@ -150,5 +148,4 @@ class FitImagingAgg(af.AggBase):
             fit=fit,
             instance=instance,
             settings_inversion=self.settings_inversion,
-            use_preloaded_grid=self.use_preloaded_grid,
         )

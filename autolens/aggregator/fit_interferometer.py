@@ -88,7 +88,6 @@ class FitInterferometerAgg(af.AggBase):
         self,
         aggregator: af.Aggregator,
         settings_inversion: Optional[aa.SettingsInversion] = None,
-        use_preloaded_grid: bool = True,
         real_space_mask: Optional[aa.Mask2D] = None,
     ):
         """
@@ -127,7 +126,6 @@ class FitInterferometerAgg(af.AggBase):
         super().__init__(aggregator=aggregator)
 
         self.settings_inversion = settings_inversion
-        self.use_preloaded_grid = use_preloaded_grid
         self.real_space_mask = real_space_mask
 
     def object_via_gen_from(
@@ -150,5 +148,4 @@ class FitInterferometerAgg(af.AggBase):
             fit=fit,
             instance=instance,
             settings_inversion=self.settings_inversion,
-            use_preloaded_grid=self.use_preloaded_grid,
         )
