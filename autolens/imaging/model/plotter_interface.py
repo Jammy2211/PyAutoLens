@@ -1,4 +1,7 @@
 from os import path
+from typing import List
+
+import autoarray.plot as aplt
 
 from autogalaxy.imaging.model.plotter_interface import PlotterInterfaceImaging as AgPlotterInterfaceImaging
 
@@ -147,3 +150,76 @@ class PlotterInterfaceImaging(PlotterInterface):
             fit_plotter.figures_2d_of_planes(
                 subtracted_image=True, model_image=True, plane_image=True, interpolate_to_uniform=True
             )
+
+    def fit_imaging_combined(self, fit_list: List[FitImaging]):
+        """
+        Output visualization of all `FitImaging` objects in a summed combined analysis, typically during or after a
+        model-fit is performed.
+
+        Images are output to the `image` folder of the `image_path` in a subfolder called `combined`. When used
+        with a non-linear search the `image_path` is the output folder of the non-linear search.
+        `.
+        Visualization includes individual images of attributes of each fit (e.g. data, normalized residual-map) on
+        a single subplot, such that the full suite of multiple datasets can be viewed on the same figure.
+
+        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under
+        the `fit` header.
+
+        Parameters
+        ----------
+        fit
+            The list of imaging fits which are visualized.
+        """
+
+        def should_plot(name):
+            return plot_setting(section=["fit", "fit_imaging"], name=name)
+
+        mat_plot_2d = self.mat_plot_2d_from(subfolders="combined")
+
+        fit_plotter_list = [
+            FitImagingPlotter(
+                fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
+            )
+            for fit in fit_list
+        ]
+
+        subplot_shape = (len(fit_list), 5)
+
+        multi_plotter = aplt.MultiFigurePlotter(
+            plotter_list=fit_plotter_list, subplot_shape=subplot_shape
+        )
+
+        if should_plot("subplot_fit"):
+
+            def make_subplot_fit(filename_suffix):
+
+                multi_plotter.subplot_of_figures_multi(
+                    func_name_list=["figures_2d"] * 4,
+                    figure_name_list=[
+                        "data",
+                        "data",
+                        "data",
+                        "data",
+                    ],
+                    filename_suffix=filename_suffix,
+                    number_subplots=len(fit_list) * 5,
+                    close_subplot=False,
+                )
+
+                multi_plotter.subplot_of_figures_multi(
+                    func_name_list=["figures_2d_of_planes"],
+                    figure_name_list=[
+                        "plane_image",
+                    ],
+                    filename_suffix=filename_suffix,
+                    number_subplots=len(fit_list) * 5,
+                    open_subplot=False,
+                    plane_index=-1
+                )
+
+            make_subplot_fit(filename_suffix="fit")
+
+            # for plotter in multi_plotter.plotter_list:
+            #     plotter.mat_plot_2d.use_log10 = True
+            #
+            # make_subplot_fit(filename_suffix="fit_log10")

@@ -222,10 +222,10 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
         Parameters
         ----------
         paths
-            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            The paths object which manages all paths, e.g. where the non-linear search outputs are stored,
             visualization and the pickled objects used by the aggregator output by this function.
         model
-            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
+            The model object, which includes model components representing the galaxies that are fitted to
             the imaging data.
         """
 
@@ -277,7 +277,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
         Parameters
         ----------
         paths
-            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            The paths object which manages all paths, e.g. where the non-linear search outputs are stored,
             visualization and the pickled objects used by the aggregator output by this function.
         result
             The result of a model fit, including the non-linear search, samples and maximum likelihood tracer.
