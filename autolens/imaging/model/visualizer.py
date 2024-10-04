@@ -129,5 +129,40 @@ class VisualizerImaging(af.Visualizer):
                     inversion=fit.inversion, during_analysis=during_analysis
                 )
 
+    @staticmethod
+    def visualize_before_fit_combined(
+        analyses,
+        paths: af.AbstractPaths,
+        model: af.AbstractPriorModel,
+    ):
+        """
+        Performs visualization before the non-linear search begins of information which shared across all analyses
+        on a single matplotlib figure.
 
-     
+        This function outputs visuals of all information which does not vary during the fit, for example the dataset
+        being fitted.
+
+        Parameters
+        ----------
+        analyses
+            The list of all analysis objects used for fitting via yhe non-linear search.
+        paths
+            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            visualization and the pickled objects used by the aggregator output by this function.
+        model
+            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
+            the imaging data.
+        """
+
+        if analyses is None:
+            return
+
+        plotter = PlotterInterfaceImaging(
+            image_path=paths.image_path, title_prefix=analyses[0].title_prefix
+        )
+
+        dataset_list = [analysis.dataset for analysis in analyses]
+
+        plotter.imaging_combined(
+            dataset_list=dataset_list,
+        )

@@ -12,6 +12,7 @@ from autolens.analysis.plotter_interface import plot_setting
 class PlotterInterfaceImaging(PlotterInterface):
 
     imaging = AgPlotterInterfaceImaging.imaging
+    imaging_combined = AgPlotterInterfaceImaging.imaging_combined
 
     def fit_imaging(
         self, fit: FitImaging, during_analysis: bool, subfolders: str = "fit_dataset"
