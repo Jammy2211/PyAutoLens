@@ -149,7 +149,7 @@ class PlotterInterface(AgPlotterInterface):
         the positions to do trace within an input threshold of one another in the source-plane.
 
         Images are output to the `image` folder of the `image_path` in a subfolder called `positions`. When
-        used with a non-linear search the `image_path` points to the search's results folder.
+        used with a non-linear search the `image_path` is the output folder of the non-linear search.
 
         The visualization is an image of the strong lens with the positions overlaid.
 

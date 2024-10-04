@@ -7,11 +7,10 @@ import autolens as al
 
 
 def test__set_traced_grids_of_planes():
-
     grid = al.Grid2D.no_mask(
         values=np.array([[[1.0, 1.0]]]),
         pixel_scales=1.0,
-        over_sampling=al.OverSamplingUniform(sub_size=1)
+        over_sampling=al.OverSamplingUniform(sub_size=1),
     )
 
     # traced grids is None so no Preloading.
