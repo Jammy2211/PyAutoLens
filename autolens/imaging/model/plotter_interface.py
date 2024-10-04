@@ -183,7 +183,9 @@ class PlotterInterfaceImaging(PlotterInterface):
             for fit in fit_list
         ]
 
-        subplot_shape = (len(fit_list), 5)
+        subplot_columns = 6
+
+        subplot_shape = (len(fit_list), subplot_columns)
 
         multi_plotter = aplt.MultiFigurePlotter(
             plotter_list=fit_plotter_list, subplot_shape=subplot_shape
@@ -194,16 +196,52 @@ class PlotterInterfaceImaging(PlotterInterface):
             def make_subplot_fit(filename_suffix):
 
                 multi_plotter.subplot_of_figures_multi(
-                    func_name_list=["figures_2d"] * 4,
+                    func_name_list=["figures_2d"],
                     figure_name_list=[
-                        "data",
-                        "data",
-                        "data",
                         "data",
                     ],
                     filename_suffix=filename_suffix,
-                    number_subplots=len(fit_list) * 5,
+                    number_subplots=len(fit_list) * subplot_columns,
                     close_subplot=False,
+                )
+
+                multi_plotter.subplot_of_figures_multi(
+                    func_name_list=["figures_2d_of_planes"],
+                    figure_name_list=[
+                        "subtracted_image",
+                    ],
+                    filename_suffix=filename_suffix,
+                    number_subplots=len(fit_list) * subplot_columns,
+                    open_subplot=False,
+                    close_subplot=False,
+                    subplot_index_offset=1,
+                    plane_index=1
+                )
+
+                multi_plotter.subplot_of_figures_multi(
+                    func_name_list=["figures_2d_of_planes"],
+                    figure_name_list=[
+                        "model_image",
+                    ],
+                    filename_suffix=filename_suffix,
+                    number_subplots=len(fit_list) * subplot_columns,
+                    open_subplot=False,
+                    close_subplot=False,
+                    subplot_index_offset=2,
+                    plane_index=0
+                )
+
+                multi_plotter.subplot_of_figures_multi(
+                    func_name_list=["figures_2d_of_planes"],
+                    figure_name_list=[
+                        "model_image",
+                    ],
+                    filename_suffix=filename_suffix,
+                    number_subplots=len(fit_list) * subplot_columns,
+                    open_subplot=False,
+                    close_subplot=False,
+                    subplot_index_offset=3,
+                    plane_index=len(fit_list[0].tracer.planes) - 1
                 )
 
                 multi_plotter.subplot_of_figures_multi(
@@ -212,9 +250,22 @@ class PlotterInterfaceImaging(PlotterInterface):
                         "plane_image",
                     ],
                     filename_suffix=filename_suffix,
-                    number_subplots=len(fit_list) * 5,
+                    number_subplots=len(fit_list) * subplot_columns,
                     open_subplot=False,
-                    plane_index=-1
+                    close_subplot=False,
+                    subplot_index_offset=4,
+                    plane_index=len(fit_list[0].tracer.planes) - 1
+                )
+
+                multi_plotter.subplot_of_figures_multi(
+                    func_name_list=["figures_2d"],
+                    figure_name_list=[
+                        "normalized_residual_map",
+                    ],
+                    filename_suffix=filename_suffix,
+                    number_subplots=len(fit_list) * subplot_columns,
+                    subplot_index_offset=5,
+                    open_subplot=False,
                 )
 
             make_subplot_fit(filename_suffix="fit")
