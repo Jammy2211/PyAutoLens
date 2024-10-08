@@ -16,6 +16,7 @@ from autoarray.operators.over_sampling.uniform import OverSamplerUniform  # noqa
 from autoarray.operators.over_sampling.iterate import OverSamplingIterate
 from autoarray.operators.over_sampling.iterate import OverSamplerIterate
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
+from autoarray.inversion.inversion.mapper_valued import MapperValued
 from autoarray.inversion.pixelization import image_mesh
 from autoarray.inversion.pixelization import mesh
 from autoarray.inversion import regularization as reg
@@ -42,11 +43,16 @@ from autoarray.operators.over_sampling.iterate import OverSamplingIterate
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
 from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
+from autoarray.structures.triangles.shape import Circle
+from autoarray.structures.triangles.shape import Triangle
+from autoarray.structures.triangles.shape import Square
+from autoarray.structures.triangles.shape import Polygon
 from autoarray.structures.vectors.uniform import VectorYX2D
 from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
+
 
 from autogalaxy import cosmology as cosmo
 from autogalaxy.analysis.adapt_images.adapt_images import AdaptImages
@@ -108,6 +114,7 @@ from .point.fit.positions.source.separations import FitPositionsSource
 from .point.fit.positions.source.max_separation import FitPositionsSourceMaxSeparation
 from .point.model.analysis import AnalysisPoint
 from .point.solver import PointSolver
+from .point.solver.shape_solver import ShapeSolver
 from .quantity.fit_quantity import FitQuantity
 from .quantity.model.analysis import AnalysisQuantity
 from . import exc
