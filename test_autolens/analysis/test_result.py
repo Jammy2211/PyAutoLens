@@ -137,11 +137,17 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
         samples_summary=samples_summary, analysis=analysis_imaging_7x7
     )
 
+    inversion = result.max_log_likelihood_fit.inversion
+    mapper = inversion.cls_list_from(cls=al.AbstractMapper)[0]
+
+    mapper_valued = al.MapperValued(
+        values=inversion.reconstruction_dict[mapper],
+        mapper=mapper,
+    )
+
     assert (
         result.source_plane_inversion_centre.in_list[0]
-        == result.max_log_likelihood_fit.inversion.brightest_pixel_centre_list[
-            0
-        ].in_list[0]
+        == mapper_valued.max_pixel_centre.in_list[0]
     )
 
     lens = al.Galaxy(redshift=0.5, light=al.lp.SersicSph(intensity=1.0))
