@@ -235,7 +235,6 @@ class ResultDataset(Result):
         """
         if self.max_log_likelihood_fit.inversion is not None:
             if self.max_log_likelihood_fit.inversion.has(cls=aa.AbstractMapper):
-
                 inversion = self.max_log_likelihood_fit.inversion
                 mapper = inversion.cls_list_from(cls=aa.AbstractMapper)[0]
 
