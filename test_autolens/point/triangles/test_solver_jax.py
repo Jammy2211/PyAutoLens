@@ -3,7 +3,6 @@ from typing import Tuple
 
 import pytest
 
-import autolens as al
 import autogalaxy as ag
 import autofit as af
 import numpy as np
@@ -15,7 +14,6 @@ except ImportError:
     from autoarray.structures.triangles.array import ArrayTriangles
 
 from autolens.mock import NullTracer
-
 
 pytest.importorskip("jax")
 
@@ -35,16 +33,9 @@ def solver(grid):
 
 
 def test_solver(solver):
-    tracer = al.Tracer(
-        galaxies=[
-            al.Galaxy(
-                redshift=0.5,
-                mass=ag.mp.Isothermal(
-                    centre=(0.0, 0.0),
-                    einstein_radius=1.0,
-                ),
-            )
-        ]
+    tracer = ag.mp.Isothermal(
+        centre=(0.0, 0.0),
+        einstein_radius=1.0,
     )
     assert solver.solve(
         tracer,
@@ -89,19 +80,38 @@ def test_real_example(grid, tracer):
 
 
 def _test_jax(grid):
-    solver = PointSolver.for_grid(
-        grid=grid,
-        pixel_scale_precision=0.001,
-        array_triangles_cls=ArrayTriangles,
-    )
+    sizes = (5, 10, 15, 20, 25, 30, 35, 40, 45, 50)
+    run_times = []
+    init_times = []
 
-    solver.solve(NullTracer(), (0.07, 0.07))
+    for size in sizes:
+        start = time.time()
+        solver = PointSolver.for_grid(
+            grid=grid,
+            pixel_scale_precision=0.001,
+            array_triangles_cls=ArrayTriangles,
+            max_containing_size=size,
+        )
 
-    repeats = 1000
-    start = time.time()
-    for _ in range(repeats):
-        result = solver.solve(NullTracer(), (0.07, 0.07))
+        solver.solve(NullTracer(), (0.07, 0.07))
 
-    print(result)
+        repeats = 100
 
-    print(f"Time taken: {(time.time() - start) / repeats}")
+        done_init_time = time.time()
+        init_time = done_init_time - start
+        for _ in range(repeats):
+            _ = solver.solve(NullTracer(), (0.07, 0.07))
+
+        # print(result)
+
+        init_times.append(init_time)
+
+        run_time = (time.time() - done_init_time) / repeats
+        run_times.append(run_time)
+
+        print(f"Time taken for {size}: {run_time} ({init_time} to init)")
+
+    from matplotlib import pyplot as plt
+
+    plt.plot(sizes, run_times)
+    plt.show()

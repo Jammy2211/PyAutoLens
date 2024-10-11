@@ -7,7 +7,6 @@ from autogalaxy.analysis.analysis.analysis import Analysis as AgAnalysis
 
 from autolens.analysis.analysis.lens import AnalysisLens
 from autolens.analysis.plotter_interface import PlotterInterface
-from autolens.point.fit.positions.abstract import AbstractFitPositions
 from autolens.point.fit.positions.image.pair_repeat import FitPositionsImagePairRepeat
 from autolens.point.fit.dataset import FitPointDataset
 from autolens.point.dataset import PointDataset
