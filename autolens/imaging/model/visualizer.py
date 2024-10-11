@@ -6,8 +6,8 @@ import autogalaxy as ag
 from autolens.imaging.model.plotter_interface import PlotterInterfaceImaging
 from autolens import exc
 
-class VisualizerImaging(af.Visualizer):
 
+class VisualizerImaging(af.Visualizer):
     @staticmethod
     def visualize_before_fit(
         analysis,
@@ -30,8 +30,7 @@ class VisualizerImaging(af.Visualizer):
         """
 
         plotter_interface = PlotterInterfaceImaging(
-            image_path=paths.image_path,
-            title_prefix=analysis.title_prefix
+            image_path=paths.image_path, title_prefix=analysis.title_prefix
         )
 
         plotter_interface.imaging(dataset=analysis.dataset)
@@ -43,9 +42,7 @@ class VisualizerImaging(af.Visualizer):
             )
 
         if analysis.adapt_images is not None:
-            plotter_interface.adapt_images(
-                adapt_images=analysis.adapt_images
-            )
+            plotter_interface.adapt_images(adapt_images=analysis.adapt_images)
 
     @staticmethod
     def visualize(
@@ -98,8 +95,7 @@ class VisualizerImaging(af.Visualizer):
                 return
 
         plotter_interface = PlotterInterfaceImaging(
-            image_path=paths.image_path,
-            title_prefix=analysis.title_prefix
+            image_path=paths.image_path, title_prefix=analysis.title_prefix
         )
 
         try:
@@ -112,16 +108,15 @@ class VisualizerImaging(af.Visualizer):
         extent = fit.data.extent_of_zoomed_array(buffer=0)
         shape_native = fit.data.zoomed_around_mask(buffer=0).shape_native
 
-        grid = ag.Grid2D.from_extent(
-            extent=extent,
-            shape_native=shape_native
-        )
+        grid = ag.Grid2D.from_extent(extent=extent, shape_native=shape_native)
 
         plotter_interface.tracer(
             tracer=tracer, grid=grid, during_analysis=during_analysis
         )
         plotter_interface.galaxies(
-            galaxies=tracer.galaxies, grid=fit.grids.uniform, during_analysis=during_analysis
+            galaxies=tracer.galaxies,
+            grid=fit.grids.uniform,
+            during_analysis=during_analysis,
         )
         if fit.inversion is not None:
             if fit.inversion.has(cls=ag.AbstractMapper):
@@ -199,7 +194,10 @@ class VisualizerImaging(af.Visualizer):
             image_path=paths.image_path, title_prefix=analyses[0].title_prefix
         )
 
-        fit_list = [analysis.fit_from(instance=instance) for analysis in analyses]
+        fit_list = [
+            analysis.fit_from(instance=single_instance)
+            for analysis, single_instance in zip(analyses, instance)
+        ]
 
         plotter.fit_imaging_combined(
             fit_list=fit_list,
