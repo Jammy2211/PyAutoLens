@@ -5,10 +5,10 @@ In chapter 2, we'll take you through how to model strong lenses using a non-line
 
 The chapter contains the following tutorials:
 
-`Tutorial 1: Data <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_2_lens_modeling/tutorial_1_data.ipynb>`_
+`Tutorial 1: Data <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_6_data.ipynb>`_
 - Loading and inspecting telescope imaging data of a strong lens.
 
-`Tutorial 2: Fitting <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_2_lens_modeling/tutorial_2_fitting.ipynb>`_
+`Tutorial 2: Fitting <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_7_fitting.ipynb>`_
 - Fitting data with a strong lens model.
 
 `Tutorial 3: Non-linear Search <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_2_lens_modeling/tutorial_3_non_linear_search.ipynb>`_
