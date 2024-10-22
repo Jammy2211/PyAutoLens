@@ -11,10 +11,10 @@ The chapter contains the following tutorials:
 - Setting up **PyAutoLens**'s visualization library.
 
 `Tutorial 1: Grids And Galaxies <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_1_grids_and_galaxies.ipynb>`_
-- Using grids of (y,x) coordinates with galaxies made up of light and mass profiles.
+- Using grids of (y,x) coordinates with galaxies made up of light profiles.
 
 `Tutorial 2: Ray Tracing <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_2_ray_tracing.ipynb>`_
-- Using Grids and galaxies to perform strong lens ray-tracing!
+- Using grids, galaxies and mass profiles to perform strong lens ray-tracing.
 
 `Tutorial 3: More Ray Tracing <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_1_introduction/tutorial_3_more_ray_tracing.ipynb>`_
 - Advanced strong lens ray-tracing.

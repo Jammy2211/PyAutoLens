@@ -18,7 +18,7 @@ def test__tracer_for_instance(analysis_imaging_7x7):
             source=al.Galaxy(redshift=1.0),
         )
         + af.Collection(
-            clump=al.Galaxy(
+            extra_galaxyp=al.Galaxy(
                 redshift=0.5,
                 light=al.lp.SersicSph(intensity=0.1),
                 mass=al.mp.IsothermalSph(einstein_radius=0.2),
