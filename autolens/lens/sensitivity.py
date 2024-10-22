@@ -85,7 +85,15 @@ class SubhaloSensitivityResult(SensitivityResult):
         """
         values_reshaped = [value for values in values.native for value in values]
 
-        pixel_scales = abs(self.x[0] - self.x[1])
+        pixel_scale_list = []
+
+        for i in range(len(values_reshaped) - 1):
+
+            pixel_scale = abs(self.x[i] - self.x[i+1])
+            if pixel_scale > 0.0:
+                pixel_scale_list.append(pixel_scale)
+
+        pixel_scales = np.min(pixel_scale_list)
 
         return aa.Array2D.from_yx_and_values(
             y=self.y,
