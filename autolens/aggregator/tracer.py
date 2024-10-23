@@ -37,15 +37,24 @@ def _tracer_from(
         randomly from the PDF).
     """
 
-    if instance is None:
-        instance = fit.instance
+    if instance is not None:
+        galaxies = instance.galaxies
+
+        if hasattr(instance, "extra_galaxies"):
+            galaxies = galaxies + fit.instance.extra_galaxies
+
+    else:
+        galaxies = fit.instance.galaxies
+
+        if hasattr(fit.instance, "extra_galaxies"):
+            galaxies = galaxies + fit.instance.extra_galaxies
 
     try:
         cosmology = instance.cosmology
     except AttributeError:
         cosmology = fit.value(name="cosmology")
 
-    tracer = Tracer(galaxies=instance.galaxies, cosmology=cosmology)
+    tracer = Tracer(galaxies=galaxies, cosmology=cosmology)
 
     if len(fit.children) > 0:
         logger.info(

@@ -88,8 +88,7 @@ class SubhaloSensitivityResult(SensitivityResult):
         pixel_scale_list = []
 
         for i in range(len(values_reshaped) - 1):
-
-            pixel_scale = abs(self.x[i] - self.x[i+1])
+            pixel_scale = abs(self.x[i] - self.x[i + 1])
             if pixel_scale > 0.0:
                 pixel_scale_list.append(pixel_scale)
 
