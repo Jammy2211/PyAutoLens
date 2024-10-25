@@ -34,6 +34,7 @@ class SubhaloSensitivityResult(SensitivityResult):
             samples=result.samples,
             perturb_samples=result.perturb_samples,
             shape=result.shape,
+            path_values=result.path_values,
         )
 
     @property
@@ -43,9 +44,7 @@ class SubhaloSensitivityResult(SensitivityResult):
 
         These are the `centre` coordinates of the dark matter subhalos that are included in the simulated datasets.
         """
-        return self.perturbed_physical_centres_list_from(
-            path="perturb.mass.centre.centre_0"
-        )
+        return self.perturbed_physical_centres_list_from(path="mass.centre.centre_0")
 
     @property
     def x(self) -> af.GridList:
@@ -54,9 +53,7 @@ class SubhaloSensitivityResult(SensitivityResult):
 
         These are the `centre` coordinates of the dark matter subhalos that are included in the simulated datasets.
         """
-        return self.perturbed_physical_centres_list_from(
-            path="perturb.mass.centre.centre_1"
-        )
+        return self.perturbed_physical_centres_list_from(path="mass.centre.centre_1")
 
     @property
     def extent(self) -> Tuple[float, float, float, float]:
@@ -88,11 +85,18 @@ class SubhaloSensitivityResult(SensitivityResult):
         """
         values_reshaped = [value for values in values.native for value in values]
 
-        pixel_scales = abs(self.x[0] - self.x[1])
+        pixel_scale_list = []
+
+        for i in range(len(values_reshaped) - 1):
+            pixel_scale = abs(self.x[i] - self.x[i + 1])
+            if pixel_scale > 0.0:
+                pixel_scale_list.append(pixel_scale)
+
+        pixel_scales = np.min(pixel_scale_list)
 
         return aa.Array2D.from_yx_and_values(
-            y=self.y.as_list,
-            x=self.x.as_list,
+            y=self.y,
+            x=self.x,
             values=values_reshaped,
             pixel_scales=(pixel_scales, pixel_scales),
             shape_native=self.shape,

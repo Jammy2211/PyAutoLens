@@ -16,6 +16,7 @@ from autoarray.operators.over_sampling.uniform import OverSamplerUniform  # noqa
 from autoarray.operators.over_sampling.iterate import OverSamplingIterate
 from autoarray.operators.over_sampling.iterate import OverSamplerIterate
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
+from autoarray.inversion.inversion.mapper_valued import MapperValued
 from autoarray.inversion.pixelization import image_mesh
 from autoarray.inversion.pixelization import mesh
 from autoarray.inversion import regularization as reg
@@ -29,6 +30,7 @@ from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.mappers.factory import mapper_from as Mapper
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
+from autoarray.operators.over_sampling.grid_oversampled import Grid2DOverSampled
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.arrays.uniform_1d import Array1D
@@ -52,6 +54,7 @@ from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
+
 from autogalaxy import cosmology as cosmo
 from autogalaxy.analysis.adapt_images.adapt_images import AdaptImages
 from autogalaxy.analysis.adapt_images.adapt_image_maker import AdaptImageMaker
@@ -60,8 +63,6 @@ from autogalaxy.gui.scribbler import Scribbler
 from autogalaxy.galaxy.galaxy import Galaxy
 from autogalaxy.galaxy.galaxies import Galaxies
 from autogalaxy.galaxy.redshift import Redshift
-from autogalaxy.analysis.clump_model import ClumpModel
-from autogalaxy.analysis.clump_model import ClumpModelDisabled
 
 from autogalaxy.quantity.dataset_quantity import DatasetQuantity
 from autogalaxy.profiles.geometry_profiles import EllProfile

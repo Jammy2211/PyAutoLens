@@ -6,8 +6,8 @@ import autogalaxy as ag
 from autolens.imaging.model.plotter_interface import PlotterInterfaceImaging
 from autolens import exc
 
-class VisualizerImaging(af.Visualizer):
 
+class VisualizerImaging(af.Visualizer):
     @staticmethod
     def visualize_before_fit(
         analysis,
@@ -22,16 +22,15 @@ class VisualizerImaging(af.Visualizer):
         Parameters
         ----------
         paths
-            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            The paths object which manages all paths, e.g. where the non-linear search outputs are stored,
             visualization and the pickled objects used by the aggregator output by this function.
         model
-            The PyAutoFit model object, which includes model components representing the galaxies that are fitted to
+            The model object, which includes model components representing the galaxies that are fitted to
             the imaging data.
         """
 
         plotter_interface = PlotterInterfaceImaging(
-            image_path=paths.image_path,
-            title_prefix=analysis.title_prefix
+            image_path=paths.image_path, title_prefix=analysis.title_prefix
         )
 
         plotter_interface.imaging(dataset=analysis.dataset)
@@ -43,9 +42,7 @@ class VisualizerImaging(af.Visualizer):
             )
 
         if analysis.adapt_images is not None:
-            plotter_interface.adapt_images(
-                adapt_images=analysis.adapt_images
-            )
+            plotter_interface.adapt_images(adapt_images=analysis.adapt_images)
 
     @staticmethod
     def visualize(
@@ -74,7 +71,7 @@ class VisualizerImaging(af.Visualizer):
         Parameters
         ----------
         paths
-            The PyAutoFit paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            The paths object which manages all paths, e.g. where the non-linear search outputs are stored,
             visualization, and the pickled objects used by the aggregator output by this function.
         instance
             An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
@@ -98,8 +95,7 @@ class VisualizerImaging(af.Visualizer):
                 return
 
         plotter_interface = PlotterInterfaceImaging(
-            image_path=paths.image_path,
-            title_prefix=analysis.title_prefix
+            image_path=paths.image_path, title_prefix=analysis.title_prefix
         )
 
         try:
@@ -112,16 +108,15 @@ class VisualizerImaging(af.Visualizer):
         extent = fit.data.extent_of_zoomed_array(buffer=0)
         shape_native = fit.data.zoomed_around_mask(buffer=0).shape_native
 
-        grid = ag.Grid2D.from_extent(
-            extent=extent,
-            shape_native=shape_native
-        )
+        grid = ag.Grid2D.from_extent(extent=extent, shape_native=shape_native)
 
         plotter_interface.tracer(
             tracer=tracer, grid=grid, during_analysis=during_analysis
         )
         plotter_interface.galaxies(
-            galaxies=tracer.galaxies, grid=fit.grids.uniform, during_analysis=during_analysis
+            galaxies=tracer.galaxies,
+            grid=fit.grids.uniform,
+            during_analysis=during_analysis,
         )
         if fit.inversion is not None:
             if fit.inversion.has(cls=ag.AbstractMapper):
@@ -129,5 +124,81 @@ class VisualizerImaging(af.Visualizer):
                     inversion=fit.inversion, during_analysis=during_analysis
                 )
 
+    @staticmethod
+    def visualize_before_fit_combined(
+        analyses,
+        paths: af.AbstractPaths,
+        model: af.AbstractPriorModel,
+    ):
+        """
+        Performs visualization before the non-linear search begins of information which shared across all analyses
+        on a single matplotlib figure.
 
-     
+        This function outputs visuals of all information which does not vary during the fit, for example the dataset
+        being fitted.
+
+        Parameters
+        ----------
+        analyses
+            The list of all analysis objects used for fitting via yhe non-linear search.
+        paths
+            The paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            visualization and the pickled objects used by the aggregator output by this function.
+        model
+            The model object, which includes model components representing the galaxies that are fitted to
+            the imaging data.
+        """
+
+        if analyses is None:
+            return
+
+        plotter = PlotterInterfaceImaging(
+            image_path=paths.image_path, title_prefix=analyses[0].title_prefix
+        )
+
+        dataset_list = [analysis.dataset for analysis in analyses]
+
+        plotter.imaging_combined(
+            dataset_list=dataset_list,
+        )
+
+    @staticmethod
+    def visualize_combined(
+        analyses,
+        paths: af.AbstractPaths,
+        instance: af.ModelInstance,
+        during_analysis: bool,
+    ):
+        """
+        Performs visualization during the non-linear search of information which is shared across all analyses on a
+        single matplotlib figure.
+
+        This function outputs visuals of all information which varies during the fit, for example the model-fit to
+        the dataset being fitted.
+
+        Parameters
+        ----------
+        analyses
+            The list of all analysis objects used for fitting via yhe non-linear search.
+        paths
+            The paths object which manages all paths, e.g. where the non-linear search outputs are stored,
+            visualization and the pickled objects used by the aggregator output by this function.
+        model
+            The model object, which includes model components representing the galaxies that are fitted to
+            the imaging data.
+        """
+        if analyses is None:
+            return
+
+        plotter = PlotterInterfaceImaging(
+            image_path=paths.image_path, title_prefix=analyses[0].title_prefix
+        )
+
+        fit_list = [
+            analysis.fit_from(instance=single_instance)
+            for analysis, single_instance in zip(analyses, instance)
+        ]
+
+        plotter.fit_imaging_combined(
+            fit_list=fit_list,
+        )

@@ -88,6 +88,13 @@ class AnalysisLens:
         else:
             cosmology = self.cosmology
 
+        if hasattr(instance, "extra_galaxies"):
+            if getattr(instance, "extra_galaxies", None) is not None:
+                return Tracer(
+                    galaxies=instance.galaxies + instance.extra_galaxies,
+                    run_time_dict=run_time_dict,
+                )
+
         return Tracer(
             galaxies=instance.galaxies,
             cosmology=cosmology,
