@@ -413,9 +413,11 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         """
         return max(
             [
-                plane_index
-                if any([galaxy.has(cls=ag.LightProfile) for galaxy in galaxies])
-                else 0
+                (
+                    plane_index
+                    if any([galaxy.has(cls=ag.LightProfile) for galaxy in galaxies])
+                    else 0
+                )
                 for (plane_index, galaxies) in enumerate(self.planes)
             ]
         )

@@ -5,7 +5,7 @@ general:
     zoom_around_mask: true
 include:
   include_2d:
-    border: true
+    border: false
     tangential_caustics: false
     radial_caustics: false
     tangential_critical_curves: false

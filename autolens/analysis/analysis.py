@@ -13,8 +13,6 @@ import autogalaxy as ag
 from autogalaxy.analysis.analysis.dataset import AnalysisDataset as AgAnalysisDataset
 
 from autolens.analysis.result import ResultDataset
-from autolens.analysis.maker import FitMaker
-from autolens.analysis.preloads import Preloads
 from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
 from autolens.lens.tracer import Tracer
@@ -196,8 +194,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
             cosmology=cosmology,
         )
 
-        self.preloads = self.preloads_cls()
-
         self.raise_inversion_positions_likelihood_exception = (
             raise_inversion_positions_likelihood_exception
         )
@@ -257,14 +253,6 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
                     "https://pyautolens.readthedocs.io/en/latest/general/demagnified_solutions.html"
                 )
 
-    @property
-    def preloads_cls(self):
-        return Preloads
-
-    @property
-    def fit_maker_cls(self):
-        return FitMaker
-
     def save_results(self, paths: af.DirectoryPaths, result: ResultDataset):
         """
         At the end of a model-fit, this routine saves attributes of the `Analysis` object to the `files`
@@ -291,18 +279,3 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
             pass
 
         image_mesh_list = []
-
-        for galaxy in result.instance.galaxies:
-            pixelization_list = galaxy.cls_list_from(cls=aa.Pixelization)
-
-            for pixelization in pixelization_list:
-                if pixelization is not None:
-                    image_mesh_list.append(pixelization.image_mesh)
-
-        if len(image_mesh_list) > 0:
-            paths.save_json(
-                name="preload_mesh_grids_of_planes",
-                object_dict=to_dict(
-                    result.max_log_likelihood_fit.tracer_to_inversion.image_plane_mesh_grid_pg_list
-                ),
-            )
