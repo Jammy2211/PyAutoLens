@@ -426,9 +426,7 @@ class FitInterferometerPlotter(Plotter):
                 )
 
         if plane_errors:
-
             if self.tracer.planes[plane_index].has(cls=aa.Pixelization):
-
                 inversion_plotter = self.inversion_plotter_of_plane(
                     plane_index=plane_index
                 )
@@ -437,13 +435,11 @@ class FitInterferometerPlotter(Plotter):
                     pixelization_index=0,
                     errors=True,
                     zoom_to_brightest=zoom_to_brightest,
-                    interpolate_to_uniform=interpolate_to_uniform
+                    interpolate_to_uniform=interpolate_to_uniform,
                 )
 
         if plane_signal_to_noise_map:
-
             if self.tracer.planes[plane_index].has(cls=aa.Pixelization):
-
                 inversion_plotter = self.inversion_plotter_of_plane(
                     plane_index=plane_index
                 )
@@ -452,7 +448,7 @@ class FitInterferometerPlotter(Plotter):
                     pixelization_index=0,
                     signal_to_noise_map=True,
                     zoom_to_brightest=zoom_to_brightest,
-                    interpolate_to_uniform=interpolate_to_uniform
+                    interpolate_to_uniform=interpolate_to_uniform,
                 )
 
     def subplot_fit_real_space(self):
