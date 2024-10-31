@@ -360,6 +360,62 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
 
         return False
 
+    def subplot_sensitivity(self):
+
+        log_likelihoods = self.result.figure_of_merit_array(
+            use_log_evidences=False,
+            remove_zeros=True,
+        )
+
+        try:
+            log_evidences = self.result.figure_of_merit_array(
+                use_log_evidences=True,
+                remove_zeros=True,
+            )
+        except TypeError:
+            log_evidences = np.zeros_like(log_likelihoods)
+
+        self.open_subplot_figure(number_subplots=4, subplot_shape=(1,4))
+
+        plotter = aplt.Array2DPlotter(
+            array=self.data_subtracted,
+            mat_plot_2d=self.mat_plot_2d,
+        )
+
+        max_value = np.round(np.nanmax(log_likelihoods), 2)
+        plotter.set_title(label=f"Sensitivity Map {max_value}")
+        plotter.figure_2d()
+
+        self.mat_plot_2d.plot_array(
+            array=log_likelihoods,
+            visuals_2d=self.visuals_2d,
+            auto_labels=AutoLabels(title="Increase in Log Likelihood"),
+        )
+
+        above_threshold = np.where(log_likelihoods > 5.0, 1.0, 0.0)
+
+        above_threshold = aa.Array2D(
+            values=above_threshold,
+            mask=log_likelihoods.mask
+        )
+        plotter.set_title(label=None)
+
+        self.mat_plot_2d.plot_array(
+            array=above_threshold,
+            visuals_2d=self.visuals_2d,
+            auto_labels=AutoLabels(title="Log Likelihood > 5.0"),
+        )
+
+        self.mat_plot_2d.plot_array(
+            array=log_evidences,
+            visuals_2d=self.visuals_2d,
+            auto_labels=AutoLabels(title="Increase in Log Evidence"),
+        )
+
+        self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_sensitivity")
+
+        self.close_subplot_figure()
+
     def subplot_figures_of_merit_grid(
         self,
         use_log_evidences: bool = True,
