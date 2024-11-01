@@ -5,6 +5,7 @@ import pytest
 import autolens as al
 import autogalaxy as ag
 from autoarray.structures.triangles.array import ArrayTriangles
+from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
 from autolens.mock import NullTracer
 from autolens.point.solver import PointSolver
 
@@ -62,13 +63,14 @@ def test_trivial(
     solver = PointSolver.for_grid(
         grid=grid,
         pixel_scale_precision=0.01,
-        array_triangles_cls=ArrayTriangles,
+        array_triangles_cls=CoordinateArrayTriangles,
     )
-    (coordinates,) = solver.solve(
+    coordinates = solver.solve(
         tracer=NullTracer(),
         source_plane_coordinate=source_plane_coordinate,
     )
-    assert coordinates == pytest.approx(source_plane_coordinate, abs=1.0e-1)
+
+    assert coordinates[0] == pytest.approx(source_plane_coordinate, abs=1.0e-1)
 
 
 def test_real_example(grid, tracer):
