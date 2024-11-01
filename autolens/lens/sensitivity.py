@@ -410,26 +410,52 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
             auto_labels=AutoLabels(title="Log Likelihood > 5.0"),
         )
 
+
+        log_evidences_base = self.result._array_2d_from(self.result.log_evidences_base)        
+        log_evidences_perturbed = self.result._array_2d_from(self.result.log_evidences_perturbed)
+
+        print(log_evidences_perturbed)
+
+        log_evidences_base_min = np.nanmin(np.where(log_evidences_base == 0, np.nan, log_evidences_base))
+        log_evidences_base_max = np.nanmax(np.where(log_evidences_base == 0, np.nan, log_evidences_base))
+        log_evidences_perturbed_min = np.nanmin(np.where(log_evidences_perturbed == 0, np.nan, log_evidences_perturbed))
+        log_evidences_perturbed_max = np.nanmax(np.where(log_evidences_perturbed == 0, np.nan, log_evidences_perturbed))
+
+        self.mat_plot_2d.cmap.kwargs["vmin"] = np.min([log_evidences_base_min, log_evidences_perturbed_min])
+        self.mat_plot_2d.cmap.kwargs["vmax"] = np.max([log_evidences_base_max, log_evidences_perturbed_max])
+
         self.mat_plot_2d.plot_array(
-            array=self.result._array_2d_from(self.result.log_evidences_base),
+            array=log_evidences_base,
             visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Log Evidence Base"),
         )
 
         self.mat_plot_2d.plot_array(
-            array=self.result._array_2d_from(self.result.log_evidences_perturbed),
+            array=log_evidences_perturbed,
             visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Log Evidence Perturb"),
+            
         )
+        
+        log_likelihoods_base = self.result._array_2d_from(self.result.log_likelihoods_base)
+        log_likelihoods_perturbed = self.result._array_2d_from(self.result.log_likelihoods_perturbed)
+
+        log_likelihoods_base_min = np.nanmin(np.where(log_likelihoods_base == 0, np.nan, log_likelihoods_base))
+        log_likelihoods_base_max = np.nanmax(np.where(log_likelihoods_base == 0, np.nan, log_likelihoods_base))
+        log_likelihoods_perturbed_min = np.nanmin(np.where(log_likelihoods_perturbed == 0, np.nan, log_likelihoods_perturbed))
+        log_likelihoods_perturbed_max = np.nanmax(np.where(log_likelihoods_perturbed == 0, np.nan, log_likelihoods_perturbed))
+
+        self.mat_plot_2d.cmap.kwargs["vmin"] = np.min([log_likelihoods_base_min, log_likelihoods_perturbed_min])
+        self.mat_plot_2d.cmap.kwargs["vmax"] = np.max([log_likelihoods_base_max, log_likelihoods_perturbed_max])
 
         self.mat_plot_2d.plot_array(
-            array=self.result._array_2d_from(self.result.log_likelihoods_base),
+            array=log_likelihoods_base,
             visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Log Likelihood Base"),
         )
 
         self.mat_plot_2d.plot_array(
-            array=self.result._array_2d_from(self.result.log_likelihoods_perturbed),
+            array=log_likelihoods_perturbed,
             visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Log Likelihood Perturb"),
         )
