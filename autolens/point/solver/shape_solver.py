@@ -4,6 +4,7 @@ import math
 from typing import Tuple, List, Iterator, Type, Optional
 
 import autoarray as aa
+from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
 
 from autoarray.structures.triangles.shape import Shape
 from autofit.jax_wrapper import jit, use_jax, numpy as np, register_pytree_node_class
@@ -66,7 +67,7 @@ class AbstractSolver:
         grid: aa.Grid2D,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
-        array_triangles_cls: Type[AbstractTriangles] = ArrayTriangles,
+        array_triangles_cls: Type[AbstractTriangles] = CoordinateArrayTriangles,
         max_containing_size=MAX_CONTAINING_SIZE,
     ):
         """
