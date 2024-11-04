@@ -293,6 +293,14 @@ class FitImagingPlotter(Plotter):
 
                 elif self.tracer.planes[plane_index].has(cls=aa.Pixelization):
 
+                    pix = self.tracer.planes[plane_index].cls_list_from(cls=aa.Pixelization)[0]
+
+                    if isinstance(pix.mesh, aa.mesh.Delaunay):
+                        try:
+                            self.mat_plot_2d.cmap.kwargs.pop("vmax")
+                        except KeyError:
+                            pass
+
                     inversion_plotter = self.inversion_plotter_of_plane(
                         plane_index=plane_index
                     )
@@ -303,6 +311,12 @@ class FitImagingPlotter(Plotter):
                         zoom_to_brightest=zoom_to_brightest,
                         interpolate_to_uniform=interpolate_to_uniform
                     )
+
+            if use_source_vmax:
+                try:
+                    self.mat_plot_2d.cmap.kwargs.pop("vmax")
+                except KeyError:
+                    pass
 
             if plane_errors:
 
@@ -333,9 +347,6 @@ class FitImagingPlotter(Plotter):
                         zoom_to_brightest=zoom_to_brightest,
                         interpolate_to_uniform=interpolate_to_uniform
                     )
-
-        if use_source_vmax:
-            self.mat_plot_2d.cmap.kwargs.pop("vmax")
 
     def subplot_of_planes(self, plane_index: Optional[int] = None):
         """
