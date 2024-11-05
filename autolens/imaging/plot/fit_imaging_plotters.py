@@ -665,7 +665,12 @@ class FitImagingPlotter(Plotter):
                     "total_mappings_pixels"
                 ]
 
-                pix_indexes = inversion_plotter.inversion.brightest_pixel_list_from(
+                mapper = inversion_plotter.inversion.cls_list_from(cls=aa.AbstractMapper)[0]
+                mapper_valued = aa.MapperValued(
+                    values=inversion_plotter.inversion.reconstruction_dict[mapper],
+                    mapper=mapper,
+                )
+                pix_indexes = mapper_valued.max_pixel_list_from(
                     total_pixels=total_pixels, filter_neighbors=True
                 )
 
