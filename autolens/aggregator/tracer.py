@@ -41,13 +41,15 @@ def _tracer_from(
         galaxies = instance.galaxies
 
         if hasattr(instance, "extra_galaxies"):
-            galaxies = galaxies + fit.instance.extra_galaxies
+            if fit.instance.extra_galaxies is not None:
+                galaxies = galaxies + fit.instance.extra_galaxies
 
     else:
         galaxies = fit.instance.galaxies
 
         if hasattr(fit.instance, "extra_galaxies"):
-            galaxies = galaxies + fit.instance.extra_galaxies
+            if fit.instance.extra_galaxies is not None:
+                galaxies = galaxies + fit.instance.extra_galaxies
 
     try:
         cosmology = instance.cosmology
