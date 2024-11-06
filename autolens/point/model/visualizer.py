@@ -83,6 +83,6 @@ class VisualizerPoint(af.Visualizer):
         )
         plotter_interface.galaxies(
             galaxies=tracer.galaxies,
-            grid=fit.grids.uniform,
+            grid=grid,
             during_analysis=during_analysis,
         )
