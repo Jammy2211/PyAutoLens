@@ -71,7 +71,7 @@ class FitPointDatasetPlotter(AbstractPlotter):
                 visuals_2d=visuals_2d,
                 auto_labels=aplt.AutoLabels(
                     title=f"{self.fit.dataset.name} Fit Positions",
-                    filename="fit_point_dataset_positions",
+                    filename="fit_point_positions",
                 ),
                 buffer=0.1,
             )
@@ -101,7 +101,7 @@ class FitPointDatasetPlotter(AbstractPlotter):
                     visuals_1d=visuals_1d,
                     auto_labels=aplt.AutoLabels(
                         title=f" {self.fit.dataset.name} Fit Fluxes",
-                        filename="fit_point_dataset_fluxes",
+                        filename="fit_point_fluxes",
                         xlabel="Point Number",
                     ),
                     plot_axis_type_override="errorbar",
