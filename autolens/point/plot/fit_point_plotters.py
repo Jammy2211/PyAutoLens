@@ -37,7 +37,32 @@ class FitPointDatasetPlotter(AbstractPlotter):
         if positions:
             visuals_2d = self.get_visuals_2d()
 
-            visuals_2d += visuals_2d.__class__(positions=self.fit.positions.model_data)
+            visuals_2d += visuals_2d.__class__(multiple_images=self.fit.positions.model_data)
+
+            if self.mat_plot_2d.axis.kwargs.get("extent") is None:
+
+                buffer = 0.1
+
+                y_max = max(
+                    max(self.fit.dataset.positions[:, 0]),
+                    max(self.fit.positions.model_data[:, 0]),
+                ) + buffer
+                y_min = min(
+                    min(self.fit.dataset.positions[:, 0]),
+                    min(self.fit.positions.model_data[:, 0]),
+                ) - buffer
+                x_max = max(
+                    max(self.fit.dataset.positions[:, 1]),
+                    max(self.fit.positions.model_data[:, 1]),
+                ) + buffer
+                x_min = min(
+                    min(self.fit.dataset.positions[:, 1]),
+                    min(self.fit.positions.model_data[:, 1]),
+                ) - buffer
+
+                extent = [y_min, y_max, x_min, x_max]
+
+                self.mat_plot_2d.axis.kwargs["extent"] = extent
 
             self.mat_plot_2d.plot_grid(
                 grid=self.fit.dataset.positions,
