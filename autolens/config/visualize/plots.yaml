@@ -7,6 +7,9 @@
     psf: false
   positions:                                 # Settings for plots with resampling image-positions on (e.g. the image).
     image_with_positions: true
+  point_dataset:                             # Settings for plots of point source datasets (e.g. PointDatasetPlotter).
+    positions: false                         # Plot the positions of th multiple images of the point source in the image plane?
+    fluxes: false                            # Plot the fluxes of the multiple images of the point source in the image plane?
   fit:                                       # Settings for plots of all fits (e.g. FitImagingPlotter, FitInterferometerPlotter).
     subplot_fit: true                        # Plot subplot of all fit quantities for any dataset (e.g. the model data, residual-map, etc.)?
     all_at_end_png: true                     # Plot all individual plots listed below as .png (even if False)?
@@ -25,6 +28,9 @@
     subtracted_images_of_planes: false       # Plot individual plots of each plane's subtracted image?
     plane_images_of_planes: false            # Plot individual plots of each plane's image (e.g. in the source plane)?
   fit_imaging: {}                            # Settings for plots of fits to imaging datasets (e.g. FitImagingPlotter).
+  fit_point_dataset:                         # Settings for plots of fits to point source datasets (e.g. FitPointDatasetPlotter).
+    positions: false                         # Plot the positions of th multiple images of the point source in the image plane?
+    fluxes: false                            # Plot the fluxes of the multiple images of the point source in the image plane?
   tracer:                               # Settings for plots of tracers (e.g. TracerPlotter).
     subplot_tracer: true                # Plot subplot of all quantities in each tracer (e.g. images, convergence)?
     all_at_end_png: true                     # Plot all individual plots listed below as .png (even if False)?

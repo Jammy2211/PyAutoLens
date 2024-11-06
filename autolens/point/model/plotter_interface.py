@@ -31,7 +31,7 @@ class PlotterInterfacePoint(PlotterInterface):
         """
 
         def should_plot(name):
-            return plot_setting(section=["dataset", "point_dataset"], name=name)
+            return plot_setting(section=["point_dataset"], name=name)
 
         mat_plot_2d = self.mat_plot_2d_from(subfolders="dataset")
 
