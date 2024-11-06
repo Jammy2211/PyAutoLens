@@ -76,7 +76,7 @@ class VisualizerPoint(af.Visualizer):
 
         tracer = fit.tracer
 
-        grid = ag.Grid2D.from_extent(extent=fit.dataset.extent, shape_native=(100, 100))
+        grid = ag.Grid2D.from_extent(extent=fit.dataset.extent_from(), shape_native=(100, 100))
 
         plotter_interface.tracer(
             tracer=tracer, grid=grid, during_analysis=during_analysis

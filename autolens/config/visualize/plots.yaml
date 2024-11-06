@@ -8,6 +8,7 @@
   positions:                                 # Settings for plots with resampling image-positions on (e.g. the image).
     image_with_positions: true
   point_dataset:                             # Settings for plots of point source datasets (e.g. PointDatasetPlotter).
+    subplot_dataset: true                    # Plot subplot containing all dataset quantities (e.g. the data, noise-map, etc.)?
     positions: false                         # Plot the positions of th multiple images of the point source in the image plane?
     fluxes: false                            # Plot the fluxes of the multiple images of the point source in the image plane?
   fit:                                       # Settings for plots of all fits (e.g. FitImagingPlotter, FitInterferometerPlotter).

@@ -1,11 +1,10 @@
-from autoarray.plot.abstract_plotters import AbstractPlotter
-
 import autogalaxy.plot as aplt
 
+from autolens.plot.abstract_plotters import Plotter
 from autolens.point.fit.dataset import FitPointDataset
 
 
-class FitPointDatasetPlotter(AbstractPlotter):
+class FitPointDatasetPlotter(Plotter):
     def __init__(
         self,
         fit: FitPointDataset,
@@ -37,7 +36,9 @@ class FitPointDatasetPlotter(AbstractPlotter):
         if positions:
             visuals_2d = self.get_visuals_2d()
 
-            visuals_2d += visuals_2d.__class__(multiple_images=self.fit.positions.model_data)
+            visuals_2d += visuals_2d.__class__(
+                multiple_images=self.fit.positions.model_data
+            )
 
             if self.mat_plot_2d.axis.kwargs.get("extent") is None:
 
