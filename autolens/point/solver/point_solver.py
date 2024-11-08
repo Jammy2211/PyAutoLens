@@ -23,12 +23,13 @@ class PointSolver(AbstractSolver):
         tracer: OperateDeflections,
         source_plane_coordinate: Tuple[float, float],
         source_plane_redshift: Optional[float] = None,
+        neighbor_order: int = 0,
     ) -> aa.Grid2DIrregular:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
 
         This is done by tiling the image plane with triangles and checking if the source plane coordinate is contained
-        within the triangle. The triangles are subsampled to increase the resolution with only the triangles that
+        within the triangle. The triangles are sub-sampled to increase the resolution with only the triangles that
         contain the source plane coordinate and their neighbours being kept.
 
         The means of the triangles  are then filtered to keep only those with an absolute magnification above the
@@ -36,6 +37,9 @@ class PointSolver(AbstractSolver):
 
         Parameters
         ----------
+        neighbor_order
+            The number of times recursively add neighbors for the triangles that contain
+            the source plane coordinate.
         source_plane_coordinate
             The source plane coordinate to trace to the image plane.
         tracer
@@ -52,6 +56,10 @@ class PointSolver(AbstractSolver):
             shape=Point(*source_plane_coordinate),
             source_plane_redshift=source_plane_redshift,
         )
+
+        for _ in range(neighbor_order):
+            kept_triangles = kept_triangles.neighborhood()
+
         filtered_means = self._filter_low_magnification(
             tracer=tracer, points=kept_triangles.means
         )

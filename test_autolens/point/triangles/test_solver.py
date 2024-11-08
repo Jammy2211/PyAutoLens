@@ -79,3 +79,28 @@ def test_real_example(grid, tracer):
     result = solver.solve(tracer=tracer, source_plane_coordinate=(0.07, 0.07))
 
     assert len(result) == 5
+
+
+@pytest.mark.parametrize(
+    "neighbor_order, expected",
+    [
+        (0, 1),
+        (1, 4),
+        (2, 10),
+    ],
+)
+def test_neighbor_order(
+    solver,
+    neighbor_order,
+    expected,
+):
+    assert (
+        len(
+            solver.solve(
+                NullTracer(),
+                source_plane_coordinate=(0.0, 0.0),
+                neighbor_order=neighbor_order,
+            )
+        )
+        == expected
+    )
