@@ -92,9 +92,14 @@ class FitPointDatasetPlotter(Plotter):
             if self.fit.dataset.fluxes is not None:
                 visuals_1d = self.get_visuals_1d()
 
-                visuals_1d += visuals_1d.__class__(
-                    model_fluxes=self.fit.flux.model_fluxes
-                )
+                # Dataset may have flux but model may not
+
+                try:
+                    visuals_1d += visuals_1d.__class__(
+                        model_fluxes=self.fit.flux.model_fluxes
+                    )
+                except AttributeError:
+                    pass
 
                 self.mat_plot_1d.plot_yx(
                     y=self.fit.dataset.fluxes,
