@@ -85,7 +85,7 @@ class PointSolver(AbstractSolver):
         for mean in filtered_means:
             if any(
                 np.linalg.norm(np.array(mean) - np.array(other))
-                <= self.pixel_scale_precision
+                <= self.pixel_scale_precision / 2
                 for other in filtered_close
             ):
                 continue
