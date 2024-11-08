@@ -99,7 +99,7 @@ def test_neighbor_order(
             solver.solve(
                 NullTracer(),
                 source_plane_coordinate=(0.0, 0.0),
-                neighbor_order=neighbor_degree,
+                neighbor_degree=neighbor_degree,
             )
         )
         == expected
