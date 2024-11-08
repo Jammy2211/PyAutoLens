@@ -82,7 +82,7 @@ def test_real_example(grid, tracer):
 
 
 @pytest.mark.parametrize(
-    "neighbor_order, expected",
+    "neighbor_degree, expected",
     [
         (0, 1),
         (1, 4),
@@ -91,7 +91,7 @@ def test_real_example(grid, tracer):
 )
 def test_neighbor_order(
     solver,
-    neighbor_order,
+    neighbor_degree,
     expected,
 ):
     assert (
@@ -99,7 +99,7 @@ def test_neighbor_order(
             solver.solve(
                 NullTracer(),
                 source_plane_coordinate=(0.0, 0.0),
-                neighbor_order=neighbor_order,
+                neighbor_order=neighbor_degree,
             )
         )
         == expected
