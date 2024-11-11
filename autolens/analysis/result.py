@@ -1,3 +1,4 @@
+import logging
 import os
 import numpy as np
 from typing import Optional, Union
@@ -14,6 +15,8 @@ from autolens.point.fit.positions.source.max_separation import (
 )
 from autolens.lens.tracer import Tracer
 from autolens.point.solver import PointSolver
+
+logger = logging.getLogger(__name__)
 
 
 class Result(AgResultDataset):
@@ -101,7 +104,62 @@ class Result(AgResultDataset):
             source_plane_coordinate=self.source_plane_centre.in_list[0],
         )
 
+        if multiple_images.shape[0] == 1:
+            return self.image_plane_multiple_image_positions_for_single_image_from()
+
         return aa.Grid2DIrregular(values=multiple_images)
+
+    def image_plane_multiple_image_positions_for_single_image_from(self, increments : int = 20) -> aa.Grid2DIrregular:
+        """
+        If the standard point solver only locates one multiple image, finds one or more additional images, which are
+        not technically multiple image in the point source regime, but are close enough to it they can be used
+        in a position threshold likelihood.
+
+        This is performed by incrementally moving the source-plane centre's coordinates towards the centre of the
+        source-plane at (0.0", 0.0"). This ensures that the centre will eventually go inside the caustic, where
+        multiple images are formed.
+
+        To move the source-plane centre, the original source-plane centre is multiplied by a factor that decreases
+        from 1.0 to 0.0 in increments of 1/increments. For example, if the source-plane centre is (1.0", -0.5") and
+        the `factor` is 0.5, the input source-plane centre is (0.5", -0.25").
+
+        The multiple images are always computed for the same mass model, thus they will always be valid multiple images
+        for the model being fitted, but as the factor decrease the multiple images may move furhter from their observed
+        positions.
+
+        Parameters
+        ----------
+        increments
+            The number of increments the source-plane centre is moved to compute multiple images.
+        """
+
+        logger.info("""
+        Could not find multiple images for maximum likelihood lens model.
+        
+        Incrementally moving source centre inwards towards centre of source-plane until caustic crossing occurs
+        and multiple images are formed.        
+        """)
+
+        grid = self.analysis.dataset.mask.derive_grid.all_false
+
+        centre = self.source_plane_centre.in_list[0]
+
+        solver = PointSolver.for_grid(
+            grid=grid,
+            pixel_scale_precision=0.001,
+        )
+
+        for i in range(1, increments):
+
+            factor = 1.0 - (1.0 * (i/increments))
+
+            multiple_images = solver.solve(
+                tracer=self.max_log_likelihood_tracer,
+                source_plane_coordinate=(centre[0] * factor, centre[1] * factor),
+            )
+
+            if multiple_images.shape[0] > 1:
+                return aa.Grid2DIrregular(values=multiple_images)
 
     def positions_threshold_from(
         self,
