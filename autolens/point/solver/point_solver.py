@@ -73,17 +73,6 @@ class PointSolver(AbstractSolver):
                 f"Filtered {difference} multiple-images with magnification below threshold."
             )
 
-        filtered_close = []
-
-        for mean in filtered_means:
-            if any(
-                np.linalg.norm(np.array(mean) - np.array(other))
-                <= self.pixel_scale_precision / 2
-                for other in filtered_close
-            ):
-                continue
-            filtered_close.append(mean)
-
         return aa.Grid2DIrregular(
-            [pair for pair in filtered_close if not np.isnan(pair).all()]
+            [pair for pair in filtered_means if not np.isnan(pair).all()]
         )
