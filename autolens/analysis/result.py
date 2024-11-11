@@ -102,52 +102,54 @@ class Result(AgResultDataset):
         )
 
         if multiple_images.shape[0] == 1:
-            return self.image_plane_multiple_image_positions_for_single_image_from(image_0=multiple_images)
+            return self.image_plane_multiple_image_positions_for_single_image_from()
 
         return aa.Grid2DIrregular(values=multiple_images)
 
-    def image_plane_multiple_image_positions_for_single_image_from(self, image_0) -> aa.Grid2DIrregular:
+    def image_plane_multiple_image_positions_for_single_image_from(self, increments : int = 20) -> aa.Grid2DIrregular:
         """
-        If the standard point solver only locates one multiple image, finds a second image which is not technically
-        a multiple image in the point source regime but is close to it.
+        If the standard point solver only locates one multiple image, finds one or more additional images, which are
+        not technically multiple image in the point source regime, but are close enough to it they can be used
+        in a position threshold likelihood.
 
-        This is performed by placing a circle at the source-plane centre and growing it until the `ShapeSolver`
-        finds a second multiple image which is a sufficiently far enough distance away from the first multiple image.
+        This is performed by incrementally moving the source-plane centre's coordinates towards the centre of the
+        source-plane at (0.0", 0.0"). This ensures that the centre will eventually go inside the caustic, where
+        multiple images are formed.
+
+        To move the source-plane centre, the original source-plane centre is multiplied by a factor that decreases
+        from 1.0 to 0.0 in increments of 1/increments. For example, if the source-plane centre is (1.0", -0.5") and
+        the `factor` is 0.5, the input source-plane centre is (0.5", -0.25").
+
+        The multiple images are always computed for the same mass model, thus they will always be valid multiple images
+        for the model being fitted, but as the factor decrease the multiple images may move furhter from their observed
+        positions.
 
         Parameters
         ----------
-        image_0
-            The first multiple image of the source-plane centre computed via the standard point solver.
+        increments
+            The number of increments the source-plane centre is moved to compute multiple images.
         """
 
         grid = self.analysis.dataset.mask.derive_grid.all_false
 
-        solver = ShapeSolver.for_grid(
+        centre = self.source_plane_centre.in_list[0]
+
+        solver = PointSolver.for_grid(
             grid=grid,
             pixel_scale_precision=0.001,
         )
 
-        centre = self.source_plane_centre.in_list[0]
+        for i in range(1, increments):
 
-        triangles = solver.solve_triangles(
-            tracer=self.max_log_likelihood_tracer,
-            shape=aa.Circle(y=centre[0], x=centre[1], radius=0.01)
-        )
+            factor = 1.0 - (1.0 * (i/increments))
 
-        multiple_images = triangles.centres
+            multiple_images = solver.solve(
+                tracer=self.max_log_likelihood_tracer,
+                source_plane_coordinate=(centre[0] * factor, centre[1] * factor),
+            )
 
-        distances = np.sum((multiple_images - image_0) ** 2, axis=1)
-
-        print(np.min(distances))
-
-        hgjjhjh
-
-        furthest_index = np.argmax(distances)
-        image_1 = multiple_images[furthest_index]
-
-        print(image_0[0], image_1)
-
-        return aa.Grid2DIrregular(values=[image_0[0], image_1])
+            if multiple_images.shape[0] > 1:
+                return aa.Grid2DIrregular(values=multiple_images)
 
     def positions_threshold_from(
         self,
