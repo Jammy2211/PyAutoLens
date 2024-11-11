@@ -4,7 +4,7 @@ import pytest
 
 import autolens as al
 import autogalaxy as ag
-from autoarray.structures.triangles.array import ArrayTriangles
+from autoarray.structures.triangles.jax_coordinate_array import ArrayTriangles
 from autolens.mock import NullTracer
 from autolens.point.solver import PointSolver
 
