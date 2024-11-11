@@ -112,6 +112,64 @@ class AbstractSolver:
         x_min = x.min()
         x_max = x.max()
 
+        return cls.for_limits_and_scale(
+            y_min=y_min,
+            y_max=y_max,
+            x_min=x_min,
+            x_max=x_max,
+            scale=scale,
+            pixel_scale_precision=pixel_scale_precision,
+            magnification_threshold=magnification_threshold,
+            array_triangles_cls=array_triangles_cls,
+            max_containing_size=max_containing_size,
+            neighbor_degree=neighbor_degree,
+        )
+
+    @classmethod
+    def for_limits_and_scale(
+        cls,
+        y_min=-1.0,
+        y_max=1.0,
+        x_min=-1.0,
+        x_max=1.0,
+        scale=0.1,
+        pixel_scale_precision: float = 0.001,
+        magnification_threshold=0.1,
+        array_triangles_cls: Type[AbstractTriangles] = CoordinateArrayTriangles,
+        max_containing_size=MAX_CONTAINING_SIZE,
+        neighbor_degree: int = 1,
+    ):
+        """
+        Create a solver for a given grid.
+
+        The grid defines the limits of the image plane and the pixel scale.
+
+        Parameters
+        ----------
+        y_min
+        y_max
+        x_min
+        x_max
+            The limits of the image plane in pixels.
+        scale
+            The pixel scale of the image plane. The initial triangles have this side length.
+        pixel_scale_precision
+            The precision to which the triangles should be subdivided.
+        magnification_threshold
+            The threshold for the magnification under which multiple images are filtered.
+        array_triangles_cls
+            The class to use for the triangles. JAX is used implicitly if USE_JAX=1 and
+            jax is installed.
+        max_containing_size
+            Only applies to JAX. This is the maximum number of multiple images expected.
+            We need to know this in advance to allocate memory for the JAX array.
+        neighbor_degree
+            The number of times recursively add neighbors for the triangles that contain
+
+        Returns
+        -------
+        The solver.
+        """
         initial_triangles = array_triangles_cls.for_limits_and_scale(
             y_min=y_min,
             y_max=y_max,
