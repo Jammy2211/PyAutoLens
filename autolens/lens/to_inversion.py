@@ -376,7 +376,6 @@ class TracerToInversion(ag.AbstractToInversion):
         """
         if self.preloads.image_plane_mesh_grid_pg_list is None:
             image_plane_mesh_grid_pg_list = self.image_plane_mesh_grid_pg_list
-
         else:
             image_plane_mesh_grid_pg_list = self.preloads.image_plane_mesh_grid_pg_list
 
@@ -441,12 +440,15 @@ class TracerToInversion(ag.AbstractToInversion):
 
         if self.preloads.traced_mesh_grids_list_of_planes is None:
             traced_mesh_grids_list_of_planes = self.traced_mesh_grid_pg_list
-            image_plane_mesh_grid_list = self.image_plane_mesh_grid_pg_list
         else:
             traced_mesh_grids_list_of_planes = (
                 self.preloads.traced_mesh_grids_list_of_planes
             )
-            image_plane_mesh_grid_list = self.preloads.image_plane_mesh_grid_list
+
+        if self.preloads.image_plane_mesh_grid_pg_list is None:
+            image_plane_mesh_grid_list = self.image_plane_mesh_grid_pg_list
+        else:
+            image_plane_mesh_grid_list = self.preloads.image_plane_mesh_grid_pg_list
 
         for plane_index, galaxies in enumerate(self.planes):
             if galaxies.has(cls=aa.Pixelization):
