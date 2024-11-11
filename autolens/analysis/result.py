@@ -1,3 +1,4 @@
+import logging
 import os
 import numpy as np
 from typing import Optional, Union
@@ -14,7 +15,9 @@ from autolens.point.fit.positions.source.max_separation import (
 )
 from autolens.lens.tracer import Tracer
 from autolens.point.solver import PointSolver
-from autolens.point.solver.shape_solver import ShapeSolver
+
+logger = logging.getLogger(__name__)
+
 
 class Result(AgResultDataset):
     @property
@@ -129,6 +132,13 @@ class Result(AgResultDataset):
         increments
             The number of increments the source-plane centre is moved to compute multiple images.
         """
+
+        logger.info("""
+        Could not find multiple images for maximum likelihood lens model.
+        
+        Incrementally moving source centre inwards towards centre of source-plane until caustic crossing occurs
+        and multiple images are formed.        
+        """)
 
         grid = self.analysis.dataset.mask.derive_grid.all_false
 
