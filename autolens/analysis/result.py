@@ -102,11 +102,23 @@ class Result(AgResultDataset):
         )
 
         if multiple_images.shape[0] == 1:
-            return self.image_plane_multiple_image_positions_for_single_image_from(multiple_image=multiple_images)
+            return self.image_plane_multiple_image_positions_for_single_image_from(image_0=multiple_images)
 
         return aa.Grid2DIrregular(values=multiple_images)
 
-    def image_plane_multiple_image_positions_for_single_image_from(self, multiple_image) -> aa.Grid2DIrregular:
+    def image_plane_multiple_image_positions_for_single_image_from(self, image_0) -> aa.Grid2DIrregular:
+        """
+        If the standard point solver only locates one multiple image, finds a second image which is not technically
+        a multiple image in the point source regime but is close to it.
+
+        This is performed by placing a circle at the source-plane centre and growing it until the `ShapeSolver`
+        finds a second multiple image which is a sufficiently far enough distance away from the first multiple image.
+
+        Parameters
+        ----------
+        image_0
+            The first multiple image of the source-plane centre computed via the standard point solver.
+        """
 
         grid = self.analysis.dataset.mask.derive_grid.all_false
 
@@ -117,16 +129,25 @@ class Result(AgResultDataset):
 
         centre = self.source_plane_centre.in_list[0]
 
-        multiple_images = solver.solve_triangles(
+        triangles = solver.solve_triangles(
             tracer=self.max_log_likelihood_tracer,
-            shape=aa.Circle(y=centre[0], x=centre[1], radius=0.1)
+            shape=aa.Circle(y=centre[0], x=centre[1], radius=0.01)
         )
 
-        print(multiple_images.vertices)
-        fdsdfsfsd
+        multiple_images = triangles.centres
 
+        distances = np.sum((multiple_images - image_0) ** 2, axis=1)
 
-        pass
+        print(np.min(distances))
+
+        hgjjhjh
+
+        furthest_index = np.argmax(distances)
+        image_1 = multiple_images[furthest_index]
+
+        print(image_0[0], image_1)
+
+        return aa.Grid2DIrregular(values=[image_0[0], image_1])
 
     def positions_threshold_from(
         self,
