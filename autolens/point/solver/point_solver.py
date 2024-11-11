@@ -28,7 +28,7 @@ class PointSolver(AbstractSolver):
         Solve for the image plane coordinates that are traced to the source plane coordinate.
 
         This is done by tiling the image plane with triangles and checking if the source plane coordinate is contained
-        within the triangle. The triangles are subsampled to increase the resolution with only the triangles that
+        within the triangle. The triangles are sub-sampled to increase the resolution with only the triangles that
         contain the source plane coordinate and their neighbours being kept.
 
         The means of the triangles  are then filtered to keep only those with an absolute magnification above the
@@ -52,6 +52,7 @@ class PointSolver(AbstractSolver):
             shape=Point(*source_plane_coordinate),
             source_plane_redshift=source_plane_redshift,
         )
+
         filtered_means = self._filter_low_magnification(
             tracer=tracer, points=kept_triangles.means
         )
@@ -77,7 +78,7 @@ class PointSolver(AbstractSolver):
         for mean in filtered_means:
             if any(
                 np.linalg.norm(np.array(mean) - np.array(other))
-                <= self.pixel_scale_precision
+                <= self.pixel_scale_precision / 2
                 for other in filtered_close
             ):
                 continue
