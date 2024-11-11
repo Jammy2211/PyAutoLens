@@ -23,7 +23,6 @@ class PointSolver(AbstractSolver):
         tracer: OperateDeflections,
         source_plane_coordinate: Tuple[float, float],
         source_plane_redshift: Optional[float] = None,
-        neighbor_degree: int = 0,
     ) -> aa.Grid2DIrregular:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
@@ -37,9 +36,6 @@ class PointSolver(AbstractSolver):
 
         Parameters
         ----------
-        neighbor_degree
-            The number of times recursively add neighbors for the triangles that contain
-            the source plane coordinate.
         source_plane_coordinate
             The source plane coordinate to trace to the image plane.
         tracer
@@ -56,9 +52,6 @@ class PointSolver(AbstractSolver):
             shape=Point(*source_plane_coordinate),
             source_plane_redshift=source_plane_redshift,
         )
-
-        for _ in range(neighbor_degree):
-            kept_triangles = kept_triangles.neighborhood()
 
         filtered_means = self._filter_low_magnification(
             tracer=tracer, points=kept_triangles.means

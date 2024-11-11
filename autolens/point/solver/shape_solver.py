@@ -41,6 +41,7 @@ class AbstractSolver:
         initial_triangles: AbstractTriangles,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
+        neighbor_degree: int = 1,
     ):
         """
         Determine the image plane coordinates that are traced to be a source plane coordinate.
@@ -51,12 +52,16 @@ class AbstractSolver:
 
         Parameters
         ----------
+        neighbor_degree
+            The number of times recursively add neighbors for the triangles that contain
+            the source plane coordinate.
         pixel_scale_precision
             The target pixel scale of the image grid.
         """
         self.scale = scale
         self.pixel_scale_precision = pixel_scale_precision
         self.magnification_threshold = magnification_threshold
+        self.neighbor_degree = neighbor_degree
 
         self.initial_triangles = initial_triangles
 
@@ -279,7 +284,10 @@ class AbstractSolver:
                 source_plane_redshift=source_plane_redshift,
                 shape=shape,
             )
-            neighbourhood = kept_triangles.neighborhood()
+            neighbourhood = kept_triangles
+            for _ in range(self.neighbor_degree):
+                neighbourhood = neighbourhood.neighborhood()
+
             up_sampled = neighbourhood.up_sample()
 
             yield Step(
