@@ -74,6 +74,7 @@ class AbstractSolver:
         magnification_threshold=0.1,
         array_triangles_cls: Type[AbstractTriangles] = CoordinateArrayTriangles,
         max_containing_size=MAX_CONTAINING_SIZE,
+        neighbor_degree: int = 1,
     ):
         """
         Create a solver for a given grid.
@@ -94,6 +95,8 @@ class AbstractSolver:
         max_containing_size
             Only applies to JAX. This is the maximum number of multiple images expected.
             We need to know this in advance to allocate memory for the JAX array.
+        neighbor_degree
+            The number of times recursively add neighbors for the triangles that contain
 
         Returns
         -------
@@ -123,6 +126,7 @@ class AbstractSolver:
             initial_triangles=initial_triangles,
             pixel_scale_precision=pixel_scale_precision,
             magnification_threshold=magnification_threshold,
+            neighbor_degree=neighbor_degree,
         )
 
     @property
