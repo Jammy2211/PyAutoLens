@@ -14,7 +14,7 @@ from autolens.point.fit.positions.source.max_separation import (
 )
 from autolens.lens.tracer import Tracer
 from autolens.point.solver import PointSolver
-
+from autolens.point.solver.shape_solver import ShapeSolver
 
 class Result(AgResultDataset):
     @property
@@ -101,7 +101,32 @@ class Result(AgResultDataset):
             source_plane_coordinate=self.source_plane_centre.in_list[0],
         )
 
+        if multiple_images.shape[0] == 1:
+            return self.image_plane_multiple_image_positions_for_single_image_from(multiple_image=multiple_images)
+
         return aa.Grid2DIrregular(values=multiple_images)
+
+    def image_plane_multiple_image_positions_for_single_image_from(self, multiple_image) -> aa.Grid2DIrregular:
+
+        grid = self.analysis.dataset.mask.derive_grid.all_false
+
+        solver = ShapeSolver.for_grid(
+            grid=grid,
+            pixel_scale_precision=0.001,
+        )
+
+        centre = self.source_plane_centre.in_list[0]
+
+        multiple_images = solver.solve_triangles(
+            tracer=self.max_log_likelihood_tracer,
+            shape=aa.Circle(y=centre[0], x=centre[1], radius=0.1)
+        )
+
+        print(multiple_images.vertices)
+        fdsdfsfsd
+
+
+        pass
 
     def positions_threshold_from(
         self,
