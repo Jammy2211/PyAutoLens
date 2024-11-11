@@ -169,6 +169,36 @@ class Result(AgResultDataset):
         use_resample=False,
         positions: Optional[aa.Grid2DIrregular] = None,
     ) -> Union[PositionsLHPenalty, PositionsLHResample]:
+        """
+        Returns a `PositionsLH` object from the result of a lens model-fit, where the maximum log likelihood mass
+        and source models are used to determine the multiple image positions in the image-plane and source-plane
+        and ray-trace them to the source-plane to determine the threshold.
+
+        In chained fits, for example the SLaM pipelines, this means that a simple initial fit (e.g. SIE mass model,
+        parametric source) can be used to determine the multiple image positions and threshold for a more complex
+        subsequent fit (e.g. power-law mass model, pixelized source).
+
+        Parameters
+        ----------
+        factor
+            The value the computed threshold is multiplied by to make the position threshold larger or smaller than the
+            maximum log likelihood model's threshold.
+        minimum_threshold
+            The output threshold is rounded up to this value if it is below it, to avoid extremely small threshold
+            values.
+        use_resample
+            If `False` the `PositionsLH` object is created using the `PositionsLHPenalty` class, which uses the
+            threshold to apply a penalty term to the likelihood. If `True` the `PositionsLH` object is created using
+            the `PositionsLHResample` class, which resamples the positions to the threshold.
+        positions
+            If input, these positions are used instead of the computed multiple image positions from the lens mass
+            model.
+
+        Returns
+        -------
+        The `PositionsLH` object used to apply a likelihood penalty or resample the positions.
+        """
+
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
             return None
 

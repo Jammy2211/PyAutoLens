@@ -46,7 +46,7 @@ You may get warnings which state something like:
 
 .. code-block:: bash
 
-    ERROR: autoarray 2024.9.21.2 has requirement numpy<=1.22.1, but you'll have numpy 1.22.2 which is incompatible.
+    ERROR: autoarray 2024.11.6.1 has requirement numpy<=1.22.1, but you'll have numpy 1.22.2 which is incompatible.
     ERROR: numba 0.53.1 has requirement llvmlite<0.37,>=0.36.0rc1, but you'll have llvmlite 0.38.0 which is incompatible.
 
 If you see these messages, they do not mean that the installation has failed and the instructions below will

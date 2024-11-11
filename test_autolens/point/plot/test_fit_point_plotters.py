@@ -29,15 +29,15 @@ def test__fit_point_quantities_are_output(
 
     fit_point_plotter.figures_2d(positions=True, fluxes=True)
 
-    assert path.join(plot_path, "fit_point_dataset_positions.png") in plot_patch.paths
-    assert path.join(plot_path, "fit_point_dataset_fluxes.png") in plot_patch.paths
+    assert path.join(plot_path, "fit_point_positions.png") in plot_patch.paths
+    assert path.join(plot_path, "fit_point_fluxes.png") in plot_patch.paths
 
     plot_patch.paths = []
 
     fit_point_plotter.figures_2d(positions=True, fluxes=False)
 
-    assert path.join(plot_path, "fit_point_dataset_positions.png") in plot_patch.paths
-    assert path.join(plot_path, "fit_point_dataset_fluxes.png") not in plot_patch.paths
+    assert path.join(plot_path, "fit_point_positions.png") in plot_patch.paths
+    assert path.join(plot_path, "fit_point_fluxes.png") not in plot_patch.paths
 
     plot_patch.paths = []
 
@@ -51,8 +51,8 @@ def test__fit_point_quantities_are_output(
 
     fit_point_plotter.figures_2d(positions=True, fluxes=True)
 
-    assert path.join(plot_path, "fit_point_dataset_positions.png") in plot_patch.paths
-    assert path.join(plot_path, "fit_point_dataset_fluxes.png") not in plot_patch.paths
+    assert path.join(plot_path, "fit_point_positions.png") in plot_patch.paths
+    assert path.join(plot_path, "fit_point_fluxes.png") not in plot_patch.paths
 
 
 def test__subplot_fit(

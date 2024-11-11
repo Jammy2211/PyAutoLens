@@ -104,6 +104,9 @@ plots:
     dirty_signal_to_noise_map: false
     phases_vs_uv_distances: false
     uv_wavelengths: false
+  fit_point_dataset:                         # Settings for plots of fits to point source datasets (e.g. FitPointDatasetPlotter).
+    positions: true                         # Plot the positions of th multiple images of the point source in the image plane?
+    fluxes: true                             # Plot the fluxes of the multiple images of the point source in the image plane?
   fit_quantity:
     all_at_end_fits: true
     all_at_end_png: true
