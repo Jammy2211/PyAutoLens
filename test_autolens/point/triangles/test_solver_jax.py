@@ -6,7 +6,7 @@ import pytest
 import autogalaxy as ag
 import autofit as af
 import numpy as np
-from autolens import PointSolver
+from autolens import PointSolver, Tracer
 
 try:
     from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
@@ -35,14 +35,19 @@ def solver(grid):
 
 
 def test_solver(solver):
-    tracer = ag.mp.Isothermal(
+    mass_profile = ag.mp.Isothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.0,
     )
-    assert solver.solve(
+    tracer = Tracer(
+        galaxies=[ag.Galaxy(redshift=0.5, mass=mass_profile)],
+    )
+    result = solver.solve(
         tracer,
         source_plane_coordinate=(0.0, 0.0),
     )
+    print(result)
+    assert result
 
 
 @pytest.mark.parametrize(

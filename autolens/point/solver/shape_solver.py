@@ -4,6 +4,7 @@ import math
 from typing import Tuple, List, Iterator, Type, Optional
 
 import autoarray as aa
+from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
 
 from autoarray.structures.triangles.shape import Shape
 from autofit.jax_wrapper import jit, use_jax, numpy as np, register_pytree_node_class
@@ -40,6 +41,7 @@ class AbstractSolver:
         initial_triangles: AbstractTriangles,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
+        neighbor_degree: int = 1,
     ):
         """
         Determine the image plane coordinates that are traced to be a source plane coordinate.
@@ -50,12 +52,16 @@ class AbstractSolver:
 
         Parameters
         ----------
+        neighbor_degree
+            The number of times recursively add neighbors for the triangles that contain
+            the source plane coordinate.
         pixel_scale_precision
             The target pixel scale of the image grid.
         """
         self.scale = scale
         self.pixel_scale_precision = pixel_scale_precision
         self.magnification_threshold = magnification_threshold
+        self.neighbor_degree = neighbor_degree
 
         self.initial_triangles = initial_triangles
 
@@ -66,7 +72,7 @@ class AbstractSolver:
         grid: aa.Grid2D,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
-        array_triangles_cls: Type[AbstractTriangles] = ArrayTriangles,
+        array_triangles_cls: Type[AbstractTriangles] = CoordinateArrayTriangles,
         max_containing_size=MAX_CONTAINING_SIZE,
     ):
         """
@@ -278,7 +284,10 @@ class AbstractSolver:
                 source_plane_redshift=source_plane_redshift,
                 shape=shape,
             )
-            neighbourhood = kept_triangles.neighborhood()
+            neighbourhood = kept_triangles
+            for _ in range(self.neighbor_degree):
+                neighbourhood = neighbourhood.neighborhood()
+
             up_sampled = neighbourhood.up_sample()
 
             yield Step(
