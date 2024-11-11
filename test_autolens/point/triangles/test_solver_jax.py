@@ -9,9 +9,11 @@ import numpy as np
 from autolens import PointSolver, Tracer
 
 try:
-    from autoarray.structures.triangles.jax_array import ArrayTriangles
+    from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
 except ImportError:
-    from autoarray.structures.triangles.array import ArrayTriangles
+    from autoarray.structures.triangles.jax_coordinate_array import (
+        CoordinateArrayTriangles,
+    )
 
 from autolens.mock import NullTracer
 
@@ -28,7 +30,7 @@ def solver(grid):
     return PointSolver.for_grid(
         grid=grid,
         pixel_scale_precision=0.01,
-        array_triangles_cls=ArrayTriangles,
+        array_triangles_cls=CoordinateArrayTriangles,
     )
 
 
@@ -77,7 +79,7 @@ def test_real_example(grid, tracer):
     solver = PointSolver.for_grid(
         grid=grid,
         pixel_scale_precision=0.001,
-        array_triangles_cls=ArrayTriangles,
+        array_triangles_cls=CoordinateArrayTriangles,
     )
 
     result = solver.solve(tracer, (0.07, 0.07))
@@ -94,7 +96,7 @@ def _test_jax(grid):
         solver = PointSolver.for_grid(
             grid=grid,
             pixel_scale_precision=0.001,
-            array_triangles_cls=ArrayTriangles,
+            array_triangles_cls=CoordinateArrayTriangles,
             max_containing_size=size,
         )
 
