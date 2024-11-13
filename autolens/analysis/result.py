@@ -109,7 +109,9 @@ class Result(AgResultDataset):
 
         return aa.Grid2DIrregular(values=multiple_images)
 
-    def image_plane_multiple_image_positions_for_single_image_from(self, increments : int = 20) -> aa.Grid2DIrregular:
+    def image_plane_multiple_image_positions_for_single_image_from(
+        self, increments: int = 20
+    ) -> aa.Grid2DIrregular:
         """
         If the standard point solver only locates one multiple image, finds one or more additional images, which are
         not technically multiple image in the point source regime, but are close enough to it they can be used
@@ -133,12 +135,14 @@ class Result(AgResultDataset):
             The number of increments the source-plane centre is moved to compute multiple images.
         """
 
-        logger.info("""
+        logger.info(
+            """
         Could not find multiple images for maximum likelihood lens model.
         
         Incrementally moving source centre inwards towards centre of source-plane until caustic crossing occurs
         and multiple images are formed.        
-        """)
+        """
+        )
 
         grid = self.analysis.dataset.mask.derive_grid.all_false
 
@@ -150,8 +154,7 @@ class Result(AgResultDataset):
         )
 
         for i in range(1, increments):
-
-            factor = 1.0 - (1.0 * (i/increments))
+            factor = 1.0 - (1.0 * (i / increments))
 
             multiple_images = solver.solve(
                 tracer=self.max_log_likelihood_tracer,
