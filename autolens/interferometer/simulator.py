@@ -18,7 +18,7 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
             An arrays representing the effective exposure time of each pixel.
         psf: PSF
             An arrays describing the PSF the simulated image is blurred with.
-        add_poisson_noise: Bool
+        add_poisson_noise_to_data: Bool
             If `True` poisson noise_maps is simulated and added to the image, based on the total counts in each image
             pixel
         noise_seed: int

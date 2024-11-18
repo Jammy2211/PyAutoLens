@@ -295,12 +295,6 @@ class FitImagingPlotter(Plotter):
 
                     pix = self.tracer.planes[plane_index].cls_list_from(cls=aa.Pixelization)[0]
 
-                    if isinstance(pix.mesh, aa.mesh.Delaunay):
-                        try:
-                            self.mat_plot_2d.cmap.kwargs.pop("vmax")
-                        except KeyError:
-                            pass
-
                     inversion_plotter = self.inversion_plotter_of_plane(
                         plane_index=plane_index
                     )
