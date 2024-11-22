@@ -356,6 +356,7 @@ class AbstractSolver:
                 filtered_triangles=kept_triangles,
                 neighbourhood=neighbourhood,
                 up_sampled=up_sampled,
+                source_triangles=source_triangles,
             )
 
             initial_triangles = up_sampled
