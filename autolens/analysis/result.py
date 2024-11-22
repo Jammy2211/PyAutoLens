@@ -164,6 +164,16 @@ class Result(AgResultDataset):
             if multiple_images.shape[0] > 1:
                 return aa.Grid2DIrregular(values=multiple_images)
 
+        logger.info(
+        """
+        Could not find multiple images for maximum likelihood lens model, even after incrementally moving the source
+        centre inwards to the centre of the source-plane.
+
+        Set the multiple image postiions to two images at (1.0", 1.0") so code continues to run.
+        """
+        )
+        return aa.Grid2DIrregular(values=[(1.0, 1.0), (1.0, 1.0)])
+
     def positions_threshold_from(
         self,
         factor=1.0,
