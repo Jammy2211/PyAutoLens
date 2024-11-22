@@ -37,7 +37,7 @@ def plot_triangles(triangles, color="black"):
     plt.show()
 
 
-def plot_triangles_compare(triangles_a, triangles_b):
+def plot_triangles_compare(triangles_a, triangles_b, number=None):
     plt.figure(figsize=(8, 8))
     for triangle in triangles_a:
         triangle = np.append(triangle, [triangle[0]], axis=0)
@@ -49,6 +49,6 @@ def plot_triangles_compare(triangles_a, triangles_b):
 
     plt.xlabel("X")
     plt.ylabel("Y")
-    plt.title(f"Triangles")
+    plt.title("Triangles" + f" {number}" if number is not None else "")
     plt.gca().set_aspect("equal", adjustable="box")
     plt.show()
