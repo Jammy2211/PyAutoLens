@@ -99,7 +99,7 @@ def test_real_example(grid, tracer):
         coordinates = set(map(tuple, triangles.coordinates.tolist()))
         jax_coordinates = set(map(tuple, jax_triangles.coordinates.tolist()))
 
-        print(f"\n\n step {step.number}")
+        print(f"\nStep {step.number}")
         print(f"side length = {step.filtered_triangles.side_length}")
 
         print(triangles.vertices.tolist()[0])
