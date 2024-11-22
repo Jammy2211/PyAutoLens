@@ -124,6 +124,26 @@ def test_real_example(grid, tracer):
     assert len(result) == 5
 
 
+def test_real_example_jax_only(grid, tracer):
+    jax_solver = PointSolver.for_grid(
+        grid=grid,
+        pixel_scale_precision=0.001,
+        array_triangles_cls=JAXTriangles,
+    )
+
+    for step in jax_solver.steps(
+        tracer=tracer,
+        shape=Point(
+            0.07,
+            0.07,
+        ),
+    ):
+        triangles = step.initial_triangles
+
+        print(triangles)
+        visualise(step)
+
+
 def test_broken_step(grid, tracer):
     solver = PointSolver(
         scale=0.5,
