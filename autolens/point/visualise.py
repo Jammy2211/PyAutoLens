@@ -24,15 +24,18 @@ def visualise(step: Step):
     plt.show()
 
 
-def plot_triangles(triangles, color="black"):
+def plot_triangles(triangles, color="black", title="Triangles", point=None):
     plt.figure(figsize=(8, 8))
     for triangle in triangles:
         triangle = np.append(triangle, [triangle[0]], axis=0)
         plt.plot(triangle[:, 0], triangle[:, 1], "o-", color=color)
 
+    if point:
+        plt.plot(point[0], point[1], "x", color="red")
+
     plt.xlabel("X")
     plt.ylabel("Y")
-    plt.title(f"Triangles")
+    plt.title(title)
     plt.gca().set_aspect("equal", adjustable="box")
     plt.show()
 
