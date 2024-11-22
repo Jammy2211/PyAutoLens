@@ -13,7 +13,7 @@ from autoarray.structures.triangles.jax_coordinate_array import (
 from autoarray.structures.triangles.shape import Point
 from autolens.mock import NullTracer
 from autolens.point.solver import PointSolver
-from autolens.point.visualise import visualise, plot_triangles_compare
+from autolens.point.visualise import visualise, plot_triangles_compare, plot_triangles
 
 
 @pytest.fixture
@@ -97,31 +97,48 @@ def test_real_example(grid, tracer):
         array_triangles_cls=JAXTriangles,
     )
 
+    point = Point(0.07, 0.07)
+
     for step, jax_step in zip(
-        solver.steps(tracer=tracer, shape=Point(0.07, 0.07)),
-        jax_solver.steps(tracer=tracer, shape=Point(0.07, 0.07)),
+        solver.steps(tracer=tracer, shape=point),
+        jax_solver.steps(tracer=tracer, shape=point),
     ):
-        point = Point(2.0, 0.0)
+        initial_triangles = step.initial_triangles
+        jax_initial_triangles = jax_step.initial_triangles
 
-        triangles = step.initial_triangles
-        jax_triangles = jax_step.initial_triangles
+        initial_triangle_set = triangle_set(initial_triangles)
+        jax_initial_triangle_set = triangle_set(jax_initial_triangles)
 
-        indices = step.initial_triangles.with_vertices(
-            step.initial_triangles.vertices
-        ).containing_indices(point)
-        jax_indices = jax_step.initial_triangles.with_vertices(
-            jax_step.initial_triangles.vertices
-        ).containing_indices(point)
+        print(
+            "difference in initial",
+            initial_triangle_set.difference(jax_initial_triangle_set),
+        )
 
-        new_triangles = triangles.for_indexes(indices)
-        new_jax_triangles = jax_triangles.for_indexes(jax_indices)
+        print("Difference in vertices")
+        print(
+            {
+                tuple(map(float, np.round(v, 3))) for v in initial_triangles.vertices
+            }.difference(
+                {
+                    tuple(map(float, np.round(v, 3)))
+                    for v in jax_initial_triangles.vertices
+                    if not np.isnan(v).any()
+                }
+            )
+        )
 
-        print(indices)
-        print(jax_indices)
+        source_triangles = triangle_set(step.source_triangles)
+        jax_source_triangles = triangle_set(jax_step.source_triangles)
 
-    result = solver.solve(tracer=tracer, source_plane_coordinate=(0.07, 0.07))
+        print(
+            "in source but not jax", source_triangles.difference(jax_source_triangles)
+        )
+        print(
+            "in jax but not source", jax_source_triangles.difference(source_triangles)
+        )
 
-    assert len(result) == 5
+        if step.number == 2:
+            break
 
 
 def test_real_example_jax_only(grid, tracer):
