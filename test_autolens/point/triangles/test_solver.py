@@ -78,6 +78,14 @@ def test_trivial(
     assert coordinates[0] == pytest.approx(source_plane_coordinate, abs=1.0e-1)
 
 
+def triangle_set(triangles):
+    return {
+        tuple(sorted([tuple(np.round(pair, 4)) for pair in triangle]))
+        for triangle in triangles.triangles.tolist()
+        if not np.isnan(triangle).any()
+    }
+
+
 def test_real_example(grid, tracer):
     solver = PointSolver.for_grid(
         grid=grid,
@@ -93,35 +101,23 @@ def test_real_example(grid, tracer):
         solver.steps(tracer=tracer, shape=Point(0.07, 0.07)),
         jax_solver.steps(tracer=tracer, shape=Point(0.07, 0.07)),
     ):
-        triangles = step.filtered_triangles
-        jax_triangles = jax_step.filtered_triangles
+        point = Point(2.0, 0.0)
 
-        coordinates = set(map(tuple, triangles.coordinates.tolist()))
-        jax_coordinates = set(map(tuple, jax_triangles.coordinates.tolist()))
+        triangles = step.initial_triangles
+        jax_triangles = jax_step.initial_triangles
 
-        print(f"\nStep {step.number}")
-        print(f"side length = {step.filtered_triangles.side_length}")
+        indices = step.initial_triangles.with_vertices(
+            step.initial_triangles.vertices
+        ).containing_indices(point)
+        jax_indices = jax_step.initial_triangles.with_vertices(
+            jax_step.initial_triangles.vertices
+        ).containing_indices(point)
 
-        print(triangles.vertices.tolist()[0])
-        print(jax_triangles.vertices.tolist()[0])
+        new_triangles = triangles.for_indexes(indices)
+        new_jax_triangles = jax_triangles.for_indexes(jax_indices)
 
-        shared = coordinates.intersection(jax_coordinates)
-        print("shared")
-        print(shared)
-
-        default_only = coordinates.difference(jax_coordinates)
-        print("default only")
-        print(default_only)
-
-        jax_only = jax_coordinates.difference(coordinates)
-        print("jax only")
-        print(jax_only)
-
-        plot_triangles_compare(
-            triangles,
-            jax_triangles,
-            number=step.number,
-        )
+        print(indices)
+        print(jax_indices)
 
     result = solver.solve(tracer=tracer, source_plane_coordinate=(0.07, 0.07))
 
