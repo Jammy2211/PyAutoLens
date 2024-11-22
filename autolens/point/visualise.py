@@ -35,3 +35,20 @@ def plot_triangles(triangles, color="black"):
     plt.title(f"Triangles")
     plt.gca().set_aspect("equal", adjustable="box")
     plt.show()
+
+
+def plot_triangles_compare(triangles_a, triangles_b):
+    plt.figure(figsize=(8, 8))
+    for triangle in triangles_a:
+        triangle = np.append(triangle, [triangle[0]], axis=0)
+        plt.plot(triangle[:, 0], triangle[:, 1], "o-", color="red")
+
+    for triangle in triangles_b:
+        triangle = np.append(triangle, [triangle[0]], axis=0)
+        plt.plot(triangle[:, 0], triangle[:, 1], "o-", color="blue")
+
+    plt.xlabel("X")
+    plt.ylabel("Y")
+    plt.title(f"Triangles")
+    plt.gca().set_aspect("equal", adjustable="box")
+    plt.show()
