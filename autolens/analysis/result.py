@@ -165,7 +165,7 @@ class Result(AgResultDataset):
                 return aa.Grid2DIrregular(values=multiple_images)
 
         logger.info(
-        """
+            """
         Could not find multiple images for maximum likelihood lens model, even after incrementally moving the source
         centre inwards to the centre of the source-plane.
 
@@ -239,6 +239,7 @@ class Result(AgResultDataset):
         minimum_threshold=None,
         use_resample=False,
         positions: Optional[aa.Grid2DIrregular] = None,
+        mass_centre_radial_distance_min: float = None,
     ) -> Union[PositionsLHPenalty, PositionsLHResample]:
         """
         Returns a `PositionsLH` object from the result of a lens model-fit, where the maximum log likelihood mass
@@ -248,6 +249,11 @@ class Result(AgResultDataset):
         In chained fits, for example the SLaM pipelines, this means that a simple initial fit (e.g. SIE mass model,
         parametric source) can be used to determine the multiple image positions and threshold for a more complex
         subsequent fit (e.g. power-law mass model, pixelized source).
+
+        The mass model central image is removed from the solution, as this is rarely physically observed and therefore
+        should not be included in the likelihood penalty or resampling. It is removed by setting a positive
+        magnification threshold in the `PointSolver`. For strange lens models the central image may still be
+        solved for, in which case the `mass_centre_radial_distance_min` parameter can be used to remove it.
 
         Parameters
         ----------
@@ -264,6 +270,10 @@ class Result(AgResultDataset):
         positions
             If input, these positions are used instead of the computed multiple image positions from the lens mass
             model.
+        mass_centre_radial_distance_min
+            The minimum radial distance from the mass model centre that a multiple image position must be to be
+            included in the likelihood penalty or resampling. If `None` all positions are used. This is an additional
+            method to remove central images that may make it through the point solver's magnification threshold.
 
         Returns
         -------
@@ -278,6 +288,18 @@ class Result(AgResultDataset):
             if positions is None
             else positions
         )
+
+        if mass_centre_radial_distance_min is not None:
+            mass_centre = self.max_log_likelihood_tracer.extract_attribute(
+                cls=ag.mp.MassProfile, attr_name="centre"
+            )
+
+            distances = positions.distances_to_coordinate_from(
+                coordinate=mass_centre[0]
+            )
+
+            positions = positions[distances > mass_centre_radial_distance_min]
+
         threshold = self.positions_threshold_from(
             factor=factor, minimum_threshold=minimum_threshold, positions=positions
         )
