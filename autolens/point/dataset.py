@@ -84,8 +84,7 @@ class PointDataset:
         info += f"fluxes_noise_map : {self.fluxes_noise_map}\n"
         return info
 
-    def extent_from(self, buffer : float = 0.1):
-
+    def extent_from(self, buffer: float = 0.1):
         y_max = max(self.positions[:, 0]) + buffer
         y_min = min(self.positions[:, 0]) - buffer
         x_max = max(self.positions[:, 1]) + buffer

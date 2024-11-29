@@ -11,7 +11,6 @@ from autolens.analysis.plotter_interface import plot_setting
 
 
 class PlotterInterfacePoint(PlotterInterface):
-
     def dataset_point(self, dataset: PointDataset):
         """
         Output visualization of an `PointDataset` dataset, typically before a model-fit is performed.
@@ -54,7 +53,10 @@ class PlotterInterfacePoint(PlotterInterface):
             dataset_plotter.subplot_dataset()
 
     def fit_point(
-        self, fit: FitPointDataset, during_analysis: bool, subfolders: str = "fit_dataset"
+        self,
+        fit: FitPointDataset,
+        during_analysis: bool,
+        subfolders: str = "fit_dataset",
     ):
         """
         Visualizes a `FitPointDataset` object, which fits an imaging dataset.
@@ -104,7 +106,6 @@ class PlotterInterfacePoint(PlotterInterface):
             fit_plotter.subplot_fit()
 
         if not during_analysis and should_plot("all_at_end_png"):
-
             mat_plot_2d = self.mat_plot_2d_from(
                 subfolders=path.join("fit_dataset", "end"),
             )
@@ -113,7 +114,4 @@ class PlotterInterfacePoint(PlotterInterface):
                 fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
             )
 
-            fit_plotter.figures_2d(
-                positions=True,
-                fluxes=True
-            )
+            fit_plotter.figures_2d(positions=True, fluxes=True)

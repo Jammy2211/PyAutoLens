@@ -361,7 +361,6 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         return False
 
     def subplot_sensitivity(self):
-
         log_likelihoods = self.result.figure_of_merit_array(
             use_log_evidences=False,
             remove_zeros=True,
@@ -375,7 +374,7 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         except TypeError:
             log_evidences = np.zeros_like(log_likelihoods)
 
-        self.open_subplot_figure(number_subplots=8, subplot_shape=(2,4))
+        self.open_subplot_figure(number_subplots=8, subplot_shape=(2, 4))
 
         plotter = aplt.Array2DPlotter(
             array=self.data_subtracted,
@@ -398,10 +397,7 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
 
         above_threshold = np.where(log_likelihoods > 5.0, 1.0, 0.0)
 
-        above_threshold = aa.Array2D(
-            values=above_threshold,
-            mask=log_likelihoods.mask
-        )
+        above_threshold = aa.Array2D(values=above_threshold, mask=log_likelihoods.mask)
 
         self.mat_plot_2d.plot_array(
             array=above_threshold,
@@ -410,16 +406,32 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         )
 
         try:
-            log_evidences_base = self.result._array_2d_from(self.result.log_evidences_base)
-            log_evidences_perturbed = self.result._array_2d_from(self.result.log_evidences_perturbed)
+            log_evidences_base = self.result._array_2d_from(
+                self.result.log_evidences_base
+            )
+            log_evidences_perturbed = self.result._array_2d_from(
+                self.result.log_evidences_perturbed
+            )
 
-            log_evidences_base_min = np.nanmin(np.where(log_evidences_base == 0, np.nan, log_evidences_base))
-            log_evidences_base_max = np.nanmax(np.where(log_evidences_base == 0, np.nan, log_evidences_base))
-            log_evidences_perturbed_min = np.nanmin(np.where(log_evidences_perturbed == 0, np.nan, log_evidences_perturbed))
-            log_evidences_perturbed_max = np.nanmax(np.where(log_evidences_perturbed == 0, np.nan, log_evidences_perturbed))
+            log_evidences_base_min = np.nanmin(
+                np.where(log_evidences_base == 0, np.nan, log_evidences_base)
+            )
+            log_evidences_base_max = np.nanmax(
+                np.where(log_evidences_base == 0, np.nan, log_evidences_base)
+            )
+            log_evidences_perturbed_min = np.nanmin(
+                np.where(log_evidences_perturbed == 0, np.nan, log_evidences_perturbed)
+            )
+            log_evidences_perturbed_max = np.nanmax(
+                np.where(log_evidences_perturbed == 0, np.nan, log_evidences_perturbed)
+            )
 
-            self.mat_plot_2d.cmap.kwargs["vmin"] = np.min([log_evidences_base_min, log_evidences_perturbed_min])
-            self.mat_plot_2d.cmap.kwargs["vmax"] = np.max([log_evidences_base_max, log_evidences_perturbed_max])
+            self.mat_plot_2d.cmap.kwargs["vmin"] = np.min(
+                [log_evidences_base_min, log_evidences_perturbed_min]
+            )
+            self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(
+                [log_evidences_base_max, log_evidences_perturbed_max]
+            )
 
             self.mat_plot_2d.plot_array(
                 array=log_evidences_base,
@@ -431,21 +443,36 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
                 array=log_evidences_perturbed,
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Log Evidence Perturb"),
-
             )
         except TypeError:
             pass
-        
-        log_likelihoods_base = self.result._array_2d_from(self.result.log_likelihoods_base)
-        log_likelihoods_perturbed = self.result._array_2d_from(self.result.log_likelihoods_perturbed)
 
-        log_likelihoods_base_min = np.nanmin(np.where(log_likelihoods_base == 0, np.nan, log_likelihoods_base))
-        log_likelihoods_base_max = np.nanmax(np.where(log_likelihoods_base == 0, np.nan, log_likelihoods_base))
-        log_likelihoods_perturbed_min = np.nanmin(np.where(log_likelihoods_perturbed == 0, np.nan, log_likelihoods_perturbed))
-        log_likelihoods_perturbed_max = np.nanmax(np.where(log_likelihoods_perturbed == 0, np.nan, log_likelihoods_perturbed))
+        log_likelihoods_base = self.result._array_2d_from(
+            self.result.log_likelihoods_base
+        )
+        log_likelihoods_perturbed = self.result._array_2d_from(
+            self.result.log_likelihoods_perturbed
+        )
 
-        self.mat_plot_2d.cmap.kwargs["vmin"] = np.min([log_likelihoods_base_min, log_likelihoods_perturbed_min])
-        self.mat_plot_2d.cmap.kwargs["vmax"] = np.max([log_likelihoods_base_max, log_likelihoods_perturbed_max])
+        log_likelihoods_base_min = np.nanmin(
+            np.where(log_likelihoods_base == 0, np.nan, log_likelihoods_base)
+        )
+        log_likelihoods_base_max = np.nanmax(
+            np.where(log_likelihoods_base == 0, np.nan, log_likelihoods_base)
+        )
+        log_likelihoods_perturbed_min = np.nanmin(
+            np.where(log_likelihoods_perturbed == 0, np.nan, log_likelihoods_perturbed)
+        )
+        log_likelihoods_perturbed_max = np.nanmax(
+            np.where(log_likelihoods_perturbed == 0, np.nan, log_likelihoods_perturbed)
+        )
+
+        self.mat_plot_2d.cmap.kwargs["vmin"] = np.min(
+            [log_likelihoods_base_min, log_likelihoods_perturbed_min]
+        )
+        self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(
+            [log_likelihoods_base_max, log_likelihoods_perturbed_max]
+        )
 
         self.mat_plot_2d.plot_array(
             array=log_likelihoods_base,
