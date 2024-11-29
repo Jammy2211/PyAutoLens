@@ -5,7 +5,7 @@ import autoarray as aa
 from autoarray.numpy_wrapper import register_pytree_node_class
 
 try:
-    from autoarray.structures.triangles.jax_array import ArrayTriangles
+    from autoarray.structures.triangles.array.jax_array import ArrayTriangles
 except ImportError:
     from autoarray.structures.triangles.array import ArrayTriangles
 

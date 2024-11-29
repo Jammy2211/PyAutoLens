@@ -11,7 +11,7 @@ from autofit.jax_wrapper import jit, use_jax, numpy as np, register_pytree_node_
 
 try:
     if use_jax:
-        from autoarray.structures.triangles.jax_array import (
+        from autoarray.structures.triangles.array.jax_array import (
             ArrayTriangles,
             MAX_CONTAINING_SIZE,
         )
