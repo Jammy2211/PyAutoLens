@@ -38,6 +38,7 @@ class Step:
     filtered_triangles: aa.AbstractTriangles
     neighbourhood: aa.AbstractTriangles
     up_sampled: aa.AbstractTriangles
+    source_triangles: aa.AbstractTriangles
 
     def tree_flatten(self):
         return (
