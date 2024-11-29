@@ -4,24 +4,27 @@ import math
 from typing import Tuple, List, Iterator, Type, Optional
 
 import autoarray as aa
-from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
 
 from autoarray.structures.triangles.shape import Shape
 from autofit.jax_wrapper import jit, use_jax, numpy as np, register_pytree_node_class
 
 try:
     if use_jax:
-        from autoarray.structures.triangles.array.jax_array import (
-            ArrayTriangles,
+        from autoarray.structures.triangles.coordinate_array.jax_coordinate_array import (
+            CoordinateArrayTriangles,
             MAX_CONTAINING_SIZE,
         )
     else:
-        from autoarray.structures.triangles.array import ArrayTriangles
+        from autoarray.structures.triangles.coordinate_array.coordinate_array import (
+            CoordinateArrayTriangles,
+        )
 
         MAX_CONTAINING_SIZE = None
 
 except ImportError:
-    from autoarray.structures.triangles.array import ArrayTriangles
+    from autoarray.structures.triangles.coordinate_array.coordinate_array import (
+        CoordinateArrayTriangles,
+    )
 
     MAX_CONTAINING_SIZE = None
 
