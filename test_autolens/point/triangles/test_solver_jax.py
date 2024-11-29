@@ -11,7 +11,7 @@ from autolens import PointSolver, Tracer
 try:
     from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
 except ImportError:
-    from autoarray.structures.triangles.jax_coordinate_array import (
+    from autoarray.structures.triangles.coordinate_array.jax_coordinate_array import (
         CoordinateArrayTriangles,
     )
 

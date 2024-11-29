@@ -6,7 +6,7 @@ import pytest
 import autolens as al
 import autogalaxy as ag
 from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
-from autoarray.structures.triangles.jax_coordinate_array import (
+from autoarray.structures.triangles.coordinate_array.jax_coordinate_array import (
     CoordinateArrayTriangles as JAXTriangles,
 )
 from autolens.mock import NullTracer
