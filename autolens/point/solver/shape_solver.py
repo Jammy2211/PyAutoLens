@@ -4,24 +4,27 @@ import math
 from typing import Tuple, List, Iterator, Type, Optional
 
 import autoarray as aa
-from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
 
 from autoarray.structures.triangles.shape import Shape
 from autofit.jax_wrapper import jit, use_jax, numpy as np, register_pytree_node_class
 
 try:
     if use_jax:
-        from autoarray.structures.triangles.jax_array import (
-            ArrayTriangles,
+        from autoarray.structures.triangles.coordinate_array.jax_coordinate_array import (
+            CoordinateArrayTriangles,
             MAX_CONTAINING_SIZE,
         )
     else:
-        from autoarray.structures.triangles.array import ArrayTriangles
+        from autoarray.structures.triangles.coordinate_array.coordinate_array import (
+            CoordinateArrayTriangles,
+        )
 
         MAX_CONTAINING_SIZE = None
 
 except ImportError:
-    from autoarray.structures.triangles.array import ArrayTriangles
+    from autoarray.structures.triangles.coordinate_array.coordinate_array import (
+        CoordinateArrayTriangles,
+    )
 
     MAX_CONTAINING_SIZE = None
 
@@ -295,12 +298,11 @@ class AbstractSolver:
         mask = np.abs(magnifications.array) > self.magnification_threshold
         return np.where(mask[:, None], points, np.nan)
 
-    def _filtered_triangles(
+    def _source_triangles(
         self,
         tracer: OperateDeflections,
         triangles: aa.AbstractTriangles,
         source_plane_redshift,
-        shape: Shape,
     ):
         """
         Filter the triangles to keep only those that meet the solver condition
@@ -310,11 +312,7 @@ class AbstractSolver:
             grid=aa.Grid2DIrregular(triangles.vertices),
             source_plane_redshift=source_plane_redshift,
         )
-        source_triangles = triangles.with_vertices(source_plane_grid.array)
-
-        indexes = source_triangles.containing_indices(shape=shape)
-
-        return triangles.for_indexes(indexes=indexes)
+        return triangles.with_vertices(source_plane_grid.array)
 
     def steps(
         self,
@@ -340,12 +338,15 @@ class AbstractSolver:
         """
         initial_triangles = self.initial_triangles
         for number in range(self.n_steps):
-            kept_triangles = self._filtered_triangles(
+            source_triangles = self._source_triangles(
                 tracer=tracer,
                 triangles=initial_triangles,
                 source_plane_redshift=source_plane_redshift,
-                shape=shape,
             )
+
+            indexes = source_triangles.containing_indices(shape=shape)
+            kept_triangles = initial_triangles.for_indexes(indexes=indexes)
+
             neighbourhood = kept_triangles
             for _ in range(self.neighbor_degree):
                 neighbourhood = neighbourhood.neighborhood()
@@ -358,6 +359,7 @@ class AbstractSolver:
                 filtered_triangles=kept_triangles,
                 neighbourhood=neighbourhood,
                 up_sampled=up_sampled,
+                source_triangles=source_triangles,
             )
 
             initial_triangles = up_sampled
