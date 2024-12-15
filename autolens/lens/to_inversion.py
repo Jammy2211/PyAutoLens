@@ -164,7 +164,7 @@ class TracerToInversion(ag.AbstractToInversion):
         lp_linear_galaxy_dict_list = {}
 
         traced_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
-            grid=self.dataset.grids.uniform
+            grid=self.dataset.grids.lp
         )
 
         if self.dataset.grids.blurring is not None:
@@ -178,7 +178,7 @@ class TracerToInversion(ag.AbstractToInversion):
 
         for plane_index, galaxies in enumerate(self.planes):
             grids = aa.GridsInterface(
-                uniform=traced_grids_of_planes_list[plane_index],
+                lp=traced_grids_of_planes_list[plane_index],
                 blurring=traced_blurring_grids_of_planes_list[plane_index],
             )
 

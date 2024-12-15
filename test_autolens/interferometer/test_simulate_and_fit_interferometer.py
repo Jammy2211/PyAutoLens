@@ -218,13 +218,13 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
     ] == pytest.approx(0.2, 1.0e-2)
     assert fit.log_likelihood == pytest.approx(fit_linear.log_likelihood)
 
-    lens_galaxy_image = lens_galaxy.image_2d_from(grid=dataset.grids.uniform)
+    lens_galaxy_image = lens_galaxy.image_2d_from(grid=dataset.grids.lp)
 
     assert fit_linear.galaxy_model_image_dict[lens_galaxy_linear] == pytest.approx(
         lens_galaxy_image, 1.0e-4
     )
 
-    traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=dataset.grids.uniform)
+    traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=dataset.grids.lp)
 
     source_galaxy_image = source_galaxy.image_2d_from(grid=traced_grid_2d_list[1])
 
@@ -233,7 +233,7 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
     )
 
     lens_galaxy_visibilities = lens_galaxy.visibilities_from(
-        grid=dataset.grids.uniform, transformer=dataset.transformer
+        grid=dataset.grids.lp, transformer=dataset.transformer
     )
 
     assert fit_linear.galaxy_model_visibilities_dict[
@@ -323,13 +323,13 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixeli
     )
     assert fit_linear.figure_of_merit == pytest.approx(-29.20551989, 1.0e-4)
 
-    lens_galaxy_image = lens_galaxy.image_2d_from(grid=dataset.grids.uniform)
+    lens_galaxy_image = lens_galaxy.image_2d_from(grid=dataset.grids.lp)
 
     assert fit_linear.galaxy_model_image_dict[lens_galaxy_linear] == pytest.approx(
         lens_galaxy_image, 1.0e-2
     )
 
-    traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=dataset.grids.uniform)
+    traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=dataset.grids.lp)
 
     source_galaxy_image = source_galaxy.image_2d_from(grid=traced_grid_2d_list[1])
 

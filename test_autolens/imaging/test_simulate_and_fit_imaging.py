@@ -57,7 +57,7 @@ def test__perfect_fit__chi_squared_0():
         noise_map_path=path.join(file_path, "noise_map.fits"),
         psf_path=path.join(file_path, "psf.fits"),
         pixel_scales=0.2,
-        over_sampling=al.OverSamplingDataset(uniform=1)
+        over_sampling=al.OverSamplingDataset(lp=1)
     )
 
     mask = al.Mask2D.circular(
@@ -154,7 +154,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
 
     masked_dataset = dataset.apply_mask(mask=mask)
     masked_dataset = masked_dataset.apply_over_sampling(
-        over_sampling=al.OverSamplingDataset(uniform=1)
+        over_sampling=al.OverSamplingDataset(lp=1)
     )
 
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
@@ -198,7 +198,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
     assert fit_linear.figure_of_merit == pytest.approx(-45.02798, 1.0e-4)
 
     lens_galaxy_image = lens_galaxy.blurred_image_2d_from(
-        grid=masked_dataset.grids.uniform,
+        grid=masked_dataset.grids.lp,
         convolver=masked_dataset.convolver,
         blurring_grid=masked_dataset.grids.blurring,
     )
@@ -210,7 +210,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
         lens_galaxy_image, 1.0e-4
     )
 
-    traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=masked_dataset.grids.uniform)
+    traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=masked_dataset.grids.lp)
     traced_blurring_grid_2d_list = tracer.traced_grid_2d_list_from(
         grid=masked_dataset.grids.blurring
     )
@@ -263,7 +263,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
 
     masked_dataset = dataset.apply_mask(mask=mask)
     masked_dataset = masked_dataset.apply_over_sampling(
-        over_sampling=al.OverSamplingDataset(uniform=1)
+        over_sampling=al.OverSamplingDataset(lp=1)
     )
 
     lens_galaxy_linear = al.Galaxy(
@@ -315,7 +315,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     assert fit_linear.figure_of_merit == pytest.approx(-84.04875317, 1.0e-4)
 
     lens_galaxy_image = lens_galaxy.blurred_image_2d_from(
-        grid=masked_dataset.grids.uniform,
+        grid=masked_dataset.grids.lp,
         convolver=masked_dataset.convolver,
         blurring_grid=masked_dataset.grids.blurring,
     )
@@ -421,7 +421,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
         psf=dataset.psf,
         noise_map=dataset.noise_map,
         over_sampling=al.OverSamplingDataset(
-            uniform=2,
+            lp=2,
             pixelization=2
         )
     )
@@ -465,7 +465,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
     assert fit_linear.figure_of_merit == pytest.approx(-84.36224277776512, 1.0e-4)
 
     lens_galaxy_image = lens_galaxy.blurred_image_2d_from(
-        grid=masked_dataset.grids.uniform,
+        grid=masked_dataset.grids.lp,
         convolver=masked_dataset.convolver,
         blurring_grid=masked_dataset.grids.blurring,
     )
@@ -717,7 +717,7 @@ def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging
         noise_map_path=path.join(file_path, "noise_map.fits"),
         psf_path=path.join(file_path, "psf.fits"),
         pixel_scales=0.2,
-        over_sampling=al.OverSamplingDataset(uniform=8)
+        over_sampling=al.OverSamplingDataset(lp=8)
     )
 
     mask = al.Mask2D.circular(
@@ -747,7 +747,7 @@ def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging
     assert fit.chi_squared == pytest.approx(5.706423629698664e-05, 1e-4)
 
     masked_dataset = masked_dataset.apply_over_sampling(
-        al.OverSamplingDataset(uniform=8)
+        al.OverSamplingDataset(lp=8)
     )
 
     basis = al.lp_basis.Basis(

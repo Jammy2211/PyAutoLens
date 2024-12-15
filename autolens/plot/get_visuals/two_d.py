@@ -169,7 +169,7 @@ class GetVisuals2D(gv2d.GetVisuals2D):
         visuals_2d_via_mask = self.via_mask_from(mask=fit.mask)
 
         visuals_2d_via_tracer = self.via_tracer_from(
-            tracer=fit.tracer, grid=fit.grids.uniform, plane_index=0
+            tracer=fit.tracer, grid=fit.grids.lp, plane_index=0
         )
 
         return visuals_2d_via_mask + visuals_2d_via_tracer

@@ -24,7 +24,7 @@ def test__tracer(
 
     plotter_interface.tracer(
         tracer=tracer_x2_plane_7x7,
-        grid=masked_imaging_7x7.grids.uniform,
+        grid=masked_imaging_7x7.grids.lp,
         during_analysis=False,
     )
 
