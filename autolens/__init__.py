@@ -11,10 +11,7 @@ from autoarray.dataset.dataset_model import DatasetModel
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.convolver import Convolver
-from autoarray.operators.over_sampling.uniform import OverSamplingUniform  # noqa
-from autoarray.operators.over_sampling.uniform import OverSamplerUniform  # noqa
-from autoarray.operators.over_sampling.iterate import OverSamplingIterate
-from autoarray.operators.over_sampling.iterate import OverSamplerIterate
+from autoarray.operators.over_sampling.over_sampler import OverSampler  # noqa
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.mapper_valued import MapperValued
 from autoarray.inversion.pixelization import image_mesh
@@ -30,7 +27,6 @@ from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.mappers.factory import mapper_from as Mapper
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
-from autoarray.operators.over_sampling.grid_oversampled import Grid2DOverSampled
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.arrays.uniform_1d import Array1D
@@ -40,7 +36,6 @@ from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.irregular_2d import Grid2DIrregularUniform
-from autoarray.operators.over_sampling.iterate import OverSamplingIterate
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
 from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay

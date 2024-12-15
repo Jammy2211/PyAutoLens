@@ -212,7 +212,7 @@ def test__fit_figure_of_merit__sub_2(image_7x7, psf_3x3, noise_map_7x7, mask_2d_
         data=image_7x7,
         psf=psf_3x3,
         noise_map=noise_map_7x7,
-        over_sampling=al.OverSamplingDataset(uniform=al.OverSamplingUniform(sub_size=2)),
+        over_sampling=al.OverSamplingDataset(uniform=al.OverSampling(sub_size=2)),
     )
 
     masked_imaging_7x7 = dataset.apply_mask(

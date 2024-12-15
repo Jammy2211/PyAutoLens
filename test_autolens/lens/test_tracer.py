@@ -221,109 +221,6 @@ def test__image_2d_list_from():
     assert len(image_list) == 3
 
 
-def test__image_2d_of_plane_from():
-    g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=1.0))
-    g1 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=2.0))
-    g2 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=3.0))
-
-    tracer = al.Tracer(galaxies=[g0, g1, g2])
-
-    image = tracer.image_2d_of_plane_from(grid=grid_simple, plane_index=0)
-
-    assert image == pytest.approx(0.30276535, 1.0e-4)
-
-    g0 = al.Galaxy(
-        redshift=0.5,
-        light_profile=al.lp.Sersic(intensity=1.0),
-        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
-    )
-    g1 = al.Galaxy(
-        redshift=1.0,
-        light_profile=al.lp.Sersic(intensity=2.0),
-        mass_profile=al.mp.IsothermalSph(einstein_radius=2.0),
-    )
-    g2 = al.Galaxy(redshift=2.0, light_profile=al.lp.Sersic(intensity=3.0))
-
-    tracer = al.Tracer(galaxies=[g0, g1, g2])
-
-    image = tracer.image_2d_of_plane_from(grid=grid_simple, plane_index=0)
-
-    assert image == pytest.approx(0.0504608, 1.0e-4)
-
-    image = tracer.image_2d_of_plane_from(grid=grid_simple, plane_index=1)
-
-    assert image == pytest.approx(0.2517025, 1.0e-4)
-
-    image = tracer.image_2d_of_plane_from(grid=grid_simple, plane_index=2)
-
-    assert image == pytest.approx(1.8611933, 1.0e-4)
-
-
-def test__image_2d_list_from__adaptive_iterate_sub_grid():
-    mask = al.Mask2D(
-        mask=[
-            [True, True, True, True, True],
-            [True, False, False, False, True],
-            [True, False, False, False, True],
-            [True, False, False, False, True],
-            [True, True, True, True, True],
-        ],
-        pixel_scales=(1.0, 1.0),
-    )
-
-    g0 = al.Galaxy(
-        redshift=0.5,
-        light_profile=al.lp.Sersic(intensity=1.0),
-        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
-    )
-    g1 = al.Galaxy(
-        redshift=1.0,
-        light_profile=al.lp.Sersic(intensity=2.0),
-        mass_profile=al.mp.IsothermalSph(einstein_radius=2.0),
-    )
-    g2 = al.Galaxy(redshift=2.0, light_profile=al.lp.Sersic(intensity=3.0))
-
-    tracer = al.Tracer(galaxies=[g0, g1, g2])
-
-    def image_2d_list_from_sub_size(sub_size):
-        grid = al.Grid2D.from_mask(
-            mask=mask, over_sampling=al.OverSamplingUniform(sub_size=sub_size)
-        )
-
-        grid_oversampled = grid.over_sampler.over_sampled_grid
-        traced_grid_list = tracer.traced_grid_2d_list_from(grid=grid_oversampled)
-
-        image_g0 = g0.image_2d_from(grid=grid)
-        image_g1_oversampled = g1.image_2d_from(grid=traced_grid_list[1])
-        image_g1 = grid.over_sampler.binned_array_2d_from(array=image_g1_oversampled)
-
-        image_g2_oversampled = g2.image_2d_from(grid=traced_grid_list[2])
-        image_g2 = grid.over_sampler.binned_array_2d_from(array=image_g2_oversampled)
-
-        return [image_g0, image_g1, image_g2]
-
-    # These values are carefully chosen to make it so that the central pixel requires a sub_size of 4 after iterations
-    # whereas pixel 0 stops iteration at 2.
-
-    image_2d_sub_2_list = image_2d_list_from_sub_size(sub_size=2)
-    image_2d_sub_4_list = image_2d_list_from_sub_size(sub_size=4)
-
-    grid_iterate = al.Grid2D.from_mask(
-        mask=mask,
-        over_sampling=al.OverSamplingIterate(fractional_accuracy=0.7, sub_steps=[2, 4]),
-    )
-
-    image_2d_list = tracer.image_2d_list_from(grid=grid_iterate)
-
-    assert image_2d_list[0][4] == pytest.approx(image_2d_sub_4_list[0][4], 1.0e-4)
-    assert image_2d_list[1][4] == pytest.approx(image_2d_sub_4_list[1][4], 1.0e-4)
-    assert image_2d_list[2][4] == pytest.approx(image_2d_sub_4_list[2][4], 1.0e-4)
-
-    assert image_2d_list[0][0] == pytest.approx(image_2d_sub_2_list[0][0], 1.0e-4)
-    assert image_2d_list[1][0] == pytest.approx(image_2d_sub_2_list[1][0], 1.0e-4)
-    assert image_2d_list[2][0] == pytest.approx(image_2d_sub_2_list[2][0], 1.0e-4)
-
-
 def test__image_2d_list_from__plane_without_light_profile_is_zeros(
     grid_2d_7x7,
 ):
@@ -359,7 +256,9 @@ def test__image_2d_from__operated_only_input(grid_2d_7x7, lp_0, lp_operated_0, m
     assert image[1] == pytest.approx(2.93152589, 1.0e-4)
 
 
-def test__image_2d_from__sum_of_individual_images(grid_2d_7x7, grid_2d_7x7_simple):
+def test__image_2d_from__sum_of_individual_images(mask_2d_7x7):
+    grid_2d_7x7 = al.Grid2D.from_mask(mask=mask_2d_7x7, over_sampling_size=2)
+
     g0 = al.Galaxy(
         redshift=0.1,
         light_profile=al.lp.Sersic(intensity=0.1),
@@ -369,11 +268,15 @@ def test__image_2d_from__sum_of_individual_images(grid_2d_7x7, grid_2d_7x7_simpl
 
     tracer = al.Tracer(galaxies=[g0, g1], cosmology=al.cosmo.Planck15())
 
-    traced_grid_2d_list_from = tracer.traced_grid_2d_list_from(grid=grid_2d_7x7)
-
-    image = g0.image_2d_from(grid=grid_2d_7x7) + g1.image_2d_from(
-        grid=traced_grid_2d_list_from[1]
+    traced_grid_2d_list = tracer.traced_grid_2d_list_from(
+        grid=al.Grid2DIrregular(grid_2d_7x7.grid_over_sampled)
     )
+
+    image = g0.image_2d_from(grid=traced_grid_2d_list[0]) + g1.image_2d_from(
+        grid=traced_grid_2d_list[1]
+    )
+
+    image = grid_2d_7x7.over_sampler.binned_array_2d_from(array=image)
 
     image_tracer = tracer.image_2d_from(grid=grid_2d_7x7)
 
@@ -382,7 +285,9 @@ def test__image_2d_from__sum_of_individual_images(grid_2d_7x7, grid_2d_7x7_simpl
 
 
 def test__image_2d_via_input_plane_image_from__with_foreground_planes(grid_2d_7x7):
-    plane_grid = al.Grid2D.uniform(shape_native=(40, 40), pixel_scales=0.3)
+    plane_grid = al.Grid2D.uniform(
+        shape_native=(40, 40), pixel_scales=0.3, over_sampling_size=1
+    )
 
     g0 = al.Galaxy(
         redshift=0.5,
@@ -415,7 +320,7 @@ def test__image_2d_via_input_plane_image_from__without_foreground_planes(
     grid_2d_7x7 = al.Grid2D(
         values=grid_2d_7x7,
         mask=grid_2d_7x7.mask,
-        over_sampling=al.OverSamplingUniform(sub_size=2),
+        over_sampling_size=2,
     )
 
     g0 = al.Galaxy(
@@ -451,8 +356,7 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes__multi_pla
     grid_2d_7x7,
 ):
     plane_grid = al.Grid2D.uniform(
-        shape_native=(40, 40),
-        pixel_scales=0.3,
+        shape_native=(40, 40), pixel_scales=0.3, over_sampling_size=1
     )
 
     g0 = al.Galaxy(
@@ -558,9 +462,7 @@ def test__light_profile_snr__signal_to_noise_via_simulator_correct():
 
 
 def test__galaxy_image_2d_dict_from(grid_2d_7x7, mask_2d_7x7):
-    grid_2d_7x7 = al.Grid2D.from_mask(
-        mask=mask_2d_7x7, over_sampling=al.OverSamplingUniform(sub_size=2)
-    )
+    grid_2d_7x7 = al.Grid2D.from_mask(mask=mask_2d_7x7, over_sampling_size=2)
 
     g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=1.0))
     g1 = al.Galaxy(
@@ -934,136 +836,6 @@ def test__regression__centre_of_profile_in_right_place():
     assert deflections.native[2, 4, 0] < 0
     assert deflections.native[1, 4, 1] > 0
     assert deflections.native[1, 3, 1] < 0
-
-    grid = al.Grid2D.uniform(
-        shape_native=(7, 7),
-        pixel_scales=1.0,
-        over_sampling=al.OverSamplingIterate(
-            fractional_accuracy=0.99, sub_steps=[2, 4]
-        ),
-    )
-
-    convergence = tracer.convergence_2d_from(grid=grid)
-    max_indexes = np.unravel_index(
-        convergence.native.argmax(), convergence.shape_native
-    )
-    assert max_indexes == (1, 4)
-
-    potential = tracer.potential_2d_from(grid=grid)
-    max_indexes = np.unravel_index(potential.native.argmin(), potential.shape_native)
-    assert max_indexes == (1, 4)
-
-    deflections = tracer.deflections_yx_2d_from(grid=grid)
-    assert deflections.native[1, 4, 0] >= -1e-8
-    assert deflections.native[2, 4, 0] <= 0
-    assert deflections.native[1, 4, 1] >= 0
-    assert deflections.native[1, 3, 1] <= 0
-
-
-def test__decorators__grid_iterate_in__iterates_array_result_correctly(gal_x1_lp):
-    mask = al.Mask2D(
-        mask=[
-            [True, True, True, True, True],
-            [True, False, False, False, True],
-            [True, False, False, False, True],
-            [True, False, False, False, True],
-            [True, True, True, True, True],
-        ],
-        pixel_scales=(1.0, 1.0),
-        origin=(0.001, 0.001),
-    )
-
-    grid = al.Grid2D.from_mask(
-        mask=mask,
-        over_sampling=al.OverSamplingIterate(fractional_accuracy=1.0, sub_steps=[2]),
-    )
-
-    tracer = al.Tracer(galaxies=[gal_x1_lp])
-
-    image = tracer.image_2d_from(grid=grid)
-
-    grid_sub_2 = al.Grid2D(
-        values=grid, mask=mask, over_sampling=al.OverSamplingUniform(sub_size=2)
-    )
-    image_sub_2 = tracer.image_2d_from(grid=grid_sub_2)
-
-    assert (image == image_sub_2).all()
-
-    grid = al.Grid2D.from_mask(
-        mask=mask,
-        over_sampling=al.OverSamplingIterate(
-            fractional_accuracy=0.95, sub_steps=[2, 4, 8]
-        ),
-    )
-
-    galaxy = al.Galaxy(
-        redshift=0.5, light=al.lp.Sersic(centre=(0.08, 0.08), intensity=1.0)
-    )
-
-    tracer = al.Tracer(galaxies=[galaxy])
-
-    image = tracer.image_2d_from(grid=grid)
-
-    grid_sub_4 = al.Grid2D(
-        values=grid, mask=mask, over_sampling=al.OverSamplingUniform(sub_size=4)
-    )
-    image_sub_4 = tracer.image_2d_from(grid=grid_sub_4)
-
-    assert image[0] == image_sub_4[0]
-
-
-def test__decorators__grid_iterate_in__method_returns_array_list__uses_highest_sub_size_of_iterate(
-    gal_x1_lp,
-):
-    mask = al.Mask2D(
-        mask=[
-            [True, True, True, True, True],
-            [True, False, False, False, True],
-            [True, False, False, False, True],
-            [True, False, False, False, True],
-            [True, True, True, True, True],
-        ],
-        pixel_scales=(1.0, 1.0),
-        origin=(0.001, 0.001),
-    )
-
-    grid = al.Grid2D.from_mask(
-        mask=mask,
-        over_sampling=al.OverSamplingIterate(fractional_accuracy=1.0, sub_steps=[2]),
-    )
-
-    tracer = al.Tracer(galaxies=[gal_x1_lp])
-
-    images = tracer.image_2d_list_from(grid=grid)
-
-    grid_sub_2 = al.Grid2D(
-        values=grid, mask=mask, over_sampling=al.OverSamplingUniform(sub_size=2)
-    )
-    image_sub_2 = tracer.image_2d_from(grid=grid_sub_2)
-
-    assert (images[0] == image_sub_2).all()
-
-    grid = al.Grid2D.from_mask(
-        mask=mask,
-        over_sampling=al.OverSamplingIterate(
-            fractional_accuracy=0.95, sub_steps=[2, 4, 8]
-        ),
-    )
-
-    galaxy = al.Galaxy(
-        redshift=0.5, light=al.lp.Sersic(centre=(0.08, 0.08), intensity=1.0)
-    )
-
-    tracer = al.Tracer(galaxies=[galaxy])
-
-    images = tracer.image_2d_list_from(grid=grid)
-
-    grid_sub_8 = al.Grid2D(
-        values=grid, mask=mask, over_sampling=al.OverSamplingUniform(sub_size=8)
-    )
-    image_sub_8 = tracer.image_2d_from(grid=grid_sub_8)
-
-    assert images[0][4] == image_sub_8[4]
 
 
 def test__instance_into_tracer__retains_dictionary_access():
