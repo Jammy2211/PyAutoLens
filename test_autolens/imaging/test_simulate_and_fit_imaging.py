@@ -9,7 +9,7 @@ import pytest
 
 def test__perfect_fit__chi_squared_0():
 
-    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2)
+    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, over_sampling_size=1)
 
     psf = al.Kernel2D.from_gaussian(
         shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
@@ -57,6 +57,7 @@ def test__perfect_fit__chi_squared_0():
         noise_map_path=path.join(file_path, "noise_map.fits"),
         psf_path=path.join(file_path, "psf.fits"),
         pixel_scales=0.2,
+        over_sampling=al.OverSamplingDataset(uniform=1)
     )
 
     mask = al.Mask2D.circular(
@@ -117,12 +118,12 @@ def test__simulate_imaging_data_and_fit__known_likelihood():
 
     fit = al.FitImaging(dataset=masked_dataset, tracer=tracer)
 
-    assert fit.figure_of_merit == pytest.approx(526.353910, 1.0e-2)
+    assert fit.figure_of_merit == pytest.approx(538.796271746575, 1.0e-2)
 
 
 def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standard_light_profiles():
 
-    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2)
+    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, over_sampling_size=1)
 
     psf = al.Kernel2D.from_gaussian(
         shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
@@ -143,7 +144,6 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
     dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
-    dataset.sub_size = 1
     dataset.noise_map = al.Array2D.ones(
         shape_native=dataset.data.shape_native, pixel_scales=0.2
     )
@@ -153,6 +153,9 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
     )
 
     masked_dataset = dataset.apply_mask(mask=mask)
+    masked_dataset = masked_dataset.apply_over_sampling(
+        over_sampling=al.OverSamplingDataset(uniform=1)
+    )
 
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
@@ -229,7 +232,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
 
 def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization():
 
-    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2)
+    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, over_sampling_size=1)
 
     psf = al.Kernel2D.from_gaussian(
         shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
@@ -250,7 +253,6 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
-    dataset.sub_size = 1
     dataset.noise_map = al.Array2D.ones(
         shape_native=dataset.data.shape_native, pixel_scales=0.2
     )
@@ -260,6 +262,9 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     )
 
     masked_dataset = dataset.apply_mask(mask=mask)
+    masked_dataset = masked_dataset.apply_over_sampling(
+        over_sampling=al.OverSamplingDataset(uniform=1)
+    )
 
     lens_galaxy_linear = al.Galaxy(
         redshift=0.5,
@@ -658,11 +663,11 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
         1.0e-4,
     )
 
+
 def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging_covariance_7x7):
-    over_sampling = al.OverSampling(sub_size=8)
 
     grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2,
-                             over_sampling=over_sampling)
+                             over_sampling_size=8)
 
     psf = al.Kernel2D.from_gaussian(
         shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
@@ -712,7 +717,7 @@ def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging
         noise_map_path=path.join(file_path, "noise_map.fits"),
         psf_path=path.join(file_path, "psf.fits"),
         pixel_scales=0.2,
-        over_sampling=al.OverSamplingDataset(uniform=over_sampling)
+        over_sampling=al.OverSamplingDataset(uniform=8)
     )
 
     mask = al.Mask2D.circular(
@@ -741,10 +746,8 @@ def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging
 
     assert fit.chi_squared == pytest.approx(5.706423629698664e-05, 1e-4)
 
-    over_sampling = al.OverSampling(sub_size=8)
-
     masked_dataset = masked_dataset.apply_over_sampling(
-        al.OverSamplingDataset(uniform=over_sampling)
+        al.OverSamplingDataset(uniform=8)
     )
 
     basis = al.lp_basis.Basis(
