@@ -416,8 +416,8 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
         psf=dataset.psf,
         noise_map=dataset.noise_map,
         over_sampling=al.OverSamplingDataset(
-            uniform=al.OverSampling(sub_size=2),
-            pixelization=al.OverSampling(sub_size=2)
+            uniform=2,
+            pixelization=2
         )
     )
 
@@ -657,96 +657,6 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
             fit_w_tilde.inversion.regularization_matrix,
         1.0e-4,
     )
-
-
-def test__perfect_fit__chi_squared_0__non_uniform_over_sampling():
-
-    over_sampling = al.OverSampling(sub_size=8)
-
-    grid = al.Grid2D.uniform(
-        shape_native=(31, 31),
-        pixel_scales=0.2,
-        over_sampling=over_sampling
-    )
-
-    psf = al.Kernel2D.from_gaussian(
-        shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
-    )
-
-    lens_galaxy = al.Galaxy(
-        redshift=0.5,
-        mass=al.mp.Isothermal(centre=(0.1, 0.1), einstein_radius=0.3),
-    )
-    source_galaxy = al.Galaxy(
-        redshift=1.0, light=al.lp.Sersic(centre=(0.1, 0.1), intensity=0.5, sersic_index=1.2)
-    )
-    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
-
-    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
-
-    dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
-    dataset.noise_map = al.Array2D.ones(
-        shape_native=dataset.data.shape_native, pixel_scales=0.2
-    )
-
-    file_path = path.join(
-        "{}".format(path.dirname(path.realpath(__file__))),
-        "data_temp",
-        "simulate_and_fit",
-    )
-
-    try:
-        shutil.rmtree(file_path)
-    except FileNotFoundError:
-        pass
-
-    if path.exists(file_path) is False:
-        os.makedirs(file_path)
-
-    dataset.output_to_fits(
-        data_path=path.join(file_path, "data.fits"),
-        noise_map_path=path.join(file_path, "noise_map.fits"),
-        psf_path=path.join(file_path, "psf.fits"),
-    )
-
-    dataset = al.Imaging.from_fits(
-        data_path=path.join(file_path, "data.fits"),
-        noise_map_path=path.join(file_path, "noise_map.fits"),
-        psf_path=path.join(file_path, "psf.fits"),
-        pixel_scales=0.2,
-    )
-
-    mask = al.Mask2D.circular(
-        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=1.5
-    )
-
-    masked_dataset = dataset.apply_mask(mask=mask)
-
-    traced_grid = tracer.traced_grid_2d_list_from(
-        grid=masked_dataset.grids.uniform,
-    )[-1]
-
-    masked_dataset = masked_dataset.apply_over_sampling(
-        over_sampling=al.OverSamplingDataset(
-            uniform=al.OverSampling(sub_size=1),
-            non_uniform=al.OverSampling.over_sample_size_via_radial_bins_from(
-            grid=traced_grid, sub_size_list=[8, 2], radial_list=[0.3], centre_list=[source_galaxy.light.centre]
-        ))
-    )
-
-    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
-
-    fit = al.FitImaging(dataset=masked_dataset, tracer=tracer)
-
-    assert fit.chi_squared < 0.1
-
-    file_path = path.join(
-        "{}".format(path.dirname(path.realpath(__file__))), "data_temp"
-    )
-
-    if path.exists(file_path) is True:
-        shutil.rmtree(file_path)
-
 
 def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging_covariance_7x7):
     over_sampling = al.OverSampling(sub_size=8)
