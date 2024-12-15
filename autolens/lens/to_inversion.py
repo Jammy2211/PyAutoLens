@@ -462,7 +462,7 @@ class TracerToInversion(ag.AbstractToInversion):
                         ].regularization,
                         source_plane_data_grid=traced_grids_of_planes_list[
                             plane_index
-                        ].grid_over_sampled,
+                        ],
                         source_plane_mesh_grid=traced_mesh_grids_list_of_planes[
                             plane_index
                         ][mapper_index],

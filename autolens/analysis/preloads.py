@@ -158,14 +158,12 @@ class Preloads(ag.Preloads):
 
         self.traced_grids_of_planes_for_inversion = None
 
-        over_sampled_grid = fit_0.grids.pixelization.over_sampler.uniform_over_sampled
-
         traced_grids_of_planes_0 = fit_0.tracer.traced_grid_2d_list_from(
-            grid=over_sampled_grid
+            grid=fit_0.grids.pixelization
         )
 
         traced_grids_of_planes_1 = fit_1.tracer.traced_grid_2d_list_from(
-            grid=over_sampled_grid
+            grid=fit_0.grids.pixelization
         )
 
         if traced_grids_of_planes_0[-1] is not None:
