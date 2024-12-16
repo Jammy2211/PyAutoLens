@@ -81,13 +81,13 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
         grid = aa.Grid2D.uniform(
             shape_native=deflections.shape_native,
             pixel_scales=deflections.pixel_scales,
-            over_sampling_size=1,
+            over_sample_size=1,
         )
 
         deflected_grid = aa.Grid2D(
             values=grid - deflections,
             mask=grid.mask,
-            over_sampling_size=1,
+            over_sample_size=1,
             over_sampled=grid - deflections,
         )
 

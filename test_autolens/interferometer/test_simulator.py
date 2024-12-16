@@ -36,7 +36,7 @@ def test__from_tracer__same_as_tracer_input():
 
 def test__via_deflections_and_galaxies_from__same_as_calculation_using_tracer():
     grid = al.Grid2D.uniform(
-        shape_native=(20, 20), pixel_scales=0.05, over_sampling_size=1
+        shape_native=(20, 20), pixel_scales=0.05, over_sample_size=1
     )
 
     lens_galaxy = al.Galaxy(redshift=0.5, mass=al.mp.Isothermal(einstein_radius=1.6))

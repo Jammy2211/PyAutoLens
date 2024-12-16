@@ -257,7 +257,7 @@ def test__image_2d_from__operated_only_input(grid_2d_7x7, lp_0, lp_operated_0, m
 
 
 def test__image_2d_from__sum_of_individual_images(mask_2d_7x7):
-    grid_2d_7x7 = al.Grid2D.from_mask(mask=mask_2d_7x7, over_sampling_size=2)
+    grid_2d_7x7 = al.Grid2D.from_mask(mask=mask_2d_7x7, over_sample_size=2)
 
     g0 = al.Galaxy(
         redshift=0.1,
@@ -286,7 +286,7 @@ def test__image_2d_from__sum_of_individual_images(mask_2d_7x7):
 
 def test__image_2d_via_input_plane_image_from__with_foreground_planes(grid_2d_7x7):
     plane_grid = al.Grid2D.uniform(
-        shape_native=(40, 40), pixel_scales=0.3, over_sampling_size=1
+        shape_native=(40, 40), pixel_scales=0.3, over_sample_size=1
     )
 
     g0 = al.Galaxy(
@@ -320,7 +320,7 @@ def test__image_2d_via_input_plane_image_from__without_foreground_planes(
     grid_2d_7x7 = al.Grid2D(
         values=grid_2d_7x7,
         mask=grid_2d_7x7.mask,
-        over_sampling_size=2,
+        over_sample_size=2,
     )
 
     g0 = al.Galaxy(
@@ -356,7 +356,7 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes__multi_pla
     grid_2d_7x7,
 ):
     plane_grid = al.Grid2D.uniform(
-        shape_native=(40, 40), pixel_scales=0.3, over_sampling_size=1
+        shape_native=(40, 40), pixel_scales=0.3, over_sample_size=1
     )
 
     g0 = al.Galaxy(
@@ -462,7 +462,7 @@ def test__light_profile_snr__signal_to_noise_via_simulator_correct():
 
 
 def test__galaxy_image_2d_dict_from(grid_2d_7x7, mask_2d_7x7):
-    grid_2d_7x7 = al.Grid2D.from_mask(mask=mask_2d_7x7, over_sampling_size=2)
+    grid_2d_7x7 = al.Grid2D.from_mask(mask=mask_2d_7x7, over_sample_size=2)
 
     g0 = al.Galaxy(redshift=0.5, light_profile=al.lp.Sersic(intensity=1.0))
     g1 = al.Galaxy(

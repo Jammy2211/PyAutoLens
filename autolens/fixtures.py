@@ -4,7 +4,7 @@ from autogalaxy.fixtures import *
 
 
 def make_grid_2d_7x7():
-    return aa.Grid2D.from_mask(mask=make_mask_2d_7x7(), over_sampling_size=1)
+    return aa.Grid2D.from_mask(mask=make_mask_2d_7x7(), over_sample_size=1)
 
 
 def make_positions_x2():
