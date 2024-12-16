@@ -24,7 +24,6 @@ except ModuleNotFoundError:
 
 
 class AnalysisPoint(AgAnalysis, AnalysisLens):
-
     Visualizer = VisualizerPoint
     Result = ResultPoint
 

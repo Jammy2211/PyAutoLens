@@ -361,7 +361,7 @@ object.
         exposure_time=300.0,
         background_sky_level=1.0,
         psf=al.Kernel2D.from_gaussian(shape_native=(11, 11), sigma=0.1, pixel_scales=0.05),
-        add_poisson_noise=True,
+        add_poisson_noise_to_data=True,
     )
 
 Once we have a simulator, we can use it to create an imaging dataset which consists of an image, noise-map and 

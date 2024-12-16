@@ -58,17 +58,18 @@ def _tracer_from(
 
     tracer = Tracer(galaxies=galaxies, cosmology=cosmology)
 
-    if len(fit.children) > 0:
-        logger.info(
-            """
-            Using database for a fit with multiple summed Analysis objects.
+    if fit.children is not None:
+        if len(fit.children) > 0:
+            logger.info(
+                """
+                Using database for a fit with multiple summed Analysis objects.
+    
+                Tracer objects do not fully support this yet (e.g. model parameters which vary over analyses may be incorrect)
+                so proceed with caution!
+                """
+            )
 
-            Tracer objects do not fully support this yet (e.g. model parameters which vary over analyses may be incorrect)
-            so proceed with caution!
-            """
-        )
-
-        return [tracer] * len(fit.children)
+            return [tracer] * len(fit.children)
 
     return [tracer]
 

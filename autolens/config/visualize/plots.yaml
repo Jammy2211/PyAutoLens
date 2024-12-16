@@ -55,7 +55,7 @@
     all_at_end_png: true                     # Plot all individual plots listed below as .png (even if False)?
     all_at_end_fits: true                    # Plot all individual plots listed below as .fits (even if False)?
     all_at_end_pdf: false                    # Plot all individual plots listed below as publication-quality .pdf (even if False)?
-    errors: false
+    reconstruction_noise_map: false
     reconstructed_image: false
     reconstruction: false
     regularization_weights: false
