@@ -269,7 +269,7 @@ def test__image_2d_from__sum_of_individual_images(mask_2d_7x7):
     tracer = al.Tracer(galaxies=[g0, g1], cosmology=al.cosmo.Planck15())
 
     traced_grid_2d_list = tracer.traced_grid_2d_list_from(
-        grid=al.Grid2DIrregular(grid_2d_7x7.grid_over_sampled)
+        grid=al.Grid2DIrregular(grid_2d_7x7.over_sampled)
     )
 
     image = g0.image_2d_from(grid=traced_grid_2d_list[0]) + g1.image_2d_from(

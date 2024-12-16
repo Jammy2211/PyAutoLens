@@ -95,7 +95,7 @@ def test__use_border_relocator__determines_if_border_pixel_relocation_is_used(
         )
     )
 
-    masked_imaging_7x7.grids.lp.grid_over_sampled[4] = np.array([300.0, 0.0])
+    masked_imaging_7x7.grids.lp.over_sampled[4] = np.array([300.0, 0.0])
 
     analysis = al.AnalysisImaging(
         dataset=masked_imaging_7x7,
@@ -105,7 +105,7 @@ def test__use_border_relocator__determines_if_border_pixel_relocation_is_used(
     instance = model.instance_from_unit_vector([])
     fit = analysis.fit_from(instance=instance)
 
-    grid = fit.inversion.linear_obj_list[0].source_plane_data_grid.grid_over_sampled
+    grid = fit.inversion.linear_obj_list[0].source_plane_data_grid.over_sampled
 
     assert grid[2] == pytest.approx([-82.99114877, 52.81254922], 1.0e-4)
 
@@ -117,7 +117,7 @@ def test__use_border_relocator__determines_if_border_pixel_relocation_is_used(
     instance = model.instance_from_unit_vector([])
     fit = analysis.fit_from(instance=instance)
 
-    grid = fit.inversion.linear_obj_list[0].source_plane_data_grid.grid_over_sampled
+    grid = fit.inversion.linear_obj_list[0].source_plane_data_grid.over_sampled
 
     assert grid[2] == pytest.approx([-82.89544515, 52.7491249], 1.0e-4)
 

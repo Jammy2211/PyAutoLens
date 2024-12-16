@@ -273,7 +273,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         if isinstance(grid, aa.Grid2D):
             grid_2d_over_sampled_list = tracer_util.traced_grid_2d_list_from(
                 planes=self.planes,
-                grid=grid.grid_over_sampled,
+                grid=grid.over_sampled,
                 cosmology=self.cosmology,
                 plane_index_limit=plane_index_limit,
             )
@@ -284,7 +284,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                 grid_2d_new = aa.Grid2D(
                     values=grid_2d_list[i],
                     mask=grid.mask,
-                    grid_over_sampled=grid_2d_over_sampled_list[i],
+                    over_sampled=grid_2d_over_sampled_list[i],
                     over_sampling_size=grid.over_sampling_size,
                 )
 
@@ -549,7 +549,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         image = griddata(
             points=plane_grid,
             values=plane_image,
-            xi=traced_grid.grid_over_sampled,
+            xi=traced_grid.over_sampled,
             fill_value=0.0,
             method="linear",
         )

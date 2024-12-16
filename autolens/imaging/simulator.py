@@ -117,7 +117,7 @@ class SimulatorImaging(aa.SimulatorImaging):
             values=grid - deflections,
             mask=grid.mask,
             over_sampling_size=1,
-            grid_over_sampled=grid - deflections
+            over_sampled=grid - deflections
         )
 
         image = sum(map(lambda g: g.image_2d_from(grid=deflected_grid), galaxies))
