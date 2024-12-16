@@ -12,21 +12,16 @@ try:
     if use_jax:
         from autoarray.structures.triangles.coordinate_array.jax_coordinate_array import (
             CoordinateArrayTriangles,
-            MAX_CONTAINING_SIZE,
         )
     else:
         from autoarray.structures.triangles.coordinate_array.coordinate_array import (
             CoordinateArrayTriangles,
         )
 
-        MAX_CONTAINING_SIZE = None
-
 except ImportError:
     from autoarray.structures.triangles.coordinate_array.coordinate_array import (
         CoordinateArrayTriangles,
     )
-
-    MAX_CONTAINING_SIZE = None
 
 from autoarray.structures.triangles.abstract import AbstractTriangles
 
@@ -76,7 +71,6 @@ class AbstractSolver:
         pixel_scale_precision: float,
         magnification_threshold=0.1,
         array_triangles_cls: Type[AbstractTriangles] = CoordinateArrayTriangles,
-        max_containing_size=MAX_CONTAINING_SIZE,
         neighbor_degree: int = 1,
     ):
         """
@@ -124,7 +118,6 @@ class AbstractSolver:
             pixel_scale_precision=pixel_scale_precision,
             magnification_threshold=magnification_threshold,
             array_triangles_cls=array_triangles_cls,
-            max_containing_size=max_containing_size,
             neighbor_degree=neighbor_degree,
         )
 
@@ -139,7 +132,6 @@ class AbstractSolver:
         pixel_scale_precision: float = 0.001,
         magnification_threshold=0.1,
         array_triangles_cls: Type[AbstractTriangles] = CoordinateArrayTriangles,
-        max_containing_size=MAX_CONTAINING_SIZE,
         neighbor_degree: int = 1,
     ):
         """
@@ -163,9 +155,6 @@ class AbstractSolver:
         array_triangles_cls
             The class to use for the triangles. JAX is used implicitly if USE_JAX=1 and
             jax is installed.
-        max_containing_size
-            Only applies to JAX. This is the maximum number of multiple images expected.
-            We need to know this in advance to allocate memory for the JAX array.
         neighbor_degree
             The number of times recursively add neighbors for the triangles that contain
 
@@ -179,7 +168,6 @@ class AbstractSolver:
             x_min=x_min,
             x_max=x_max,
             scale=scale,
-            max_containing_size=max_containing_size,
         )
 
         return cls(
