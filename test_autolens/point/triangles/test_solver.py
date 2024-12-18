@@ -1,9 +1,14 @@
 from typing import Tuple
 
+import numpy as np
 import pytest
 
 import autolens as al
 import autogalaxy as ag
+from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
+from autoarray.structures.triangles.coordinate_array.jax_coordinate_array import (
+    CoordinateArrayTriangles as JAXTriangles,
+)
 from autolens.mock import NullTracer
 from autolens.point.solver import PointSolver
 
@@ -70,12 +75,39 @@ def test_trivial(
     assert coordinates[0] == pytest.approx(source_plane_coordinate, abs=1.0e-1)
 
 
-def test_real_example(grid, tracer):
-    solver = PointSolver.for_grid(
+def triangle_set(triangles):
+    return {
+        tuple(sorted([tuple(np.round(pair, 4)) for pair in triangle]))
+        for triangle in triangles.triangles.tolist()
+        if not np.isnan(triangle).any()
+    }
+
+
+def test_real_example_jax(grid, tracer):
+    jax_solver = PointSolver.for_grid(
         grid=grid,
         pixel_scale_precision=0.001,
+        array_triangles_cls=JAXTriangles,
     )
 
-    result = solver.solve(tracer=tracer, source_plane_coordinate=(0.07, 0.07))
+    result = jax_solver.solve(
+        tracer=tracer,
+        source_plane_coordinate=(0.07, 0.07),
+    )
+
+    assert len(result) == 5
+
+
+def test_real_example_normal(grid, tracer):
+    jax_solver = PointSolver.for_grid(
+        grid=grid,
+        pixel_scale_precision=0.001,
+        array_triangles_cls=CoordinateArrayTriangles,
+    )
+
+    result = jax_solver.solve(
+        tracer=tracer,
+        source_plane_coordinate=(0.07, 0.07),
+    )
 
     assert len(result) == 5
