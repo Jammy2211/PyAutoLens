@@ -15,7 +15,6 @@ directory = path.dirname(path.realpath(__file__))
 def test__modify_before_fit__inversion_no_positions_likelihood__raises_exception(
     masked_imaging_7x7,
 ):
-
     lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph())
 
     pixelization = al.Pixelization(
