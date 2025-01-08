@@ -10,11 +10,11 @@ def test_andrew_implementation():
 
     assert (
         Fit(
-            data,
-            model_positions,
-            np.array(
+            data=data,
+            noise_map=np.array(
                 [error, error],
             ),
+            model_positions=model_positions,
         ).log_likelihood()
         == -4.40375330990644
     )
