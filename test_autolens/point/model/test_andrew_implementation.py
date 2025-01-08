@@ -66,3 +66,27 @@ def test_nan_model_positions(
         ],
     )
     assert fit.log_likelihood() == -4.40375330990644
+
+
+def test_duplicate_model_position(
+    data,
+    noise_map,
+):
+    model_positions = np.array(
+        [
+            (-1.0749, -1.1),
+            (1.19117, 1.175),
+            (1.19117, 1.175),
+        ]
+    )
+    fit = Fit(
+        data=data,
+        noise_map=noise_map,
+        model_positions=model_positions,
+    )
+
+    assert np.allclose(
+        fit.all_permutations_log_likelihoods(),
+        [-1.14237812, -0.87193683],
+    )
+    assert fit.log_likelihood() == -4.211539531047171
