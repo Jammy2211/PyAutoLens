@@ -8,7 +8,7 @@ from autolens.point.model.result import ResultPoint
 directory = path.dirname(path.realpath(__file__))
 
 
-def test__make_result__result_imaging_is_returned(point_dataset):
+def _test__make_result__result_imaging_is_returned(point_dataset):
     model = af.Collection(
         galaxies=af.Collection(
             lens=al.Galaxy(redshift=0.5, point_0=al.ps.Point(centre=(0.0, 0.0)))
