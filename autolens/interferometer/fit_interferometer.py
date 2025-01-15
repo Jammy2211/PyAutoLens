@@ -99,7 +99,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         transform to the sum of light profile images.
         """
         return self.tracer.visibilities_from(
-            grid=self.grids.uniform, transformer=self.dataset.transformer
+            grid=self.grids.lp, transformer=self.dataset.transformer
         )
 
     @property
@@ -172,7 +172,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         data being fitted.
         """
         galaxy_model_image_dict = self.tracer.galaxy_image_2d_dict_from(
-            grid=self.grids.uniform
+            grid=self.grids.lp
         )
 
         galaxy_linear_obj_image_dict = self.galaxy_linear_obj_data_dict_from(
@@ -194,7 +194,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
           are solved for first via the inversion.
         """
         galaxy_model_visibilities_dict = self.tracer.galaxy_visibilities_dict_from(
-            grid=self.grids.uniform, transformer=self.dataset.transformer
+            grid=self.grids.lp, transformer=self.dataset.transformer
         )
 
         galaxy_linear_obj_visibilities_dict = self.galaxy_linear_obj_data_dict_from(

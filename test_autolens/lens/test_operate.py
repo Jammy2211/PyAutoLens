@@ -155,13 +155,8 @@ def test__operate_image__galaxy_blurred_image_2d_dict_from(
         blurring_grid=blurring_grid_2d_7x7,
     )
 
-    g1_deflections = g1.deflections_yx_2d_from(grid=grid_2d_7x7)
-
-    source_grid_2d_7x7 = grid_2d_7x7 - g1_deflections
-
-    g1_blurring_deflections = g1.deflections_yx_2d_from(grid=blurring_grid_2d_7x7)
-
-    source_blurring_grid_2d_7x7 = blurring_grid_2d_7x7 - g1_blurring_deflections
+    source_grid_2d_7x7 = g1.traced_grid_2d_from(grid=grid_2d_7x7)
+    source_blurring_grid_2d_7x7 = g1.traced_grid_2d_from(grid=blurring_grid_2d_7x7)
 
     g3_blurred_image = g3.blurred_image_2d_from(
         grid=source_grid_2d_7x7,
@@ -206,9 +201,7 @@ def test__operate_image__galaxy_visibilities_dict_from_grid_and_transformer(
         grid=grid_2d_7x7, transformer=transformer_7x7_7
     )
 
-    g1_deflections = g1.deflections_yx_2d_from(grid=grid_2d_7x7)
-
-    source_grid_2d_7x7 = grid_2d_7x7 - g1_deflections
+    source_grid_2d_7x7 = g1.traced_grid_2d_from(grid=grid_2d_7x7)
 
     g3_visibilities = g3.visibilities_from(
         grid=source_grid_2d_7x7, transformer=transformer_7x7_7

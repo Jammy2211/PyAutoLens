@@ -109,11 +109,11 @@ class VisualizerInterferometer(af.Visualizer):
         tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
         plotter_interface.tracer(
-            tracer=tracer, grid=fit.grids.uniform, during_analysis=during_analysis
+            tracer=tracer, grid=fit.grids.lp, during_analysis=during_analysis
         )
         plotter_interface.galaxies(
             galaxies=tracer.galaxies,
-            grid=fit.grids.uniform,
+            grid=fit.grids.lp,
             during_analysis=during_analysis,
         )
         if fit.inversion is not None:
