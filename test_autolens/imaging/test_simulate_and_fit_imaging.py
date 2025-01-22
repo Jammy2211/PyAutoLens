@@ -25,7 +25,7 @@ def test__perfect_fit__chi_squared_0():
     )
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
-    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
     dataset.noise_map = al.Array2D.ones(
@@ -99,7 +99,7 @@ def test__perfect_fit__chi_squared_0__use_grid_iterate_to_simulate_and_fit():
     )
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
-    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
     dataset.noise_map = al.Array2D.ones(
@@ -217,7 +217,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
     )
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
-    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
     dataset.sub_size = 1
@@ -324,7 +324,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     )
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
-    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
     dataset.sub_size = 1
@@ -477,7 +477,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
     )
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
-    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
     dataset.noise_map = al.Array2D.ones(
@@ -621,7 +621,7 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
     source_1 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(centre=(0.3, 0.3)))
     tracer = al.Tracer(galaxies=[lens_0, lens_1, lens_2, source_0, source_1])
 
-    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
     dataset.sub_size = 2
@@ -715,7 +715,7 @@ def test__perfect_fit__chi_squared_0__non_uniform_over_sampling():
     )
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
-    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
     dataset.noise_map = al.Array2D.ones(
@@ -803,7 +803,7 @@ def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging
     )
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
-    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
     dataset.noise_map = al.Array2D.ones(

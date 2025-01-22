@@ -10,17 +10,21 @@ from autofit.jax_wrapper import jit, use_jax, numpy as np, register_pytree_node_
 
 try:
     if use_jax:
-        from autoarray.structures.triangles.jax_array import (
-            ArrayTriangles,
+        from autoarray.structures.triangles.coordinate_array.jax_coordinate_array import (
+            CoordinateArrayTriangles,
             MAX_CONTAINING_SIZE,
         )
     else:
-        from autoarray.structures.triangles.array import ArrayTriangles
+        from autoarray.structures.triangles.coordinate_array.coordinate_array import (
+            CoordinateArrayTriangles,
+        )
 
         MAX_CONTAINING_SIZE = None
 
 except ImportError:
-    from autoarray.structures.triangles.array import ArrayTriangles
+    from autoarray.structures.triangles.coordinate_array.coordinate_array import (
+        CoordinateArrayTriangles,
+    )
 
     MAX_CONTAINING_SIZE = None
 
@@ -40,6 +44,7 @@ class AbstractSolver:
         initial_triangles: AbstractTriangles,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
+        neighbor_degree: int = 1,
     ):
         """
         Determine the image plane coordinates that are traced to be a source plane coordinate.
@@ -50,12 +55,16 @@ class AbstractSolver:
 
         Parameters
         ----------
+        neighbor_degree
+            The number of times recursively add neighbors for the triangles that contain
+            the source plane coordinate.
         pixel_scale_precision
             The target pixel scale of the image grid.
         """
         self.scale = scale
         self.pixel_scale_precision = pixel_scale_precision
         self.magnification_threshold = magnification_threshold
+        self.neighbor_degree = neighbor_degree
 
         self.initial_triangles = initial_triangles
 
@@ -66,8 +75,9 @@ class AbstractSolver:
         grid: aa.Grid2D,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
-        array_triangles_cls: Type[AbstractTriangles] = ArrayTriangles,
+        array_triangles_cls: Type[AbstractTriangles] = CoordinateArrayTriangles,
         max_containing_size=MAX_CONTAINING_SIZE,
+        neighbor_degree: int = 1,
     ):
         """
         Create a solver for a given grid.
@@ -88,6 +98,8 @@ class AbstractSolver:
         max_containing_size
             Only applies to JAX. This is the maximum number of multiple images expected.
             We need to know this in advance to allocate memory for the JAX array.
+        neighbor_degree
+            The number of times recursively add neighbors for the triangles that contain
 
         Returns
         -------
@@ -103,6 +115,64 @@ class AbstractSolver:
         x_min = x.min()
         x_max = x.max()
 
+        return cls.for_limits_and_scale(
+            y_min=y_min,
+            y_max=y_max,
+            x_min=x_min,
+            x_max=x_max,
+            scale=scale,
+            pixel_scale_precision=pixel_scale_precision,
+            magnification_threshold=magnification_threshold,
+            array_triangles_cls=array_triangles_cls,
+            max_containing_size=max_containing_size,
+            neighbor_degree=neighbor_degree,
+        )
+
+    @classmethod
+    def for_limits_and_scale(
+        cls,
+        y_min=-1.0,
+        y_max=1.0,
+        x_min=-1.0,
+        x_max=1.0,
+        scale=0.1,
+        pixel_scale_precision: float = 0.001,
+        magnification_threshold=0.1,
+        array_triangles_cls: Type[AbstractTriangles] = CoordinateArrayTriangles,
+        max_containing_size=MAX_CONTAINING_SIZE,
+        neighbor_degree: int = 1,
+    ):
+        """
+        Create a solver for a given grid.
+
+        The grid defines the limits of the image plane and the pixel scale.
+
+        Parameters
+        ----------
+        y_min
+        y_max
+        x_min
+        x_max
+            The limits of the image plane in pixels.
+        scale
+            The pixel scale of the image plane. The initial triangles have this side length.
+        pixel_scale_precision
+            The precision to which the triangles should be subdivided.
+        magnification_threshold
+            The threshold for the magnification under which multiple images are filtered.
+        array_triangles_cls
+            The class to use for the triangles. JAX is used implicitly if USE_JAX=1 and
+            jax is installed.
+        max_containing_size
+            Only applies to JAX. This is the maximum number of multiple images expected.
+            We need to know this in advance to allocate memory for the JAX array.
+        neighbor_degree
+            The number of times recursively add neighbors for the triangles that contain
+
+        Returns
+        -------
+        The solver.
+        """
         initial_triangles = array_triangles_cls.for_limits_and_scale(
             y_min=y_min,
             y_max=y_max,
@@ -117,6 +187,7 @@ class AbstractSolver:
             initial_triangles=initial_triangles,
             pixel_scale_precision=pixel_scale_precision,
             magnification_threshold=magnification_threshold,
+            neighbor_degree=neighbor_degree,
         )
 
     @property
@@ -227,12 +298,11 @@ class AbstractSolver:
         mask = np.abs(magnifications.array) > self.magnification_threshold
         return np.where(mask[:, None], points, np.nan)
 
-    def _filtered_triangles(
+    def _source_triangles(
         self,
         tracer: OperateDeflections,
         triangles: aa.AbstractTriangles,
         source_plane_redshift,
-        shape: Shape,
     ):
         """
         Filter the triangles to keep only those that meet the solver condition
@@ -242,11 +312,7 @@ class AbstractSolver:
             grid=aa.Grid2DIrregular(triangles.vertices),
             source_plane_redshift=source_plane_redshift,
         )
-        source_triangles = triangles.with_vertices(source_plane_grid.array)
-
-        indexes = source_triangles.containing_indices(shape=shape)
-
-        return triangles.for_indexes(indexes=indexes)
+        return triangles.with_vertices(source_plane_grid.array)
 
     def steps(
         self,
@@ -272,13 +338,19 @@ class AbstractSolver:
         """
         initial_triangles = self.initial_triangles
         for number in range(self.n_steps):
-            kept_triangles = self._filtered_triangles(
+            source_triangles = self._source_triangles(
                 tracer=tracer,
                 triangles=initial_triangles,
                 source_plane_redshift=source_plane_redshift,
-                shape=shape,
             )
-            neighbourhood = kept_triangles.neighborhood()
+
+            indexes = source_triangles.containing_indices(shape=shape)
+            kept_triangles = initial_triangles.for_indexes(indexes=indexes)
+
+            neighbourhood = kept_triangles
+            for _ in range(self.neighbor_degree):
+                neighbourhood = neighbourhood.neighborhood()
+
             up_sampled = neighbourhood.up_sample()
 
             yield Step(
@@ -287,6 +359,7 @@ class AbstractSolver:
                 filtered_triangles=kept_triangles,
                 neighbourhood=neighbourhood,
                 up_sampled=up_sampled,
+                source_triangles=source_triangles,
             )
 
             initial_triangles = up_sampled

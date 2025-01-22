@@ -229,7 +229,12 @@ class FitInterferometerPlotter(Plotter):
                 "total_mappings_pixels"
             ]
 
-            pix_indexes = inversion_plotter.inversion.brightest_pixel_list_from(
+            mapper = inversion_plotter.inversion.cls_list_from(cls=aa.AbstractMapper)[0]
+            mapper_valued = aa.MapperValued(
+                values=inversion_plotter.inversion.reconstruction_dict[mapper],
+                mapper=mapper,
+            )
+            pix_indexes = mapper_valued.max_pixel_list_from(
                 total_pixels=total_pixels, filter_neighbors=True
             )
 
@@ -370,7 +375,10 @@ class FitInterferometerPlotter(Plotter):
         self,
         plane_index: Optional[int] = None,
         plane_image: bool = False,
+        plane_noise_map: bool = False,
+        plane_signal_to_noise_map: bool = False,
         zoom_to_brightest: bool = True,
+        interpolate_to_uniform: bool = False,
     ):
         """
         Plots images representing each individual `Plane` in the fit's `Tracer` in 2D, which are computed via the
@@ -390,9 +398,20 @@ class FitInterferometerPlotter(Plotter):
             Whether to make a 2D plot (via `imshow`) of the image of a plane in its source-plane (e.g. unlensed).
             Depending on how the fit is performed, this could either be an image of light profiles of the reconstruction
             of an `Inversion`.
+        plane_noise_map
+            Whether to make a 2D plot of the noise-map of a plane in its source-plane, where the
+            noise map can only be computed when a pixelized source reconstruction is performed and they correspond to
+            the noise map in each reconstructed pixel as given by the inverse curvature matrix.
+        plane_signal_to_noise_map
+            Whether to make a 2D plot of the signal-to-noise map of a plane in its source-plane,
+            where the signal-to-noise map values can only be computed when a pixelized source reconstruction and they
+            are the ratio of reconstructed flux to error in each pixel.
         zoom_to_brightest
             For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
             the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
+        interpolate_to_uniform
+            If `True`, the mapper's reconstruction is interpolated to a uniform grid before plotting, for example
+            meaning that an irregular Delaunay grid can be plotted as a uniform grid.
         """
         if plane_image:
             if not self.tracer.planes[plane_index].has(cls=aa.Pixelization):
@@ -408,6 +427,33 @@ class FitInterferometerPlotter(Plotter):
                     pixelization_index=0,
                     reconstruction=True,
                     zoom_to_brightest=zoom_to_brightest,
+                    interpolate_to_uniform=interpolate_to_uniform,
+                )
+
+        if plane_noise_map:
+            if self.tracer.planes[plane_index].has(cls=aa.Pixelization):
+                inversion_plotter = self.inversion_plotter_of_plane(
+                    plane_index=plane_index
+                )
+
+                inversion_plotter.figures_2d_of_pixelization(
+                    pixelization_index=0,
+                    reconstruction_noise_map=True,
+                    zoom_to_brightest=zoom_to_brightest,
+                    interpolate_to_uniform=interpolate_to_uniform,
+                )
+
+        if plane_signal_to_noise_map:
+            if self.tracer.planes[plane_index].has(cls=aa.Pixelization):
+                inversion_plotter = self.inversion_plotter_of_plane(
+                    plane_index=plane_index
+                )
+
+                inversion_plotter.figures_2d_of_pixelization(
+                    pixelization_index=0,
+                    signal_to_noise_map=True,
+                    zoom_to_brightest=zoom_to_brightest,
+                    interpolate_to_uniform=interpolate_to_uniform,
                 )
 
     def subplot_fit_real_space(self):

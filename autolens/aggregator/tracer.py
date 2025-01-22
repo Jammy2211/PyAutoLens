@@ -41,13 +41,15 @@ def _tracer_from(
         galaxies = instance.galaxies
 
         if hasattr(instance, "extra_galaxies"):
-            galaxies = galaxies + fit.instance.extra_galaxies
+            if fit.instance.extra_galaxies is not None:
+                galaxies = galaxies + fit.instance.extra_galaxies
 
     else:
         galaxies = fit.instance.galaxies
 
         if hasattr(fit.instance, "extra_galaxies"):
-            galaxies = galaxies + fit.instance.extra_galaxies
+            if fit.instance.extra_galaxies is not None:
+                galaxies = galaxies + fit.instance.extra_galaxies
 
     try:
         cosmology = instance.cosmology
@@ -56,17 +58,18 @@ def _tracer_from(
 
     tracer = Tracer(galaxies=galaxies, cosmology=cosmology)
 
-    if len(fit.children) > 0:
-        logger.info(
-            """
-            Using database for a fit with multiple summed Analysis objects.
+    if fit.children is not None:
+        if len(fit.children) > 0:
+            logger.info(
+                """
+                Using database for a fit with multiple summed Analysis objects.
+    
+                Tracer objects do not fully support this yet (e.g. model parameters which vary over analyses may be incorrect)
+                so proceed with caution!
+                """
+            )
 
-            Tracer objects do not fully support this yet (e.g. model parameters which vary over analyses may be incorrect)
-            so proceed with caution!
-            """
-        )
-
-        return [tracer] * len(fit.children)
+            return [tracer] * len(fit.children)
 
     return [tracer]
 

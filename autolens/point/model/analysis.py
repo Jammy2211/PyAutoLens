@@ -6,11 +6,11 @@ import autogalaxy as ag
 from autogalaxy.analysis.analysis.analysis import Analysis as AgAnalysis
 
 from autolens.analysis.analysis.lens import AnalysisLens
-from autolens.analysis.plotter_interface import PlotterInterface
 from autolens.point.fit.positions.image.pair_repeat import FitPositionsImagePairRepeat
 from autolens.point.fit.dataset import FitPointDataset
 from autolens.point.dataset import PointDataset
 from autolens.point.model.result import ResultPoint
+from autolens.point.model.visualizer import VisualizerPoint
 from autolens.point.solver import PointSolver
 
 from autolens import exc
@@ -24,6 +24,7 @@ except ModuleNotFoundError:
 
 
 class AnalysisPoint(AgAnalysis, AnalysisLens):
+    Visualizer = VisualizerPoint
     Result = ResultPoint
 
     def __init__(
@@ -103,11 +104,6 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
             fit_positions_cls=self.fit_positions_cls,
             run_time_dict=run_time_dict,
         )
-
-    def visualize(self, paths, instance, during_analysis):
-        tracer = self.tracer_via_instance_from(instance=instance)
-
-        plotter_interface = PlotterInterface(image_path=paths.image_path)
 
     def save_attributes(self, paths: af.DirectoryPaths):
         ag.output_to_json(
