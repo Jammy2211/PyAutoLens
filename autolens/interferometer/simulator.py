@@ -1,4 +1,7 @@
+from typing import List
+
 import autoarray as aa
+import autogalaxy as ag
 
 from autolens.lens.tracer import Tracer
 
@@ -49,13 +52,44 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
 
         return self.via_tracer_from(tracer=tracer, grid=grid)
 
-    def via_deflections_and_galaxies_from(self, deflections, galaxies):
+    def via_deflections_and_galaxies_from(
+        self, deflections: aa.VectorYX2D, galaxies: List[ag.Galaxy]
+    ) -> aa.Imaging:
+        """
+        Simulate an `Imaging` dataset from an input deflection angle map and list of galaxies.
+
+        The input deflection angle map ray-traces the image-plane coordinates from the image-plane to source-plane,
+        via the lens equation.
+
+        This traced grid is then used to evaluate the light of the list of galaxies, which therefore simulate the
+        image of the strong lens.
+
+        This function is used in situations where one has access to a deflection angle map which does not suit being
+        ray-traced using a `Tracer` object (e.g. deflection angles from a cosmological simulation of a galaxy).
+
+        The steps of the `SimulatorImaging` simulation process (e.g. PSF convolution, noise addition) are
+        described in the `SimulatorImaging` `__init__` method docstring.
+
+        Parameters
+        ----------
+        galaxies
+            The galaxies used to create the tracer, which describes the ray-tracing and strong lens configuration
+            used to simulate the imaging dataset.
+        grid
+            The image-plane 2D grid of (y,x) coordinates grid which the image of the strong lens is generated on.
+        """
         grid = aa.Grid2D.uniform(
             shape_native=deflections.shape_native,
             pixel_scales=deflections.pixel_scales,
+            over_sample_size=1,
         )
 
-        deflected_grid = grid - deflections
+        deflected_grid = aa.Grid2D(
+            values=grid - deflections,
+            mask=grid.mask,
+            over_sample_size=1,
+            over_sampled=grid - deflections,
+        )
 
         image = sum(map(lambda g: g.image_2d_from(grid=deflected_grid), galaxies))
 
