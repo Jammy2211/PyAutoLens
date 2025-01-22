@@ -9,8 +9,6 @@ import autogalaxy as ag
 
 from autoarray.inversion.inversion.factory import inversion_from
 
-from autolens.analysis.preloads import Preloads
-
 
 class TracerToInversion(ag.AbstractToInversion):
     def __init__(
@@ -19,7 +17,6 @@ class TracerToInversion(ag.AbstractToInversion):
         tracer,
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
-        preloads=Preloads(),
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -55,8 +52,6 @@ class TracerToInversion(ag.AbstractToInversion):
             the pixelization's pixels to the brightest regions of the image.
         settings_inversion
             The settings of the inversion, which controls how the linear algebra calculation is performed.
-        preloads
-            Preloads of the inversion, which are used to speed up the linear algebra calculation.
         run_time_dict
             A dictionary of run-time values used to compute the inversion, for example the noise-map normalization.
         """
@@ -66,7 +61,6 @@ class TracerToInversion(ag.AbstractToInversion):
             dataset=dataset,
             adapt_images=adapt_images,
             settings_inversion=settings_inversion,
-            preloads=preloads,
             run_time_dict=run_time_dict,
         )
 
@@ -352,10 +346,7 @@ class TracerToInversion(ag.AbstractToInversion):
         -------
             The list of lists of traced mesh grids grouped by plane.
         """
-        if self.preloads.image_plane_mesh_grid_pg_list is None:
-            image_plane_mesh_grid_pg_list = self.image_plane_mesh_grid_pg_list
-        else:
-            image_plane_mesh_grid_pg_list = self.preloads.image_plane_mesh_grid_pg_list
+        image_plane_mesh_grid_pg_list = self.image_plane_mesh_grid_pg_list
 
         traced_mesh_grid_pg_list = []
 
@@ -409,31 +400,16 @@ class TracerToInversion(ag.AbstractToInversion):
 
         mapper_galaxy_dict = {}
 
-        if self.preloads.traced_grids_of_planes_for_inversion is None:
-            traced_grids_of_planes_list = self.traced_grid_2d_list_of_inversion
-        else:
-            traced_grids_of_planes_list = (
-                self.preloads.traced_grids_of_planes_for_inversion
-            )
+        traced_grids_of_planes_list = self.traced_grid_2d_list_of_inversion
 
-        if self.preloads.traced_mesh_grids_list_of_planes is None:
-            traced_mesh_grids_list_of_planes = self.traced_mesh_grid_pg_list
-        else:
-            traced_mesh_grids_list_of_planes = (
-                self.preloads.traced_mesh_grids_list_of_planes
-            )
-
-        if self.preloads.image_plane_mesh_grid_pg_list is None:
-            image_plane_mesh_grid_list = self.image_plane_mesh_grid_pg_list
-        else:
-            image_plane_mesh_grid_list = self.preloads.image_plane_mesh_grid_pg_list
+        traced_mesh_grids_list_of_planes = self.traced_mesh_grid_pg_list
+        image_plane_mesh_grid_list = self.image_plane_mesh_grid_pg_list
 
         for plane_index, galaxies in enumerate(self.planes):
             if galaxies.has(cls=aa.Pixelization):
                 to_inversion = ag.GalaxiesToInversion(
                     dataset=self.dataset,
                     galaxies=galaxies,
-                    preloads=self.preloads,
                     adapt_images=self.adapt_images,
                     settings_inversion=self.settings_inversion,
                     run_time_dict=self.run_time_dict,
@@ -500,7 +476,6 @@ class TracerToInversion(ag.AbstractToInversion):
             dataset=self.dataset,
             linear_obj_list=self.linear_obj_list,
             settings=self.settings_inversion,
-            preloads=self.preloads,
             run_time_dict=self.tracer.run_time_dict,
         )
 

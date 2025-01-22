@@ -11,7 +11,6 @@ import autogalaxy as ag
 from autoarray.exc import PixelizationException
 
 from autolens.analysis.analysis.dataset import AnalysisDataset
-from autolens.analysis.preloads import Preloads
 from autolens.analysis.positions import PositionsLHResample
 from autolens.analysis.positions import PositionsLHPenalty
 from autolens.interferometer.model.result import ResultInterferometer
@@ -115,13 +114,6 @@ class AnalysisInterferometer(AnalysisDataset):
         """
         super().modify_before_fit(paths=paths, model=model)
 
-        if not paths.is_complete:
-            logger.info(
-                "PRELOADS - Setting up preloads, may take a few minutes for fits using an inversion."
-            )
-
-            self.set_preloads(paths=paths, model=model)
-
         return self
 
     def log_likelihood_function(self, instance):
@@ -190,7 +182,6 @@ class AnalysisInterferometer(AnalysisDataset):
     def fit_from(
         self,
         instance: af.ModelInstance,
-        preload_overwrite: Optional[Preloads] = None,
         run_time_dict: Optional[Dict] = None,
     ) -> FitInterferometer:
         """
@@ -204,8 +195,6 @@ class AnalysisInterferometer(AnalysisDataset):
         instance
             An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
             via a non-linear search).
-        preload_overwrite
-            If a `Preload` object is input this is used instead of the preloads stored as an attribute in the analysis.
         check_positions
             Whether the multiple image positions of the lensed source should be checked, i.e. whether they trace
             within the position threshold of one another in the source plane.
@@ -224,14 +213,11 @@ class AnalysisInterferometer(AnalysisDataset):
 
         adapt_images = self.adapt_images_via_instance_from(instance=instance)
 
-        preloads = self.preloads if preload_overwrite is None else preload_overwrite
-
         return FitInterferometer(
             dataset=self.dataset,
             tracer=tracer,
             adapt_images=adapt_images,
             settings_inversion=self.settings_inversion,
-            preloads=preloads,
             run_time_dict=run_time_dict,
         )
 
@@ -255,9 +241,6 @@ class AnalysisInterferometer(AnalysisDataset):
         - Its uv-wavelengths
         - Its real space mask.
         - The positions of the brightest pixels in the lensed source which are used to discard mass models.
-        - The preloaded image-plane source plane pixelization if used by the analysis. This ensures that differences in
-        the scikit-learn library do not lead to different pixelizations being computed if results are transferred from
-        a HPC to laptop.
 
          It is common for these attributes to be loaded by many of the template aggregator functions given in the
          `aggregator` modules. For example, when using the database tools to perform a fit, the default behaviour is for
@@ -297,7 +280,7 @@ class AnalysisInterferometer(AnalysisDataset):
         An `info_dict` is also created which stores information on aspects of the model and dataset that dictate
         run times, so the profiled times can be interpreted with this context.
 
-        The results of this profiling are then output to hard-disk in the `preloads` folder of the model-fit results,
+        The results of this profiling are then output to hard-disk in the `profiling` folder of the model-fit results,
         which they can be inspected to ensure run-times are as expected.
 
         Parameters
