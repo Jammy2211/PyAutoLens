@@ -51,6 +51,3 @@ def test__use_real_tracer(gal_x1_mp):
 
     assert fit.model_fluxes.in_list[1] == pytest.approx(2.5, 1.0e-4)
     assert fit.log_likelihood == pytest.approx(-3.11702, 1.0e-4)
-
-
-

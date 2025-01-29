@@ -19,16 +19,17 @@ class FitPositionsSource(AbstractFitPositions):
         profile: Optional[ag.ps.Point] = None,
     ):
         """
-        Fits a point source dataset using a `Tracer` object with a source-plane chi-squared based on the separation of
-        image-plane positions ray-traced to the source-plane compared to the centre of the source galaxy.
+        Fits the positions of a a point source dataset using a `Tracer` object with a source-plane chi-squared based on
+        the separation of image-plane positions ray-traced to the source-plane compared to the centre of the source
+        galaxy.
 
         The fit performs the following steps:
 
-        1) Ray-trace the positions in the point source to the source-plane via the `Tracer`, including accounting for
-           multi-plane ray-tracing.
+        1) Determine the source-plane centre of the source-galaxy, which could be a free model parameter or computed
+           as the barycenter of ray-traced positions in the source-plane, using name pairing (see below).
 
-        2) Determine the source-plane centre of the source-galaxy, which could be a free model parameter or computed
-           as the barycenter of ray-traced positions in the source-plane.
+        2) Ray-trace the positions in the point source to the source-plane via the `Tracer`, including accounting for
+           multi-plane ray-tracing.
 
         3) Compute the distance of each ray-traced position to the source-plane centre and compute the residuals,
 

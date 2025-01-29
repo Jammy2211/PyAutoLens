@@ -51,4 +51,6 @@ def test__magnifications_at_positions__multi_plane_calculation(gal_x1_mp):
 
     assert fit_1.magnifications_at_positions[0] == magnification_1
 
-    assert fit_0.magnifications_at_positions[0] != pytest.approx(fit_1.magnifications_at_positions[0], 1.0e-1)
+    assert fit_0.magnifications_at_positions[0] != pytest.approx(
+        fit_1.magnifications_at_positions[0], 1.0e-1
+    )
