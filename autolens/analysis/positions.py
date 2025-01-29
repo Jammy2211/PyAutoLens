@@ -13,8 +13,8 @@ import autogalaxy as ag
 from autogalaxy.analysis.analysis.dataset import AnalysisDataset
 
 from autolens.lens.tracer import Tracer
-from autolens.point.fit.positions.source.max_separation import (
-    FitPositionsSourceMaxSeparation,
+from autolens.point.max_separation import (
+    SourceMaxSeparation,
 )
 
 from autolens import exc
@@ -77,7 +77,7 @@ class AbstractPositionsLH:
         -------
 
         """
-        positions_fit = FitPositionsSourceMaxSeparation(
+        positions_fit = SourceMaxSeparation(
             data=self.positions, noise_map=None, tracer=tracer
         )
 
@@ -141,7 +141,7 @@ class PositionsLHResample(AbstractPositionsLH):
         if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
             return
 
-        positions_fit = FitPositionsSourceMaxSeparation(
+        positions_fit = SourceMaxSeparation(
             data=self.positions, noise_map=None, tracer=tracer
         )
 
@@ -264,7 +264,7 @@ class PositionsLHPenalty(AbstractPositionsLH):
         if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
             return
 
-        positions_fit = FitPositionsSourceMaxSeparation(
+        positions_fit = SourceMaxSeparation(
             data=self.positions, noise_map=None, tracer=tracer
         )
 
