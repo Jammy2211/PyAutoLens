@@ -24,8 +24,11 @@ def test__two_sets_of_positions__residuals_likelihood_correct():
     assert fit.noise_normalization == pytest.approx(2.28945, 1.0e-4)
     assert fit.log_likelihood == pytest.approx(-5.14472988, 1.0e-4)
 
+    # Inclusion of mass model below means there are nonzero magnifications at each position, which get factored into
+    # chi-squared calculation.
+
     galaxy_mass = al.Galaxy(
-        redshift=0.5, mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0)
+        redshift=0.5, mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=0.1)
     )
 
     tracer = al.Tracer(galaxies=[galaxy_mass, galaxy_point_source])
@@ -34,8 +37,10 @@ def test__two_sets_of_positions__residuals_likelihood_correct():
         name="point_0", data=positions, noise_map=noise_map, tracer=tracer, solver=None
     )
 
-    assert fit.model_data.in_list == [(0.0, 0.0), (0.0, 1.0)]
-    assert fit.log_likelihood == pytest.approx(-1.6447298, 1.0e-4)
+    assert fit.magnifications_at_positions.in_list == pytest.approx([1.1111049387688177, 1.0526308864400329], 1.0e-4)
+    assert fit.model_data.in_list == [(0.0, 0.9), (0.0, 1.9)]
+    assert fit.chi_squared_map.in_list == pytest.approx([2.6244291578941694, 3.2580292867960323], 1.0e-4)
+    assert fit.log_likelihood == pytest.approx(-4.0859591081945, 1.0e-4)
 
 
 def test__multi_plane_position_solving():

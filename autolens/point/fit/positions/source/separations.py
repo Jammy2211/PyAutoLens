@@ -35,10 +35,13 @@ class FitPositionsSource(AbstractFitPositions):
 
         4) Compute the magnification of each image-plane position via the Hessian of the tracer's deflection angles.
 
-        5) Compute the chi-squared of each position as the square of the residual multiplied by the magnification and
+        5) Compute the residuals of each position as the difference between the source-plane centre and each
+           ray-traced position.
+
+        6) Compute the chi-squared of each position as the square of the residual multiplied by the magnification and
            divided by the RMS noise-map value.
 
-        6) Sum the chi-squared values to compute the overall log likelihood of the fit.
+        7) Sum the chi-squared values to compute the overall log likelihood of the fit.
 
         Point source fitting uses name pairing, whereby the `name` of the `Point` object is paired to the name of the
         point source dataset to ensure that point source datasets are fitted to the correct point source.
@@ -104,3 +107,12 @@ class FitPositionsSource(AbstractFitPositions):
         return self.model_data.distances_to_coordinate_from(
             coordinate=self.source_plane_coordinate
         )
+
+    @property
+    def chi_squared_map(self) -> float:
+        """
+        Returns the chi-squared of the point-source source-plane fit, which is the sum of the squared residuals
+        multiplied by the magnifications squared, divided by the noise-map values squared.
+        """
+
+        return self.residual_map**2.0 / (self.magnifications_at_positions**2.0 * self.noise_map**2.0)

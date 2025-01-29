@@ -66,3 +66,7 @@ class AbstractFitPositions(AbstractFitPoint, ABC):
             solver=solver,
             profile=profile,
         )
+
+    @property
+    def positions(self):
+        return self.data
