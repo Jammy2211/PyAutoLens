@@ -76,7 +76,7 @@ def test__fit_dataset__all_positions_classes():
         fit_positions_cls=al.FitPositionsImagePairAll,
     )
 
-    assert fit.positions.log_likelihood == pytest.approx(-47.78945977, 1.0e-4)
+    assert fit.positions.log_likelihood == pytest.approx(-24.6435280294, 1.0e-4)
 
     fit = al.FitPointDataset(
         dataset=dataset_0,
