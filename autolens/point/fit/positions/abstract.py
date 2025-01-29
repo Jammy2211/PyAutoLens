@@ -1,16 +1,15 @@
 from abc import ABC
-from typing import Optional, Tuple
+from typing import Optional
 
 import autoarray as aa
 import autogalaxy as ag
 
+from autolens.point.fit.abstract import AbstractFitPoint
 from autolens.point.solver import PointSolver
 from autolens.lens.tracer import Tracer
 
-from autolens import exc
 
-
-class AbstractFitPositions(aa.AbstractFit, ABC):
+class AbstractFitPositions(AbstractFitPoint, ABC):
     def __init__(
         self,
         name: str,
@@ -32,69 +31,11 @@ class AbstractFitPositions(aa.AbstractFit, ABC):
             The noise-value assumed when computing the log likelihood.
         """
 
-        self.name = name
-        self._data = data
-        self._noise_map = noise_map
-        self.tracer = tracer
-        self.solver = solver
-
-        self.profile = (
-            tracer.extract_profile(profile_name=name) if profile is None else profile
+        super().__init__(
+            name=name,
+            data=data,
+            noise_map=noise_map,
+            tracer=tracer,
+            solver=solver,
+            profile=profile,
         )
-
-        if self.profile is None:
-            raise exc.PointExtractionException(
-                f"For the point-source named {name} there was no matching point source profile "
-                f"in the tracer (make sure your tracer's point source name is the same the dataset name."
-            )
-
-    @property
-    def data(self):
-        return self._data
-
-    @property
-    def noise_map(self):
-        return self._noise_map
-
-    @property
-    def source_plane_coordinate(self) -> Tuple[float, float]:
-        """
-        Returns the centre of the point-source in the source-plane, which is used when computing the model
-        image-plane positions from the tracer.
-
-        Returns
-        -------
-        The (y,x) arc-second coordinates of the point-source in the source-plane.
-        """
-        return self.profile.centre
-
-    @property
-    def source_plane_index(self) -> int:
-        """
-        Returns the integer plane index containing the point source galaxy, which is used when computing the model
-        image-plane positions from the tracer.
-
-        This index is used to ensure that if multi-plane tracing is used when solving the model image-plane positions,
-        the correct source-plane is used to compute the model positions whilst accounting for multi-plane lensing.
-
-        Returns
-        -------
-        The index of the plane containing the point-source galaxy.
-        """
-        return self.tracer.extract_plane_index_of_profile(profile_name=self.name)
-
-    @property
-    def source_plane_redshift(self) -> float:
-        """
-        Returns the redshift of the plane containing the point source galaxy, which is used when computing the model
-        image-plane positions from the tracer.
-
-        This redshift is used to ensure that if multi-plane tracing is used when solving the model image-plane
-        positions, the correct source-plane is used to compute the model positions whilst accounting for multi-plane
-        lensing.
-
-        Returns
-        -------
-        The redshift of the plane containing the point-source galaxy.
-        """
-        return self.tracer.planes[self.source_plane_index].redshift
