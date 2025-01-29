@@ -115,4 +115,4 @@ class FitPositionsSource(AbstractFitPositions):
         multiplied by the magnifications squared, divided by the noise-map values squared.
         """
 
-        return self.residual_map**2.0 / (self.magnifications_at_positions**2.0 * self.noise_map**2.0)
+        return self.residual_map**2.0 / (self.magnifications_at_positions**-2.0 * self.noise_map**2.0)
