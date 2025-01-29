@@ -15,6 +15,31 @@ class PointDatasetPlotter(Plotter):
         visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
         include_2d: aplt.Include2D = aplt.Include2D(),
     ):
+        """
+        Plots the attributes of `PointDataset` objects using the matplotlib methods and functions functions which
+        customize the plot's appearance.
+
+        The `mat_plot_2d` attribute wraps matplotlib function calls to make the figure. By default, the settings
+        passed to every matplotlib function called are those specified in the `config/visualize/mat_wrap/*.ini` files,
+        but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
+
+        Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
+        the `Imaging` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
+        object or the `config/visualize/include.ini` file.
+
+        Parameters
+        ----------
+        dataset
+            The imaging dataset the plotter plots.
+        get_visuals_2d
+            A function which extracts from the `Imaging` the 2D visuals which are plotted on figures.
+        mat_plot_2d
+            Contains objects which wrap the matplotlib function calls that make 2D plots.
+        visuals_2d
+            Contains 2D visuals that can be overlaid on 2D plots.
+        include_2d
+            Specifies which attributes of the `Imaging` are extracted and plotted as visuals for 2D plots.
+        """
         super().__init__(
             mat_plot_1d=mat_plot_1d,
             visuals_1d=visuals_1d,
@@ -33,6 +58,19 @@ class PointDatasetPlotter(Plotter):
         return self.visuals_2d
 
     def figures_2d(self, positions: bool = False, fluxes: bool = False):
+        """
+        Plots the individual attributes of the plotter's `PointDataset` object in 2D.
+
+        The API is such that every plottable attribute of the `Imaging` object is an input parameter of type bool of
+        the function, which if switched to `True` means that it is plotted.
+
+        Parameters
+        ----------
+        positions
+            If `True`, the dataset's positions are plotted on the figure compared to the model positions.
+        fluxes
+            If `True`, the dataset's fluxes are plotted on the figure compared to the model fluxes.
+        """
         if positions:
             self.mat_plot_2d.plot_grid(
                 grid=self.dataset.positions,
