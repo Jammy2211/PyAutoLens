@@ -1,3 +1,5 @@
+from autoarray.numpy_wrapper import numpy as npw
+import numpy as np
 from typing import Optional
 
 import autoarray as aa
@@ -116,3 +118,17 @@ class FitPositionsSource(AbstractFitPositions):
         """
 
         return self.residual_map**2.0 / (self.magnifications_at_positions**-2.0 * self.noise_map**2.0)
+
+    @property
+    def noise_normalization(self) -> float:
+        """
+        Returns the normalization of the noise-map, which is the sum of the noise-map values squared.
+        """
+        return npw.sum(npw.log(2 * np.pi * (self.magnifications_at_positions**-2.0 *self.noise_map**2.0)))
+
+    @property
+    def log_likelihood(self) -> float:
+        """
+        Returns the log likelihood of the point-source source-plane fit, which is the sum of the chi-squared values.
+        """
+        return -0.5 * (sum(self.chi_squared_map) + self.noise_normalization)
