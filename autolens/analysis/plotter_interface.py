@@ -26,7 +26,7 @@ class PlotterInterface(AgPlotterInterface):
         The path on the hard-disk to the `image` folder of the non-linear searches results.
     """
 
-    def tracer(self, tracer: Tracer, grid: aa.type.Grid2DLike, during_analysis: bool):
+    def tracer(self, tracer: Tracer, grid: aa.type.Grid2DLike):
         """
         Visualizes a `Tracer` object.
 
@@ -47,8 +47,6 @@ class PlotterInterface(AgPlotterInterface):
         grid
             A 2D grid of (y,x) arc-second coordinates used to perform ray-tracing, which is the masked grid tied to
             the dataset.
-        during_analysis
-            Whether visualization is performed during a non-linear search or once it is completed.
         """
 
         def should_plot(name):
@@ -65,28 +63,6 @@ class PlotterInterface(AgPlotterInterface):
 
         if should_plot("subplot_galaxies_images"):
             tracer_plotter.subplot_galaxies_images()
-
-        tracer_plotter.figures_2d(
-            image=should_plot("image"),
-            source_plane=should_plot("source_plane_image"),
-            deflections_y=should_plot("deflections"),
-            deflections_x=should_plot("deflections"),
-            magnification=should_plot("magnification"),
-        )
-
-        mat_plot_2d.use_log10 = True
-
-        tracer_plotter.figures_2d(
-            convergence=should_plot("convergence"),
-            potential=should_plot("potential"),
-        )
-
-        if should_plot("lens_image"):
-            tracer_plotter.figures_2d_of_planes(
-                plane_image=True, plane_index=0, zoom_to_brightest=False
-            )
-
-        mat_plot_2d.use_log10 = False
 
     def image_with_positions(self, image: aa.Array2D, positions: aa.Grid2DIrregular):
         """
@@ -123,6 +99,8 @@ class PlotterInterface(AgPlotterInterface):
                 include_2d=self.include_2d,
                 visuals_2d=visuals_2d,
             )
+
             image_plotter.set_filename("image_with_positions")
+
             if should_plot("image_with_positions"):
                 image_plotter.figure_2d()
