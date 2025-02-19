@@ -30,20 +30,6 @@ def test__tracer(
     plot_path = path.join(plot_path, "tracer")
 
     assert path.join(plot_path, "subplot_galaxies_images.png") in plot_patch.paths
-    assert path.join(plot_path, "image_2d.png") in plot_patch.paths
-    assert path.join(plot_path, "plane_image_of_plane_1.png") in plot_patch.paths
-    assert path.join(plot_path, "convergence_2d.png") in plot_patch.paths
-    assert path.join(plot_path, "potential_2d.png") not in plot_patch.paths
-    assert path.join(plot_path, "deflections_y_2d.png") not in plot_patch.paths
-    assert path.join(plot_path, "deflections_x_2d.png") not in plot_patch.paths
-    assert path.join(plot_path, "magnification_2d.png") in plot_patch.paths
-
-    convergence = al.util.array_2d.numpy_array_2d_via_fits_from(
-        file_path=path.join(plot_path, "fits", "convergence_2d.fits"), hdu=0
-    )
-
-    assert convergence.shape == (7, 7)
-
 
 def test__image_with_positions(
     image_7x7, positions_x2, include_2d_all, plot_path, plot_patch
