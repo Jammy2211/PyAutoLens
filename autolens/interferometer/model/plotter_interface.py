@@ -19,7 +19,6 @@ class PlotterInterfaceInterferometer(PlotterInterface):
     def fit_interferometer(
         self,
         fit: FitInterferometer,
-        during_analysis: bool,
     ):
         """
         Visualizes a `FitInterferometer` object, which fits an interferometer dataset.
@@ -37,11 +36,6 @@ class PlotterInterfaceInterferometer(PlotterInterface):
         ----------
         fit
             The maximum log likelihood `FitInterferometer` of the non-linear search which is used to plot the fit.
-        during_analysis
-            Whether visualization is performed during a non-linear search or once it is completed.
-        visuals_2d
-            An object containing attributes which may be plotted over the figure (e.g. the centres of mass and light
-            profiles).
         """
 
         def should_plot(name):
@@ -74,26 +68,6 @@ class PlotterInterfaceInterferometer(PlotterInterface):
             include_2d=self.include_2d,
             mat_plot_1d=mat_plot_1d,
             mat_plot_2d=mat_plot_2d,
-        )
-
-        fit_plotter.figures_2d(
-            data=should_plot("data"),
-            noise_map=should_plot("noise_map"),
-            signal_to_noise_map=should_plot("signal_to_noise_map"),
-            model_data=should_plot("model_data"),
-            residual_map_real=should_plot("residual_map"),
-            chi_squared_map_real=should_plot("chi_squared_map"),
-            normalized_residual_map_real=should_plot("normalized_residual_map"),
-            residual_map_imag=should_plot("residual_map"),
-            chi_squared_map_imag=should_plot("chi_squared_map"),
-            normalized_residual_map_imag=should_plot("normalized_residual_map"),
-            dirty_image=should_plot("data"),
-            dirty_noise_map=should_plot("noise_map"),
-            dirty_signal_to_noise_map=should_plot("signal_to_noise_map"),
-            dirty_model_image=should_plot("model_data"),
-            dirty_residual_map=should_plot("residual_map"),
-            dirty_normalized_residual_map=should_plot("normalized_residual_map"),
-            dirty_chi_squared_map=should_plot("chi_squared_map"),
         )
 
         if plot_setting(section="inversion", name="subplot_mappings"):
