@@ -71,87 +71,28 @@ mat_wrap_2d:
       s: 17
 plots:
   dataset:
-    data: true
-    noise_map: false
-    signal_to_noise_map: false
     subplot_dataset: true
-    uv_wavelengths: false
   fit:
-    all_at_end_fits: true
-    all_at_end_png: false
-    chi_squared_map: true
-    data: true
-    model_data: true
-    model_images_of_planes: false
-    noise_map: false
-    normalized_residual_map: true
-    plane_images_of_planes: true
-    residual_map: false
-    signal_to_noise_map: false
     subplot_fit: true
     subplots_of_planes: false
-    subtracted_images_of_planes: true
   fit_imaging: {}
   fit_interferometer:
     subplot_fit_real_space: true
     subplot_fit_dirty_images: true
-    amplitudes_vs_uv_distances: false
-    dirty_chi_squared_map: false
-    dirty_image: false
-    dirty_noise_map: false
-    dirty_normalized_residual_map: false
-    dirty_residual_map: false
-    dirty_signal_to_noise_map: false
-    phases_vs_uv_distances: false
-    uv_wavelengths: false
-  fit_point_dataset:                         # Settings for plots of fits to point source datasets (e.g. FitPointDatasetPlotter).
-    positions: true                         # Plot the positions of th multiple images of the point source in the image plane?
-    fluxes: true                             # Plot the fluxes of the multiple images of the point source in the image plane?
+  fit_point_dataset: {}
   fit_quantity:
-    all_at_end_fits: true
-    all_at_end_png: true
-    chi_squared_map: false
-    image: true
-    model_image: false
-    noise_map: false
-    residual_map: false
     subplot_fit: true
   galaxies:
-    convergence: false
-    image: false
-    potential: false
+    subplot_galaxies: true
+    subplot_galaxy_images: true
+    subplot_galaxies_1d: true
+    subplot_galaxies_1d_decomposed: true
   adapt:
-    images_of_galaxies: true
-    model_image: true
-  imaging:
-    psf: true
-  interferometer:
-    amplitudes_vs_uv_distances: false
-    dirty_image: false
-    dirty_noise_map: false
-    dirty_signal_to_noise_map: false
-    phases_vs_uv_distances: false
-    uv_wavelengths: false
+    subplot_adapt_images: true
   inversion:
-    all_at_end_png: false
-    chi_squared_map: true
-    errors: false
-    normalized_residual_map: false
-    reconstructed_image: true
-    reconstruction: true
-    regularization_weights: false
-    residual_map: false
     subplot_inversion: true
   positions:
     image_with_positions: true
   tracer:
-    all_at_end_fits: true
-    all_at_end_png: false
-    convergence: true
-    deflections: false
-    image: true
-    magnification: true
-    potential: false
-    source_plane_image: true
     subplot_tracer: true
     subplot_galaxies_images: true
