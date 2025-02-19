@@ -22,7 +22,7 @@ def test__fit_interferometer(
     plotter_interface = PlotterInterfaceInterferometer(image_path=plot_path)
 
     plotter_interface.fit_interferometer(
-        fit=fit_interferometer_x2_plane_7x7, during_analysis=True
+        fit=fit_interferometer_x2_plane_7x7,
     )
 
     assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths

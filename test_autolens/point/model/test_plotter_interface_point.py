@@ -19,7 +19,7 @@ def test__fit_point(fit_point_dataset_x2_plane, include_2d_all, plot_path, plot_
 
     plotter_interface = PlotterInterfacePoint(image_path=plot_path)
 
-    plotter_interface.fit_point(fit=fit_point_dataset_x2_plane, during_analysis=False)
+    plotter_interface.fit_point(fit=fit_point_dataset_x2_plane)
 
     assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
 

@@ -23,7 +23,7 @@ def test__fit_imaging(
     plotter_interface = PlotterInterfaceImaging(image_path=plot_path)
 
     plotter_interface.fit_imaging(
-        fit=fit_imaging_x2_plane_inversion_7x7, during_analysis=False
+        fit=fit_imaging_x2_plane_inversion_7x7,
     )
 
     assert path.join(plot_path, "subplot_tracer.png") in plot_patch.paths
