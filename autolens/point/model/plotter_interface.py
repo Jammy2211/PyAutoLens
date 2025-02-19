@@ -38,24 +38,12 @@ class PlotterInterfacePoint(PlotterInterface):
             dataset=dataset, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
         )
 
-        dataset_plotter.figures_2d(
-            positions=should_plot("positions"),
-            fluxes=should_plot("fluxes"),
-        )
-
-        mat_plot_2d = self.mat_plot_2d_from()
-
-        dataset_plotter = PointDatasetPlotter(
-            dataset=dataset, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
-        )
-
         if should_plot("subplot_dataset"):
             dataset_plotter.subplot_dataset()
 
     def fit_point(
         self,
         fit: FitPointDataset,
-        during_analysis: bool,
     ):
         """
         Visualizes a `FitPointDataset` object, which fits an imaging dataset.
@@ -74,26 +62,10 @@ class PlotterInterfacePoint(PlotterInterface):
         ----------
         fit
             The maximum log likelihood `FitPointDataset` of the non-linear search which is used to plot the fit.
-        during_analysis
-            Whether visualization is performed during a non-linear search or once it is completed.
-        visuals_2d
-            An object containing attributes which may be plotted over the figure (e.g. the centres of mass and light
-            profiles).
         """
 
         def should_plot(name):
             return plot_setting(section=["fit", "fit_point_dataset"], name=name)
-
-        mat_plot_2d = self.mat_plot_2d_from()
-
-        fit_plotter = FitPointDatasetPlotter(
-            fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
-        )
-
-        fit_plotter.figures_2d(
-            positions=should_plot("positions"),
-            fluxes=should_plot("fluxes"),
-        )
 
         mat_plot_2d = self.mat_plot_2d_from()
 
