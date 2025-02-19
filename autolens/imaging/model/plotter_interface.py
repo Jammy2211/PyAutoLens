@@ -18,7 +18,7 @@ class PlotterInterfaceImaging(PlotterInterface):
     imaging_combined = AgPlotterInterfaceImaging.imaging_combined
 
     def fit_imaging(
-        self, fit: FitImaging, during_analysis: bool,
+        self, fit: FitImaging,
     ):
         """
         Visualizes a `FitImaging` object, which fits an imaging dataset.
@@ -37,11 +37,6 @@ class PlotterInterfaceImaging(PlotterInterface):
         ----------
         fit
             The maximum log likelihood `FitImaging` of the non-linear search which is used to plot the fit.
-        during_analysis
-            Whether visualization is performed during a non-linear search or once it is completed.
-        visuals_2d
-            An object containing attributes which may be plotted over the figure (e.g. the centres of mass and light
-            profiles).
         """
 
         if plot_setting(section="tracer", name="subplot_tracer"):
@@ -56,28 +51,6 @@ class PlotterInterfaceImaging(PlotterInterface):
 
         def should_plot(name):
             return plot_setting(section=["fit", "fit_imaging"], name=name)
-
-        mat_plot_2d = self.mat_plot_2d_from()
-
-        fit_plotter = FitImagingPlotter(
-            fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
-        )
-
-        fit_plotter.figures_2d(
-            data=should_plot("data"),
-            noise_map=should_plot("noise_map"),
-            signal_to_noise_map=should_plot("signal_to_noise_map"),
-            model_image=should_plot("model_data"),
-            residual_map=should_plot("residual_map"),
-            chi_squared_map=should_plot("chi_squared_map"),
-            normalized_residual_map=should_plot("normalized_residual_map"),
-        )
-
-        fit_plotter.figures_2d_of_planes(
-            subtracted_image=should_plot("subtracted_images_of_planes"),
-            model_image=should_plot("model_images_of_planes"),
-            plane_image=should_plot("plane_images_of_planes"),
-        )
 
         mat_plot_2d = self.mat_plot_2d_from()
 
@@ -220,9 +193,9 @@ class PlotterInterfaceImaging(PlotterInterface):
                     open_subplot=False,
                 )
 
-            make_subplot_fit(filename_suffix="fit")
+            make_subplot_fit(filename_suffix="fit_combined")
 
-            # for plotter in multi_plotter.plotter_list:
-            #     plotter.mat_plot_2d.use_log10 = True
-            #
-            # make_subplot_fit(filename_suffix="fit_log10")
+            for plotter in multi_plotter.plotter_list:
+                plotter.mat_plot_2d.use_log10 = True
+
+            make_subplot_fit(filename_suffix="fit_combined_log10")
