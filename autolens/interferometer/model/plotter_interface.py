@@ -20,7 +20,6 @@ class PlotterInterfaceInterferometer(PlotterInterface):
         self,
         fit: FitInterferometer,
         during_analysis: bool,
-        subfolders: str = "fit_dataset",
     ):
         """
         Visualizes a `FitInterferometer` object, which fits an interferometer dataset.
@@ -48,8 +47,8 @@ class PlotterInterfaceInterferometer(PlotterInterface):
         def should_plot(name):
             return plot_setting(section=["fit", "fit_interferometer"], name=name)
 
-        mat_plot_1d = self.mat_plot_1d_from(subfolders="")
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="")
+        mat_plot_1d = self.mat_plot_1d_from()
+        mat_plot_2d = self.mat_plot_2d_from()
 
         fit_plotter = FitInterferometerPlotter(
             fit=fit,
@@ -67,8 +66,8 @@ class PlotterInterfaceInterferometer(PlotterInterface):
         if should_plot("subplot_fit_real_space"):
             fit_plotter.subplot_fit_real_space()
 
-        mat_plot_1d = self.mat_plot_1d_from(subfolders=subfolders)
-        mat_plot_2d = self.mat_plot_2d_from(subfolders=subfolders)
+        mat_plot_1d = self.mat_plot_1d_from()
+        mat_plot_2d = self.mat_plot_2d_from()
 
         fit_plotter = FitInterferometerPlotter(
             fit=fit,
@@ -102,64 +101,3 @@ class PlotterInterfaceInterferometer(PlotterInterface):
                 plane_index=len(fit.tracer.planes) - 1
             )
 
-        if not during_analysis and should_plot("all_at_end_png"):
-            mat_plot_1d = self.mat_plot_1d_from(subfolders=path.join(subfolders, "end"))
-            mat_plot_2d = self.mat_plot_2d_from(subfolders=path.join(subfolders, "end"))
-
-            fit_plotter = FitInterferometerPlotter(
-                fit=fit,
-                include_2d=self.include_2d,
-                mat_plot_1d=mat_plot_1d,
-                mat_plot_2d=mat_plot_2d,
-            )
-
-            fit_plotter.figures_2d(
-                data=True,
-                noise_map=True,
-                signal_to_noise_map=True,
-                model_data=True,
-                residual_map_real=True,
-                chi_squared_map_real=True,
-                normalized_residual_map_real=True,
-                residual_map_imag=True,
-                chi_squared_map_imag=True,
-                normalized_residual_map_imag=True,
-                dirty_image=True,
-                dirty_noise_map=True,
-                dirty_signal_to_noise_map=True,
-                dirty_model_image=True,
-                dirty_residual_map=True,
-                dirty_normalized_residual_map=True,
-                dirty_chi_squared_map=True,
-            )
-
-            plane_index_max = len(fit.tracer.planes) - 1
-
-            fit_plotter.figures_2d_of_planes(
-                plane_index=plane_index_max, plane_image=True
-            )
-
-        if not during_analysis and should_plot("all_at_end_fits"):
-            mat_plot_2d = self.mat_plot_2d_from(
-                subfolders=path.join("fit_dataset", "fits"), format="fits"
-            )
-
-            fit_plotter = FitInterferometerPlotter(
-                fit=fit, include_2d=self.include_2d, mat_plot_2d=mat_plot_2d
-            )
-
-            fit_plotter.figures_2d(
-                dirty_image=True,
-                dirty_noise_map=True,
-                dirty_signal_to_noise_map=True,
-                dirty_model_image=True,
-                dirty_residual_map=True,
-                dirty_normalized_residual_map=True,
-                dirty_chi_squared_map=True,
-            )
-
-            plane_index_max = len(fit.tracer.planes) - 1
-
-            fit_plotter.figures_2d_of_planes(
-                plane_index=plane_index_max, plane_image=True
-            )

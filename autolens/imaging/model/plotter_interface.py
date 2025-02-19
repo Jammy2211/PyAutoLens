@@ -18,7 +18,7 @@ class PlotterInterfaceImaging(PlotterInterface):
     imaging_combined = AgPlotterInterfaceImaging.imaging_combined
 
     def fit_imaging(
-        self, fit: FitImaging, during_analysis: bool, subfolders: str = "fit_dataset"
+        self, fit: FitImaging, during_analysis: bool,
     ):
         """
         Visualizes a `FitImaging` object, which fits an imaging dataset.
@@ -46,7 +46,7 @@ class PlotterInterfaceImaging(PlotterInterface):
 
         if plot_setting(section="tracer", name="subplot_tracer"):
 
-            mat_plot_2d = self.mat_plot_2d_from(subfolders="")
+            mat_plot_2d = self.mat_plot_2d_from()
 
             fit_plotter = FitImagingPlotter(
                 fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
@@ -57,7 +57,7 @@ class PlotterInterfaceImaging(PlotterInterface):
         def should_plot(name):
             return plot_setting(section=["fit", "fit_imaging"], name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from(subfolders=subfolders)
+        mat_plot_2d = self.mat_plot_2d_from()
 
         fit_plotter = FitImagingPlotter(
             fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
@@ -79,7 +79,7 @@ class PlotterInterfaceImaging(PlotterInterface):
             plane_image=should_plot("plane_images_of_planes"),
         )
 
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="")
+        mat_plot_2d = self.mat_plot_2d_from()
 
         fit_plotter = FitImagingPlotter(
             fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
@@ -102,54 +102,6 @@ class PlotterInterfaceImaging(PlotterInterface):
                 fit_plotter.subplot_mappings_of_plane(plane_index=len(fit.tracer.planes) - 1)
             except IndexError:
                 pass
-
-        if not during_analysis and should_plot("all_at_end_png"):
-
-            mat_plot_2d = self.mat_plot_2d_from(
-                subfolders=path.join("fit_dataset", "end"),
-            )
-
-            fit_plotter = FitImagingPlotter(
-                fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
-            )
-
-            fit_plotter.figures_2d(
-                data=True,
-                noise_map=True,
-                signal_to_noise_map=True,
-                model_image=True,
-                residual_map=True,
-                normalized_residual_map=True,
-                chi_squared_map=True,
-            )
-
-            fit_plotter.figures_2d_of_planes(
-                subtracted_image=True, model_image=True, plane_image=True
-            )
-
-        if not during_analysis and should_plot("all_at_end_fits"):
-
-            mat_plot_2d = self.mat_plot_2d_from(
-                subfolders=path.join("fit_dataset", "fits"), format="fits"
-            )
-
-            fit_plotter = FitImagingPlotter(
-                fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
-            )
-
-            fit_plotter.figures_2d(
-                data=True,
-                noise_map=True,
-                signal_to_noise_map=True,
-                model_image=True,
-                residual_map=True,
-                normalized_residual_map=True,
-                chi_squared_map=True,
-            )
-
-            fit_plotter.figures_2d_of_planes(
-                subtracted_image=True, model_image=True, plane_image=True, interpolate_to_uniform=True
-            )
 
     def fit_imaging_combined(self, fit_list: List[FitImaging]):
         """
@@ -174,7 +126,7 @@ class PlotterInterfaceImaging(PlotterInterface):
         def should_plot(name):
             return plot_setting(section=["fit", "fit_imaging"], name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="combined")
+        mat_plot_2d = self.mat_plot_2d_from()
 
         fit_plotter_list = [
             FitImagingPlotter(

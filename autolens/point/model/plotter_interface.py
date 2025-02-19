@@ -32,7 +32,7 @@ class PlotterInterfacePoint(PlotterInterface):
         def should_plot(name):
             return plot_setting(section=["point_dataset"], name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="dataset")
+        mat_plot_2d = self.mat_plot_2d_from()
 
         dataset_plotter = PointDatasetPlotter(
             dataset=dataset, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
@@ -43,7 +43,7 @@ class PlotterInterfacePoint(PlotterInterface):
             fluxes=should_plot("fluxes"),
         )
 
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="")
+        mat_plot_2d = self.mat_plot_2d_from()
 
         dataset_plotter = PointDatasetPlotter(
             dataset=dataset, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
@@ -56,7 +56,6 @@ class PlotterInterfacePoint(PlotterInterface):
         self,
         fit: FitPointDataset,
         during_analysis: bool,
-        subfolders: str = "fit_dataset",
     ):
         """
         Visualizes a `FitPointDataset` object, which fits an imaging dataset.
@@ -85,7 +84,7 @@ class PlotterInterfacePoint(PlotterInterface):
         def should_plot(name):
             return plot_setting(section=["fit", "fit_point_dataset"], name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from(subfolders=subfolders)
+        mat_plot_2d = self.mat_plot_2d_from()
 
         fit_plotter = FitPointDatasetPlotter(
             fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
@@ -96,7 +95,7 @@ class PlotterInterfacePoint(PlotterInterface):
             fluxes=should_plot("fluxes"),
         )
 
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="")
+        mat_plot_2d = self.mat_plot_2d_from()
 
         fit_plotter = FitPointDatasetPlotter(
             fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
@@ -105,13 +104,3 @@ class PlotterInterfacePoint(PlotterInterface):
         if should_plot("subplot_fit"):
             fit_plotter.subplot_fit()
 
-        if not during_analysis and should_plot("all_at_end_png"):
-            mat_plot_2d = self.mat_plot_2d_from(
-                subfolders=path.join("fit_dataset", "end"),
-            )
-
-            fit_plotter = FitPointDatasetPlotter(
-                fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
-            )
-
-            fit_plotter.figures_2d(positions=True, fluxes=True)

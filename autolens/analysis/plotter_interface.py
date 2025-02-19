@@ -54,7 +54,7 @@ class PlotterInterface(AgPlotterInterface):
         def should_plot(name):
             return plot_setting(section="tracer", name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="tracer")
+        mat_plot_2d = self.mat_plot_2d_from()
 
         tracer_plotter = TracerPlotter(
             tracer=tracer,
@@ -88,61 +88,6 @@ class PlotterInterface(AgPlotterInterface):
 
         mat_plot_2d.use_log10 = False
 
-        if not during_analysis and should_plot("all_at_end_png"):
-            mat_plot_2d = self.mat_plot_2d_from(
-                subfolders=path.join("tracer", "end"),
-            )
-
-            tracer_plotter = TracerPlotter(
-                tracer=tracer,
-                grid=grid,
-                mat_plot_2d=mat_plot_2d,
-                include_2d=self.include_2d,
-            )
-
-            tracer_plotter.figures_2d(
-                image=True,
-                source_plane=True,
-                deflections_y=True,
-                deflections_x=True,
-                magnification=True,
-            )
-
-            mat_plot_2d.use_log10 = True
-
-            tracer_plotter.figures_2d(
-                convergence=True,
-                potential=True,
-            )
-
-            tracer_plotter.figures_2d_of_planes(
-                plane_image=True, plane_index=0, zoom_to_brightest=False
-            )
-
-            mat_plot_2d.use_log10 = False
-
-        if not during_analysis and should_plot("all_at_end_fits"):
-            mat_plot_2d = self.mat_plot_2d_from(
-                subfolders=path.join("tracer", "fits"), format="fits"
-            )
-
-            tracer_plotter = TracerPlotter(
-                tracer=tracer,
-                grid=grid,
-                mat_plot_2d=mat_plot_2d,
-                include_2d=self.include_2d,
-            )
-
-            tracer_plotter.figures_2d(
-                image=True,
-                source_plane=True,
-                convergence=True,
-                potential=True,
-                deflections_y=True,
-                deflections_x=True,
-                magnification=True,
-            )
-
     def image_with_positions(self, image: aa.Array2D, positions: aa.Grid2DIrregular):
         """
         Visualizes the positions of a model-fit, where these positions are used to resample lens models where
@@ -167,7 +112,7 @@ class PlotterInterface(AgPlotterInterface):
         def should_plot(name):
             return plot_setting(section=["positions"], name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="positions")
+        mat_plot_2d = self.mat_plot_2d_from()
 
         if positions is not None:
             visuals_2d = aplt.Visuals2D(positions=positions)
