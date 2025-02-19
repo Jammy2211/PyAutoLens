@@ -40,6 +40,4 @@ def test__fit_imaging_combined(
 
     visualizer.fit_imaging_combined(fit_list=2 * [fit_imaging_x2_plane_inversion_7x7])
 
-    plot_path = path.join(plot_path, "combined")
-
-    assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
+    assert path.join(plot_path, "subplot_fit_combined.png") in plot_patch.paths

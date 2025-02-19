@@ -27,9 +27,8 @@ def test__tracer(
         grid=masked_imaging_7x7.grids.lp,
     )
 
-    plot_path = path.join(plot_path, "tracer")
-
     assert path.join(plot_path, "subplot_galaxies_images.png") in plot_patch.paths
+
 
 def test__image_with_positions(
     image_7x7, positions_x2, include_2d_all, plot_path, plot_patch
@@ -40,7 +39,5 @@ def test__image_with_positions(
     plotter_interface = vis.PlotterInterface(image_path=plot_path)
 
     plotter_interface.image_with_positions(image=image_7x7, positions=positions_x2)
-
-    plot_path = path.join(plot_path, "positions")
 
     assert path.join(plot_path, "image_with_positions.png") in plot_patch.paths

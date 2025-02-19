@@ -74,4 +74,3 @@ class PlotterInterfaceInterferometer(PlotterInterface):
             fit_plotter.subplot_mappings_of_plane(
                 plane_index=len(fit.tracer.planes) - 1
             )
-

@@ -75,4 +75,3 @@ class PlotterInterfacePoint(PlotterInterface):
 
         if should_plot("subplot_fit"):
             fit_plotter.subplot_fit()
-
