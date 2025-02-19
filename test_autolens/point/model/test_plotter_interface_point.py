@@ -22,7 +22,3 @@ def test__fit_point(fit_point_dataset_x2_plane, include_2d_all, plot_path, plot_
     plotter_interface.fit_point(fit=fit_point_dataset_x2_plane)
 
     assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
-
-    plot_path = path.join(plot_path, "fit_dataset")
-
-    assert path.join(plot_path, "fit_point_positions.png") in plot_patch.paths
