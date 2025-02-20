@@ -75,7 +75,8 @@ plots:
   fit:
     subplot_fit: true
     subplots_of_planes: false
-  fit_imaging: {}
+  fit_imaging:
+    fits_model_galaxy_images : true         # Output a .fits file containing the model images of every galaxy?
   fit_interferometer:
     subplot_fit_real_space: true
     subplot_fit_dirty_images: true

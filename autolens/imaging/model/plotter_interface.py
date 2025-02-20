@@ -1,4 +1,3 @@
-
 from typing import List
 
 import autoarray.plot as aplt
@@ -75,6 +74,25 @@ class PlotterInterfaceImaging(PlotterInterface):
                 fit_plotter.subplot_mappings_of_plane(plane_index=len(fit.tracer.planes) - 1)
             except IndexError:
                 pass
+
+        if should_plot("fits_model_galaxy_images"):
+            multi_plotter = aplt.MultiFigurePlotter(
+                plotter_list=[
+                    aplt.Array2DPlotter(array=image, mat_plot_2d=mat_plot_2d)
+                    for (galaxy, image) in fit.galaxy_model_image_dict.items()
+                ],
+            )
+
+            multi_plotter.output_to_fits(
+                func_name_list=["figure_2d"] * len(multi_plotter.plotter_list),
+                figure_name_list=[None] * len(multi_plotter.plotter_list),
+                #                tag_list=[name for name, galaxy in galaxies.items()],
+                tag_list=[
+                    f"galaxy_{i}" for i in range(len(multi_plotter.plotter_list))
+                ],
+                filename="model_galaxy_images",
+                remove_fits_first=True,
+            )
 
     def fit_imaging_combined(self, fit_list: List[FitImaging]):
         """
