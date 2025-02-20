@@ -62,8 +62,8 @@ class FitPositionsImagePairAll(AbstractFitPositionsImagePair):
 
     def log_p(
         self,
-        data_position: np.array,
-        model_position: np.array,
+        data_position: np.ndarray,
+        model_position: np.ndarray,
         sigma: float,
     ) -> float:
         """
@@ -87,7 +87,7 @@ class FitPositionsImagePairAll(AbstractFitPositionsImagePair):
         chi2 = self.square_distance(data_position, model_position) / sigma**2
         return -np.log(np.sqrt(2 * np.pi * sigma**2)) - 0.5 * chi2
 
-    def all_permutations_log_likelihoods(self) -> np.array:
+    def all_permutations_log_likelihoods(self) -> np.ndarray:
         """
         Compute the log likelihood for each permutation whereby the model could explain the observed image coordinates.
 
