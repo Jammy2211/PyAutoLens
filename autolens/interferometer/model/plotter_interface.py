@@ -77,4 +77,9 @@ class PlotterInterfaceInterferometer(PlotterInterface):
                 plane_index=len(fit.tracer.planes) - 1
             )
 
-        fits_to_fits(should_plot=should_plot, fit=fit, mat_plot_2d=mat_plot_2d, fit_plotter_cls=FitInterferometerPlotter)
+        fits_to_fits(
+            should_plot=should_plot,
+            fit=fit,
+            mat_plot_2d=mat_plot_2d,
+            fit_plotter_cls=FitInterferometerPlotter,
+        )
