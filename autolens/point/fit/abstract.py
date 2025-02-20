@@ -62,9 +62,7 @@ class AbstractFitPoint(aa.AbstractFit, ABC):
         self.tracer = tracer
         self.solver = solver
 
-        self.profile = (
-            tracer.extract_profile(profile_name=name) if profile is None else profile
-        )
+        self.profile = profile or tracer.extract_profile(profile_name=name)
 
         if self.profile is None:
             raise exc.PointExtractionException(
