@@ -106,7 +106,8 @@ class VisualizerInterferometer(af.Visualizer):
         tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
         plotter_interface.tracer(
-            tracer=tracer, grid=fit.grids.lp,
+            tracer=tracer,
+            grid=fit.grids.lp,
         )
         plotter_interface.galaxies(
             galaxies=tracer.galaxies,

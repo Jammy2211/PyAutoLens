@@ -65,7 +65,6 @@ class PlotterInterface(AgPlotterInterface):
             tracer_plotter.subplot_galaxies_images()
 
         if should_plot("fits_tracer"):
-
             number_plots = 4
 
             multi_plotter = aplt.MultiFigurePlotter(
@@ -75,13 +74,15 @@ class PlotterInterface(AgPlotterInterface):
             multi_plotter.output_to_fits(
                 func_name_list=["figures_2d"] * number_plots,
                 figure_name_list=[
-                    "convergence", "potential", "deflections_y", "deflections_x"
+                    "convergence",
+                    "potential",
+                    "deflections_y",
+                    "deflections_x",
                 ],
                 tag_list=["convergence", "potential", "deflections_y", "deflections_x"],
                 filename="tracer",
                 remove_fits_first=True,
             )
-
 
     def image_with_positions(self, image: aa.Array2D, positions: aa.Grid2DIrregular):
         """

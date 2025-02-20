@@ -77,7 +77,8 @@ class VisualizerPoint(af.Visualizer):
         )
 
         plotter_interface.tracer(
-            tracer=tracer, grid=grid,
+            tracer=tracer,
+            grid=grid,
         )
         plotter_interface.galaxies(
             galaxies=tracer.galaxies,
