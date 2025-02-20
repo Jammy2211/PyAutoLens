@@ -1,6 +1,9 @@
 from os import path
 
 import pytest
+
+import autolens as al
+
 from autolens.interferometer.model.plotter_interface import (
     PlotterInterfaceInterferometer,
 )
@@ -28,3 +31,21 @@ def test__fit_interferometer(
     assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
     assert path.join(plot_path, "subplot_fit_real_space.png") in plot_patch.paths
     assert path.join(plot_path, "subplot_fit_dirty_images.png") in plot_patch.paths
+
+    # visibilities = ag.util.array_2d.numpy_array_2d_via_fits_from(
+    #     file_path=path.join(plot_path, "fit.fits"), hdu=0
+    # )
+    #
+    # assert visibilities.shape == (5, 5)
+
+    image = al.util.array_2d.numpy_array_2d_via_fits_from(
+        file_path=path.join(plot_path, "model_galaxy_images.fits"), hdu=0
+    )
+
+    assert image.shape == (5, 5)
+
+    image = al.util.array_2d.numpy_array_2d_via_fits_from(
+        file_path=path.join(plot_path, "dirty_images.fits"), hdu=0
+    )
+
+    assert image.shape == (5, 5)

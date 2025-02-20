@@ -4,6 +4,8 @@ from autogalaxy.interferometer.model.plotter_interface import (
     PlotterInterfaceInterferometer as AgPlotterInterfaceInterferometer,
 )
 
+from autogalaxy.interferometer.model.plotter_interface import fits_to_fits
+
 from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.interferometer.plot.fit_interferometer_plotters import (
     FitInterferometerPlotter,
@@ -74,3 +76,5 @@ class PlotterInterfaceInterferometer(PlotterInterface):
             fit_plotter.subplot_mappings_of_plane(
                 plane_index=len(fit.tracer.planes) - 1
             )
+
+        fits_to_fits(should_plot=should_plot, fit=fit, mat_plot_2d=mat_plot_2d, fit_plotter_cls=FitInterferometerPlotter)
