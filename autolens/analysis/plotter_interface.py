@@ -64,6 +64,25 @@ class PlotterInterface(AgPlotterInterface):
         if should_plot("subplot_galaxies_images"):
             tracer_plotter.subplot_galaxies_images()
 
+        if should_plot("fits_tracer"):
+
+            number_plots = 4
+
+            multi_plotter = aplt.MultiFigurePlotter(
+                plotter_list=[tracer_plotter] * number_plots
+            )
+
+            multi_plotter.output_to_fits(
+                func_name_list=["figures_2d"] * number_plots,
+                figure_name_list=[
+                    "convergence", "potential", "deflections_y", "deflections_x"
+                ],
+                tag_list=["convergence", "potential", "deflections_y", "deflections_x"],
+                filename="tracer",
+                remove_fits_first=True,
+            )
+
+
     def image_with_positions(self, image: aa.Array2D, positions: aa.Grid2DIrregular):
         """
         Visualizes the positions of a model-fit, where these positions are used to resample lens models where

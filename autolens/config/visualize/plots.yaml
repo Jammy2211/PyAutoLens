@@ -24,6 +24,7 @@ fit_point_dataset: {}                      # Settings for plots of fits to point
 tracer:                                    # Settings for plots of tracers (e.g. TracerPlotter).
   subplot_tracer: true                     # Plot subplot of all quantities in each tracer (e.g. images, convergence)?
   subplot_galaxies_images: false           # Plot subplot of the image of each plane in the tracer?
+  fits_tracer: false                       # Output tracer.fits file of tracer's convergence, potential, deflections_y and deflections_x?
 
 inversion:                                 # Settings for plots of inversions (e.g. InversionPlotter).
   subplot_inversion: true                  # Plot subplot of all quantities in each inversion (e.g. reconstrucuted image, reconstruction)?

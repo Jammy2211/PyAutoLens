@@ -1,4 +1,4 @@
-from os import path
+
 from typing import List
 
 import autoarray.plot as aplt

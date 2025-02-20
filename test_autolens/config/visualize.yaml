@@ -96,3 +96,4 @@ plots:
   tracer:
     subplot_tracer: true
     subplot_galaxies_images: true
+    fits_tracer: true                       # Output tracer.fits file of tracer's convergence, potential, deflections_y and deflections_x?
