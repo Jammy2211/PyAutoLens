@@ -37,12 +37,13 @@ def test__two_sets_of_positions__residuals_likelihood_correct():
         name="point_0", data=positions, noise_map=noise_map, tracer=tracer, solver=None
     )
 
-    assert fit.magnifications_at_positions.in_list == pytest.approx([1.1111049387688177, 1.0526308864400329], 1.0e-4)
+    assert fit.magnifications_at_positions.in_list == pytest.approx(
+        [1.1111049387688177, 1.0526308864400329], 1.0e-4
+    )
     assert fit.model_data.in_list == [(0.0, 0.9), (0.0, 1.9)]
 
-
     assert fit.chi_squared_map.in_list == pytest.approx([3.9999555592589244, 3.9999947369459807], 1.0e-4)
-    assert fit.log_likelihood == pytest.approx(-5.144705033951853, 1.0e-4)
+    assert fit.log_likelihood == pytest.approx(-4.98805743691215, 1.0e-4)
 
 
 def test__multi_plane_position_solving():

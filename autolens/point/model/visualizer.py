@@ -61,9 +61,6 @@ class VisualizerPoint(af.Visualizer):
         instance
             An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
             via a non-linear search).
-        during_analysis
-            If True the visualization is being performed midway through the non-linear search before it is finished,
-            which may change which images are output.
         """
         fit = analysis.fit_from(instance=instance)
 
@@ -71,7 +68,7 @@ class VisualizerPoint(af.Visualizer):
             image_path=paths.image_path, title_prefix=analysis.title_prefix
         )
 
-        plotter_interface.fit_point(fit=fit, during_analysis=during_analysis)
+        plotter_interface.fit_point(fit=fit)
 
         tracer = fit.tracer
 
@@ -80,10 +77,10 @@ class VisualizerPoint(af.Visualizer):
         )
 
         plotter_interface.tracer(
-            tracer=tracer, grid=grid, during_analysis=during_analysis
+            tracer=tracer,
+            grid=grid,
         )
         plotter_interface.galaxies(
             galaxies=tracer.galaxies,
             grid=grid,
-            during_analysis=during_analysis,
         )
