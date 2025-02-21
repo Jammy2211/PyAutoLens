@@ -24,15 +24,15 @@ class PlotterInterfaceImaging(PlotterInterface):
         """
         Visualizes a `FitImaging` object, which fits an imaging dataset.
 
-        Images are output to the `image` folder of the `image_path` in a subfolder called `fit`. When
-        used with a non-linear search the `image_path` points to the search's results folder and this function
-        visualizes the maximum log likelihood `FitImaging` inferred by the search so far.
+        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path` 
+        points to the search's results folder and this function visualizes the maximum log likelihood `FitImaging` 
+        inferred by the search so far.
 
-        Visualization includes individual images of attributes of the `FitImaging` (e.g. the model data, residual map)
-        and a subplot of all `FitImaging`'s images on the same figure.
+        Visualization includes a subplot of individual images of attributes of the `FitImaging` (e.g. the model data,
+        residual map) and .fits files containing its attributes grouped together.
 
-        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under the
-        [fit] header.
+        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under
+        the `fit` and `fit_imaging` header.
 
         Parameters
         ----------
@@ -84,18 +84,18 @@ class PlotterInterfaceImaging(PlotterInterface):
         Output visualization of all `FitImaging` objects in a summed combined analysis, typically during or after a
         model-fit is performed.
 
-        Images are output to the `image` folder of the `image_path` in a subfolder called `combined`. When used
-        with a non-linear search the `image_path` is the output folder of the non-linear search.
-        `.
-        Visualization includes individual images of attributes of each fit (e.g. data, normalized residual-map) on
-        a single subplot, such that the full suite of multiple datasets can be viewed on the same figure.
+        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path`
+        is the output folder of the non-linear search.
+
+        Visualization includes a subplot of individual images of attributes of each fit (e.g. data, normalized
+        residual-map) on a single subplot, such that the full suite of multiple datasets can be viewed on the same figure.
 
         The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under
-        the `fit` header.
+        the `fit` and `fit_imaging` headers.
 
         Parameters
         ----------
-        fit
+        fit_list
             The list of imaging fits which are visualized.
         """
 
