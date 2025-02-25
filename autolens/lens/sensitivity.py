@@ -360,6 +360,51 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
 
         return False
 
+    def sensitivity_to_fits(self):
+
+        log_likelihoods = self.result.figure_of_merit_array(
+            use_log_evidences=False,
+            remove_zeros=False,
+        )
+
+        mat_plot_2d = aplt.MatPlot2D(
+            output=aplt.Output(
+                path=self.mat_plot_2d.output.path,
+                filename="sensitivity_log_likelihood",
+                format="fits",
+            )
+        )
+
+        mat_plot_2d.plot_array(
+            array=log_likelihoods,
+            visuals_2d=self.visuals_2d,
+            auto_labels=AutoLabels(),
+        )
+
+
+        try:
+            log_evidences = self.result.figure_of_merit_array(
+                use_log_evidences=True,
+                remove_zeros=False,
+            )
+
+            mat_plot_2d = aplt.MatPlot2D(
+                output=aplt.Output(
+                    path=self.mat_plot_2d.output.path,
+                    filename="sensitivity_log_evidence",
+                    format="fits",
+                )
+            )
+
+            mat_plot_2d.plot_array(
+                array=log_evidences,
+                visuals_2d=self.visuals_2d,
+                auto_labels=AutoLabels(),
+            )
+
+        except TypeError:
+            pass
+
     def subplot_sensitivity(self):
         log_likelihoods = self.result.figure_of_merit_array(
             use_log_evidences=False,
