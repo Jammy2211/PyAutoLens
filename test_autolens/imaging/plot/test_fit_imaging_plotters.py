@@ -88,8 +88,6 @@ def test__figures_of_plane(
         subtracted_image=True, model_image=True, plane_index=0, plane_image=True
     )
 
-    print(plot_patch.paths)
-
     assert path.join(plot_path, "source_subtracted_image.png") in plot_patch.paths
     assert (
         path.join(plot_path, "lens_subtracted_image.png") not in plot_patch.paths

@@ -30,13 +30,13 @@ class MockFitImaging(aa.m.MockFitImaging):
         if self._grid is not None:
             return self._grid
 
-        return super().grids.uniform
+        return super().grids.lp
 
     @property
     def grids(self) -> aa.GridsInterface:
 
         return aa.GridsInterface(
-            uniform=self.grid,
+            lp=self.grid,
             pixelization=self.grid,
         )
 

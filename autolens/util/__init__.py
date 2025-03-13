@@ -1,6 +1,7 @@
 from autoarray.geometry import geometry_util as geometry
 from autoarray.mask import mask_1d_util as mask_1d
 from autoarray.mask import mask_2d_util as mask_2d
+from autoarray.operators.over_sampling import over_sample_util as over_sample
 from autoarray.structures.arrays import array_1d_util as array_1d
 from autoarray.structures.arrays import array_2d_util as array_2d
 from autoarray.structures.grids import grid_1d_util as grid_1d

@@ -23,28 +23,24 @@ def test__fit_imaging(
     plotter_interface = PlotterInterfaceImaging(image_path=plot_path)
 
     plotter_interface.fit_imaging(
-        fit=fit_imaging_x2_plane_inversion_7x7, during_analysis=False
+        fit=fit_imaging_x2_plane_inversion_7x7,
     )
 
     assert path.join(plot_path, "subplot_tracer.png") in plot_patch.paths
     assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
     assert path.join(plot_path, "subplot_fit_log10.png") in plot_patch.paths
 
-    plot_path = path.join(plot_path, "fit_dataset")
-
-    assert path.join(plot_path, "data.png") in plot_patch.paths
-    assert path.join(plot_path, "noise_map.png") not in plot_patch.paths
-
-    assert path.join(plot_path, "lens_subtracted_image.png") in plot_patch.paths
-    assert path.join(plot_path, "source_model_image.png") not in plot_patch.paths
-
-    assert path.join(plot_path, "reconstruction.png") in plot_patch.paths
-
     image = al.util.array_2d.numpy_array_2d_via_fits_from(
-        file_path=path.join(plot_path, "fits", "data.fits"), hdu=0
+        file_path=path.join(plot_path, "fit.fits"), hdu=0
     )
 
-    assert image.shape == (7, 7)
+    assert image.shape == (5, 5)
+
+    image = al.util.array_2d.numpy_array_2d_via_fits_from(
+        file_path=path.join(plot_path, "model_galaxy_images.fits"), hdu=0
+    )
+
+    assert image.shape == (5, 5)
 
 def test__fit_imaging_combined(
     fit_imaging_x2_plane_inversion_7x7, plot_path, plot_patch
@@ -56,6 +52,4 @@ def test__fit_imaging_combined(
 
     visualizer.fit_imaging_combined(fit_list=2 * [fit_imaging_x2_plane_inversion_7x7])
 
-    plot_path = path.join(plot_path, "combined")
-
-    assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
+    assert path.join(plot_path, "subplot_fit_combined.png") in plot_patch.paths

@@ -5,7 +5,7 @@ import autoarray as aa
 from autolens.lens.tracer import Tracer
 
 
-class FitPositionsSourceMaxSeparation:
+class SourceMaxSeparation:
     def __init__(
         self,
         data: aa.Grid2DIrregular,

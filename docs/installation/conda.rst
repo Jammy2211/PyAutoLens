@@ -46,7 +46,7 @@ You may get warnings which state something like:
 
 .. code-block:: bash
 
-    ERROR: autoarray 2024.9.21.2 has requirement numpy<=1.22.1, but you'll have numpy 1.22.2 which is incompatible.
+    ERROR: autoarray 2025.1.18.7 has requirement numpy<=1.22.1, but you'll have numpy 1.22.2 which is incompatible.
     ERROR: numba 0.53.1 has requirement llvmlite<0.37,>=0.36.0rc1, but you'll have llvmlite 0.38.0 which is incompatible.
 
 If you see these messages, they do not mean that the installation has failed and the instructions below will
@@ -105,7 +105,7 @@ For interferometer analysis there are two optional dependencies that must be ins
 .. code-block:: bash
 
     pip install pynufft
-    pip install pylops==1.11.1
+    pip install pylops==2.3.1
 
 **PyAutoLens** will run without these libraries and it is recommended that you only install them if you intend to
 do interferometer analysis.

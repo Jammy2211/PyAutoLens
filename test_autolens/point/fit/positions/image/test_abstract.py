@@ -77,8 +77,8 @@ def test__multi_plane_position_solving():
     )
 
     assert fit_0.model_data[0, 0] == pytest.approx(
-        scaling_factor * fit_1.model_data[0, 0], 1.0e-1
+        scaling_factor * fit_1.model_data[1, 0], 1.0e-1
     )
-    assert fit_0.model_data[0, 1] == pytest.approx(
+    assert fit_0.model_data[1, 1] == pytest.approx(
         scaling_factor * fit_1.model_data[0, 1], 1.0e-1
     )

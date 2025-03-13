@@ -38,9 +38,6 @@ class VisualizerQuantity(af.Visualizer):
         instance
             An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
             via a non-linear search).
-        during_analysis
-            If True the visualization is being performed midway through the non-linear search before it is finished,
-            which may change which images are output.
         """
 
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
@@ -56,6 +53,5 @@ class VisualizerQuantity(af.Visualizer):
         plotter_interface = PlotterInterface(image_path=paths.image_path)
         plotter_interface.tracer(
             tracer=fit.tracer,
-            grid=analysis.dataset.grids.uniform,
-            during_analysis=during_analysis,
+            grid=analysis.dataset.grids.lp,
         )

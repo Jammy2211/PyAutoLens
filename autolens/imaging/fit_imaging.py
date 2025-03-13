@@ -46,7 +46,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
            noise-map (if an inversion is performed the `log_evidence`, including additional terms describing the linear
            algebra solution, is computed).
 
-        When performing a `model-fit`via an `AnalysisImaging` object the `figure_of_merit` of this `FitImaging` object
+        When performing a `model-fit`via an `AnalysisImaging` object the `figure_of_merit` of this object
         is called and returned in the `log_likelihood_function`.
 
         Parameters
@@ -77,36 +77,13 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         self.adapt_images = adapt_images
         self.settings_inversion = settings_inversion
 
-    @cached_property
-    def grids(self) -> aa.GridsInterface:
-
-        grids = super().grids
-
-        if grids.non_uniform is None:
-            return grids
-
-        uniform = aa.Grid2D(
-            values=grids.non_uniform,
-            mask=self.dataset.mask,
-            over_sampling=self.dataset.over_sampling.non_uniform,
-            over_sampling_non_uniform=self.dataset.over_sampling.non_uniform
-        )
-
-        return aa.GridsInterface(
-            uniform=uniform,
-            non_uniform=grids.non_uniform,
-            pixelization=grids.pixelization,
-            blurring=grids.blurring,
-            border_relocator=grids.border_relocator
-        )
-
     @property
     def blurred_image(self) -> aa.Array2D:
         """
         Returns the image of all light profiles in the fit's tracer convolved with the imaging dataset's PSF.
         """
         return self.tracer.blurred_image_2d_from(
-            grid=self.grids.uniform,
+            grid=self.grids.lp,
             convolver=self.dataset.convolver,
             blurring_grid=self.grids.blurring,
         )
@@ -185,7 +162,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         """
 
         galaxy_blurred_image_2d_dict = self.tracer.galaxy_blurred_image_2d_dict_from(
-            grid=self.grids.uniform,
+            grid=self.grids.lp,
             convolver=self.dataset.convolver,
             blurring_grid=self.grids.blurring,
         )
@@ -256,7 +233,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         model_images_of_planes_list = [
             aa.Array2D(
-            values=np.zeros(self.grids.uniform.shape_slim), mask=self.dataset.mask
+            values=np.zeros(self.grids.lp.shape_slim), mask=self.dataset.mask
             )
             for i in range(self.tracer.total_planes)
         ]
@@ -312,7 +289,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             exc.raise_linear_light_profile_in_unmasked()
 
         return self.tracer.unmasked_blurred_image_2d_from(
-            grid=self.grids.uniform, psf=self.dataset.psf
+            grid=self.grids.lp, psf=self.dataset.psf
         )
 
     @property
@@ -328,7 +305,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             exc.raise_linear_light_profile_in_unmasked()
 
         return self.tracer.unmasked_blurred_image_2d_list_from(
-            grid=self.grids.uniform, psf=self.dataset.psf
+            grid=self.grids.lp, psf=self.dataset.psf
         )
 
     @property

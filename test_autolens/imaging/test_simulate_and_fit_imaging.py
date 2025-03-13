@@ -9,7 +9,7 @@ import pytest
 
 def test__perfect_fit__chi_squared_0():
 
-    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2)
+    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, over_sample_size=1)
 
     psf = al.Kernel2D.from_gaussian(
         shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
@@ -25,7 +25,7 @@ def test__perfect_fit__chi_squared_0():
     )
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
-    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
     dataset.noise_map = al.Array2D.ones(
@@ -57,6 +57,7 @@ def test__perfect_fit__chi_squared_0():
         noise_map_path=path.join(file_path, "noise_map.fits"),
         psf_path=path.join(file_path, "psf.fits"),
         pixel_scales=0.2,
+        over_sample_size_lp=1
     )
 
     mask = al.Mask2D.circular(
@@ -78,83 +79,6 @@ def test__perfect_fit__chi_squared_0():
     if path.exists(file_path) is True:
         shutil.rmtree(file_path)
 
-
-def test__perfect_fit__chi_squared_0__use_grid_iterate_to_simulate_and_fit():
-    over_sampling = al.OverSamplingIterate(fractional_accuracy=0.9999, sub_steps=[2, 4, 8])
-
-    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2,
-                             over_sampling=over_sampling)
-
-    psf = al.Kernel2D.from_gaussian(
-        shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
-    )
-
-    lens_galaxy = al.Galaxy(
-        redshift=0.5,
-        light=al.lp.Sersic(centre=(0.1, 0.1), intensity=0.1),
-        mass=al.mp.Isothermal(centre=(0.1, 0.1), einstein_radius=1.8),
-    )
-    source_galaxy = al.Galaxy(
-        redshift=1.0, light=al.lp.Exponential(centre=(0.1, 0.1), intensity=0.5)
-    )
-    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
-
-    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
-
-    dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
-    dataset.noise_map = al.Array2D.ones(
-        shape_native=dataset.data.shape_native, pixel_scales=0.2
-    )
-
-    file_path = path.join(
-        "{}".format(path.dirname(path.realpath(__file__))),
-        "data_temp",
-        "simulate_and_fit",
-    )
-
-    try:
-        shutil.rmtree(file_path)
-    except FileNotFoundError:
-        pass
-
-    if path.exists(file_path) is False:
-        os.makedirs(file_path)
-
-    dataset.output_to_fits(
-        data_path=path.join(file_path, "data.fits"),
-        noise_map_path=path.join(file_path, "noise_map.fits"),
-        psf_path=path.join(file_path, "psf.fits"),
-    )
-
-    dataset = al.Imaging.from_fits(
-        data_path=path.join(file_path, "data.fits"),
-        noise_map_path=path.join(file_path, "noise_map.fits"),
-        psf_path=path.join(file_path, "psf.fits"),
-        pixel_scales=0.2,
-        over_sampling=al.OverSamplingDataset(uniform=over_sampling)
-    )
-
-    mask = al.Mask2D.circular(
-        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=0.8
-    )
-
-    masked_dataset = dataset.apply_mask(mask=mask)
-
-    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
-
-    fit = al.FitImaging(dataset=masked_dataset, tracer=tracer)
-
-    # The value is actually not zero before the blurring grid assumes a sub_size=1
-    # and does not use the iterative grid, which has a small impact on the chi-squared
-
-    assert fit.chi_squared == pytest.approx(7.451891005452524e-05, 1e-4)
-
-    file_path = path.join(
-        "{}".format(path.dirname(path.realpath(__file__))), "data_temp"
-    )
-
-    if path.exists(file_path) is True:
-        shutil.rmtree(file_path)
 
 
 def test__simulate_imaging_data_and_fit__known_likelihood():
@@ -194,12 +118,12 @@ def test__simulate_imaging_data_and_fit__known_likelihood():
 
     fit = al.FitImaging(dataset=masked_dataset, tracer=tracer)
 
-    assert fit.figure_of_merit == pytest.approx(526.353910, 1.0e-2)
+    assert fit.figure_of_merit == pytest.approx(538.796271746575, 1.0e-2)
 
 
 def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standard_light_profiles():
 
-    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2)
+    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, over_sample_size=1)
 
     psf = al.Kernel2D.from_gaussian(
         shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
@@ -217,10 +141,9 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
     )
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
-    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
-    dataset.sub_size = 1
     dataset.noise_map = al.Array2D.ones(
         shape_native=dataset.data.shape_native, pixel_scales=0.2
     )
@@ -230,6 +153,9 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
     )
 
     masked_dataset = dataset.apply_mask(mask=mask)
+    masked_dataset = masked_dataset.apply_over_sampling(
+        over_sample_size_lp=1
+    )
 
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
@@ -272,7 +198,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
     assert fit_linear.figure_of_merit == pytest.approx(-45.02798, 1.0e-4)
 
     lens_galaxy_image = lens_galaxy.blurred_image_2d_from(
-        grid=masked_dataset.grids.uniform,
+        grid=masked_dataset.grids.lp,
         convolver=masked_dataset.convolver,
         blurring_grid=masked_dataset.grids.blurring,
     )
@@ -284,7 +210,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
         lens_galaxy_image, 1.0e-4
     )
 
-    traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=masked_dataset.grids.uniform)
+    traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=masked_dataset.grids.lp)
     traced_blurring_grid_2d_list = tracer.traced_grid_2d_list_from(
         grid=masked_dataset.grids.blurring
     )
@@ -306,7 +232,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
 
 def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization():
 
-    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2)
+    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, over_sample_size=1)
 
     psf = al.Kernel2D.from_gaussian(
         shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
@@ -324,10 +250,9 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     )
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
-    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
-    dataset.sub_size = 1
     dataset.noise_map = al.Array2D.ones(
         shape_native=dataset.data.shape_native, pixel_scales=0.2
     )
@@ -337,6 +262,9 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     )
 
     masked_dataset = dataset.apply_mask(mask=mask)
+    masked_dataset = masked_dataset.apply_over_sampling(
+        over_sample_size_lp=1
+    )
 
     lens_galaxy_linear = al.Galaxy(
         redshift=0.5,
@@ -387,7 +315,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     assert fit_linear.figure_of_merit == pytest.approx(-84.04875317, 1.0e-4)
 
     lens_galaxy_image = lens_galaxy.blurred_image_2d_from(
-        grid=masked_dataset.grids.uniform,
+        grid=masked_dataset.grids.lp,
         convolver=masked_dataset.convolver,
         blurring_grid=masked_dataset.grids.blurring,
     )
@@ -459,7 +387,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
 
 def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization__sub_2():
 
-    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, over_sampling=al.OverSamplingUniform(sub_size=2))
+    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, over_sample_size=2)
 
     psf = al.Kernel2D.from_gaussian(
         shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
@@ -477,7 +405,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
     )
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
-    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
     dataset.noise_map = al.Array2D.ones(
@@ -492,10 +420,8 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
         data=dataset.data,
         psf=dataset.psf,
         noise_map=dataset.noise_map,
-        over_sampling=al.OverSamplingDataset(
-            uniform=al.OverSamplingUniform(sub_size=2),
-            pixelization=al.OverSamplingUniform(sub_size=2)
-        )
+        over_sample_size_lp=2,
+        over_sample_size_pixelization=2
     )
 
     masked_dataset = dataset.apply_mask(mask=mask)
@@ -537,7 +463,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
     assert fit_linear.figure_of_merit == pytest.approx(-84.36224277776512, 1.0e-4)
 
     lens_galaxy_image = lens_galaxy.blurred_image_2d_from(
-        grid=masked_dataset.grids.uniform,
+        grid=masked_dataset.grids.lp,
         convolver=masked_dataset.convolver,
         blurring_grid=masked_dataset.grids.blurring,
     )
@@ -621,7 +547,7 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
     source_1 = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(centre=(0.3, 0.3)))
     tracer = al.Tracer(galaxies=[lens_0, lens_1, lens_2, source_0, source_1])
 
-    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
     dataset.sub_size = 2
@@ -692,100 +618,11 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
         1.0e-4,
     )
 
-def test__perfect_fit__chi_squared_0__non_uniform_over_sampling():
-
-    over_sampling = al.OverSamplingUniform(sub_size=8)
-
-    grid = al.Grid2D.uniform(
-        shape_native=(31, 31),
-        pixel_scales=0.2,
-        over_sampling=over_sampling
-    )
-
-    psf = al.Kernel2D.from_gaussian(
-        shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
-    )
-
-    lens_galaxy = al.Galaxy(
-        redshift=0.5,
-        mass=al.mp.Isothermal(centre=(0.1, 0.1), einstein_radius=0.3),
-    )
-    source_galaxy = al.Galaxy(
-        redshift=1.0, light=al.lp.Sersic(centre=(0.1, 0.1), intensity=0.5, sersic_index=1.2)
-    )
-    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
-
-    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
-
-    dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
-    dataset.noise_map = al.Array2D.ones(
-        shape_native=dataset.data.shape_native, pixel_scales=0.2
-    )
-
-    file_path = path.join(
-        "{}".format(path.dirname(path.realpath(__file__))),
-        "data_temp",
-        "simulate_and_fit",
-    )
-
-    try:
-        shutil.rmtree(file_path)
-    except FileNotFoundError:
-        pass
-
-    if path.exists(file_path) is False:
-        os.makedirs(file_path)
-
-    dataset.output_to_fits(
-        data_path=path.join(file_path, "data.fits"),
-        noise_map_path=path.join(file_path, "noise_map.fits"),
-        psf_path=path.join(file_path, "psf.fits"),
-    )
-
-    dataset = al.Imaging.from_fits(
-        data_path=path.join(file_path, "data.fits"),
-        noise_map_path=path.join(file_path, "noise_map.fits"),
-        psf_path=path.join(file_path, "psf.fits"),
-        pixel_scales=0.2,
-    )
-
-    mask = al.Mask2D.circular(
-        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=1.5
-    )
-
-    masked_dataset = dataset.apply_mask(mask=mask)
-
-    traced_grid = tracer.traced_grid_2d_list_from(
-        grid=masked_dataset.grids.uniform,
-    )[-1]
-
-    masked_dataset = masked_dataset.apply_over_sampling(
-        over_sampling=al.OverSamplingDataset(
-            uniform=al.OverSamplingUniform(sub_size=1),
-            non_uniform=al.OverSamplingUniform.from_radial_bins(
-            grid=traced_grid, sub_size_list=[8, 2], radial_list=[0.3], centre_list=[source_galaxy.light.centre]
-        ))
-    )
-
-    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
-
-    fit = al.FitImaging(dataset=masked_dataset, tracer=tracer)
-
-    assert fit.chi_squared < 0.1
-
-    file_path = path.join(
-        "{}".format(path.dirname(path.realpath(__file__))), "data_temp"
-    )
-
-    if path.exists(file_path) is True:
-        shutil.rmtree(file_path)
-
 
 def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging_covariance_7x7):
-    over_sampling = al.OverSamplingIterate(fractional_accuracy=0.9999, sub_steps=[2, 4, 8])
 
     grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2,
-                             over_sampling=over_sampling)
+                             over_sample_size=8)
 
     psf = al.Kernel2D.from_gaussian(
         shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
@@ -803,7 +640,7 @@ def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging
     )
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
-    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise=False)
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
 
     dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
     dataset.noise_map = al.Array2D.ones(
@@ -835,7 +672,7 @@ def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging
         noise_map_path=path.join(file_path, "noise_map.fits"),
         psf_path=path.join(file_path, "psf.fits"),
         pixel_scales=0.2,
-        over_sampling=al.OverSamplingDataset(uniform=over_sampling)
+        over_sample_size_lp=8
     )
 
     mask = al.Mask2D.circular(
@@ -864,10 +701,8 @@ def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging
 
     assert fit.chi_squared == pytest.approx(5.706423629698664e-05, 1e-4)
 
-    over_sampling = al.OverSamplingUniform(sub_size=8)
-
     masked_dataset = masked_dataset.apply_over_sampling(
-        al.OverSamplingDataset(uniform=over_sampling)
+        over_sample_size_lp=8
     )
 
     basis = al.lp_basis.Basis(

@@ -116,7 +116,7 @@ class TracerToInversion(ag.AbstractToInversion):
         The traced grids of the inversion, which are cached for efficiency.
         """
         return self.tracer.traced_grid_2d_list_from(
-            grid=self.dataset.grids.pixelization.over_sampler.over_sampled_grid
+            grid=self.dataset.grids.pixelization
         )
 
     @cached_property
@@ -157,31 +157,9 @@ class TracerToInversion(ag.AbstractToInversion):
 
         lp_linear_galaxy_dict_list = {}
 
-        perform_over_sampling = aa.perform_over_sampling_from(
-            grid=self.dataset.grids.uniform
+        traced_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
+            grid=self.dataset.grids.lp
         )
-
-        if perform_over_sampling:
-            grid_input = self.dataset.grids.uniform.over_sampler.over_sampled_grid
-            grid_input.over_sampling = None
-
-            traced_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
-                grid=grid_input
-            )
-
-            traced_grids_of_planes_list = [
-                aa.Grid2DOverSampled(
-                    grid=grid,
-                    over_sampler=self.dataset.grids.uniform.over_sampler,
-                    pixels_in_mask=self.dataset.mask.pixels_in_mask,
-                )
-                for grid in traced_grids_of_planes_list
-            ]
-
-        else:
-            traced_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
-                grid=self.dataset.grids.uniform
-            )
 
         if self.dataset.grids.blurring is not None:
             traced_blurring_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
@@ -194,7 +172,7 @@ class TracerToInversion(ag.AbstractToInversion):
 
         for plane_index, galaxies in enumerate(self.planes):
             grids = aa.GridsInterface(
-                uniform=traced_grids_of_planes_list[plane_index],
+                lp=traced_grids_of_planes_list[plane_index],
                 blurring=traced_blurring_grids_of_planes_list[plane_index],
             )
 

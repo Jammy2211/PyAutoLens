@@ -9,21 +9,30 @@ class SimulatorImaging(aa.SimulatorImaging):
 
     def via_tracer_from(self, tracer : Tracer, grid : aa.type.Grid2DLike) -> aa.Imaging:
         """
-        Simulate an `Imaging` dataset from an input tracer and grid.
+        Simulate an `Imaging` dataset from an input `Tracer` object and a 2D grid of (y,x) coordinates.
 
-        The tracer is used to perform ray-tracing and generate the image of the strong lens galaxies (e.g.
-        the lens light, lensed source light, etc) which is simulated.
+        The mass profiles of each galaxy in the tracer are used to perform ray-tracing of the input 2D grid and
+        their light profiles are used to generate the image of the galaxies which are simulated.
 
         The steps of the `SimulatorImaging` simulation process (e.g. PSF convolution, noise addition) are
-        described in the `SimulatorImaging` `__init__` method docstring.
+        described in the `SimulatorImaging` `__init__` method docstring, found in the PyAutoArray project.
+
+        If one of more galaxy light profiles are a `LightProfileSNR` object, the `intensity` of the light profile is
+        automatically set such that the signal-to-noise ratio of the light profile is equal to its input
+        `signal_to_noise_ratio` value.
+
+        For example, if a `LightProfileSNR` object has a `signal_to_noise_ratio` of 5.0, the intensity of the light
+        profile is set such that the peak surface brightness of the profile is 5.0 times the background noise level of
+        the image.
 
         Parameters
         ----------
         tracer
             The tracer, which describes the ray-tracing and strong lens configuration used to simulate the imaging
-            dataset.
+            dataset as well as the light profiles of the galaxies used to simulate the image of the galaxies.
         grid
-            The image-plane grid which the image of the strong lens is generated on.
+            The 2D grid of (y,x) coordinates which the mass profiles of the galaxies in the tracer are ray-traced using
+            in order to generate the image of the galaxies via their light profiles.
         """
 
         tracer.set_snr_of_snr_light_profiles(
@@ -44,13 +53,22 @@ class SimulatorImaging(aa.SimulatorImaging):
 
     def via_galaxies_from(self, galaxies : List[ag.Galaxy], grid : aa.type.Grid2DLike) -> aa.Imaging:
         """
-        Simulate an `Imaging` dataset from an input list of galaxies and grid.
+        Simulate an `Imaging` dataset from an input list of `Galaxy` objects and a 2D grid of (y,x) coordinates.
 
-        The galaxies are used to create a tracer, which performs ray-tracing and generate the image of the strong lens
-        galaxies (e.g. the lens light, lensed source light, etc) which is simulated.
+        The galaxies are used to create a `Tracer`. The mass profiles of each galaxy in the tracer are used to
+        perform ray-tracing of the input 2D grid and their light profiles are used to generate the image of the
+        galaxies which are simulated.
 
         The steps of the `SimulatorImaging` simulation process (e.g. PSF convolution, noise addition) are
         described in the `SimulatorImaging` `__init__` method docstring.
+
+        If one of more galaxy light profiles are a `LightProfileSNR` object, the `intensity` of the light profile is
+        automatically set such that the signal-to-noise ratio of the light profile is equal to its input
+        `signal_to_noise_ratio` value.
+
+        For example, if a `LightProfileSNR` object has a `signal_to_noise_ratio` of 5.0, the intensity of the light
+        profile is set such that the peak surface brightness of the profile is 5.0 times the background noise level of
+        the image.
 
         Parameters
         ----------
@@ -58,7 +76,7 @@ class SimulatorImaging(aa.SimulatorImaging):
             The galaxies used to create the tracer, which describes the ray-tracing and strong lens configuration
             used to simulate the imaging dataset.
         grid
-            The image-plane grid which the image of the strong lens is generated on.
+            The image-plane 2D grid of (y,x) coordinates grid which the image of the strong lens is generated on.
         """
 
         tracer = Tracer(galaxies=galaxies)
@@ -87,14 +105,20 @@ class SimulatorImaging(aa.SimulatorImaging):
             The galaxies used to create the tracer, which describes the ray-tracing and strong lens configuration
             used to simulate the imaging dataset.
         grid
-            The image-plane grid which the image of the strong lens is generated on.
+            The image-plane 2D grid of (y,x) coordinates grid which the image of the strong lens is generated on.
         """
         grid = aa.Grid2D.uniform(
             shape_native=deflections.shape_native,
             pixel_scales=deflections.pixel_scales,
+            over_sample_size=1
         )
 
-        deflected_grid = grid - deflections
+        deflected_grid = aa.Grid2D(
+            values=grid - deflections,
+            mask=grid.mask,
+            over_sample_size=1,
+            over_sampled=grid - deflections
+        )
 
         image = sum(map(lambda g: g.image_2d_from(grid=deflected_grid), galaxies))
 
@@ -105,10 +129,10 @@ class SimulatorImaging(aa.SimulatorImaging):
         Simulate an `Imaging` dataset from an input image of a source galaxy.
 
         This input image is on a uniform and regular 2D array, meaning it can simulate the source's irregular
-        and assymetric source galaxy morphological features.
+        and asymmetric source galaxy morphological features.
 
         The typical use case is inputting the image of an irregular galaxy in the source-plane (whose values are
-        on a uniform array) and using this function computing the lensed image of this source galaxy.
+        on a uniform array) and using this function to compute the lensed image of this source galaxy.
 
         The tracer is used to perform ray-tracing and generate the image of the strong lens galaxies (e.g.
         the lens light, lensed source light, etc) which is simulated.
@@ -125,7 +149,7 @@ class SimulatorImaging(aa.SimulatorImaging):
             The tracer, which describes the ray-tracing and strong lens configuration used to simulate the imaging
             dataset.
         grid
-            The image-plane grid which the image of the strong lens is generated on.
+            The image-plane 2D grid of (y,x) coordinates grid which the image of the strong lens is generated on.
         source_image
             The image of the source-plane and source galaxy which is interpolated to compute the lensed image.
         """

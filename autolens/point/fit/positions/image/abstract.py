@@ -1,4 +1,5 @@
 from abc import ABC
+import numpy as np
 from typing import Optional
 
 import autoarray as aa
@@ -20,15 +21,46 @@ class AbstractFitPositionsImagePair(AbstractFitPositions, ABC):
         profile: Optional[ag.ps.Point] = None,
     ):
         """
-        A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
-        their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
+        Abstract class to fit the positions of a point source dataset using a `Tracer` object with an image-plane
+        chi-squared, where the specific implementation of the image-plane chi-squared is defined in the sub-class.
+
+        The fit performs the following steps:
+
+        1) Determine the source-plane centre of the point source, which could be a free model parameter or computed
+           as the barycenter of ray-traced positions in the source-plane, using name pairing (see below).
+
+        2) Determine the image-plane model positions using the `PointSolver` and the source-plane centre of the point
+           source (e.g. ray tracing triangles to and from  the image and source planes), including accounting for
+           multi-plane ray-tracing.
+
+        3) Using the sub-class specific chi-squared, compute the residuals of each image-plane position, chi-squared
+           and overall log likelihood of the fit.
+
+        Point source fitting uses name pairing, whereby the `name` of the `Point` object is paired to the name of the
+        point source dataset to ensure that point source datasets are fitted to the correct point source.
+
+        This fit object is used in the `FitPointDataset` to perform position based fitting of a `PointDataset`,
+        which may also fit other components of the point dataset like fluxes or time delays.
+
+        When performing a `model-fit`via an `AnalysisPoint` object the `figure_of_merit` of this object
+        is called and returned in the `log_likelihood_function`.
 
         Parameters
         ----------
-        data : Grid2DIrregular
-            The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
-        noise_value
-            The noise-value assumed when computing the log likelihood.
+        name
+            The name of the point source dataset which is paired to a `Point` profile.
+        data
+            The positions of the point source in the image-plane which are fitted.
+        noise_map
+            The noise-map of the positions which are used to compute the log likelihood of the positions.
+        tracer
+            The tracer of galaxies whose point source profile are used to fit the positions.
+        solver
+            Solves the lens equation in order to determine the image-plane positions of a point source by ray-tracing
+            triangles to and from the source-plane.
+        profile
+            Manually input the profile of the point source, which is used instead of the one extracted from the
+            tracer via name pairing if that profile is not found.
         """
 
         super().__init__(
@@ -41,7 +73,24 @@ class AbstractFitPositionsImagePair(AbstractFitPositions, ABC):
         )
 
     @staticmethod
-    def square_distance(coord1, coord2):
+    def square_distance(
+        coord1: np.array,
+        coord2: np.array,
+    ) -> float:
+        """
+        Calculate the square distance between two points.
+
+        Parameters
+        ----------
+        coord1
+            The first point to calculate the distance between.
+        coord2
+            The second point to calculate the distance between.
+
+        Returns
+        -------
+        The square distance between the two points
+        """
         return (coord1[0] - coord2[0]) ** 2 + (coord1[1] - coord2[1]) ** 2
 
     @property

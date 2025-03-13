@@ -1,16 +1,15 @@
 from abc import ABC
-from typing import Optional, Tuple
+from typing import Optional
 
 import autoarray as aa
 import autogalaxy as ag
 
+from autolens.point.fit.abstract import AbstractFitPoint
 from autolens.point.solver import PointSolver
 from autolens.lens.tracer import Tracer
 
-from autolens import exc
 
-
-class AbstractFitPositions(aa.AbstractFit, ABC):
+class AbstractFitPositions(AbstractFitPoint, ABC):
     def __init__(
         self,
         name: str,
@@ -21,80 +20,53 @@ class AbstractFitPositions(aa.AbstractFit, ABC):
         profile: Optional[ag.ps.Point] = None,
     ):
         """
-        A lens position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
-        their maximum separation, such that points which tracer closer to one another have a higher log_likelihood.
+        Abstract class to fit the positions of a a point source dataset using a `Tracer` object, where the specific
+        implementation of the chi-squared is defined in the sub-class.
+
+        The fit performs the following steps:
+
+        1) Determine the source-plane centre of the point source, which could be a free model parameter or computed
+           as the barycenter of ray-traced positions in the source-plane, using name pairing (see below).
+
+        2) Using the sub-class specific chi-squared, compute the residuals of each image-plane position, chi-squared
+           and overall log likelihood of the fit.
+
+        Point source fitting uses name pairing, whereby the `name` of the `Point` object is paired to the name of the
+        point source dataset to ensure that point source datasets are fitted to the correct point source.
+
+        This fit object is used in the `FitPointDataset` to perform position based fitting of a `PointDataset`,
+        which may also fit other components of the point dataset like fluxes or time delays.
+
+        When performing a `model-fit`via an `AnalysisPoint` object the `figure_of_merit` of this object
+        is called and returned in the `log_likelihood_function`.
 
         Parameters
         ----------
-        data : Grid2DIrregular
-            The (y,x) arc-second coordinates of positions which the maximum distance and log_likelihood is computed using.
-        noise_value
-            The noise-value assumed when computing the log likelihood.
+        name
+            The name of the point source dataset which is paired to a `Point` profile.
+        data
+            The positions of the point source in the image-plane which are fitted.
+        noise_map
+            The noise-map of the positions which are used to compute the log likelihood of the positions.
+        tracer
+            The tracer of galaxies whose point source profile are used to fit the positions.
+        solver
+            Solves the lens equation in order to determine the image-plane positions of a point source by ray-tracing
+            triangles to and from the source-plane.
+        profile
+            Manually input the profile of the point source, which is used instead of the one extracted from the
+            tracer via name pairing if that profile is not found.
         """
 
-        self.name = name
-        self._data = data
-        self._noise_map = noise_map
-        self.tracer = tracer
-        self.solver = solver
-
-        self.profile = (
-            tracer.extract_profile(profile_name=name) if profile is None else profile
+        super().__init__(
+            name=name,
+            data=data,
+            noise_map=noise_map,
+            tracer=tracer,
+            solver=solver,
+            profile=profile,
         )
 
-        if self.profile is None:
-            raise exc.PointExtractionException(
-                f"For the point-source named {name} there was no matching point source profile "
-                f"in the tracer (make sure your tracer's point source name is the same the dataset name."
-            )
-
     @property
-    def data(self):
-        return self._data
-
-    @property
-    def noise_map(self):
-        return self._noise_map
-
-    @property
-    def source_plane_coordinate(self) -> Tuple[float, float]:
-        """
-        Returns the centre of the point-source in the source-plane, which is used when computing the model
-        image-plane positions from the tracer.
-
-        Returns
-        -------
-        The (y,x) arc-second coordinates of the point-source in the source-plane.
-        """
-        return self.profile.centre
-
-    @property
-    def source_plane_index(self) -> int:
-        """
-        Returns the integer plane index containing the point source galaxy, which is used when computing the model
-        image-plane positions from the tracer.
-
-        This index is used to ensure that if multi-plane tracing is used when solving the model image-plane positions,
-        the correct source-plane is used to compute the model positions whilst accounting for multi-plane lensing.
-
-        Returns
-        -------
-        The index of the plane containing the point-source galaxy.
-        """
-        return self.tracer.extract_plane_index_of_profile(profile_name=self.name)
-
-    @property
-    def source_plane_redshift(self) -> float:
-        """
-        Returns the redshift of the plane containing the point source galaxy, which is used when computing the model
-        image-plane positions from the tracer.
-
-        This redshift is used to ensure that if multi-plane tracing is used when solving the model image-plane
-        positions, the correct source-plane is used to compute the model positions whilst accounting for multi-plane
-        lensing.
-
-        Returns
-        -------
-        The redshift of the plane containing the point-source galaxy.
-        """
-        return self.tracer.planes[self.source_plane_index].redshift
+    def positions(self):
+        return self.data

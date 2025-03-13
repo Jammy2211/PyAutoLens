@@ -76,9 +76,6 @@ class VisualizerImaging(af.Visualizer):
         instance
             An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
             via a non-linear search).
-        during_analysis
-            If True the visualization is being performed midway through the non-linear search before it is finished,
-            which may change which images are output.
         """
 
         fit = analysis.fit_from(instance=instance)
@@ -99,7 +96,7 @@ class VisualizerImaging(af.Visualizer):
         )
 
         try:
-            plotter_interface.fit_imaging(fit=fit, during_analysis=during_analysis)
+            plotter_interface.fit_imaging(fit=fit)
         except exc.InversionException:
             pass
 
@@ -111,17 +108,16 @@ class VisualizerImaging(af.Visualizer):
         grid = ag.Grid2D.from_extent(extent=extent, shape_native=shape_native)
 
         plotter_interface.tracer(
-            tracer=tracer, grid=grid, during_analysis=during_analysis
+            tracer=tracer, grid=grid,
         )
         plotter_interface.galaxies(
             galaxies=tracer.galaxies,
-            grid=fit.grids.uniform,
-            during_analysis=during_analysis,
+            grid=fit.grids.lp,
         )
         if fit.inversion is not None:
             if fit.inversion.has(cls=ag.AbstractMapper):
                 plotter_interface.inversion(
-                    inversion=fit.inversion, during_analysis=during_analysis
+                    inversion=fit.inversion,
                 )
 
     @staticmethod
