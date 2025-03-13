@@ -9,7 +9,6 @@ import autogalaxy as ag
 
 from autogalaxy.abstract_fit import AbstractFitInversion
 
-from autolens.analysis.preloads import Preloads
 from autolens.lens.tracer import Tracer
 from autolens.lens.to_inversion import TracerToInversion
 
@@ -24,7 +23,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         dataset_model : Optional[aa.DatasetModel] = None,
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
-        preloads: Preloads = Preloads(),
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -64,9 +62,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             reconstructed galaxy's morphology.
         settings_inversion
             Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
-        preloads
-            Contains preloaded calculations (e.g. linear algebra matrices) which can skip certain calculations in
-            the fit.
         run_time_dict
             A dictionary which if passed to the fit records how long function calls which have the `profile_func`
             decorator take to run.
@@ -82,26 +77,16 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         self.adapt_images = adapt_images
         self.settings_inversion = settings_inversion
 
-        self.preloads = preloads
-
     @property
     def blurred_image(self) -> aa.Array2D:
         """
         Returns the image of all light profiles in the fit's tracer convolved with the imaging dataset's PSF.
-
-        For certain lens models the blurred image does not change (for example when all light profiles in the tracer
-        are fixed in the lens model). For faster run-times the blurred image can be preloaded.
         """
-
-        if self.preloads.blurred_image is None:
-
-            return self.tracer.blurred_image_2d_from(
-                grid=self.grids.lp,
-                convolver=self.dataset.convolver,
-                blurring_grid=self.grids.blurring,
-            )
-
-        return self.preloads.blurred_image
+        return self.tracer.blurred_image_2d_from(
+            grid=self.grids.lp,
+            convolver=self.dataset.convolver,
+            blurring_grid=self.grids.blurring,
+        )
 
     @property
     def profile_subtracted_image(self) -> aa.Array2D:
@@ -127,7 +112,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             tracer=self.tracer,
             adapt_images=self.adapt_images,
             settings_inversion=self.settings_inversion,
-            preloads=self.preloads,
             run_time_dict=self.run_time_dict
         )
 
@@ -334,44 +318,3 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         or `GalaxyPlotter` objects.
         """
         return self.model_obj_linear_light_profiles_to_light_profiles
-
-    def refit_with_new_preloads(
-        self,
-        preloads: Preloads,
-        settings_inversion: Optional[aa.SettingsInversion] = None,
-    ) -> "FitImaging":
-        """
-        Returns a new fit which uses the dataset, tracer and other objects of this fit, but uses a different set of
-        preloads input into this function.
-
-        This is used when setting up the preloads objects, to concisely test how using different preloads objects
-        changes the attributes of the fit.
-
-        Parameters
-        ----------
-        preloads
-            The new preloads which are used to refit the data using the
-        settings_inversion
-            Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
-
-        Returns
-        -------
-        A new fit which has used new preloads input into this function but the same dataset, tracer and other settings.
-        """
-        run_time_dict = {} if self.run_time_dict is not None else None
-
-        settings_inversion = (
-            self.settings_inversion
-            if settings_inversion is None
-            else settings_inversion
-        )
-
-        return FitImaging(
-            dataset=self.dataset,
-            tracer=self.tracer,
-            dataset_model=self.dataset_model,
-            adapt_images=self.adapt_images,
-            settings_inversion=settings_inversion,
-            preloads=preloads,
-            run_time_dict=run_time_dict,
-        )

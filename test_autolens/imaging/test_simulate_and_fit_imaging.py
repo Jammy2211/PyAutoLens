@@ -618,49 +618,6 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
         1.0e-4,
     )
 
-    preloads = al.Preloads(
-        linear_func_operated_mapping_matrix_dict=fit_mapping.inversion.linear_func_operated_mapping_matrix_dict,
-        data_linear_func_matrix_dict=fit_mapping.inversion.data_linear_func_matrix_dict
-    )
-
-    fit_w_tilde = al.FitImaging(
-        dataset=masked_dataset,
-        tracer=tracer,
-        preloads=preloads,
-        settings_inversion=al.SettingsInversion(use_w_tilde=True),
-    )
-
-    assert fit_mapping.inversion.curvature_matrix == pytest.approx(
-            fit_w_tilde.inversion.curvature_matrix,
-        1.0e-4,
-    )
-
-    assert fit_mapping.inversion.regularization_matrix == pytest.approx(
-            fit_w_tilde.inversion.regularization_matrix,
-        1.0e-4,
-    )
-
-    preloads = al.Preloads(
-        mapper_operated_mapping_matrix_dict=fit_mapping.inversion.mapper_operated_mapping_matrix_dict,
-    )
-
-    fit_w_tilde = al.FitImaging(
-        dataset=masked_dataset,
-        tracer=tracer,
-        preloads=preloads,
-        settings_inversion=al.SettingsInversion(use_w_tilde=True),
-    )
-
-    assert fit_mapping.inversion.curvature_matrix == pytest.approx(
-            fit_w_tilde.inversion.curvature_matrix,
-        1.0e-4,
-    )
-
-    assert fit_mapping.inversion.regularization_matrix == pytest.approx(
-            fit_w_tilde.inversion.regularization_matrix,
-        1.0e-4,
-    )
-
 
 def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging_covariance_7x7):
 
