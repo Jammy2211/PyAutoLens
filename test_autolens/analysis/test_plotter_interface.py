@@ -25,25 +25,15 @@ def test__tracer(
     plotter_interface.tracer(
         tracer=tracer_x2_plane_7x7,
         grid=masked_imaging_7x7.grids.lp,
-        during_analysis=False,
     )
-
-    plot_path = path.join(plot_path, "tracer")
 
     assert path.join(plot_path, "subplot_galaxies_images.png") in plot_patch.paths
-    assert path.join(plot_path, "image_2d.png") in plot_patch.paths
-    assert path.join(plot_path, "plane_image_of_plane_1.png") in plot_patch.paths
-    assert path.join(plot_path, "convergence_2d.png") in plot_patch.paths
-    assert path.join(plot_path, "potential_2d.png") not in plot_patch.paths
-    assert path.join(plot_path, "deflections_y_2d.png") not in plot_patch.paths
-    assert path.join(plot_path, "deflections_x_2d.png") not in plot_patch.paths
-    assert path.join(plot_path, "magnification_2d.png") in plot_patch.paths
 
-    convergence = al.util.array_2d.numpy_array_2d_via_fits_from(
-        file_path=path.join(plot_path, "fits", "convergence_2d.fits"), hdu=0
+    image = al.util.array_2d.numpy_array_2d_via_fits_from(
+        file_path=path.join(plot_path, "tracer.fits"), hdu=0
     )
 
-    assert convergence.shape == (7, 7)
+    assert image.shape == (5, 5)
 
 
 def test__image_with_positions(
@@ -55,7 +45,5 @@ def test__image_with_positions(
     plotter_interface = vis.PlotterInterface(image_path=plot_path)
 
     plotter_interface.image_with_positions(image=image_7x7, positions=positions_x2)
-
-    plot_path = path.join(plot_path, "positions")
 
     assert path.join(plot_path, "image_with_positions.png") in plot_patch.paths

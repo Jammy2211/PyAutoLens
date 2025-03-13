@@ -45,7 +45,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
            algebra solution, is computed).
 
         When performing a model-fit` via ` AnalysisInterferometer` object the `figure_of_merit` of
-        this `FitInterferometer` object is called and returned in the `log_likelihood_function`.
+        this object is called and returned in the `log_likelihood_function`.
 
         Parameters
         ----------

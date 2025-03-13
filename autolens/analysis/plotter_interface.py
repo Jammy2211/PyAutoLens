@@ -26,19 +26,19 @@ class PlotterInterface(AgPlotterInterface):
         The path on the hard-disk to the `image` folder of the non-linear searches results.
     """
 
-    def tracer(self, tracer: Tracer, grid: aa.type.Grid2DLike, during_analysis: bool):
+    def tracer(self, tracer: Tracer, grid: aa.type.Grid2DLike):
         """
         Visualizes a `Tracer` object.
 
-        Images are output to the `image` folder of the `image_path` in a subfolder called `tracer`. When
-        used with a non-linear search the `image_path` points to the search's results folder and this function
-        visualizes the maximum log likelihood `Tracer` inferred by the search so far.
+        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path` 
+        points to the search's results folder and this function visualizes the maximum log likelihood `Tracer` 
+        inferred by the search so far.
 
-        Visualization includes individual images of attributes of the tracer (e.g. its image, convergence, deflection
-        angles) and a subplot of all these attributes on the same figure.
+        Visualization includes a subplot of individual images of attributes of the tracer (e.g. its image, convergence,
+        deflection angles) and .fits files containing its attributes grouped together.
 
-        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under the
-        [tracer] header.
+        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under
+        the `tracer` header.
 
         Parameters
         ----------
@@ -47,14 +47,12 @@ class PlotterInterface(AgPlotterInterface):
         grid
             A 2D grid of (y,x) arc-second coordinates used to perform ray-tracing, which is the masked grid tied to
             the dataset.
-        during_analysis
-            Whether visualization is performed during a non-linear search or once it is completed.
         """
 
         def should_plot(name):
             return plot_setting(section="tracer", name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="tracer")
+        mat_plot_2d = self.mat_plot_2d_from()
 
         tracer_plotter = TracerPlotter(
             tracer=tracer,
@@ -66,81 +64,24 @@ class PlotterInterface(AgPlotterInterface):
         if should_plot("subplot_galaxies_images"):
             tracer_plotter.subplot_galaxies_images()
 
-        tracer_plotter.figures_2d(
-            image=should_plot("image"),
-            source_plane=should_plot("source_plane_image"),
-            deflections_y=should_plot("deflections"),
-            deflections_x=should_plot("deflections"),
-            magnification=should_plot("magnification"),
-        )
+        if should_plot("fits_tracer"):
+            number_plots = 4
 
-        mat_plot_2d.use_log10 = True
-
-        tracer_plotter.figures_2d(
-            convergence=should_plot("convergence"),
-            potential=should_plot("potential"),
-        )
-
-        if should_plot("lens_image"):
-            tracer_plotter.figures_2d_of_planes(
-                plane_image=True, plane_index=0, zoom_to_brightest=False
+            multi_plotter = aplt.MultiFigurePlotter(
+                plotter_list=[tracer_plotter] * number_plots
             )
 
-        mat_plot_2d.use_log10 = False
-
-        if not during_analysis and should_plot("all_at_end_png"):
-            mat_plot_2d = self.mat_plot_2d_from(
-                subfolders=path.join("tracer", "end"),
-            )
-
-            tracer_plotter = TracerPlotter(
-                tracer=tracer,
-                grid=grid,
-                mat_plot_2d=mat_plot_2d,
-                include_2d=self.include_2d,
-            )
-
-            tracer_plotter.figures_2d(
-                image=True,
-                source_plane=True,
-                deflections_y=True,
-                deflections_x=True,
-                magnification=True,
-            )
-
-            mat_plot_2d.use_log10 = True
-
-            tracer_plotter.figures_2d(
-                convergence=True,
-                potential=True,
-            )
-
-            tracer_plotter.figures_2d_of_planes(
-                plane_image=True, plane_index=0, zoom_to_brightest=False
-            )
-
-            mat_plot_2d.use_log10 = False
-
-        if not during_analysis and should_plot("all_at_end_fits"):
-            mat_plot_2d = self.mat_plot_2d_from(
-                subfolders=path.join("tracer", "fits"), format="fits"
-            )
-
-            tracer_plotter = TracerPlotter(
-                tracer=tracer,
-                grid=grid,
-                mat_plot_2d=mat_plot_2d,
-                include_2d=self.include_2d,
-            )
-
-            tracer_plotter.figures_2d(
-                image=True,
-                source_plane=True,
-                convergence=True,
-                potential=True,
-                deflections_y=True,
-                deflections_x=True,
-                magnification=True,
+            multi_plotter.output_to_fits(
+                func_name_list=["figures_2d"] * number_plots,
+                figure_name_list=[
+                    "convergence",
+                    "potential",
+                    "deflections_y",
+                    "deflections_x",
+                ],
+                tag_list=["convergence", "potential", "deflections_y", "deflections_x"],
+                filename="tracer",
+                remove_fits_first=True,
             )
 
     def image_with_positions(self, image: aa.Array2D, positions: aa.Grid2DIrregular):
@@ -148,13 +89,13 @@ class PlotterInterface(AgPlotterInterface):
         Visualizes the positions of a model-fit, where these positions are used to resample lens models where
         the positions to do trace within an input threshold of one another in the source-plane.
 
-        Images are output to the `image` folder of the `image_path` in a subfolder called `positions`. When
-        used with a non-linear search the `image_path` is the output folder of the non-linear search.
+        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path` 
+        is the output folder of the non-linear search.
 
         The visualization is an image of the strong lens with the positions overlaid.
 
         The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under the
-        [tracer] header.
+        `positions` header.
 
         Parameters
         ----------
@@ -167,7 +108,7 @@ class PlotterInterface(AgPlotterInterface):
         def should_plot(name):
             return plot_setting(section=["positions"], name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from(subfolders="positions")
+        mat_plot_2d = self.mat_plot_2d_from()
 
         if positions is not None:
             visuals_2d = aplt.Visuals2D(positions=positions)
@@ -178,6 +119,8 @@ class PlotterInterface(AgPlotterInterface):
                 include_2d=self.include_2d,
                 visuals_2d=visuals_2d,
             )
+
             image_plotter.set_filename("image_with_positions")
+
             if should_plot("image_with_positions"):
                 image_plotter.figure_2d()
