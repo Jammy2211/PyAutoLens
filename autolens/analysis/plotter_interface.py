@@ -30,8 +30,8 @@ class PlotterInterface(AgPlotterInterface):
         """
         Visualizes a `Tracer` object.
 
-        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path` 
-        points to the search's results folder and this function visualizes the maximum log likelihood `Tracer` 
+        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path`
+        points to the search's results folder and this function visualizes the maximum log likelihood `Tracer`
         inferred by the search so far.
 
         Visualization includes a subplot of individual images of attributes of the tracer (e.g. its image, convergence,
@@ -89,7 +89,7 @@ class PlotterInterface(AgPlotterInterface):
         Visualizes the positions of a model-fit, where these positions are used to resample lens models where
         the positions to do trace within an input threshold of one another in the source-plane.
 
-        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path` 
+        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path`
         is the output folder of the non-linear search.
 
         The visualization is an image of the strong lens with the positions overlaid.

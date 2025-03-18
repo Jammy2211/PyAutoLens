@@ -15,9 +15,9 @@ class PlotterInterfacePoint(PlotterInterface):
         """
         Output visualization of an `PointDataset` dataset, typically before a model-fit is performed.
 
-        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path` 
+        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path`
         is the output folder of the non-linear search.
-        
+
         Visualization includes individual images of the different points of the dataset (e.g. the positions and fluxes)
 
         The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under
