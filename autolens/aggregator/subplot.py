@@ -12,7 +12,6 @@ class FITSTracer(Enum):
     deflections_x = "DEFLECTIONS_X"
 
 
-
 class FITSFit(Enum):
     """
     The HDUs that can be extracted from the fit.fits file.
@@ -22,7 +21,6 @@ class FITSFit(Enum):
     residual_map = "RESIDUAL_MAP"
     normalized_residual_map = "NORMALIZED_RESIDUAL_MAP"
     chi_squared_map = "CHI_SQUARED_MAP"
-
 
 
 class SubplotDataset(Enum):
@@ -59,6 +57,7 @@ class SubplotTracer(Enum):
     deflections_y = (1, 2)
     deflections_x = (2, 2)
 
+
 class SubplotFit(Enum):
     """
     The subplots that can be extracted from the subplot_fit image.
@@ -77,7 +76,7 @@ class SubplotFit(Enum):
     normalized_residual_map = (2, 0)
     normalized_residual_map_one_sigma = (2, 1)
     chi_squared_map = (2, 2)
-    source_plane_image_zoom = (2, 3)
+    source_plane_image = (2, 3)
 
 
 class SubplotFitLog10(Enum):
@@ -98,4 +97,4 @@ class SubplotFitLog10(Enum):
     normalized_residual_map = (2, 0)
     normalized_residual_map_one_sigma = (2, 1)
     chi_squared_map = (2, 2)
-    source_plane_image_zoom = (2, 3)
+    source_plane_image = (2, 3)

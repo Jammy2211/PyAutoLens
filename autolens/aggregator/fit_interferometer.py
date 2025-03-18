@@ -69,7 +69,6 @@ def _fit_interferometer_from(
         dataset_model_list,
         adapt_images_list,
     ):
-
         fit_dataset_list.append(
             FitInterferometer(
                 dataset=dataset,
