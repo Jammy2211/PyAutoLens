@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class TracerFITS(Enum):
+class FITSTracer(Enum):
     """
     The HDUs that can be extracted from the fit.fits file.
     """
@@ -13,7 +13,7 @@ class TracerFITS(Enum):
 
 
 
-class FitFITS(Enum):
+class FITSFit(Enum):
     """
     The HDUs that can be extracted from the fit.fits file.
     """

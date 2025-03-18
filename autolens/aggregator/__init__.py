@@ -26,5 +26,5 @@ from autolens.aggregator.subplot import SubplotDataset as subplot_dataset
 from autolens.aggregator.subplot import SubplotTracer as subplot_tracer
 from autolens.aggregator.subplot import SubplotFit as subplot_fit
 from autolens.aggregator.subplot import SubplotFitLog10 as subplot_fit_log10
-from autolens.aggregator.subplot import TracerFITS as fit_tracer
-from autolens.aggregator.subplot import FitFITS as fit_fits
+from autolens.aggregator.subplot import FITSTracer as fits_tracer
+from autolens.aggregator.subplot import FITSFit as fits_fits
