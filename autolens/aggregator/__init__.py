@@ -21,3 +21,8 @@ from autogalaxy.aggregator.ellipse.fit_ellipse import _fit_ellipse_from
 from autogalaxy.aggregator.ellipse.fit_ellipse import FitEllipseAgg
 
 from autolens.aggregator.subhalo import SubhaloAgg
+
+from autolens.aggregator.subplot import SubplotDataset as subplot_dataset
+from autolens.aggregator.subplot import SubplotTracer as subplot_tracer
+from autolens.aggregator.subplot import SubplotFit as subplot_fit
+from autolens.aggregator.subplot import SubplotFitLog10 as subplot_fit_log10
