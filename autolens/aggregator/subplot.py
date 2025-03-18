@@ -1,6 +1,30 @@
 from enum import Enum
 
 
+class TracerFITS(Enum):
+    """
+    The HDUs that can be extracted from the fit.fits file.
+    """
+
+    convergence = "CONVERGENCE"
+    potential = "POTENTIAL"
+    deflections_y = "DEFLECTIONS_Y"
+    deflections_x = "DEFLECTIONS_X"
+
+
+
+class FitFITS(Enum):
+    """
+    The HDUs that can be extracted from the fit.fits file.
+    """
+
+    model_image = "MODEL_IMAGE"
+    residual_map = "RESIDUAL_MAP"
+    normalized_residual_map = "NORMALIZED_RESIDUAL_MAP"
+    chi_squared_map = "CHI_SQUARED_MAP"
+
+
+
 class SubplotDataset(Enum):
     """
     The subplots that can be extracted from the subplot_fit image.
