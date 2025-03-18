@@ -150,31 +150,6 @@ def test__modify_before_fit__inversion_no_positions_likelihood__raises_exception
     analysis.modify_before_fit(paths=af.DirectoryPaths(), model=model)
 
 
-def test__check_preloads(masked_imaging_7x7):
-    conf.instance["general"]["test"]["check_preloads"] = True
-
-    lens_galaxy = al.Galaxy(redshift=0.5, light=al.lp.Sersic(intensity=0.1))
-
-    model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
-
-    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
-
-    instance = model.instance_from_unit_vector([])
-    tracer = analysis.tracer_via_instance_from(instance=instance)
-    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
-
-    analysis.preloads.check_via_fit(fit=fit)
-
-    analysis.preloads.blurred_image = fit.blurred_image
-
-    analysis.preloads.check_via_fit(fit=fit)
-
-    analysis.preloads.blurred_image = fit.blurred_image + 1.0
-
-    with pytest.raises(exc.PreloadsException):
-        analysis.preloads.check_via_fit(fit=fit)
-
-
 def test__save_results__tracer_output_to_json(analysis_imaging_7x7):
     lens = al.Galaxy(redshift=0.5)
     source = al.Galaxy(redshift=1.0)

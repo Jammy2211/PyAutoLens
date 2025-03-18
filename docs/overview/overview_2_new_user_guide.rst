@@ -125,9 +125,11 @@ The ``autolens_workspace/guides`` package has many useful guides, including conc
 and unit conversion guides (``guides/units``).
 
 Quickly navigate to this part of the workspace and skim read the guides quickly. You do not need to understand them in detail now
-so don't spend long reading them. T
+so don't spend long reading them.
 
-he purpose of looking at them now is you know they exist and can refer to them if you get stuck using **PyAutoLens**.
+**If your dataset type is a point source, you should read the ``guides/point_source.ipynb`` guide now, which covers many details of point source modeling.**
+
+The purpose of looking at them now is you know they exist and can refer to them if you get stuck using **PyAutoLens**.
 
 GitHub Links:
 
