@@ -18,12 +18,13 @@ def _fit_imaging_from(
     settings_inversion: aa.SettingsInversion = None,
 ) -> List[FitImaging]:
     """
-    Returns a list of `FitImaging` object from a `PyAutoFit` sqlite database `Fit` object.
+    Returns a list of `FitImaging` object from a `PyAutoFit` loaded directory `Fit` or sqlite database `Fit` object.
 
-    The results of a model-fit can be stored in a sqlite database, including the following attributes of the fit:
+    The results of a model-fit can be loaded from hard-disk or stored in a sqlite database, including the following 
+    attributes of the fit:
 
     - The imaging data, noise-map, PSF and settings as .fits files (e.g. `dataset/data.fits`).
-    - The mask used to mask the `Imaging` data structure in the fit (`dataset/mask.fits`).
+    - The mask used to mask the `Imaging` data structure in the fit (`dataset.fits[hdu=0]`).
     - The settings of inversions used by the fit (`dataset/settings_inversion.json`).
 
     Each individual attribute can be loaded from the database via the `fit.value()` method.
@@ -41,7 +42,8 @@ def _fit_imaging_from(
     Parameters
     ----------
     fit
-        A `PyAutoFit` `Fit` object which contains the results of a model-fit as an entry in a sqlite database.
+        A `PyAutoFit` `Fit` object which contains the results of a model-fit as an entry which has been loaded from 
+        an output directory or from an sqlite database..
     instance
         A manual instance that overwrites the max log likelihood instance in fit (e.g. for drawing the instance
         randomly from the PDF).
@@ -90,10 +92,11 @@ class FitImagingAgg(af.AggBase):
         Interfaces with an `PyAutoFit` aggregator object to create instances of `FitImaging` objects from the results
         of a model-fit.
 
-        The results of a model-fit can be stored in a sqlite database, including the following attributes of the fit:
+        The results of a model-fit can be loaded from hard-disk or stored in a sqlite database, including the following 
+    attributes of the fit:
 
         - The imaging data, noise-map, PSF and settings as .fits files (e.g. `dataset/data.fits`).
-        - The mask used to mask the `Imaging` data structure in the fit (`dataset/mask.fits`).
+        - The mask used to mask the `Imaging` data structure in the fit (`dataset.fits[hdu=0]`).
         - The settings of inversions used by the fit (`dataset/settings_inversion.json`).
 
         The `aggregator` contains the path to each of these files, and they can be loaded individually. This class
@@ -138,7 +141,8 @@ class FitImagingAgg(af.AggBase):
         Parameters
         ----------
         fit
-            A `PyAutoFit` `Fit` object which contains the results of a model-fit as an entry in a sqlite database.
+            A `PyAutoFit` `Fit` object which contains the results of a model-fit as an entry which has been loaded from 
+        an output directory or from an sqlite database..
         instance
             A manual instance that overwrites the max log likelihood instance in fit (e.g. for drawing the instance
             randomly from the PDF).

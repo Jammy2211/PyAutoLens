@@ -169,20 +169,20 @@ class AnalysisImaging(AnalysisDataset):
         Before the non-linear search begins, this routine saves attributes of the `Analysis` object to the `files`
         folder such that they can be loaded after the analysis using PyAutoFit's database and aggregator tools.
 
-        For this analysis, it uses the `AnalysisDataset` object's method to output the following:
+         It outputs the following attributes of the dataset:
 
-        - The dataset's data.
-        - The dataset's noise-map.
-        - The settings associated with the dataset.
-        - The settings associated with the inversion.
-        - The settings associated with the pixelization.
-        - The Cosmology.
-        - The adapt image's model image and galaxy images, if used.
+         - The mask applied to the dataset, in the `PrimaryHDU` of `dataset.fits`.
+         - The imaging dataset as `dataset.fits` (data / noise-map / psf / over sampler / etc.).
 
-        This function also outputs attributes specific to an imaging dataset:
+         For this analysis, it uses the `AnalysisDataset` object's method to output the following:
 
-        - Its PSF.
-        - Its mask.
+         - The settings associated with the inversion.
+         - The settings associated with the pixelization.
+         - The Cosmology.
+         - The adapt image's model image and galaxy images, as `adapt_images.fits`, if used.
+
+        This function also outputs attributes specific to lens modeling:
+
         - The positions of the brightest pixels in the lensed source which are used to discard mass models.
 
         It is common for these attributes to be loaded by many of the template aggregator functions given in the
