@@ -65,16 +65,21 @@ class PlotterInterface(AgPlotterInterface):
             tracer_plotter.subplot_galaxies_images()
 
         if should_plot("fits_tracer"):
-
             hdu_list = hdu_list_for_output_from(
                 values_list=[
                     grid.mask.astype("float"),
                     tracer.convergence_2d_from(grid=grid).native,
                     tracer.potential_2d_from(grid=grid).native,
-                    tracer.deflections_yx_2d_from(grid=grid).native[:,:,0],
-                    tracer.deflections_yx_2d_from(grid=grid).native[:,:,1],
+                    tracer.deflections_yx_2d_from(grid=grid).native[:, :, 0],
+                    tracer.deflections_yx_2d_from(grid=grid).native[:, :, 1],
                 ],
-                ext_name_list=["mask", "convergence", "potential", "deflections_y", "deflections_x"],
+                ext_name_list=[
+                    "mask",
+                    "convergence",
+                    "potential",
+                    "deflections_y",
+                    "deflections_x",
+                ],
                 header_dict=grid.mask.pixel_scale_header,
             )
 
