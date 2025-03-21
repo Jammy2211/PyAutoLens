@@ -42,10 +42,10 @@ def test__fit_interferometer(
         file_path=path.join(plot_path, "model_galaxy_images.fits"), hdu=0
     )
 
-    assert image.shape == (5, 5)
+    assert image.shape == (7, 7)
 
     image = al.util.array_2d.numpy_array_2d_via_fits_from(
         file_path=path.join(plot_path, "dirty_images.fits"), hdu=0
     )
 
-    assert image.shape == (5, 5)
+    assert image.shape == (7, 7)

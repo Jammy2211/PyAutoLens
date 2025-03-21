@@ -79,7 +79,6 @@ class PlotterInterfaceInterferometer(PlotterInterface):
 
         fits_to_fits(
             should_plot=should_plot,
+            image_path=self.image_path,
             fit=fit,
-            mat_plot_2d=mat_plot_2d,
-            fit_plotter_cls=FitInterferometerPlotter,
         )
