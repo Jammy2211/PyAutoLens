@@ -30,13 +30,13 @@ def test__fit_imaging(
     assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
     assert path.join(plot_path, "subplot_fit_log10.png") in plot_patch.paths
 
-    image = al.util.array_2d.numpy_array_2d_via_fits_from(
+    image = al.ndarray_via_fits_from(
         file_path=path.join(plot_path, "fit.fits"), hdu=0
     )
 
     assert image.shape == (7, 7)
 
-    image = al.util.array_2d.numpy_array_2d_via_fits_from(
+    image = al.ndarray_via_fits_from(
         file_path=path.join(plot_path, "model_galaxy_images.fits"), hdu=0
     )
 

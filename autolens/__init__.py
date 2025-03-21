@@ -113,6 +113,11 @@ from . import mock as m
 from . import util
 
 from autoconf import conf
+from autoconf.fitsable import ndarray_via_hdu_from
+from autoconf.fitsable import ndarray_via_fits_from
+from autoconf.fitsable import header_obj_from
+from autoconf.fitsable import output_to_fits
+from autoconf.fitsable import hdu_list_for_output_from
 
 conf.instance.register(__file__)
 
