@@ -169,10 +169,6 @@ class AnalysisImaging(AnalysisDataset):
         Before the non-linear search begins, this routine saves attributes of the `Analysis` object to the `files`
         folder such that they can be loaded after the analysis using PyAutoFit's database and aggregator tools.
 
-         It outputs the following attributes of the dataset:
-
-         - The mask applied to the dataset, in the `PrimaryHDU` of `dataset.fits`.
-         - The imaging dataset as `dataset.fits` (data / noise-map / psf / over sampler / etc.).
 
          For this analysis, it uses the `AnalysisDataset` object's method to output the following:
 
@@ -184,6 +180,11 @@ class AnalysisImaging(AnalysisDataset):
         This function also outputs attributes specific to lens modeling:
 
         - The positions of the brightest pixels in the lensed source which are used to discard mass models.
+
+        The following .fits files are also output via the plotter interface:
+
+        - The mask applied to the dataset, in the `PrimaryHDU` of `dataset.fits`.
+        - The imaging dataset as `dataset.fits` (data / noise-map / psf / over sampler / etc.).
 
         It is common for these attributes to be loaded by many of the template aggregator functions given in the
         `aggregator` modules. For example, when using the database tools to perform a fit, the default behaviour is for

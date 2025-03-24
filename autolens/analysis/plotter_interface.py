@@ -80,7 +80,7 @@ class PlotterInterface(AgPlotterInterface):
                     "deflections_y",
                     "deflections_x",
                 ],
-                header_dict=grid.mask.pixel_scale_header,
+                header_dict=grid.mask.header_dict,
             )
 
             hdu_list.writeto(self.image_path / "tracer.fits", overwrite=True)
