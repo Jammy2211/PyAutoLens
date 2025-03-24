@@ -61,7 +61,7 @@ class AbstractPositionsLH:
 
     def output_positions_info(self, output_path: str, tracer: Tracer):
         """
-        Outputs a `positions.info` file which summarizes the positions penalty term for a model fit, including:
+        Outputs a `positions.info` file which summarises the positions penalty term for a model fit, including:
 
         - The arc second coordinates of the lensed source multiple images used for the model-fit.
         - The radial distance of these coordinates from (0.0, 0.0).

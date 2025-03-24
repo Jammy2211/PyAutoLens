@@ -361,7 +361,6 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         return False
 
     def sensitivity_to_fits(self):
-
         log_likelihoods = self.result.figure_of_merit_array(
             use_log_evidences=False,
             remove_zeros=False,
@@ -380,7 +379,6 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
             visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(),
         )
-
 
         try:
             log_evidences = self.result.figure_of_merit_array(

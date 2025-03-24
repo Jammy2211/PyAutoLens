@@ -25,7 +25,7 @@ class PlotterInterfaceInterferometer(PlotterInterface):
         """
         Visualizes a `FitInterferometer` object, which fits an interferometer dataset.
 
-        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path` 
+        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path`
         is the output folder of the non-linear search.
 
         Visualization includes a subplot of individual images of attributes of the `FitInterferometer` (e.g. the model
@@ -79,7 +79,6 @@ class PlotterInterfaceInterferometer(PlotterInterface):
 
         fits_to_fits(
             should_plot=should_plot,
+            image_path=self.image_path,
             fit=fit,
-            mat_plot_2d=mat_plot_2d,
-            fit_plotter_cls=FitInterferometerPlotter,
         )

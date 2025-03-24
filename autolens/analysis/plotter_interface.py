@@ -1,4 +1,4 @@
-from os import path
+from autoconf.fitsable import hdu_list_for_output_from
 
 import autoarray as aa
 import autogalaxy.plot as aplt
@@ -30,8 +30,8 @@ class PlotterInterface(AgPlotterInterface):
         """
         Visualizes a `Tracer` object.
 
-        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path` 
-        points to the search's results folder and this function visualizes the maximum log likelihood `Tracer` 
+        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path`
+        points to the search's results folder and this function visualizes the maximum log likelihood `Tracer`
         inferred by the search so far.
 
         Visualization includes a subplot of individual images of attributes of the tracer (e.g. its image, convergence,
@@ -65,31 +65,32 @@ class PlotterInterface(AgPlotterInterface):
             tracer_plotter.subplot_galaxies_images()
 
         if should_plot("fits_tracer"):
-            number_plots = 4
-
-            multi_plotter = aplt.MultiFigurePlotter(
-                plotter_list=[tracer_plotter] * number_plots
-            )
-
-            multi_plotter.output_to_fits(
-                func_name_list=["figures_2d"] * number_plots,
-                figure_name_list=[
+            hdu_list = hdu_list_for_output_from(
+                values_list=[
+                    grid.mask.astype("float"),
+                    tracer.convergence_2d_from(grid=grid).native,
+                    tracer.potential_2d_from(grid=grid).native,
+                    tracer.deflections_yx_2d_from(grid=grid).native[:, :, 0],
+                    tracer.deflections_yx_2d_from(grid=grid).native[:, :, 1],
+                ],
+                ext_name_list=[
+                    "mask",
                     "convergence",
                     "potential",
                     "deflections_y",
                     "deflections_x",
                 ],
-                tag_list=["convergence", "potential", "deflections_y", "deflections_x"],
-                filename="tracer",
-                remove_fits_first=True,
+                header_dict=grid.mask.header_dict,
             )
+
+            hdu_list.writeto(self.image_path / "tracer.fits", overwrite=True)
 
     def image_with_positions(self, image: aa.Array2D, positions: aa.Grid2DIrregular):
         """
         Visualizes the positions of a model-fit, where these positions are used to resample lens models where
         the positions to do trace within an input threshold of one another in the source-plane.
 
-        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path` 
+        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path`
         is the output folder of the non-linear search.
 
         The visualization is an image of the strong lens with the positions overlaid.

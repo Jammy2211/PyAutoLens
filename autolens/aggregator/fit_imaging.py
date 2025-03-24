@@ -18,12 +18,13 @@ def _fit_imaging_from(
     settings_inversion: aa.SettingsInversion = None,
 ) -> List[FitImaging]:
     """
-    Returns a list of `FitImaging` object from a `PyAutoFit` sqlite database `Fit` object.
+    Returns a list of `FitImaging` object from a `PyAutoFit` loaded directory `Fit` or sqlite database `Fit` object.
 
-    The results of a model-fit can be stored in a sqlite database, including the following attributes of the fit:
+    The results of a model-fit can be loaded from hard-disk or stored in a sqlite database, including the following
+    attributes of the fit:
 
     - The imaging data, noise-map, PSF and settings as .fits files (e.g. `dataset/data.fits`).
-    - The mask used to mask the `Imaging` data structure in the fit (`dataset/mask.fits`).
+    - The mask used to mask the `Imaging` data structure in the fit (`dataset.fits[hdu=0]`).
     - The settings of inversions used by the fit (`dataset/settings_inversion.json`).
 
     Each individual attribute can be loaded from the database via the `fit.value()` method.
@@ -41,7 +42,8 @@ def _fit_imaging_from(
     Parameters
     ----------
     fit
-        A `PyAutoFit` `Fit` object which contains the results of a model-fit as an entry in a sqlite database.
+        A `PyAutoFit` `Fit` object which contains the results of a model-fit as an entry which has been loaded from
+        an output directory or from an sqlite database..
     instance
         A manual instance that overwrites the max log likelihood instance in fit (e.g. for drawing the instance
         randomly from the PDF).
@@ -67,7 +69,6 @@ def _fit_imaging_from(
         dataset_model_list,
         adapt_images_list,
     ):
-
         fit_dataset_list.append(
             FitImaging(
                 dataset=dataset,
@@ -88,41 +89,42 @@ class FitImagingAgg(af.AggBase):
         settings_inversion: Optional[aa.SettingsInversion] = None,
     ):
         """
-        Interfaces with an `PyAutoFit` aggregator object to create instances of `FitImaging` objects from the results
-        of a model-fit.
+            Interfaces with an `PyAutoFit` aggregator object to create instances of `FitImaging` objects from the results
+            of a model-fit.
 
-        The results of a model-fit can be stored in a sqlite database, including the following attributes of the fit:
+            The results of a model-fit can be loaded from hard-disk or stored in a sqlite database, including the following
+        attributes of the fit:
 
-        - The imaging data, noise-map, PSF and settings as .fits files (e.g. `dataset/data.fits`).
-        - The mask used to mask the `Imaging` data structure in the fit (`dataset/mask.fits`).
-        - The settings of inversions used by the fit (`dataset/settings_inversion.json`).
+            - The imaging data, noise-map, PSF and settings as .fits files (e.g. `dataset/data.fits`).
+            - The mask used to mask the `Imaging` data structure in the fit (`dataset.fits[hdu=0]`).
+            - The settings of inversions used by the fit (`dataset/settings_inversion.json`).
 
-        The `aggregator` contains the path to each of these files, and they can be loaded individually. This class
-        can load them all at once and create an `FitImaging` object via the `_fit_imaging_from` method.
+            The `aggregator` contains the path to each of these files, and they can be loaded individually. This class
+            can load them all at once and create an `FitImaging` object via the `_fit_imaging_from` method.
 
-        This class's methods returns generators which create the instances of the `FitImaging` objects. This ensures
-        that large sets of results can be efficiently loaded from the hard-disk and do not require storing all
-        `FitImaging` instances in the memory at once.
+            This class's methods returns generators which create the instances of the `FitImaging` objects. This ensures
+            that large sets of results can be efficiently loaded from the hard-disk and do not require storing all
+            `FitImaging` instances in the memory at once.
 
-        For example, if the `aggregator` contains 3 model-fits, this class can be used to create a generator which
-        creates instances of the corresponding 3 `FitImaging` objects.
+            For example, if the `aggregator` contains 3 model-fits, this class can be used to create a generator which
+            creates instances of the corresponding 3 `FitImaging` objects.
 
-        If multiple `FitImaging` objects were fitted simultaneously via analysis summing, the `fit.child_values()` method
-        is instead used to load lists of the data, noise-map, PSF and mask and combine them into a list of
-        `FitImaging` objects.
+            If multiple `FitImaging` objects were fitted simultaneously via analysis summing, the `fit.child_values()` method
+            is instead used to load lists of the data, noise-map, PSF and mask and combine them into a list of
+            `FitImaging` objects.
 
-        This can be done manually, but this object provides a more concise API.
+            This can be done manually, but this object provides a more concise API.
 
-        Parameters
-        ----------
-        aggregator
-            A `PyAutoFit` aggregator object which can load the results of model-fits.
-        settings_inversion
-            Optionally overwrite the `SettingsInversion` of the `Inversion` object that is created from the fit.
-        use_preloaded_grid
-            Certain pixelization's construct their mesh in the source-plane from a stochastic KMeans algorithm. This
-            grid may be output to hard-disk after the model-fit and loaded via the database to ensure the same grid is
-            used as the fit.
+            Parameters
+            ----------
+            aggregator
+                A `PyAutoFit` aggregator object which can load the results of model-fits.
+            settings_inversion
+                Optionally overwrite the `SettingsInversion` of the `Inversion` object that is created from the fit.
+            use_preloaded_grid
+                Certain pixelization's construct their mesh in the source-plane from a stochastic KMeans algorithm. This
+                grid may be output to hard-disk after the model-fit and loaded via the database to ensure the same grid is
+                used as the fit.
         """
         super().__init__(aggregator=aggregator)
 
@@ -139,7 +141,8 @@ class FitImagingAgg(af.AggBase):
         Parameters
         ----------
         fit
-            A `PyAutoFit` `Fit` object which contains the results of a model-fit as an entry in a sqlite database.
+            A `PyAutoFit` `Fit` object which contains the results of a model-fit as an entry which has been loaded from
+        an output directory or from an sqlite database..
         instance
             A manual instance that overwrites the max log likelihood instance in fit (e.g. for drawing the instance
             randomly from the PDF).
