@@ -1106,5 +1106,5 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                         )
 
     @aa.profile_func
-    def convolve_via_convolver(self, image, blurring_image, convolver):
-        return convolver.convolve_image(image=image, blurring_image=blurring_image)
+    def convolve_via_psf(self, image, blurring_image, psf):
+        return psf.convolve_image(image=image, blurring_image=blurring_image)

@@ -84,7 +84,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         """
         return self.tracer.blurred_image_2d_from(
             grid=self.grids.lp,
-            convolver=self.dataset.convolver,
+            psf=self.dataset.psf,
             blurring_grid=self.grids.blurring,
         )
 
@@ -103,7 +103,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             data=self.profile_subtracted_image,
             noise_map=self.noise_map,
             grids=self.grids,
-            convolver=self.dataset.convolver,
+            psf=self.dataset.psf,
             w_tilde=self.w_tilde,
         )
 
@@ -163,7 +163,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         galaxy_blurred_image_2d_dict = self.tracer.galaxy_blurred_image_2d_dict_from(
             grid=self.grids.lp,
-            convolver=self.dataset.convolver,
+            psf=self.dataset.psf,
             blurring_grid=self.grids.blurring,
         )
 

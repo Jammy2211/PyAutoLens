@@ -199,7 +199,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
 
     lens_galaxy_image = lens_galaxy.blurred_image_2d_from(
         grid=masked_dataset.grids.lp,
-        convolver=masked_dataset.convolver,
+        psf=masked_dataset.psf,
         blurring_grid=masked_dataset.grids.blurring,
     )
 
@@ -217,7 +217,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
 
     source_galaxy_image = source_galaxy.blurred_image_2d_from(
         grid=traced_grid_2d_list[1],
-        convolver=masked_dataset.convolver,
+        psf=masked_dataset.psf,
         blurring_grid=traced_blurring_grid_2d_list[1],
     )
 
@@ -316,7 +316,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
 
     lens_galaxy_image = lens_galaxy.blurred_image_2d_from(
         grid=masked_dataset.grids.lp,
-        convolver=masked_dataset.convolver,
+        psf=masked_dataset.psf,
         blurring_grid=masked_dataset.grids.blurring,
     )
 
@@ -464,7 +464,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
 
     lens_galaxy_image = lens_galaxy.blurred_image_2d_from(
         grid=masked_dataset.grids.lp,
-        convolver=masked_dataset.convolver,
+        psf=masked_dataset.psf,
         blurring_grid=masked_dataset.grids.blurring,
     )
 
