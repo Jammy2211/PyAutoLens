@@ -45,7 +45,11 @@ class SimulatorImaging(aa.SimulatorImaging):
             grid=grid, psf_shape_2d=self.psf.shape_native
         )
 
-        dataset = self.via_image_from(image=image)
+        over_sample_size = grid.over_sample_size.resized_from(
+            new_shape=image.shape_native, mask_pad_value=1
+        )
+
+        dataset = self.via_image_from(image=image, over_sample_size=over_sample_size)
 
         return dataset.trimmed_after_convolution_from(
             kernel_shape=self.psf.shape_native
