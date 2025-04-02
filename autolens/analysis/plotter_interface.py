@@ -1,4 +1,4 @@
-from os import path
+from autoconf.fitsable import hdu_list_for_output_from
 
 import autoarray as aa
 import autogalaxy.plot as aplt
@@ -65,24 +65,25 @@ class PlotterInterface(AgPlotterInterface):
             tracer_plotter.subplot_galaxies_images()
 
         if should_plot("fits_tracer"):
-            number_plots = 4
-
-            multi_plotter = aplt.MultiFigurePlotter(
-                plotter_list=[tracer_plotter] * number_plots
-            )
-
-            multi_plotter.output_to_fits(
-                func_name_list=["figures_2d"] * number_plots,
-                figure_name_list=[
+            hdu_list = hdu_list_for_output_from(
+                values_list=[
+                    grid.mask.astype("float"),
+                    tracer.convergence_2d_from(grid=grid).native,
+                    tracer.potential_2d_from(grid=grid).native,
+                    tracer.deflections_yx_2d_from(grid=grid).native[:, :, 0],
+                    tracer.deflections_yx_2d_from(grid=grid).native[:, :, 1],
+                ],
+                ext_name_list=[
+                    "mask",
                     "convergence",
                     "potential",
                     "deflections_y",
                     "deflections_x",
                 ],
-                tag_list=["convergence", "potential", "deflections_y", "deflections_x"],
-                filename="tracer",
-                remove_fits_first=True,
+                header_dict=grid.mask.header_dict,
             )
+
+            hdu_list.writeto(self.image_path / "tracer.fits", overwrite=True)
 
     def image_with_positions(self, image: aa.Array2D, positions: aa.Grid2DIrregular):
         """

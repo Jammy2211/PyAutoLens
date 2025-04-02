@@ -77,7 +77,7 @@ class PlotterInterfaceImaging(PlotterInterface):
             except IndexError:
                 pass
 
-        fits_to_fits(should_plot=should_plot, fit=fit, mat_plot_2d=mat_plot_2d, fit_plotter_cls=FitImagingPlotter)
+        fits_to_fits(should_plot=should_plot, image_path=self.image_path, fit=fit)
 
     def fit_imaging_combined(self, fit_list: List[FitImaging]):
         """

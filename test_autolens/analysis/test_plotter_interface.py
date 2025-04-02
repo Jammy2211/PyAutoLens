@@ -29,11 +29,11 @@ def test__tracer(
 
     assert path.join(plot_path, "subplot_galaxies_images.png") in plot_patch.paths
 
-    image = al.util.array_2d.numpy_array_2d_via_fits_from(
+    image = al.ndarray_via_fits_from(
         file_path=path.join(plot_path, "tracer.fits"), hdu=0
     )
 
-    assert image.shape == (5, 5)
+    assert image.shape == (7, 7)
 
 
 def test__image_with_positions(
