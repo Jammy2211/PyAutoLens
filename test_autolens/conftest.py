@@ -119,9 +119,9 @@ def make_psf_3x3():
     return fixtures.make_psf_3x3()
 
 
-@pytest.fixture(name="convolver_7x7")
-def make_convolver_7x7():
-    return fixtures.make_convolver_7x7()
+@pytest.fixture(name="psf_3x3")
+def make_psf_3x3():
+    return fixtures.make_psf_3x3()
 
 
 @pytest.fixture(name="imaging_7x7")

@@ -463,7 +463,7 @@ def test__inversion_imaging_from(grid_2d_7x7, masked_imaging_7x7):
         data=masked_imaging_7x7.data,
         noise_map=masked_imaging_7x7.noise_map,
         grids=grids,
-        convolver=masked_imaging_7x7.convolver,
+        psf=masked_imaging_7x7.psf,
     )
 
     g_linear = al.Galaxy(redshift=0.5, light_linear=al.lp_linear.Sersic())
