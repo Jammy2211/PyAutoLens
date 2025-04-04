@@ -160,8 +160,7 @@ effects like the telescope optics and background sky subtraction in the model-fi
 performed directly on the observed visibilities in their native Fourier space, circumventing issues associated with the 
 incomplete sampling of the uv-plane that give rise to artefacts that can bias the inferred mass model and source 
 reconstruction in real-space. To make feasible the analysis of millions of visibilities, `PyAutoLens` 
-uses `PyNUFFT` [@pynufft] to fit the visibilities via a non-uniform fast Fourier transform and `PyLops` [@PyLops] to 
-express the memory-intensive linear algebra calculations as efficient linear operators [@Powell2020]. Creating 
+uses `PyNUFFT` [@pynufft] to fit the visibilities via a non-uniform fast Fourier transform. Creating 
 realistic simulations of imaging and interferometer strong lensing datasets is possible, as performed 
 by [@Alexander2019] [@Hermans2019] who used `PyAutoLens` to train neural networks to detect strong lenses.
  
@@ -198,7 +197,6 @@ taken without a local `PyAutoLens` installation.
 - `numba` [@numba]
 - `NumPy` [@numpy]
 - `PyAutoFit` [@pyautofit]
-- `PyLops` [@PyLops]
 - `PyMultiNest` [@pymultinest] [@multinest]
 - `PyNUFFT` [@pynufft]
 - `pyprojroot` (https://github.com/chendaniely/pyprojroot)
