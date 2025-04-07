@@ -19,9 +19,6 @@ dataset:                                   # Settings for plots of all datasets 
 positions:                                 # Settings for plots with resampling image-positions on (e.g. the image).
   image_with_positions: true
 
-point_dataset:                             # Settings for plots of point source datasets (e.g. PointDatasetPlotter).
-  subplot_dataset: true                    # Plot subplot containing all dataset quantities (e.g. the data, noise-map, etc.)?
-
 fit:                                       # Settings for plots of all fits (e.g. FitImagingPlotter, FitInterferometerPlotter).
   subplot_fit: true                        # Plot subplot of all fit quantities for any dataset (e.g. the model data, residual-map, etc.)?
   subplot_fit_log10: true                  # Plot subplot of all fit quantities for any dataset using log10 color maps (e.g. the model data, residual-map, etc.)?
@@ -51,7 +48,14 @@ fit_interferometer:                        # Settings for plots of fits to inter
   subplot_fit_real_space: false            # Plot subplot of the real-space images of all interferometer datasets?
   fits_dirty_images: false                 # output dirty_images.fits showing the dirty image, noise-map, model-data, resiual-map, normalized residual map and chi-squared map?
 
+point_dataset:                             # Settings for plots of point source datasets (e.g. PointDatasetPlotter).
+  subplot_dataset: true                    # Plot subplot containing all dataset quantities (e.g. the data, noise-map, etc.)?
+
 fit_point_dataset: {}                      # Settings for plots of fits to point source datasets (e.g. FitPointDatasetPlotter).
+
+fit_ellipse:                               # Settings for plots of ellipse fitting fits (e.g. FitEllipse)
+  data : true                              # Plot the data of the ellipse fit?
+  data_no_ellipse: true                    # Plot the data without the black data ellipses, which obscure noisy data?
 
 fit_quantity:                              # Settings for plots of fit quantities (e.g. FitQuantityPlotter).
   subplot_fit: true
