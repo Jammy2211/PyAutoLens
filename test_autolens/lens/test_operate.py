@@ -35,7 +35,7 @@ def test__operate_image__blurred_images_2d_via_psf_from__for_tracer_gives_list_o
     )
 
     assert blurred_image.native == pytest.approx(
-        blurred_image_0.native + blurred_image_1.native, 1.0e-4
+        blurred_image_0.native.array + blurred_image_1.native.array, 1.0e-4
     )
 
     blurred_image_list = tracer.blurred_image_2d_list_from(
