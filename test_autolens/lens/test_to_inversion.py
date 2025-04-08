@@ -62,8 +62,12 @@ def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
     assert lp_linear_func_list[0].grid == pytest.approx(
         masked_imaging_7x7.grids.lp, 1.0e-4
     )
-    assert lp_linear_func_list[1].grid == pytest.approx(traced_grid_list[1].array, 1.0e-4)
-    assert lp_linear_func_list[2].grid == pytest.approx(traced_grid_list[2].array, 1.0e-4)
+    assert lp_linear_func_list[1].grid == pytest.approx(
+        traced_grid_list[1].array, 1.0e-4
+    )
+    assert lp_linear_func_list[2].grid == pytest.approx(
+        traced_grid_list[2].array, 1.0e-4
+    )
 
     lp_linear_3 = al.lp_linear.LightProfileLinear()
     lp_linear_4 = al.lp_linear.LightProfileLinear()
@@ -360,8 +364,12 @@ def test__traced_mesh_grid_pg_list(masked_imaging_7x7):
 
     traced_mesh_grids_list_of_planes = tracer_to_inversion.traced_mesh_grid_pg_list
 
-    traced_grid_pix_0 = tracer.traced_grid_2d_list_from(grid=al.Grid2DIrregular(values=[[1.0, 0.0]]))[2]
-    traced_grid_pix_1 = tracer.traced_grid_2d_list_from(grid=al.Grid2DIrregular(values=[[2.0, 0.0]]))[4]
+    traced_grid_pix_0 = tracer.traced_grid_2d_list_from(
+        grid=al.Grid2DIrregular(values=[[1.0, 0.0]])
+    )[2]
+    traced_grid_pix_1 = tracer.traced_grid_2d_list_from(
+        grid=al.Grid2DIrregular(values=[[2.0, 0.0]])
+    )[4]
 
     assert traced_mesh_grids_list_of_planes[0] == None
     assert traced_mesh_grids_list_of_planes[1] == None
@@ -464,10 +472,12 @@ def test__inversion_imaging_from(grid_2d_7x7, masked_imaging_7x7):
         noise_map=masked_imaging_7x7.noise_map,
         grids=grids,
         psf=masked_imaging_7x7.psf,
-        convolver=masked_imaging_7x7.convolver
+        convolver=masked_imaging_7x7.convolver,
     )
 
-    g_linear = al.Galaxy(redshift=0.5, light_linear=al.lp_linear.Sersic(centre=(0.05, 0.05)))
+    g_linear = al.Galaxy(
+        redshift=0.5, light_linear=al.lp_linear.Sersic(centre=(0.05, 0.05))
+    )
 
     tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), g_linear])
 
@@ -520,7 +530,9 @@ def test__inversion_interferometer_from(grid_2d_7x7, interferometer_7):
         transformer=interferometer_7.transformer,
     )
 
-    g_linear = al.Galaxy(redshift=0.5, light_linear=al.lp_linear.Sersic(centre=(0.05, 0.05)))
+    g_linear = al.Galaxy(
+        redshift=0.5, light_linear=al.lp_linear.Sersic(centre=(0.05, 0.05))
+    )
 
     tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), g_linear])
 

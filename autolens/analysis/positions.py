@@ -224,7 +224,9 @@ class PositionsLHPenalty(AbstractPositionsLH):
                 residual_map=residual_map, noise_map=dataset.noise_map
             )
 
-            chi_squared = aa.util.fit.chi_squared_from(chi_squared_map=chi_squared_map.array)
+            chi_squared = aa.util.fit.chi_squared_from(
+                chi_squared_map=chi_squared_map.array
+            )
 
             noise_normalization = aa.util.fit.noise_normalization_from(
                 noise_map=dataset.noise_map.array

@@ -41,7 +41,9 @@ def test__fit_figure_of_merit(interferometer_7):
     )
 
     g0 = al.Galaxy(
-        redshift=0.5, bulge=basis, mass_profile=al.mp.IsothermalSph(centre=(0.05, 0.05), einstein_radius=1.0)
+        redshift=0.5,
+        bulge=basis,
+        mass_profile=al.mp.IsothermalSph(centre=(0.05, 0.05), einstein_radius=1.0),
     )
 
     g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(centre=(0.05, 0.05), intensity=1.0))
@@ -71,7 +73,9 @@ def test__fit_figure_of_merit(interferometer_7):
     assert fit.perform_inversion is True
     assert fit.figure_of_merit == pytest.approx(-66.90612, 1.0e-4)
 
-    galaxy_light = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(centre=(0.05, 0.05), intensity=1.0))
+    galaxy_light = al.Galaxy(
+        redshift=0.5, bulge=al.lp.Sersic(centre=(0.05, 0.05), intensity=1.0)
+    )
 
     pixelization = al.Pixelization(
         mesh=al.mesh.Rectangular(shape=(3, 3)),
@@ -113,7 +117,9 @@ def test__fit_figure_of_merit(interferometer_7):
     )
 
     g0_linear = al.Galaxy(
-        redshift=0.5, bulge=basis, mass_profile=al.mp.IsothermalSph(centre=(0.05, 0.05), einstein_radius=1.0)
+        redshift=0.5,
+        bulge=basis,
+        mass_profile=al.mp.IsothermalSph(centre=(0.05, 0.05), einstein_radius=1.0),
     )
 
     tracer = al.Tracer(galaxies=[g0_linear, g1])
@@ -190,7 +196,8 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
     )
 
     g0_no_light = al.Galaxy(
-        redshift=0.5, mass_profile=al.mp.IsothermalSph(centre=(0.05, 0.05), einstein_radius=1.0)
+        redshift=0.5,
+        mass_profile=al.mp.IsothermalSph(centre=(0.05, 0.05), einstein_radius=1.0),
     )
     galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
@@ -291,10 +298,10 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
     assert fit.galaxy_model_visibilities_dict[g0_linear][0] == pytest.approx(
-        1.0138228768598911+0.006599377953512708j, 1.0e-2
+        1.0138228768598911 + 0.006599377953512708j, 1.0e-2
     )
     assert fit.galaxy_model_visibilities_dict[g1_linear][0] == pytest.approx(
-        -0.012892097547972572-0.0019719184145301906j, 1.0e-2
+        -0.012892097547972572 - 0.0019719184145301906j, 1.0e-2
     )
     assert (fit.galaxy_model_visibilities_dict[g2] == np.zeros((7,))).all()
 
@@ -312,7 +319,8 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
     )
 
     g0_no_light = al.Galaxy(
-        redshift=0.5, mass_profile=al.mp.IsothermalSph(centre=(0.05, 0.05), einstein_radius=1.0)
+        redshift=0.5,
+        mass_profile=al.mp.IsothermalSph(centre=(0.05, 0.05), einstein_radius=1.0),
     )
     galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
@@ -322,7 +330,7 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
 
     assert (fit.galaxy_model_visibilities_dict[g0_no_light] == np.zeros((7,))).all()
     assert fit.galaxy_model_visibilities_dict[galaxy_pix_0][0] == pytest.approx(
-        0.37828909168666935+0.40127834296223164j, 1.0e-4
+        0.37828909168666935 + 0.40127834296223164j, 1.0e-4
     )
 
     assert fit.model_data == pytest.approx(
@@ -342,14 +350,14 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
     )
 
     assert fit.galaxy_model_visibilities_dict[g0_linear][0] == pytest.approx(
-        -23.049182329227243-0.1500363319686841j, 1.0e-4
+        -23.049182329227243 - 0.1500363319686841j, 1.0e-4
     )
 
     assert fit.galaxy_model_visibilities_dict[galaxy_pix_0][0] == pytest.approx(
-        -0.054816474483476214+0.14599319644288866j, 1.0e-4
+        -0.054816474483476214 + 0.14599319644288866j, 1.0e-4
     )
     assert fit.galaxy_model_visibilities_dict[galaxy_pix_1][0] == pytest.approx(
-        -0.054816474483476214+0.14599319644288866j, 1.0e-4
+        -0.054816474483476214 + 0.14599319644288866j, 1.0e-4
     )
     assert (fit.galaxy_model_visibilities_dict[g2] == np.zeros((7,))).all()
 
