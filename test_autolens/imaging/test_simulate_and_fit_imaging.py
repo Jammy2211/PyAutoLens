@@ -111,7 +111,7 @@ def test__simulate_imaging_data_and_fit__known_likelihood():
     dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
     mask = al.Mask2D.circular(
-        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=2.0
+        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=2.005
     )
 
     masked_dataset = dataset.apply_mask(mask=mask)
@@ -149,7 +149,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
     )
 
     mask = al.Mask2D.circular(
-        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=0.8
+        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=0.805
     )
 
     masked_dataset = dataset.apply_mask(mask=mask)
@@ -204,10 +204,10 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
     )
 
     assert fit_linear.galaxy_model_image_dict[lens_galaxy_linear] == pytest.approx(
-        lens_galaxy_image, 1.0e-4
+        lens_galaxy_image.array, 1.0e-4
     )
     assert fit_linear.model_images_of_planes_list[0] == pytest.approx(
-        lens_galaxy_image, 1.0e-4
+        lens_galaxy_image.array, 1.0e-4
     )
 
     traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=masked_dataset.grids.lp)
@@ -222,11 +222,11 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
     )
 
     assert fit_linear.galaxy_model_image_dict[source_galaxy_linear] == pytest.approx(
-        source_galaxy_image, 1.0e-4
+        source_galaxy_image.array, 1.0e-4
     )
 
     assert fit_linear.model_images_of_planes_list[1] == pytest.approx(
-        source_galaxy_image, 1.0e-4
+        source_galaxy_image.array, 1.0e-4
     )
 
 
@@ -258,7 +258,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     )
 
     mask = al.Mask2D.circular(
-        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=0.8
+        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=0.805
     )
 
     masked_dataset = dataset.apply_mask(mask=mask)
@@ -321,10 +321,10 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     )
 
     assert fit_linear.galaxy_model_image_dict[lens_galaxy_linear] == pytest.approx(
-        lens_galaxy_image, 1.0e-2
+        lens_galaxy_image.array, 1.0e-2
     )
     assert fit_linear.model_images_of_planes_list[0] == pytest.approx(
-        lens_galaxy_image, 1.0e-2
+        lens_galaxy_image.array, 1.0e-2
     )
 
     assert fit_linear.galaxy_model_image_dict[source_galaxy_pix][0] == pytest.approx(
@@ -413,7 +413,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
     )
 
     mask = al.Mask2D.circular(
-        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=0.8
+        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=0.805
     )
 
     dataset = al.Imaging(
@@ -469,10 +469,10 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
     )
 
     assert fit_linear.galaxy_model_image_dict[lens_galaxy_linear] == pytest.approx(
-        lens_galaxy_image, 1.0e-2
+        lens_galaxy_image.array, 1.0e-2
     )
     assert fit_linear.model_images_of_planes_list[0] == pytest.approx(
-        lens_galaxy_image, 1.0e-2
+        lens_galaxy_image.array, 1.0e-2
     )
 
     assert fit_linear.galaxy_model_image_dict[source_galaxy_pix][0] == pytest.approx(
@@ -676,7 +676,7 @@ def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging
     )
 
     mask = al.Mask2D.circular(
-        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=0.8
+        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=0.805
     )
 
     masked_dataset = dataset.apply_mask(mask=mask)

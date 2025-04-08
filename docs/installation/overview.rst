@@ -67,5 +67,3 @@ Dependencies
 And the following optional dependencies:
 
 **pynufft**: https://github.com/jyhmiinlin/pynufft
-
-**PyLops**: https://github.com/PyLops/pylops

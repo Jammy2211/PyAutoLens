@@ -1,6 +1,5 @@
 from abc import ABC
 import numpy as np
-from functools import wraps
 from scipy.interpolate import griddata
 from typing import Dict, List, Optional, Type, Union
 
@@ -549,9 +548,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         )[plane_index]
 
         image = griddata(
-            points=plane_grid,
-            values=plane_image,
-            xi=traced_grid.over_sampled,
+            points=plane_grid.array,
+            values=plane_image.array,
+            xi=traced_grid.over_sampled.array,
             fill_value=0.0,
             method="linear",
         )

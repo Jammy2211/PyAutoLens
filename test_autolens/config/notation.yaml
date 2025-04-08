@@ -62,7 +62,6 @@ label:
     weight_power: W_{\rm p}
   superscript:
     ExternalShear: ext
-    InputDeflections: defl
     Pixelization: pix
     Point: point
     Redshift: ''
