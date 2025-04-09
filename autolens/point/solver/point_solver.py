@@ -1,3 +1,4 @@
+import jax.numpy as jnp
 import logging
 from typing import Tuple, Optional
 
@@ -54,4 +55,8 @@ class PointSolver(AbstractSolver):
             tracer=tracer, points=kept_triangles.means
         )
 
-        return aa.Grid2DIrregular([pair for pair in filtered_means])
+        arr = aa.Grid2DIrregular([pair for pair in filtered_means])
+
+        mask = ~jnp.isnan(arr.array).any(axis=1)
+        return aa.Grid2DIrregular(arr.array[mask])
+
