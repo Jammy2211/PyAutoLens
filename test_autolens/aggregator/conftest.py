@@ -41,8 +41,7 @@ def aggregator_from(database_file, analysis, model, samples):
     clean(database_file=database_file)
 
     search = al.m.MockSearch(
-        samples=samples,
-        result=al.m.MockResult(model=model, samples=samples)
+        samples=samples, result=al.m.MockResult(model=model, samples=samples)
     )
     search.paths = af.DirectoryPaths(path_prefix=database_file)
     search.fit(model=model, analysis=analysis)

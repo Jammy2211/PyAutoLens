@@ -59,4 +59,3 @@ class PointSolver(AbstractSolver):
 
         mask = ~jnp.isnan(arr.array).any(axis=1)
         return aa.Grid2DIrregular(arr.array[mask])
-

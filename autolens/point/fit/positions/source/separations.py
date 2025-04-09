@@ -130,7 +130,10 @@ class FitPositionsSource(AbstractFitPositions):
             jnp.log(
                 2
                 * np.pi
-                * (self.magnifications_at_positions.array**-2.0 * self.noise_map.array**2.0)
+                * (
+                    self.magnifications_at_positions.array**-2.0
+                    * self.noise_map.array**2.0
+                )
             )
         )
 
