@@ -67,8 +67,8 @@ def test__positions__resample__raises_exception(masked_imaging_7x7):
 
 
 def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x7):
-    lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph())
-    source = al.Galaxy(redshift=1.0, light=al.lp.SersicSph())
+    lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph(centre=(0.05, 0.05)))
+    source = al.Galaxy(redshift=1.0, light=al.lp.SersicSph(centre=(0.05, 0.05)))
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -82,7 +82,7 @@ def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
     assert fit.log_likelihood == pytest.approx(analysis_log_likelihood, 1.0e-4)
-    assert analysis_log_likelihood == pytest.approx(-6258.043397009, 1.0e-4)
+    assert analysis_log_likelihood == pytest.approx(-14.79034680979, 1.0e-4)
 
     positions_likelihood = al.PositionsLHPenalty(
         positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01
