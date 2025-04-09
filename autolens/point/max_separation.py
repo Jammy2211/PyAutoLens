@@ -33,7 +33,9 @@ class SourceMaxSeparation:
         self.data = data
         self.noise_map = noise_map
 
-        self.source_plane_positions = tracer.traced_grid_2d_list_from(grid=aa.Grid2DIrregular(data))[-1]
+        traced_grid_2d_list = tracer.traced_grid_2d_list_from(grid=aa.Grid2DIrregular(data))
+
+        self.source_plane_positions = aa.Grid2DIrregular(values=traced_grid_2d_list[-1])
 
     @property
     def furthest_separations_of_source_plane_positions(self) -> aa.ArrayIrregular:
