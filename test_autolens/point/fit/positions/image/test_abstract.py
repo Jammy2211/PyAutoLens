@@ -76,9 +76,13 @@ def test__multi_plane_position_solving():
         redshift_0=0.5, redshift_1=1.0, redshift_final=2.0
     )
 
+    print(scaling_factor)
+    print(fit_0.model_data)
+    print(fit_1.model_data)
+
     assert fit_0.model_data[0, 0] == pytest.approx(
-        scaling_factor * fit_1.model_data[1, 0], 1.0e-1
+        scaling_factor * fit_1.model_data.array[1, 0], 1.0e-1
     )
     assert fit_0.model_data[1, 1] == pytest.approx(
-        scaling_factor * fit_1.model_data[0, 1], 1.0e-1
+        scaling_factor * fit_1.model_data.array[0, 1], 1.0e-1
     )
