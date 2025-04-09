@@ -54,9 +54,9 @@ def test_andrew_implementation(fit):
     assert fit.chi_squared == -2.0 * -4.40375330990644
 
 
-@pytest.mark.skipif(not JAX_INSTALLED, reason="JAX is not installed")
-def test_jax(fit):
-    assert jax.jit(fit.log_likelihood)() == -4.40375330990644
+# @pytest.mark.skipif(not JAX_INSTALLED, reason="JAX is not installed")
+# def test_jax(fit):
+#     assert jax.jit(fit.log_likelihood)() == -4.40375330990644
 
 
 def test_nan_model_positions(

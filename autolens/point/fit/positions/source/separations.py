@@ -118,7 +118,7 @@ class FitPositionsSource(AbstractFitPositions):
         """
 
         return self.residual_map**2.0 / (
-            self.magnifications_at_positions**-2.0 * self.noise_map**2.0
+            self.magnifications_at_positions.array**-2.0 * self.noise_map.array**2.0
         )
 
     @property
@@ -130,7 +130,10 @@ class FitPositionsSource(AbstractFitPositions):
             jnp.log(
                 2
                 * np.pi
-                * (self.magnifications_at_positions**-2.0 * self.noise_map**2.0)
+                * (
+                    self.magnifications_at_positions.array**-2.0
+                    * self.noise_map.array**2.0
+                )
             )
         )
 
