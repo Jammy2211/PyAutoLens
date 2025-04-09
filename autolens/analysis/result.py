@@ -223,7 +223,7 @@ class Result(AgResultDataset):
             data=positions, noise_map=None, tracer=tracer
         )
 
-        threshold = factor * np.max(
+        threshold = factor * np.nanmax(
             positions_fits.max_separation_of_source_plane_positions
         )
 
