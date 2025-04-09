@@ -4,7 +4,7 @@ from typing import Tuple, Optional
 import autoarray as aa
 from autoarray.structures.triangles.shape import Point
 
-from autofit.jax_wrapper import jit, register_pytree_node_class
+from autofit.jax_wrapper import register_pytree_node_class
 from autogalaxy import OperateDeflections
 from .shape_solver import AbstractSolver
 
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 @register_pytree_node_class
 class PointSolver(AbstractSolver):
-    @jit
+
     def solve(
         self,
         tracer: OperateDeflections,
@@ -55,21 +55,3 @@ class PointSolver(AbstractSolver):
         )
 
         return aa.Grid2DIrregular([pair for pair in filtered_means])
-
-        # filtered_means = [
-        #     pair for pair in filtered_means if not np.any(np.isnan(pair)).all()
-        # ]
-        #
-        # difference = len(kept_triangles.means) - len(filtered_means)
-        # if difference > 0:
-        #     logger.debug(
-        #         f"Filtered one multiple-image with magnification below threshold."
-        #     )
-        # elif difference > 1:
-        #     logger.warning(
-        #         f"Filtered {difference} multiple-images with magnification below threshold."
-        #     )
-        #
-        # return aa.Grid2DIrregular(
-        #     [pair for pair in filtered_means if not np.isnan(pair).all()]
-        # )

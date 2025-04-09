@@ -1,5 +1,4 @@
 import jax.numpy as jnp
-from jax import jit
 import logging
 import math
 
@@ -208,7 +207,6 @@ class AbstractSolver:
         # noinspection PyTypeChecker
         return grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
 
-    @jit
     def solve_triangles(
         self,
         tracer: OperateDeflections,
@@ -270,7 +268,7 @@ class AbstractSolver:
         """
         points = jnp.array(points)
         magnifications = tracer.magnification_2d_via_hessian_from(
-            grid=aa.Grid2DIrregular(points),
+            grid=aa.Grid2DIrregular(points).array,
             buffer=self.scale,
         )
         mask = jnp.abs(magnifications.array) > self.magnification_threshold

@@ -128,5 +128,5 @@ class FitFluxes(AbstractFitPoint):
         RMS noise-map values squared.
         """
         return ag.util.fit.chi_squared_from(
-            chi_squared_map=self.chi_squared_map,
+            chi_squared_map=self.chi_squared_map.array,
         )
