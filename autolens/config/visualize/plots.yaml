@@ -1,25 +1,33 @@
+# The `plots` section customizes every image that is output to hard-disk during a model-fit.
+
+# For example, if `plots: fit: subplot_fit=True``, the ``subplot_fit.png`` subplot file will
+# be plotted every time visualization is performed.
+
+# There are two settings which are important for inspecting results via the dataset after a fit is complete which are:
+
+# - `fits_dataset`: This outputs `dataset.fits` which the database functionality may use to reperform fits.
+# -`fits_adapt_images`, This outputs `adapt_images.fits` which the database functionality may use to reperform fits.
+
+# These can be disabled to save on hard-disk space but will lead to certain database functionality being disabled.
+
+subplot_format: [png]                      # Output format of all subplots, can be png, pdf or both (e.g. [png, pdf])
+
 dataset:                                   # Settings for plots of all datasets (e.g. ImagingPlotter, InterferometerPlotter).
   subplot_dataset: true                    # Plot subplot containing all dataset quantities (e.g. the data, noise-map, etc.)?
+  fits_dataset: true                      # Output a .fits file containing the dataset data, noise-map and other quantities?
 
 positions:                                 # Settings for plots with resampling image-positions on (e.g. the image).
   image_with_positions: true
-
-point_dataset:                             # Settings for plots of point source datasets (e.g. PointDatasetPlotter).
-  subplot_dataset: true                    # Plot subplot containing all dataset quantities (e.g. the data, noise-map, etc.)?
 
 fit:                                       # Settings for plots of all fits (e.g. FitImagingPlotter, FitInterferometerPlotter).
   subplot_fit: true                        # Plot subplot of all fit quantities for any dataset (e.g. the model data, residual-map, etc.)?
   subplot_fit_log10: true                  # Plot subplot of all fit quantities for any dataset using log10 color maps (e.g. the model data, residual-map, etc.)?
   subplot_of_planes: false                 # Plot subplot of the model-image, subtracted image and other quantities of each plane?
   subplot_galaxies_images: false              # Plot subplot of the image of each plane in the model?
+  fits_fit: false                          # Output a .fits file containing the fit model data, residual map, normalized residual map and chi-squared?
+  fits_model_galaxy_images : false         # Output a .fits file containing the model images of every galaxy?
 
 fit_imaging: {}                            # Settings for plots of fits to imaging datasets (e.g. FitImagingPlotter).
-
-fit_interferometer:                        # Settings for plots of fits to interferometer datasets (e.g. FitInterferometerPlotter).
-  subplot_fit_dirty_images: false          # Plot subplot of the dirty-images of all interferometer datasets?
-  subplot_fit_real_space: false            # Plot subplot of the real-space images of all interferometer datasets?
-
-fit_point_dataset: {}                      # Settings for plots of fits to point source datasets (e.g. FitPointDatasetPlotter).
 
 tracer:                                    # Settings for plots of tracers (e.g. TracerPlotter).
   subplot_tracer: true                     # Plot subplot of all quantities in each tracer (e.g. images, convergence)?
@@ -29,9 +37,25 @@ tracer:                                    # Settings for plots of tracers (e.g.
 inversion:                                 # Settings for plots of inversions (e.g. InversionPlotter).
   subplot_inversion: true                  # Plot subplot of all quantities in each inversion (e.g. reconstrucuted image, reconstruction)?
   subplot_mappings: true                   # Plot subplot of the image-to-source pixels mappings of each pixelization?
+  fits_reconstruction: false               # output reconstruction.fits containing the reconstructed pixelization and noise map on the adaptive mesh?
 
 adapt:                                     # Settings for plots of adapt images used by adaptive pixelizations.
   subplot_adapt_images: true               # Plot subplot showing each adapt image used for adaptive pixelization?
+  fits_adapt_images: true                  # Output a .fits file containing the adapt images used for adaptive pixelization?
+
+fit_interferometer:                        # Settings for plots of fits to interferometer datasets (e.g. FitInterferometerPlotter).
+  subplot_fit_dirty_images: false          # Plot subplot of the dirty-images of all interferometer datasets?
+  subplot_fit_real_space: false            # Plot subplot of the real-space images of all interferometer datasets?
+  fits_dirty_images: false                 # output dirty_images.fits showing the dirty image, noise-map, model-data, resiual-map, normalized residual map and chi-squared map?
+
+point_dataset:                             # Settings for plots of point source datasets (e.g. PointDatasetPlotter).
+  subplot_dataset: true                    # Plot subplot containing all dataset quantities (e.g. the data, noise-map, etc.)?
+
+fit_point_dataset: {}                      # Settings for plots of fits to point source datasets (e.g. FitPointDatasetPlotter).
+
+fit_ellipse:                               # Settings for plots of ellipse fitting fits (e.g. FitEllipse)
+  data : true                              # Plot the data of the ellipse fit?
+  data_no_ellipse: true                    # Plot the data without the black data ellipses, which obscure noisy data?
 
 fit_quantity:                              # Settings for plots of fit quantities (e.g. FitQuantityPlotter).
   subplot_fit: true
