@@ -33,7 +33,7 @@ def test__tracer(
         file_path=path.join(plot_path, "tracer.fits"), hdu=0
     )
 
-    assert image.shape == (7, 7)
+    assert image.shape == (5, 5)
 
 
 def test__image_with_positions(

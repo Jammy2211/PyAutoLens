@@ -80,12 +80,11 @@ class FitImagingPlotter(Plotter):
         Returns an `TracerPlotter` corresponding to the `Tracer` in the `FitImaging`.
         """
 
-        extent = self.fit.data.extent_of_zoomed_array(buffer=0)
-        shape_native = self.fit.data.zoomed_around_mask(buffer=0).shape_native
+        zoom = aa.Zoom2D(mask=self.fit.mask)
 
         grid = aa.Grid2D.from_extent(
-            extent=extent,
-            shape_native=shape_native
+            extent=zoom.extent_from(buffer=0),
+            shape_native=zoom.shape_native
         )
 
         return TracerPlotter(

@@ -102,8 +102,10 @@ class VisualizerImaging(af.Visualizer):
 
         tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
-        extent = fit.data.extent_of_zoomed_array(buffer=0)
-        shape_native = fit.data.zoomed_around_mask(buffer=0).shape_native
+        zoom = ag.Zoom2D(mask=fit.mask)
+
+        extent = zoom.extent_from(buffer=0)
+        shape_native = zoom.shape_native
 
         grid = ag.Grid2D.from_extent(extent=extent, shape_native=shape_native)
 

@@ -34,13 +34,13 @@ def test__fit_imaging(
         file_path=path.join(plot_path, "fit.fits"), hdu=0
     )
 
-    assert image.shape == (7, 7)
+    assert image.shape == (5, 5)
 
     image = al.ndarray_via_fits_from(
         file_path=path.join(plot_path, "model_galaxy_images.fits"), hdu=0
     )
 
-    assert image.shape == (7, 7)
+    assert image.shape == (5, 5)
 
 def test__fit_imaging_combined(
     fit_imaging_x2_plane_inversion_7x7, plot_path, plot_patch

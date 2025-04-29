@@ -11,6 +11,7 @@
 # These can be disabled to save on hard-disk space but will lead to certain database functionality being disabled.
 
 subplot_format: [png]                      # Output format of all subplots, can be png, pdf or both (e.g. [png, pdf])
+fits_are_zoomed: true                      # If true, output .fits files are zoomed in on the center of the unmasked region image, saving hard-disk space.
 
 dataset:                                   # Settings for plots of all datasets (e.g. ImagingPlotter, InterferometerPlotter).
   subplot_dataset: true                    # Plot subplot containing all dataset quantities (e.g. the data, noise-map, etc.)?
@@ -37,7 +38,7 @@ tracer:                                    # Settings for plots of tracers (e.g.
 inversion:                                 # Settings for plots of inversions (e.g. InversionPlotter).
   subplot_inversion: true                  # Plot subplot of all quantities in each inversion (e.g. reconstrucuted image, reconstruction)?
   subplot_mappings: true                   # Plot subplot of the image-to-source pixels mappings of each pixelization?
-  fits_reconstruction: false               # output reconstruction.fits containing the reconstructed pixelization and noise map on the adaptive mesh?
+  csv_reconstruction: false                # output reconstruction.csv containing the source-plane mesh y, x, reconstruction and noise map values.
 
 adapt:                                     # Settings for plots of adapt images used by adaptive pixelizations.
   subplot_adapt_images: true               # Plot subplot showing each adapt image used for adaptive pixelization?
