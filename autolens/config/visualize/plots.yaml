@@ -11,6 +11,7 @@
 # These can be disabled to save on hard-disk space but will lead to certain database functionality being disabled.
 
 subplot_format: [png]                      # Output format of all subplots, can be png, pdf or both (e.g. [png, pdf])
+fits_are_zoomed: true                      # If true, output .fits files are zoomed in on the center of the unmasked region image, saving hard-disk space.
 
 dataset:                                   # Settings for plots of all datasets (e.g. ImagingPlotter, InterferometerPlotter).
   subplot_dataset: true                    # Plot subplot containing all dataset quantities (e.g. the data, noise-map, etc.)?
