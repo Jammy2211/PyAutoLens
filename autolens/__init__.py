@@ -9,6 +9,7 @@ from autoarray.dataset.grids import GridsInterface
 from autoarray.dataset.dataset_model import DatasetModel
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
+from autoarray.mask.derive.zoom_2d import Zoom2D
 from autoarray.operators.over_sampling.over_sampler import OverSampler  # noqa
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.mapper_valued import MapperValued
