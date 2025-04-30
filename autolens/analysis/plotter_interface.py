@@ -1,5 +1,7 @@
+import ast
 import numpy as np
 
+from autoconf import conf
 from autoconf.fitsable import hdu_list_for_output_from
 
 import autoarray as aa
@@ -96,12 +98,18 @@ class PlotterInterface(AgPlotterInterface):
 
         if should_plot("fits_source_plane_images"):
 
+            shape_native = conf.instance["visualize"]["plots"]["tracer"][
+                "fits_source_plane_shape"
+            ]
+            shape_native = ast.literal_eval(shape_native)
+
             zoom = aa.Zoom2D(mask=grid.mask)
             mask = zoom.mask_2d_from(buffer=1)
             grid_source_plane = aa.Grid2D.from_extent(
-                extent=mask.geometry.extent,
-                shape_native=(100, 100)
+                extent=mask.geometry.extent, shape_native=tuple(shape_native)
             )
+
+            print(grid_source_plane)
 
             image_list = [grid_source_plane.mask.astype("float")]
             ext_name_list = ["mask"]
@@ -110,9 +118,8 @@ class PlotterInterface(AgPlotterInterface):
 
                 if plane.has(cls=ag.LightProfile):
 
-                    image = plane.plane_image_2d_from(
+                    image = plane.image_2d_from(
                         grid=grid_source_plane,
-                        zoom_to_brightest=False
                     ).native
 
                 else:
@@ -120,7 +127,7 @@ class PlotterInterface(AgPlotterInterface):
                     image = np.zeros(grid_source_plane.shape_native)
 
                 image_list.append(image)
-                ext_name_list.append(f"source_plane_image_{i}")
+                ext_name_list.append(f"source_plane_image_{i+1}")
 
             hdu_list = hdu_list_for_output_from(
                 values_list=image_list,
@@ -128,9 +135,9 @@ class PlotterInterface(AgPlotterInterface):
                 header_dict=grid_source_plane.mask.header_dict,
             )
 
-            hdu_list.writeto(self.image_path / "source_plane_images.fits", overwrite=True)
-
-
+            hdu_list.writeto(
+                self.image_path / "source_plane_images.fits", overwrite=True
+            )
 
     def image_with_positions(self, image: aa.Array2D, positions: aa.Grid2DIrregular):
         """

@@ -35,6 +35,7 @@ tracer:                                    # Settings for plots of tracers (e.g.
   subplot_galaxies_images: false           # Plot subplot of the image of each plane in the tracer?
   fits_tracer: false                       # Output tracer.fits file of tracer's convergence, potential, deflections_y and deflections_x?
   fits_source_plane_images: false          # Output source_plane_images.fits file of the source-plane image (light profiles only) of each galaxy in the tracer?
+  fits_source_plane_shape: (100, 100)      # The shape of the source-plane image output in the fits_source_plane_images.fits file.
 
 inversion:                                 # Settings for plots of inversions (e.g. InversionPlotter).
   subplot_inversion: true                  # Plot subplot of all quantities in each inversion (e.g. reconstrucuted image, reconstruction)?

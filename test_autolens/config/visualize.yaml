@@ -100,3 +100,5 @@ plots:
     subplot_tracer: true
     subplot_galaxies_images: true
     fits_tracer: true                       # Output tracer.fits file of tracer's convergence, potential, deflections_y and deflections_x?
+    fits_source_plane_images: true           # Output source_plane_images.fits file of the source-plane image (light profiles only) of each galaxy in the tracer?
+    fits_source_plane_shape: (3, 3)      # The shape of the source-plane image output in the fits_source_plane_images.fits file.
