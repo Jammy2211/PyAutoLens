@@ -31,6 +31,7 @@ from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.arrays.rgb import Array2DRGB
 from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
@@ -92,9 +93,11 @@ from .analysis.positions import PositionsLHPenalty
 from .imaging.simulator import SimulatorImaging
 from .imaging.fit_imaging import FitImaging
 from .imaging.model.analysis import AnalysisImaging
+from .imaging.model.visualizer import VisualizerImaging
 from .interferometer.simulator import SimulatorInterferometer
 from .interferometer.fit_interferometer import FitInterferometer
 from .interferometer.model.analysis import AnalysisInterferometer
+from .interferometer.model.visualizer import VisualizerInterferometer
 from .point.dataset import PointDataset
 from .point.fit.dataset import FitPointDataset
 from .point.fit.fluxes import FitFluxes
