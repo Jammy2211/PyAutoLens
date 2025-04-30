@@ -292,8 +292,6 @@ class FitImagingPlotter(Plotter):
 
                 elif self.tracer.planes[plane_index].has(cls=aa.Pixelization):
 
-                    pix = self.tracer.planes[plane_index].cls_list_from(cls=aa.Pixelization)[0]
-
                     inversion_plotter = self.inversion_plotter_of_plane(
                         plane_index=plane_index
                     )
