@@ -30,6 +30,7 @@ from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.arrays.rgb import Array2DRGB
 from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
