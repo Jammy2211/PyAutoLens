@@ -59,12 +59,25 @@ class PlotterInterfaceImaging(PlotterInterface):
             fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
         )
 
+        plane_indexes_to_plot = [i for i in fit.tracer.plane_indexes_with_images if i != 0]
+
         if should_plot("subplot_fit"):
-            fit_plotter.subplot_fit()
+
+            # This loop means that multiple subplot_fit objects are output for a double source plane lens.
+
+            if len(plane_indexes_to_plot) > 1:
+                for plane_index in plane_indexes_to_plot:
+                    fit_plotter.subplot_fit(plane_index=plane_index)
+            else:
+                fit_plotter.subplot_fit()
 
         if should_plot("subplot_fit_log10"):
             try:
-                fit_plotter.subplot_fit_log10()
+                if len(plane_indexes_to_plot) > 1:
+                    for plane_index in plane_indexes_to_plot:
+                        fit_plotter.subplot_fit_log10(plane_index=plane_index)
+                else:
+                    fit_plotter.subplot_fit_log10()
             except ValueError:
                 pass
 

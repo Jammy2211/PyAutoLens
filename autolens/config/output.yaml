@@ -93,4 +93,4 @@ latent_results: true # Whether to output the `latent.results` file.
 
 # Other Files:
 
-search_log: true # `search.log`: logging produced whilst running the fit or fit_sequential method
+search_log: true # `search.log`: logging produced whilst running the fit method
