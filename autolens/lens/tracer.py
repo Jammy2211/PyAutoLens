@@ -802,7 +802,18 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         return cls_list
 
     @property
-    def plane_indexes_with_pixelizations(self):
+    def plane_indexes_with_pixelizations(self) -> List[int]:
+        """
+        Returns a list of integer indexes of the indexes of planes which use a `Pixelization` to reconstruct the
+        source galaxy.
+
+        This list is used to set up an inversion, whereby each pixelization is extracted from the tracer with its
+        corresponding ray-traced grid and passed to the PyAutoArray `inversion` module.
+
+        Returns
+        -------
+        The list of integer indexes of the planes which use a `Pixelization` to reconstruct the source galaxy.
+        """
         plane_indexes_with_inversions = [
             plane_index if plane.has(cls=aa.Pixelization) else None
             for (plane_index, plane) in enumerate(self.planes)
@@ -810,6 +821,32 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         return [
             plane_index
             for plane_index in plane_indexes_with_inversions
+            if plane_index is not None
+        ]
+
+    @property
+    def plane_indexes_with_images(self):
+        """
+        Returns a list of integer indexes of the indexes of planes which create an image, meaning they either
+        have a `LightProfile` or `Pixelization`.
+
+        This list is used to visualize double source plane lenses, whereby a fit for every plane with a
+        `LightProfile` or `Pixelization` is created.
+
+        Returns
+        -------
+        The list of integer indexes of the planes which create an image.
+        """
+        plane_indexes_with_images = [
+            plane_index if plane.has(cls=ag.LightProfile) else None
+            for (plane_index, plane) in enumerate(self.planes)
+        ] + self.plane_indexes_with_pixelizations
+
+        plane_indexes_with_images = list(dict.fromkeys(plane_indexes_with_images))
+
+        return [
+            plane_index
+            for plane_index in plane_indexes_with_images
             if plane_index is not None
         ]
 

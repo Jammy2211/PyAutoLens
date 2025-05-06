@@ -109,8 +109,6 @@ class PlotterInterface(AgPlotterInterface):
                 extent=mask.geometry.extent, shape_native=tuple(shape_native)
             )
 
-            print(grid_source_plane)
-
             image_list = [grid_source_plane.mask.astype("float")]
             ext_name_list = ["mask"]
 
