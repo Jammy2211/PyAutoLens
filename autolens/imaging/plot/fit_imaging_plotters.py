@@ -422,7 +422,7 @@ class FitImagingPlotter(Plotter):
             auto_labels=AutoLabels(filename=auto_filename),
         )
 
-    def subplot_fit(self):
+    def subplot_fit(self, plane_index: Optional[int] = None):
         """
         Standard subplot of the attributes of the plotter's `FitImaging` object.
         """
@@ -444,21 +444,22 @@ class FitImagingPlotter(Plotter):
         # If the lens light is not included the subplot index does not increase, so we must manually set it to 4
         self.mat_plot_2d.subplot_index = 6
 
-        final_plane_index = len(self.fit.tracer.planes) - 1
+        plane_index_tag = "" if plane_index is None else f"_{plane_index}"
+
+        plane_index = len(self.fit.tracer.planes) - 1 if plane_index is None else plane_index
 
         self.mat_plot_2d.cmap.kwargs["vmin"] = 0.0
 
         self.set_title(label="Lens Light Subtracted Image")
-        self.figures_2d_of_planes(plane_index=final_plane_index, subtracted_image=True, use_source_vmax=True)
+        self.figures_2d_of_planes(plane_index=plane_index, subtracted_image=True, use_source_vmax=True)
 
         self.set_title(label="Source Model Image (Image Plane)")
-        self.figures_2d_of_planes(plane_index=final_plane_index, model_image=True, use_source_vmax=True)
+        self.figures_2d_of_planes(plane_index=plane_index, model_image=True, use_source_vmax=True)
 
         self.mat_plot_2d.cmap.kwargs.pop("vmin")
 
         self.set_title(label="Source Plane (Zoomed)")
-        self.figures_2d_of_planes(plane_index=final_plane_index, plane_image=True, use_source_vmax=True)
-
+        self.figures_2d_of_planes(plane_index=plane_index, plane_image=True, use_source_vmax=True)
 
         self.set_title(label=None)
 
@@ -480,7 +481,7 @@ class FitImagingPlotter(Plotter):
 
         self.set_title(label="Source Plane (No Zoom)")
         self.figures_2d_of_planes(
-            plane_index=final_plane_index,
+            plane_index=plane_index,
             plane_image=True,
             zoom_to_brightest=False,
             use_source_vmax=True
@@ -489,11 +490,11 @@ class FitImagingPlotter(Plotter):
         self.set_title(label=None)
 
         self.mat_plot_2d.output.subplot_to_figure(
-            auto_filename="subplot_fit"
+            auto_filename=f"subplot_fit{plane_index_tag}"
         )
         self.close_subplot_figure()
 
-    def subplot_fit_log10(self):
+    def subplot_fit_log10(self, plane_index: Optional[int] = None):
         """
         Standard subplot of the attributes of the plotter's `FitImaging` object.
         """
@@ -530,21 +531,22 @@ class FitImagingPlotter(Plotter):
         # If the lens light is not included the subplot index does not increase, so we must manually set it to 4
         self.mat_plot_2d.subplot_index = 6
 
-        final_plane_index = len(self.fit.tracer.planes) - 1
+        plane_index_tag = "" if plane_index is None else f"_{plane_index}"
+
+        plane_index = len(self.fit.tracer.planes) - 1 if plane_index is None else plane_index
 
         self.mat_plot_2d.cmap.kwargs["vmin"] = 0.0
 
         self.set_title(label="Lens Light Subtracted Image")
-        self.figures_2d_of_planes(plane_index=final_plane_index, subtracted_image=True, use_source_vmax=True)
+        self.figures_2d_of_planes(plane_index=plane_index, subtracted_image=True, use_source_vmax=True)
 
         self.set_title(label="Source Model Image (Image Plane)")
-        self.figures_2d_of_planes(plane_index=final_plane_index, model_image=True, use_source_vmax=True)
+        self.figures_2d_of_planes(plane_index=plane_index, model_image=True, use_source_vmax=True)
 
         self.mat_plot_2d.cmap.kwargs.pop("vmin")
 
         self.set_title(label="Source Plane (Zoomed)")
-        self.figures_2d_of_planes(plane_index=final_plane_index, plane_image=True, use_source_vmax=True)
-
+        self.figures_2d_of_planes(plane_index=plane_index, plane_image=True, use_source_vmax=True)
 
         self.set_title(label=None)
 
@@ -570,7 +572,7 @@ class FitImagingPlotter(Plotter):
 
         self.set_title(label="Source Plane (No Zoom)")
         self.figures_2d_of_planes(
-            plane_index=final_plane_index,
+            plane_index=plane_index,
             plane_image=True,
             zoom_to_brightest=False,
             use_source_vmax=True
@@ -579,7 +581,7 @@ class FitImagingPlotter(Plotter):
         self.set_title(label=None)
 
         self.mat_plot_2d.output.subplot_to_figure(
-            auto_filename="subplot_fit_log10"
+            auto_filename=f"subplot_fit_log10{plane_index_tag}"
         )
         self.close_subplot_figure()
 
