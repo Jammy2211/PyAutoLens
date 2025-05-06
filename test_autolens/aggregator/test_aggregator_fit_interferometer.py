@@ -35,6 +35,8 @@ def test__fit_interferometer_randomly_drawn_via_pdf_gen_from(
     clean(database_file=database_file)
 
 
+# TODO : These need to use FactorGraphModel
+
 # def test__fit_interferometer_randomly_drawn_via_pdf_gen_from__analysis_multi(analysis_interferometer_7, samples, model):
 #
 #     agg = aggregator_from(
