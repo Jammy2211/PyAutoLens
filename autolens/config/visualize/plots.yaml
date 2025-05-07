@@ -40,7 +40,7 @@ tracer:                                    # Settings for plots of tracers (e.g.
 inversion:                                 # Settings for plots of inversions (e.g. InversionPlotter).
   subplot_inversion: true                  # Plot subplot of all quantities in each inversion (e.g. reconstrucuted image, reconstruction)?
   subplot_mappings: true                   # Plot subplot of the image-to-source pixels mappings of each pixelization?
-  csv_reconstruction: false                # output reconstruction.csv containing the source-plane mesh y, x, reconstruction and noise map values.
+  csv_reconstruction: false                # output source_plane_reconstruction_0.csv containing the source-plane mesh y, x, reconstruction and noise map values.
 
 adapt:                                     # Settings for plots of adapt images used by adaptive pixelizations.
   subplot_adapt_images: true               # Plot subplot showing each adapt image used for adaptive pixelization?
