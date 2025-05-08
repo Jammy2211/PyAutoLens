@@ -77,6 +77,7 @@ from autogalaxy.profiles import basis as lp_basis
 from autogalaxy.profiles.light import (
     linear_operated as lp_linear_operated,
 )
+from autogalaxy.profiles.light.linear import LightProfileLinearObjFuncList
 from autogalaxy.operate.image import OperateImage
 from autogalaxy.operate.deflections import OperateDeflections
 from autogalaxy.quantity.dataset_quantity import DatasetQuantity
