@@ -31,6 +31,17 @@ dependencies = [
     "nautilus-sampler==1.0.4"
 ]
 
+[project.optional-dependencies]
+optional=[
+    "numba",
+    "pylops>=1.10.0,<=2.3.1",
+    "pynufft",
+    "zeus-mcmc==2.5.4",
+    "getdist==1.4",
+    "ultranest==4.3.2"
+]
+
+
 [project.urls]
 Homepage = "https://github.com/Jammy2211/PyAutoLens"
 
