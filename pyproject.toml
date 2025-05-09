@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=61.0", "setuptools-scm", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autolens"
+dynamic = ["version", "dependencies"]
+description="Open-Source Strong Lensing"
+readme = { file = "README.rst", content-type = "text/x-rst" }
+license = { text = "MIT License" }
+requires-python = ">=3.9"
+authors = [
+    { name = "James Nightingale", email = "James.Nightingale@newcastle.ac.uk" },
+    { name = "Richard Hayes", email = "richard@rghsoftware.co.uk" },
+]
+classifiers = [
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Physics",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12"
+]
+keywords = ["cli"]
+
+[project.urls]
+Homepage = "https://github.com/Jammy2211/PyAutoLens"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+exclude = ["docs", "test_autolens", "test_autolens*"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = "requirements.txt" }
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
+local_scheme = "no-local-version"
+
+
+[project.optional-dependencies]
+test = ["pytest"]
+dev = ["pytest", "black"]
+
+[tool.setuptools.package-data]
+"autolens.config" = ["*"]
+
+[tool.pytest.ini_options]
+testpaths = ["test_autolens"]
