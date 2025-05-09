@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "autolens"
-dynamic = ["version", "dependencies"]
+dynamic = ["version"]
 description="Open-Source Strong Lensing"
 readme = { file = "README.rst", content-type = "text/x-rst" }
 license-files = [
@@ -39,9 +39,6 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 exclude = ["docs", "test_autolens", "test_autolens*"]
-
-[tool.setuptools.dynamic]
-dependencies = { file = "requirements.txt" }
 
 [tool.setuptools_scm]
 version_scheme = "post-release"
