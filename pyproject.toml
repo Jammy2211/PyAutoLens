@@ -7,7 +7,6 @@ name = "autolens"
 dynamic = ["version", "dependencies"]
 description="Open-Source Strong Lensing"
 readme = { file = "README.rst", content-type = "text/x-rst" }
-license = "MIT"
 license-files = [
     "LICENSE",
 ]
