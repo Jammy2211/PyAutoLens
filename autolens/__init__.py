@@ -77,6 +77,7 @@ from autogalaxy.profiles import basis as lp_basis
 from autogalaxy.profiles.light import (
     linear_operated as lp_linear_operated,
 )
+from autogalaxy.profiles.light.linear import LightProfileLinearObjFuncList
 from autogalaxy.operate.image import OperateImage
 from autogalaxy.operate.deflections import OperateDeflections
 from autogalaxy.quantity.dataset_quantity import DatasetQuantity
@@ -125,4 +126,4 @@ from autoconf.fitsable import hdu_list_for_output_from
 
 conf.instance.register(__file__)
 
-__version__ = "2025.1.18.7"
+__version__ = "2025.5.10.1"

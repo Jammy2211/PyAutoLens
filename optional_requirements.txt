@@ -1,7 +1,0 @@
-numba
-pynufft
-zeus-mcmc==2.5.4
-getdist==1.4
-#jax>=0.4.13
-#jaxlib>=0.4.13
-ultranest==4.3.2

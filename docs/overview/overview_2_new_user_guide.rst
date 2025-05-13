@@ -98,7 +98,7 @@ https://github.com/Jammy2211/autolens_workspace/tree/release/config/visualize
 **PyAutoLens** supports multiple different data types, and you as a user likely only require to learn how to use
 the software to analyse one type of dataset.
 
-Therefore, you now need to assess which dataset type is relevant to you:
+Therefore, you now need to assess which dataset type is relevant to you (``imaging``, ``interferometer``, ``point_source`` or ``group``).:
 
 - **Imaging**: CCD imaging data (e.g. from the Hubble Space Telescope or James Webb Space Telescope), in which case
 you will go to the ``imaging`` packages in the workspace.
@@ -112,7 +112,7 @@ in which case you will go to the ``point_source`` packages in the workspace.
 The scale of your strong lens is also important. Most examples assume that your strong lens is galaxy-scale, meaning that
 there is only one lens galaxy and one lensed source. For these systems the Einstein radius is typically below 5.0".
 
-A group scale lens is one where the lens has multiple galaxies responsible for the lensing, and all of their
+A **group** scale lens is one where the lens has multiple galaxies responsible for the lensing, and all of their
 mass must be modeled for an accurate analysis. Group scale lenses often have multiple sources and Einstein Radii
 above 5.0".
 
