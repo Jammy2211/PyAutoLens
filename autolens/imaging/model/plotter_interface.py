@@ -65,7 +65,7 @@ class PlotterInterfaceImaging(PlotterInterface):
 
             # This loop means that multiple subplot_fit objects are output for a double source plane lens.
 
-            if len(plane_indexes_to_plot) > 1:
+            if len(fit.tracer.planes) > 2:
                 for plane_index in plane_indexes_to_plot:
                     fit_plotter.subplot_fit(plane_index=plane_index)
             else:
@@ -73,7 +73,7 @@ class PlotterInterfaceImaging(PlotterInterface):
 
         if should_plot("subplot_fit_log10"):
             try:
-                if len(plane_indexes_to_plot) > 1:
+                if len(fit.tracer.planes) > 2:
                     for plane_index in plane_indexes_to_plot:
                         fit_plotter.subplot_fit_log10(plane_index=plane_index)
                 else:
