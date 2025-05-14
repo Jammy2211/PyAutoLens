@@ -2,6 +2,7 @@ import numpy as np
 from typing import Optional, Union
 from os import path
 import os
+from typing import Dict
 
 import autoarray as aa
 import autofit as af
@@ -21,7 +22,12 @@ from autolens import exc
 
 
 class AbstractPositionsLH:
-    def __init__(self, positions: aa.Grid2DIrregular, threshold: float):
+    def __init__(
+        self,
+        positions: aa.Grid2DIrregular,
+        threshold: float,
+        plane_index_positions_dict: Optional[Dict[int, aa.Grid2DIrregular]] = None,
+    ):
         """
         The `PositionsLH` objects add a penalty term to the likelihood of the **PyAutoLens** `log_likelihood_function`
         defined in the `Analysis` classes.
@@ -54,6 +60,9 @@ class AbstractPositionsLH:
         self.positions = positions
         self.threshold = threshold
 
+        if plane_index_positions_dict is None:
+            self.plane_index_positions_dict = {-1: positions}
+
     def log_likelihood_function_positions_overwrite(
         self, instance: af.ModelInstance, analysis: AnalysisDataset
     ) -> Optional[float]:
@@ -77,21 +86,26 @@ class AbstractPositionsLH:
         -------
 
         """
-        positions_fit = SourceMaxSeparation(
-            data=self.positions, noise_map=None, tracer=tracer
-        )
-
-        distances = positions_fit.data.distances_to_coordinate_from(
-            coordinate=(0.0, 0.0)
-        )
-
         with open_(path.join(output_path, "positions.info"), "w+") as f:
-            f.write(f"Positions: \n {self.positions} \n\n")
-            f.write(f"Radial Distance from (0.0, 0.0): \n {distances} \n\n")
-            f.write(f"Threshold = {self.threshold} \n")
-            f.write(
-                f"Max Source Plane Separation of Maximum Likelihood Model = {positions_fit.max_separation_of_source_plane_positions}"
-            )
+
+            for plane_index, positions in self.plane_index_positions_dict.items():
+
+                positions_fit = SourceMaxSeparation(
+                    data=self.positions, noise_map=None, tracer=tracer
+                )
+
+                distances = positions_fit.data.distances_to_coordinate_from(
+                    coordinate=(0.0, 0.0)
+                )
+
+                f.write(f"Plane Index: {plane_index} \n")
+                f.write(f"Positions: \n {self.positions} \n\n")
+                f.write(f"Radial Distance from (0.0, 0.0): \n {distances} \n\n")
+                f.write(f"Threshold = {self.threshold} \n")
+                f.write(
+                    f"Max Source Plane Separation of Maximum Likelihood Model = {positions_fit.max_separation_of_source_plane_positions}"
+                )
+                f.write("")
 
 
 class PositionsLHResample(AbstractPositionsLH):
@@ -141,15 +155,20 @@ class PositionsLHResample(AbstractPositionsLH):
         if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
             return
 
-        positions_fit = SourceMaxSeparation(
-            data=self.positions, noise_map=None, tracer=tracer
-        )
+        for plane_index, positions in self.plane_index_positions_dict.items():
 
-        if not positions_fit.max_separation_within_threshold(self.threshold):
-            if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
-                return
+            positions_fit = SourceMaxSeparation(
+                data=self.positions,
+                noise_map=None,
+                tracer=tracer,
+                plane_index=plane_index,
+            )
 
-            raise exc.RayTracingException
+            if not positions_fit.max_separation_within_threshold(self.threshold):
+                if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
+                    return
+
+                raise exc.RayTracingException
 
 
 class PositionsLHPenalty(AbstractPositionsLH):
@@ -264,14 +283,25 @@ class PositionsLHPenalty(AbstractPositionsLH):
         if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
             return
 
-        positions_fit = SourceMaxSeparation(
-            data=self.positions, noise_map=None, tracer=tracer
-        )
+        log_likelihood_penalty = 0.0
 
-        if not positions_fit.max_separation_within_threshold(self.threshold):
-            return self.log_likelihood_penalty_factor * (
-                positions_fit.max_separation_of_source_plane_positions - self.threshold
+        for plane_index, positions in self.plane_index_positions_dict.items():
+
+            positions_fit = SourceMaxSeparation(
+                data=self.positions,
+                noise_map=None,
+                tracer=tracer,
+                plane_index=plane_index,
             )
+
+            if not positions_fit.max_separation_within_threshold(self.threshold):
+
+                log_likelihood_penalty += self.log_likelihood_penalty_factor * (
+                    positions_fit.max_separation_of_source_plane_positions
+                    - self.threshold
+                )
+
+        return log_likelihood_penalty
 
     def log_likelihood_function_positions_overwrite(
         self, instance: af.ModelInstance, analysis: AnalysisDataset

@@ -42,7 +42,8 @@ def test__output_positions_info():
     with open_(positions_file, "r") as f:
         output = f.readlines()
 
-    assert "Positions" in output[0]
+    assert "Plane Index: -1" in output[0]
+    assert "Positions" in output[1]
 
     os.remove(positions_file)
 
