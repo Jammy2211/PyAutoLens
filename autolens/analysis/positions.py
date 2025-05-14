@@ -24,8 +24,8 @@ from autolens import exc
 class AbstractPositionsLH:
     def __init__(
         self,
-        positions: aa.Grid2DIrregular,
         threshold: float,
+        positions: Optional[aa.Grid2DIrregular] = None,
         plane_index_positions_dict: Optional[Dict[int, aa.Grid2DIrregular]] = None,
     ):
         """
@@ -50,18 +50,23 @@ class AbstractPositionsLH:
             If the maximum separation of any two source plane coordinates is above the threshold the penalty term
             is applied.
         """
-        if len(positions) == 1:
-            raise exc.PositionsException(
-                f"The positions input into the Positions have length one "
-                f"(e.g. it is only one (y,x) coordinate and therefore cannot be compared with other images).\n\n"
-                "Please input more positions into the Positions."
-            )
 
         self.positions = positions
         self.threshold = threshold
 
+        self.plane_index_positions_dict = plane_index_positions_dict
+
         if plane_index_positions_dict is None:
             self.plane_index_positions_dict = {-1: positions}
+
+        for positions in self.plane_index_positions_dict.values():
+
+            if len(positions) == 1:
+                raise exc.PositionsException(
+                    f"The positions input into the PositionsLikelihood object have length one "
+                    f"(e.g. it is only one (y,x) coordinate and therefore cannot be compared with other images).\n\n"
+                    "Please input more positions into the Positions."
+                )
 
     def log_likelihood_function_positions_overwrite(
         self, instance: af.ModelInstance, analysis: AnalysisDataset
@@ -91,7 +96,7 @@ class AbstractPositionsLH:
             for plane_index, positions in self.plane_index_positions_dict.items():
 
                 positions_fit = SourceMaxSeparation(
-                    data=self.positions, noise_map=None, tracer=tracer
+                    data=positions, noise_map=None, tracer=tracer
                 )
 
                 distances = positions_fit.data.distances_to_coordinate_from(
@@ -99,7 +104,7 @@ class AbstractPositionsLH:
                 )
 
                 f.write(f"Plane Index: {plane_index} \n")
-                f.write(f"Positions: \n {self.positions} \n\n")
+                f.write(f"Positions: \n {positions} \n\n")
                 f.write(f"Radial Distance from (0.0, 0.0): \n {distances} \n\n")
                 f.write(f"Threshold = {self.threshold} \n")
                 f.write(
@@ -158,7 +163,7 @@ class PositionsLHResample(AbstractPositionsLH):
         for plane_index, positions in self.plane_index_positions_dict.items():
 
             positions_fit = SourceMaxSeparation(
-                data=self.positions,
+                data=positions,
                 noise_map=None,
                 tracer=tracer,
                 plane_index=plane_index,
@@ -174,9 +179,10 @@ class PositionsLHResample(AbstractPositionsLH):
 class PositionsLHPenalty(AbstractPositionsLH):
     def __init__(
         self,
-        positions: aa.Grid2DIrregular,
         threshold: float,
         log_likelihood_penalty_factor: float = 1e8,
+        positions: Optional[aa.Grid2DIrregular] = None,
+        plane_index_positions_dict: Optional[Dict[int, aa.Grid2DIrregular]] = None,
     ):
         """
         The `PositionsLH` objects add a penalty term to the likelihood of the **PyAutoLens** `log_likelihood_function`
@@ -207,7 +213,11 @@ class PositionsLHPenalty(AbstractPositionsLH):
             A factor which multiplies how far source pixels do not trace within the threshold of one another, with a
             larger factor producing a larger penalty making the non-linear parameter space gradient steeper.
         """
-        super().__init__(positions=positions, threshold=threshold)
+        super().__init__(
+            positions=positions,
+            threshold=threshold,
+            plane_index_positions_dict=plane_index_positions_dict,
+        )
 
         self.log_likelihood_penalty_factor = log_likelihood_penalty_factor
 
@@ -288,7 +298,7 @@ class PositionsLHPenalty(AbstractPositionsLH):
         for plane_index, positions in self.plane_index_positions_dict.items():
 
             positions_fit = SourceMaxSeparation(
-                data=self.positions,
+                data=positions,
                 noise_map=None,
                 tracer=tracer,
                 plane_index=plane_index,

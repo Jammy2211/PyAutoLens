@@ -106,6 +106,33 @@ def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x
     assert analysis_log_likelihood == pytest.approx(-22048700558.9052, 1.0e-4)
 
 
+def test__positions__likelihood_overwrites__changes_likelihood__double_source_plane_example(masked_imaging_7x7):
+
+    lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph(centre=(0.05, 0.05)))
+    source_0 = al.Galaxy(redshift=1.0, light=al.lp.SersicSph(centre=(0.05, 0.05)))
+    source_1 = al.Galaxy(redshift=2.0, light=al.lp.SersicSph(centre=(0.05, 0.05)))
+
+    model = af.Collection(galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1))
+
+    instance = model.instance_from_unit_vector([])
+
+    plane_index_positions_dict = {
+        1: al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
+        2: al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)])
+    }
+
+    positions_likelihood = al.PositionsLHPenalty(
+        plane_index_positions_dict=plane_index_positions_dict, threshold=0.01
+    )
+
+    analysis = al.AnalysisImaging(
+        dataset=masked_imaging_7x7, positions_likelihood=positions_likelihood
+    )
+    analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
+
+    assert analysis_log_likelihood == pytest.approx(-44140499647.28964, 1.0e-4)
+
+
 def test__profile_log_likelihood_function(masked_imaging_7x7):
     pixelization = al.Pixelization(
         mesh=al.mesh.Rectangular(shape=(3, 3)),
