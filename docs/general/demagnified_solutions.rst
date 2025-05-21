@@ -150,7 +150,7 @@ This is often used to set up new ``Analysis`` objects with a positions penalty c
 
 .. code-block:: python
 
-    analysis_2 = al.AnalysisImaging(
+    analysis = al.AnalysisImaging(
         dataset=dataset,
         positions_likelihood=result_1.positions_likelihood_from(
             factor=3.0, minimum_threshold=0.2
@@ -181,4 +181,21 @@ functionality.
                 positions_likelihood_source_plane_0,
                 positions_likelihood_source_plane_1
             ]
+    )
+
+To set up an ``Analysis`` object with multiple ``PositionsLH`` objects from a result, each positions likelihood is
+computed from the result for each ``plane_redshift``:
+
+.. code-block::
+
+    analysis = al.AnalysisImaging(
+        dataset=dataset,
+        positions_likelihood_list=[
+            source_lp_result.positions_likelihood_from(
+                factor=3.0, minimum_threshold=0.2, plane_redshift=source_lp_result.instance.galaxies.source_1.redshift,
+            ),
+            source_lp_result.positions_likelihood_from(
+                factor=3.0, minimum_threshold=0.2, plane_redshift=source_lp_result.instance.galaxies.source_2.redshift,
+            )
+        ],
     )

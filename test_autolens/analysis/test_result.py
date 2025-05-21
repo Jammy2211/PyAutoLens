@@ -44,7 +44,7 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
 
     result = res.Result(samples_summary=samples_summary, analysis=analysis_imaging_7x7)
 
-    assert result.source_plane_light_profile_centre.in_list == [(1.0, 2.0)]
+    assert result.source_plane_light_profile_centre_from().in_list == [(1.0, 2.0)]
 
     source_0 = al.Galaxy(
         redshift=1.0,
@@ -62,7 +62,7 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
 
     result = res.Result(samples_summary=samples_summary, analysis=analysis_imaging_7x7)
 
-    assert result.source_plane_light_profile_centre.in_list == [(1.0, 2.0)]
+    assert result.source_plane_light_profile_centre_from().in_list == [(1.0, 2.0)]
 
     source_0 = al.Galaxy(
         redshift=1.0, light=al.lp.SersicSph(centre=(1.0, 2.0), intensity=2.0)
@@ -78,7 +78,7 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
 
     result = res.Result(samples_summary=samples_summary, analysis=analysis_imaging_7x7)
 
-    assert result.source_plane_light_profile_centre.in_list == [(5.0, 6.0)]
+    assert result.source_plane_light_profile_centre_from().in_list == [(5.0, 6.0)]
 
     tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5)])
 
@@ -86,7 +86,7 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
 
     result = res.Result(samples_summary=samples_summary, analysis=analysis_imaging_7x7)
 
-    assert result.source_plane_light_profile_centre == None
+    assert result.source_plane_light_profile_centre_from() == None
 
 
 def test__source_plane_inversion_centre(analysis_imaging_7x7):
@@ -116,7 +116,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
     )
 
     assert (
-        result.source_plane_inversion_centre.in_list[0]
+        result.source_plane_inversion_centre_from().in_list[0]
         == mapper_valued.max_pixel_centre.in_list[0]
     )
 
@@ -131,7 +131,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
         samples_summary=samples_summary, analysis=analysis_imaging_7x7
     )
 
-    assert result.source_plane_inversion_centre == None
+    assert result.source_plane_inversion_centre_from() == None
 
     lens = al.Galaxy(redshift=0.5, light=al.lp_linear.Sersic())
     source = al.Galaxy(redshift=1.0)
@@ -144,7 +144,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
         samples_summary=samples_summary, analysis=analysis_imaging_7x7
     )
 
-    assert result.source_plane_inversion_centre == None
+    assert result.source_plane_inversion_centre_from() == None
 
 
 def test__source_plane_centre(analysis_imaging_7x7):
@@ -169,7 +169,7 @@ def test__source_plane_centre(analysis_imaging_7x7):
         samples_summary=samples_summary, analysis=analysis_imaging_7x7
     )
 
-    assert result.source_plane_centre.in_list[0] == pytest.approx(
+    assert result.source_plane_centre_from().in_list[0] == pytest.approx(
         (-0.916666, -0.916666), 1.0e-4
     )
 

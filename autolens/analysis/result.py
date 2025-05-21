@@ -26,8 +26,9 @@ class Result(AgResultDataset):
         """
         return self.analysis.tracer_via_instance_from(instance=self.instance)
 
-    @property
-    def source_plane_light_profile_centre(self) -> aa.Grid2DIrregular:
+    def source_plane_light_profile_centre_from(
+        self, plane_redshift: Optional[float] = None
+    ) -> aa.Grid2DIrregular:
         """
         Return a light profile centre of one of the a galaxies in the maximum log likelihood `Tracer`'s source-plane.
         If there are multiple light profiles, the first light profile's centre is returned.
@@ -35,14 +36,22 @@ class Result(AgResultDataset):
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
         multiple-image positions.
         """
-        centre = self.max_log_likelihood_tracer.planes[-1].extract_attribute(
+        try:
+            plane_index = self.max_log_likelihood_tracer.plane_index_via_redshift_from(
+                redshift=plane_redshift
+            )
+        except TypeError:
+            plane_index = -1
+
+        centre = self.max_log_likelihood_tracer.planes[plane_index].extract_attribute(
             cls=ag.LightProfile, attr_name="centre"
         )
         if centre is not None:
             return aa.Grid2DIrregular(values=[np.asarray(centre[0])])
 
-    @property
-    def source_plane_centre(self) -> aa.Grid2DIrregular:
+    def source_plane_centre_from(
+        self, plane_redshift: Optional[float] = None
+    ) -> aa.Grid2DIrregular:
         """
         Return the centre of a source-plane galaxy via the following criteria:
 
@@ -52,7 +61,9 @@ class Result(AgResultDataset):
         These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
         (and thus tracer) by back-tracing the centres to the image plane via the mass model.
         """
-        return self.source_plane_light_profile_centre
+        return self.source_plane_light_profile_centre_from(
+            plane_redshift=plane_redshift
+        )
 
     def image_plane_multiple_image_positions(
         self, plane_redshift: Optional[float] = None
@@ -79,9 +90,13 @@ class Result(AgResultDataset):
             pixel_scale_precision=0.001,
         )
 
+        source_plane_centre = self.source_plane_centre_from(
+            plane_redshift=plane_redshift
+        )
+
         multiple_images = solver.solve(
             tracer=self.max_log_likelihood_tracer,
-            source_plane_coordinate=self.source_plane_centre.in_list[0],
+            source_plane_coordinate=source_plane_centre.in_list[0],
             plane_redshift=plane_redshift,
         )
 
@@ -270,7 +285,7 @@ class Result(AgResultDataset):
 
         Returns
         -------
-        The `PositionsLH` object used to apply a likelihood penalty or resample the positions.
+        The `PositionsLH` object used to apply a likelihood penalty using the positions.
         """
 
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
@@ -319,8 +334,9 @@ class ResultDataset(Result):
 
         return self.analysis.tracer_via_instance_from(instance=instance)
 
-    @property
-    def source_plane_centre(self) -> aa.Grid2DIrregular:
+    def source_plane_centre_from(
+        self, plane_redshift: Optional[float] = None
+    ) -> aa.Grid2DIrregular:
         """
         Return the centre of a source-plane galaxy via the following criteria:
 
@@ -330,23 +346,46 @@ class ResultDataset(Result):
         These centres are used by automatic position updating to determine the multiple-images of a best-fit lens model
         (and thus tracer) by back-tracing the centres to the image plane via the mass model.
         """
-        if self.source_plane_inversion_centre is not None:
-            return self.source_plane_inversion_centre
-        elif self.source_plane_light_profile_centre is not None:
-            return self.source_plane_light_profile_centre
+        source_plane_inversion_centre = self.source_plane_inversion_centre_from(
+            plane_redshift=plane_redshift
+        )
 
-    @property
-    def source_plane_inversion_centre(self) -> aa.Grid2DIrregular:
+        if source_plane_inversion_centre is not None:
+            return source_plane_inversion_centre
+
+        return self.source_plane_light_profile_centre_from(
+            plane_redshift=plane_redshift
+        )
+
+    def source_plane_inversion_centre_from(
+        self, plane_redshift: Optional[float] = None
+    ) -> aa.Grid2DIrregular:
         """
         Returns the centre of the brightest source pixel(s) of an `LEq`.
 
         These centres are used by automatic position updating to determine the best-fit lens model's image-plane
         multiple-image positions.
         """
+
         if self.max_log_likelihood_fit.inversion is not None:
             if self.max_log_likelihood_fit.inversion.has(cls=aa.AbstractMapper):
+
+                try:
+                    plane_index = (
+                        self.max_log_likelihood_tracer.plane_index_via_redshift_from(
+                            redshift=plane_redshift
+                        )
+                    )
+                    mapper_index = (
+                        self.max_log_likelihood_tracer.plane_indexes_with_pixelizations[
+                            plane_index
+                        ]
+                    )
+                except TypeError:
+                    mapper_index = 0
+
                 inversion = self.max_log_likelihood_fit.inversion
-                mapper = inversion.cls_list_from(cls=aa.AbstractMapper)[0]
+                mapper = inversion.cls_list_from(cls=aa.AbstractMapper)[mapper_index]
 
                 mapper_valued = aa.MapperValued(
                     values=inversion.reconstruction_dict[mapper],
