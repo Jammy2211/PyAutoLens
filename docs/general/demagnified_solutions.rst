@@ -160,7 +160,7 @@ This is often used to set up new ``Analysis`` objects with a positions penalty c
 Multiple Source Plane Systems
 -----------------------------
 
-A double source plane system is a lens system where there are mutiple source-planes at different redshifts, meaning that
+A double source plane system is a lens system where there are multiple source-planes at different redshifts, meaning that
 incuding the image-plane there are at least 3 planes.
 
 The ``PositionsLH`` class can have a `plane_redshift` input, which specifies the redshift of the source-plane
