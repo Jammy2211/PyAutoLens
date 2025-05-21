@@ -91,29 +91,12 @@ The penalty term is created and passed to an ``Analysis`` object as follows:
     positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 
     analysis = al.AnalysisImaging(
-        dataset=dataset, positions_likelihood=positions_likelihood
+        dataset=dataset, positions_likelihood_list=[positions_likelihood]
     )
 
 The threshold of 0.5" is large. For an accurate lens model we would anticipate the positions trace within < 0.01" of
 one another. However, we only want the threshold to aid the non-linear with the choice of mass model in the initial fit
 and remove demagnified solutions.
-
-Resampling
-----------
-
-An alternative penalty term is available via the ``PositionsLHResample`` object, which rejects and resamples a lens
-model if the ``positions``do not trace within the ``threshold`` of one another in the source plane.
-
-This is not the recommended option, as it is slower and can often lead to prolonged periods of the non-linear search
-guessing and rejecting mass models.
-
-.. code-block:: python
-
-    positions_likelihood = al.PositionsLHResample(positions=positions, threshold=0.3)
-
-    analysis = al.AnalysisImaging(
-        dataset=dataset, positions_likelihood=positions_likelihood
-    )
 
 Auto Position Updates
 ---------------------
@@ -172,4 +155,30 @@ This is often used to set up new ``Analysis`` objects with a positions penalty c
         positions_likelihood=result_1.positions_likelihood_from(
             factor=3.0, minimum_threshold=0.2
         ),
+    )
+
+Multiple Source Plane Systems
+-----------------------------
+
+A double source plane system is a lens system where there are mutiple source-planes at different redshifts, meaning that
+incuding the image-plane there are at least 3 planes.
+
+The ``PositionsLH`` class can have a `plane_redshift` input, which specifies the redshift of the source-plane
+the positions are ray-traced to.
+
+Multiple ``PositionsLH`` objects can be passed to the ``Analysis`` object, which then applies the penalty term to
+both source-planes independently such that a double source-plane system can be fitted with the penalty based likelihood
+functionality.
+
+.. code-block:: python
+
+    positions_likelihood_source_plane_0 = al.PositionsLH(positions=positions, threshold=0.3, plane_redshift=1.0)
+    positions_likelihood_source_plane_1 = al.PositionsLH(positions=positions, threshold=0.3, plane_redshift=2.0)
+
+    analysis = al.AnalysisImaging(
+        dataset=dataset, positions_likelihood_list=
+            [
+                positions_likelihood_source_plane_0,
+                positions_likelihood_source_plane_1
+            ]
     )
