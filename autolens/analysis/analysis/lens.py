@@ -1,6 +1,6 @@
 import logging
 import numpy as np
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
 import autofit as af
 import autoarray as aa
@@ -22,8 +22,8 @@ logger.setLevel(level="INFO")
 class AnalysisLens:
     def __init__(
         self,
-        positions_likelihood: Optional[
-            Union[PositionsLHResample, PositionsLHPenalty]
+        positions_likelihood_list: Optional[
+            List[Union[PositionsLHResample, PositionsLHPenalty]]
         ] = None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):
@@ -43,7 +43,7 @@ class AnalysisLens:
             The Cosmology assumed for this analysis.
         """
         self.cosmology = cosmology
-        self.positions_likelihood = positions_likelihood
+        self.positions_likelihood_list = positions_likelihood_list
 
     def tracer_via_instance_from(
         self,
@@ -123,10 +123,13 @@ class AnalysisLens:
         The penalty value of the positions log likelihood, if the positions do not trace close in the source plane,
         else a None is returned to indicate there is no penalty.
         """
-        if self.positions_likelihood is not None:
+        if self.positions_likelihood_list is not None:
             try:
-                return self.positions_likelihood.log_likelihood_function_positions_overwrite(
-                    instance=instance, analysis=self
-                )
+                log_likelihood = 0.0
+                for positions_likelihood in self.positions_likelihood_list:
+                    log_likelihood += positions_likelihood.log_likelihood_function_positions_overwrite(
+                        instance=instance, analysis=self
+                    )
+                return log_likelihood
             except (ValueError, np.linalg.LinAlgError) as e:
                 raise exc.FitException from e

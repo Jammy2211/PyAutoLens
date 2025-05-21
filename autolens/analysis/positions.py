@@ -26,7 +26,7 @@ class AbstractPositionsLH:
         self,
         threshold: float,
         positions: Optional[aa.Grid2DIrregular] = None,
-        plane_redshift_positions_dict: Optional[Dict[float, aa.Grid2DIrregular]] = None,
+        plane_redshift: Optional[float] = None,
     ):
         """
         The `PositionsLH` objects add a penalty term to the likelihood of the **PyAutoLens** `log_likelihood_function`
@@ -44,9 +44,8 @@ class AbstractPositionsLH:
         The default behaviour assumes a single lens plane and single source plane, meaning the input `positions`
         are the image-plane coordinates of one source galaxy at a specifc redshift.
 
-        For multiple source planes, the `plane_redshift_positions_dict` dictionary can be used to input multiple
-        sets of image positions, where the key is the redshift of the source plane and the value is the
-        corresponding image-plane coordinates.
+        For multiple source planes, the `plane_redshift` can be used to pair the image-plane positions with the
+        redshift of the source plane they trace too.
 
         Parameters
         ----------
@@ -56,31 +55,21 @@ class AbstractPositionsLH:
         threshold
             If the maximum separation of any two source plane coordinates is above the threshold the penalty term
             is applied.
-        plane_redshift_positions_dict
-            A dictionary of plane redshifts and the corresponding image-plane coordinates of the lensed source
-            multiple images. The key is the redshift of the source plane and the value is the corresponding
-            image-plane coordinates.
+        plane_redshift
+            The plane redshift of the lensed source multiple images, which is only required if position threshold
+            for a double source plane lens system is being used where the specific plane is required.
         """
 
         self.positions = positions
         self.threshold = threshold
+        self.plane_redshift = plane_redshift
 
-        self.plane_redshift_positions_dict = plane_redshift_positions_dict
-
-        if plane_redshift_positions_dict is None:
-            self.plane_redshift_positions_dict = {None: positions}
-
-        if len(self.plane_redshift_positions_dict) == 1:
-            self.positions = list(self.plane_redshift_positions_dict.values())[0]
-
-        for positions in self.plane_redshift_positions_dict.values():
-
-            if len(positions) == 1:
-                raise exc.PositionsException(
-                    f"The positions input into the PositionsLikelihood object have length one "
-                    f"(e.g. it is only one (y,x) coordinate and therefore cannot be compared with other images).\n\n"
-                    "Please input more positions into the Positions."
-                )
+        if len(positions) == 1:
+            raise exc.PositionsException(
+                f"The positions input into the PositionsLikelihood object have length one "
+                f"(e.g. it is only one (y,x) coordinate and therefore cannot be compared with other images).\n\n"
+                "Please input more positions into the Positions."
+            )
 
     def log_likelihood_function_positions_overwrite(
         self, instance: af.ModelInstance, analysis: AnalysisDataset
@@ -107,29 +96,22 @@ class AbstractPositionsLH:
         """
         with open_(path.join(output_path, "positions.info"), "w+") as f:
 
-            plane_index = 0
+            positions_fit = SourceMaxSeparation(
+                data=self.positions, noise_map=None, tracer=tracer, plane_redshift=self.plane_redshift
+            )
 
-            for plane_redshift, positions in self.plane_redshift_positions_dict.items():
+            distances = positions_fit.data.distances_to_coordinate_from(
+                coordinate=(0.0, 0.0)
+            )
 
-                positions_fit = SourceMaxSeparation(
-                    data=positions, noise_map=None, tracer=tracer, plane_redshift=plane_redshift
-                )
-
-                distances = positions_fit.data.distances_to_coordinate_from(
-                    coordinate=(0.0, 0.0)
-                )
-
-                f.write(f"Plane Index: {plane_index} \n")
-                f.write(f"Plane Redshift: {plane_redshift} \n")
-                f.write(f"Positions: \n {positions} \n\n")
-                f.write(f"Radial Distance from (0.0, 0.0): \n {distances} \n\n")
-                f.write(f"Threshold = {self.threshold} \n")
-                f.write(
-                    f"Max Source Plane Separation of Maximum Likelihood Model = {positions_fit.max_separation_of_plane_positions}"
-                )
-                f.write("")
-
-                plane_index += 1
+            f.write(f"Plane Redshift: {self.plane_redshift} \n")
+            f.write(f"Positions: \n {self.positions} \n\n")
+            f.write(f"Radial Distance from (0.0, 0.0): \n {distances} \n\n")
+            f.write(f"Threshold = {self.threshold} \n")
+            f.write(
+                f"Max Source Plane Separation of Maximum Likelihood Model = {positions_fit.max_separation_of_plane_positions}"
+            )
+            f.write("")
 
 
 class PositionsLHResample(AbstractPositionsLH):
@@ -179,20 +161,18 @@ class PositionsLHResample(AbstractPositionsLH):
         if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
             return
 
-        for plane_redshift, positions in self.plane_redshift_positions_dict.items():
+        positions_fit = SourceMaxSeparation(
+            data=self.positions,
+            noise_map=None,
+            tracer=tracer,
+            plane_redshift=self.plane_redshift,
+        )
 
-            positions_fit = SourceMaxSeparation(
-                data=positions,
-                noise_map=None,
-                tracer=tracer,
-                plane_redshift=plane_redshift,
-            )
+        if not positions_fit.max_separation_within_threshold(self.threshold):
+            if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
+                return
 
-            if not positions_fit.max_separation_within_threshold(self.threshold):
-                if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
-                    return
-
-                raise exc.RayTracingException
+            raise exc.RayTracingException
 
 
 class PositionsLHPenalty(AbstractPositionsLH):
@@ -201,7 +181,7 @@ class PositionsLHPenalty(AbstractPositionsLH):
         threshold: float,
         log_likelihood_penalty_factor: float = 1e8,
         positions: Optional[aa.Grid2DIrregular] = None,
-        plane_redshift_positions_dict: Optional[Dict[int, aa.Grid2DIrregular]] = None,
+        plane_redshift: Optional[float] = None,
     ):
         """
         The `PositionsLH` objects add a penalty term to the likelihood of the **PyAutoLens** `log_likelihood_function`
@@ -231,15 +211,14 @@ class PositionsLHPenalty(AbstractPositionsLH):
         log_likelihood_penalty_factor
             A factor which multiplies how far source pixels do not trace within the threshold of one another, with a
             larger factor producing a larger penalty making the non-linear parameter space gradient steeper.
-        plane_redshift_positions_dict
-            A dictionary of plane redshifts and the corresponding image-plane coordinates of the lensed source
-            multiple images. The key is the redshift of the source plane and the value is the corresponding
-            image-plane coordinates.
+        plane_redshift
+            The plane redshift of the lensed source multiple images, which is only required if position threshold
+            for a double source plane lens system is being used where the specific plane is required.
         """
         super().__init__(
             positions=positions,
             threshold=threshold,
-            plane_redshift_positions_dict=plane_redshift_positions_dict,
+            plane_redshift=plane_redshift
         )
 
         self.log_likelihood_penalty_factor = log_likelihood_penalty_factor
@@ -318,21 +297,19 @@ class PositionsLHPenalty(AbstractPositionsLH):
 
         log_likelihood_penalty = 0.0
 
-        for plane_redshift, positions in self.plane_redshift_positions_dict.items():
+        positions_fit = SourceMaxSeparation(
+            data=self.positions,
+            noise_map=None,
+            tracer=tracer,
+            plane_redshift=self.plane_redshift,
+        )
 
-            positions_fit = SourceMaxSeparation(
-                data=positions,
-                noise_map=None,
-                tracer=tracer,
-                plane_redshift=plane_redshift,
+        if not positions_fit.max_separation_within_threshold(self.threshold):
+
+            log_likelihood_penalty += self.log_likelihood_penalty_factor * (
+                positions_fit.max_separation_of_plane_positions
+                - self.threshold
             )
-
-            if not positions_fit.max_separation_within_threshold(self.threshold):
-
-                log_likelihood_penalty += self.log_likelihood_penalty_factor * (
-                    positions_fit.max_separation_of_plane_positions
-                    - self.threshold
-                )
 
         return log_likelihood_penalty
 

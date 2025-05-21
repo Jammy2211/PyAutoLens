@@ -1,9 +1,9 @@
 import os
 import logging
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from autoconf import conf
-from autoconf.dictable import to_dict, output_to_json
+from autoconf.dictable import output_to_json
 
 import autofit as af
 import autoarray as aa
@@ -27,8 +27,8 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
     def __init__(
         self,
         dataset,
-        positions_likelihood: Optional[
-            Union[PositionsLHResample, PositionsLHPenalty]
+        positions_likelihood_list: Optional[
+            List[Union[PositionsLHResample, PositionsLHPenalty]]
         ] = None,
         adapt_image_maker: Optional[ag.AdaptImageMaker] = None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
@@ -49,10 +49,10 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
         ----------
         dataset
             The imaging, interferometer or other dataset that the model if fitted too.
-        positions_likelihood
-            An object which alters the likelihood function to include a term which accounts for whether
-            image-pixel coordinates in arc-seconds corresponding to the multiple images of the lensed source galaxy
-            trace close to one another in the source-plane.
+        positions_likelihood_list
+            Alters the likelihood function to include a term which accounts for whether image-pixel coordinates in
+            arc-seconds corresponding to the multiple images of each lensed source galaxy trace close to one another in
+            their source-plane.
         adapt_images
             Contains the adapt-images which are used to make a pixelization's mesh and regularization adapt to the
             reconstructed galaxy's morphology.
@@ -78,7 +78,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
 
         AnalysisLens.__init__(
             self=self,
-            positions_likelihood=positions_likelihood,
+            positions_likelihood_list=positions_likelihood_list,
             cosmology=cosmology,
         )
 

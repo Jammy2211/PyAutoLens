@@ -57,7 +57,7 @@ def test__positions__resample__raises_exception(masked_imaging_7x7):
     )
 
     analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7, positions_likelihood=positions_likelihood
+        dataset=masked_imaging_7x7, positions_likelihood_list=[positions_likelihood]
     )
 
     instance = model.instance_from_unit_vector([])
@@ -89,7 +89,7 @@ def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x
     )
 
     analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7, positions_likelihood=positions_likelihood
+        dataset=masked_imaging_7x7, positions_likelihood_list=[positions_likelihood]
     )
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
@@ -116,17 +116,15 @@ def test__positions__likelihood_overwrites__changes_likelihood__double_source_pl
 
     instance = model.instance_from_unit_vector([])
 
-    plane_redshift_positions_dict = {
-        1.0: al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
-        2.0: al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)])
-    }
-
-    positions_likelihood = al.PositionsLHPenalty(
-        plane_redshift_positions_dict=plane_redshift_positions_dict, threshold=0.01
+    positions_likelihood_0 = al.PositionsLHPenalty(
+        plane_redshift=1.0, positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01
+    )
+    positions_likelihood_1 = al.PositionsLHPenalty(
+        plane_redshift=2.0, positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01
     )
 
     analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7, positions_likelihood=positions_likelihood
+        dataset=masked_imaging_7x7, positions_likelihood_list=[positions_likelihood_0, positions_likelihood_1]
     )
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
