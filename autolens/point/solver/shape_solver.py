@@ -186,10 +186,10 @@ class AbstractSolver:
         return math.ceil(math.log2(self.scale / self.pixel_scale_precision))
 
     @staticmethod
-    def _source_plane_grid(
+    def _plane_grid(
         tracer: OperateDeflections,
         grid: aa.type.Grid2DLike,
-        source_plane_redshift: Optional[float] = None,
+        plane_redshift: Optional[float] = None,
     ) -> aa.type.Grid2DLike:
         """
         Calculate the source plane grid from the image plane grid.
@@ -204,16 +204,16 @@ class AbstractSolver:
         The source plane grid computed by applying the deflections to the image plane grid.
         """
 
-        source_plane_index = -1
+        plane_index = -1
 
-        if source_plane_redshift is not None:
+        if plane_redshift is not None:
             for redshift in tracer.plane_redshifts:
-                source_plane_index += 1
-                if redshift == source_plane_redshift:
+                plane_index += 1
+                if redshift == plane_redshift:
                     break
 
         deflections = tracer.deflections_between_planes_from(
-            grid=grid, plane_i=0, plane_j=source_plane_index
+            grid=grid, plane_i=0, plane_j=plane_index
         )
         # noinspection PyTypeChecker
         return grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
@@ -223,7 +223,7 @@ class AbstractSolver:
         self,
         tracer: OperateDeflections,
         shape: Shape,
-        source_plane_redshift: Optional[float] = None,
+        plane_redshift: Optional[float] = None,
     ) -> AbstractTriangles:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
@@ -241,7 +241,7 @@ class AbstractSolver:
             The tracer to use to trace the image plane coordinates to the source plane.
         shape
             The shape in the source plane for which we want to identify the image plane coordinates.
-        source_plane_redshift
+        plane_redshift
             The redshift of the source plane.
 
         Returns
@@ -257,7 +257,7 @@ class AbstractSolver:
             self.steps(
                 tracer=tracer,
                 shape=shape,
-                source_plane_redshift=source_plane_redshift,
+                plane_redshift=plane_redshift,
             )
         )
         final_step = steps[-1]
@@ -286,27 +286,27 @@ class AbstractSolver:
         mask = np.abs(magnifications.array) > self.magnification_threshold
         return np.where(mask[:, None], points, np.nan)
 
-    def _source_triangles(
+    def _plane_triangles(
         self,
         tracer: OperateDeflections,
         triangles: aa.AbstractTriangles,
-        source_plane_redshift,
+        plane_redshift,
     ):
         """
         Filter the triangles to keep only those that meet the solver condition
         """
-        source_plane_grid = self._source_plane_grid(
+        plane_grid = self._plane_grid(
             tracer=tracer,
             grid=aa.Grid2DIrregular(triangles.vertices),
-            source_plane_redshift=source_plane_redshift,
+            plane_redshift=plane_redshift,
         )
-        return triangles.with_vertices(source_plane_grid.array)
+        return triangles.with_vertices(plane_grid.array)
 
     def steps(
         self,
         tracer: OperateDeflections,
         shape: Shape,
-        source_plane_redshift: Optional[float] = None,
+        plane_redshift: Optional[float] = None,
     ) -> Iterator[Step]:
         """
         Iterate over the steps of the triangle solver algorithm.
@@ -315,7 +315,7 @@ class AbstractSolver:
         ----------
         tracer
             The tracer to use to trace the image plane coordinates to the source plane.
-        source_plane_redshift
+        plane_redshift
             The redshift of the source plane.
         shape
             The shape in the source plane for which we want to identify the image plane coordinates.
@@ -326,13 +326,13 @@ class AbstractSolver:
         """
         initial_triangles = self.initial_triangles
         for number in range(self.n_steps):
-            source_triangles = self._source_triangles(
+            plane_triangles = self._plane_triangles(
                 tracer=tracer,
                 triangles=initial_triangles,
-                source_plane_redshift=source_plane_redshift,
+                plane_redshift=plane_redshift,
             )
 
-            indexes = source_triangles.containing_indices(shape=shape)
+            indexes = plane_triangles.containing_indices(shape=shape)
             kept_triangles = initial_triangles.for_indexes(indexes=indexes)
 
             neighbourhood = kept_triangles
@@ -347,7 +347,7 @@ class AbstractSolver:
                 filtered_triangles=kept_triangles,
                 neighbourhood=neighbourhood,
                 up_sampled=up_sampled,
-                source_triangles=source_triangles,
+                plane_triangles=plane_triangles,
             )
 
             initial_triangles = up_sampled
@@ -376,7 +376,7 @@ class ShapeSolver(AbstractSolver):
         self,
         tracer: OperateDeflections,
         shape: Shape,
-        source_plane_redshift: Optional[float] = None,
+        plane_redshift: Optional[float] = None,
     ) -> float:
         """
         Find the magnification of the shape in the source plane.
@@ -387,7 +387,7 @@ class ShapeSolver(AbstractSolver):
             A tracer that traces the image plane to the source plane.
         shape
             The shape of an image plane pixel.
-        source_plane_redshift
+        plane_redshift
             The redshift of the source plane.
 
         Returns
@@ -397,6 +397,6 @@ class ShapeSolver(AbstractSolver):
         kept_triangles = super().solve_triangles(
             tracer=tracer,
             shape=shape,
-            source_plane_redshift=source_plane_redshift,
+            plane_redshift=plane_redshift,
         )
         return kept_triangles.area / shape.area

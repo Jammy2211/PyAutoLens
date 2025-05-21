@@ -9,6 +9,6 @@ class MockPointSolver:
         self,
         tracer,
         source_plane_coordinate,
-        source_plane_redshift: Optional[float] = None,
+        plane_redshift: Optional[float] = None,
     ):
         return self.model_positions

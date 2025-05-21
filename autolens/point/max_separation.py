@@ -42,23 +42,23 @@ class SourceMaxSeparation:
         else:
             plane_index = tracer.plane_index_via_redshift_from(redshift=plane_redshift)
 
-        self.source_plane_positions = tracer.traced_grid_2d_list_from(grid=data)[
+        self.plane_positions = tracer.traced_grid_2d_list_from(grid=data)[
             plane_index
         ]
 
     @property
-    def furthest_separations_of_source_plane_positions(self) -> aa.ArrayIrregular:
+    def furthest_separations_of_plane_positions(self) -> aa.ArrayIrregular:
         """
         Returns the furthest distance of every source-plane (y,x) coordinate to the other source-plane (y,x)
         coordinates.
 
         For example, for the following source-plane positions:
 
-        source_plane_positions = [[(0.0, 0.0), (0.0, 1.0), (0.0, 3.0)]
+        plane_positions = [[(0.0, 0.0), (0.0, 1.0), (0.0, 3.0)]
 
         The returned furthest distances are:
 
-        source_plane_positions = [3.0, 2.0, 3.0]
+        plane_positions = [3.0, 2.0, 3.0]
 
         Returns
         -------
@@ -66,11 +66,11 @@ class SourceMaxSeparation:
             The further distances of every set of grouped source-plane coordinates the other source-plane coordinates
             that it is grouped with.
         """
-        return self.source_plane_positions.furthest_distances_to_other_coordinates
+        return self.plane_positions.furthest_distances_to_other_coordinates
 
     @property
-    def max_separation_of_source_plane_positions(self) -> float:
-        return max(self.furthest_separations_of_source_plane_positions)
+    def max_separation_of_plane_positions(self) -> float:
+        return max(self.furthest_separations_of_plane_positions)
 
     def max_separation_within_threshold(self, threshold) -> bool:
-        return self.max_separation_of_source_plane_positions <= threshold
+        return self.max_separation_of_plane_positions <= threshold
