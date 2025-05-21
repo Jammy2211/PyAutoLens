@@ -13,8 +13,7 @@ from autogalaxy.analysis.analysis.dataset import AnalysisDataset as AgAnalysisDa
 
 from autolens.analysis.analysis.lens import AnalysisLens
 from autolens.analysis.result import ResultDataset
-from autolens.analysis.positions import PositionsLHResample
-from autolens.analysis.positions import PositionsLHPenalty
+from autolens.analysis.positions import PositionsLH
 
 from autolens import exc
 
@@ -28,7 +27,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
         self,
         dataset,
         positions_likelihood_list: Optional[
-            List[Union[PositionsLHResample, PositionsLHPenalty]]
+            List[PositionsLH]
         ] = None,
         adapt_image_maker: Optional[ag.AdaptImageMaker] = None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
@@ -52,7 +51,8 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
         positions_likelihood_list
             Alters the likelihood function to include a term which accounts for whether image-pixel coordinates in
             arc-seconds corresponding to the multiple images of each lensed source galaxy trace close to one another in
-            their source-plane.
+            their source-plane. This is a list, as it may support multiple planes, where a positions likelihood object
+            is input for each plane (e.g. double source plane lensing).
         adapt_images
             Contains the adapt-images which are used to make a pixelization's mesh and regularization adapt to the
             reconstructed galaxy's morphology.
@@ -62,7 +62,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
             Settings controlling how an inversion is fitted during the model-fit, for example which linear algebra
             formalism is used.
         raise_inversion_positions_likelihood_exception
-            If an inversion is used without the `positions_likelihood` it is likely a systematic solution will
+            If an inversion is used without the `positions_likelihood_list` it is likely a systematic solution will
             be inferred, in which case an Exception is raised before the model-fit begins to inform the user
             of this. This exception is not raised if this input is False, allowing the user to perform the model-fit
             anyway.
@@ -124,7 +124,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
 
         if has_pix:
             if (
-                self.positions_likelihood is None
+                self.positions_likelihood_list is None
                 and self.raise_inversion_positions_likelihood_exception
                 and not conf.instance["general"]["test"][
                     "disable_positions_lh_inversion_check"
@@ -133,7 +133,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
                 raise exc.AnalysisException(
                     """
                     You have begun a model-fit which reconstructs the source using a pixelization.
-                    However, you have not input a `positions_likelihood` object.
+                    However, you have not input a `positions_likelihood_list` object.
                     It is likely your model-fit will infer an inaccurate solution.
                     
                     Please read the following readthedocs page for a description of why this is, and how to set up

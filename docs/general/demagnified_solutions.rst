@@ -70,7 +70,7 @@ stars:
 The ``autolens_workspace`` also includes a Graphical User Interface for drawing lensed source positions via 
 mouse click (https://github.com/Jammy2211/autolens_workspace/blob/release/scripts/imaging/preprocess/gui/positions.py).
 
-Next, we create ``PositionsLHPenalty`` object, which has an input ``threshold``.
+Next, we create ``PositionsLH`` object, which has an input ``threshold``.
 
 This requires that a mass model traces the multiple image ``positions`` specified above within the ``threshold`` 
 value (e.g. 0.5") of one another in the source-plane. If this criteria is not met, a large penalty term is
@@ -88,7 +88,7 @@ The penalty term is created and passed to an ``Analysis`` object as follows:
 
 .. code-block:: python
 
-    positions_likelihood = al.PositionsLHPenalty(positions=positions, threshold=0.3)
+    positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 
     analysis = al.AnalysisImaging(
         dataset=dataset, positions_likelihood=positions_likelihood
@@ -155,7 +155,7 @@ These inputs are useful when using function to set the ``threshold`` in a new fi
 it allows us to make sure we do set too small a threshold that we remove genuinely physically mass models.
 
 For writing search chaining pipelines, a convenience method is available in the ``result`` which returns directly a
-``PositionsLHPenalty`` object:
+``PositionsLH`` object:
 
 .. code-block:: python
 

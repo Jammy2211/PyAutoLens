@@ -44,28 +44,6 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
     assert fit.log_likelihood == analysis_log_likelihood
 
 
-def test__positions__resample__raises_exception(masked_imaging_7x7):
-    model = af.Collection(
-        galaxies=af.Collection(
-            lens=al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph()),
-            source=al.Galaxy(redshift=1.0),
-        )
-    )
-
-    positions_likelihood = al.PositionsLHResample(
-        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01
-    )
-
-    analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7, positions_likelihood_list=[positions_likelihood]
-    )
-
-    instance = model.instance_from_unit_vector([])
-
-    with pytest.raises(exc.RayTracingException):
-        analysis.log_likelihood_function(instance=instance)
-
-
 def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x7):
     lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph(centre=(0.05, 0.05)))
     source = al.Galaxy(redshift=1.0, light=al.lp.SersicSph(centre=(0.05, 0.05)))
@@ -84,7 +62,7 @@ def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x
     assert fit.log_likelihood == pytest.approx(analysis_log_likelihood, 1.0e-4)
     assert analysis_log_likelihood == pytest.approx(-14.79034680979, 1.0e-4)
 
-    positions_likelihood = al.PositionsLHPenalty(
+    positions_likelihood = al.PositionsLH(
         positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01
     )
 
@@ -116,10 +94,10 @@ def test__positions__likelihood_overwrites__changes_likelihood__double_source_pl
 
     instance = model.instance_from_unit_vector([])
 
-    positions_likelihood_0 = al.PositionsLHPenalty(
+    positions_likelihood_0 = al.PositionsLH(
         plane_redshift=1.0, positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01
     )
-    positions_likelihood_1 = al.PositionsLHPenalty(
+    positions_likelihood_1 = al.PositionsLH(
         plane_redshift=2.0, positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01
     )
 

@@ -6,8 +6,7 @@ import autofit as af
 import autoarray as aa
 import autogalaxy as ag
 
-from autolens.analysis.positions import PositionsLHResample
-from autolens.analysis.positions import PositionsLHPenalty
+from autolens.analysis.positions import PositionsLH
 from autolens.lens.tracer import Tracer
 
 from autolens.lens import tracer_util
@@ -23,7 +22,7 @@ class AnalysisLens:
     def __init__(
         self,
         positions_likelihood_list: Optional[
-            List[Union[PositionsLHResample, PositionsLHPenalty]]
+            List[PositionsLH]
         ] = None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):

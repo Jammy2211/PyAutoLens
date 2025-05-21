@@ -10,14 +10,14 @@ from autolens import exc
 
 
 def test__check_positions_on_instantiation():
-    al.PositionsLHResample(
+    al.PositionsLH(
         positions=al.Grid2DIrregular([(1.0, 2.0), (3.0, 4.0)]), threshold=0.1
     )
 
     # Positions input with threshold but positions are length 1.
 
     with pytest.raises(exc.PositionsException):
-        al.PositionsLHResample(
+        al.PositionsLH(
             positions=al.Grid2DIrregular([(1.0, 2.0)]), threshold=0.1
         )
 
@@ -27,7 +27,7 @@ def test__output_positions_info():
         "{}".format(os.path.dirname(os.path.realpath(__file__))), "files"
     )
 
-    positions_likelihood = al.PositionsLHResample(
+    positions_likelihood = al.PositionsLH(
         positions=al.Grid2DIrregular([(1.0, 2.0), (3.0, 4.0)]), threshold=0.1
     )
 
@@ -52,7 +52,7 @@ def test__output_positions_info():
 def make_settings_dict():
     return {
         "type": "instance",
-        "class_path": "autolens.analysis.positions.PositionsLHPenalty",
+        "class_path": "autolens.analysis.positions.PositionsLH",
         "arguments": {
             "positions": {
                 "type": "ndarray",
@@ -66,20 +66,20 @@ def make_settings_dict():
 
 
 def test_settings_from_dict(settings_dict):
-    assert isinstance(from_dict(settings_dict), al.PositionsLHPenalty)
+    assert isinstance(from_dict(settings_dict), al.PositionsLH)
 
 
 def test_file():
     filename = "/tmp/temp.json"
 
     output_to_json(
-        al.PositionsLHPenalty(
+        al.PositionsLH(
             positions=al.Grid2DIrregular([(1.0, 2.0), (3.0, 4.0)]), threshold=0.1
         ),
         filename,
     )
 
     try:
-        assert isinstance(from_json(filename), al.PositionsLHPenalty)
+        assert isinstance(from_json(filename), al.PositionsLH)
     finally:
         os.remove(filename)

@@ -1,4 +1,5 @@
 import autofit as af
+import autogalaxy as ag
 
 from autolens.interferometer.model.plotter_interface import (
     PlotterInterfaceInterferometer,
@@ -34,10 +35,20 @@ class VisualizerInterferometer(af.Visualizer):
 
         plotter_interface.interferometer(dataset=analysis.interferometer)
 
-        if analysis.positions_likelihood is not None:
+        if analysis.positions_likelihood_list is not None:
+
+            positions_list = []
+
+            for positions_likelihood in analysis.positions_likelihood_list:
+                positions_list.append(
+                    positions_likelihood.positions
+                )
+
+            positions = ag.Grid2DIrregular(positions_list)
+
             plotter_interface.image_with_positions(
                 image=analysis.dataset.dirty_image,
-                positions=analysis.positions_likelihood.positions,
+                positions=positions
             )
 
         if analysis.adapt_images is not None:
@@ -81,10 +92,13 @@ class VisualizerInterferometer(af.Visualizer):
         """
         fit = analysis.fit_from(instance=instance)
 
-        if analysis.positions_likelihood is not None:
-            analysis.positions_likelihood.output_positions_info(
-                output_path=paths.output_path, tracer=fit.tracer
-            )
+        if analysis.positions_likelihood_list is not None:
+
+            for positions_likelihood in analysis.positions_likelihood_list:
+
+                positions_likelihood.output_positions_info(
+                    output_path=paths.output_path, tracer=fit.tracer
+                )
 
         if fit.inversion is not None:
             try:

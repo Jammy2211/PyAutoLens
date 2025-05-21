@@ -8,8 +8,7 @@ import autogalaxy as ag
 
 from autogalaxy.analysis.result import ResultDataset as AgResultDataset
 
-from autolens.analysis.positions import PositionsLHResample
-from autolens.analysis.positions import PositionsLHPenalty
+from autolens.analysis.positions import PositionsLH
 from autolens.point.max_separation import (
     SourceMaxSeparation,
 )
@@ -26,34 +25,6 @@ class Result(AgResultDataset):
         An instance of a `Tracer` corresponding to the maximum log likelihood model inferred by the non-linear search.
         """
         return self.analysis.tracer_via_instance_from(instance=self.instance)
-
-    @property
-    def max_log_likelihood_positions_threshold(self) -> float:
-        """
-        If the `Analysis` has a `PositionsLH` object this add a penalty term to the likelihood of the
-        `log_likelihood_function`.
-
-        This term is computed by ray-tracing a set of multiple image positions (E.g. corresponding to the lensed
-        sources brightest pixels) to the source-plane and computing their maximum separation. This separation is
-        then combined with a threshold to compute the likelihood term.
-
-        This property returns the maximum separation of this `Analysis` object's multiple image positions for the
-        maximum log likelihood tracer.
-
-        It therefore provides information on how closely the lens model was able to ray trace the multiple images to
-        one another in the source plane, and can be used for setting up the `PositionsLH` object in subsequent fits.
-
-        Returns
-        -------
-
-        """
-        positions_fits = SourceMaxSeparation(
-            data=self.analysis.positions_likelihood.positions,
-            noise_map=None,
-            tracer=self.max_log_likelihood_tracer,
-        )
-
-        return positions_fits.max_separation_of_plane_positions
 
     @property
     def source_plane_light_profile_centre(self) -> aa.Grid2DIrregular:
@@ -89,7 +60,15 @@ class Result(AgResultDataset):
         the multiple image position of the source(s) in the image-plane.
 
         These image-plane positions are used by the next search in a pipeline if automatic position updating is turned
-        on."""
+        on.
+
+        Parameters
+        ----------
+        plane_redshift
+            The plane redshift of the lensed source, which is only required when a double (or triple) source plane lens
+            system is being analysed where the specific plane via its redshift is required to define whihch source
+            galaxy is used to compute the multiple images.
+        """
 
         grid = self.analysis.dataset.mask.derive_grid.all_false
 
@@ -131,6 +110,10 @@ class Result(AgResultDataset):
 
         Parameters
         ----------
+        plane_redshift
+            The plane redshift of the lensed source, which is only required when a double (or triple) source plane lens
+            system is being analysed where the specific plane via its redshift is required to define whihch source
+            galaxy is used to compute the multiple images.
         increments
             The number of increments the source-plane centre is moved to compute multiple images.
         """
@@ -209,6 +192,10 @@ class Result(AgResultDataset):
         positions
             If input, these positions are used instead of the computed multiple image positions from the lens mass
             model.
+        plane_redshift
+            The plane redshift of the lensed source, which is only required when a double (or triple) source plane lens
+            system is being analysed where the specific plane via its redshift is required to define whihch source
+            galaxy is used to compute the multiple images.
 
         Returns
         -------
@@ -216,7 +203,6 @@ class Result(AgResultDataset):
             The maximum source plane separation of this results maximum likelihood `Tracer` multiple images multiplied
             by `factor` and rounded up to the `threshold`.
         """
-        plane_redshift_positions_dict = {}
 
         tracer = Tracer(galaxies=self.max_log_likelihood_galaxies)
 
@@ -244,11 +230,10 @@ class Result(AgResultDataset):
         self,
         factor=1.0,
         minimum_threshold=None,
-        use_resample=False,
         positions: Optional[aa.Grid2DIrregular] = None,
         mass_centre_radial_distance_min: float = None,
-        plane_redshift_list: Optional[List[int]] = None,
-    ) -> Union[PositionsLHPenalty, PositionsLHResample]:
+        plane_redshift: Optional[float] = None,
+    ) -> PositionsLH:
         """
         Returns a `PositionsLH` object from the result of a lens model-fit, where the maximum log likelihood mass
         and source models are used to determine the multiple image positions in the image-plane and source-plane
@@ -271,10 +256,6 @@ class Result(AgResultDataset):
         minimum_threshold
             The output threshold is rounded up to this value if it is below it, to avoid extremely small threshold
             values.
-        use_resample
-            If `False` the `PositionsLH` object is created using the `PositionsLHPenalty` class, which uses the
-            threshold to apply a penalty term to the likelihood. If `True` the `PositionsLH` object is created using
-            the `PositionsLHResample` class, which resamples the positions to the threshold.
         positions
             If input, these positions are used instead of the computed multiple image positions from the lens mass
             model.
@@ -282,6 +263,10 @@ class Result(AgResultDataset):
             The minimum radial distance from the mass model centre that a multiple image position must be to be
             included in the likelihood penalty or resampling. If `None` all positions are used. This is an additional
             method to remove central images that may make it through the point solver's magnification threshold.
+        plane_redshift
+            The plane redshift of the lensed source, which is only required when a double (or triple) source plane lens
+            system is being analysed where the specific plane via its redshift is required to define whihch source
+            galaxy is used to compute the multiple images.
 
         Returns
         -------
@@ -291,43 +276,28 @@ class Result(AgResultDataset):
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
             return
 
-        plane_redshift_list = [None] if plane_redshift_list is None else plane_redshift_list
+        positions = (
+            self.image_plane_multiple_image_positions(plane_redshift=plane_redshift)
+            if positions is None
+            else positions
+        )
 
-        plane_redshift_positions_dict = {}
-        threshold_list = []
-
-        for plane_redshift in plane_redshift_list:
-
-            positions = (
-                self.image_plane_multiple_image_positions(plane_redshift=plane_redshift)
-                if positions is None
-                else positions
+        if mass_centre_radial_distance_min is not None:
+            mass_centre = self.max_log_likelihood_tracer.extract_attribute(
+                cls=ag.mp.MassProfile, attr_name="centre"
             )
 
-            if mass_centre_radial_distance_min is not None:
-                mass_centre = self.max_log_likelihood_tracer.extract_attribute(
-                    cls=ag.mp.MassProfile, attr_name="centre"
-                )
-
-                distances = positions.distances_to_coordinate_from(
-                    coordinate=mass_centre[0]
-                )
-
-                positions = positions[distances > mass_centre_radial_distance_min]
-
-            threshold = self.positions_threshold_from(
-                factor=factor, minimum_threshold=minimum_threshold, positions=positions, plane_redshift=plane_redshift
+            distances = positions.distances_to_coordinate_from(
+                coordinate=mass_centre[0]
             )
 
-            threshold_list.append(threshold)
+            positions = positions[distances > mass_centre_radial_distance_min]
 
-            plane_redshift_positions_dict[plane_redshift] = positions
-
-        threshold = np.max(threshold_list)
-
-        if not use_resample:
-            return PositionsLHPenalty(plane_redshift_positions_dict=plane_redshift_positions_dict, threshold=threshold)
-        return PositionsLHResample(plane_redshift_positions_dict=plane_redshift_positions_dict, threshold=threshold)
+        threshold = self.positions_threshold_from(
+            factor=factor, minimum_threshold=minimum_threshold, positions=positions, plane_redshift=plane_redshift
+        )
+        
+        return PositionsLH(positions=positions, threshold=threshold, plane_redshift=plane_redshift)
 
 
 class ResultDataset(Result):
@@ -343,15 +313,6 @@ class ResultDataset(Result):
         )
 
         return self.analysis.tracer_via_instance_from(instance=instance)
-
-    @property
-    def positions(self):
-        """
-        The (y,x) arc-second coordinates of the lensed sources brightest pixels, which are used for discarding mass
-        models which do not trace within a threshold in the source-plane of one another.
-        """
-        if self.analysis.positions_likelihood is not None:
-            return self.analysis.positions_likelihood.positions
 
     @property
     def source_plane_centre(self) -> aa.Grid2DIrregular:

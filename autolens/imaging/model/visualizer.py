@@ -35,10 +35,21 @@ class VisualizerImaging(af.Visualizer):
 
         plotter_interface.imaging(dataset=analysis.dataset)
 
-        if analysis.positions_likelihood is not None:
+        if analysis.positions_likelihood_list is not None:
+
+            positions_list = []
+
+            for positions_likelihood in analysis.positions_likelihood_list:
+
+                positions_list.append(
+                    positions_likelihood.positions
+                )
+
+            positions = ag.Grid2DIrregular(positions_list)
+
             plotter_interface.image_with_positions(
                 image=analysis.dataset.data,
-                positions=analysis.positions_likelihood.positions,
+                positions=positions,
             )
 
         if analysis.adapt_images is not None:
@@ -80,10 +91,13 @@ class VisualizerImaging(af.Visualizer):
 
         fit = analysis.fit_from(instance=instance)
 
-        if analysis.positions_likelihood is not None:
-            analysis.positions_likelihood.output_positions_info(
-                output_path=paths.output_path, tracer=fit.tracer
-            )
+        if analysis.positions_likelihood_list is not None:
+
+            for positions_likelihood in analysis.positions_likelihood_list:
+
+                positions_likelihood.output_positions_info(
+                    output_path=paths.output_path, tracer=fit.tracer
+                )
 
         if fit.inversion is not None:
             try:

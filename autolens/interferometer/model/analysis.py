@@ -2,8 +2,6 @@ import logging
 import numpy as np
 from typing import Dict, Optional, Tuple, Union
 
-from autoconf.dictable import to_dict
-
 import autofit as af
 import autoarray as aa
 import autogalaxy as ag
@@ -11,8 +9,7 @@ import autogalaxy as ag
 from autoarray.exc import PixelizationException
 
 from autolens.analysis.analysis.dataset import AnalysisDataset
-from autolens.analysis.positions import PositionsLHResample
-from autolens.analysis.positions import PositionsLHPenalty
+from autolens.analysis.positions import PositionsLH
 from autolens.interferometer.model.result import ResultInterferometer
 from autolens.interferometer.model.visualizer import VisualizerInterferometer
 from autolens.interferometer.fit_interferometer import FitInterferometer
@@ -31,8 +28,8 @@ class AnalysisInterferometer(AnalysisDataset):
     def __init__(
         self,
         dataset,
-        positions_likelihood: Optional[
-            Union[PositionsLHResample, PositionsLHPenalty]
+        positions_likelihood_list: Optional[
+            PositionsLH
         ] = None,
         adapt_image_maker: Optional[ag.AdaptImageMaker] = None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
@@ -60,10 +57,11 @@ class AnalysisInterferometer(AnalysisDataset):
         ----------
         dataset
             The interferometer dataset that the model is fitted too.
-        positions_likelihood
-            An object which alters the likelihood function to include a term which accounts for whether
-            image-pixel coordinates in arc-seconds corresponding to the multiple images of the lensed source galaxy
-            trace close to one another in the source-plane.
+        positions_likelihood_list
+            Alters the likelihood function to include a term which accounts for whether image-pixel coordinates in
+            arc-seconds corresponding to the multiple images of each lensed source galaxy trace close to one another in
+            their source-plane. This is a list, as it may support multiple planes, where a positions likelihood object
+            is input for each plane (e.g. double source plane lensing).
         adapt_images
             Contains the adapt-images which are used to make a pixelization's mesh and regularization adapt to the
             reconstructed galaxy's morphology.
@@ -72,7 +70,7 @@ class AnalysisInterferometer(AnalysisDataset):
         settings_inversion
             Settings controlling how an inversion is fitted, for example which linear algebra formalism is used.
         raise_inversion_positions_likelihood_exception
-            If an inversion is used without the `positions_likelihood` it is likely a systematic solution will
+            If an inversion is used without the `positions_likelihood_list` it is likely a systematic solution will
             be inferred, in which case an Exception is raised before the model-fit begins to inform the user
             of this. This exception is not raised if this input is False, allowing the user to perform the model-fit
             anyway.
@@ -82,7 +80,7 @@ class AnalysisInterferometer(AnalysisDataset):
         """
         super().__init__(
             dataset=dataset,
-            positions_likelihood=positions_likelihood,
+            positions_likelihood_list=positions_likelihood_list,
             adapt_image_maker=adapt_image_maker,
             cosmology=cosmology,
             settings_inversion=settings_inversion,
@@ -260,13 +258,6 @@ class AnalysisInterferometer(AnalysisDataset):
         )
 
         analysis.save_attributes(paths=paths)
-
-        if self.positions_likelihood is not None:
-            paths.save_json(
-                name="positions",
-                object_dict=to_dict(self.positions_likelihood.positions),
-                prefix="dataset",
-            )
 
     def profile_log_likelihood_function(
         self, instance: af.ModelInstance, paths: Optional[af.DirectoryPaths] = None

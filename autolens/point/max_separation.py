@@ -37,8 +37,6 @@ class SourceMaxSeparation:
         self.data = data
         self.noise_map = noise_map
 
-        print(plane_redshift)
-
         try:
             plane_index = tracer.plane_index_via_redshift_from(redshift=plane_redshift)
         except TypeError:
