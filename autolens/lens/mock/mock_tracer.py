@@ -8,6 +8,9 @@ class MockTracer:
     def traced_grid_2d_list_from(self, grid):
         return self._traced_grid_2d_list_from
 
+    def plane_index_via_redshift_from(self, redshift):
+        raise TypeError
+
 
 class MockTracerPoint(MockTracer):
     def __init__(

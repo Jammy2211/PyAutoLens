@@ -39,28 +39,6 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(interferome
     assert fit.log_likelihood == analysis_log_likelihood
 
 
-def test__positions__resample__raises_exception(interferometer_7, mask_2d_7x7):
-    model = af.Collection(
-        galaxies=af.Collection(
-            lens=al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph()),
-            source=al.Galaxy(redshift=1.0),
-        )
-    )
-
-    positions_likelihood = al.PositionsLHResample(
-        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01
-    )
-
-    analysis = al.AnalysisInterferometer(
-        dataset=interferometer_7, positions_likelihood=positions_likelihood
-    )
-
-    instance = model.instance_from_unit_vector([])
-
-    with pytest.raises(exc.RayTracingException):
-        analysis.log_likelihood_function(instance=instance)
-
-
 def test__positions__likelihood_overwrite__changes_likelihood(
     interferometer_7, mask_2d_7x7
 ):
@@ -81,12 +59,12 @@ def test__positions__likelihood_overwrite__changes_likelihood(
     assert fit.log_likelihood == analysis_log_likelihood
     assert analysis_log_likelihood == pytest.approx(-62.463179940, 1.0e-4)
 
-    positions_likelihood = al.PositionsLHPenalty(
+    positions_likelihood = al.PositionsLH(
         positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01
     )
 
     analysis = al.AnalysisInterferometer(
-        dataset=interferometer_7, positions_likelihood=positions_likelihood
+        dataset=interferometer_7, positions_likelihood_list=[positions_likelihood]
     )
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 

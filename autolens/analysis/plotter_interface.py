@@ -139,7 +139,7 @@ class PlotterInterface(AgPlotterInterface):
 
     def image_with_positions(self, image: aa.Array2D, positions: aa.Grid2DIrregular):
         """
-        Visualizes the positions of a model-fit, where these positions are used to resample lens models where
+        Visualizes the positions of a model-fit, where these positions are used to penalize lens models where
         the positions to do trace within an input threshold of one another in the source-plane.
 
         Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path`
@@ -154,8 +154,8 @@ class PlotterInterface(AgPlotterInterface):
         ----------
         imaging
             The imaging dataset whose image the positions are overlaid.
-        position
-            The 2D (y,x) arc-second positions used to resample inaccurate mass models.
+        positions
+            The 2D (y,x) arc-second positions used to penalize inaccurate mass models.
         """
 
         def should_plot(name):

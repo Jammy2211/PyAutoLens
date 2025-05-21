@@ -213,10 +213,10 @@ class FitImagingPlotter(Plotter):
 
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
-        if use_source_vmax:
-            self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(self.fit.model_images_of_planes_list[-1])
-
         for plane_index in plane_indexes:
+
+            if use_source_vmax:
+                self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(self.fit.model_images_of_planes_list[plane_index])
 
             if subtracted_image:
 
@@ -765,7 +765,7 @@ class FitImagingPlotter(Plotter):
         if data:
 
             if use_source_vmax:
-                self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(self.fit.model_images_of_planes_list[-1])
+                self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(self.fit.model_images_of_planes_list[1:])
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,
@@ -799,7 +799,7 @@ class FitImagingPlotter(Plotter):
         if model_image:
 
             if use_source_vmax:
-                self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(self.fit.model_images_of_planes_list[-1])
+                self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(self.fit.model_images_of_planes_list[1:])
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.model_data,

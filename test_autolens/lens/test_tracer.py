@@ -78,6 +78,19 @@ def test__planes():
     assert tracer.planes == [[g1, g1], [g2, g2], [g3]]
 
 
+def test__plane_index_via_redshift_from():
+
+    g1 = al.Galaxy(redshift=1)
+    g2 = al.Galaxy(redshift=2)
+    g3 = al.Galaxy(redshift=3)
+
+    tracer = al.Tracer(galaxies=[g1, g2, g3])
+
+    assert tracer.plane_index_via_redshift_from(redshift=2.0) == 1
+    assert tracer.plane_index_via_redshift_from(redshift=3.0) == 2
+    assert tracer.plane_index_via_redshift_from(redshift=3.001) == None
+
+
 def test__upper_plane_index_with_light_profile():
     g0 = al.Galaxy(redshift=0.5)
     g1 = al.Galaxy(redshift=1.0)

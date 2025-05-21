@@ -8,10 +8,7 @@ class RayTracingException(af.exc.FitException):
     """
     Raises exceptions associated with the `lens/tracer.py` module and `Tracer` class.
 
-    For example if the multiple image positions do not trace without a threshold of one another, in order to
-    resample inaccurate mass models during a model-fit.
-
-    This exception inehrits from a `FitException`. This means that if this exception is raised during a model-fit in
+    This exception inherits from a `FitException`. This means that if this exception is raised during a model-fit in
     the analysis class's `log_likelihood_function` that model is resampled and does not terminate the code.
     """
 

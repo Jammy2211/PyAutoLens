@@ -95,7 +95,7 @@ class FitPositionsSource(AbstractFitPositions):
             deflections = self.tracer.deflections_yx_2d_from(grid=self.data)
         else:
             deflections = self.tracer.deflections_between_planes_from(
-                grid=self.data, plane_i=0, plane_j=self.source_plane_index
+                grid=self.data, plane_i=0, plane_j=self.plane_index
             )
 
         return self.data.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
