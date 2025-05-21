@@ -1,7 +1,7 @@
 import logging
 import os
 import numpy as np
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 import autoarray as aa
 import autogalaxy as ag
@@ -165,7 +165,7 @@ class Result(AgResultDataset):
                 return aa.Grid2DIrregular(values=multiple_images)
 
         logger.info(
-            """
+        """
         Could not find multiple images for maximum likelihood lens model, even after incrementally moving the source
         centre inwards to the centre of the source-plane.
 
@@ -179,6 +179,7 @@ class Result(AgResultDataset):
         factor=1.0,
         minimum_threshold=None,
         positions: Optional[aa.Grid2DIrregular] = None,
+        plane_index_list : Optional[List[int]] = None,
     ) -> float:
         """
         Compute a new position threshold from these results corresponding to the image-plane multiple image positions
@@ -211,11 +212,18 @@ class Result(AgResultDataset):
             by `factor` and rounded up to the `threshold`.
         """
 
-        positions = (
-            self.image_plane_multiple_image_positions
-            if positions is None
-            else positions
-        )
+        if plane_index_list is None:
+            plane_index_list = [-1]
+
+        plane_index_positions_dict = {}
+
+        for plane_index in plane_index_list:
+
+            plane_index_positions_dict[plane_index] = (
+                self.image_plane_multiple_image_positions
+                if positions is None
+                else positions
+            )
 
         tracer = Tracer(galaxies=self.max_log_likelihood_galaxies)
 
@@ -281,7 +289,7 @@ class Result(AgResultDataset):
         """
 
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
-            return None
+            return
 
         positions = (
             self.image_plane_multiple_image_positions
