@@ -54,6 +54,15 @@ optional=[
     "getdist==1.4",
     "ultranest==4.3.2"
 ]
+docs=[
+    "sphinx",
+    "furo",
+    "myst-parser",
+    "sphinx_copybutton",
+    "sphinx_design",
+    "sphinx_inline_tabs",
+    "sphinx_autodoc_typehints"
+]
 test = ["pytest"]
 dev = ["pytest", "black"]
 
