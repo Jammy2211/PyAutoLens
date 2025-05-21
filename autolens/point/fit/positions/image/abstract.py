@@ -101,5 +101,5 @@ class AbstractFitPositionsImagePair(AbstractFitPositions, ABC):
         return self.solver.solve(
             tracer=self.tracer,
             source_plane_coordinate=self.source_plane_coordinate,
-            source_plane_redshift=self.source_plane_redshift,
+            plane_redshift=self.plane_redshift,
         )

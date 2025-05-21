@@ -2,6 +2,7 @@ import numpy as np
 from typing import Optional, Union
 from os import path
 import os
+from typing import Dict
 
 import autoarray as aa
 import autofit as af
@@ -20,8 +21,14 @@ from autolens.point.max_separation import (
 from autolens import exc
 
 
-class AbstractPositionsLH:
-    def __init__(self, positions: aa.Grid2DIrregular, threshold: float):
+class PositionsLH:
+    def __init__(
+        self,
+        positions: aa.Grid2DIrregular,
+        threshold: float,
+        log_likelihood_penalty_factor: float = 1e8,
+        plane_redshift: Optional[float] = None,
+    ):
         """
         The `PositionsLH` objects add a penalty term to the likelihood of the **PyAutoLens** `log_likelihood_function`
         defined in the `Analysis` classes.
@@ -31,9 +38,23 @@ class AbstractPositionsLH:
         on the basis that this indicates an unphysical or inaccurate mass model. If they trace within the
         threshold the penalty term is not applied.
 
+        For the `PositionsLH` object, if the multiple image coordinates do not trace within the source-plane
+        threshold of one another a penalty to the likelihood is applied:
+
+        `log_Likelihood_penalty_base - log_likelihood_penalty_factor * (max_source_plane_separation - threshold)`
+
+        The penalty term reduces as the source-plane coordinates trace closer to one another, meaning that the
+        initial stages of the non-linear search can sample mass models that reduce the threshold.
+
         For example, for one penalty term, if the multiple image coordinates are defined
         via `positions=aa.Grid2DIrregular([(1.0, 0.0), (-1.0, 0.0)]` and they do not trace within `threshold=0.3` of
-        one another, the mass model will be rejected and a new model sampled.
+        one another, the mass model will receive a large likelihood penalty.
+
+        The default behaviour assumes a single lens plane and single source plane, meaning the input `positions`
+        are the image-plane coordinates of one source galaxy at a specifc redshift.
+
+        For multiple source planes, the `plane_redshift` can be used to pair the image-plane positions with the
+        redshift of the source plane they trace too.
 
         Parameters
         ----------
@@ -43,21 +64,25 @@ class AbstractPositionsLH:
         threshold
             If the maximum separation of any two source plane coordinates is above the threshold the penalty term
             is applied.
+        log_likelihood_penalty_factor
+            A factor which multiplies how far source pixels do not trace within the threshold of one another, with a
+            larger factor producing a larger penalty making the non-linear parameter space gradient steeper.
+        plane_redshift
+            The plane redshift of the lensed source multiple images, which is only required if position threshold
+            for a double source plane lens system is being used where the specific plane is required.
         """
+        self.positions = positions
+        self.threshold = threshold
+        self.plane_redshift = plane_redshift
+
         if len(positions) == 1:
             raise exc.PositionsException(
-                f"The positions input into the Positions have length one "
+                f"The positions input into the PositionsLikelihood object have length one "
                 f"(e.g. it is only one (y,x) coordinate and therefore cannot be compared with other images).\n\n"
                 "Please input more positions into the Positions."
             )
 
-        self.positions = positions
-        self.threshold = threshold
-
-    def log_likelihood_function_positions_overwrite(
-        self, instance: af.ModelInstance, analysis: AnalysisDataset
-    ) -> Optional[float]:
-        raise NotImplementedError
+        self.log_likelihood_penalty_factor = log_likelihood_penalty_factor
 
     def output_positions_info(self, output_path: str, tracer: Tracer):
         """
@@ -77,120 +102,31 @@ class AbstractPositionsLH:
         -------
 
         """
-        positions_fit = SourceMaxSeparation(
-            data=self.positions, noise_map=None, tracer=tracer
-        )
+        with open_(path.join(output_path, "positions.info"), "a+") as f:
 
-        distances = positions_fit.data.distances_to_coordinate_from(
-            coordinate=(0.0, 0.0)
-        )
+            positions_fit = SourceMaxSeparation(
+                data=self.positions,
+                noise_map=None,
+                tracer=tracer,
+                plane_redshift=self.plane_redshift,
+            )
 
-        with open_(path.join(output_path, "positions.info"), "w+") as f:
+            distances = positions_fit.data.distances_to_coordinate_from(
+                coordinate=(0.0, 0.0)
+            )
+
+            if self.plane_redshift is None:
+                f.write(f"Plane Index: -1 \n")
+            else:
+                f.write(f"Plane Redshift: {self.plane_redshift} \n")
+
             f.write(f"Positions: \n {self.positions} \n\n")
             f.write(f"Radial Distance from (0.0, 0.0): \n {distances} \n\n")
             f.write(f"Threshold = {self.threshold} \n")
             f.write(
-                f"Max Source Plane Separation of Maximum Likelihood Model = {positions_fit.max_separation_of_source_plane_positions}"
+                f"Max Source Plane Separation of Maximum Likelihood Model = {positions_fit.max_separation_of_plane_positions}"
             )
-
-
-class PositionsLHResample(AbstractPositionsLH):
-    """
-    The `PositionsLH` objects add a penalty term to the likelihood of the **PyAutoLens** `log_likelihood_function`
-    defined in the `Analysis` classes.
-
-    The penalty term inspects the distance that the locations of the multiple images of the lensed source galaxy
-    trace within one another in the source-plane and penalizes solutions where they trace far from one another,
-    on the basis that this indicates an unphysical or inaccurate mass model. If they trace within the
-    threshold the penalty term is not applied.
-
-    For the `PositionsLHResample` object, if the multiple image coordinates do not trace within the source-plane
-    threshold of one another the mass model is rejected and a new model is sampled.
-
-    The penalty term rejects any model where the source-plane coordinates do not trace within the threshold, meaning
-    that the initial stages of the non-linear search may need to sample many mass models randomly in order to sample
-    an initial set that that trace within the threshold.
-
-    Parameters
-    ----------
-    positions
-        The arcsecond coordinates of the lensed source multiple images which are used to compute the likelihood
-        penalty.
-    threshold
-        If the maximum separation of any two source plane coordinates is above the threshold the penalty term
-        is applied.
-    """
-
-    def log_likelihood_function_positions_overwrite(
-        self, instance: af.ModelInstance, analysis: AnalysisDataset
-    ) -> Optional[float]:
-        """
-        This is called in the `log_likelihood_function` of certain `Analysis` classes to add the penalty term of
-        this class, which rejects and resamples mass models which do not trace within the threshold of one another
-        in the source-plane.
-
-        Parameters
-        ----------
-        instance
-            The instance of the lens model that is being fitted for this iteration of the non-linear search.
-        analysis
-            The analysis class from which the log likliehood function is called.
-        """
-        tracer = analysis.tracer_via_instance_from(instance=instance)
-
-        if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
-            return
-
-        positions_fit = SourceMaxSeparation(
-            data=self.positions, noise_map=None, tracer=tracer
-        )
-
-        if not positions_fit.max_separation_within_threshold(self.threshold):
-            if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
-                return
-
-            raise exc.RayTracingException
-
-
-class PositionsLHPenalty(AbstractPositionsLH):
-    def __init__(
-        self,
-        positions: aa.Grid2DIrregular,
-        threshold: float,
-        log_likelihood_penalty_factor: float = 1e8,
-    ):
-        """
-        The `PositionsLH` objects add a penalty term to the likelihood of the **PyAutoLens** `log_likelihood_function`
-        defined in the `Analysis` classes.
-
-        The penalty term inspects the distance that the locations of the multiple images of the lensed source galaxy
-        trace within one another in the source-plane and penalizes solutions where they trace far from one another,
-        on the basis that this indicates an unphysical or inaccurate mass model. If they trace within the
-        threshold the penalty term is not applied.
-
-        For the `PositionsLHPenalty` object, if the multiple image coordinates do not trace within the source-plane
-        threshold of one another a penalty to the likelihood is applied:
-
-        `log_Likelihood_penalty_base - log_likelihood_penalty_factor * (max_source_plane_separation - threshold)`
-
-        The penalty term reduces as the source-plane coordinates trace closer to one another, meaning that the
-        initial stages of the non-linear search can sample mass models that reduce the threshold.
-
-        Parameters
-        ----------
-        positions
-            The arcsecond coordinates of the lensed source multiple images which are used to compute the likelihood
-            penalty.
-        threshold
-            If the maximum separation of any two source plane coordinates is above the threshold the penalty term
-            is applied.
-        log_likelihood_penalty_factor
-            A factor which multiplies how far source pixels do not trace within the threshold of one another, with a
-            larger factor producing a larger penalty making the non-linear parameter space gradient steeper.
-        """
-        super().__init__(positions=positions, threshold=threshold)
-
-        self.log_likelihood_penalty_factor = log_likelihood_penalty_factor
+            f.write("")
 
     def log_likelihood_penalty_base_from(
         self, dataset: Union[aa.Imaging, aa.Interferometer]
@@ -264,14 +200,22 @@ class PositionsLHPenalty(AbstractPositionsLH):
         if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
             return
 
+        log_likelihood_penalty = 0.0
+
         positions_fit = SourceMaxSeparation(
-            data=self.positions, noise_map=None, tracer=tracer
+            data=self.positions,
+            noise_map=None,
+            tracer=tracer,
+            plane_redshift=self.plane_redshift,
         )
 
         if not positions_fit.max_separation_within_threshold(self.threshold):
-            return self.log_likelihood_penalty_factor * (
-                positions_fit.max_separation_of_source_plane_positions - self.threshold
+
+            log_likelihood_penalty += self.log_likelihood_penalty_factor * (
+                positions_fit.max_separation_of_plane_positions - self.threshold
             )
+
+        return log_likelihood_penalty
 
     def log_likelihood_function_positions_overwrite(
         self, instance: af.ModelInstance, analysis: AnalysisDataset

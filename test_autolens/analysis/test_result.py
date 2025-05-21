@@ -31,36 +31,6 @@ def test__max_log_likelihood_tracer(
     assert isinstance(result.max_log_likelihood_tracer.galaxies[0], al.Galaxy)
 
 
-def test__max_log_likelihood_positions_threshold(masked_imaging_7x7):
-    positions_likelihood = al.PositionsLHResample(
-        positions=al.Grid2DIrregular(values=[(1.0, 1.0), [-1.0, -1.0]]), threshold=100.0
-    )
-
-    analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7, positions_likelihood=positions_likelihood
-    )
-
-    tracer = al.Tracer(
-        galaxies=[
-            al.Galaxy(
-                redshift=0.5,
-                mass=al.mp.Isothermal(
-                    centre=(0.1, 0.0), einstein_radius=1.0, ell_comps=(0.0, 0.0)
-                ),
-            ),
-            al.Galaxy(redshift=1.0, bulge=al.lp.SersicSph(centre=(0.0, 0.0))),
-        ]
-    )
-
-    samples_summary = al.m.MockSamplesSummary(max_log_likelihood_instance=tracer)
-
-    result = res.Result(samples_summary=samples_summary, analysis=analysis)
-
-    assert result.max_log_likelihood_positions_threshold == pytest.approx(
-        0.8309561230, 1.0e-4
-    )
-
-
 def test__source_plane_light_profile_centre(analysis_imaging_7x7):
     lens = al.Galaxy(redshift=0.5, light=al.lp.SersicSph(intensity=1.0))
 
@@ -74,7 +44,7 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
 
     result = res.Result(samples_summary=samples_summary, analysis=analysis_imaging_7x7)
 
-    assert result.source_plane_light_profile_centre.in_list == [(1.0, 2.0)]
+    assert result.source_plane_light_profile_centre_from().in_list == [(1.0, 2.0)]
 
     source_0 = al.Galaxy(
         redshift=1.0,
@@ -92,7 +62,7 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
 
     result = res.Result(samples_summary=samples_summary, analysis=analysis_imaging_7x7)
 
-    assert result.source_plane_light_profile_centre.in_list == [(1.0, 2.0)]
+    assert result.source_plane_light_profile_centre_from().in_list == [(1.0, 2.0)]
 
     source_0 = al.Galaxy(
         redshift=1.0, light=al.lp.SersicSph(centre=(1.0, 2.0), intensity=2.0)
@@ -108,7 +78,7 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
 
     result = res.Result(samples_summary=samples_summary, analysis=analysis_imaging_7x7)
 
-    assert result.source_plane_light_profile_centre.in_list == [(5.0, 6.0)]
+    assert result.source_plane_light_profile_centre_from().in_list == [(5.0, 6.0)]
 
     tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5)])
 
@@ -116,7 +86,7 @@ def test__source_plane_light_profile_centre(analysis_imaging_7x7):
 
     result = res.Result(samples_summary=samples_summary, analysis=analysis_imaging_7x7)
 
-    assert result.source_plane_light_profile_centre == None
+    assert result.source_plane_light_profile_centre_from() == None
 
 
 def test__source_plane_inversion_centre(analysis_imaging_7x7):
@@ -146,7 +116,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
     )
 
     assert (
-        result.source_plane_inversion_centre.in_list[0]
+        result.source_plane_inversion_centre_from().in_list[0]
         == mapper_valued.max_pixel_centre.in_list[0]
     )
 
@@ -161,7 +131,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
         samples_summary=samples_summary, analysis=analysis_imaging_7x7
     )
 
-    assert result.source_plane_inversion_centre == None
+    assert result.source_plane_inversion_centre_from() == None
 
     lens = al.Galaxy(redshift=0.5, light=al.lp_linear.Sersic())
     source = al.Galaxy(redshift=1.0)
@@ -174,7 +144,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
         samples_summary=samples_summary, analysis=analysis_imaging_7x7
     )
 
-    assert result.source_plane_inversion_centre == None
+    assert result.source_plane_inversion_centre_from() == None
 
 
 def test__source_plane_centre(analysis_imaging_7x7):
@@ -199,7 +169,7 @@ def test__source_plane_centre(analysis_imaging_7x7):
         samples_summary=samples_summary, analysis=analysis_imaging_7x7
     )
 
-    assert result.source_plane_centre.in_list[0] == pytest.approx(
+    assert result.source_plane_centre_from().in_list[0] == pytest.approx(
         (-0.916666, -0.916666), 1.0e-4
     )
 
@@ -225,7 +195,7 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
         samples_summary=samples_summary, analysis=analysis_imaging_7x7
     )
 
-    multiple_images = result.image_plane_multiple_image_positions
+    multiple_images = result.image_plane_multiple_image_positions()
 
     assert pytest.approx((0.968719, 0.366210), 1.0e-2) in multiple_images.in_list
 
@@ -280,14 +250,7 @@ def test__positions_likelihood_from(analysis_imaging_7x7):
         factor=0.1, minimum_threshold=0.2
     )
 
-    assert isinstance(positions_likelihood, al.PositionsLHPenalty)
-    assert positions_likelihood.threshold == pytest.approx(0.2, 1.0e-4)
-
-    positions_likelihood = result.positions_likelihood_from(
-        factor=0.1, minimum_threshold=0.2, use_resample=True
-    )
-
-    assert isinstance(positions_likelihood, al.PositionsLHResample)
+    assert isinstance(positions_likelihood, al.PositionsLH)
     assert positions_likelihood.threshold == pytest.approx(0.2, 1.0e-4)
 
 
@@ -314,7 +277,7 @@ def test__positions_likelihood_from__mass_centre_radial_distance_min(
         factor=0.1, minimum_threshold=0.2, mass_centre_radial_distance_min=0.1
     )
 
-    assert isinstance(positions_likelihood, al.PositionsLHPenalty)
+    assert isinstance(positions_likelihood, al.PositionsLH)
     assert len(positions_likelihood.positions) == 2
     assert positions_likelihood.positions[0] == pytest.approx(
         (-1.00097656e00, 5.63818622e-04), 1.0e-4
@@ -333,32 +296,6 @@ def test__results_include_mask__available_as_property(
     )
 
     assert (result.mask == masked_imaging_7x7.mask).all()
-
-
-def test__results_include_positions__available_as_property(
-    analysis_imaging_7x7, masked_imaging_7x7, samples_summary_with_result
-):
-    result = res.ResultDataset(
-        samples_summary=samples_summary_with_result,
-        analysis=analysis_imaging_7x7,
-    )
-
-    assert result.positions == None
-
-    positions_likelihood = al.PositionsLHResample(
-        positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=1.0
-    )
-
-    analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7, positions_likelihood=positions_likelihood
-    )
-
-    result = res.ResultDataset(
-        samples_summary=samples_summary_with_result,
-        analysis=analysis,
-    )
-
-    assert (result.positions[0] == np.array([1.0, 100.0])).all()
 
 
 def test___image_dict(analysis_imaging_7x7):

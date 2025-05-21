@@ -145,7 +145,7 @@ class AbstractFitPoint(aa.AbstractFit, ABC):
         return self.profile.centre
 
     @property
-    def source_plane_index(self) -> int:
+    def plane_index(self) -> int:
         """
         Returns the integer plane index containing the point source galaxy, which is used when computing the deflection
         angles of image-plane positions from the tracer.
@@ -160,7 +160,7 @@ class AbstractFitPoint(aa.AbstractFit, ABC):
         return self.tracer.extract_plane_index_of_profile(profile_name=self.name)
 
     @property
-    def source_plane_redshift(self) -> float:
+    def plane_redshift(self) -> float:
         """
         Returns the redshift of the plane containing the point source galaxy, which is used when computing the
         deflection angles of image-plane positions from the tracer.
@@ -173,4 +173,4 @@ class AbstractFitPoint(aa.AbstractFit, ABC):
         -------
         The redshift of the plane containing the point-source galaxy.
         """
-        return self.tracer.planes[self.source_plane_index].redshift
+        return self.tracer.planes[self.plane_index].redshift

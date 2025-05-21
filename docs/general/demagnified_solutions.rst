@@ -70,7 +70,7 @@ stars:
 The ``autolens_workspace`` also includes a Graphical User Interface for drawing lensed source positions via 
 mouse click (https://github.com/Jammy2211/autolens_workspace/blob/release/scripts/imaging/preprocess/gui/positions.py).
 
-Next, we create ``PositionsLHPenalty`` object, which has an input ``threshold``.
+Next, we create ``PositionsLH`` object, which has an input ``threshold``.
 
 This requires that a mass model traces the multiple image ``positions`` specified above within the ``threshold`` 
 value (e.g. 0.5") of one another in the source-plane. If this criteria is not met, a large penalty term is
@@ -88,32 +88,15 @@ The penalty term is created and passed to an ``Analysis`` object as follows:
 
 .. code-block:: python
 
-    positions_likelihood = al.PositionsLHPenalty(positions=positions, threshold=0.3)
+    positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 
     analysis = al.AnalysisImaging(
-        dataset=dataset, positions_likelihood=positions_likelihood
+        dataset=dataset, positions_likelihood_list=[positions_likelihood]
     )
 
 The threshold of 0.5" is large. For an accurate lens model we would anticipate the positions trace within < 0.01" of
 one another. However, we only want the threshold to aid the non-linear with the choice of mass model in the initial fit
 and remove demagnified solutions.
-
-Resampling
-----------
-
-An alternative penalty term is available via the ``PositionsLHResample`` object, which rejects and resamples a lens
-model if the ``positions``do not trace within the ``threshold`` of one another in the source plane.
-
-This is not the recommended option, as it is slower and can often lead to prolonged periods of the non-linear search
-guessing and rejecting mass models.
-
-.. code-block:: python
-
-    positions_likelihood = al.PositionsLHResample(positions=positions, threshold=0.3)
-
-    analysis = al.AnalysisImaging(
-        dataset=dataset, positions_likelihood=positions_likelihood
-    )
 
 Auto Position Updates
 ---------------------
@@ -155,7 +138,7 @@ These inputs are useful when using function to set the ``threshold`` in a new fi
 it allows us to make sure we do set too small a threshold that we remove genuinely physically mass models.
 
 For writing search chaining pipelines, a convenience method is available in the ``result`` which returns directly a
-``PositionsLHPenalty`` object:
+``PositionsLH`` object:
 
 .. code-block:: python
 
@@ -167,9 +150,52 @@ This is often used to set up new ``Analysis`` objects with a positions penalty c
 
 .. code-block:: python
 
-    analysis_2 = al.AnalysisImaging(
+    analysis = al.AnalysisImaging(
         dataset=dataset,
         positions_likelihood=result_1.positions_likelihood_from(
             factor=3.0, minimum_threshold=0.2
         ),
+    )
+
+Multiple Source Plane Systems
+-----------------------------
+
+A double source plane system is a lens system where there are mutiple source-planes at different redshifts, meaning that
+incuding the image-plane there are at least 3 planes.
+
+The ``PositionsLH`` class can have a `plane_redshift` input, which specifies the redshift of the source-plane
+the positions are ray-traced to.
+
+Multiple ``PositionsLH`` objects can be passed to the ``Analysis`` object, which then applies the penalty term to
+both source-planes independently such that a double source-plane system can be fitted with the penalty based likelihood
+functionality.
+
+.. code-block:: python
+
+    positions_likelihood_source_plane_0 = al.PositionsLH(positions=positions, threshold=0.3, plane_redshift=1.0)
+    positions_likelihood_source_plane_1 = al.PositionsLH(positions=positions, threshold=0.3, plane_redshift=2.0)
+
+    analysis = al.AnalysisImaging(
+        dataset=dataset, positions_likelihood_list=
+            [
+                positions_likelihood_source_plane_0,
+                positions_likelihood_source_plane_1
+            ]
+    )
+
+To set up an ``Analysis`` object with multiple ``PositionsLH`` objects from a result, each positions likelihood is
+computed from the result for each ``plane_redshift``:
+
+.. code-block::
+
+    analysis = al.AnalysisImaging(
+        dataset=dataset,
+        positions_likelihood_list=[
+            source_lp_result.positions_likelihood_from(
+                factor=3.0, minimum_threshold=0.2, plane_redshift=source_lp_result.instance.galaxies.source_1.redshift,
+            ),
+            source_lp_result.positions_likelihood_from(
+                factor=3.0, minimum_threshold=0.2, plane_redshift=source_lp_result.instance.galaxies.source_2.redshift,
+            )
+        ],
     )

@@ -205,14 +205,6 @@ class AnalysisImaging(AnalysisDataset):
 
         analysis.save_attributes(paths=paths)
 
-        if self.positions_likelihood is not None:
-
-            paths.save_json(
-                name="positions",
-                object_dict=to_dict(self.positions_likelihood.positions),
-                prefix="dataset",
-            )
-
     def profile_log_likelihood_function(
         self, instance: af.ModelInstance, paths: Optional[af.DirectoryPaths] = None
     ) -> Tuple[Dict, Dict]:

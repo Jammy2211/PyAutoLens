@@ -22,7 +22,7 @@ class PointSolver(AbstractSolver):
         self,
         tracer: OperateDeflections,
         source_plane_coordinate: Tuple[float, float],
-        source_plane_redshift: Optional[float] = None,
+        plane_redshift: Optional[float] = None,
     ) -> aa.Grid2DIrregular:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
@@ -37,11 +37,12 @@ class PointSolver(AbstractSolver):
         Parameters
         ----------
         source_plane_coordinate
-            The source plane coordinate to trace to the image plane.
+            The plane coordinate to trace to the image plane, which by default in the source-plane coordinate
+            but could be a coordinate in another plane is `plane_redshift` is input.
         tracer
             The tracer that traces the image plane coordinates to the source plane
-        source_plane_redshift
-            The redshift of the source plane coordinate.
+        plane_redshift
+            The redshift of the plane coordinate, which for multi-plane systems may not be the source-plane.
 
         Returns
         -------
@@ -50,7 +51,7 @@ class PointSolver(AbstractSolver):
         kept_triangles = super().solve_triangles(
             tracer=tracer,
             shape=Point(*source_plane_coordinate),
-            source_plane_redshift=source_plane_redshift,
+            plane_redshift=plane_redshift,
         )
 
         filtered_means = self._filter_low_magnification(
