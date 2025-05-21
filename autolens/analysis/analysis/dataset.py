@@ -26,9 +26,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
     def __init__(
         self,
         dataset,
-        positions_likelihood_list: Optional[
-            List[PositionsLH]
-        ] = None,
+        positions_likelihood_list: Optional[List[PositionsLH]] = None,
         adapt_image_maker: Optional[ag.AdaptImageMaker] = None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
         settings_inversion: aa.SettingsInversion = None,

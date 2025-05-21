@@ -21,9 +21,7 @@ logger.setLevel(level="INFO")
 class AnalysisLens:
     def __init__(
         self,
-        positions_likelihood_list: Optional[
-            List[PositionsLH]
-        ] = None,
+        positions_likelihood_list: Optional[List[PositionsLH]] = None,
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
     ):
         """

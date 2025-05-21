@@ -253,6 +253,7 @@ def test__positions_likelihood_from(analysis_imaging_7x7):
     assert isinstance(positions_likelihood, al.PositionsLH)
     assert positions_likelihood.threshold == pytest.approx(0.2, 1.0e-4)
 
+
 def test__positions_likelihood_from__mass_centre_radial_distance_min(
     analysis_imaging_7x7,
 ):
@@ -295,7 +296,6 @@ def test__results_include_mask__available_as_property(
     )
 
     assert (result.mask == masked_imaging_7x7.mask).all()
-
 
 
 def test___image_dict(analysis_imaging_7x7):

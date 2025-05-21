@@ -40,15 +40,12 @@ class VisualizerInterferometer(af.Visualizer):
             positions_list = []
 
             for positions_likelihood in analysis.positions_likelihood_list:
-                positions_list.append(
-                    positions_likelihood.positions
-                )
+                positions_list.append(positions_likelihood.positions)
 
             positions = ag.Grid2DIrregular(positions_list)
 
             plotter_interface.image_with_positions(
-                image=analysis.dataset.dirty_image,
-                positions=positions
+                image=analysis.dataset.dirty_image, positions=positions
             )
 
         if analysis.adapt_images is not None:

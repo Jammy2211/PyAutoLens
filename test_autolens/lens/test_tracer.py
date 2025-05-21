@@ -90,6 +90,7 @@ def test__plane_index_via_redshift_from():
     assert tracer.plane_index_via_redshift_from(redshift=3.0) == 2
     assert tracer.plane_index_via_redshift_from(redshift=3.001) == None
 
+
 def test__upper_plane_index_with_light_profile():
     g0 = al.Galaxy(redshift=0.5)
     g1 = al.Galaxy(redshift=1.0)

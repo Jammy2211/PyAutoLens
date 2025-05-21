@@ -17,9 +17,7 @@ def test__check_positions_on_instantiation():
     # Positions input with threshold but positions are length 1.
 
     with pytest.raises(exc.PositionsException):
-        al.PositionsLH(
-            positions=al.Grid2DIrregular([(1.0, 2.0)]), threshold=0.1
-        )
+        al.PositionsLH(positions=al.Grid2DIrregular([(1.0, 2.0)]), threshold=0.1)
 
 
 def test__output_positions_info():

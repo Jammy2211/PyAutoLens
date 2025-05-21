@@ -54,7 +54,9 @@ class Result(AgResultDataset):
         """
         return self.source_plane_light_profile_centre
 
-    def image_plane_multiple_image_positions(self, plane_redshift : Optional[float] = None) -> aa.Grid2DIrregular:
+    def image_plane_multiple_image_positions(
+        self, plane_redshift: Optional[float] = None
+    ) -> aa.Grid2DIrregular:
         """
         Backwards ray-trace the source-plane centres (see above) to the image-plane via the mass model, to determine
         the multiple image position of the source(s) in the image-plane.
@@ -89,7 +91,7 @@ class Result(AgResultDataset):
         return aa.Grid2DIrregular(values=multiple_images)
 
     def image_plane_multiple_image_positions_for_single_image_from(
-        self, plane_redshift : Optional[float] = None, increments: int = 20
+        self, plane_redshift: Optional[float] = None, increments: int = 20
     ) -> aa.Grid2DIrregular:
         """
         If the standard point solver only locates one multiple image, finds one or more additional images, which are
@@ -149,7 +151,7 @@ class Result(AgResultDataset):
                 return aa.Grid2DIrregular(values=multiple_images)
 
         logger.info(
-        """
+            """
         Could not find multiple images for maximum likelihood lens model, even after incrementally moving the source
         centre inwards to the centre of the source-plane.
 
@@ -163,7 +165,7 @@ class Result(AgResultDataset):
         factor=1.0,
         minimum_threshold=None,
         positions: Optional[aa.Grid2DIrregular] = None,
-        plane_redshift : Optional[float] = None,
+        plane_redshift: Optional[float] = None,
     ) -> float:
         """
         Compute a new position threshold from these results corresponding to the image-plane multiple image positions
@@ -176,10 +178,10 @@ class Result(AgResultDataset):
 
         This is used for non-linear search chaining, specifically updating the position threshold of a new model-fit
         using the maximum likelihood model of a previous search.
-        
+
         The above behaviour assumes a single lens and single source plane, if there are multiple source planes (e.g.
         a double source plane lens) the input `plane_redshift_list` can be used to specify which source planea
-        the position threshold is computed for. 
+        the position threshold is computed for.
 
         Parameters
         ----------
@@ -216,9 +218,7 @@ class Result(AgResultDataset):
             data=positions, noise_map=None, tracer=tracer, plane_redshift=plane_redshift
         )
 
-        threshold = factor * np.max(
-            positions_fits.max_separation_of_plane_positions
-        )
+        threshold = factor * np.max(positions_fits.max_separation_of_plane_positions)
 
         if minimum_threshold is not None:
             if threshold < minimum_threshold:
@@ -294,10 +294,15 @@ class Result(AgResultDataset):
             positions = positions[distances > mass_centre_radial_distance_min]
 
         threshold = self.positions_threshold_from(
-            factor=factor, minimum_threshold=minimum_threshold, positions=positions, plane_redshift=plane_redshift
+            factor=factor,
+            minimum_threshold=minimum_threshold,
+            positions=positions,
+            plane_redshift=plane_redshift,
         )
-        
-        return PositionsLH(positions=positions, threshold=threshold, plane_redshift=plane_redshift)
+
+        return PositionsLH(
+            positions=positions, threshold=threshold, plane_redshift=plane_redshift
+        )
 
 
 class ResultDataset(Result):

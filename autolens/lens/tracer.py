@@ -801,7 +801,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
         return cls_list
 
-    def plane_index_via_redshift_from(self, redshift : float) -> Optional[int]:
+    def plane_index_via_redshift_from(self, redshift: float) -> Optional[int]:
         """
         Returns the index of a plane at a given redshift.
 

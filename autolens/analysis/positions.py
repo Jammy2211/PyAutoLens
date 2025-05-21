@@ -105,7 +105,10 @@ class PositionsLH:
         with open_(path.join(output_path, "positions.info"), "a+") as f:
 
             positions_fit = SourceMaxSeparation(
-                data=self.positions, noise_map=None, tracer=tracer, plane_redshift=self.plane_redshift
+                data=self.positions,
+                noise_map=None,
+                tracer=tracer,
+                plane_redshift=self.plane_redshift,
             )
 
             distances = positions_fit.data.distances_to_coordinate_from(
@@ -209,8 +212,7 @@ class PositionsLH:
         if not positions_fit.max_separation_within_threshold(self.threshold):
 
             log_likelihood_penalty += self.log_likelihood_penalty_factor * (
-                positions_fit.max_separation_of_plane_positions
-                - self.threshold
+                positions_fit.max_separation_of_plane_positions - self.threshold
             )
 
         return log_likelihood_penalty
