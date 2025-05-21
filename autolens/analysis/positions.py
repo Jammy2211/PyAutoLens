@@ -70,6 +70,9 @@ class AbstractPositionsLH:
         if plane_redshift_positions_dict is None:
             self.plane_redshift_positions_dict = {None: positions}
 
+        if len(self.plane_redshift_positions_dict) == 1:
+            self.positions = list(self.plane_redshift_positions_dict.values())[0]
+
         for positions in self.plane_redshift_positions_dict.values():
 
             if len(positions) == 1:
@@ -122,7 +125,7 @@ class AbstractPositionsLH:
                 f.write(f"Radial Distance from (0.0, 0.0): \n {distances} \n\n")
                 f.write(f"Threshold = {self.threshold} \n")
                 f.write(
-                    f"Max Source Plane Separation of Maximum Likelihood Model = {positions_fit.max_separation_of_source_plane_positions}"
+                    f"Max Source Plane Separation of Maximum Likelihood Model = {positions_fit.max_separation_of_plane_positions}"
                 )
                 f.write("")
 
@@ -327,7 +330,7 @@ class PositionsLHPenalty(AbstractPositionsLH):
             if not positions_fit.max_separation_within_threshold(self.threshold):
 
                 log_likelihood_penalty += self.log_likelihood_penalty_factor * (
-                    positions_fit.max_separation_of_source_plane_positions
+                    positions_fit.max_separation_of_plane_positions
                     - self.threshold
                 )
 

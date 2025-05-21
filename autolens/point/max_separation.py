@@ -37,10 +37,12 @@ class SourceMaxSeparation:
         self.data = data
         self.noise_map = noise_map
 
-        if plane_redshift is None:
-            plane_index = -1
-        else:
+        print(plane_redshift)
+
+        try:
             plane_index = tracer.plane_index_via_redshift_from(redshift=plane_redshift)
+        except TypeError:
+            plane_index = -1
 
         self.plane_positions = tracer.traced_grid_2d_list_from(grid=data)[
             plane_index

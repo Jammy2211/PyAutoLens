@@ -225,7 +225,7 @@ def test__image_plane_multiple_image_positions(analysis_imaging_7x7):
         samples_summary=samples_summary, analysis=analysis_imaging_7x7
     )
 
-    multiple_images = result.image_plane_multiple_image_positions
+    multiple_images = result.image_plane_multiple_image_positions()
 
     assert pytest.approx((0.968719, 0.366210), 1.0e-2) in multiple_images.in_list
 

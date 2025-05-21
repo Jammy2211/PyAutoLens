@@ -204,13 +204,10 @@ class AbstractSolver:
         The source plane grid computed by applying the deflections to the image plane grid.
         """
 
-        plane_index = -1
-
-        if plane_redshift is not None:
-            for redshift in tracer.plane_redshifts:
-                plane_index += 1
-                if redshift == plane_redshift:
-                    break
+        if plane_redshift is None:
+            plane_index = -1
+        else:
+            plane_index = tracer.plane_index_via_redshift_from(redshift=plane_redshift)
 
         deflections = tracer.deflections_between_planes_from(
             grid=grid, plane_i=0, plane_j=plane_index
