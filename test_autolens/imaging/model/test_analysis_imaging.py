@@ -116,13 +116,13 @@ def test__positions__likelihood_overwrites__changes_likelihood__double_source_pl
 
     instance = model.instance_from_unit_vector([])
 
-    plane_index_positions_dict = {
-        1: al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
-        2: al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)])
+    plane_redshift_positions_dict = {
+        1.0: al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]),
+        2.0: al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)])
     }
 
     positions_likelihood = al.PositionsLHPenalty(
-        plane_index_positions_dict=plane_index_positions_dict, threshold=0.01
+        plane_redshift_positions_dict=plane_redshift_positions_dict, threshold=0.01
     )
 
     analysis = al.AnalysisImaging(

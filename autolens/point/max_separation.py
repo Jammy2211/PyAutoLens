@@ -11,7 +11,7 @@ class SourceMaxSeparation:
         data: aa.Grid2DIrregular,
         noise_map: Optional[aa.ArrayIrregular],
         tracer: Tracer,
-        plane_index: int = -1,
+        plane_redshift: float = Optional[None],
     ):
         """
         Given a positions dataset, which is a list of positions with names that associated them to model source
@@ -29,13 +29,19 @@ class SourceMaxSeparation:
             The object that defines the ray-tracing of the strong lens system of galaxies.
         noise_value
             The noise-value assumed when computing the log likelihood.
-        plane_index
-            The index of the plane in the `Tracer` that the source-plane positions are computed from. This is typically
-            the last plane in the `Tracer`, which is the source-plane.
+        plane_redshift
+            The redshift of the plane in the `Tracer` that the source-plane positions are computed from. This is
+            often the last plane in the `Tracer`, which is the source-plane.
         """
 
         self.data = data
         self.noise_map = noise_map
+
+        if plane_redshift is None:
+            plane_index = -1
+        else:
+            plane_index = tracer.plane_index_via_redshift_from(redshift=plane_redshift)
+
         self.source_plane_positions = tracer.traced_grid_2d_list_from(grid=data)[
             plane_index
         ]

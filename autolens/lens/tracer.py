@@ -135,31 +135,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             plane_redshifts=self.plane_redshifts,
         )
 
-    def plane_index_via_redshift_from(self, redshift : float) -> Optional[int]:
-        """
-        Returns the index of a plane at a given redshift.
-
-        This is used to determine the index of a plane in the tracer, which is useful for multi-plane ray-tracing
-        calculations. The index of the plane may, for example, be used to extract grid of a specific plane in the
-        tracer after multi-plane ray-tracing calculations.
-
-        A tolerance of 1e-8 is used to determine if the input redshift is close to the redshift of a plane. If
-        no matching plane is found, None is returned.
-
-        Parameters
-        ----------
-        redshift
-            The redshift of the plane to find the index of.
-
-        Returns
-        -------
-            The index of the plane that matches the input redshift.
-        """
-
-        for plane_index, plane_redshift in enumerate(self.plane_redshifts):
-            if np.isclose(redshift, plane_redshift, atol=1e-8):
-                return plane_index
-
     @classmethod
     def sliced_tracer_from(
         cls,
@@ -825,6 +800,31 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                     cls_list.append(cls_galaxy)
 
         return cls_list
+
+    def plane_index_via_redshift_from(self, redshift : float) -> Optional[int]:
+        """
+        Returns the index of a plane at a given redshift.
+
+        This is used to determine the index of a plane in the tracer, which is useful for multi-plane ray-tracing
+        calculations. The index of the plane may, for example, be used to extract grid of a specific plane in the
+        tracer after multi-plane ray-tracing calculations.
+
+        A tolerance of 1e-8 is used to determine if the input redshift is close to the redshift of a plane. If
+        no matching plane is found, None is returned.
+
+        Parameters
+        ----------
+        redshift
+            The redshift of the plane to find the index of.
+
+        Returns
+        -------
+            The index of the plane that matches the input redshift.
+        """
+
+        for plane_index, plane_redshift in enumerate(self.plane_redshifts):
+            if np.isclose(redshift, plane_redshift, atol=1e-8):
+                return plane_index
 
     @property
     def plane_indexes_with_pixelizations(self) -> List[int]:
