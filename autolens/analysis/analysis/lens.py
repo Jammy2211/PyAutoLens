@@ -121,12 +121,21 @@ class AnalysisLens:
         else a None is returned to indicate there is no penalty.
         """
         if self.positions_likelihood_list is not None:
+
+            log_likelihood_overwrite = None
+
             try:
-                log_likelihood = 0.0
                 for positions_likelihood in self.positions_likelihood_list:
-                    log_likelihood += positions_likelihood.log_likelihood_function_positions_overwrite(
+                    log_likelihood_with_penalty = positions_likelihood.log_likelihood_function_positions_overwrite(
                         instance=instance, analysis=self
                     )
-                return log_likelihood
+                    if log_likelihood_with_penalty is not None:
+                        try:
+                            log_likelihood_overwrite += log_likelihood_with_penalty
+                        except TypeError:
+                            log_likelihood_overwrite = log_likelihood_with_penalty
+
+
+                return log_likelihood_overwrite
             except (ValueError, np.linalg.LinAlgError) as e:
                 raise exc.FitException from e

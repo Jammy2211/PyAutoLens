@@ -203,8 +203,6 @@ class PositionsLH:
         if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
             return
 
-        log_likelihood_penalty = 0.0
-
         positions_fit = SourceMaxSeparation(
             data=self.positions,
             noise_map=None,
@@ -214,11 +212,9 @@ class PositionsLH:
 
         if not positions_fit.max_separation_within_threshold(self.threshold):
 
-            log_likelihood_penalty += self.log_likelihood_penalty_factor * (
+            return self.log_likelihood_penalty_factor * (
                 positions_fit.max_separation_of_plane_positions - self.threshold
             )
-
-        return log_likelihood_penalty
 
     def log_likelihood_function_positions_overwrite(
         self, instance: af.ModelInstance, analysis: AnalysisDataset
