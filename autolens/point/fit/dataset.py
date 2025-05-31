@@ -37,7 +37,8 @@ class FitPointDataset:
         - The fluxes of the point source, which use the magnification of the point source to compute the fluxes in the
           image-plane.
 
-        - The time delays of the point source (NOT IMPLEMENTED YET).
+        - The time delays of the point source in delays, which use the tracer to compute the model time delays
+          at the image-plane positions of the point source in the dataset.
 
         The fit may use one or combinations of the above components to compute the log likelihood, depending on what
         components are available in the point source dataset and the model point source profiles input. For example:
@@ -55,7 +56,8 @@ class FitPointDataset:
         2) Fit the fluxes of the point source dataset using the `FitFluxes` object, where the object type may be
           extended in the future to support different types of point source profiles.
 
-        3) Time delays are not currently supported but this API will extend to include time delays in the future.
+        3) Fits the time delays of the point source dataset using the `FitTimeDelays` object, which is an image-plane
+           evaluation of the time delays at the image-plane positions of the point source in the dataset.
 
         Point source fitting uses name pairing, whereby the `name` of the `Point` object is paired to the name of the
         point source dataset to ensure that point source datasets are fitted to the correct point source.
