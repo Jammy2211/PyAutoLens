@@ -4,6 +4,7 @@ from typing import Callable, Dict, Optional
 from autolens.point.dataset import PointDataset
 from autolens.point.solver import PointSolver
 from autolens.point.fit.fluxes import FitFluxes
+from autolens.point.fit.times_delays import FitTimeDelays
 from autolens.lens.tracer import Tracer
 
 from autolens.point.fit.positions.image.pair import FitPositionsImagePair
@@ -100,16 +101,33 @@ class FitPointDataset:
             self.positions = None
 
         try:
-            self.flux = FitFluxes(
-                name=dataset.name,
-                data=dataset.fluxes,
-                noise_map=dataset.fluxes_noise_map,
-                positions=dataset.positions,
-                tracer=tracer,
-            )
+            if dataset.fluxes is not None:
+                self.flux = FitFluxes(
+                    name=dataset.name,
+                    data=dataset.fluxes,
+                    noise_map=dataset.fluxes_noise_map,
+                    positions=dataset.positions,
+                    tracer=tracer,
+                )
+            else:
+                self.flux = None
 
         except exc.PointExtractionException:
             self.flux = None
+
+        try:
+            if dataset.time_delays is not None:
+                self.time_delays = FitTimeDelays(
+                    name=dataset.name,
+                    data=dataset.time_delays,
+                    noise_map=dataset.time_delays_noise_map,
+                    positions=dataset.positions,
+                    tracer=tracer,
+                )
+            else:
+                self.time_delays = None
+        except exc.PointExtractionException:
+            self.time_delays = None
 
     @property
     def model_obj(self):
@@ -125,8 +143,11 @@ class FitPointDataset:
             self.positions.log_likelihood if self.positions is not None else 0.0
         )
         log_likelihood_flux = self.flux.log_likelihood if self.flux is not None else 0.0
+        log_likelihood_time_delays = (
+            self.time_delays.log_likelihood if self.time_delays is not None else 0.0
+        )
 
-        return log_likelihood_positions + log_likelihood_flux
+        return log_likelihood_positions + log_likelihood_flux + log_likelihood_time_delays
 
     @property
     def figure_of_merit(self) -> float:
