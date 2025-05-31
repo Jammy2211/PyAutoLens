@@ -96,7 +96,9 @@ class VisualizerInterferometer(af.Visualizer):
             for positions_likelihood in analysis.positions_likelihood_list:
 
                 positions_likelihood.output_positions_info(
-                    output_path=paths.output_path, tracer=fit.tracer, overwrite_file=overwrite_file
+                    output_path=paths.output_path,
+                    tracer=fit.tracer,
+                    overwrite_file=overwrite_file,
                 )
 
                 overwrite_file = False

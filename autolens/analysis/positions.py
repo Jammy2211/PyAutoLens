@@ -84,7 +84,9 @@ class PositionsLH:
 
         self.log_likelihood_penalty_factor = log_likelihood_penalty_factor
 
-    def output_positions_info(self, output_path: str, tracer: Tracer, overwrite_file : bool = True):
+    def output_positions_info(
+        self, output_path: str, tracer: Tracer, overwrite_file: bool = True
+    ):
         """
         Outputs a `positions.info` file which summarises the positions penalty term for a model fit, including:
 
