@@ -135,7 +135,6 @@ class AnalysisLens:
                         except TypeError:
                             log_likelihood_overwrite = log_likelihood_with_penalty
 
-
                 return log_likelihood_overwrite
             except (ValueError, np.linalg.LinAlgError) as e:
                 raise exc.FitException from e

@@ -4,6 +4,8 @@ from typing import List, Optional
 import autoarray as aa
 import autogalaxy as ag
 
+from autolens import exc
+
 
 def plane_redshifts_from(galaxies: List[ag.Galaxy]) -> List[float]:
     """
@@ -247,6 +249,92 @@ def grid_2d_at_redshift_from(
     )
 
     return traced_grid_list[plane_index_insert]
+
+
+def time_delay_from(
+    galaxies: List[ag.Galaxy],
+    grid: aa.type.Grid2DLike,
+    cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
+) -> aa.type.Grid2DLike:
+    """
+    Returns the gravitational lensing time delay in days for a grid of 2D (y, x) coordinates.
+
+    This function calculates the time delay at each image-plane position due to both geometric and gravitational
+    (Shapiro) effects, as described by the Fermat potential, which are computed using the deflection angles of the
+    galaxies in the lens system.
+
+    It requires a two-plane system (lens and source), and does not currently support multi-plane time delay
+    calculations involving more than two planes, but it could be extended to do so in the future.
+
+    The time delay is computed as:
+
+    .. math::
+        \Delta t(\boldsymbol{\theta}) = \frac{D_{\Delta t}}{c} \, \phi(\boldsymbol{\theta})
+
+    where:
+
+    - \( \boldsymbol{\theta} \): image-plane coordinate
+    - \( \phi(\boldsymbol{\theta}) \): Fermat potential at each coordinate
+    - \( c \): speed of light
+    - \( D_{\Delta t} \): time-delay distance
+
+    The time-delay distance is given by:
+
+    .. math::
+        D_{\Delta t} = (1 + z_l) \frac{D_d D_s}{D_{ds}}
+
+    with \( D_d, D_s, D_{ds} \) the angular diameter distances to the lens, to the source, and from lens to source.
+
+    The time delay is computed using the Fermat potential,
+
+    An input `AstroPy` cosmology object can change the cosmological model, which is used to compute the scaling
+    factors between planes (which are derived from their redshifts and angular diameter distances). It is these
+    scaling factors that account for multi-plane ray tracing effects.
+
+    Parameters
+    ----------
+    galaxies
+        List of galaxies whose mass profiles define the lens and source planes. Must contain exactly two redshifts.
+    grid
+        The 2D (y, x) image-plane coordinates where the time delay is computed.
+    cosmology
+        The cosmological model used to calculate angular diameter distances. Defaults to Planck15.
+
+    Returns
+    -------
+    The time delay at each (y, x) coordinate in the input grid, in units of days.
+    """
+    plane_redshifts = plane_redshifts_from(galaxies=galaxies)
+
+    if len(plane_redshifts) != 2:
+        raise exc.RayTracingException(
+            "The time delay calculation requires exactly two planes, but the input galaxies have "
+            f"{len(plane_redshifts)} planes with redshifts {plane_redshifts}."
+        )
+
+    # Constants
+    mpc_in_m = 3.08567758e22  # Mpc in meters
+    arcsec_to_rad = np.deg2rad(1.0 / 3600.0)  # arcsec to radians
+    seconds_per_day = 86400
+    c = 299792458  # speed of light in m/s
+
+    factor = arcsec_to_rad**2 / seconds_per_day
+
+    # Angular diameter distances
+    Dd = cosmology.angular_diameter_distance(plane_redshifts[0]).value  # [Mpc]
+    Ds = cosmology.angular_diameter_distance(plane_redshifts[1]).value  # [Mpc]
+    Dds = cosmology.angular_diameter_distance_z1z2(
+        z1=plane_redshifts[0], z2=plane_redshifts[1]
+    ).value  # [Mpc]
+
+    # Time-delay distance in meters
+    D_dt = (1 + plane_redshifts[0]) * Dd * Ds / Dds * mpc_in_m
+
+    # Fermat potential
+    fermat_potential = galaxies.fermat_potential_from(grid=grid)
+
+    # Final time delay in days
+    return D_dt / c * fermat_potential * factor
 
 
 def ordered_plane_redshifts_with_slicing_from(
