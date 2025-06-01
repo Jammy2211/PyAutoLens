@@ -561,7 +561,7 @@ def test__potential_2d_from(grid_2d_7x7):
     ).all()
 
 
-def test__time_delay_from():
+def test__time_delays_from():
 
     grid = al.Grid2DIrregular(values=[(0.7, 0.5), (1.0, 1.0)])
 
@@ -574,7 +574,7 @@ def test__time_delay_from():
 
     tracer = al.Tracer(galaxies=[g0, g1])
 
-    time_delay = tracer.time_delay_from(grid=grid)
+    time_delay = tracer.time_delays_from(grid=grid)
 
     assert time_delay == pytest.approx(np.array([8.52966247, -29.0176387]), 1.0e-4)
 

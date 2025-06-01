@@ -251,7 +251,7 @@ def grid_2d_at_redshift_from(
     return traced_grid_list[plane_index_insert]
 
 
-def time_delay_from(
+def time_delays_from(
     galaxies: List[ag.Galaxy],
     grid: aa.type.Grid2DLike,
     cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),

@@ -22,6 +22,7 @@ class MockTracerPoint(MockTracer):
         magnification=None,
         einstein_radius=None,
         einstein_mass=None,
+        time_delays=None,
     ):
         super().__init__(image_plane_mesh_grid_pg_list=image_plane_mesh_grid_pg_list)
 
@@ -33,6 +34,7 @@ class MockTracerPoint(MockTracer):
         self.magnification = magnification
         self.einstein_radius = einstein_radius
         self.einstein_mass = einstein_mass
+        self.time_delays = time_delays
 
     @property
     def planes(self):
@@ -58,3 +60,6 @@ class MockTracerPoint(MockTracer):
 
     def einstein_mass_angular_from(self, grid):
         return self.einstein_mass
+
+    def time_delays_from(self, grid):
+        return self.time_delays

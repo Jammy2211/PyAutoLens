@@ -4,6 +4,7 @@ from typing import Callable, Dict, Optional
 from autolens.point.dataset import PointDataset
 from autolens.point.solver import PointSolver
 from autolens.point.fit.fluxes import FitFluxes
+from autolens.point.fit.times_delays import FitTimeDelays
 from autolens.lens.tracer import Tracer
 
 from autolens.point.fit.positions.image.pair import FitPositionsImagePair
@@ -36,7 +37,8 @@ class FitPointDataset:
         - The fluxes of the point source, which use the magnification of the point source to compute the fluxes in the
           image-plane.
 
-        - The time delays of the point source (NOT IMPLEMENTED YET).
+        - The time delays of the point source in delays, which use the tracer to compute the model time delays
+          at the image-plane positions of the point source in the dataset.
 
         The fit may use one or combinations of the above components to compute the log likelihood, depending on what
         components are available in the point source dataset and the model point source profiles input. For example:
@@ -54,7 +56,8 @@ class FitPointDataset:
         2) Fit the fluxes of the point source dataset using the `FitFluxes` object, where the object type may be
           extended in the future to support different types of point source profiles.
 
-        3) Time delays are not currently supported but this API will extend to include time delays in the future.
+        3) Fits the time delays of the point source dataset using the `FitTimeDelays` object, which is an image-plane
+           evaluation of the time delays at the image-plane positions of the point source in the dataset.
 
         Point source fitting uses name pairing, whereby the `name` of the `Point` object is paired to the name of the
         point source dataset to ensure that point source datasets are fitted to the correct point source.
@@ -100,16 +103,33 @@ class FitPointDataset:
             self.positions = None
 
         try:
-            self.flux = FitFluxes(
-                name=dataset.name,
-                data=dataset.fluxes,
-                noise_map=dataset.fluxes_noise_map,
-                positions=dataset.positions,
-                tracer=tracer,
-            )
+            if dataset.fluxes is not None:
+                self.flux = FitFluxes(
+                    name=dataset.name,
+                    data=dataset.fluxes,
+                    noise_map=dataset.fluxes_noise_map,
+                    positions=dataset.positions,
+                    tracer=tracer,
+                )
+            else:
+                self.flux = None
 
         except exc.PointExtractionException:
             self.flux = None
+
+        try:
+            if dataset.time_delays is not None:
+                self.time_delays = FitTimeDelays(
+                    name=dataset.name,
+                    data=dataset.time_delays,
+                    noise_map=dataset.time_delays_noise_map,
+                    positions=dataset.positions,
+                    tracer=tracer,
+                )
+            else:
+                self.time_delays = None
+        except exc.PointExtractionException:
+            self.time_delays = None
 
     @property
     def model_obj(self):
@@ -125,8 +145,13 @@ class FitPointDataset:
             self.positions.log_likelihood if self.positions is not None else 0.0
         )
         log_likelihood_flux = self.flux.log_likelihood if self.flux is not None else 0.0
+        log_likelihood_time_delays = (
+            self.time_delays.log_likelihood if self.time_delays is not None else 0.0
+        )
 
-        return log_likelihood_positions + log_likelihood_flux
+        return (
+            log_likelihood_positions + log_likelihood_flux + log_likelihood_time_delays
+        )
 
     @property
     def figure_of_merit(self) -> float:
