@@ -761,7 +761,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         return sum([galaxy.potential_2d_from(grid=grid) for galaxy in self.galaxies])
 
     @aa.grid_dec.to_array
-    def time_delay_from(self, grid: aa.type.Grid2DLike) -> aa.Array2D:
+    def time_delays_from(self, grid: aa.type.Grid2DLike) -> aa.Array2D:
         """
         Returns the gravitational lensing time delay in days, for a grid of 2D (y, x) coordinates.
 
@@ -769,10 +769,15 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         (Shapiro) effects, as described by the Fermat potential, which are computed using the deflection angles of the
         galaxies in the lens system.
 
-        A full description of the calculation is given in the `autolens.lens.tracer.tracer_util.time_delay_from`
+        Time dleays are computed from a reference point, which is the delay one would compute without a mass model.
+        This means a time delay could be negative, which means the light travel time is faster when lensing is
+        accounted for. When performing fitting, all time-delays are subtracted by the time-delay of the
+        shortest time-delay, such that its value is zero and all other time-delays are positive.
+
+        A full description of the calculation is given in the `autolens.lens.tracer.tracer_util.time_delays_from`
         function, which performs the calculation and has full latex documentation of the equations used.
         """
-        return tracer_util.time_delay_from(
+        return tracer_util.time_delays_from(
             galaxies=ag.Galaxies(self.galaxies_ascending_redshift),
             grid=grid,
             cosmology=self.cosmology,

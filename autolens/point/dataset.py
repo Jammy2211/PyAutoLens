@@ -11,8 +11,10 @@ class PointDataset:
         positions_noise_map: Union[float, aa.ArrayIrregular, List[float]],
         fluxes: Optional[Union[aa.ArrayIrregular, List[float]]] = None,
         fluxes_noise_map: Optional[Union[float, aa.ArrayIrregular, List[float]]] = None,
-        time_delays : Optional[Union[aa.ArrayIrregular, List[float]]] = None,
-        time_delays_noise_map: Optional[Union[float, aa.ArrayIrregular, List[float]]] = None,
+        time_delays: Optional[Union[aa.ArrayIrregular, List[float]]] = None,
+        time_delays_noise_map: Optional[
+            Union[float, aa.ArrayIrregular, List[float]]
+        ] = None,
     ):
         """
         A collection of the data component that can be used for point-source model-fitting, for example fitting the
@@ -40,14 +42,15 @@ class PointDataset:
         time_delays
             The time delays of each observed point-source of light in days.
         time_delays_noise_map
-            The noise-value of every observed time delay, which is typically measured from the time delay analysis. 
+            The noise-value of every observed time delay, which is typically measured from the time delay analysis.
         """
 
         self.name = name
 
         # Ensure positions is a Grid2DIrregular
         self.positions = (
-            positions if isinstance(positions, aa.Grid2DIrregular)
+            positions
+            if isinstance(positions, aa.Grid2DIrregular)
             else aa.Grid2DIrregular(values=positions)
         )
 
@@ -56,15 +59,20 @@ class PointDataset:
             positions_noise_map = [positions_noise_map] * len(self.positions)
 
         self.positions_noise_map = (
-            positions_noise_map if isinstance(positions_noise_map, aa.ArrayIrregular)
+            positions_noise_map
+            if isinstance(positions_noise_map, aa.ArrayIrregular)
             else aa.ArrayIrregular(values=positions_noise_map)
         )
-        
+
         def convert_to_array_irregular(values):
             """
             Convert data to ArrayIrregular if it is not already.
             """
-            return aa.ArrayIrregular(values=values) if values is not None and not isinstance(values, aa.ArrayIrregular) else values
+            return (
+                aa.ArrayIrregular(values=values)
+                if values is not None and not isinstance(values, aa.ArrayIrregular)
+                else values
+            )
 
         # Convert fluxes, time delays and their noise maps to ArrayIrregular if provided as values and not already this type
 

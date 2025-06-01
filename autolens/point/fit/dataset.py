@@ -149,7 +149,9 @@ class FitPointDataset:
             self.time_delays.log_likelihood if self.time_delays is not None else 0.0
         )
 
-        return log_likelihood_positions + log_likelihood_flux + log_likelihood_time_delays
+        return (
+            log_likelihood_positions + log_likelihood_flux + log_likelihood_time_delays
+        )
 
     @property
     def figure_of_merit(self) -> float:

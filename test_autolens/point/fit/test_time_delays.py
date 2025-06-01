@@ -8,7 +8,7 @@ def test__one_set_of_time_delays__residuals_likelihood_correct():
     # Mock tracer returns fixed time delays (like magnifications in original)
     tracer = al.m.MockTracerPoint(
         profile=al.ps.Point(),
-        time_delays=al.ArrayIrregular([2.0, 2.0]),
+        time_delays=al.ArrayIrregular([2.0, 2.0]),  # Mock time delays for two positions
     )
 
     data = al.ArrayIrregular([1.0, 2.0])  # observed time delays
@@ -26,16 +26,12 @@ def test__one_set_of_time_delays__residuals_likelihood_correct():
     assert fit.data.in_list == [1.0, 2.0]
     assert fit.noise_map.in_list == [3.0, 1.0]
     assert fit.model_time_delays.in_list == [2.0, 2.0]
-    assert fit.residual_map.in_list == [1.0, 0.0]
-    assert fit.normalized_residual_map.in_list == [1.0 / 3.0, 0.0]
-    assert fit.chi_squared_map.in_list == [(1.0 / 3.0) ** 2, 0.0]
-    assert fit.chi_squared == pytest.approx((1.0 / 3.0) ** 2, 1.0e-4)
-    assert fit.noise_normalization == pytest.approx(
-        (2 * (np.log(2 * np.pi * noise_map.values**2))).sum(), 1.0e-4
-    )
-    assert fit.log_likelihood == pytest.approx(
-        -0.5 * (fit.chi_squared + fit.noise_normalization), 1.0e-4
-    )
+    assert fit.residual_map.in_list == [0.0, 1.0]
+    assert fit.normalized_residual_map.in_list == [0.0, 1.0]
+    assert fit.chi_squared_map.in_list == [0.0, 1.0]
+    assert fit.chi_squared == pytest.approx(1.0, 1.0e-4)
+    assert fit.noise_normalization == pytest.approx(5.87297, 1.0e-4)
+    assert fit.log_likelihood == pytest.approx(-3.43648935, 1.0e-4)
 
 
 def test__use_real_tracer(gal_x1_mp):
@@ -57,5 +53,5 @@ def test__use_real_tracer(gal_x1_mp):
     )
 
     # Replace 2.5 with expected model time delay from your tracer
-    assert fit.model_time_delays.in_list[1] == pytest.approx(2.5, 1.0e-4)
-    assert fit.log_likelihood == pytest.approx(-3.11702, 1.0e-4)
+    assert fit.model_time_delays.in_list[1] == pytest.approx(-573.994580905, 1.0e-4)
+    assert fit.log_likelihood == pytest.approx(-22600.81488747, 1.0e-4)

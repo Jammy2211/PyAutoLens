@@ -1,3 +1,4 @@
+import numpy as np
 from typing import Optional
 
 import autoarray as aa
@@ -25,7 +26,10 @@ class FitTimeDelays(AbstractFitPoint):
 
         1) Compute the model time delays at the input image-plane `positions` using the tracer.
 
-        2) Subtract the observed time delays from the model time delays to compute the residuals.
+        2) Compute the relative time delays of the dataset time delays and the time delays of the point source at
+           these positions, which are the time delays  relative to the shortest time delay
+
+        2) Subtract the observed relative time delays from the model relative time delays to compute the residuals.
 
         3) Compute the chi-squared of each time delay residual.
 
@@ -65,9 +69,11 @@ class FitTimeDelays(AbstractFitPoint):
         """
         The model time delays of the tracer at each of the input image-plane positions.
 
-        Only point sources which include a model parameter for their time delay are used.
+        These values are not subtracted by the shorter time delay of the point source, which would make the shorter
+        delay have a value of zero. However, this subtraction is performed in the `residual_map` property, in order
+        to ensure the residuals are computed relative to the shorter time delay.
         """
-        return self.tracer.time_delay_from(grid=self.positions)
+        return self.tracer.time_delays_from(grid=self.positions)
 
     @property
     def model_time_delays(self) -> aa.ArrayIrregular:
@@ -78,8 +84,15 @@ class FitTimeDelays(AbstractFitPoint):
         """
         Returns the difference between the observed and model time delays of the point source,
         which is the residual time delay of the fit.
+
+        The residuals are computed relative to the shortest time delay of the point source, which is subtracted
+        from the dataset time delays and model time delays before the subtraction.
         """
-        residual_map = super().residual_map
+
+        data = self.data - np.min(self.data)
+        model_data = self.model_data - np.min(self.model_data)
+
+        residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
         return aa.ArrayIrregular(values=residual_map)
 
     @property
