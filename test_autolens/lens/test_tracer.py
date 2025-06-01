@@ -561,6 +561,24 @@ def test__potential_2d_from(grid_2d_7x7):
     ).all()
 
 
+def test__time_delays_from():
+
+    grid = al.Grid2DIrregular(values=[(0.7, 0.5), (1.0, 1.0)])
+
+    mp = al.mp.Isothermal(
+        centre=(0.0, 0.0), ell_comps=(0.0, -0.111111), einstein_radius=2.0
+    )
+
+    g0 = al.Galaxy(redshift=0.2, mass=mp)
+    g1 = al.Galaxy(redshift=0.7)
+
+    tracer = al.Tracer(galaxies=[g0, g1])
+
+    time_delay = tracer.time_delays_from(grid=grid)
+
+    assert time_delay == pytest.approx(np.array([8.52966247, -29.0176387]), 1.0e-4)
+
+
 def test__deflections_of_planes_summed_from(grid_2d_7x7):
     g0 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
     g1 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=2.0))

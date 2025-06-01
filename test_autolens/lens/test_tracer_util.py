@@ -173,3 +173,23 @@ def test__grid_2d_at_redshift_from__redshift_between_planes(grid_2d_7x7):
     )
 
     assert (grid_at_redshift == grid_2d_7x7.mask.derive_grid.all_false).all()
+
+
+def test__time_delays_from():
+
+    grid = al.Grid2DIrregular(values=[(0.7, 0.5), (1.0, 1.0)])
+
+    mp = al.mp.Isothermal(
+        centre=(0.0, 0.0), ell_comps=(0.0, -0.111111), einstein_radius=2.0
+    )
+
+    lens = al.Galaxy(redshift=0.2, mass=mp)
+    source = al.Galaxy(redshift=0.7)
+
+    time_delay = al.util.tracer.time_delays_from(
+        galaxies=al.Galaxies([lens, source]),
+        grid=grid,
+        cosmology=al.cosmo.Planck15(),
+    )
+
+    assert time_delay == pytest.approx(np.array([8.52966247, -29.0176387]), 1.0e-4)

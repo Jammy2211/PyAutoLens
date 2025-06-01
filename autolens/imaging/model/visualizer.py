@@ -93,11 +93,15 @@ class VisualizerImaging(af.Visualizer):
 
         if analysis.positions_likelihood_list is not None:
 
+            overwrite_file = True
+
             for positions_likelihood in analysis.positions_likelihood_list:
 
                 positions_likelihood.output_positions_info(
-                    output_path=paths.output_path, tracer=fit.tracer
+                    output_path=paths.output_path, tracer=fit.tracer, overwrite_file=overwrite_file
                 )
+
+                overwrite_file = False
 
         if fit.inversion is not None:
             try:

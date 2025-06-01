@@ -101,6 +101,7 @@ from .interferometer.model.visualizer import VisualizerInterferometer
 from .point.dataset import PointDataset
 from .point.fit.dataset import FitPointDataset
 from .point.fit.fluxes import FitFluxes
+from .point.fit.times_delays import FitTimeDelays
 from .point.fit.positions.image.abstract import AbstractFitPositionsImagePair
 from .point.fit.positions.image.pair import FitPositionsImagePair
 from .point.fit.positions.image.pair_all import FitPositionsImagePairAll

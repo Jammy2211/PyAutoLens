@@ -13,39 +13,10 @@ import datetime
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 
-from pyprojroot import here
-
-# /home/docs/checkouts/readthedocs.org/user_builds/pyautolens/checkouts/latest/docs
-
-clone_path = str(here())
-
 import os
 import sys
 
 sys.path.insert(0, os.path.abspath("."))
-
-
-def clone_repo(name: str, url: str):
-    clone = f"git clone {url}/{name}"
-    os.system(clone)
-    os.system(f"pip install -r {name}/requirements.txt")
-    os.system(f"rm -rf {name}/docs")
-    sys.path.insert(
-        0,
-        os.path.abspath(f"{clone_path}/{name}"),
-    )
-
-
-clone_repo(name="PyAutoFit", url="https://github.com/rhayes777")
-clone_repo(name="PyAutoArray", url="https://github.com/Jammy2211")
-clone_repo(name="PyAutoGalaxy", url="https://github.com/Jammy2211")
-
-clone_path = os.path.split(clone_path)[0]
-
-sys.path.insert(
-    0,
-    os.path.abspath(clone_path),
-)
 
 import autolens
 
@@ -53,7 +24,7 @@ import autolens
 
 year = datetime.date.today().year
 project = "PyAutoLens"
-copyright = "2022, James Nightingale, Richard Hayes"
+copyright = "2025, James Nightingale, Richard Hayes"
 author = "James Nightingale, Richard Hayes"
 
 # The full version, including alpha/beta/rc tags
