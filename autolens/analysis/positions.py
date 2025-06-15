@@ -71,7 +71,10 @@ class PositionsLH:
             The plane redshift of the lensed source multiple images, which is only required if position threshold
             for a double source plane lens system is being used where the specific plane is required.
         """
-        self.positions = positions
+
+        self.positions = aa.Grid2DIrregular(
+            np.isfinite(positions.array)
+        )
         self.threshold = threshold
         self.plane_redshift = plane_redshift
 
