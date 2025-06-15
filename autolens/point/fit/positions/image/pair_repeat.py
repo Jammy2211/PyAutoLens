@@ -1,6 +1,4 @@
 import jax.numpy as jnp
-import numpy as np
-
 import autoarray as aa
 
 from autolens.point.fit.positions.image.abstract import AbstractFitPositionsImagePair

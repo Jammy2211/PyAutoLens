@@ -27,7 +27,7 @@ def noise_map():
 
 @pytest.fixture
 def fit(data, noise_map):
-    model_positions = np.array(
+    model_positions = al.Grid2DIrregular(
         [
             (-1.0749, -1.1),
             (1.19117, 1.175),
@@ -63,7 +63,7 @@ def test_nan_model_positions(
     data,
     noise_map,
 ):
-    model_positions = np.array(
+    model_positions = al.Grid2DIrregular(
         [
             (-1.0749, -1.1),
             (1.19117, 1.175),
@@ -92,7 +92,7 @@ def test_duplicate_model_position(
     data,
     noise_map,
 ):
-    model_positions = np.array(
+    model_positions = al.Grid2DIrregular(
         [
             (-1.0749, -1.1),
             (1.19117, 1.175),
