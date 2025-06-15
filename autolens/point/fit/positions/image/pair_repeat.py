@@ -66,4 +66,4 @@ class FitPositionsImagePairRepeat(AbstractFitPositionsImagePair):
             ]
             residual_map.append(jnp.sqrt(jnp.min(jnp.array(distances))))
 
-        return aa.ArrayIrregular(values=residual_map)
+        return aa.ArrayIrregular(values=jnp.array(residual_map))
