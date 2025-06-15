@@ -72,8 +72,13 @@ class PositionsLH:
             for a double source plane lens system is being used where the specific plane is required.
         """
 
+        try:
+            mask = np.isfinite(positions.array).all(axis=1)
+        except AttributeError:
+            mask = np.isfinite(positions).all(axis=1)
+
         self.positions = aa.Grid2DIrregular(
-            np.isfinite(positions.array)
+            positions[mask]
         )
         self.threshold = threshold
         self.plane_redshift = plane_redshift
