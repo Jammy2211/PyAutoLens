@@ -42,8 +42,8 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(interferome
 def test__positions__likelihood_overwrite__changes_likelihood(
     interferometer_7, mask_2d_7x7
 ):
-    lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph())
-    source = al.Galaxy(redshift=1.0, light=al.lp.SersicSph())
+    lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph(centre=(0.05, 0.05)))
+    source = al.Galaxy(redshift=1.0, light=al.lp.SersicSph(centre=(0.05, 0.05)))
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -57,7 +57,7 @@ def test__positions__likelihood_overwrite__changes_likelihood(
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
     assert fit.log_likelihood == analysis_log_likelihood
-    assert analysis_log_likelihood == pytest.approx(-127914.36273, 1.0e-4)
+    assert analysis_log_likelihood == pytest.approx(-62.463179940, 1.0e-4)
 
     positions_likelihood = al.PositionsLH(
         positions=al.Grid2DIrregular([(1.0, 100.0), (200.0, 2.0)]), threshold=0.01

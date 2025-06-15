@@ -1,13 +1,11 @@
+import jax.numpy as jnp
 import logging
 from typing import Tuple, Optional
 
-from autoarray.numpy_wrapper import np
-
 import autoarray as aa
-from autoarray.numpy_wrapper import use_jax
 from autoarray.structures.triangles.shape import Point
 
-from autofit.jax_wrapper import jit, register_pytree_node_class
+from autofit.jax_wrapper import register_pytree_node_class
 from autogalaxy import OperateDeflections
 from .shape_solver import AbstractSolver
 
@@ -17,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 @register_pytree_node_class
 class PointSolver(AbstractSolver):
-    @jit
+
     def solve(
         self,
         tracer: OperateDeflections,
@@ -57,23 +55,11 @@ class PointSolver(AbstractSolver):
         filtered_means = self._filter_low_magnification(
             tracer=tracer, points=kept_triangles.means
         )
-        if use_jax:
-            return aa.Grid2DIrregular([pair for pair in filtered_means])
 
-        filtered_means = [
-            pair for pair in filtered_means if not np.any(np.isnan(pair)).all()
-        ]
+        solution = aa.Grid2DIrregular([pair for pair in filtered_means]).array
 
-        difference = len(kept_triangles.means) - len(filtered_means)
-        if difference > 0:
-            logger.debug(
-                f"Filtered one multiple-image with magnification below threshold."
-            )
-        elif difference > 1:
-            logger.warning(
-                f"Filtered {difference} multiple-images with magnification below threshold."
-            )
+        is_nan = jnp.isnan(solution).any(axis=1)
+        sentinel = jnp.full_like(solution[0], fill_value=jnp.inf)
+        solution = jnp.where(is_nan[:, None], sentinel, solution)
 
-        return aa.Grid2DIrregular(
-            [pair for pair in filtered_means if not np.isnan(pair).all()]
-        )
+        return aa.Grid2DIrregular(solution)

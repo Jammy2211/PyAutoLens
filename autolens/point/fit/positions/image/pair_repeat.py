@@ -1,5 +1,4 @@
-import numpy as np
-
+import jax.numpy as jnp
 import autoarray as aa
 
 from autolens.point.fit.positions.image.abstract import AbstractFitPositionsImagePair
@@ -63,6 +62,6 @@ class FitPositionsImagePairRepeat(AbstractFitPositionsImagePair):
                 self.square_distance(model_position, position)
                 for model_position in self.model_data
             ]
-            residual_map.append(np.sqrt(min(distances)))
+            residual_map.append(jnp.sqrt(jnp.min(jnp.array(distances))))
 
-        return aa.ArrayIrregular(values=residual_map)
+        return aa.ArrayIrregular(values=jnp.array(residual_map))

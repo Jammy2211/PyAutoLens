@@ -82,9 +82,17 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         """
         Returns the image of all light profiles in the fit's tracer convolved with the imaging dataset's PSF.
         """
+
+        if len(self.tracer.cls_list_from(cls=ag.LightProfile)) == len(
+            self.tracer.cls_list_from(cls=ag.lp_operated.LightProfileOperated)
+        ):
+            return self.tracer.image_2d_from(
+                grid=self.grids.lp,
+            )
+
         return self.tracer.blurred_image_2d_from(
             grid=self.grids.lp,
-            convolver=self.dataset.convolver,
+            psf=self.dataset.psf,
             blurring_grid=self.grids.blurring,
         )
 
@@ -93,7 +101,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         """
         Returns the dataset's image with all blurred light profile images in the fit's tracer subtracted.
         """
-
         return self.data - self.blurred_image
 
     @property
@@ -103,6 +110,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             data=self.profile_subtracted_image,
             noise_map=self.noise_map,
             grids=self.grids,
+            psf=self.dataset.psf,
             convolver=self.dataset.convolver,
             w_tilde=self.w_tilde,
         )
@@ -163,7 +171,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         galaxy_blurred_image_2d_dict = self.tracer.galaxy_blurred_image_2d_dict_from(
             grid=self.grids.lp,
-            convolver=self.dataset.convolver,
+            psf=self.dataset.psf,
             blurring_grid=self.grids.blurring,
         )
 
