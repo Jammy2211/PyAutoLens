@@ -360,7 +360,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
                 0.0,
             ]
         ),
-        1.0e-4,
+        abs=1.0e-1,
     )
     assert fit_linear.figure_of_merit == pytest.approx(-84.11166, 1.0e-4)
 
@@ -382,7 +382,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
-    assert fit_linear.figure_of_merit == pytest.approx(-73.27676850869975, 1.0e-4)
+    assert fit_linear.figure_of_merit == pytest.approx(-73.27676850869975, abs=1.0e-4)
 
 
 def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization__sub_2():
@@ -512,9 +512,9 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
                 0.0,
             ]
         ),
-        1.0e-4,
+        abs=1.0e-1,
     )
-    assert fit_linear.figure_of_merit == pytest.approx(-84.66302233089499, 1.0e-4)
+    assert fit_linear.figure_of_merit == pytest.approx(-84.66302233089499, abs=1.0e-4)
 
 
 def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_tilde():

@@ -42,7 +42,7 @@ class SourceMaxSeparation:
         except TypeError:
             plane_index = -1
 
-        self.plane_positions = tracer.traced_grid_2d_list_from(grid=data)[plane_index]
+        self.plane_positions = aa.Grid2DIrregular(values=tracer.traced_grid_2d_list_from(grid=data)[plane_index])
 
     @property
     def furthest_separations_of_plane_positions(self) -> aa.ArrayIrregular:

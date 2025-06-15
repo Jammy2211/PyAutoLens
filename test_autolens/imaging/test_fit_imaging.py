@@ -519,7 +519,7 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
     assert (fit.galaxy_model_image_dict[g2] == np.zeros(9)).all()
 
     assert fit.model_data == pytest.approx(
-        fit.galaxy_model_image_dict[g0_linear] + fit.galaxy_model_image_dict[g1_linear],
+        fit.galaxy_model_image_dict[g0_linear].array + fit.galaxy_model_image_dict[g1_linear].array,
         1.0e-4,
     )
 
@@ -540,13 +540,13 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
 
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
-    assert (fit.galaxy_model_image_dict[g0_no_light] == np.zeros(9)).all()
-    assert fit.galaxy_model_image_dict[galaxy_pix_0][4] == pytest.approx(
+    assert (fit.galaxy_model_image_dict[g0_no_light].array == np.zeros(9)).all()
+    assert fit.galaxy_model_image_dict[galaxy_pix_0].array[4] == pytest.approx(
         1.259965886, 1.0e-4
     )
 
     assert fit.model_data == pytest.approx(
-        fit.galaxy_model_image_dict[galaxy_pix_0], 1.0e-4
+        fit.galaxy_model_image_dict[galaxy_pix_0].array, 1.0e-4
     )
 
     # Normal light + Linear Light PRofiles + Pixelization + Regularizaiton
