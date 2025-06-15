@@ -102,5 +102,5 @@ class FitTimeDelays(AbstractFitPoint):
         which is the residual values divided by the RMS noise-map squared.
         """
         return ag.util.fit.chi_squared_from(
-            chi_squared_map=self.chi_squared_map,
+            chi_squared_map=self.chi_squared_map.array,
         )
