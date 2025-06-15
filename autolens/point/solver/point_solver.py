@@ -59,4 +59,5 @@ class PointSolver(AbstractSolver):
         arr = aa.Grid2DIrregular([pair for pair in filtered_means])
 
         mask = ~jnp.isnan(arr.array).any(axis=1)
-        return aa.Grid2DIrregular(arr.array[mask])
+
+        return aa.Grid2DIrregular(jnp.take(arr.array, jnp.nonzero(mask, size=mask.shape[0])[0], axis=0))
