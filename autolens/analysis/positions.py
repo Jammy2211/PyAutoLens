@@ -223,8 +223,11 @@ class PositionsLH:
                 max_separation - self.threshold
             )
 
-
-        return jnp.where(max_separation < self.threshold, 0.0, penalty)
+        return jax.lax.cond(
+            max_separation > self.threshold,
+            lambda: penalty,
+            lambda: jnp.array(0.0),
+        )
 
     def log_likelihood_function_positions_overwrite(
         self, instance: af.ModelInstance, analysis: AnalysisDataset
