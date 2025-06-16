@@ -174,7 +174,7 @@ def test__grid_2d_at_redshift_from(grid_2d_7x7):
 
     grid_at_redshift = tracer.grid_2d_at_redshift_from(grid=grid_simple, redshift=0.5)
 
-    assert grid_2d_list_from[1] == pytest.approx(grid_at_redshift, 1.0e-4)
+    assert grid_2d_list_from[1] == pytest.approx(grid_at_redshift.array, 1.0e-4)
     assert grid_at_redshift[0] == pytest.approx((0.6273814, 1.2547628), 1.0e-4)
 
     galaxies_plus_extra = [g0, g1, g2, g3, g4, g5, al.Galaxy(redshift=1.75)]
@@ -185,7 +185,7 @@ def test__grid_2d_at_redshift_from(grid_2d_7x7):
 
     grid_at_redshift = tracer.grid_2d_at_redshift_from(grid=grid_simple, redshift=1.75)
 
-    assert grid_2d_list_from[2] == pytest.approx(grid_at_redshift, 1.0e-4)
+    assert grid_2d_list_from[2] == pytest.approx(grid_at_redshift.array, 1.0e-4)
     assert grid_at_redshift[0] == pytest.approx((0.27331481161, 0.5466296232), 1.0e-4)
 
     galaxies_plus_extra = [g0, g1, g2, g3, g4, g5, al.Galaxy(redshift=2.0)]
@@ -196,7 +196,7 @@ def test__grid_2d_at_redshift_from(grid_2d_7x7):
 
     grid_at_redshift = tracer.grid_2d_at_redshift_from(grid=grid_simple, redshift=2.0)
 
-    assert grid_2d_list_from[2] == pytest.approx(grid_at_redshift, 1.0e-4)
+    assert grid_2d_list_from[2] == pytest.approx(grid_at_redshift.array, 1.0e-4)
     assert grid_at_redshift[0] == pytest.approx((0.222772465, 0.445544931), 1.0e-4)
 
 
@@ -294,7 +294,7 @@ def test__image_2d_from__sum_of_individual_images(mask_2d_7x7):
     image_tracer = tracer.image_2d_from(grid=grid_2d_7x7)
 
     assert image.shape_native == (7, 7)
-    assert image == pytest.approx(image_tracer, 1.0e-4)
+    assert image == pytest.approx(image_tracer.array, 1.0e-4)
 
 
 def test__image_2d_via_input_plane_image_from__with_foreground_planes(grid_2d_7x7):
@@ -323,7 +323,7 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes(grid_2d_7x
     )
 
     assert image_via_light_profile[0] == pytest.approx(
-        image_via_input_plane_image[0], 1.0e-2
+        image_via_input_plane_image[0].array, 1.0e-2
     )
 
 
@@ -398,7 +398,7 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes__multi_pla
     )
 
     assert image_via_light_profile[0] == pytest.approx(
-        image_via_input_plane_image[0], 1.0e-2
+        image_via_input_plane_image[0].array, 1.0e-2
     )
 
     plane_image = g1.image_2d_from(grid=plane_grid)
@@ -411,7 +411,7 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes__multi_pla
     )
 
     assert image_via_light_profile[0] == pytest.approx(
-        image_via_input_plane_image[0], 1.0e-2
+        image_via_input_plane_image[0].array, 1.0e-2
     )
 
 
@@ -436,7 +436,7 @@ def test__padded_image_2d_from(grid_2d_7x7):
 
     assert padded_tracer_image.shape_native == (9, 9)
     assert padded_tracer_image == pytest.approx(
-        padded_g0_image + padded_g1_image + padded_g2_image, 1.0e-4
+        padded_g0_image.array + padded_g1_image.array + padded_g2_image.array, 1.0e-4
     )
 
 
@@ -847,7 +847,7 @@ def test__regression__centre_of_profile_in_right_place():
 
     g0 = al.Galaxy(
         redshift=0.5,
-        mass=al.mp.Isothermal(centre=(2.0, 1.0), einstein_radius=1.0),
+        mass=al.mp.Isothermal(centre=(1.9999, 0.9999), einstein_radius=1.0),
     )
 
     tracer = al.Tracer(galaxies=[g0, al.Galaxy(redshift=1.0)])

@@ -71,6 +71,7 @@ class PositionsLH:
             The plane redshift of the lensed source multiple images, which is only required if position threshold
             for a double source plane lens system is being used where the specific plane is required.
         """
+
         self.positions = positions
         self.threshold = threshold
         self.plane_redshift = plane_redshift
@@ -165,10 +166,12 @@ class PositionsLH:
                 residual_map=residual_map, noise_map=dataset.noise_map
             )
 
-            chi_squared = aa.util.fit.chi_squared_from(chi_squared_map=chi_squared_map)
+            chi_squared = aa.util.fit.chi_squared_from(
+                chi_squared_map=chi_squared_map.array
+            )
 
             noise_normalization = aa.util.fit.noise_normalization_from(
-                noise_map=dataset.noise_map
+                noise_map=dataset.noise_map.array
             )
 
         else:

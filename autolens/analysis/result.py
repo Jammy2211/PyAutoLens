@@ -233,7 +233,7 @@ class Result(AgResultDataset):
             data=positions, noise_map=None, tracer=tracer, plane_redshift=plane_redshift
         )
 
-        threshold = factor * np.max(positions_fits.max_separation_of_plane_positions)
+        threshold = factor * np.nanmax(positions_fits.max_separation_of_plane_positions)
 
         if minimum_threshold is not None:
             if threshold < minimum_threshold:
@@ -285,7 +285,7 @@ class Result(AgResultDataset):
 
         Returns
         -------
-        The `PositionsLH` object used to apply a likelihood penalty using the positions.
+        The `PositionsLH` object used to apply a likelihood penalty or resample the positions.
         """
 
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
@@ -307,6 +307,12 @@ class Result(AgResultDataset):
             )
 
             positions = positions[distances > mass_centre_radial_distance_min]
+
+        mask = np.isfinite(positions.array).all(axis=1)
+
+        positions = aa.Grid2DIrregular(
+            positions[mask]
+        )
 
         threshold = self.positions_threshold_from(
             factor=factor,

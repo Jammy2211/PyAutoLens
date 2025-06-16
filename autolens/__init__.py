@@ -10,7 +10,6 @@ from autoarray.dataset.dataset_model import DatasetModel
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.mask.derive.zoom_2d import Zoom2D
-from autoarray.operators.convolver import Convolver
 from autoarray.operators.over_sampling.over_sampler import OverSampler  # noqa
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.mapper_valued import MapperValued
@@ -27,6 +26,7 @@ from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.mappers.factory import mapper_from as Mapper
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
+from autoarray.inversion.convolver import Convolver
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.arrays.uniform_1d import Array1D
