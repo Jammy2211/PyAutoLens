@@ -1,3 +1,5 @@
+import jax
+import jax.numpy as jnp
 import numpy as np
 from typing import Optional, Union
 from os import path
@@ -215,11 +217,23 @@ class PositionsLH:
             plane_redshift=self.plane_redshift,
         )
 
-        if not positions_fit.max_separation_within_threshold(self.threshold):
+        max_separation = positions_fit.max_separation_of_plane_positions
 
-            return self.log_likelihood_penalty_factor * (
-                positions_fit.max_separation_of_plane_positions - self.threshold
+        penalty = self.log_likelihood_penalty_factor * (
+                max_separation - self.threshold
             )
+
+
+        return jnp.where(max_separation < self.threshold, 0.0, penalty)
+
+        # if not positions_fit.max_separation_within_threshold(self.threshold):
+        #
+        #     return
+        # return jax.lax.cond(
+        #     positions_fit.max_separation_within_threshold(self.threshold),
+        #     lambda: compute_penalty(),
+        #     lambda: jnp.array(-1.0e10),
+        # )
 
     def log_likelihood_function_positions_overwrite(
         self, instance: af.ModelInstance, analysis: AnalysisDataset
