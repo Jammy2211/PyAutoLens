@@ -183,7 +183,7 @@ class PositionsLH:
             plane_redshift=self.plane_redshift,
         )
 
-        max_separation = positions_fit.max_separation_of_plane_positions
+        max_separation = jnp.max(positions_fit.furthest_separations_of_plane_positions.array)
 
         penalty = self.log_likelihood_penalty_factor * (
                 max_separation - self.threshold

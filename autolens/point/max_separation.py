@@ -1,4 +1,3 @@
-import jax.numpy as jnp
 from typing import Optional
 
 import autoarray as aa
@@ -69,7 +68,7 @@ class SourceMaxSeparation:
 
     @property
     def max_separation_of_plane_positions(self) -> float:
-        return jnp.max(self.furthest_separations_of_plane_positions.array)
+        return max(self.furthest_separations_of_plane_positions)
 
     def max_separation_within_threshold(self, threshold) -> bool:
         return self.max_separation_of_plane_positions <= threshold
