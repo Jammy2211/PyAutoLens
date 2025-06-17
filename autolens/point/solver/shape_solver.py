@@ -9,7 +9,7 @@ import autoarray as aa
 from autoarray.structures.triangles.shape import Shape
 from autofit.jax_wrapper import register_pytree_node_class
 
-from autoarray.structures.triangles.coordinate_array.jax_coordinate_array import (
+from autoarray.structures.triangles.coordinate_array import (
     CoordinateArrayTriangles,
 )
 from autoarray.structures.triangles.abstract import AbstractTriangles
