@@ -180,8 +180,7 @@ class TracerToInversion(ag.AbstractToInversion):
                 data=self.dataset.data,
                 noise_map=self.dataset.noise_map,
                 grids=grids,
-                psf=self.psf,
-                convolver=self.dataset.convolver,
+                convolver=self.convolver,
                 transformer=self.transformer,
                 w_tilde=self.dataset.w_tilde,
             )

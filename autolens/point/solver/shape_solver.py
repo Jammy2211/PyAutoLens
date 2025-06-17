@@ -1,4 +1,3 @@
-import jax.numpy as jnp
 import logging
 import math
 
@@ -7,11 +6,23 @@ from typing import Tuple, List, Iterator, Type, Optional
 import autoarray as aa
 
 from autoarray.structures.triangles.shape import Shape
-from autofit.jax_wrapper import register_pytree_node_class
+from autofit.jax_wrapper import jit, use_jax, numpy as np, register_pytree_node_class
 
-from autoarray.structures.triangles.coordinate_array.jax_coordinate_array import (
-    CoordinateArrayTriangles,
-)
+try:
+    if use_jax:
+        from autoarray.structures.triangles.coordinate_array.jax_coordinate_array import (
+            CoordinateArrayTriangles,
+        )
+    else:
+        from autoarray.structures.triangles.coordinate_array.coordinate_array import (
+            CoordinateArrayTriangles,
+        )
+
+except ImportError:
+    from autoarray.structures.triangles.coordinate_array.coordinate_array import (
+        CoordinateArrayTriangles,
+    )
+
 from autoarray.structures.triangles.abstract import AbstractTriangles
 
 from autogalaxy import OperateDeflections
@@ -204,6 +215,7 @@ class AbstractSolver:
         # noinspection PyTypeChecker
         return grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
 
+    @jit
     def solve_triangles(
         self,
         tracer: OperateDeflections,
@@ -263,13 +275,13 @@ class AbstractSolver:
         -------
         The points with an absolute magnification above the threshold.
         """
-        points = jnp.array(points)
+        points = np.array(points)
         magnifications = tracer.magnification_2d_via_hessian_from(
-            grid=aa.Grid2DIrregular(points).array,
+            grid=aa.Grid2DIrregular(points),
             buffer=self.scale,
         )
-        mask = jnp.abs(magnifications.array) > self.magnification_threshold
-        return jnp.where(mask[:, None], points, jnp.nan)
+        mask = np.abs(magnifications.array) > self.magnification_threshold
+        return np.where(mask[:, None], points, np.nan)
 
     def _plane_triangles(
         self,

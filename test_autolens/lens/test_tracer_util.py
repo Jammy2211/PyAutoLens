@@ -47,14 +47,14 @@ def test__traced_grid_2d_list_from(grid_2d_7x7_simple):
     assert traced_grid_list[2][0] == pytest.approx(
         np.array(
             [
-                (1.0 - beta_02 * val - beta_12 * defl11.array[0, 0]),
-                (1.0 - beta_02 * val - beta_12 * defl11.array[0, 1]),
+                (1.0 - beta_02 * val - beta_12 * defl11[0, 0]),
+                (1.0 - beta_02 * val - beta_12 * defl11[0, 1]),
             ]
         ),
         1e-4,
     )
     assert traced_grid_list[2][1] == pytest.approx(
-        np.array([(1.0 - beta_02 * 1.0 - beta_12 * defl12.array[0, 0]), 0.0]), 1e-4
+        np.array([(1.0 - beta_02 * 1.0 - beta_12 * defl12[0, 0]), 0.0]), 1e-4
     )
 
     assert traced_grid_list[3][1] == pytest.approx(np.array([1.0, 0.0]), 1e-4)
@@ -120,25 +120,25 @@ def test__grid_2d_at_redshift_from(grid_2d_7x7):
         galaxies=galaxies, grid=grid_2d_7x7, redshift=0.75
     )
 
-    assert grid_at_redshift == pytest.approx(traced_grid_list[1].array, 1.0e-4)
+    assert grid_at_redshift == pytest.approx(traced_grid_list[1], 1.0e-4)
 
     grid_at_redshift = al.util.tracer.grid_2d_at_redshift_from(
         galaxies=galaxies, grid=grid_2d_7x7, redshift=1.0
     )
 
-    assert grid_at_redshift == pytest.approx(traced_grid_list[2].array, 1.0e-4)
+    assert grid_at_redshift == pytest.approx(traced_grid_list[2], 1.0e-4)
 
     grid_at_redshift = al.util.tracer.grid_2d_at_redshift_from(
         galaxies=galaxies, grid=grid_2d_7x7, redshift=1.5
     )
 
-    assert grid_at_redshift == pytest.approx(traced_grid_list[3].array, 1.0e-4)
+    assert grid_at_redshift == pytest.approx(traced_grid_list[3], 1.0e-4)
 
     grid_at_redshift = al.util.tracer.grid_2d_at_redshift_from(
         galaxies=galaxies, grid=grid_2d_7x7, redshift=2.0
     )
 
-    assert grid_at_redshift == pytest.approx(traced_grid_list[4].array, 1.0e-4)
+    assert grid_at_redshift == pytest.approx(traced_grid_list[4], 1.0e-4)
 
 
 def test__grid_2d_at_redshift_from__redshift_between_planes(grid_2d_7x7):

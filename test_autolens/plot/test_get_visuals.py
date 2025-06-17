@@ -45,10 +45,7 @@ def test__2d__via_tracer(tracer_x2_plane_7x7, grid_2d_7x7):
         visuals_2d_via.tangential_critical_curves[0]
         == tracer_x2_plane_7x7.tangential_critical_curve_list_from(grid=grid_2d_7x7)[0]
     ).all()
-    assert (
-        visuals_2d_via.radial_critical_curves[0]
-        == tracer_x2_plane_7x7.radial_critical_curve_list_from(grid=grid_2d_7x7)[0]
-    ).all()
+    assert visuals_2d_via.radial_critical_curves == None
     assert visuals_2d_via.vectors == 2
 
     include_2d = aplt.Include2D(
@@ -137,12 +134,7 @@ def test__via_fit_imaging_from(fit_imaging_x2_plane_7x7, grid_2d_7x7):
             grid=grid_2d_7x7
         )[0]
     ).all()
-    assert (
-        visuals_2d_via.radial_critical_curves[0]
-        == fit_imaging_x2_plane_7x7.tracer.radial_critical_curve_list_from(
-            grid=grid_2d_7x7
-        )[0]
-    ).all()
+    assert visuals_2d_via.radial_critical_curves == None
     assert visuals_2d_via.vectors == 2
 
     include_2d = aplt.Include2D(

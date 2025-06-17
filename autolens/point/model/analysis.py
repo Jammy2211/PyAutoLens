@@ -125,8 +125,6 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
             fit = self.fit_from(instance=instance)
             return fit.log_likelihood
         except (AttributeError, ValueError, TypeError, NumbaException) as e:
-            print(e)
-            dfdsfd
             raise exc.FitException from e
 
     def fit_from(

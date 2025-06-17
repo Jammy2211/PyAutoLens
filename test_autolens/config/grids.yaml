@@ -1,0 +1,65 @@
+interpolate:
+  convergence_2d_from:
+    Isothermal: false
+    IsothermalInitialize: false
+    IsothermalSph: true
+  deflections_yx_2d_from:
+    Isothermal: false
+    IsothermalInitialize: false
+    IsothermalSph: true
+  image_2d_from:
+    Sersic: false
+    SersicInitialize: false
+    SersicSph: true
+  potential_2d_from:
+    Isothermal: false
+    IsothermalInitialize: false
+    IsothermalSph: true
+# Certain light and mass profile calculations become ill defined at (0.0, 0.0) or close to this value. This can lead
+# to numerical issues in the calculation of the profile, for example a np.nan may arise, crashing the code. 
+  
+# To avoid this, we set a minimum value for the radial coordinate of the profile. If the radial coordinate is below 
+# this value, it is rounded up to this value. This ensures that the profile cannot receive a radial coordinate of 0.0.
+
+# For example, if an input grid coordinate has a radial coordinate of 1e-12, for most profiles this will be rounded up
+# to radial_minimum=1e-08. This is a small enough value that it should not impact the results of the profile calculation.
+
+radial_minimum:
+  radial_minimum:
+    DevVaucouleurs: 1.0e-08
+    DevVaucouleursSph: 1.0e-08
+    EllMassProfile: 1.0e-08
+    EllProfile: 1.0e-08
+    Exponential: 1.0e-08
+    ExponentialSph: 1.0e-08
+    ExternalShear: 1.0e-08
+    Gaussian: 1.0e-08
+    GaussianGradient: 1.0e-08
+    GaussianSph: 1.0e-08
+    Isothermal: 1.0e-08
+    IsothermalCore: 1.0e-08
+    IsothermalCoreSph: 1.0e-08
+    IsothermalInitialize: 1.0e-08
+    IsothermalSph: 1.0e-08
+    MassSheet: 1.0e-08
+    MockGridRadialMinimum: 2.5
+    NFW: 1.0e-08
+    NFWSph: 1.0e-08
+    NFWTruncatedSph: 1.0e-08
+    PointMass: 0.0
+    PowerLaw: 1.0e-08
+    PowerLawBroken: 1.0e-08
+    PowerLawBrokenSph: 1.0e-08
+    PowerLawCore: 1.0e-08
+    PowerLawCoreSph: 1.0e-08
+    PowerLawSph: 1.0e-08
+    Sersic: 1.0e-08
+    SersicCore: 1.0e-08
+    SersicCoreSph: 1.0e-08
+    SersicGradient: 1.0e-08
+    SersicGradientSph: 1.0e-08
+    SersicSph: 1.0e-08
+    SphNFWTruncatedMCR: 1.0e-08
+    gNFW: 1.0e-08
+    gNFWSph: 1.0e-08
+

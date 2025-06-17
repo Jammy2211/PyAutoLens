@@ -1,4 +1,3 @@
-import jax.numpy as jnp
 import numpy as np
 from typing import Optional
 
@@ -90,8 +89,8 @@ class FitTimeDelays(AbstractFitPoint):
         from the dataset time delays and model time delays before the subtraction.
         """
 
-        data = self.data - jnp.min(self.data)
-        model_data = self.model_data - jnp.min(self.model_data)
+        data = self.data - np.min(self.data)
+        model_data = self.model_data - np.min(self.model_data)
 
         residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
         return aa.ArrayIrregular(values=residual_map)
@@ -103,5 +102,5 @@ class FitTimeDelays(AbstractFitPoint):
         which is the residual values divided by the RMS noise-map squared.
         """
         return ag.util.fit.chi_squared_from(
-            chi_squared_map=self.chi_squared_map.array,
+            chi_squared_map=self.chi_squared_map,
         )

@@ -117,8 +117,6 @@ class AnalysisImaging(AnalysisDataset):
             np.linalg.LinAlgError,
             OverflowError,
         ) as e:
-            print(e)
-            fggdfg
             raise exc.FitException from e
 
     def fit_from(
