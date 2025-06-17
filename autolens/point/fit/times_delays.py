@@ -90,8 +90,8 @@ class FitTimeDelays(AbstractFitPoint):
         from the dataset time delays and model time delays before the subtraction.
         """
 
-        data = self.data - jnp.min(self.data)
-        model_data = self.model_data - jnp.min(self.model_data)
+        data = self.data - jnp.min(self.data.array)
+        model_data = self.model_data - jnp.min(self.model_data.array)
 
         residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
         return aa.ArrayIrregular(values=residual_map)

@@ -59,7 +59,7 @@ def test_andrew_implementation(fit):
 #     assert jax.jit(fit.log_likelihood)() == -4.40375330990644
 
 
-def test_nan_model_positions(
+def test_inf_model_positions(
     data,
     noise_map,
 ):
@@ -67,7 +67,7 @@ def test_nan_model_positions(
         [
             (-1.0749, -1.1),
             (1.19117, 1.175),
-            (np.nan, np.nan),
+            (np.inf, np.inf),
         ]
     )
     fit = al.FitPositionsImagePairAll(
@@ -77,6 +77,8 @@ def test_nan_model_positions(
         tracer=tracer,
         solver=al.mock.MockPointSolver(model_positions),
     )
+
+    print(fit.all_permutations_log_likelihoods())
 
     assert np.allclose(
         fit.all_permutations_log_likelihoods(),
