@@ -56,7 +56,10 @@ class PointSolver(AbstractSolver):
             tracer=tracer, points=kept_triangles.means
         )
 
-        arr = aa.Grid2DIrregular([pair for pair in filtered_means])
+        solution = aa.Grid2DIrregular([pair for pair in filtered_means]).array
 
-        mask = ~jnp.isnan(arr.array).any(axis=1)
-        return aa.Grid2DIrregular(arr.array[mask])
+        is_nan = jnp.isnan(solution).any(axis=1)
+        sentinel = jnp.full_like(solution[0], fill_value=jnp.inf)
+        solution = jnp.where(is_nan[:, None], sentinel, solution)
+
+        return aa.Grid2DIrregular(solution)

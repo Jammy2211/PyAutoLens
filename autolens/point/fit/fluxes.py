@@ -1,3 +1,4 @@
+import jax.numpy as jnp
 from typing import Optional
 
 import autoarray as aa
@@ -101,10 +102,10 @@ class FitFluxes(AbstractFitPoint):
         are used.
         """
         return aa.ArrayIrregular(
-            values=[
+            values=jnp.array([
                 magnification * self.profile.flux
                 for magnification in self.magnifications_at_positions
-            ]
+            ])
         )
 
     @property

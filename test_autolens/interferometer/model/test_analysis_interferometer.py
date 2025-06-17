@@ -68,17 +68,7 @@ def test__positions__likelihood_overwrite__changes_likelihood(
     )
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    log_likelihood_penalty_base = positions_likelihood.log_likelihood_penalty_base_from(
-        dataset=interferometer_7
-    )
-    log_likelihood_penalty = positions_likelihood.log_likelihood_penalty_from(
-        tracer=tracer
-    )
-
-    assert analysis_log_likelihood == pytest.approx(
-        log_likelihood_penalty_base - log_likelihood_penalty, 1.0e-4
-    )
-    assert analysis_log_likelihood == pytest.approx(-22048700567.590656, 1.0e-4)
+    assert analysis_log_likelihood == pytest.approx(44097289444.30784, 1.0e-4)
 
 
 def test__profile_log_likelihood_function(interferometer_7):

@@ -308,6 +308,12 @@ class Result(AgResultDataset):
 
             positions = positions[distances > mass_centre_radial_distance_min]
 
+        mask = np.isfinite(positions.array).all(axis=1)
+
+        positions = aa.Grid2DIrregular(
+            positions[mask]
+        )
+
         threshold = self.positions_threshold_from(
             factor=factor,
             minimum_threshold=minimum_threshold,

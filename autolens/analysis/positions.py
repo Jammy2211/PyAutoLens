@@ -1,3 +1,5 @@
+import jax
+import jax.numpy as jnp
 import numpy as np
 from typing import Optional, Union
 from os import path
@@ -71,6 +73,7 @@ class PositionsLH:
             The plane redshift of the lensed source multiple images, which is only required if position threshold
             for a double source plane lens system is being used where the specific plane is required.
         """
+
         self.positions = positions
         self.threshold = threshold
         self.plane_redshift = plane_redshift
@@ -133,79 +136,45 @@ class PositionsLH:
             )
             f.write("")
 
-    def log_likelihood_penalty_base_from(
-        self, dataset: Union[aa.Imaging, aa.Interferometer]
-    ) -> float:
+    def log_likelihood_penalty_from(self, instance: af.ModelInstance, analysis: AnalysisDataset) -> jnp.array:
         """
-        The fast log likelihood penalty scheme returns an alternative penalty log likelihood for any model where the
-        image-plane positions do not trace within a threshold distance of one another in the source-plane.
+        Returns a log-likelihood penalty used to constrain lens models where multiple image-plane
+        positions do not trace to within a threshold distance of one another in the source-plane.
 
-        This `log_likelihood_penalty` is defined as:
+        This penalty is intended for use in `Analysis` classes that include the `PenaltyLH` mixin. It adds a
+        heavy penalty to the likelihood when the multiple images traces far apart in the source-plane, discouraging
+        models where the mapped source-plane positions  are too widely separated.
 
-        log_Likelihood_penalty_base - log_likelihood_penalty_factor * (max_source_plane_separation - threshold)
+        Specifically, if the maximum separation between traced positions in the source-plane exceeds
+        a defined threshold, a penalty term is applied to the log likelihood:
 
-        The `log_likelihood_penalty` is only used if `max_source_plane_separation > threshold`.
+            penalty = log_likelihood_penalty_factor * (max_separation - threshold)
 
-        This function returns the `log_likelihood_penalty_base`, which represents the lowest possible likelihood
-        solutions a model-fit can give. It is the chi-squared of model-data consisting of all zeros plus
-        the noise normalziation term.
+        If the separation is within the threshold, no penalty is applied.
+
+        JAX Compatibility
+        -----------------
+        Because this function may be jitted or differentiated using JAX, it uses `jax.lax.cond` to apply
+        conditional logic in a way that is compatible with JAX's functional and tracing model.
+        Both branches (penalty and zero) are evaluated at trace time, though only one is returned
+        at runtime depending on the condition.
 
         Parameters
         ----------
-        dataset
-            The imaging or interferometer dataset from which the penalty base is computed.
+        instance
+            The current model instance evaluated during the non-linear search.
+        analysis
+            The `Analysis` object calling this function, from which the `tracer` and `dataset` are derived.
+
+        Returns
+        -------
+        penalty
+            A scalar log-likelihood penalty (≥ 0) if the max separation exceeds the threshold, or 0.0 otherwise.
         """
+        tracer = analysis.tracer_via_instance_from(instance=instance)
 
-        residual_map = aa.util.fit.residual_map_from(
-            data=dataset.data, model_data=np.zeros(dataset.data.shape)
-        )
-
-        if isinstance(dataset, aa.Imaging):
-            chi_squared_map = aa.util.fit.chi_squared_map_from(
-                residual_map=residual_map, noise_map=dataset.noise_map
-            )
-
-            chi_squared = aa.util.fit.chi_squared_from(
-                chi_squared_map=chi_squared_map.array
-            )
-
-            noise_normalization = aa.util.fit.noise_normalization_from(
-                noise_map=dataset.noise_map.array
-            )
-
-        else:
-            chi_squared_map = aa.util.fit.chi_squared_map_complex_from(
-                residual_map=residual_map, noise_map=dataset.noise_map
-            )
-
-            chi_squared = aa.util.fit.chi_squared_complex_from(
-                chi_squared_map=chi_squared_map
-            )
-
-            noise_normalization = aa.util.fit.noise_normalization_complex_from(
-                noise_map=dataset.noise_map
-            )
-
-        return -0.5 * (chi_squared + noise_normalization)
-
-    def log_likelihood_penalty_from(self, tracer: Tracer) -> Optional[float]:
-        """
-        The fast log likelihood penalty scheme returns an alternative penalty log likelihood for any model where the
-        image-plane positions to not trace within a threshold distance of one another in the source-plane.
-
-        This `log_likelihood_penalty` is defined as:
-
-        log_Likelihood_penalty_base - log_likelihood_penalty_factor * (max_source_plane_separation - threshold)
-
-        The `log_likelihood_penalty` is only used if `max_source_plane_separation > threshold`.
-
-        Parameters
-        ----------
-        dataset
-            The imaging or interferometer dataset from which the penalty base is computed.
-        """
         if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
-            return
+            return jnp.array(0.0),
 
         positions_fit = SourceMaxSeparation(
             data=self.positions,
@@ -214,41 +183,14 @@ class PositionsLH:
             plane_redshift=self.plane_redshift,
         )
 
-        if not positions_fit.max_separation_within_threshold(self.threshold):
+        max_separation = jnp.max(positions_fit.furthest_separations_of_plane_positions.array)
 
-            return self.log_likelihood_penalty_factor * (
-                positions_fit.max_separation_of_plane_positions - self.threshold
+        penalty = self.log_likelihood_penalty_factor * (
+                max_separation - self.threshold
             )
 
-    def log_likelihood_function_positions_overwrite(
-        self, instance: af.ModelInstance, analysis: AnalysisDataset
-    ) -> Optional[float]:
-        """
-        This is called in the `log_likelihood_function` of certain `Analysis` classes to add the penalty term of
-        this class, which penalies mass models which do not trace within the threshold of one another in the
-        source-plane.
-
-        Parameters
-        ----------
-        instance
-            The instance of the lens model that is being fitted for this iteration of the non-linear search.
-        analysis
-            The analysis class from which the log likliehood function is called.
-        """
-        tracer = analysis.tracer_via_instance_from(instance=instance)
-
-        if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
-            return
-
-        log_likelihood_positions_penalty = self.log_likelihood_penalty_from(
-            tracer=tracer
+        return jax.lax.cond(
+            max_separation > self.threshold,
+            lambda: penalty,
+            lambda: jnp.array(0.0),
         )
-
-        if log_likelihood_positions_penalty is None:
-            return None
-
-        log_likelihood_penalty_base = self.log_likelihood_penalty_base_from(
-            dataset=analysis.dataset
-        )
-
-        return log_likelihood_penalty_base - log_likelihood_positions_penalty

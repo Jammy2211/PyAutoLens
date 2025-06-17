@@ -152,16 +152,14 @@ class AnalysisInterferometer(AnalysisDataset):
         """
 
         try:
-            log_likelihood_positions_overwrite = (
-                self.log_likelihood_positions_overwrite_from(instance=instance)
+            log_likelihood_penalty = self.log_likelihood_penalty_from(
+                instance=instance
             )
-            if log_likelihood_positions_overwrite is not None:
-                return log_likelihood_positions_overwrite
         except Exception as e:
             raise e
 
         try:
-            return self.fit_from(instance=instance).figure_of_merit
+            return self.fit_from(instance=instance).figure_of_merit + log_likelihood_penalty
         except (
             PixelizationException,
             exc.PixelizationException,

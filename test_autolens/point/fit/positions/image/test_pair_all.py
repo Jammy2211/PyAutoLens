@@ -27,7 +27,7 @@ def noise_map():
 
 @pytest.fixture
 def fit(data, noise_map):
-    model_positions = np.array(
+    model_positions = al.Grid2DIrregular(
         [
             (-1.0749, -1.1),
             (1.19117, 1.175),
@@ -59,15 +59,15 @@ def test_andrew_implementation(fit):
 #     assert jax.jit(fit.log_likelihood)() == -4.40375330990644
 
 
-def test_nan_model_positions(
+def test_inf_model_positions(
     data,
     noise_map,
 ):
-    model_positions = np.array(
+    model_positions = al.Grid2DIrregular(
         [
             (-1.0749, -1.1),
             (1.19117, 1.175),
-            (np.nan, np.nan),
+            (np.inf, np.inf),
         ]
     )
     fit = al.FitPositionsImagePairAll(
@@ -77,6 +77,8 @@ def test_nan_model_positions(
         tracer=tracer,
         solver=al.mock.MockPointSolver(model_positions),
     )
+
+    print(fit.all_permutations_log_likelihoods())
 
     assert np.allclose(
         fit.all_permutations_log_likelihoods(),
@@ -92,7 +94,7 @@ def test_duplicate_model_position(
     data,
     noise_map,
 ):
-    model_positions = np.array(
+    model_positions = al.Grid2DIrregular(
         [
             (-1.0749, -1.1),
             (1.19117, 1.175),

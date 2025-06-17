@@ -1,3 +1,4 @@
+import jax.numpy as jnp
 import logging
 import numpy as np
 from typing import Dict, List, Optional, Union
@@ -98,7 +99,7 @@ class AnalysisLens:
             run_time_dict=run_time_dict,
         )
 
-    def log_likelihood_positions_overwrite_from(
+    def log_likelihood_penalty_from(
         self, instance: af.ModelInstance
     ) -> Optional[float]:
         """
@@ -120,21 +121,20 @@ class AnalysisLens:
         The penalty value of the positions log likelihood, if the positions do not trace close in the source plane,
         else a None is returned to indicate there is no penalty.
         """
-        if self.positions_likelihood_list is not None:
+        log_likelihood_penalty = jnp.array(0.0)
 
-            log_likelihood_overwrite = None
+        if self.positions_likelihood_list is not None:
 
             try:
                 for positions_likelihood in self.positions_likelihood_list:
-                    log_likelihood_with_penalty = positions_likelihood.log_likelihood_function_positions_overwrite(
+                    log_likelihood_penalty = positions_likelihood.log_likelihood_penalty_from(
                         instance=instance, analysis=self
                     )
-                    if log_likelihood_with_penalty is not None:
-                        try:
-                            log_likelihood_overwrite += log_likelihood_with_penalty
-                        except TypeError:
-                            log_likelihood_overwrite = log_likelihood_with_penalty
 
-                return log_likelihood_overwrite
+                    log_likelihood_penalty += log_likelihood_penalty
+
+                return log_likelihood_penalty
             except (ValueError, np.linalg.LinAlgError) as e:
                 raise exc.FitException from e
+
+        return log_likelihood_penalty

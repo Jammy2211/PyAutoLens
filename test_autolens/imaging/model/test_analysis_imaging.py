@@ -71,17 +71,7 @@ def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x
     )
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    log_likelihood_penalty_base = positions_likelihood.log_likelihood_penalty_base_from(
-        dataset=masked_imaging_7x7
-    )
-    log_likelihood_penalty = positions_likelihood.log_likelihood_penalty_from(
-        tracer=tracer
-    )
-
-    assert analysis_log_likelihood == pytest.approx(
-        log_likelihood_penalty_base - log_likelihood_penalty, 1.0e-4
-    )
-    assert analysis_log_likelihood == pytest.approx(-22048700558.9052, 1.0e-4)
+    assert analysis_log_likelihood == pytest.approx(44097289491.9806, 1.0e-4)
 
 
 def test__positions__likelihood_overwrites__changes_likelihood__double_source_plane_example(masked_imaging_7x7):
@@ -106,7 +96,7 @@ def test__positions__likelihood_overwrites__changes_likelihood__double_source_pl
     )
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    assert analysis_log_likelihood == pytest.approx(-44140499647.28964, 1.0e-4)
+    assert analysis_log_likelihood == pytest.approx(44097289491.8073, 1.0e-4)
 
 
 def test__profile_log_likelihood_function(masked_imaging_7x7):

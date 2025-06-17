@@ -144,7 +144,7 @@ class FitPointDatasetPlotter(Plotter):
 
                 try:
                     visuals_1d += visuals_1d.__class__(
-                        model_fluxes=self.fit.flux.model_fluxes
+                        model_fluxes=self.fit.flux.model_fluxes.array
                     )
                 except AttributeError:
                     pass
