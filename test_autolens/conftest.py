@@ -56,6 +56,14 @@ def remove_logs():
 # Lens Datasets #
 
 
+@pytest.fixture(autouse=True)
+def set_config_path(request):
+    conf.instance.push(
+        new_path=path.join(directory, "config"),
+        output_path=path.join(directory, "output"),
+    )
+
+
 @pytest.fixture(name="mask_2d_7x7")
 def make_mask_2d_7x7():
     return fixtures.make_mask_2d_7x7()
@@ -111,9 +119,9 @@ def make_psf_3x3():
     return fixtures.make_psf_3x3()
 
 
-@pytest.fixture(name="psf_3x3")
-def make_psf_3x3():
-    return fixtures.make_psf_3x3()
+@pytest.fixture(name="convolver_7x7")
+def make_convolver_7x7():
+    return fixtures.make_convolver_7x7()
 
 
 @pytest.fixture(name="imaging_7x7")

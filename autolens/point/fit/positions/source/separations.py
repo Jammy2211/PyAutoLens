@@ -1,4 +1,4 @@
-import jax.numpy as jnp
+from autoarray.numpy_wrapper import numpy as npw
 import numpy as np
 from typing import Optional
 
@@ -118,7 +118,7 @@ class FitPositionsSource(AbstractFitPositions):
         """
 
         return self.residual_map**2.0 / (
-            self.magnifications_at_positions.array**-2.0 * self.noise_map.array**2.0
+            self.magnifications_at_positions**-2.0 * self.noise_map**2.0
         )
 
     @property
@@ -126,14 +126,11 @@ class FitPositionsSource(AbstractFitPositions):
         """
         Returns the normalization of the noise-map, which is the sum of the noise-map values squared.
         """
-        return jnp.sum(
-            jnp.log(
+        return npw.sum(
+            npw.log(
                 2
                 * np.pi
-                * (
-                    self.magnifications_at_positions.array**-2.0
-                    * self.noise_map.array**2.0
-                )
+                * (self.magnifications_at_positions**-2.0 * self.noise_map**2.0)
             )
         )
 

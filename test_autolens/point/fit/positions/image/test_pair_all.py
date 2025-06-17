@@ -27,7 +27,7 @@ def noise_map():
 
 @pytest.fixture
 def fit(data, noise_map):
-    model_positions = al.Grid2DIrregular(
+    model_positions = np.array(
         [
             (-1.0749, -1.1),
             (1.19117, 1.175),
@@ -54,16 +54,16 @@ def test_andrew_implementation(fit):
     assert fit.chi_squared == -2.0 * -4.40375330990644
 
 
-# @pytest.mark.skipif(not JAX_INSTALLED, reason="JAX is not installed")
-# def test_jax(fit):
-#     assert jax.jit(fit.log_likelihood)() == -4.40375330990644
+@pytest.mark.skipif(not JAX_INSTALLED, reason="JAX is not installed")
+def test_jax(fit):
+    assert jax.jit(fit.log_likelihood)() == -4.40375330990644
 
 
 def test_nan_model_positions(
     data,
     noise_map,
 ):
-    model_positions = al.Grid2DIrregular(
+    model_positions = np.array(
         [
             (-1.0749, -1.1),
             (1.19117, 1.175),
@@ -92,7 +92,7 @@ def test_duplicate_model_position(
     data,
     noise_map,
 ):
-    model_positions = al.Grid2DIrregular(
+    model_positions = np.array(
         [
             (-1.0749, -1.1),
             (1.19117, 1.175),

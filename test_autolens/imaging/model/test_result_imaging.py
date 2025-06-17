@@ -9,7 +9,7 @@ from autolens.imaging.model.result import ResultImaging
 def test___linear_light_profiles_in_result(analysis_imaging_7x7):
 
     galaxies = af.ModelInstance()
-    galaxies.galaxy = al.Galaxy(redshift=0.5, bulge=al.lp_linear.Sersic(centre=(0.05, 0.05)))
+    galaxies.galaxy = al.Galaxy(redshift=0.5, bulge=al.lp_linear.Sersic())
 
     instance = af.ModelInstance()
     instance.galaxies = galaxies
@@ -24,4 +24,4 @@ def test___linear_light_profiles_in_result(analysis_imaging_7x7):
     )
     assert result.max_log_likelihood_tracer.galaxies[
         0
-    ].bulge.intensity == pytest.approx(0.1868684644, 1.0e-4)
+    ].bulge.intensity == pytest.approx(0.002310735, 1.0e-4)

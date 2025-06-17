@@ -5,7 +5,7 @@ from test_autolens.aggregator.conftest import clean, aggregator_from
 database_file = "db_fit_imaging"
 
 
-def test__fit_imaging_randomly_drawn_via_pdf_gen_from__analysis_single(
+def test__fit_imaging_randomly_drawn_via_pdf_gen_from(
     analysis_imaging_7x7, samples, model
 ):
     agg = aggregator_from(

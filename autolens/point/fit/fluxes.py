@@ -1,4 +1,3 @@
-import jax.numpy as jnp
 from typing import Optional
 
 import autoarray as aa
@@ -102,10 +101,10 @@ class FitFluxes(AbstractFitPoint):
         are used.
         """
         return aa.ArrayIrregular(
-            values=jnp.array([
+            values=[
                 magnification * self.profile.flux
                 for magnification in self.magnifications_at_positions
-            ])
+            ]
         )
 
     @property
@@ -129,5 +128,5 @@ class FitFluxes(AbstractFitPoint):
         RMS noise-map values squared.
         """
         return ag.util.fit.chi_squared_from(
-            chi_squared_map=self.chi_squared_map.array,
+            chi_squared_map=self.chi_squared_map,
         )

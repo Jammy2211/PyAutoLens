@@ -1,7 +1,4 @@
-import jax.numpy as jnp
 import numpy as np
-from ott.geometry import pointcloud
-from ott.solvers.linear import sinkhorn
 from scipy.optimize import linear_sum_assignment
 
 import autoarray as aa
