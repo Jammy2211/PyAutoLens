@@ -2,7 +2,7 @@ import jax.numpy as jnp
 import logging
 import math
 
-from typing import Tuple, List, Iterator, Type, Optional
+from typing import Tuple, List, Iterator, Optional
 
 import autoarray as aa
 
@@ -59,7 +59,6 @@ class AbstractSolver:
         grid: aa.Grid2D,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
-        array_triangles_cls: Type[AbstractTriangles] = CoordinateArrayTriangles,
         neighbor_degree: int = 1,
     ):
         """
@@ -75,9 +74,6 @@ class AbstractSolver:
             The precision to which the triangles should be subdivided.
         magnification_threshold
             The threshold for the magnification under which multiple images are filtered.
-        array_triangles_cls
-            The class to use for the triangles. JAX is used implicitly if USE_JAX=1 and
-            jax is installed.
         max_containing_size
             Only applies to JAX. This is the maximum number of multiple images expected.
             We need to know this in advance to allocate memory for the JAX array.
@@ -106,7 +102,6 @@ class AbstractSolver:
             scale=scale,
             pixel_scale_precision=pixel_scale_precision,
             magnification_threshold=magnification_threshold,
-            array_triangles_cls=array_triangles_cls,
             neighbor_degree=neighbor_degree,
         )
 
@@ -120,7 +115,6 @@ class AbstractSolver:
         scale=0.1,
         pixel_scale_precision: float = 0.001,
         magnification_threshold=0.1,
-        array_triangles_cls: Type[AbstractTriangles] = CoordinateArrayTriangles,
         neighbor_degree: int = 1,
     ):
         """
@@ -141,9 +135,6 @@ class AbstractSolver:
             The precision to which the triangles should be subdivided.
         magnification_threshold
             The threshold for the magnification under which multiple images are filtered.
-        array_triangles_cls
-            The class to use for the triangles. JAX is used implicitly if USE_JAX=1 and
-            jax is installed.
         neighbor_degree
             The number of times recursively add neighbors for the triangles that contain
 
@@ -151,7 +142,7 @@ class AbstractSolver:
         -------
         The solver.
         """
-        initial_triangles = array_triangles_cls.for_limits_and_scale(
+        initial_triangles = CoordinateArrayTriangles.for_limits_and_scale(
             y_min=y_min,
             y_max=y_max,
             x_min=x_min,
