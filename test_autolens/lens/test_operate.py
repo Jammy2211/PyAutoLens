@@ -122,10 +122,18 @@ def test__operate_image__galaxy_blurred_image_2d_dict_from(
         blurring_grid=blurring_grid_2d_7x7,
     )
 
-    assert blurred_image_dict[g0].slim == pytest.approx(g0_blurred_image.slim.array, 1.0e-4)
-    assert blurred_image_dict[g1].slim == pytest.approx(g1_blurred_image.slim.array, 1.0e-4)
-    assert blurred_image_dict[g2].slim == pytest.approx(g2_blurred_image.slim.array, 1.0e-4)
-    assert blurred_image_dict[g3].slim == pytest.approx(g3_blurred_image.slim.array, 1.0e-4)
+    assert blurred_image_dict[g0].slim == pytest.approx(
+        g0_blurred_image.slim.array, 1.0e-4
+    )
+    assert blurred_image_dict[g1].slim == pytest.approx(
+        g1_blurred_image.slim.array, 1.0e-4
+    )
+    assert blurred_image_dict[g2].slim == pytest.approx(
+        g2_blurred_image.slim.array, 1.0e-4
+    )
+    assert blurred_image_dict[g3].slim == pytest.approx(
+        g3_blurred_image.slim.array, 1.0e-4
+    )
 
 
 def test__operate_image__galaxy_visibilities_dict_from_grid_and_transformer(

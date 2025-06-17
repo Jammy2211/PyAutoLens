@@ -66,6 +66,7 @@ def test_trivial(
     coordinates = coordinates.array[~np.isnan(coordinates.array).any(axis=1)]
     assert coordinates[0] == pytest.approx(source_plane_coordinate, abs=1.0e-1)
 
+
 def test_real_example_jax(grid, tracer):
     jax_solver = PointSolver.for_grid(
         grid=grid,

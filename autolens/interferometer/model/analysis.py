@@ -152,14 +152,15 @@ class AnalysisInterferometer(AnalysisDataset):
         """
 
         try:
-            log_likelihood_penalty = self.log_likelihood_penalty_from(
-                instance=instance
-            )
+            log_likelihood_penalty = self.log_likelihood_penalty_from(instance=instance)
         except Exception as e:
             raise e
 
         try:
-            return self.fit_from(instance=instance).figure_of_merit + log_likelihood_penalty
+            return (
+                self.fit_from(instance=instance).figure_of_merit
+                + log_likelihood_penalty
+            )
         except (
             PixelizationException,
             exc.PixelizationException,

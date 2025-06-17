@@ -102,10 +102,12 @@ class FitFluxes(AbstractFitPoint):
         are used.
         """
         return aa.ArrayIrregular(
-            values=jnp.array([
-                magnification * self.profile.flux
-                for magnification in self.magnifications_at_positions
-            ])
+            values=jnp.array(
+                [
+                    magnification * self.profile.flux
+                    for magnification in self.magnifications_at_positions
+                ]
+            )
         )
 
     @property
