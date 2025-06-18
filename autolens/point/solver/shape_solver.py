@@ -301,6 +301,7 @@ class AbstractSolver:
         An iterator over the steps of the triangle solver algorithm.
         """
         initial_triangles = self.initial_triangles
+
         for number in range(self.n_steps):
             plane_triangles = self._plane_triangles(
                 tracer=tracer,
