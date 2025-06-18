@@ -1,6 +1,5 @@
 import pytest
 
-from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
 from autoarray.structures.triangles.shape import Circle
 from autolens.mock import NullTracer
 from autolens.point.solver.shape_solver import ShapeSolver
@@ -11,7 +10,6 @@ def solver(grid):
     return ShapeSolver.for_grid(
         grid=grid,
         pixel_scale_precision=0.001,
-        array_triangles_cls=CoordinateArrayTriangles,
     )
 
 

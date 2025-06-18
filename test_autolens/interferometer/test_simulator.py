@@ -29,7 +29,7 @@ def test__from_tracer__same_as_tracer_input():
         image=tracer.image_2d_from(grid=grid)
     )
 
-    assert (dataset.data == interferometer_via_image.data).all()
+    assert (dataset.data == interferometer_via_image.data.array).all()
     assert (dataset.uv_wavelengths == interferometer_via_image.uv_wavelengths).all()
     assert (dataset.noise_map == interferometer_via_image.noise_map).all()
 
@@ -61,7 +61,7 @@ def test__via_deflections_and_galaxies_from__same_as_calculation_using_tracer():
         image=tracer.image_2d_from(grid=grid)
     )
 
-    assert (dataset.data == interferometer_via_image.data).all()
+    assert (dataset.data == interferometer_via_image.data.array).all()
     assert (interferometer_via_image.uv_wavelengths == dataset.uv_wavelengths).all()
     assert (dataset.noise_map == interferometer_via_image.noise_map).all()
 
@@ -104,6 +104,6 @@ def test__simulate_interferometer_from_lens__source_galaxy__compare_to_interfero
         image=tracer.image_2d_from(grid=grid)
     )
 
-    assert dataset.data == pytest.approx(interferometer_via_image.data, 1.0e-4)
+    assert dataset.data == pytest.approx(interferometer_via_image.data.array, 1.0e-4)
     assert (dataset.uv_wavelengths == interferometer_via_image.uv_wavelengths).all()
     assert (interferometer_via_image.noise_map == dataset.noise_map).all()

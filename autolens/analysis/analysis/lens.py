@@ -127,8 +127,10 @@ class AnalysisLens:
 
             try:
                 for positions_likelihood in self.positions_likelihood_list:
-                    log_likelihood_penalty = positions_likelihood.log_likelihood_penalty_from(
-                        instance=instance, analysis=self
+                    log_likelihood_penalty = (
+                        positions_likelihood.log_likelihood_penalty_from(
+                            instance=instance, analysis=self
+                        )
                     )
 
                     log_likelihood_penalty += log_likelihood_penalty

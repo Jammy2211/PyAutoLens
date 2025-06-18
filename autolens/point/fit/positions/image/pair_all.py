@@ -107,16 +107,18 @@ class FitPositionsImagePairAll(AbstractFitPositionsImagePair):
             [
                 jnp.log(
                     jnp.sum(
-                        jnp.array([
-                            jnp.exp(
-                                self.log_p(
-                                    data_position,
-                                    model_position,
-                                    sigma,
+                        jnp.array(
+                            [
+                                jnp.exp(
+                                    self.log_p(
+                                        data_position,
+                                        model_position,
+                                        sigma,
+                                    )
                                 )
-                            )
-                            for model_position in model_data
-                        ])
+                                for model_position in model_data
+                            ]
+                        )
                     )
                 )
                 for data_position, sigma in zip(self.data, self.noise_map)
