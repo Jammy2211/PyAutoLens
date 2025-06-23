@@ -3,11 +3,9 @@ DevVaucouleurs:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -15,11 +13,9 @@ DevVaucouleurs:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -40,7 +36,7 @@ DevVaucouleurs:
     lower_limit: -1.0
     mean: 0.0
     sigma: 0.3
-    type: Gaussian
+    type: TruncatedGaussian
     upper_limit: 1.0
     width_modifier:
       type: Absolute
@@ -52,7 +48,7 @@ DevVaucouleurs:
     lower_limit: -1.0
     mean: 0.0
     sigma: 0.3
-    type: Gaussian
+    type: TruncatedGaussian
     upper_limit: 1.0
     width_modifier:
       type: Absolute
@@ -82,11 +78,9 @@ DevVaucouleursSph:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -94,11 +88,9 @@ DevVaucouleursSph:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -137,11 +129,9 @@ Exponential:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -149,11 +139,9 @@ Exponential:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -174,7 +162,7 @@ Exponential:
     lower_limit: -1.0
     mean: 0.0
     sigma: 0.3
-    type: Gaussian
+    type: TruncatedGaussian
     upper_limit: 1.0
     width_modifier:
       type: Absolute
@@ -186,7 +174,7 @@ Exponential:
     lower_limit: -1.0
     mean: 0.0
     sigma: 0.3
-    type: Gaussian
+    type: TruncatedGaussian
     upper_limit: 1.0
     width_modifier:
       type: Absolute
@@ -216,11 +204,9 @@ ExponentialSph:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -228,11 +214,9 @@ ExponentialSph:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -271,11 +255,9 @@ Sersic:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -283,11 +265,9 @@ Sersic:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -308,7 +288,7 @@ Sersic:
     lower_limit: -1.0
     mean: 0.0
     sigma: 0.3
-    type: Gaussian
+    type: TruncatedGaussian
     upper_limit: 1.0
     width_modifier:
       type: Absolute
@@ -320,7 +300,7 @@ Sersic:
     lower_limit: -1.0
     mean: 0.0
     sigma: 0.3
-    type: Gaussian
+    type: TruncatedGaussian
     upper_limit: 1.0
     width_modifier:
       type: Absolute
@@ -360,11 +340,9 @@ SersicGradient:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -372,11 +350,9 @@ SersicGradient:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -397,7 +373,7 @@ SersicGradient:
     lower_limit: -1.0
     mean: 0.0
     sigma: 0.3
-    type: Gaussian
+    type: TruncatedGaussian
     upper_limit: 1.0
     width_modifier:
       type: Absolute
@@ -409,7 +385,7 @@ SersicGradient:
     lower_limit: -1.0
     mean: 0.0
     sigma: 0.3
-    type: Gaussian
+    type: TruncatedGaussian
     upper_limit: 1.0
     width_modifier:
       type: Absolute
@@ -459,11 +435,9 @@ SersicGradientSph:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -471,11 +445,9 @@ SersicGradientSph:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -534,11 +506,9 @@ SersicSph:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -546,11 +516,9 @@ SersicSph:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05

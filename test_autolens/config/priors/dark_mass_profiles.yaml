@@ -3,11 +3,9 @@ NFW:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -15,11 +13,9 @@ NFW:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -30,7 +26,7 @@ NFW:
     lower_limit: -1.0
     mean: 0.0
     sigma: 0.3
-    type: Gaussian
+    type: TruncatedGaussian
     upper_limit: 1.0
     width_modifier:
       type: Absolute
@@ -42,7 +38,7 @@ NFW:
     lower_limit: -1.0
     mean: 0.0
     sigma: 0.3
-    type: Gaussian
+    type: TruncatedGaussian
     upper_limit: 1.0
     width_modifier:
       type: Absolute
@@ -72,11 +68,9 @@ NFWSph:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -84,11 +78,9 @@ NFWSph:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -117,11 +109,9 @@ NFWTruncatedSph:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -129,11 +119,9 @@ NFWTruncatedSph:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -172,11 +160,9 @@ SphNFWTruncatedMCR:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -184,11 +170,9 @@ SphNFWTruncatedMCR:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -207,11 +191,9 @@ gNFW:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -219,11 +201,9 @@ gNFW:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -234,7 +214,7 @@ gNFW:
     lower_limit: -1.0
     mean: 0.0
     sigma: 0.3
-    type: Gaussian
+    type: TruncatedGaussian
     upper_limit: 1.0
     width_modifier:
       type: Absolute
@@ -246,7 +226,7 @@ gNFW:
     lower_limit: -1.0
     mean: 0.0
     sigma: 0.3
-    type: Gaussian
+    type: TruncatedGaussian
     upper_limit: 1.0
     width_modifier:
       type: Absolute
@@ -286,11 +266,9 @@ gNFWSph:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05
@@ -298,11 +276,9 @@ gNFWSph:
     limits:
       lower: -inf
       upper: inf
-    lower_limit: -inf
     mean: 0.0
     sigma: 0.3
     type: Gaussian
-    upper_limit: inf
     width_modifier:
       type: Absolute
       value: 0.05

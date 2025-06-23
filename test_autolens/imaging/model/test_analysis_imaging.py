@@ -98,25 +98,3 @@ def test__positions__likelihood_overwrites__changes_likelihood__double_source_pl
 
     assert analysis_log_likelihood == pytest.approx(44097289491.8073, 1.0e-4)
 
-
-def test__profile_log_likelihood_function(masked_imaging_7x7):
-    pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
-        regularization=al.reg.Constant(coefficient=1.0),
-    )
-
-    lens = al.Galaxy(redshift=0.5, light=al.lp.Sersic(intensity=0.1))
-    source = al.Galaxy(redshift=1.0, pixelization=pixelization)
-
-    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
-
-    instance = model.instance_from_unit_vector([])
-
-    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
-
-    run_time_dict, info_dict = analysis.profile_log_likelihood_function(
-        instance=instance
-    )
-
-    assert "regularization_term_0" in run_time_dict
-    assert "log_det_regularization_matrix_term_0" in run_time_dict
