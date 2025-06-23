@@ -99,7 +99,6 @@ class TracerToInversion(ag.AbstractToInversion):
                 return True
 
     @cached_property
-    @aa.profile_func
     def traced_grid_2d_list_of_inversion(self) -> List[aa.type.Grid2DLike]:
         """
         Returns a list of the traced grids of the inversion.
@@ -285,7 +284,6 @@ class TracerToInversion(ag.AbstractToInversion):
         return adapt_galaxy_image_pg_list
 
     @cached_property
-    @aa.profile_func
     def image_plane_mesh_grid_pg_list(self) -> List[List]:
         """
         Returns a list of lists of image-plane mesh grids, where each inner list corresponds to a single plane.
@@ -325,7 +323,6 @@ class TracerToInversion(ag.AbstractToInversion):
         return image_plane_mesh_grid_list_of_planes
 
     @cached_property
-    @aa.profile_func
     def traced_mesh_grid_pg_list(self) -> List[List]:
         """
         Returns a list of lists of traced mesh grids, where each inner list corresponds to a single plane.

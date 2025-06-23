@@ -451,7 +451,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         return image_2d_list
 
     @aa.grid_dec.to_array
-    @aa.profile_func
     def image_2d_from(
         self,
         grid: aa.type.Grid2DLike,
@@ -1189,6 +1188,5 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                             psf=psf,
                         )
 
-    @aa.profile_func
     def convolve_via_psf(self, image, blurring_image, psf):
         return psf.convolve_image(image=image, blurring_image=blurring_image)
