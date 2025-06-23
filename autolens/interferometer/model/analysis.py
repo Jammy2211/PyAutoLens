@@ -160,7 +160,6 @@ class AnalysisInterferometer(AnalysisDataset):
     def fit_from(
         self,
         instance: af.ModelInstance,
-        run_time_dict: Optional[Dict] = None,
     ) -> FitInterferometer:
         """
         Given a model instance create a `FitInterferometer` object.
@@ -186,7 +185,7 @@ class AnalysisInterferometer(AnalysisDataset):
         """
 
         tracer = self.tracer_via_instance_from(
-            instance=instance, run_time_dict=run_time_dict
+            instance=instance,
         )
 
         adapt_images = self.adapt_images_via_instance_from(instance=instance)
@@ -196,7 +195,6 @@ class AnalysisInterferometer(AnalysisDataset):
             tracer=tracer,
             adapt_images=adapt_images,
             settings_inversion=self.settings_inversion,
-            run_time_dict=run_time_dict,
         )
 
     def save_attributes(self, paths: af.DirectoryPaths):

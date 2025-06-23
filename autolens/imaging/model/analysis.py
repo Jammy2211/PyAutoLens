@@ -101,7 +101,6 @@ class AnalysisImaging(AnalysisDataset):
     def fit_from(
         self,
         instance: af.ModelInstance,
-        run_time_dict: Optional[Dict] = None,
     ) -> FitImaging:
         """
         Given a model instance create a `FitImaging` object.
@@ -117,8 +116,6 @@ class AnalysisImaging(AnalysisDataset):
         check_positions
             Whether the multiple image positions of the lensed source should be checked, i.e. whether they trace
             within the position threshold of one another in the source plane.
-        run_time_dict
-            A dictionary which times functions called to fit the model to data, for profiling.
 
         Returns
         -------
@@ -127,7 +124,7 @@ class AnalysisImaging(AnalysisDataset):
         """
 
         tracer = self.tracer_via_instance_from(
-            instance=instance, run_time_dict=run_time_dict
+            instance=instance,
         )
 
         dataset_model = self.dataset_model_via_instance_from(instance=instance)
@@ -140,7 +137,6 @@ class AnalysisImaging(AnalysisDataset):
             dataset_model=dataset_model,
             adapt_images=adapt_images,
             settings_inversion=self.settings_inversion,
-            run_time_dict=run_time_dict,
         )
 
     def save_attributes(self, paths: af.DirectoryPaths):

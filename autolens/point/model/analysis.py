@@ -124,10 +124,10 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         return self.fit_from(instance=instance).log_likelihood
 
     def fit_from(
-        self, instance, run_time_dict: Optional[Dict] = None
+        self, instance,
     ) -> FitPointDataset:
         tracer = self.tracer_via_instance_from(
-            instance=instance, run_time_dict=run_time_dict
+            instance=instance,
         )
         """
         Given a model instance create a `FitPointDataset` object.
@@ -140,8 +140,6 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         instance
             An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
             via a non-linear search).
-        run_time_dict
-            A dictionary which times functions called to fit the model to data, for profiling.
 
         Returns
         -------
@@ -152,7 +150,6 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
             tracer=tracer,
             solver=self.solver,
             fit_positions_cls=self.fit_positions_cls,
-            run_time_dict=run_time_dict,
         )
 
     def save_attributes(self, paths: af.DirectoryPaths):

@@ -25,7 +25,6 @@ class FitPointDataset:
         tracer: Tracer,
         solver: PointSolver,
         fit_positions_cls=FitPositionsImagePair,
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         Fits a point source dataset using a `Tracer` object, where the following components of the point source data
@@ -84,7 +83,6 @@ class FitPointDataset:
         self.dataset = dataset
         self.tracer = tracer
         self.solver = solver
-        self.run_time_dict = run_time_dict
 
         profile = self.tracer.extract_profile(profile_name=dataset.name)
 
