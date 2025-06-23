@@ -6,7 +6,7 @@ Galaxy:
 
 Redshift:
   redshift:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 0.0

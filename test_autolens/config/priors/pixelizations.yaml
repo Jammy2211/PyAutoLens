@@ -1,6 +1,6 @@
 delaunay.DelaunayBrightnessImage:
   pixels:
-    gaussian_limits:
+    limits:
       lower: 50.0
       upper: inf
     lower_limit: 50.0
@@ -10,7 +10,7 @@ delaunay.DelaunayBrightnessImage:
       type: Absolute
       value: 100.0
   weight_floor:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 0.0
@@ -20,7 +20,7 @@ delaunay.DelaunayBrightnessImage:
       type: Absolute
       value: 0.1
   weight_power:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 0.0
@@ -31,7 +31,7 @@ delaunay.DelaunayBrightnessImage:
       value: 5.0
 delaunay.DelaunayMagnification:
   shape_0:
-    gaussian_limits:
+    limits:
       lower: 3.0
       upper: inf
     lower_limit: 20.0
@@ -41,7 +41,7 @@ delaunay.DelaunayMagnification:
       type: Absolute
       value: 8.0
   shape_1:
-    gaussian_limits:
+    limits:
       lower: 3.0
       upper: inf
     lower_limit: 20.0
@@ -52,7 +52,7 @@ delaunay.DelaunayMagnification:
       value: 8.0
 rectangular.Rectangular:
   shape_0:
-    gaussian_limits:
+    limits:
       lower: 3.0
       upper: inf
     lower_limit: 20.0
@@ -62,7 +62,7 @@ rectangular.Rectangular:
       type: Absolute
       value: 8.0
   shape_1:
-    gaussian_limits:
+    limits:
       lower: 3.0
       upper: inf
     lower_limit: 20.0
@@ -73,7 +73,7 @@ rectangular.Rectangular:
       value: 8.0
 voronoi.VoronoiBrightnessImage:
   pixels:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 50.0
@@ -83,7 +83,7 @@ voronoi.VoronoiBrightnessImage:
       type: Absolute
       value: 400.0
   weight_floor:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 0.0
@@ -93,7 +93,7 @@ voronoi.VoronoiBrightnessImage:
       type: Absolute
       value: 0.1
   weight_power:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 0.0
@@ -104,7 +104,7 @@ voronoi.VoronoiBrightnessImage:
       value: 5.0
 voronoi.VoronoiMagnification:
   shape_0:
-    gaussian_limits:
+    limits:
       lower: 3.0
       upper: inf
     lower_limit: 20.0
@@ -114,7 +114,7 @@ voronoi.VoronoiMagnification:
       type: Absolute
       value: 8.0
   shape_1:
-    gaussian_limits:
+    limits:
       lower: 3.0
       upper: inf
     lower_limit: 20.0

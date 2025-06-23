@@ -1,6 +1,6 @@
 DevVaucouleurs:
   centre_0:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -12,7 +12,7 @@ DevVaucouleurs:
       type: Absolute
       value: 0.05
   centre_1:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -24,7 +24,7 @@ DevVaucouleurs:
       type: Absolute
       value: 0.05
   effective_radius:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 0.0
@@ -34,7 +34,7 @@ DevVaucouleurs:
       type: Relative
       value: 1.0
   ell_comps_0:
-    gaussian_limits:
+    limits:
       lower: -1.0
       upper: 1.0
     lower_limit: -1.0
@@ -46,7 +46,7 @@ DevVaucouleurs:
       type: Absolute
       value: 0.2
   ell_comps_1:
-    gaussian_limits:
+    limits:
       lower: -1.0
       upper: 1.0
     lower_limit: -1.0
@@ -58,7 +58,7 @@ DevVaucouleurs:
       type: Absolute
       value: 0.2
   intensity:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -68,7 +68,7 @@ DevVaucouleurs:
       type: Relative
       value: 0.5
   mass_to_light_ratio:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -79,7 +79,7 @@ DevVaucouleurs:
       value: 0.3
 DevVaucouleursSph:
   centre_0:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -91,7 +91,7 @@ DevVaucouleursSph:
       type: Absolute
       value: 0.05
   centre_1:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -103,7 +103,7 @@ DevVaucouleursSph:
       type: Absolute
       value: 0.05
   effective_radius:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 0.0
@@ -113,7 +113,7 @@ DevVaucouleursSph:
       type: Relative
       value: 1.0
   intensity:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -123,7 +123,7 @@ DevVaucouleursSph:
       type: Relative
       value: 0.5
   mass_to_light_ratio:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -134,7 +134,7 @@ DevVaucouleursSph:
       value: 0.3
 Exponential:
   centre_0:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -146,7 +146,7 @@ Exponential:
       type: Absolute
       value: 0.05
   centre_1:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -158,7 +158,7 @@ Exponential:
       type: Absolute
       value: 0.05
   effective_radius:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 0.0
@@ -168,7 +168,7 @@ Exponential:
       type: Relative
       value: 1.0
   ell_comps_0:
-    gaussian_limits:
+    limits:
       lower: -1.0
       upper: 1.0
     lower_limit: -1.0
@@ -180,7 +180,7 @@ Exponential:
       type: Absolute
       value: 0.2
   ell_comps_1:
-    gaussian_limits:
+    limits:
       lower: -1.0
       upper: 1.0
     lower_limit: -1.0
@@ -192,7 +192,7 @@ Exponential:
       type: Absolute
       value: 0.2
   intensity:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -202,7 +202,7 @@ Exponential:
       type: Relative
       value: 0.5
   mass_to_light_ratio:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -213,7 +213,7 @@ Exponential:
       value: 0.3
 ExponentialSph:
   centre_0:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -225,7 +225,7 @@ ExponentialSph:
       type: Absolute
       value: 0.05
   centre_1:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -237,7 +237,7 @@ ExponentialSph:
       type: Absolute
       value: 0.05
   effective_radius:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 0.0
@@ -247,7 +247,7 @@ ExponentialSph:
       type: Relative
       value: 1.0
   intensity:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -257,7 +257,7 @@ ExponentialSph:
       type: Relative
       value: 0.5
   mass_to_light_ratio:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -268,7 +268,7 @@ ExponentialSph:
       value: 0.3
 Sersic:
   centre_0:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -280,7 +280,7 @@ Sersic:
       type: Absolute
       value: 0.05
   centre_1:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -292,7 +292,7 @@ Sersic:
       type: Absolute
       value: 0.05
   effective_radius:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 0.0
@@ -302,7 +302,7 @@ Sersic:
       type: Relative
       value: 1.0
   ell_comps_0:
-    gaussian_limits:
+    limits:
       lower: -1.0
       upper: 1.0
     lower_limit: -1.0
@@ -314,7 +314,7 @@ Sersic:
       type: Absolute
       value: 0.2
   ell_comps_1:
-    gaussian_limits:
+    limits:
       lower: -1.0
       upper: 1.0
     lower_limit: -1.0
@@ -326,7 +326,7 @@ Sersic:
       type: Absolute
       value: 0.2
   intensity:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -336,7 +336,7 @@ Sersic:
       type: Relative
       value: 0.5
   mass_to_light_ratio:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -346,7 +346,7 @@ Sersic:
       type: Relative
       value: 0.3
   sersic_index:
-    gaussian_limits:
+    limits:
       lower: 0.8
       upper: 5.0
     lower_limit: 0.8
@@ -357,7 +357,7 @@ Sersic:
       value: 1.5
 SersicGradient:
   centre_0:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -369,7 +369,7 @@ SersicGradient:
       type: Absolute
       value: 0.05
   centre_1:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -381,7 +381,7 @@ SersicGradient:
       type: Absolute
       value: 0.05
   effective_radius:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 0.0
@@ -391,7 +391,7 @@ SersicGradient:
       type: Relative
       value: 1.0
   ell_comps_0:
-    gaussian_limits:
+    limits:
       lower: -1.0
       upper: 1.0
     lower_limit: -1.0
@@ -403,7 +403,7 @@ SersicGradient:
       type: Absolute
       value: 0.2
   ell_comps_1:
-    gaussian_limits:
+    limits:
       lower: -1.0
       upper: 1.0
     lower_limit: -1.0
@@ -415,7 +415,7 @@ SersicGradient:
       type: Absolute
       value: 0.2
   intensity:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -425,7 +425,7 @@ SersicGradient:
       type: Relative
       value: 0.5
   mass_to_light_gradient:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: -1.0
@@ -435,7 +435,7 @@ SersicGradient:
       type: Absolute
       value: 0.2
   mass_to_light_ratio:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -445,7 +445,7 @@ SersicGradient:
       type: Relative
       value: 0.3
   sersic_index:
-    gaussian_limits:
+    limits:
       lower: 0.8
       upper: 5.0
     lower_limit: 0.8
@@ -456,7 +456,7 @@ SersicGradient:
       value: 1.5
 SersicGradientSph:
   centre_0:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -468,7 +468,7 @@ SersicGradientSph:
       type: Absolute
       value: 0.05
   centre_1:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -480,7 +480,7 @@ SersicGradientSph:
       type: Absolute
       value: 0.05
   effective_radius:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 0.0
@@ -490,7 +490,7 @@ SersicGradientSph:
       type: Relative
       value: 1.0
   intensity:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -500,7 +500,7 @@ SersicGradientSph:
       type: Relative
       value: 0.5
   mass_to_light_gradient:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: -1.0
@@ -510,7 +510,7 @@ SersicGradientSph:
       type: Absolute
       value: 0.2
   mass_to_light_ratio:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -520,7 +520,7 @@ SersicGradientSph:
       type: Relative
       value: 0.3
   sersic_index:
-    gaussian_limits:
+    limits:
       lower: 0.8
       upper: 5.0
     lower_limit: 0.8
@@ -531,7 +531,7 @@ SersicGradientSph:
       value: 1.5
 SersicSph:
   centre_0:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -543,7 +543,7 @@ SersicSph:
       type: Absolute
       value: 0.05
   centre_1:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -555,7 +555,7 @@ SersicSph:
       type: Absolute
       value: 0.05
   effective_radius:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 0.0
@@ -565,7 +565,7 @@ SersicSph:
       type: Relative
       value: 1.0
   intensity:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -575,7 +575,7 @@ SersicSph:
       type: Relative
       value: 0.5
   mass_to_light_ratio:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -585,7 +585,7 @@ SersicSph:
       type: Relative
       value: 0.3
   sersic_index:
-    gaussian_limits:
+    limits:
       lower: 0.8
       upper: 5.0
     lower_limit: 0.8

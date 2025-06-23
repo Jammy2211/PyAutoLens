@@ -151,30 +151,11 @@ class AnalysisInterferometer(AnalysisDataset):
             The log likelihood indicating how well this model instance fitted the interferometer data.
         """
 
-        try:
-            log_likelihood_penalty = self.log_likelihood_penalty_from(instance=instance)
-        except Exception as e:
-            raise e
+        log_likelihood_penalty = self.log_likelihood_penalty_from(
+            instance=instance
+        )
 
-        try:
-            return (
-                self.fit_from(instance=instance).figure_of_merit
-                + log_likelihood_penalty
-            )
-        except (
-            PixelizationException,
-            exc.PixelizationException,
-            exc.InversionException,
-            exc.GridException,
-            exc.MeshException,
-            ValueError,
-            TypeError,
-            np.linalg.LinAlgError,
-            OverflowError,
-        ) as e:
-            print(e)
-            fggdfg
-            raise exc.FitException from e
+        return self.fit_from(instance=instance).figure_of_merit + log_likelihood_penalty
 
     def fit_from(
         self,

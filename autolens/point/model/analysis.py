@@ -121,13 +121,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         float
             The log likelihood indicating how well this model instance fitted the imaging data.
         """
-        try:
-            fit = self.fit_from(instance=instance)
-            return fit.log_likelihood
-        except (AttributeError, ValueError, TypeError, NumbaException) as e:
-            print(e)
-            dfdsfd
-            raise exc.FitException from e
+        return self.fit_from(instance=instance).log_likelihood
 
     def fit_from(
         self, instance, run_time_dict: Optional[Dict] = None

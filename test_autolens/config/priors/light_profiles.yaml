@@ -1,6 +1,6 @@
 EllLightProfile:
   centre_0:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: 0.0
@@ -10,7 +10,7 @@ EllLightProfile:
       type: Absolute
       value: 0.05
   centre_1:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: 0.0
@@ -20,7 +20,7 @@ EllLightProfile:
       type: Absolute
       value: 0.05
   ell_comps_0:
-    gaussian_limits:
+    limits:
       lower: -1.0
       upper: 1.0
     lower_limit: -1.0
@@ -32,7 +32,7 @@ EllLightProfile:
       type: Absolute
       value: 0.2
   ell_comps_1:
-    gaussian_limits:
+    limits:
       lower: -1.0
       upper: 1.0
     lower_limit: -1.0
@@ -54,7 +54,7 @@ EllLightProfile:
       value: 0.5
 Exponential:
   centre_0:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: 0.0
@@ -64,7 +64,7 @@ Exponential:
       type: Absolute
       value: 0.05
   centre_1:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: 0.0
@@ -74,7 +74,7 @@ Exponential:
       type: Absolute
       value: 0.05
   effective_radius:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 0.0
@@ -84,7 +84,7 @@ Exponential:
       type: Absolute
       value: 2.0
   ell_comps_0:
-    gaussian_limits:
+    limits:
       lower: -1.0
       upper: 1.0
     lower_limit: -1.0
@@ -96,7 +96,7 @@ Exponential:
       type: Absolute
       value: 0.2
   ell_comps_1:
-    gaussian_limits:
+    limits:
       lower: -1.0
       upper: 1.0
     lower_limit: -1.0
@@ -118,7 +118,7 @@ Exponential:
       value: 0.5
 Gaussian:
   centre_0:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -130,7 +130,7 @@ Gaussian:
       type: Absolute
       value: 0.05
   centre_1:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -142,7 +142,7 @@ Gaussian:
       type: Absolute
       value: 0.05
   ell_comps_0:
-    gaussian_limits:
+    limits:
       lower: -1.0
       upper: 1.0
     lower_limit: -1.0
@@ -154,7 +154,7 @@ Gaussian:
       type: Absolute
       value: 0.2
   ell_comps_1:
-    gaussian_limits:
+    limits:
       lower: -1.0
       upper: 1.0
     lower_limit: -1.0
@@ -166,7 +166,7 @@ Gaussian:
       type: Absolute
       value: 0.2
   intensity:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -176,7 +176,7 @@ Gaussian:
       type: Relative
       value: 0.5
   sigma:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 0.0
@@ -187,7 +187,7 @@ Gaussian:
       value: 0.5
 Sersic:
   centre_0:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -199,7 +199,7 @@ Sersic:
       type: Absolute
       value: 0.05
   centre_1:
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf
     lower_limit: -inf
@@ -211,7 +211,7 @@ Sersic:
       type: Absolute
       value: 0.05
   effective_radius:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 0.0
@@ -221,7 +221,7 @@ Sersic:
       type: Relative
       value: 1.0
   ell_comps_0:
-    gaussian_limits:
+    limits:
       lower: -1.0
       upper: 1.0
     lower_limit: -1.0
@@ -233,7 +233,7 @@ Sersic:
       type: Absolute
       value: 0.2
   ell_comps_1:
-    gaussian_limits:
+    limits:
       lower: -1.0
       upper: 1.0
     lower_limit: -1.0
@@ -245,7 +245,7 @@ Sersic:
       type: Absolute
       value: 0.2
   intensity:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -255,7 +255,7 @@ Sersic:
       type: Relative
       value: 0.5
   sersic_index:
-    gaussian_limits:
+    limits:
       lower: 0.5
       upper: inf
     lower_limit: 0.0
