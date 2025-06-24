@@ -124,7 +124,8 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         return self.fit_from(instance=instance).log_likelihood
 
     def fit_from(
-        self, instance,
+        self,
+        instance,
     ) -> FitPointDataset:
         tracer = self.tracer_via_instance_from(
             instance=instance,

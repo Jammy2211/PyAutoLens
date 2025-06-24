@@ -151,9 +151,7 @@ class AnalysisInterferometer(AnalysisDataset):
             The log likelihood indicating how well this model instance fitted the interferometer data.
         """
 
-        log_likelihood_penalty = self.log_likelihood_penalty_from(
-            instance=instance
-        )
+        log_likelihood_penalty = self.log_likelihood_penalty_from(instance=instance)
 
         return self.fit_from(instance=instance).figure_of_merit + log_likelihood_penalty
 

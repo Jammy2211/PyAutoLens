@@ -73,7 +73,8 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         self.settings_inversion = settings_inversion
 
         super().__init__(
-            dataset=dataset, dataset_model=dataset_model,
+            dataset=dataset,
+            dataset_model=dataset_model,
         )
         AbstractFitInversion.__init__(
             self=self, model_obj=tracer, settings_inversion=settings_inversion
