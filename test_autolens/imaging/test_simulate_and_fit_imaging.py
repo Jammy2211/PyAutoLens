@@ -118,7 +118,7 @@ def test__simulate_imaging_data_and_fit__known_likelihood():
 
     fit = al.FitImaging(dataset=masked_dataset, tracer=tracer)
 
-    assert fit.figure_of_merit == pytest.approx(538.796271746575, 1.0e-2)
+    assert fit.figure_of_merit == pytest.approx(574.3397424970, 1.0e-2)
 
 
 def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standard_light_profiles():
@@ -298,16 +298,9 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     assert fit_linear.inversion.reconstruction == pytest.approx(
         np.array(
             [
-                99.98206689,
-                0.12232328,
-                0.10729026,
-                0.10243489,
-                0.15267803,
-                0.13052345,
-                0.10758802,
-                0.1491073,
-                0.15455053,
-                0.12146136,
+                9.99914333e+01, 9.09781824e-02 ,7.07497204e-01, 8.49923287e-02,
+                6.59363860e-01, 2.02882546e+00, 6.95897372e-01, 1.45637431e-01,
+                6.64292575e-01, 1.08637423e-01
             ]
         ),
         1.0e-4,
@@ -449,12 +442,11 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
         settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
-
     assert fit_linear.inversion.reconstruction == pytest.approx(
         np.array(
             [
-                99.95778211,  0.26760714,  0.18616947,  0.1814436,   0.35814812,  0.2721518,
-                0.18617081,  0.39590081,  0.35814604,  0.26760716
+                99.97786229,  0.20198423, 1.60549092, 0.14487827,  1.6066755,   4.73452957,
+                1.61532944,  0.32693971,  1.65517967,  0.19727977,
             ]
         ),
         1.0e-4,

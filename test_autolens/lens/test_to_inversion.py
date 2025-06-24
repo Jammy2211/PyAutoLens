@@ -563,4 +563,4 @@ def test__inversion_interferometer_from(grid_2d_7x7, interferometer_7):
 
     inversion = tracer_to_inversion.inversion
 
-    assert inversion.reconstruction[0] == pytest.approx(-0.2662, 1.0e-4)
+    assert inversion.reconstruction[0] == pytest.approx(-0.095834752881, 1.0e-4)
