@@ -23,7 +23,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         dataset_model : Optional[aa.DatasetModel] = None,
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         Fits an imaging dataset using a `Tracer` object.
@@ -62,12 +61,9 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             reconstructed galaxy's morphology.
         settings_inversion
             Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
-        run_time_dict
-            A dictionary which if passed to the fit records how long function calls which have the `profile_func`
-            decorator take to run.
         """
 
-        super().__init__(dataset=dataset, dataset_model=dataset_model, run_time_dict=run_time_dict)
+        super().__init__(dataset=dataset, dataset_model=dataset_model)
         AbstractFitInversion.__init__(
             self=self, model_obj=tracer, settings_inversion=settings_inversion
         )
@@ -120,7 +116,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             tracer=self.tracer,
             adapt_images=self.adapt_images,
             settings_inversion=self.settings_inversion,
-            run_time_dict=self.run_time_dict
         )
 
     @cached_property

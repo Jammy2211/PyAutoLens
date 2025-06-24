@@ -17,7 +17,6 @@ class TracerToInversion(ag.AbstractToInversion):
         tracer,
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         Interfaces a dataset and tracer with the inversion module, to setup a linear algebra calculation.
@@ -52,8 +51,6 @@ class TracerToInversion(ag.AbstractToInversion):
             the pixelization's pixels to the brightest regions of the image.
         settings_inversion
             The settings of the inversion, which controls how the linear algebra calculation is performed.
-        run_time_dict
-            A dictionary of run-time values used to compute the inversion, for example the noise-map normalization.
         """
         self.tracer = tracer
 
@@ -61,7 +58,6 @@ class TracerToInversion(ag.AbstractToInversion):
             dataset=dataset,
             adapt_images=adapt_images,
             settings_inversion=settings_inversion,
-            run_time_dict=run_time_dict,
         )
 
     @property
@@ -99,7 +95,6 @@ class TracerToInversion(ag.AbstractToInversion):
                 return True
 
     @cached_property
-    @aa.profile_func
     def traced_grid_2d_list_of_inversion(self) -> List[aa.type.Grid2DLike]:
         """
         Returns a list of the traced grids of the inversion.
@@ -191,7 +186,6 @@ class TracerToInversion(ag.AbstractToInversion):
                 galaxies=galaxies,
                 settings_inversion=self.settings_inversion,
                 adapt_images=self.adapt_images,
-                run_time_dict=self.run_time_dict,
             )
 
             lp_linear_galaxy_dict_of_plane = (
@@ -285,7 +279,6 @@ class TracerToInversion(ag.AbstractToInversion):
         return adapt_galaxy_image_pg_list
 
     @cached_property
-    @aa.profile_func
     def image_plane_mesh_grid_pg_list(self) -> List[List]:
         """
         Returns a list of lists of image-plane mesh grids, where each inner list corresponds to a single plane.
@@ -316,7 +309,6 @@ class TracerToInversion(ag.AbstractToInversion):
                 galaxies=galaxies,
                 adapt_images=self.adapt_images,
                 settings_inversion=self.settings_inversion,
-                run_time_dict=self.run_time_dict,
             )
 
             image_plane_mesh_grid_list = to_inversion.image_plane_mesh_grid_list
@@ -325,7 +317,6 @@ class TracerToInversion(ag.AbstractToInversion):
         return image_plane_mesh_grid_list_of_planes
 
     @cached_property
-    @aa.profile_func
     def traced_mesh_grid_pg_list(self) -> List[List]:
         """
         Returns a list of lists of traced mesh grids, where each inner list corresponds to a single plane.
@@ -413,7 +404,6 @@ class TracerToInversion(ag.AbstractToInversion):
                     galaxies=galaxies,
                     adapt_images=self.adapt_images,
                     settings_inversion=self.settings_inversion,
-                    run_time_dict=self.run_time_dict,
                 )
 
                 galaxies_with_pixelization_list = galaxies.galaxies_with_cls_list_from(
@@ -477,7 +467,6 @@ class TracerToInversion(ag.AbstractToInversion):
             dataset=self.dataset,
             linear_obj_list=self.linear_obj_list,
             settings=self.settings_inversion,
-            run_time_dict=self.tracer.run_time_dict,
         )
 
         inversion.linear_obj_galaxy_dict = self.linear_obj_galaxy_dict

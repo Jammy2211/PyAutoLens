@@ -18,7 +18,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         self,
         galaxies: Union[List[ag.Galaxy], af.ModelInstance],
         cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         Performs gravitational lensing ray-tracing calculations based on an input list of galaxies and a cosmology.
@@ -49,16 +48,11 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             The list of galaxies which make up the gravitational lensing ray-tracing system.
         cosmology
             The cosmology used to perform ray-tracing calculations.
-        run_time_dict
-            A dictionary of information on the run-times of function calls, including the total time and time spent on
-            different calculations.
         """
 
         self.galaxies = galaxies
 
         self.cosmology = cosmology
-
-        self.run_time_dict = run_time_dict
 
     @property
     def galaxies_ascending_redshift(self) -> List[ag.Galaxy]:
@@ -451,7 +445,6 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         return image_2d_list
 
     @aa.grid_dec.to_array
-    @aa.profile_func
     def image_2d_from(
         self,
         grid: aa.type.Grid2DLike,
@@ -1188,7 +1181,3 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                             background_sky_level=background_sky_level,
                             psf=psf,
                         )
-
-    @aa.profile_func
-    def convolve_via_psf(self, image, blurring_image, psf):
-        return psf.convolve_image(image=image, blurring_image=blurring_image)

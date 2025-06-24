@@ -18,7 +18,7 @@ constant.Constant:
     upper_limit: 1.0
 constant_zeorth.ConstantZeroth:
   coefficient_neighbor:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06
@@ -28,7 +28,7 @@ constant_zeorth.ConstantZeroth:
       type: Relative
       value: 0.5
   coefficient_zeroth:
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
     lower_limit: 1.0e-06

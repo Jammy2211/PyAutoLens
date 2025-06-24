@@ -46,13 +46,9 @@ class AnalysisLens:
     def tracer_via_instance_from(
         self,
         instance: af.ModelInstance,
-        run_time_dict: Optional[Dict] = None,
     ) -> Tracer:
         """
         Create a `Tracer` from the galaxies contained in a model instance.
-
-        If PyAutoFit's profiling tools are used with the analysis class, this function may receive a `run_time_dict`
-        which times how long each set of the model-fit takes to perform.
 
         Parameters
         ----------
@@ -90,13 +86,11 @@ class AnalysisLens:
             if getattr(instance, "extra_galaxies", None) is not None:
                 return Tracer(
                     galaxies=instance.galaxies + instance.extra_galaxies,
-                    run_time_dict=run_time_dict,
                 )
 
         return Tracer(
             galaxies=instance.galaxies,
             cosmology=cosmology,
-            run_time_dict=run_time_dict,
         )
 
     def log_likelihood_penalty_from(
