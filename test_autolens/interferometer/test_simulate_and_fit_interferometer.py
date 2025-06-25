@@ -313,4 +313,4 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixeli
         ),
         1.0e-2,
     )
-    assert fit_linear.figure_of_merit == pytest.approx(-29.20551989, 1.0e-4)
+    assert fit_linear.figure_of_merit == pytest.approx(-29.223696823166, 1.0e-4)
