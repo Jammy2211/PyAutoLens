@@ -17,7 +17,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def __init__(
         self,
         galaxies: Union[List[ag.Galaxy], af.ModelInstance],
-        cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
+        cosmology: ag.cosmo.LensingCosmology = None,
     ):
         """
         Performs gravitational lensing ray-tracing calculations based on an input list of galaxies and a cosmology.
@@ -52,7 +52,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
         self.galaxies = galaxies
 
-        self.cosmology = cosmology
+        self.cosmology = cosmology or ag.cosmo.Planck15()
 
     @property
     def galaxies_ascending_redshift(self) -> List[ag.Galaxy]:
@@ -135,7 +135,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         line_of_sight_galaxies: List[ag.Galaxy],
         source_galaxies: List[ag.Galaxy],
         planes_between_lenses: List[int],
-        cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
+        cosmology: ag.cosmo.LensingCosmology = None,
     ):
         """
         Returns a tracer where the lens system is split into planes with specified redshift distances between them.
@@ -182,6 +182,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         cosmology
             The cosmology used to perform ray-tracing calculations.
         """
+        cosmology = cosmology or ag.cosmo.Planck15()
 
         lens_redshifts = tracer_util.plane_redshifts_from(galaxies=lens_galaxies)
 

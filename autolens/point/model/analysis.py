@@ -33,7 +33,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         solver: PointSolver,
         fit_positions_cls=FitPositionsImagePairRepeat,
         image=None,
-        cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
+        cosmology: ag.cosmo.LensingCosmology = None,
         title_prefix: str = None,
     ):
         """

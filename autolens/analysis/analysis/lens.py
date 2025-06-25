@@ -1,7 +1,7 @@
 import jax.numpy as jnp
 import logging
 import numpy as np
-from typing import Dict, List, Optional, Union
+from typing import List, Optional
 
 import autofit as af
 import autoarray as aa
@@ -23,7 +23,7 @@ class AnalysisLens:
     def __init__(
         self,
         positions_likelihood_list: Optional[List[PositionsLH]] = None,
-        cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
+        cosmology: ag.cosmo.LensingCosmology = None,
     ):
         """
         Analysis classes are used by PyAutoFit to fit a model to a dataset via a non-linear search.
@@ -40,7 +40,9 @@ class AnalysisLens:
         cosmology
             The Cosmology assumed for this analysis.
         """
-        self.cosmology = cosmology
+        from autogalaxy.cosmology.wrap import Planck15
+
+        self.cosmology = cosmology or Planck15()
         self.positions_likelihood_list = positions_likelihood_list
 
     def tracer_via_instance_from(

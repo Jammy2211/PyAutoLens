@@ -15,7 +15,7 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLens):
         self,
         dataset: ag.DatasetQuantity,
         func_str: str,
-        cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
+        cosmology: ag.cosmo.LensingCosmology = None,
     ):
         """
         Analysis classes are used by PyAutoFit to fit a model to a dataset via a non-linear search.
