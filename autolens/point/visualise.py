@@ -1,16 +1,19 @@
-from matplotlib import pyplot as plt
 import numpy as np
 
 from autolens.point.solver.step import Step
 
 
 def add_triangles(triangles, color):
+    from matplotlib import pyplot as plt
+
     for triangle in triangles:
         triangle = np.append(triangle, [triangle[0]], axis=0)
         plt.plot(triangle[:, 0], triangle[:, 1], "o-", color=color)
 
 
 def visualise(step: Step):
+    from matplotlib import pyplot as plt
+
     plt.figure(figsize=(8, 8))
     add_triangles(step.initial_triangles, color="black")
     add_triangles(step.up_sampled, color="green")
@@ -25,6 +28,8 @@ def visualise(step: Step):
 
 
 def plot_triangles(triangles, color="black", title="Triangles", point=None):
+    from matplotlib import pyplot as plt
+
     plt.figure(figsize=(8, 8))
     for triangle in triangles:
         triangle = np.append(triangle, [triangle[0]], axis=0)
@@ -41,6 +46,8 @@ def plot_triangles(triangles, color="black", title="Triangles", point=None):
 
 
 def plot_triangles_compare(triangles_a, triangles_b, number=None):
+    from matplotlib import pyplot as plt
+
     plt.figure(figsize=(8, 8))
     for triangle in triangles_a:
         triangle = np.append(triangle, [triangle[0]], axis=0)

@@ -146,9 +146,9 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         source_image: Optional[aa.Array2D] = None,
         result: Optional[SubhaloSensitivityResult] = None,
         data_subtracted: Optional[aa.Array2D] = None,
-        mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
-        visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
-        include_2d: aplt.Include2D = aplt.Include2D(),
+        mat_plot_2d: aplt.MatPlot2D = None,
+        visuals_2d: aplt.Visuals2D = None,
+        include_2d: aplt.Include2D = None,
     ):
         """
         Plots the simulated datasets and results of a sensitivity mapping analysis, where dark matter halos are used

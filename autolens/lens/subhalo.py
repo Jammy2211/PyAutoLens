@@ -173,9 +173,9 @@ class SubhaloPlotter(AbstractPlotter):
         result: Optional[SubhaloGridSearchResult] = None,
         fit_imaging_with_subhalo: Optional[FitImaging] = None,
         fit_imaging_no_subhalo: Optional[FitImaging] = None,
-        mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
-        visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
-        include_2d: aplt.Include2D = aplt.Include2D(),
+        mat_plot_2d: aplt.MatPlot2D = None,
+        visuals_2d: aplt.Visuals2D = None,
+        include_2d: aplt.Include2D = None,
     ):
         """
         Plots the results of scanning for a dark matter subhalo in strong lens imaging.

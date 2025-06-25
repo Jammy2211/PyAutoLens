@@ -17,12 +17,12 @@ class TracerPlotter(Plotter):
         self,
         tracer: Tracer,
         grid: aa.type.Grid2DLike,
-        mat_plot_1d: aplt.MatPlot1D = aplt.MatPlot1D(),
-        visuals_1d: aplt.Visuals1D = aplt.Visuals1D(),
-        include_1d: aplt.Include1D = aplt.Include1D(),
-        mat_plot_2d: aplt.MatPlot2D = aplt.MatPlot2D(),
-        visuals_2d: aplt.Visuals2D = aplt.Visuals2D(),
-        include_2d: aplt.Include2D = aplt.Include2D(),
+        mat_plot_1d: aplt.MatPlot1D = None,
+        visuals_1d: aplt.Visuals1D = None,
+        include_1d: aplt.Include1D = None,
+        mat_plot_2d: aplt.MatPlot2D = None,
+        visuals_2d: aplt.Visuals2D = None,
+        include_2d: aplt.Include2D = None,
     ):
         """
         Plots the attributes of `Tracer` objects using the matplotlib methods `plot()` and `imshow()` and many
