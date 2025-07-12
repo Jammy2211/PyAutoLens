@@ -30,7 +30,7 @@ class AnalysisInterferometer(AnalysisDataset):
         dataset,
         positions_likelihood_list: Optional[PositionsLH] = None,
         adapt_image_maker: Optional[ag.AdaptImageMaker] = None,
-        cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
+        cosmology: ag.cosmo.LensingCosmology = None,
         settings_inversion: aa.SettingsInversion = None,
         raise_inversion_positions_likelihood_exception: bool = True,
         title_prefix: str = None,

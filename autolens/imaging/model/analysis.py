@@ -1,20 +1,13 @@
 import logging
-import numpy as np
-from typing import Dict, Optional, Tuple
 
-from autoconf.dictable import to_dict
 
 import autofit as af
 import autogalaxy as ag
-
-from autoarray.exc import PixelizationException
 
 from autolens.analysis.analysis.dataset import AnalysisDataset
 from autolens.imaging.model.result import ResultImaging
 from autolens.imaging.model.visualizer import VisualizerImaging
 from autolens.imaging.fit_imaging import FitImaging
-
-from autolens import exc
 
 logger = logging.getLogger(__name__)
 

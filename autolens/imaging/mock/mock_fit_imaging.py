@@ -7,12 +7,14 @@ class MockFitImaging(aa.m.MockFitImaging):
     def __init__(
         self,
         tracer=None,
-        dataset=aa.m.MockDataset(),
+        dataset=None,
         inversion=None,
         noise_map=None,
         grid=None,
         blurred_image=None,
     ):
+
+        dataset = dataset or aa.m.MockDataset()
 
         super().__init__(
             dataset=dataset,

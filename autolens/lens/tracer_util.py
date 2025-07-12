@@ -86,7 +86,7 @@ def planes_from(
 def traced_grid_2d_list_from(
     planes: List[List[ag.Galaxy]],
     grid: aa.type.Grid2DLike,
-    cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
+    cosmology: ag.cosmo.LensingCosmology = None,
     plane_index_limit: int = Optional[None],
 ):
     """
@@ -133,6 +133,7 @@ def traced_grid_2d_list_from(
     traced_grid_list
         A list of 2D (y,x) grids each of which are the input grid ray-traced to a redshift of the input list of planes.
     """
+    cosmology = cosmology or ag.cosmo.Planck15()
 
     traced_grid_list = []
     traced_deflection_list = []
@@ -175,7 +176,7 @@ def grid_2d_at_redshift_from(
     redshift: float,
     galaxies: List[ag.Galaxy],
     grid: aa.type.Grid2DLike,
-    cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
+    cosmology: ag.cosmo.LensingCosmology = None,
 ) -> aa.type.Grid2DLike:
     """
     Returns a ray-traced grid of 2D Cartesian (y,x) coordinates, which accounts for multi-plane ray-tracing, at a
@@ -217,6 +218,7 @@ def grid_2d_at_redshift_from(
     cosmology
         The cosmology used for ray-tracing from which angular diameter distances between planes are computed.
     """
+    cosmology = cosmology or ag.cosmo.Planck15()
 
     plane_redshifts = plane_redshifts_from(galaxies=galaxies)
 
@@ -254,7 +256,7 @@ def grid_2d_at_redshift_from(
 def time_delays_from(
     galaxies: List[ag.Galaxy],
     grid: aa.type.Grid2DLike,
-    cosmology: ag.cosmo.LensingCosmology = ag.cosmo.Planck15(),
+    cosmology: ag.cosmo.LensingCosmology = None,
 ) -> aa.type.Grid2DLike:
     """
     Returns the gravitational lensing time delay in days for a grid of 2D (y, x) coordinates.
@@ -304,6 +306,8 @@ def time_delays_from(
     -------
     The time delay at each (y, x) coordinate in the input grid, in units of days.
     """
+    cosmology = cosmology or ag.cosmo.Planck15()
+
     plane_redshifts = plane_redshifts_from(galaxies=galaxies)
 
     if len(plane_redshifts) != 2:

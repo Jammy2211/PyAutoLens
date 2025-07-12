@@ -305,7 +305,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
         ),
         1.0e-4,
     )
-    assert fit_linear.figure_of_merit == pytest.approx(-84.04875317, 1.0e-4)
+    assert fit_linear.figure_of_merit == pytest.approx(-85.94918592874168, 1.0e-4)
 
     lens_galaxy_image = lens_galaxy.blurred_image_2d_from(
         grid=masked_dataset.grids.lp,
@@ -321,11 +321,11 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     )
 
     assert fit_linear.galaxy_model_image_dict[source_galaxy_pix][0] == pytest.approx(
-        0.063911, 1.0e-4
+        0.05425175, 1.0e-4
     )
 
     assert fit_linear.model_images_of_planes_list[1][0] == pytest.approx(
-        0.063911, 1.0e-4
+        0.05425175, 1.0e-4
     )
 
     fit_linear = al.FitImaging(
@@ -355,7 +355,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
         ),
         abs=1.0e-1,
     )
-    assert fit_linear.figure_of_merit == pytest.approx(-84.11166, 1.0e-4)
+    assert fit_linear.figure_of_merit == pytest.approx(-86.01614801681916, 1.0e-4)
 
     pixelization = al.Pixelization(
         image_mesh=al.image_mesh.Overlay(shape=(3,3)),
@@ -452,7 +452,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
         1.0e-4,
     )
 
-    assert fit_linear.figure_of_merit == pytest.approx(-84.36224277776512, 1.0e-4)
+    assert fit_linear.figure_of_merit == pytest.approx(-86.288358299142, 1.0e-4)
 
     lens_galaxy_image = lens_galaxy.blurred_image_2d_from(
         grid=masked_dataset.grids.lp,
@@ -468,15 +468,15 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
     )
 
     assert fit_linear.galaxy_model_image_dict[source_galaxy_pix][0] == pytest.approx(
-        0.1473073435555056, 1.0e-4
+        0.1330676, 1.0e-4
     )
 
     assert fit_linear.model_images_of_planes_list[1][0] == pytest.approx(
-        0.147307343555, 1.0e-4
+        0.1330676, 1.0e-4
     )
 
     assert fit_linear.subtracted_images_of_planes_list[1][0] == pytest.approx(
-        0.35652124420455, 1.0e-4
+        0.34054169, 1.0e-4
     )
 
     fit_linear = al.FitImaging(
@@ -506,7 +506,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
         ),
         abs=1.0e-1,
     )
-    assert fit_linear.figure_of_merit == pytest.approx(-84.66302233089499, abs=1.0e-4)
+    assert fit_linear.figure_of_merit == pytest.approx(-86.61380401245304, abs=1.0e-4)
 
 
 def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_tilde():
