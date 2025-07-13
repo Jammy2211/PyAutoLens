@@ -307,8 +307,16 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixeli
     assert fit_linear.inversion.reconstruction == pytest.approx(
         np.array(
             [
-                101.76664331,   0.49639672,   0.49531196,   0.49854243,   0.44661417,
-                0.44782337,   0.44844437,   0.39942579,   0.40320996,   0.40104302
+                101.76664331,
+                0.49639672,
+                0.49531196,
+                0.49854243,
+                0.44661417,
+                0.44782337,
+                0.44844437,
+                0.39942579,
+                0.40320996,
+                0.40104302,
             ]
         ),
         1.0e-2,

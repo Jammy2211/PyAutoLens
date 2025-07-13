@@ -30,7 +30,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
         adapt_image_maker: Optional[ag.AdaptImageMaker] = None,
         cosmology: ag.cosmo.LensingCosmology = None,
         settings_inversion: aa.SettingsInversion = None,
-        preloads : aa.Preloads = None,
+        preloads: aa.Preloads = None,
         raise_inversion_positions_likelihood_exception: bool = True,
         title_prefix: str = None,
     ):

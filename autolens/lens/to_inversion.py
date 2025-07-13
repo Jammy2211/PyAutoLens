@@ -469,7 +469,7 @@ class TracerToInversion(ag.AbstractToInversion):
             dataset=self.dataset,
             linear_obj_list=self.linear_obj_list,
             settings=self.settings_inversion,
-            preloads=self.preloads
+            preloads=self.preloads,
         )
 
         inversion.linear_obj_galaxy_dict = self.linear_obj_galaxy_dict
