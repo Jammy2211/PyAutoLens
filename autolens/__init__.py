@@ -115,7 +115,7 @@ from .point.solver.shape_solver import ShapeSolver
 from .quantity.fit_quantity import FitQuantity
 from .quantity.model.analysis import AnalysisQuantity
 
-from .analysis.preloads import mapper_index_list_from
+from .analysis.preloads import mapper_indices_from
 
 from . import exc
 from . import mock as m

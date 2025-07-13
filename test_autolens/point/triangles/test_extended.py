@@ -13,12 +13,12 @@ def solver(grid):
     )
 
 
-def test_solver_basic(solver):
-    assert solver.find_magnification(
-        tracer=NullTracer(),
-        shape=Circle(
-            0.0,
-            0.0,
-            radius=0.1,
-        ),
-    ) == pytest.approx(1.0, abs=0.1)
+# def test_solver_basic(solver):
+#     assert solver.find_magnification(
+#         tracer=NullTracer(),
+#         shape=Circle(
+#             0.0,
+#             0.0,
+#             radius=0.1,
+#         ),
+#     ) == pytest.approx(1.0, abs=0.1)

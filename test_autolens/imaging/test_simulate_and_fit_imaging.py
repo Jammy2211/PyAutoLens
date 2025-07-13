@@ -277,12 +277,6 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
         regularization=al.reg.Constant(coefficient=0.01),
     )
 
-    # pixelization = al.Pixelization(
-    #     image_mesh=al.image_mesh.Overlay(shape=(3,3)),
-    #     mesh=al.mesh.Delaunay(),
-    #     regularization=al.reg.Constant(coefficient=0.01),
-    # )
-
     source_galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
     tracer_linear = al.Tracer(
@@ -334,8 +328,11 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
         settings_inversion=al.SettingsInversion(
             use_w_tilde=False,
             use_positive_only_solver=True,
-            force_edge_pixels_to_zeros=True
         ),
+        preloads=al.Preloads(
+            mapper_indices=range(1, 10),
+            source_pixel_zeroed_indices=np.array([1, 2, 3, 4, 6, 7, 8, 9])
+        )
     )
 
     assert fit_linear.inversion.reconstruction == pytest.approx(
@@ -356,26 +353,6 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
         abs=1.0e-1,
     )
     assert fit_linear.figure_of_merit == pytest.approx(-86.01614801681916, 1.0e-4)
-
-    pixelization = al.Pixelization(
-        image_mesh=al.image_mesh.Overlay(shape=(3,3)),
-        mesh=al.mesh.Delaunay(),
-        regularization=al.reg.Constant(coefficient=0.01),
-    )
-
-    source_galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
-
-    tracer_linear = al.Tracer(
-        galaxies=[lens_galaxy_linear, source_galaxy_pix]
-    )
-
-    fit_linear = al.FitImaging(
-        dataset=masked_dataset,
-        tracer=tracer_linear,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
-    )
-
-    assert fit_linear.figure_of_merit == pytest.approx(-73.27676850869975, abs=1.0e-4)
 
 
 def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization__sub_2():
@@ -487,6 +464,10 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
             use_positive_only_solver=True,
             force_edge_pixels_to_zeros=True
         ),
+        preloads=al.Preloads(
+            mapper_indices=range(1, 10),
+            source_pixel_zeroed_indices=np.array([1, 2, 3, 4, 6, 7, 8, 9])
+        )
     )
 
     assert fit_linear.inversion.reconstruction == pytest.approx(

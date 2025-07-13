@@ -8,7 +8,7 @@ from autolens.lens.to_inversion import TracerToInversion
 
 from autolens.fixtures import make_masked_imaging_7x7_no_blur
 
-def mapper_index_list_from(model):
+def mapper_indices_from(model):
 
     instance = model.instance_from_prior_medians()
     tracer = Tracer(galaxies=instance.galaxies)
@@ -17,9 +17,9 @@ def mapper_index_list_from(model):
         tracer=tracer,
     )
 
-    mapper_index_list = aa.util.inversion.param_range_list_from(
+    mapper_indices = aa.util.inversion.param_range_list_from(
         cls=aa.AbstractMapper,
         linear_obj_list=tracer_to_inversion.linear_obj_list
     )
 
-    return jnp.arange(np.min(mapper_index_list), np.max(mapper_index_list), dtype=int)
+    return jnp.arange(np.min(mapper_indices), np.max(mapper_indices), dtype=int)
