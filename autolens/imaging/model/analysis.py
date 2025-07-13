@@ -130,6 +130,7 @@ class AnalysisImaging(AnalysisDataset):
             dataset_model=dataset_model,
             adapt_images=adapt_images,
             settings_inversion=self.settings_inversion,
+            preloads=self.preloads
         )
 
     def save_attributes(self, paths: af.DirectoryPaths):

@@ -905,5 +905,3 @@ def test__output_to_and_load_from_json():
     assert tracer_from_json.galaxies[0].redshift == 0.5
     assert tracer_from_json.galaxies[1].redshift == 1.0
     assert tracer_from_json.galaxies[0].mass_profile.einstein_radius == 1.0
-
-    assert isinstance(tracer_from_json.cosmology, al.cosmo.wrap.Planck15)

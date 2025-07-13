@@ -17,6 +17,7 @@ class TracerToInversion(ag.AbstractToInversion):
         tracer,
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
+        preloads: aa.Preloads = None,
     ):
         """
         Interfaces a dataset and tracer with the inversion module, to setup a linear algebra calculation.
@@ -53,6 +54,7 @@ class TracerToInversion(ag.AbstractToInversion):
             The settings of the inversion, which controls how the linear algebra calculation is performed.
         """
         self.tracer = tracer
+        self.preloads = preloads
 
         super().__init__(
             dataset=dataset,
@@ -467,6 +469,7 @@ class TracerToInversion(ag.AbstractToInversion):
             dataset=self.dataset,
             linear_obj_list=self.linear_obj_list,
             settings=self.settings_inversion,
+            preloads=self.preloads
         )
 
         inversion.linear_obj_galaxy_dict = self.linear_obj_galaxy_dict
