@@ -14,9 +14,7 @@ def make_plotter_interface_plotter_setup():
     return path.join("{}".format(directory), "files")
 
 
-def test__tracer(
-    masked_imaging_7x7, tracer_x2_plane_7x7, include_2d_all, plot_path, plot_patch
-):
+def test__tracer(masked_imaging_7x7, tracer_x2_plane_7x7, plot_path, plot_patch):
     if os.path.exists(plot_path):
         shutil.rmtree(plot_path)
 
@@ -36,9 +34,7 @@ def test__tracer(
     assert image.shape == (5, 5)
 
 
-def test__image_with_positions(
-    image_7x7, positions_x2, include_2d_all, plot_path, plot_patch
-):
+def test__image_with_positions(image_7x7, positions_x2, plot_path, plot_patch):
     if os.path.exists(plot_path):
         shutil.rmtree(plot_path)
 

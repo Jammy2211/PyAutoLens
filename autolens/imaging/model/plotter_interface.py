@@ -40,15 +40,21 @@ class PlotterInterfaceImaging(PlotterInterface):
             The maximum log likelihood `FitImaging` of the non-linear search which is used to plot the fit.
         """
 
+        import time
+
         if plot_setting(section="tracer", name="subplot_tracer"):
 
             mat_plot_2d = self.mat_plot_2d_from()
 
             fit_plotter = FitImagingPlotter(
-                fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
+                fit=fit, mat_plot_2d=mat_plot_2d
             )
 
+            start_time = time.time()
+
             fit_plotter.subplot_tracer()
+
+            print(f"Tracer subplot took {time.time() - start_time:.2f} seconds to plot.")
 
         def should_plot(name):
             return plot_setting(section=["fit", "fit_imaging"], name=name)
@@ -56,7 +62,7 @@ class PlotterInterfaceImaging(PlotterInterface):
         mat_plot_2d = self.mat_plot_2d_from()
 
         fit_plotter = FitImagingPlotter(
-            fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
+            fit=fit, mat_plot_2d=mat_plot_2d
         )
 
         plane_indexes_to_plot = [i for i in fit.tracer.plane_indexes_with_images if i != 0]
@@ -65,13 +71,20 @@ class PlotterInterfaceImaging(PlotterInterface):
 
             # This loop means that multiple subplot_fit objects are output for a double source plane lens.
 
+            start_time = time.time()
+
             if len(fit.tracer.planes) > 2:
                 for plane_index in plane_indexes_to_plot:
                     fit_plotter.subplot_fit(plane_index=plane_index)
             else:
                 fit_plotter.subplot_fit()
 
+            print(f"Fit subplot took {time.time() - start_time:.2f} seconds to plot.")
+
         if should_plot("subplot_fit_log10"):
+
+            start_time = time.time()
+
             try:
                 if len(fit.tracer.planes) > 2:
                     for plane_index in plane_indexes_to_plot:
@@ -81,8 +94,15 @@ class PlotterInterfaceImaging(PlotterInterface):
             except ValueError:
                 pass
 
+            print(f"Fit log10 subplot took {time.time() - start_time:.2f} seconds to plot.")
+
+
+        start_time = time.time()
+
         if should_plot("subplot_of_planes"):
             fit_plotter.subplot_of_planes()
+
+        print(f"Planes subplot took {time.time() - start_time:.2f} seconds to plot.")
 
         if plot_setting(section="inversion", name="subplot_mappings"):
             try:
@@ -90,7 +110,11 @@ class PlotterInterfaceImaging(PlotterInterface):
             except IndexError:
                 pass
 
+        start_time = time.time()
+
         fits_to_fits(should_plot=should_plot, image_path=self.image_path, fit=fit)
+
+        print(f"Fits to fits took {time.time() - start_time:.2f} seconds to plot.")
 
     def fit_imaging_combined(self, fit_list: List[FitImaging]):
         """
@@ -119,7 +143,7 @@ class PlotterInterfaceImaging(PlotterInterface):
 
         fit_plotter_list = [
             FitImagingPlotter(
-                fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
+                fit=fit, mat_plot_2d=mat_plot_2d
             )
             for fit in fit_list
         ]

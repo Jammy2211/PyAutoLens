@@ -45,7 +45,7 @@ galaxy:
 A complete overview of pixelized source reconstructions can be found
 at ``notebooks/overview/overview_5_pixelizations.ipynb``.
 
-Chapter 4 of the **HowToLens** lectures describes pixelizations in detail and teaches users how they can be used to 
+Chapter 4 of lectures describes pixelizations in detail and teaches users how they can be used to
 perform lens modeling.
 
 

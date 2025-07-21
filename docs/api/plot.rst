@@ -75,8 +75,6 @@ visuals to figures.
 
    MatPlot1D
    MatPlot2D
-   Include1D
-   Include2D
    Visuals1D
    Visuals2D
 

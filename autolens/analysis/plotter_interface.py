@@ -63,7 +63,6 @@ class PlotterInterface(AgPlotterInterface):
             tracer=tracer,
             grid=grid,
             mat_plot_2d=mat_plot_2d,
-            include_2d=self.include_2d,
         )
 
         if should_plot("subplot_galaxies_images"):
@@ -169,7 +168,6 @@ class PlotterInterface(AgPlotterInterface):
             image_plotter = aplt.Array2DPlotter(
                 array=image,
                 mat_plot_2d=mat_plot_2d,
-                include_2d=self.include_2d,
                 visuals_2d=visuals_2d,
             )
 

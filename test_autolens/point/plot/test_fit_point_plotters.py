@@ -18,11 +18,10 @@ def make_fit_point_plotter_setup():
 
 
 def test__fit_point_quantities_are_output(
-    fit_point_dataset_x2_plane, include_2d_all, plot_path, plot_patch
+    fit_point_dataset_x2_plane, plot_path, plot_patch
 ):
     fit_point_plotter = aplt.FitPointDatasetPlotter(
         fit=fit_point_dataset_x2_plane,
-        include_2d=include_2d_all,
         mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
@@ -45,7 +44,6 @@ def test__fit_point_quantities_are_output(
 
     fit_point_plotter = aplt.FitPointDatasetPlotter(
         fit=fit_point_dataset_x2_plane,
-        include_2d=include_2d_all,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
@@ -55,12 +53,9 @@ def test__fit_point_quantities_are_output(
     assert path.join(plot_path, "fit_point_fluxes.png") not in plot_patch.paths
 
 
-def test__subplot_fit(
-    fit_point_dataset_x2_plane, include_2d_all, plot_path, plot_patch
-):
+def test__subplot_fit(fit_point_dataset_x2_plane, plot_path, plot_patch):
     fit_point_plotter = aplt.FitPointDatasetPlotter(
         fit=fit_point_dataset_x2_plane,
-        include_2d=include_2d_all,
         mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )

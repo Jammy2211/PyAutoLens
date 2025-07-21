@@ -28,6 +28,7 @@ from autoarray.plot.wrap.two_d import (
     GridPlot,
     VectorYXQuiver,
     PatchOverlay,
+    DelaunayDrawer,
     VoronoiDrawer,
     OriginScatter,
     MaskScatter,
@@ -66,8 +67,6 @@ from autogalaxy.plot.wrap import (
 
 from autogalaxy.plot.mat_plot.one_d import MatPlot1D
 from autogalaxy.plot.mat_plot.two_d import MatPlot2D
-from autogalaxy.plot.include.one_d import Include1D
-from autogalaxy.plot.include.two_d import Include2D
 from autogalaxy.plot.visuals.one_d import Visuals1D
 from autogalaxy.plot.visuals.two_d import Visuals2D
 

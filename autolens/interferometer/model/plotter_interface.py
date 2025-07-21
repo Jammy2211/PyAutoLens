@@ -48,7 +48,6 @@ class PlotterInterfaceInterferometer(PlotterInterface):
 
         fit_plotter = FitInterferometerPlotter(
             fit=fit,
-            include_2d=self.include_2d,
             mat_plot_1d=mat_plot_1d,
             mat_plot_2d=mat_plot_2d,
         )
@@ -67,7 +66,6 @@ class PlotterInterfaceInterferometer(PlotterInterface):
 
         fit_plotter = FitInterferometerPlotter(
             fit=fit,
-            include_2d=self.include_2d,
             mat_plot_1d=mat_plot_1d,
             mat_plot_2d=mat_plot_2d,
         )

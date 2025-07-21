@@ -18,7 +18,6 @@ def make_plotter_interface_plotter_setup():
 
 def test__fit_interferometer(
     fit_interferometer_x2_plane_7x7,
-    include_2d_all,
     plot_path,
     plot_patch,
 ):

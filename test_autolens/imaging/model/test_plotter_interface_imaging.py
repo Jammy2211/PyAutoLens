@@ -15,7 +15,7 @@ def make_plotter_interface_plotter_setup():
 
 
 def test__fit_imaging(
-    fit_imaging_x2_plane_inversion_7x7, include_2d_all, plot_path, plot_patch
+    fit_imaging_x2_plane_inversion_7x7, plot_path, plot_patch
 ):
     if os.path.exists(plot_path):
         shutil.rmtree(plot_path)

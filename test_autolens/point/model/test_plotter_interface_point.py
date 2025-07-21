@@ -13,7 +13,7 @@ def make_plotter_interface_plotter_setup():
     return path.join("{}".format(directory), "files")
 
 
-def test__fit_point(fit_point_dataset_x2_plane, include_2d_all, plot_path, plot_patch):
+def test__fit_point(fit_point_dataset_x2_plane, plot_path, plot_patch):
     if os.path.exists(plot_path):
         shutil.rmtree(plot_path)
 

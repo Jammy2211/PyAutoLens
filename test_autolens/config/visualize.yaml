@@ -3,26 +3,6 @@ general:
     backend: default
     imshow_origin: upper
     zoom_around_mask: true
-include:
-  include_2d:
-    border: false
-    tangential_caustics: false
-    radial_caustics: false
-    tangential_critical_curves: false
-    radial_critical_curves: false
-    grid: true
-    inversion_grid: true
-    light_profile_centres: true
-    mapper_image_plane_mesh_grid: false
-    mapper_source_plane_mesh_grid: true
-    mask: true
-    mass_profile_centres: true
-    multiple_images: false
-    origin: true
-    parallel_overscan: true
-    positions: true
-    serial_overscan: true
-    serial_prescan: true
 mat_wrap_2d:
   CausticsLine:
     figure:

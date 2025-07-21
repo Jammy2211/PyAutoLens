@@ -175,7 +175,6 @@ class SubhaloPlotter(AbstractPlotter):
         fit_imaging_no_subhalo: Optional[FitImaging] = None,
         mat_plot_2d: aplt.MatPlot2D = None,
         visuals_2d: aplt.Visuals2D = None,
-        include_2d: aplt.Include2D = None,
     ):
         """
         Plots the results of scanning for a dark matter subhalo in strong lens imaging.
@@ -206,12 +205,8 @@ class SubhaloPlotter(AbstractPlotter):
             Contains objects which wrap the matplotlib function calls that make 2D plots.
         visuals_2d
             Contains 2D visuals that can be overlaid on 2D plots.
-        include_2d
-            Specifies which attributes of the `MassProfile` are extracted and plotted as visuals for 2D plots.
         """
-        super().__init__(
-            mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
-        )
+        super().__init__(mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d)
 
         self.result = result
 
@@ -245,7 +240,6 @@ class SubhaloPlotter(AbstractPlotter):
             fit=self.fit_imaging_no_subhalo,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.visuals_2d,
-            include_2d=self.include_2d,
         )
 
     @property
@@ -275,7 +269,6 @@ class SubhaloPlotter(AbstractPlotter):
             fit=self.fit_imaging_with_subhalo,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=visuals_2d,
-            include_2d=self.include_2d,
         )
 
     def set_auto_filename(

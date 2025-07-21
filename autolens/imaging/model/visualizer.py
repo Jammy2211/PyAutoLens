@@ -89,6 +89,9 @@ class VisualizerImaging(af.Visualizer):
             via a non-linear search).
         """
 
+        import time
+        start_time = time.time()
+
         fit = analysis.fit_from(instance=instance)
 
         if analysis.positions_likelihood_list is not None:
@@ -113,10 +116,17 @@ class VisualizerImaging(af.Visualizer):
             image_path=paths.image_path, title_prefix=analysis.title_prefix
         )
 
+        import time
+        start_time = time.time()
+
         try:
             plotter_interface.fit_imaging(fit=fit)
         except exc.InversionException:
             pass
+
+        print()
+        print(f"VisualizerImaging.visualize took {time.time() - start_time} seconds")
+        fff
 
         tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
