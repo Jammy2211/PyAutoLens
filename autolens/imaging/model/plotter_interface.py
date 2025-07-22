@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import autoarray.plot as aplt
 
@@ -19,7 +19,7 @@ class PlotterInterfaceImaging(PlotterInterface):
     imaging_combined = AgPlotterInterfaceImaging.imaging_combined
 
     def fit_imaging(
-        self, fit: FitImaging,
+        self, fit: FitImaging, visuals_2d_of_planes_list : Optional[aplt.Visuals2D] = None
     ):
         """
         Visualizes a `FitImaging` object, which fits an imaging dataset.
@@ -45,7 +45,7 @@ class PlotterInterfaceImaging(PlotterInterface):
             mat_plot_2d = self.mat_plot_2d_from()
 
             fit_plotter = FitImagingPlotter(
-                fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
+                fit=fit, mat_plot_2d=mat_plot_2d, visuals_2d_of_planes_list=visuals_2d_of_planes_list,
             )
 
             fit_plotter.subplot_tracer()
@@ -56,7 +56,7 @@ class PlotterInterfaceImaging(PlotterInterface):
         mat_plot_2d = self.mat_plot_2d_from()
 
         fit_plotter = FitImagingPlotter(
-            fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
+            fit=fit, mat_plot_2d=mat_plot_2d, visuals_2d_of_planes_list=visuals_2d_of_planes_list,
         )
 
         plane_indexes_to_plot = [i for i in fit.tracer.plane_indexes_with_images if i != 0]
@@ -72,6 +72,7 @@ class PlotterInterfaceImaging(PlotterInterface):
                 fit_plotter.subplot_fit()
 
         if should_plot("subplot_fit_log10"):
+
             try:
                 if len(fit.tracer.planes) > 2:
                     for plane_index in plane_indexes_to_plot:
@@ -80,6 +81,7 @@ class PlotterInterfaceImaging(PlotterInterface):
                     fit_plotter.subplot_fit_log10()
             except ValueError:
                 pass
+
 
         if should_plot("subplot_of_planes"):
             fit_plotter.subplot_of_planes()
@@ -92,7 +94,7 @@ class PlotterInterfaceImaging(PlotterInterface):
 
         fits_to_fits(should_plot=should_plot, image_path=self.image_path, fit=fit)
 
-    def fit_imaging_combined(self, fit_list: List[FitImaging]):
+    def fit_imaging_combined(self, fit_list: List[FitImaging], visuals_2d_of_planes_list : Optional[aplt.Visuals2D] = None):
         """
         Output visualization of all `FitImaging` objects in a summed combined analysis, typically during or after a
         model-fit is performed.
@@ -119,7 +121,7 @@ class PlotterInterfaceImaging(PlotterInterface):
 
         fit_plotter_list = [
             FitImagingPlotter(
-                fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
+                fit=fit, mat_plot_2d=mat_plot_2d, visuals_2d_of_planes_list=visuals_2d_of_planes_list,
             )
             for fit in fit_list
         ]

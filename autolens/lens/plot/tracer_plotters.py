@@ -11,6 +11,8 @@ from autolens.lens.tracer import Tracer
 
 from autolens import exc
 
+from autolens.lens import tracer_util
+
 
 class TracerPlotter(Plotter):
     def __init__(
@@ -19,10 +21,9 @@ class TracerPlotter(Plotter):
         grid: aa.type.Grid2DLike,
         mat_plot_1d: aplt.MatPlot1D = None,
         visuals_1d: aplt.Visuals1D = None,
-        include_1d: aplt.Include1D = None,
         mat_plot_2d: aplt.MatPlot2D = None,
         visuals_2d: aplt.Visuals2D = None,
-        include_2d: aplt.Include2D = None,
+        visuals_2d_of_planes_list: Optional = None,
     ):
         """
         Plots the attributes of `Tracer` objects using the matplotlib methods `plot()` and `imshow()` and many
@@ -34,8 +35,7 @@ class TracerPlotter(Plotter):
         customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals1D` and `Visuals2D` objects. Attributes may be
-        extracted from the `MassProfile` and plotted via the visuals object, if the corresponding entry is `True` in
-        the `Include1D` or `Include2D` object or the `config/visualize/include.ini` file.
+        extracted from the `MassProfile` and plotted via the visuals object.
 
         Parameters
         ----------
@@ -47,16 +47,11 @@ class TracerPlotter(Plotter):
             Contains objects which wrap the matplotlib function calls that make 1D plots.
         visuals_1d
             Contains 1D visuals that can be overlaid on 1D plots.
-        include_1d
-            Specifies which attributes of the `MassProfile` are extracted and plotted as visuals for 1D plots.
         mat_plot_2d
             Contains objects which wrap the matplotlib function calls that make 2D plots.
         visuals_2d
             Contains 2D visuals that can be overlaid on 2D plots.
-        include_2d
-            Specifies which attributes of the `MassProfile` are extracted and plotted as visuals for 2D plots.
         """
-
         from autogalaxy.profiles.light.linear import (
             LightProfileLinear,
         )
@@ -69,9 +64,7 @@ class TracerPlotter(Plotter):
         super().__init__(
             mat_plot_1d=mat_plot_1d,
             visuals_1d=visuals_1d,
-            include_1d=include_1d,
             mat_plot_2d=mat_plot_2d,
-            include_2d=include_2d,
             visuals_2d=visuals_2d,
         )
 
@@ -81,21 +74,27 @@ class TracerPlotter(Plotter):
         self._mass_plotter = MassPlotter(
             mass_obj=self.tracer,
             grid=self.grid,
-            get_visuals_2d=self.get_visuals_2d,
             mat_plot_2d=self.mat_plot_2d,
-            include_2d=self.include_2d,
             visuals_2d=self.visuals_2d,
         )
 
-    def get_visuals_2d(self) -> aplt.Visuals2D:
-        return self.get_visuals_2d_of_plane(plane_index=0)
+        self._visuals_2d_of_planes_list = visuals_2d_of_planes_list
 
-    def get_visuals_2d_of_plane(self, plane_index: int) -> aplt.Visuals2D:
-        return self.get_2d.via_tracer_from(
-            tracer=self.tracer, grid=self.grid, plane_index=plane_index
-        )
+    @property
+    def visuals_2d_of_planes_list(self):
 
-    def galaxies_plotter_from(self, plane_index: int) -> aplt.GalaxiesPlotter:
+        if self._visuals_2d_of_planes_list is None:
+            self._visuals_2d_of_planes_list = (
+                tracer_util.visuals_2d_of_planes_list_from(
+                    tracer=self.tracer, grid=self.grid
+                )
+            )
+
+        return self._visuals_2d_of_planes_list
+
+    def galaxies_plotter_from(
+        self, plane_index: int, retain_visuals: bool = False
+    ) -> aplt.GalaxiesPlotter:
         """
         Returns an `GalaxiesPlotter` corresponding to a `Plane` in the `Tracer`.
 
@@ -104,14 +103,24 @@ class TracerPlotter(Plotter):
         plane_index
             The index of the plane in the `Tracer` used to make the `GalaxiesPlotter`.
         """
+
         plane_grid = self.tracer.traced_grid_2d_list_from(grid=self.grid)[plane_index]
+
+        if retain_visuals:
+
+            visuals_2d = self.visuals_2d
+
+        else:
+
+            visuals_2d = self.visuals_2d.add_critical_curves_or_caustics(
+                mass_obj=self.tracer, grid=self.grid, plane_index=plane_index
+            )
 
         return aplt.GalaxiesPlotter(
             galaxies=ag.Galaxies(galaxies=self.tracer.planes[plane_index]),
             grid=plane_grid,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=self.get_visuals_2d_of_plane(plane_index=plane_index),
-            include_2d=self.include_2d,
+            visuals_2d=visuals_2d,
         )
 
     def figures_2d(
@@ -154,7 +163,7 @@ class TracerPlotter(Plotter):
         if image:
             self.mat_plot_2d.plot_array(
                 array=self.tracer.image_2d_from(grid=self.grid),
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self._mass_plotter.visuals_2d_with_critical_curves,
                 auto_labels=aplt.AutoLabels(title="Image", filename="image_2d"),
             )
 
@@ -196,6 +205,7 @@ class TracerPlotter(Plotter):
         plane_grid: bool = False,
         plane_index: Optional[int] = None,
         zoom_to_brightest: bool = True,
+        retain_visuals: bool = False,
     ):
         """
         Plots source-plane images (e.g. the unlensed light) each individual `Plane` in the plotter's `Tracer` in 2D,
@@ -221,7 +231,9 @@ class TracerPlotter(Plotter):
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
         for plane_index in plane_indexes:
-            galaxies_plotter = self.galaxies_plotter_from(plane_index=plane_index)
+            galaxies_plotter = self.galaxies_plotter_from(
+                plane_index=plane_index, retain_visuals=retain_visuals
+            )
 
             if plane_index == 1:
                 source_plane_title = True
@@ -324,40 +336,31 @@ class TracerPlotter(Plotter):
         self.figures_2d(source_plane=True)
         self.set_title(label=None)
 
-        include_tangential_critical_curves_original = (
-            self.include_2d._tangential_critical_curves
-        )
-        include_radial_critical_curves_original = (
-            self.include_2d._radial_critical_curves
-        )
-
         self._subplot_lens_and_mass()
 
         self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_tracer")
         self.close_subplot_figure()
 
-        self.include_2d._tangential_critical_curves = (
-            include_tangential_critical_curves_original
-        )
-        self.include_2d._radial_critical_curves = (
-            include_radial_critical_curves_original
-        )
         self.mat_plot_2d.use_log10 = use_log10_original
 
     def _subplot_lens_and_mass(self):
+
         self.mat_plot_2d.use_log10 = True
-        self.include_2d._tangential_critical_curves = False
-        self.include_2d._radial_critical_curves = False
 
         self.set_title(label="Lens Galaxy Image")
+
         self.figures_2d_of_planes(
-            plane_image=True, plane_index=0, zoom_to_brightest=False
+            plane_image=True,
+            plane_index=0,
+            zoom_to_brightest=False,
+            retain_visuals=True,
         )
 
         self.mat_plot_2d.subplot_index = 5
 
         self.set_title(label=None)
         self.figures_2d(convergence=True)
+
         self.figures_2d(potential=True)
 
         self.mat_plot_2d.use_log10 = False

@@ -14,6 +14,8 @@ from autolens.plot.abstract_plotters import Plotter
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.lens.plot.tracer_plotters import TracerPlotter
 
+from autolens.lens import tracer_util
+
 
 class FitImagingPlotter(Plotter):
     def __init__(
@@ -21,8 +23,8 @@ class FitImagingPlotter(Plotter):
         fit: FitImaging,
         mat_plot_2d: aplt.MatPlot2D = None,
         visuals_2d: aplt.Visuals2D = None,
-        include_2d: aplt.Include2D = None,
-        residuals_symmetric_cmap: bool = True
+        residuals_symmetric_cmap: bool = True,
+        visuals_2d_of_planes_list : Optional = None
     ):
         """
         Plots the attributes of `FitImaging` objects using the matplotlib method `imshow()` and many other matplotlib
@@ -33,8 +35,7 @@ class FitImagingPlotter(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `FitImaging` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
-        object or the `config/visualize/include.ini` file.
+        the `FitImaging` and plotted via the visuals object.
 
         Parameters
         ----------
@@ -44,38 +45,69 @@ class FitImagingPlotter(Plotter):
             Contains objects which wrap the matplotlib function calls that make the plot.
         visuals_2d
             Contains visuals that can be overlaid on the plot.
-        include_2d
-            Specifies which attributes of the `Array2D` are extracted and plotted as visuals.
         residuals_symmetric_cmap
             If true, the `residual_map` and `normalized_residual_map` are plotted with a symmetric color map such
             that `abs(vmin) = abs(vmax)`.
         """
-        super().__init__(
-            mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
-        )
+        super().__init__(mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d)
 
         self.fit = fit
 
         self._fit_imaging_meta_plotter = FitImagingPlotterMeta(
             fit=self.fit,
-            get_visuals_2d=self.get_visuals_2d,
             mat_plot_2d=self.mat_plot_2d,
-            include_2d=self.include_2d,
             visuals_2d=self.visuals_2d,
-            residuals_symmetric_cmap=residuals_symmetric_cmap
+            residuals_symmetric_cmap=residuals_symmetric_cmap,
         )
 
         self.residuals_symmetric_cmap = residuals_symmetric_cmap
 
-    def get_visuals_2d(self) -> aplt.Visuals2D:
-        return self.get_2d.via_fit_imaging_from(fit=self.fit)
+        self._visuals_2d_of_planes_list = visuals_2d_of_planes_list
+
+    @property
+    def visuals_2d_of_planes_list(self):
+
+        if self._visuals_2d_of_planes_list is None:
+
+            self._visuals_2d_of_planes_list = tracer_util.visuals_2d_of_planes_list_from(
+                tracer=self.fit.tracer,
+                grid=self.fit.grids.lp.mask.derive_grid.all_false,
+            )
+
+        return self._visuals_2d_of_planes_list
+
+    def visuals_2d_from(
+        self, plane_index: Optional[int] = None, remove_critical_caustic: bool = False
+    ) -> aplt.Visuals2D:
+        """
+        Returns the `Visuals2D` of the plotter with critical curves and caustics added, which are used to plot
+        the critical curves and caustics of the `Tracer` object.
+
+        If `remove_critical_caustic` is `True`, critical curves and caustics are not included in the visuals.
+
+        Parameters
+        ----------
+        plane_index
+            The index of the plane in the tracer which is used to extract quantities, as only one plane is plotted
+            at a time.
+        remove_critical_caustic
+            Whether to remove critical curves and caustics from the visuals.
+        """
+        if remove_critical_caustic:
+            return self.visuals_2d
+
+        return (
+            self.visuals_2d
+            + self.visuals_2d_of_planes_list[plane_index]
+        )
 
     @property
     def tracer(self):
         return self.fit.tracer_linear_light_profiles_to_light_profiles
 
-    @property
-    def tracer_plotter(self) -> TracerPlotter:
+    def tracer_plotter_of_plane(
+        self, plane_index: int, remove_critical_caustic: bool = False
+    ) -> TracerPlotter:
         """
         Returns an `TracerPlotter` corresponding to the `Tracer` in the `FitImaging`.
         """
@@ -83,19 +115,20 @@ class FitImagingPlotter(Plotter):
         zoom = aa.Zoom2D(mask=self.fit.mask)
 
         grid = aa.Grid2D.from_extent(
-            extent=zoom.extent_from(buffer=0),
-            shape_native=zoom.shape_native
+            extent=zoom.extent_from(buffer=0), shape_native=zoom.shape_native
         )
-
         return TracerPlotter(
             tracer=self.tracer,
             grid=grid,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=self.visuals_2d,
-            include_2d=self.include_2d,
+            visuals_2d=self.visuals_2d_from(
+                plane_index=plane_index, remove_critical_caustic=remove_critical_caustic
+            ),
         )
 
-    def inversion_plotter_of_plane(self, plane_index: int) -> aplt.InversionPlotter:
+    def inversion_plotter_of_plane(
+        self, plane_index: int, remove_critical_caustic: bool = False
+    ) -> aplt.InversionPlotter:
         """
         Returns an `InversionPlotter` corresponding to one of the `Inversion`'s in the fit, which is specified via
         the index of the `Plane` that inversion was performed on.
@@ -110,16 +143,14 @@ class FitImagingPlotter(Plotter):
         InversionPlotter
             An object that plots inversions which is used for plotting attributes of the inversion.
         """
+
         inversion_plotter = aplt.InversionPlotter(
             inversion=self.fit.inversion,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=self.tracer_plotter.get_visuals_2d_of_plane(
-                plane_index=plane_index
+            visuals_2d=self.visuals_2d_from(
+                plane_index=plane_index, remove_critical_caustic=remove_critical_caustic
             ),
-            include_2d=self.include_2d,
         )
-        inversion_plotter.visuals_2d.mask = None
-        inversion_plotter.visuals_2d.border = None
         return inversion_plotter
 
     def plane_indexes_from(self, plane_index: int):
@@ -152,7 +183,7 @@ class FitImagingPlotter(Plotter):
         use_source_vmax: bool = False,
         zoom_to_brightest: bool = True,
         interpolate_to_uniform: bool = False,
-        remove_critical_caustic : bool = True
+        remove_critical_caustic: bool = False,
     ):
         """
         Plots images representing each individual `Plane` in the fit's `Tracer` in 2D, which are computed via the
@@ -200,23 +231,14 @@ class FitImagingPlotter(Plotter):
             Whether to remove critical curves and caustics from the plot.
         """
 
-        visuals_2d = self.get_visuals_2d()
-
-        visuals_2d_no_critical_caustic = self.get_visuals_2d()
-
-        if remove_critical_caustic:
-
-            visuals_2d_no_critical_caustic.tangential_critical_curves = None
-            visuals_2d_no_critical_caustic.radial_critical_curves = None
-            visuals_2d_no_critical_caustic.tangential_caustics = None
-            visuals_2d_no_critical_caustic.radial_caustics = None
-
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
         for plane_index in plane_indexes:
 
             if use_source_vmax:
-                self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(self.fit.model_images_of_planes_list[plane_index].array)
+                self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(
+                    self.fit.model_images_of_planes_list[plane_index].array
+                )
 
             if subtracted_image:
 
@@ -237,24 +259,14 @@ class FitImagingPlotter(Plotter):
 
                 self.mat_plot_2d.plot_array(
                     array=self.fit.subtracted_images_of_planes_list[plane_index],
-                    visuals_2d=visuals_2d_no_critical_caustic,
-                    auto_labels=aplt.AutoLabels(
-                        title=title,
-                        filename=filename
+                    visuals_2d=self.visuals_2d_from(
+                        plane_index=plane_index,
+                        remove_critical_caustic=remove_critical_caustic,
                     ),
+                    auto_labels=aplt.AutoLabels(title=title, filename=filename),
                 )
 
             if model_image:
-
-                if self.tracer.planes[plane_index].has(cls=aa.Pixelization):
-
-                    # Overwrite plane_index=0 so that model image uses critical curves -- improve via config cutomization
-
-                    visuals_2d_model_image = self.inversion_plotter_of_plane(plane_index=0).get_visuals_2d_for_data()
-
-                else:
-
-                    visuals_2d_model_image = visuals_2d
 
                 title = f"Model Image of Plane {plane_index}"
                 filename = f"model_image_of_plane_{plane_index}"
@@ -273,34 +285,41 @@ class FitImagingPlotter(Plotter):
 
                 self.mat_plot_2d.plot_array(
                     array=self.fit.model_images_of_planes_list[plane_index],
-                    visuals_2d=visuals_2d_model_image,
-                    auto_labels=aplt.AutoLabels(
-                        title=title,
-                        filename=filename
+                    visuals_2d=self.visuals_2d_from(
+                        plane_index=plane_index,
+                        remove_critical_caustic=remove_critical_caustic,
                     ),
+                    auto_labels=aplt.AutoLabels(title=title, filename=filename),
                 )
 
             if plane_image:
 
                 if not self.tracer.planes[plane_index].has(cls=aa.Pixelization):
 
-                    self.tracer_plotter.figures_2d_of_planes(
+                    tracer_plotter = self.tracer_plotter_of_plane(
+                        plane_index=plane_index,
+                        remove_critical_caustic=remove_critical_caustic,
+                    )
+
+                    tracer_plotter.figures_2d_of_planes(
                         plane_image=True,
                         plane_index=plane_index,
-                        zoom_to_brightest=zoom_to_brightest
+                        zoom_to_brightest=zoom_to_brightest,
+                        retain_visuals=True,
                     )
 
                 elif self.tracer.planes[plane_index].has(cls=aa.Pixelization):
 
                     inversion_plotter = self.inversion_plotter_of_plane(
-                        plane_index=plane_index
+                        plane_index=plane_index,
+                        remove_critical_caustic=remove_critical_caustic,
                     )
 
                     inversion_plotter.figures_2d_of_pixelization(
                         pixelization_index=0,
                         reconstruction=True,
                         zoom_to_brightest=zoom_to_brightest,
-                        interpolate_to_uniform=interpolate_to_uniform
+                        interpolate_to_uniform=interpolate_to_uniform,
                     )
 
             if use_source_vmax:
@@ -314,14 +333,15 @@ class FitImagingPlotter(Plotter):
                 if self.tracer.planes[plane_index].has(cls=aa.Pixelization):
 
                     inversion_plotter = self.inversion_plotter_of_plane(
-                        plane_index=plane_index
+                        plane_index=plane_index,
+                        remove_critical_caustic=remove_critical_caustic,
                     )
 
                     inversion_plotter.figures_2d_of_pixelization(
                         pixelization_index=0,
                         reconstruction_noise_map=True,
                         zoom_to_brightest=zoom_to_brightest,
-                        interpolate_to_uniform=interpolate_to_uniform
+                        interpolate_to_uniform=interpolate_to_uniform,
                     )
 
             if plane_signal_to_noise_map:
@@ -329,49 +349,16 @@ class FitImagingPlotter(Plotter):
                 if self.tracer.planes[plane_index].has(cls=aa.Pixelization):
 
                     inversion_plotter = self.inversion_plotter_of_plane(
-                        plane_index=plane_index
+                        plane_index=plane_index,
+                        remove_critical_caustic=remove_critical_caustic,
                     )
 
                     inversion_plotter.figures_2d_of_pixelization(
                         pixelization_index=0,
                         signal_to_noise_map=True,
                         zoom_to_brightest=zoom_to_brightest,
-                        interpolate_to_uniform=interpolate_to_uniform
+                        interpolate_to_uniform=interpolate_to_uniform,
                     )
-
-    def subplot_of_planes(self, plane_index: Optional[int] = None):
-        """
-        Plots images representing each individual `Plane` in the plotter's `Tracer` in 2D on a subplot, which are
-        computed via the plotter's 2D grid object.
-
-        These images subtract or omit the contribution of other planes in the plane, such that plots showing
-        each individual plane are made.
-
-        The subplot plots the subtracted image, model image and plane image of each plane, where are described in the
-        `figures_2d_of_planes` function.
-
-        Parameters
-        ----------
-        plane_index
-            The index of the plane whose images are included on the subplot.
-        """
-
-        plane_indexes = self.plane_indexes_from(plane_index=plane_index)
-
-        for plane_index in plane_indexes:
-
-            self.open_subplot_figure(number_subplots=4)
-
-            self.figures_2d(data=True)
-
-            self.figures_2d_of_planes(subtracted_image=True, plane_index=plane_index)
-            self.figures_2d_of_planes(model_image=True, plane_index=plane_index)
-            self.figures_2d_of_planes(plane_image=True, plane_index=plane_index)
-
-            self.mat_plot_2d.output.subplot_to_figure(
-                auto_filename=f"subplot_of_plane_{plane_index}"
-            )
-            self.close_subplot_figure()
 
     def subplot(
         self,
@@ -439,27 +426,43 @@ class FitImagingPlotter(Plotter):
         self.figures_2d(model_image=True)
 
         self.set_title(label="Lens Light Model Image")
-        self.figures_2d_of_planes(plane_index=0, model_image=True)
+        self.figures_2d_of_planes(
+            plane_index=0, model_image=True, remove_critical_caustic=True
+        )
 
         # If the lens light is not included the subplot index does not increase, so we must manually set it to 4
         self.mat_plot_2d.subplot_index = 6
 
         plane_index_tag = "" if plane_index is None else f"_{plane_index}"
 
-        plane_index = len(self.fit.tracer.planes) - 1 if plane_index is None else plane_index
+        plane_index = (
+            len(self.fit.tracer.planes) - 1 if plane_index is None else plane_index
+        )
 
         self.mat_plot_2d.cmap.kwargs["vmin"] = 0.0
 
         self.set_title(label="Lens Light Subtracted Image")
-        self.figures_2d_of_planes(plane_index=plane_index, subtracted_image=True, use_source_vmax=True)
+        self.figures_2d_of_planes(
+            plane_index=plane_index,
+            subtracted_image=True,
+            use_source_vmax=True,
+            remove_critical_caustic=True,
+        )
 
         self.set_title(label="Source Model Image (Image Plane)")
-        self.figures_2d_of_planes(plane_index=plane_index, model_image=True, use_source_vmax=True)
+        self.figures_2d_of_planes(
+            plane_index=plane_index,
+            model_image=True,
+            use_source_vmax=True,
+            remove_critical_caustic=True,
+        )
 
         self.mat_plot_2d.cmap.kwargs.pop("vmin")
 
         self.set_title(label="Source Plane (Zoomed)")
-        self.figures_2d_of_planes(plane_index=plane_index, plane_image=True, use_source_vmax=True)
+        self.figures_2d_of_planes(
+            plane_index=plane_index, plane_image=True, use_source_vmax=True
+        )
 
         self.set_title(label=None)
 
@@ -484,7 +487,7 @@ class FitImagingPlotter(Plotter):
             plane_index=plane_index,
             plane_image=True,
             zoom_to_brightest=False,
-            use_source_vmax=True
+            use_source_vmax=True,
         )
 
         self.set_title(label=None)
@@ -526,27 +529,35 @@ class FitImagingPlotter(Plotter):
         self.figures_2d(model_image=True)
 
         self.set_title(label="Lens Light Model Image")
-        self.figures_2d_of_planes(plane_index=0, model_image=True)
+        self.figures_2d_of_planes(plane_index=0, model_image=True, remove_critical_caustic=True)
 
         # If the lens light is not included the subplot index does not increase, so we must manually set it to 4
         self.mat_plot_2d.subplot_index = 6
 
         plane_index_tag = "" if plane_index is None else f"_{plane_index}"
 
-        plane_index = len(self.fit.tracer.planes) - 1 if plane_index is None else plane_index
+        plane_index = (
+            len(self.fit.tracer.planes) - 1 if plane_index is None else plane_index
+        )
 
         self.mat_plot_2d.cmap.kwargs["vmin"] = 0.0
 
         self.set_title(label="Lens Light Subtracted Image")
-        self.figures_2d_of_planes(plane_index=plane_index, subtracted_image=True, use_source_vmax=True)
+        self.figures_2d_of_planes(
+            plane_index=plane_index, subtracted_image=True, use_source_vmax=True, remove_critical_caustic=True
+        )
 
         self.set_title(label="Source Model Image (Image Plane)")
-        self.figures_2d_of_planes(plane_index=plane_index, model_image=True, use_source_vmax=True)
+        self.figures_2d_of_planes(
+            plane_index=plane_index, model_image=True, use_source_vmax=True, remove_critical_caustic=True
+        )
 
         self.mat_plot_2d.cmap.kwargs.pop("vmin")
 
         self.set_title(label="Source Plane (Zoomed)")
-        self.figures_2d_of_planes(plane_index=plane_index, plane_image=True, use_source_vmax=True)
+        self.figures_2d_of_planes(
+            plane_index=plane_index, plane_image=True, use_source_vmax=True
+        )
 
         self.set_title(label=None)
 
@@ -575,7 +586,7 @@ class FitImagingPlotter(Plotter):
             plane_index=plane_index,
             plane_image=True,
             zoom_to_brightest=False,
-            use_source_vmax=True
+            use_source_vmax=True,
         )
 
         self.set_title(label=None)
@@ -587,6 +598,40 @@ class FitImagingPlotter(Plotter):
 
         self.mat_plot_2d.use_log10 = use_log10_original
         self.mat_plot_2d.contour = contour_original
+
+    def subplot_of_planes(self, plane_index: Optional[int] = None):
+        """
+        Plots images representing each individual `Plane` in the plotter's `Tracer` in 2D on a subplot, which are
+        computed via the plotter's 2D grid object.
+
+        These images subtract or omit the contribution of other planes in the plane, such that plots showing
+        each individual plane are made.
+
+        The subplot plots the subtracted image, model image and plane image of each plane, where are described in the
+        `figures_2d_of_planes` function.
+
+        Parameters
+        ----------
+        plane_index
+            The index of the plane whose images are included on the subplot.
+        """
+
+        plane_indexes = self.plane_indexes_from(plane_index=plane_index)
+
+        for plane_index in plane_indexes:
+
+            self.open_subplot_figure(number_subplots=4)
+
+            self.figures_2d(data=True)
+
+            self.figures_2d_of_planes(subtracted_image=True, plane_index=plane_index)
+            self.figures_2d_of_planes(model_image=True, plane_index=plane_index)
+            self.figures_2d_of_planes(plane_image=True, plane_index=plane_index)
+
+            self.mat_plot_2d.output.subplot_to_figure(
+                auto_filename=f"subplot_of_plane_{plane_index}"
+            )
+            self.close_subplot_figure()
 
     def subplot_tracer(self):
         """
@@ -600,6 +645,7 @@ class FitImagingPlotter(Plotter):
         -------
 
         """
+
         use_log10_original = self.mat_plot_2d.use_log10
 
         final_plane_index = len(self.fit.tracer.planes) - 1
@@ -609,7 +655,9 @@ class FitImagingPlotter(Plotter):
         self.figures_2d(model_image=True)
 
         self.set_title(label="Lensed Source Image")
-        self.figures_2d_of_planes(plane_index=final_plane_index, model_image=True, use_source_vmax=True)
+        self.figures_2d_of_planes(
+            plane_index=final_plane_index, model_image=True, use_source_vmax=True
+        )
         self.set_title(label=None)
 
         self.set_title(label="Source Plane")
@@ -617,26 +665,21 @@ class FitImagingPlotter(Plotter):
             plane_index=final_plane_index,
             plane_image=True,
             zoom_to_brightest=False,
-            use_source_vmax=True
+            use_source_vmax=True,
         )
 
-        tracer_plotter = self.tracer_plotter
-
-        include_tangential_critical_curves_original = tracer_plotter.include_2d._tangential_critical_curves
-        include_radial_critical_curves_original = tracer_plotter.include_2d._radial_critical_curves
+        tracer_plotter = self.tracer_plotter_of_plane(plane_index=0)
 
         tracer_plotter._subplot_lens_and_mass()
 
-        self.mat_plot_2d.output.subplot_to_figure(
-            auto_filename="subplot_tracer"
-        )
+        self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_tracer")
         self.close_subplot_figure()
 
-        self.include_2d._tangential_critical_curves = include_tangential_critical_curves_original
-        self.include_2d._radial_critical_curves = include_radial_critical_curves_original
         self.mat_plot_2d.use_log10 = use_log10_original
 
-    def subplot_mappings_of_plane(self, plane_index: Optional[int] = None, auto_filename: str = "subplot_mappings"):
+    def subplot_mappings_of_plane(
+        self, plane_index: Optional[int] = None, auto_filename: str = "subplot_mappings"
+    ):
 
         try:
 
@@ -658,34 +701,32 @@ class FitImagingPlotter(Plotter):
                     "total_mappings_pixels"
                 ]
 
-                mapper = inversion_plotter.inversion.cls_list_from(cls=aa.AbstractMapper)[0]
+                mapper = inversion_plotter.inversion.cls_list_from(
+                    cls=aa.AbstractMapper
+                )[0]
                 mapper_valued = aa.MapperValued(
                     values=inversion_plotter.inversion.reconstruction_dict[mapper],
                     mapper=mapper,
                 )
+
                 pix_indexes = mapper_valued.max_pixel_list_from(
                     total_pixels=total_pixels, filter_neighbors=True
                 )
 
-                inversion_plotter.visuals_2d.pix_indexes = [
-                    [index] for index in pix_indexes[pixelization_index]
-                ]
+                indexes = mapper.slim_indexes_for_pix_indexes(pix_indexes=pix_indexes)
 
-                inversion_plotter.visuals_2d.tangential_critical_curves = None
-                inversion_plotter.visuals_2d.radial_critical_curves = None
+                inversion_plotter.visuals_2d.indexes = indexes
 
                 inversion_plotter.figures_2d_of_pixelization(
                     pixelization_index=pixelization_index, reconstructed_image=True
                 )
 
-                self.visuals_2d.pix_indexes = [
+                self.visuals_2d.source_plane_mesh_indexes = [
                     [index] for index in pix_indexes[pixelization_index]
                 ]
 
                 self.figures_2d_of_planes(
-                    plane_index=plane_index,
-                    plane_image=True,
-                    use_source_vmax=True
+                    plane_index=plane_index, plane_image=True, use_source_vmax=True
                 )
 
                 self.set_title(label="Source Reconstruction (Unzoomed)")
@@ -693,11 +734,11 @@ class FitImagingPlotter(Plotter):
                     plane_index=plane_index,
                     plane_image=True,
                     zoom_to_brightest=False,
-                    use_source_vmax=True
+                    use_source_vmax=True,
                 )
                 self.set_title(label=None)
 
-                self.visuals_2d.pix_indexes = None
+                self.visuals_2d.source_plane_mesh_indexes = None
 
                 inversion_plotter.mat_plot_2d.output.subplot_to_figure(
                     auto_filename=f"{auto_filename}_{pixelization_index}"
@@ -719,7 +760,7 @@ class FitImagingPlotter(Plotter):
         normalized_residual_map: bool = False,
         chi_squared_map: bool = False,
         residual_flux_fraction_map: bool = False,
-        use_source_vmax : bool = False,
+        use_source_vmax: bool = False,
         suffix: str = "",
     ):
         """
@@ -751,25 +792,19 @@ class FitImagingPlotter(Plotter):
             certain plots (e.g. the `data`) in order to ensure the lensed source is visible compared to the lens.
         """
 
-        visuals_2d = self.get_visuals_2d()
-
-        visuals_2d_no_critical_caustic = self.get_visuals_2d()
-        visuals_2d_no_critical_caustic.tangential_critical_curves = None
-        visuals_2d_no_critical_caustic.radial_critical_curves = None
-        visuals_2d_no_critical_caustic.tangential_caustics = None
-        visuals_2d_no_critical_caustic.radial_caustics = None
-        visuals_2d_no_critical_caustic.origin = None
-        visuals_2d_no_critical_caustic.light_profile_centres = None
-        visuals_2d_no_critical_caustic.mass_profile_centres = None
-
         if data:
 
             if use_source_vmax:
-                self.mat_plot_2d.cmap.kwargs["vmax"] = np.max([model_image.array for model_image in self.fit.model_images_of_planes_list[1:]])
+                self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(
+                    [
+                        model_image.array
+                        for model_image in self.fit.model_images_of_planes_list[1:]
+                    ]
+                )
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,
-                visuals_2d=visuals_2d_no_critical_caustic,
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Data", filename=f"data{suffix}"),
             )
 
@@ -780,7 +815,7 @@ class FitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.noise_map,
-                visuals_2d=visuals_2d_no_critical_caustic,
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Noise-Map", filename=f"noise_map{suffix}"
                 ),
@@ -790,20 +825,27 @@ class FitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.signal_to_noise_map,
-                visuals_2d=visuals_2d_no_critical_caustic,
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
-                    title="Signal-To-Noise Map", cb_unit=" S/N", filename=f"signal_to_noise_map{suffix}"
+                    title="Signal-To-Noise Map",
+                    cb_unit=" S/N",
+                    filename=f"signal_to_noise_map{suffix}",
                 ),
             )
 
         if model_image:
 
             if use_source_vmax:
-                self.mat_plot_2d.cmap.kwargs["vmax"] = np.max([model_image.array for model_image in self.fit.model_images_of_planes_list[1:]])
+                self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(
+                    [
+                        model_image.array
+                        for model_image in self.fit.model_images_of_planes_list[1:]
+                    ]
+                )
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.model_data,
-                visuals_2d=visuals_2d,
+                visuals_2d=self.visuals_2d_from(plane_index=0),
                 auto_labels=AutoLabels(
                     title="Model Image", filename=f"model_image{suffix}"
                 ),
@@ -822,7 +864,7 @@ class FitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.residual_map,
-                visuals_2d=visuals_2d_no_critical_caustic,
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Residual Map", filename=f"residual_map{suffix}"
                 ),
@@ -832,7 +874,7 @@ class FitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.normalized_residual_map,
-                visuals_2d=visuals_2d_no_critical_caustic,
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Normalized Residual Map",
                     cb_unit=r" $\sigma$",
@@ -846,9 +888,11 @@ class FitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.chi_squared_map,
-                visuals_2d=visuals_2d_no_critical_caustic,
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
-                    title="Chi-Squared Map", cb_unit=r" $\chi^2$",  filename=f"chi_squared_map{suffix}"
+                    title="Chi-Squared Map",
+                    cb_unit=r" $\chi^2$",
+                    filename=f"chi_squared_map{suffix}",
                 ),
             )
 
@@ -856,8 +900,9 @@ class FitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.residual_flux_fraction_map,
-                visuals_2d=visuals_2d_no_critical_caustic,
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
-                    title="Residual Flux Fraction Map", filename=f"residual_flux_fraction_map{suffix}"
+                    title="Residual Flux Fraction Map",
+                    filename=f"residual_flux_fraction_map{suffix}",
                 ),
             )

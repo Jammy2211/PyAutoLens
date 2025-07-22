@@ -3,6 +3,7 @@ from typing import List, Optional
 
 import autoarray as aa
 import autogalaxy as ag
+import autogalaxy.plot as aplt
 
 from autolens import exc
 
@@ -398,3 +399,20 @@ def ordered_plane_redshifts_with_slicing_from(
         )[1:]
 
     return plane_redshifts[0:-1]
+
+
+def visuals_2d_of_planes_list_from(tracer, grid) -> aplt.Visuals2D:
+
+    visuals_2d_of_planes_list = []
+
+    for plane_index in range(len(tracer.planes)):
+
+        visuals_2d_of_planes_list.append(
+            aplt.Visuals2D().add_critical_curves_or_caustics(
+                mass_obj=tracer,
+                grid=grid,
+                plane_index=plane_index,
+            )
+        )
+
+    return visuals_2d_of_planes_list

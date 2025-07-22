@@ -34,9 +34,7 @@ class PlotterInterfacePoint(PlotterInterface):
 
         mat_plot_2d = self.mat_plot_2d_from()
 
-        dataset_plotter = PointDatasetPlotter(
-            dataset=dataset, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
-        )
+        dataset_plotter = PointDatasetPlotter(dataset=dataset, mat_plot_2d=mat_plot_2d)
 
         if should_plot("subplot_dataset"):
             dataset_plotter.subplot_dataset()
@@ -69,9 +67,7 @@ class PlotterInterfacePoint(PlotterInterface):
 
         mat_plot_2d = self.mat_plot_2d_from()
 
-        fit_plotter = FitPointDatasetPlotter(
-            fit=fit, mat_plot_2d=mat_plot_2d, include_2d=self.include_2d
-        )
+        fit_plotter = FitPointDatasetPlotter(fit=fit, mat_plot_2d=mat_plot_2d)
 
         if should_plot("subplot_fit"):
             fit_plotter.subplot_fit()

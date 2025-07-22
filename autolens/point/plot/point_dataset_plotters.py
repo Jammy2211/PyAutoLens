@@ -10,10 +10,8 @@ class PointDatasetPlotter(Plotter):
         dataset: PointDataset,
         mat_plot_1d: aplt.MatPlot1D = None,
         visuals_1d: aplt.Visuals1D = None,
-        include_1d: aplt.Include1D = None,
         mat_plot_2d: aplt.MatPlot2D = None,
         visuals_2d: aplt.Visuals2D = None,
-        include_2d: aplt.Include2D = None,
     ):
         """
         Plots the attributes of `PointDataset` objects using the matplotlib methods and functions functions which
@@ -24,38 +22,25 @@ class PointDatasetPlotter(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `Imaging` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
-        object or the `config/visualize/include.ini` file.
+        the `Imaging` and plotted via the visuals object.
 
         Parameters
         ----------
         dataset
             The imaging dataset the plotter plots.
-        get_visuals_2d
-            A function which extracts from the `Imaging` the 2D visuals which are plotted on figures.
         mat_plot_2d
             Contains objects which wrap the matplotlib function calls that make 2D plots.
         visuals_2d
             Contains 2D visuals that can be overlaid on 2D plots.
-        include_2d
-            Specifies which attributes of the `Imaging` are extracted and plotted as visuals for 2D plots.
         """
         super().__init__(
             mat_plot_1d=mat_plot_1d,
             visuals_1d=visuals_1d,
-            include_1d=include_1d,
             mat_plot_2d=mat_plot_2d,
-            include_2d=include_2d,
             visuals_2d=visuals_2d,
         )
 
         self.dataset = dataset
-
-    def get_visuals_1d(self) -> aplt.Visuals1D:
-        return self.visuals_1d
-
-    def get_visuals_2d(self) -> aplt.Visuals2D:
-        return self.visuals_2d
 
     def figures_2d(self, positions: bool = False, fluxes: bool = False):
         """
@@ -76,7 +61,7 @@ class PointDatasetPlotter(Plotter):
                 grid=self.dataset.positions,
                 y_errors=self.dataset.positions_noise_map,
                 x_errors=self.dataset.positions_noise_map,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=aplt.AutoLabels(
                     title=f"{self.dataset.name} Positions",
                     filename="point_dataset_positions",
@@ -100,7 +85,7 @@ class PointDatasetPlotter(Plotter):
                 self.mat_plot_1d.plot_yx(
                     y=self.dataset.fluxes,
                     y_errors=self.dataset.fluxes_noise_map,
-                    visuals_1d=self.get_visuals_1d(),
+                    visuals_1d=self.visuals_1d,
                     auto_labels=aplt.AutoLabels(
                         title=f" {self.dataset.name} Fluxes",
                         filename="point_dataset_fluxes",

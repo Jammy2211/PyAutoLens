@@ -371,11 +371,6 @@ def make_adapt_images_7x7():
     return fixtures.make_adapt_images_7x7()
 
 
-@pytest.fixture(name="include_2d_all")
-def make_include_all():
-    return fixtures.make_include_2d_all()
-
-
 @pytest.fixture(name="samples_summary_with_result")
 def make_samples_summary_with_result():
     return fixtures.make_samples_summary_with_result()

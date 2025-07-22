@@ -148,7 +148,6 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         data_subtracted: Optional[aa.Array2D] = None,
         mat_plot_2d: aplt.MatPlot2D = None,
         visuals_2d: aplt.Visuals2D = None,
-        include_2d: aplt.Include2D = None,
     ):
         """
         Plots the simulated datasets and results of a sensitivity mapping analysis, where dark matter halos are used
@@ -160,8 +159,7 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals1D` and `Visuals2D` objects. Attributes may be
-        extracted from the `MassProfile` and plotted via the visuals object, if the corresponding entry is `True` in
-        the `Include1D` or `Include2D` object or the `config/visualize/include.ini` file.
+        extracted from the `MassProfile` and plotted via the visuals object.
 
         Parameters
         ----------
@@ -173,19 +171,13 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
             Contains objects which wrap the matplotlib function calls that make 1D plots.
         visuals_1d
             Contains 1D visuals that can be overlaid on 1D plots.
-        include_1d
-            Specifies which attributes of the `MassProfile` are extracted and plotted as visuals for 1D plots.
         mat_plot_2d
             Contains objects which wrap the matplotlib function calls that make 2D plots.
         visuals_2d
             Contains 2D visuals that can be overlaid on 2D plots.
-        include_2d
-            Specifies which attributes of the `MassProfile` are extracted and plotted as visuals for 2D plots.
         """
 
-        super().__init__(
-            mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
-        )
+        super().__init__(mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d)
 
         self.mask = mask
         self.tracer_perturb = tracer_perturb
@@ -195,7 +187,6 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         self.data_subtracted = data_subtracted
         self.mat_plot_2d = mat_plot_2d
         self.visuals_2d = visuals_2d
-        self.include_2d = include_2d
 
     def update_mat_plot_array_overlay(self, evidence_max):
         evidence_half = evidence_max / 2.0
