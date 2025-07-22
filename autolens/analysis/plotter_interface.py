@@ -1,5 +1,6 @@
 import ast
 import numpy as np
+from typing import Optional
 
 from autoconf import conf
 from autoconf.fitsable import hdu_list_for_output_from
@@ -31,7 +32,12 @@ class PlotterInterface(AgPlotterInterface):
         The path on the hard-disk to the `image` folder of the non-linear searches results.
     """
 
-    def tracer(self, tracer: Tracer, grid: aa.type.Grid2DLike):
+    def tracer(
+        self,
+        tracer: Tracer,
+        grid: aa.type.Grid2DLike,
+        visuals_2d_of_planes_list: Optional[aplt.Visuals2D] = None,
+    ):
         """
         Visualizes a `Tracer` object.
 
@@ -63,6 +69,7 @@ class PlotterInterface(AgPlotterInterface):
             tracer=tracer,
             grid=grid,
             mat_plot_2d=mat_plot_2d,
+            visuals_2d_of_planes_list=visuals_2d_of_planes_list,
         )
 
         if should_plot("subplot_galaxies_images"):

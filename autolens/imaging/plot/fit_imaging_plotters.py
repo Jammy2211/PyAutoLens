@@ -645,6 +645,7 @@ class FitImagingPlotter(Plotter):
         -------
 
         """
+
         use_log10_original = self.mat_plot_2d.use_log10
 
         final_plane_index = len(self.fit.tracer.planes) - 1

@@ -344,17 +344,23 @@ class TracerPlotter(Plotter):
         self.mat_plot_2d.use_log10 = use_log10_original
 
     def _subplot_lens_and_mass(self):
+
         self.mat_plot_2d.use_log10 = True
 
         self.set_title(label="Lens Galaxy Image")
+
         self.figures_2d_of_planes(
-            plane_image=True, plane_index=0, zoom_to_brightest=False
+            plane_image=True,
+            plane_index=0,
+            zoom_to_brightest=False,
+            retain_visuals=True,
         )
 
         self.mat_plot_2d.subplot_index = 5
 
         self.set_title(label=None)
         self.figures_2d(convergence=True)
+
         self.figures_2d(potential=True)
 
         self.mat_plot_2d.use_log10 = False

@@ -26,6 +26,18 @@ PyAutoLens: Open-Source Strong Lensing
 .. |arXiv| image:: https://img.shields.io/badge/arXiv-1708.07377-blue
     :target: https://arxiv.org/abs/1708.07377
 
+.. image:: https://www.repostatus.org/badges/latest/active.svg
+    :target: https://www.repostatus.org/#active
+    :alt: Project Status: Active
+
+.. image:: https://img.shields.io/pypi/pyversions/autolens
+    :target: https://pypi.org/project/autolens/
+    :alt: Python Versions
+
+.. image:: https://img.shields.io/pypi/v/autolens.svg
+    :target: https://pypi.org/project/autolens/
+    :alt: PyPI Version
+
 |binder| |RTD| |Tests| |Build| |code-style| |JOSS| |arXiv|
 
 `Installation Guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ |

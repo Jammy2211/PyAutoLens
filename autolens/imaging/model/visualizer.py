@@ -4,6 +4,8 @@ import autofit as af
 import autogalaxy as ag
 
 from autolens.imaging.model.plotter_interface import PlotterInterfaceImaging
+
+from autolens.lens import tracer_util
 from autolens import exc
 
 
@@ -89,9 +91,6 @@ class VisualizerImaging(af.Visualizer):
             via a non-linear search).
         """
 
-        import time
-        start_time = time.time()
-
         fit = analysis.fit_from(instance=instance)
 
         if analysis.positions_likelihood_list is not None:
@@ -112,22 +111,6 @@ class VisualizerImaging(af.Visualizer):
             except exc.InversionException:
                 return
 
-        plotter_interface = PlotterInterfaceImaging(
-            image_path=paths.image_path, title_prefix=analysis.title_prefix
-        )
-
-        import time
-        start_time = time.time()
-
-        try:
-            plotter_interface.fit_imaging(fit=fit)
-        except exc.InversionException:
-            pass
-
-        print()
-        print(f"VisualizerImaging.visualize took {time.time() - start_time} seconds")
-        fff
-
         tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
         zoom = ag.Zoom2D(mask=fit.mask)
@@ -137,8 +120,28 @@ class VisualizerImaging(af.Visualizer):
 
         grid = ag.Grid2D.from_extent(extent=extent, shape_native=shape_native)
 
+        visuals_2d_of_planes_list = tracer_util.visuals_2d_of_planes_list_from(
+            tracer=fit.tracer,
+            grid=fit.grids.lp.mask.derive_grid.all_false
+        )
+
+        plotter_interface = PlotterInterfaceImaging(
+            image_path=paths.image_path,
+            title_prefix=analysis.title_prefix,
+        )
+
+        try:
+            plotter_interface.fit_imaging(
+                fit=fit,
+                visuals_2d_of_planes_list=visuals_2d_of_planes_list
+            )
+        except exc.InversionException:
+            pass
+
         plotter_interface.tracer(
-            tracer=tracer, grid=grid,
+            tracer=tracer,
+            grid=grid,
+            visuals_2d_of_planes_list=visuals_2d_of_planes_list
         )
         plotter_interface.galaxies(
             galaxies=tracer.galaxies,
