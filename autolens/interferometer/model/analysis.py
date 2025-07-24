@@ -153,7 +153,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
         log_likelihood_penalty = self.log_likelihood_penalty_from(instance=instance)
 
-        return self.fit_from(instance=instance).figure_of_merit + log_likelihood_penalty
+        return self.fit_from(instance=instance).figure_of_merit - log_likelihood_penalty
 
     def fit_from(
         self,

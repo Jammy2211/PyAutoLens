@@ -89,7 +89,7 @@ class AnalysisImaging(AnalysisDataset):
             instance=instance
         )
 
-        return self.fit_from(instance=instance).figure_of_merit + log_likelihood_penalty
+        return self.fit_from(instance=instance).figure_of_merit - log_likelihood_penalty
 
     def fit_from(
         self,
