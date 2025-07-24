@@ -191,12 +191,6 @@ class PositionsLH:
 
         penalty = self.log_likelihood_penalty_factor * (max_separation - self.threshold)
 
-        print(max_separation, self.threshold, jax.lax.cond(
-            max_separation > self.threshold,
-            lambda: penalty,
-            lambda: jnp.array(0.0),
-        ))
-
         return jax.lax.cond(
             max_separation > self.threshold,
             lambda: penalty,
