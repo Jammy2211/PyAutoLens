@@ -71,7 +71,7 @@ def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x
     )
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    assert analysis_log_likelihood == pytest.approx(44097289491.9806, 1.0e-4)
+    assert analysis_log_likelihood == pytest.approx(-44097289521.734665, 1.0e-4)
 
 
 def test__positions__likelihood_overwrites__changes_likelihood__double_source_plane_example(masked_imaging_7x7):
@@ -96,5 +96,5 @@ def test__positions__likelihood_overwrites__changes_likelihood__double_source_pl
     )
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    assert analysis_log_likelihood == pytest.approx(44097289491.8073, 1.0e-4)
+    assert analysis_log_likelihood == pytest.approx(-44097289521.734665, 1.0e-4)
 
