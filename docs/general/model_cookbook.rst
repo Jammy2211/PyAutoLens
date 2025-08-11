@@ -383,8 +383,8 @@ profiles.
 
 The following example notebooks show how to compose and fit these models:
 
-https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/modeling/features/multi_gaussian_expansion.ipynb
-https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/modeling/features/shapelets.ipynb
+https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/modeling/imaging/features/multi_gaussian_expansion.ipynb
+https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/modeling/imaging/features/shapelets.ipynb
 
 Model Linking (Advanced)
 ------------------------
