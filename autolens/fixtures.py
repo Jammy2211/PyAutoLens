@@ -50,7 +50,7 @@ def make_tracer_x2_plane_7x7():
 
 def make_tracer_x2_plane_inversion_7x7():
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(), regularization=al.reg.Constant()
+        mesh=al.mesh.RectangularUniform(), regularization=al.reg.Constant()
     )
 
     source_gal_inversion = al.Galaxy(redshift=1.0, pixelization=pixelization)

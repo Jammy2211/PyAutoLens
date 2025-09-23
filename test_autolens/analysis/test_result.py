@@ -93,7 +93,7 @@ def test__source_plane_inversion_centre(analysis_imaging_7x7):
     lens = al.Galaxy(redshift=0.5, light=al.lp.SersicSph(intensity=1.0))
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular((3, 3)),
+        mesh=al.mesh.RectangularUniform((3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
@@ -151,7 +151,7 @@ def test__source_plane_centre(analysis_imaging_7x7):
     lens = al.Galaxy(redshift=0.5, light=al.lp.SersicSph(intensity=1.0))
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular((3, 3)),
+        mesh=al.mesh.RectangularUniform((3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 

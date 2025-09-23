@@ -57,7 +57,7 @@ def test__fit_figure_of_merit(interferometer_7):
     assert fit.figure_of_merit == pytest.approx(-12779.937568696, 1.0e-4)
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=0.01),
     )
 
@@ -79,7 +79,7 @@ def test__fit_figure_of_merit(interferometer_7):
     )
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
@@ -192,7 +192,7 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
     )
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
@@ -316,7 +316,7 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
     # Pixelization + Regularizaiton only
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
@@ -374,7 +374,7 @@ def test__model_visibilities_of_planes_list(interferometer_7):
     g1_linear = al.Galaxy(redshift=0.75, bulge=al.lp_linear.Sersic())
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 

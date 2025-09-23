@@ -82,7 +82,7 @@ def test__use_border_relocator__determines_if_border_pixel_relocation_is_used(
     masked_imaging_7x7,
 ):
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
@@ -128,7 +128,7 @@ def test__modify_before_fit__inversion_no_positions_likelihood__raises_exception
     lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph())
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(), regularization=al.reg.Constant()
+        mesh=al.mesh.RectangularUniform(), regularization=al.reg.Constant()
     )
 
     source = al.Galaxy(redshift=1.0, pixelization=pixelization)

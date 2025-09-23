@@ -78,7 +78,7 @@ def test__perfect_fit__chi_squared_0():
     assert fit.chi_squared == pytest.approx(0.0)
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(7, 7)),
+        mesh=al.mesh.RectangularUniform(shape=(7, 7)),
         regularization=al.reg.Constant(coefficient=0.0001),
     )
 
@@ -113,7 +113,7 @@ def test__simulate_interferometer_data_and_fit__known_likelihood():
     grid = al.Grid2D.from_mask(mask=mask, over_sample_size=1)
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(16, 16)),
+        mesh=al.mesh.RectangularUniform(shape=(16, 16)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
@@ -290,7 +290,7 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixeli
     )
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=0.01),
     )
 
