@@ -114,7 +114,7 @@ def test__lp_linear_func_galaxy_dict_from(masked_imaging_7x7):
 
 
 def test__cls_pg_list_from(masked_imaging_7x7, grid_2d_7x7):
-    mesh_0 = al.mesh.Rectangular(shape=(3, 3))
+    mesh_0 = al.mesh.RectangularUniform(shape=(3, 3))
 
     pixelization_0 = al.Pixelization(mesh=mesh_0)
 
@@ -132,11 +132,11 @@ def test__cls_pg_list_from(masked_imaging_7x7, grid_2d_7x7):
     assert pixelization_list[0] == []
     assert pixelization_list[1][0].mesh.pixels == 9
 
-    mesh_1 = al.mesh.Rectangular(shape=(4, 3))
+    mesh_1 = al.mesh.RectangularUniform(shape=(4, 3))
 
     pixelization_1 = al.Pixelization(mesh=mesh_1)
 
-    mesh_2 = al.mesh.Rectangular(shape=(4, 4))
+    mesh_2 = al.mesh.RectangularUniform(shape=(4, 4))
 
     pixelization_2 = al.Pixelization(mesh=mesh_2)
 
@@ -392,15 +392,21 @@ def test__mapper_galaxy_dict(masked_imaging_7x7):
 
     galaxy_no_pix = al.Galaxy(redshift=0.5)
 
-    pixelization_0 = al.m.MockPixelization(mesh=al.mesh.Rectangular(shape=(3, 3)))
+    pixelization_0 = al.m.MockPixelization(
+        mesh=al.mesh.RectangularUniform(shape=(3, 3))
+    )
 
     galaxy_pix_0 = al.Galaxy(redshift=0.5, pixelization=pixelization_0)
 
-    pixelization_1 = al.m.MockPixelization(mesh=al.mesh.Rectangular(shape=(4, 3)))
+    pixelization_1 = al.m.MockPixelization(
+        mesh=al.mesh.RectangularUniform(shape=(4, 3))
+    )
 
     galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization_1)
 
-    pixelization_2 = al.m.MockPixelization(mesh=al.mesh.Rectangular(shape=(4, 4)))
+    pixelization_2 = al.m.MockPixelization(
+        mesh=al.mesh.RectangularUniform(shape=(4, 4))
+    )
 
     galaxy_pix_2 = al.Galaxy(redshift=1.0, pixelization=pixelization_2)
 
@@ -492,7 +498,7 @@ def test__inversion_imaging_from(grid_2d_7x7, masked_imaging_7x7):
     assert inversion.reconstruction[0] == pytest.approx(0.186868464426, 1.0e-2)
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=0.0),
     )
 
@@ -547,7 +553,7 @@ def test__inversion_interferometer_from(grid_2d_7x7, interferometer_7):
     assert inversion.reconstruction[0] == pytest.approx(0.0412484695, 1.0e-5)
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(7, 7)),
+        mesh=al.mesh.RectangularUniform(shape=(7, 7)),
         regularization=al.reg.Constant(coefficient=0.0),
     )
 

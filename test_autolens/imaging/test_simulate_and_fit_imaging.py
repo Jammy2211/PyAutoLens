@@ -90,7 +90,7 @@ def test__simulate_imaging_data_and_fit__known_likelihood():
     )
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(16, 16)),
+        mesh=al.mesh.RectangularUniform(shape=(16, 16)),
         regularization=al.reg.Constant(coefficient=(1.0)),
     )
 
@@ -273,7 +273,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     )
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=0.01),
     )
 
@@ -403,7 +403,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
     )
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=0.01),
     )
 
@@ -552,14 +552,14 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
     )
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
     source_0 = al.Galaxy(redshift=0.4, pixelization=pixelization)
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 

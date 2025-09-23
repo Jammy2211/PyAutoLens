@@ -70,7 +70,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
     assert fit.figure_of_merit == pytest.approx(-648.4814555620, 1.0e-4)
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
@@ -86,7 +86,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
     galaxy_light = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(centre=(0.05, 0.05), intensity=1.0))
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
@@ -256,7 +256,7 @@ def test__fit_figure_of_merit__sub_2(image_7x7, psf_3x3, noise_map_7x7, mask_2d_
     assert fit.figure_of_merit == pytest.approx(-41.60614104506277, 1.0e-4)
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
@@ -272,7 +272,7 @@ def test__fit_figure_of_merit__sub_2(image_7x7, psf_3x3, noise_map_7x7, mask_2d_
     galaxy_light = al.Galaxy(redshift=0.5, bulge=al.lp.Sersic(intensity=1.0))
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
@@ -448,7 +448,7 @@ def test__fit__model_dataset__grid_offset__handles_special_behaviour(masked_imag
     )
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
@@ -530,7 +530,7 @@ def test__galaxy_model_image_dict(masked_imaging_7x7):
     )
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
@@ -663,7 +663,7 @@ def test__model_images_of_planes_list(masked_imaging_7x7_sub_2):
     g1_linear = al.Galaxy(redshift=0.75, bulge=al.lp_linear.Sersic())
 
     pixelization = al.Pixelization(
-        mesh=al.mesh.Rectangular(shape=(3, 3)),
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
         regularization=al.reg.Constant(coefficient=1.0),
     )
 
@@ -806,7 +806,7 @@ def test__total_mappers(masked_imaging_7x7):
 
     assert fit.total_mappers == 0
 
-    pixelization = al.Pixelization(mesh=al.mesh.Rectangular())
+    pixelization = al.Pixelization(mesh=al.mesh.RectangularUniform())
 
     g2 = al.Galaxy(redshift=2.0, pixelization=pixelization)
 
