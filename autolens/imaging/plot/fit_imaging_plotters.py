@@ -409,10 +409,85 @@ class FitImagingPlotter(Plotter):
             auto_labels=AutoLabels(filename=auto_filename),
         )
 
+
+    def subplot_fit_x1_plane(self):
+        """
+        Standard subplot of the attributes of the plotter's `FitImaging` object.
+        """
+
+        self.open_subplot_figure(number_subplots=6)
+
+        self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(self.fit.model_images_of_planes_list[0].array)
+        self.figures_2d(data=True)
+        self.mat_plot_2d.cmap.kwargs.pop("vmax")
+
+        self.figures_2d(signal_to_noise_map=True)
+
+        self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(self.fit.model_images_of_planes_list[0].array)
+        self.figures_2d(model_image=True)
+        self.mat_plot_2d.cmap.kwargs.pop("vmax")
+
+        self.residuals_symmetric_cmap = False
+        self.set_title(label="Lens Light Subtracted Image")
+        self.figures_2d(normalized_residual_map=True)
+
+        self.residuals_symmetric_cmap = True
+        self.set_title(label="Normalized Residual Map")
+        self.figures_2d(normalized_residual_map=True)
+        self.set_title(label=None)
+
+        self.figures_2d(chi_squared_map=True)
+
+        self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_fit")
+        self.close_subplot_figure()
+
+    def subplot_fit_log10_x1_plane(self):
+        """
+        Standard subplot of the attributes of the plotter's `FitImaging` object.
+        """
+
+        contour_original = copy.copy(self.mat_plot_2d.contour)
+        use_log10_original = self.mat_plot_2d.use_log10
+
+        self.open_subplot_figure(number_subplots=6)
+
+        self.mat_plot_2d.contour = False
+        self.mat_plot_2d.use_log10 = True
+
+        self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(self.fit.model_images_of_planes_list[0].array)
+        self.figures_2d(data=True)
+        self.mat_plot_2d.cmap.kwargs.pop("vmax")
+
+        self.figures_2d(signal_to_noise_map=True)
+
+        self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(self.fit.model_images_of_planes_list[0].array)
+        self.figures_2d(model_image=True)
+        self.mat_plot_2d.cmap.kwargs.pop("vmax")
+
+        self.residuals_symmetric_cmap = False
+        self.set_title(label="Lens Light Subtracted Image")
+        self.figures_2d(normalized_residual_map=True)
+
+        self.residuals_symmetric_cmap = True
+        self.set_title(label="Normalized Residual Map")
+        self.figures_2d(normalized_residual_map=True)
+        self.set_title(label=None)
+
+        self.figures_2d(chi_squared_map=True)
+
+        self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_fit_log10")
+        self.close_subplot_figure()
+
+        self.mat_plot_2d.use_log10 = use_log10_original
+        self.mat_plot_2d.contour = contour_original
+
     def subplot_fit(self, plane_index: Optional[int] = None):
         """
         Standard subplot of the attributes of the plotter's `FitImaging` object.
         """
+
+        if len(self.fit.tracer.planes) == 1:
+            return self.subplot_fit_x1_plane()
 
         self.open_subplot_figure(number_subplots=12)
 
@@ -501,6 +576,9 @@ class FitImagingPlotter(Plotter):
         """
         Standard subplot of the attributes of the plotter's `FitImaging` object.
         """
+
+        if len(self.fit.tracer.planes) == 1:
+            return self.subplot_fit_log10_x1_plane()
 
         contour_original = copy.copy(self.mat_plot_2d.contour)
         use_log10_original = self.mat_plot_2d.use_log10
@@ -792,15 +870,21 @@ class FitImagingPlotter(Plotter):
             certain plots (e.g. the `data`) in order to ensure the lensed source is visible compared to the lens.
         """
 
-        if data:
-
-            if use_source_vmax:
-                self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(
+        if use_source_vmax:
+            try:
+                source_vmax = np.max(
                     [
                         model_image.array
                         for model_image in self.fit.model_images_of_planes_list[1:]
                     ]
                 )
+            except ValueError:
+                source_vmax = None
+
+        if data:
+
+            if use_source_vmax:
+                self.mat_plot_2d.cmap.kwargs["vmax"] = source_vmax
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,
@@ -836,12 +920,7 @@ class FitImagingPlotter(Plotter):
         if model_image:
 
             if use_source_vmax:
-                self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(
-                    [
-                        model_image.array
-                        for model_image in self.fit.model_images_of_planes_list[1:]
-                    ]
-                )
+                self.mat_plot_2d.cmap.kwargs["vmax"] = source_vmax
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.model_data,

@@ -33,6 +33,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
         preloads: aa.Preloads = None,
         raise_inversion_positions_likelihood_exception: bool = True,
         title_prefix: str = None,
+        **kwargs
     ):
         """
         Fits a lens model to a dataset via a non-linear search.
@@ -74,6 +75,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
             settings_inversion=settings_inversion,
             preloads=preloads,
             title_prefix=title_prefix,
+            **kwargs
         )
 
         AnalysisLens.__init__(
