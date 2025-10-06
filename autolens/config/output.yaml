@@ -86,8 +86,10 @@ start_point: true
 # manually after completing a successful model-fit. This will save computational run time by not computing latent
 # variables during a any model-fit which is unsuccessful.
 
-latent_during_fit: true # Whether to output the `latent.csv`, `latent.results` and `latent_summary.json` files during the fit when it performs on-the-fly output.
+latent_during_fit: false # Whether to output the `latent.csv`, `latent.results` and `latent_summary.json` files during the fit when it performs on-the-fly output.
 latent_after_fit: true # If `latent_during_fit` is False, whether to output the `latent.csv`, `latent.results` and `latent_summary.json` files after the fit is complete.
+latent_draw_via_pdf : true # Whether to draw latent variable values via the PDF of every sample, which uses fewer samples to estimate latent variable errors. If False, latent variable values are drawn from every sample.
+latent_draw_via_pdf_size : 100 # The number of samples drawn to estimate latent variable errors if `latent_draw_via_pdf` is True.
 latent_csv: true # Whether to ouptut the `latent.csv` file.
 latent_results: true # Whether to output the `latent.results` file.
 
