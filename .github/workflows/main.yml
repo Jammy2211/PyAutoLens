@@ -78,6 +78,7 @@ jobs:
     - name: Run tests
       run: |
         export ROOT_DIR=`pwd`
+        export JAX_ENABLE_X64=True
         export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoConf
         export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoFit
         export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoArray
