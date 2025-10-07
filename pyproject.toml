@@ -49,9 +49,9 @@ local_scheme = "no-local-version"
 optional=[
     "numba",
     "pynufft",
+    "ultranest==3.6.2",
     "zeus-mcmc==2.5.4",
-    "getdist==1.4",
-    "ultranest==4.3.2"
+    "getdist==1.4"
 ]
 docs=[
     "sphinx",
