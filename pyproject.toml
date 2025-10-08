@@ -28,7 +28,7 @@ classifiers = [
 keywords = ["cli"]
 dependencies = [
     "autogalaxy",
-    "nautilus-sampler==1.0.4"
+    "nautilus-sampler==1.0.5"
 ]
 
 [project.urls]
