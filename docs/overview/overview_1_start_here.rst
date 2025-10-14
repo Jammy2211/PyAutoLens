@@ -167,7 +167,7 @@ A ``Galaxy`` object is a collection of light profiles at a specific redshift.
 
 This object is highly extensible and is what ultimately allows us to fit complex models to strong lens images.
 
-Below, we create two galaxies representing the lens and source galaxies shown in the strong lensing diagram above.
+We create two galaxies representing the lens and source galaxies shown in the strong lensing diagram above.
 
 .. code:: python
 

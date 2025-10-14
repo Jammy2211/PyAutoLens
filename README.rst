@@ -86,7 +86,7 @@ API Overview
 ------------
 
 Lensing calculations are performed in **PyAutoLens** by building a ``Tracer`` object from ``LightProfile``,
-``MassProfile`` and ``Galaxy`` objects. Below, we create a simple strong lens system where a redshift 0.5
+``MassProfile`` and ``Galaxy`` objects. We create a simple strong lens system where a redshift 0.5
 lens ``Galaxy`` with an ``Isothermal`` ``MassProfile`` lenses a background source at redshift 1.0 with an
 ``Exponential`` ``LightProfile`` representing a disk.
 
