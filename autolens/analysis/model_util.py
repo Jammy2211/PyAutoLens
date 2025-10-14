@@ -1,31 +1,35 @@
 import numpy as np
+from typing import Tuple
 
 import autofit as af
 import autolens as al
 
 
-def mge_start_here_lens_model_from(
+def mge_model_from(
     mask_radius: float,
-    lens_total_gaussians: int = 20,
-    source_total_gaussians: int = 20,
-    lens_gaussian_per_basis: int = 1,
-    source_gaussian_per_basis: int = 1,
+    total_gaussians: int = 30,
+    gaussian_per_basis: int = 1,
+    centre_prior_is_uniform: bool = True,
+    centre: Tuple[float, float] = (0.0, 0.0),
 ) -> af.Collection:
     """
-    Construct a strong lens model using a Multi-Gaussian Expansion (MGE) for the
-    lens and source galaxy light, and a Singular Isothermal Ellipsoid (SIE) plus
-    external shear for the lens mass.
+    Construct a Multi-Gaussian Expansion (MGE) for the lens or source galaxy light
 
     This model is designed as a "start here" configuration for lens modeling:
+
     - The lens and source light are represented by a Basis object composed of many
       Gaussian light profiles with fixed logarithmically spaced widths (`sigma`).
     - All Gaussians within each basis share common centres and ellipticity
       components, reducing degeneracy while retaining flexibility.
-    - The lens mass distribution is modeled with an isothermal ellipsoid and an
-      external shear, a common baseline for strong lensing.
+
+    - Users can combine with a lens mass model of their choiuce.
 
     The resulting model provides a good balance of speed, flexibility, and accuracy
     for fitting most galaxy-scale strong lenses.
+
+    This code is mostly to make the API simple for new users, hiding the technical
+    details of setting up an MGE. More advanced users may wish to customize the
+    model further.
 
     Parameters
     ----------
@@ -66,20 +70,31 @@ def mge_start_here_lens_model_from(
     """
 
     # The sigma values of the Gaussians will be fixed to values spanning 0.01 to the mask radius, 3.0".
-    log10_sigma_list = np.linspace(-2, np.log10(mask_radius), lens_total_gaussians)
+    log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
 
     # By defining the centre here, it creates two free parameters that are assigned below to all Gaussians.
 
-    centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
-    centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+    if centre_prior_is_uniform:
+
+        centre_0 = af.UniformPrior(
+            lower_limit=centre[0] - 0.1, upper_limit=centre[0] + 0.1
+        )
+        centre_1 = af.UniformPrior(
+            lower_limit=centre[1] - 0.1, upper_limit=centre[1] + 0.1
+        )
+
+    else:
+
+        centre_0 = af.GaussianPrior(mean=centre[0], sigma=0.3)
+        centre_1 = af.GaussianPrior(mean=centre[1], sigma=0.3)
 
     bulge_gaussian_list = []
 
-    for j in range(lens_gaussian_per_basis):
+    for j in range(gaussian_per_basis):
         # A list of Gaussian model components whose parameters are customized belows.
 
         gaussian_list = af.Collection(
-            af.Model(al.lp_linear.Gaussian) for _ in range(lens_total_gaussians)
+            af.Model(al.lp_linear.Gaussian) for _ in range(total_gaussians)
         )
 
         # Iterate over every Gaussian and customize its parameters.
@@ -98,50 +113,10 @@ def mge_start_here_lens_model_from(
 
     # The Basis object groups many light profiles together into a single model component.
 
-    bulge = af.Model(
+    return af.Model(
         al.lp_basis.Basis,
         profile_list=bulge_gaussian_list,
     )
-    mass = af.Model(al.mp.Isothermal)
-    shear = af.Model(al.mp.ExternalShear)
-    lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
-
-    # Source:
-
-    # By defining the centre here, it creates two free parameters that are assigned to the source Gaussians.
-
-    centre_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
-    centre_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
-
-    log10_sigma_list = np.linspace(-2, np.log10(1.0), source_total_gaussians)
-
-    bulge_gaussian_list = []
-
-    for j in range(source_gaussian_per_basis):
-        gaussian_list = af.Collection(
-            af.Model(al.lp_linear.Gaussian) for _ in range(source_total_gaussians)
-        )
-
-        for i, gaussian in enumerate(gaussian_list):
-            gaussian.centre.centre_0 = centre_0
-            gaussian.centre.centre_1 = centre_1
-            gaussian.ell_comps = gaussian_list[0].ell_comps
-            gaussian.sigma = 10 ** log10_sigma_list[i]
-
-        bulge_gaussian_list += gaussian_list
-
-    source_bulge = af.Model(
-        al.lp_basis.Basis,
-        profile_list=bulge_gaussian_list,
-    )
-
-    source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
-
-    # Overall Lens Model:
-
-    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
-
-    return model
 
 
 def simulator_start_here_model_from():
