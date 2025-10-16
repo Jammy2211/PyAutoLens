@@ -39,20 +39,18 @@ class VisualizerImaging(af.Visualizer):
 
         if analysis.positions_likelihood_list is not None:
 
-            if analysis.positions_likelihood_list[0] is not None:
+            positions_list = []
 
-                positions_list = []
+            for positions_likelihood in analysis.positions_likelihood_list:
 
-                for positions_likelihood in analysis.positions_likelihood_list:
+                positions_list.append(
+                    positions_likelihood.positions
+                )
 
-                    positions_list.append(
-                        positions_likelihood.positions
-                    )
+            positions = ag.Grid2DIrregular(positions_list)
 
-                positions = ag.Grid2DIrregular(positions_list)
-
-                plotter_interface.image_with_positions(
-                    image=analysis.dataset.data,
+            plotter_interface.image_with_positions(
+                image=analysis.dataset.data,
                 positions=positions,
             )
 

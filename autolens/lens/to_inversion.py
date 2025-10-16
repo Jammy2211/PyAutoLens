@@ -173,13 +173,18 @@ class TracerToInversion(ag.AbstractToInversion):
                 blurring=traced_blurring_grids_of_planes_list[plane_index],
             )
 
+            if self.settings_inversion.use_w_tilde:
+                w_tilde = self.dataset.w_tilde
+            else:
+                w_tilde = None
+
             dataset = aa.DatasetInterface(
                 data=self.dataset.data,
                 noise_map=self.dataset.noise_map,
                 grids=grids,
                 psf=self.psf,
                 transformer=self.transformer,
-                w_tilde=self.dataset.w_tilde,
+                w_tilde=w_tilde,
             )
 
             galaxies_to_inversion = ag.GalaxiesToInversion(

@@ -75,7 +75,7 @@ class FitPositionsImagePair(AbstractFitPositionsImagePair):
                 self.data,
             )[:, np.newaxis]
             - np.array(
-                self.model_data,
+                self.model_data.array,
             ),
             axis=2,
         )
@@ -85,7 +85,7 @@ class FitPositionsImagePair(AbstractFitPositionsImagePair):
         for data_index, model_index in zip(data_indexes, model_indexes):
             distance = np.sqrt(
                 self.square_distance(
-                    self.data[data_index], self.model_data[model_index]
+                    self.data[data_index], self.model_data.array[model_index]
                 )
             )
 
