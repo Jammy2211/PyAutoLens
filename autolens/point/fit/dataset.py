@@ -1,6 +1,3 @@
-from typing import Callable, Dict, Optional
-
-
 from autolens.point.dataset import PointDataset
 from autolens.point.solver import PointSolver
 from autolens.point.fit.fluxes import FitFluxes
@@ -9,14 +6,6 @@ from autolens.lens.tracer import Tracer
 
 from autolens.point.fit.positions.image.pair import FitPositionsImagePair
 from autolens import exc
-
-try:
-    import numba
-
-    NumbaException = numba.errors.TypingError
-except ModuleNotFoundError:
-    NumbaException = AttributeError
-
 
 class FitPointDataset:
     def __init__(

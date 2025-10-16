@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple
+from typing import Optional, Tuple
 
 import autofit as af
 import autolens as al
@@ -11,6 +11,8 @@ def mge_model_from(
     gaussian_per_basis: int = 1,
     centre_prior_is_uniform: bool = True,
     centre: Tuple[float, float] = (0.0, 0.0),
+    centre_fixed : Optional[Tuple[float, float]] = None,
+    use_spherical : bool = False
 ) -> af.Collection:
     """
     Construct a Multi-Gaussian Expansion (MGE) for the lens or source galaxy light
@@ -74,19 +76,24 @@ def mge_model_from(
 
     # By defining the centre here, it creates two free parameters that are assigned below to all Gaussians.
 
-    if centre_prior_is_uniform:
-
+    if centre_fixed is not None:
+        centre_0 = centre[0]
+        centre_1 = centre[1]
+    elif centre_prior_is_uniform:
         centre_0 = af.UniformPrior(
             lower_limit=centre[0] - 0.1, upper_limit=centre[0] + 0.1
         )
         centre_1 = af.UniformPrior(
             lower_limit=centre[1] - 0.1, upper_limit=centre[1] + 0.1
         )
-
     else:
-
         centre_0 = af.GaussianPrior(mean=centre[0], sigma=0.3)
         centre_1 = af.GaussianPrior(mean=centre[1], sigma=0.3)
+
+    if use_spherical:
+        model_cls = al.lp_linear.GaussianSph
+    else:
+        model_cls = al.lp_linear.Gaussian
 
     bulge_gaussian_list = []
 
@@ -94,7 +101,7 @@ def mge_model_from(
         # A list of Gaussian model components whose parameters are customized belows.
 
         gaussian_list = af.Collection(
-            af.Model(al.lp_linear.Gaussian) for _ in range(total_gaussians)
+            af.Model(model_cls) for _ in range(total_gaussians)
         )
 
         # Iterate over every Gaussian and customize its parameters.
@@ -102,9 +109,10 @@ def mge_model_from(
         for i, gaussian in enumerate(gaussian_list):
             gaussian.centre.centre_0 = centre_0  # All Gaussians have same y centre.
             gaussian.centre.centre_1 = centre_1  # All Gaussians have same x centre.
-            gaussian.ell_comps = gaussian_list[
-                0
-            ].ell_comps  # All Gaussians have same elliptical components.
+            if not use_spherical:
+                gaussian.ell_comps = gaussian_list[
+                    0
+                ].ell_comps  # All Gaussians have same elliptical components.
             gaussian.sigma = (
                 10 ** log10_sigma_list[i]
             )  # All Gaussian sigmas are fixed to values above.
@@ -119,21 +127,28 @@ def mge_model_from(
     )
 
 
-def simulator_start_here_model_from():
-    bulge = af.Model(al.lp_snr.Sersic)
+def simulator_start_here_model_from(
+        include_lens_light : bool = True,
+        use_point_source : bool = False
+):
 
-    bulge.centre = (0.0, 0.0)
-    bulge.ell_comps.ell_comps_0 = af.TruncatedGaussianPrior(
-        mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
-    )
-    bulge.ell_comps.ell_comps_1 = af.TruncatedGaussianPrior(
-        mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
-    )
-    bulge.signal_to_noise_ratio = af.UniformPrior(lower_limit=20.0, upper_limit=60.0)
-    bulge.effective_radius = af.UniformPrior(lower_limit=1.0, upper_limit=5.0)
-    bulge.sersic_index = af.TruncatedGaussianPrior(
-        mean=4.0, sigma=0.5, lower_limit=0.8, upper_limit=5.0
-    )
+    if include_lens_light:
+        bulge = af.Model(al.lp_snr.Sersic)
+
+        bulge.centre = (0.0, 0.0)
+        bulge.ell_comps.ell_comps_0 = af.TruncatedGaussianPrior(
+            mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
+        )
+        bulge.ell_comps.ell_comps_1 = af.TruncatedGaussianPrior(
+            mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
+        )
+        bulge.signal_to_noise_ratio = af.UniformPrior(lower_limit=20.0, upper_limit=60.0)
+        bulge.effective_radius = af.UniformPrior(lower_limit=1.0, upper_limit=5.0)
+        bulge.sersic_index = af.TruncatedGaussianPrior(
+            mean=4.0, sigma=0.5, lower_limit=0.8, upper_limit=5.0
+        )
+    else:
+        bulge = None
 
     mass = af.Model(al.mp.Isothermal)
 
@@ -153,24 +168,34 @@ def simulator_start_here_model_from():
 
     lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
 
-    bulge = af.Model(al.lp_snr.Sersic)
+    if use_point_source:
 
-    bulge.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
-    bulge.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
-    bulge.ell_comps.ell_comps_0 = af.GaussianPrior(
-        mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
-    )
-    bulge.ell_comps.ell_comps_1 = af.GaussianPrior(
-        mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
-    )
-    bulge.signal_to_noise_ratio = af.UniformPrior(lower_limit=10.0, upper_limit=30.0)
-    bulge.effective_radius = af.UniformPrior(lower_limit=0.01, upper_limit=3.0)
-    bulge.sersic_index = af.GaussianPrior(
-        mean=2.0, sigma=0.5, lower_limit=0.8, upper_limit=5.0
-    )
+        point_0 = af.Model(al.ps.PointFlux)
 
-    source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+        point_0.centre.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
+        point_0.centre.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
+        point_0.flux = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)
 
-    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+        source = af.Model(al.Galaxy, redshift=1.0, point_0=point_0)
+
+    else:
+
+        bulge = af.Model(al.lp_snr.Sersic)
+
+        bulge.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
+        bulge.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
+        bulge.ell_comps.ell_comps_0 = af.TruncatedGaussianPrior(
+            mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
+        )
+        bulge.ell_comps.ell_comps_1 = af.TruncatedGaussianPrior(
+            mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
+        )
+        bulge.signal_to_noise_ratio = af.UniformPrior(lower_limit=10.0, upper_limit=30.0)
+        bulge.effective_radius = af.UniformPrior(lower_limit=0.01, upper_limit=3.0)
+        bulge.sersic_index = af.TruncatedGaussianPrior(
+            mean=2.0, sigma=0.5, lower_limit=0.8, upper_limit=5.0
+        )
+
+        source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
     return lens, source
