@@ -24,6 +24,7 @@ class PlotterInterfaceInterferometer(PlotterInterface):
         self,
         fit: FitInterferometer,
         visuals_2d_of_planes_list: Optional[aplt.Visuals2D] = None,
+        quick_update: bool = False,
     ):
         """
         Visualizes a `FitInterferometer` object, which fits an interferometer dataset.
@@ -60,6 +61,9 @@ class PlotterInterfaceInterferometer(PlotterInterface):
 
         if should_plot("subplot_fit_dirty_images"):
             fit_plotter.subplot_fit_dirty_images()
+
+        if quick_update:
+            return
 
         if should_plot("subplot_fit_real_space"):
             fit_plotter.subplot_fit_real_space()

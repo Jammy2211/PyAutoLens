@@ -3,11 +3,6 @@
 Troubleshooting
 ===============
 
-Numba
------
-
-Help for troubleshooting specifically numba is provided at `at this readthedocs page <https://pyautolens.readthedocs.io/en/latest/installation/numba.html>`_
-
 Pip Version
 -----------
 
@@ -23,7 +18,7 @@ Pip / Conda
 -----------
 
 If you are trying to `install via pip <https://pyautolens.readthedocs.io/en/latest/installation/pip.html>`_ but
-still haing issues, we recommend you try to `install via conda <https://pyautogalaxy.readthedocs.io/en/latest/installation/conda.html>`_
+still having issues, we recommend you try to `install via conda <https://pyautogalaxy.readthedocs.io/en/latest/installation/conda.html>`_
 instead, or visa versa.
 
 Support

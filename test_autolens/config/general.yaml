@@ -8,7 +8,7 @@ grid:
   remove_projected_centre: false
 hpc:
   hpc_mode: false
-  iterations_per_update: 5000
+  iterations_per_full_update: 5000
 adapt:
   adapt_minimum_percent: 0.01
   adapt_noise_limit: 100000000.0

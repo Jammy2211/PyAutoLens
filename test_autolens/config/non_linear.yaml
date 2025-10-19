@@ -4,18 +4,14 @@ mock:
       method: prior
     printing:
       silence: false
-    updates:
-      iterations_per_update: 2500
-      remove_state_files_at_end: true
+
   MockSearch:
     initialize:
       method: prior
     printing:
       silence: false
     search: {}
-    updates:
-      iterations_per_update: 2500
-      remove_state_files_at_end: true
+
 nest:
   DynestyDynamic:
     general:
@@ -39,9 +35,7 @@ nest:
       number_of_cores: 1
     printing:
       silence: false
-    updates:
-      iterations_per_update: 2500
-      remove_state_files_at_end: true
+
   DynestyStatic:
     parallel:
       number_of_cores: 1
@@ -78,6 +72,4 @@ nest:
       stagger_resampling_likelihood: true
       verbose: false
       write_output: true
-    updates:
-      iterations_per_update: 2500
-      remove_state_files_at_end: true
+

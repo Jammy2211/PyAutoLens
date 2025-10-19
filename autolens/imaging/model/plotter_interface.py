@@ -19,7 +19,7 @@ class PlotterInterfaceImaging(PlotterInterface):
     imaging_combined = AgPlotterInterfaceImaging.imaging_combined
 
     def fit_imaging(
-        self, fit: FitImaging, visuals_2d_of_planes_list : Optional[aplt.Visuals2D] = None
+        self, fit: FitImaging, visuals_2d_of_planes_list : Optional[aplt.Visuals2D] = None, quick_update: bool = False
     ):
         """
         Visualizes a `FitImaging` object, which fits an imaging dataset.
@@ -40,6 +40,30 @@ class PlotterInterfaceImaging(PlotterInterface):
             The maximum log likelihood `FitImaging` of the non-linear search which is used to plot the fit.
         """
 
+        def should_plot(name):
+            return plot_setting(section=["fit", "fit_imaging"], name=name)
+
+        mat_plot_2d = self.mat_plot_2d_from(quick_update=quick_update)
+
+        fit_plotter = FitImagingPlotter(
+            fit=fit, mat_plot_2d=mat_plot_2d, visuals_2d_of_planes_list=visuals_2d_of_planes_list,
+        )
+
+        plane_indexes_to_plot = [i for i in fit.tracer.plane_indexes_with_images if i != 0]
+
+        if should_plot("subplot_fit") or quick_update:
+
+            # This loop means that multiple subplot_fit objects are output for a double source plane lens.
+
+            if len(fit.tracer.planes) > 2:
+                for plane_index in plane_indexes_to_plot:
+                    fit_plotter.subplot_fit(plane_index=plane_index)
+            else:
+                fit_plotter.subplot_fit()
+
+        if quick_update:
+            return
+
         if plot_setting(section="tracer", name="subplot_tracer"):
 
             mat_plot_2d = self.mat_plot_2d_from()
@@ -49,27 +73,6 @@ class PlotterInterfaceImaging(PlotterInterface):
             )
 
             fit_plotter.subplot_tracer()
-
-        def should_plot(name):
-            return plot_setting(section=["fit", "fit_imaging"], name=name)
-
-        mat_plot_2d = self.mat_plot_2d_from()
-
-        fit_plotter = FitImagingPlotter(
-            fit=fit, mat_plot_2d=mat_plot_2d, visuals_2d_of_planes_list=visuals_2d_of_planes_list,
-        )
-
-        plane_indexes_to_plot = [i for i in fit.tracer.plane_indexes_with_images if i != 0]
-
-        if should_plot("subplot_fit"):
-
-            # This loop means that multiple subplot_fit objects are output for a double source plane lens.
-
-            if len(fit.tracer.planes) > 2:
-                for plane_index in plane_indexes_to_plot:
-                    fit_plotter.subplot_fit(plane_index=plane_index)
-            else:
-                fit_plotter.subplot_fit()
 
         if should_plot("subplot_fit_log10"):
 
@@ -81,7 +84,6 @@ class PlotterInterfaceImaging(PlotterInterface):
                     fit_plotter.subplot_fit_log10()
             except ValueError:
                 pass
-
 
         if should_plot("subplot_of_planes"):
             fit_plotter.subplot_of_planes()

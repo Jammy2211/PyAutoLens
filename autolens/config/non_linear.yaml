@@ -29,9 +29,6 @@ nest:
       slices: 5
       update_interval: null
       walks: 5
-    updates:
-      iterations_per_update: 2500
-      remove_state_files_at_end: true
   DynestyStatic:
     initialize:
       method: prior
@@ -58,9 +55,3 @@ nest:
       slices: 5
       update_interval: null
       walks: 5
-    updates:
-      iterations_per_update: 5000
-      log_every_update: 1
-      model_results_every_update: 1
-      remove_state_files_at_end: true
-      visualize_every_update: 1
