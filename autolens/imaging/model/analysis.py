@@ -173,3 +173,5 @@ class AnalysisImaging(AnalysisDataset):
         )
 
         analysis.save_attributes(paths=paths)
+
+

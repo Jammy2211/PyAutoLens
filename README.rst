@@ -1,5 +1,5 @@
-PyAutoLens: Open-Source Strong Lensing
-======================================
+PyAutoLens-JAX: Open-Source Strong Lensing
+==========================================
 
 .. |nbsp| unicode:: 0xA0
     :trim:
@@ -50,7 +50,7 @@ PyAutoLens: Open-Source Strong Lensing
 
 When two or more galaxies are aligned perfectly down our line-of-sight, the background galaxy appears multiple times.
 
-This is called strong gravitational lensing and **PyAutoLens** makes it simple to model strong gravitational lenses.
+This is called strong gravitational lensing and **PyAutoLens** makes it **simple** to model strong gravitational lenses, using JAX to **accelerate lens modeling on GPUs**.
 
 Getting Started
 ---------------
@@ -81,135 +81,3 @@ you may wish to read through the **HowToLens** lectures. These teach you the bas
 and Bayesian inference, with the content pitched at undergraduate level and above.
 
 A complete overview of the lectures `is provided on the HowToLens readthedocs page <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
-
-API Overview
-------------
-
-Lensing calculations are performed in **PyAutoLens** by building a ``Tracer`` object from ``LightProfile``,
-``MassProfile`` and ``Galaxy`` objects. We create a simple strong lens system where a redshift 0.5
-lens ``Galaxy`` with an ``Isothermal`` ``MassProfile`` lenses a background source at redshift 1.0 with an
-``Exponential`` ``LightProfile`` representing a disk.
-
-.. code-block:: python
-
-    import autolens as al
-    import autolens.plot as aplt
-    from astropy import cosmology as cosmo
-
-    """
-    To describe the deflection of light by mass, two-dimensional grids of (y,x) Cartesian
-    coordinates are used.
-    """
-    grid = al.Grid2D.uniform(
-        shape_native=(50, 50),
-        pixel_scales=0.05,  # <- Conversion from pixel units to arc-seconds.
-    )
-
-    """
-    The lens galaxy has an elliptical isothermal mass profile and is at redshift 0.5.
-    """
-    mass = al.mp.Isothermal(
-        centre=(0.0, 0.0), ell_comps=(0.1, 0.05), einstein_radius=1.6
-    )
-
-    lens_galaxy = al.Galaxy(redshift=0.5, mass=mass)
-
-    """
-    The source galaxy has an elliptical exponential light profile and is at redshift 1.0.
-    """
-    disk = al.lp.Exponential(
-        centre=(0.3, 0.2),
-        ell_comps=(0.05, 0.25),
-        intensity=0.05,
-        effective_radius=0.5,
-    )
-
-    source_galaxy = al.Galaxy(redshift=1.0, disk=disk)
-
-    """
-    We create the strong lens using a Tracer, which uses the galaxies, their redshifts
-    and an input cosmology to determine how light is deflected on its path to Earth.
-    """
-    tracer = al.Tracer(
-        galaxies=[lens_galaxy, source_galaxy], 
-        cosmology = al.cosmo.Planck15()
-    )
-
-    """
-    We can use the Grid2D and Tracer to perform many lensing calculations, for example
-    plotting the image of the lensed source.
-    """
-    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-    tracer_plotter.figures_2d(image=True)
-
-With **PyAutoLens**, you can begin modeling a lens in minutes. The example below demonstrates a simple analysis which
-fits the lens galaxy's mass with an ``Isothermal`` and the source galaxy's light with a ``Sersic``.
-
-.. code-block:: python
-
-    import autofit as af
-    import autolens as al
-    import autolens.plot as aplt
-
-    """
-    Load Imaging data of the strong lens from the dataset folder of the workspace.
-    """
-    dataset = al.Imaging.from_fits(
-        data_path="/path/to/dataset/image.fits",
-        noise_map_path="/path/to/dataset/noise_map.fits",
-        psf_path="/path/to/dataset/psf.fits",
-        pixel_scales=0.1,
-    )
-
-    """
-    Create a mask for the imaging data, which we setup as a 3.0" circle, and apply it.
-    """
-    mask = al.Mask2D.circular(
-        shape_native=dataset.shape_native,
-        pixel_scales=dataset.pixel_scales,
-        radius=3.0
-    )
-    dataset = dataset.apply_mask(mask=mask)
-
-    """
-    We model the lens galaxy using an elliptical isothermal mass profile and
-    the source galaxy using an elliptical sersic light profile.
-
-    To setup these profiles as model components whose parameters are free & fitted for
-    we set up each Galaxy as a `Model` and define the model as a `Collection` of all galaxies.
-    """
-    # Lens:
-
-    mass = af.Model(al.mp.Isothermal)
-    lens = af.Model(al.Galaxy, redshift=0.5, mass=lens_mass_profile)
-
-    # Source:
-
-    disk = af.Model(al.lp.Sersic)
-    source = af.Model(al.Galaxy, redshift=1.0, disk=disk)
-
-    # Overall Lens Model:
-    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
-
-    """
-    We define the non-linear search used to fit the model to the data (in this case, Dynesty).
-    """
-    search = af.Nautilus(name="search[example]", n_live=50)
-
-    """
-    We next set up the `Analysis`, which contains the `log likelihood function` that the
-    non-linear search calls to fit the lens model to the data.
-    """
-    analysis = al.AnalysisImaging(dataset=dataset)
-
-    """
-    To perform the model-fit we pass the model and analysis to the search's fit method. This will
-    output results (e.g., dynesty samples, model parameters, visualization) to hard-disk.
-    """
-    result = search.fit(model=model, analysis=analysis)
-
-    """
-    The results contain information on the fit, for example the maximum likelihood
-    model from the Dynesty parameter space search.
-    """
-    print(result.samples.max_log_likelihood())

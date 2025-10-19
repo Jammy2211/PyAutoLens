@@ -42,6 +42,7 @@ class PlotterInterfacePoint(PlotterInterface):
     def fit_point(
         self,
         fit: FitPointDataset,
+        quick_update: bool = False,
     ):
         """
         Visualizes a `FitPointDataset` object, which fits an imaging dataset.
@@ -69,5 +70,8 @@ class PlotterInterfacePoint(PlotterInterface):
 
         fit_plotter = FitPointDatasetPlotter(fit=fit, mat_plot_2d=mat_plot_2d)
 
-        if should_plot("subplot_fit"):
+        if should_plot("subplot_fit") or quick_update:
             fit_plotter.subplot_fit()
+
+        if quick_update:
+            return

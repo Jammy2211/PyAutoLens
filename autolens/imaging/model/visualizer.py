@@ -63,6 +63,7 @@ class VisualizerImaging(af.Visualizer):
         paths: af.DirectoryPaths,
         instance: af.ModelInstance,
         during_analysis: bool,
+        quick_update: bool = False,
     ):
         """
         Output images of the maximum log likelihood model inferred by the model-fit. This function is called throughout
@@ -91,7 +92,55 @@ class VisualizerImaging(af.Visualizer):
             via a non-linear search).
         """
 
+        import time
+
+        start_time = time.time()
+
         fit = analysis.fit_from(instance=instance)
+
+        print(f"Fit From time: {time.time() - start_time} seconds")
+
+        start_time = time.time()
+
+        tracer = fit.tracer_linear_light_profiles_to_light_profiles
+
+        print(f"Tracer Linear Light Profiles time: {time.time() - start_time} seconds")
+
+        start_time = time.time()
+
+        visuals_2d_of_planes_list = tracer_util.visuals_2d_of_planes_list_from(
+            tracer=fit.tracer,
+            grid=fit.grids.lp.mask.derive_grid.all_false
+        )
+
+        print(f"Visuals 2D of planes list time: {time.time() - start_time} seconds")
+
+        start_time = time.time()
+
+        plotter_interface = PlotterInterfaceImaging(
+            image_path=paths.image_path,
+            title_prefix=analysis.title_prefix,
+        )
+
+        print(f"Plotter Interface Imaging time: {time.time() - start_time} seconds")
+
+        start = time.time()
+
+        try:
+            plotter_interface.fit_imaging(
+                fit=fit,
+                visuals_2d_of_planes_list=visuals_2d_of_planes_list,
+                quick_update=quick_update,
+            )
+        except exc.InversionException:
+            pass
+
+        print(f"Plotter Interface Fit Imaging time: {time.time() - start} seconds")
+
+        if quick_update:
+            return
+
+        # Full update based on configs.
 
         if analysis.positions_likelihood_list is not None:
 
@@ -111,32 +160,12 @@ class VisualizerImaging(af.Visualizer):
             except exc.InversionException:
                 return
 
-        tracer = fit.tracer_linear_light_profiles_to_light_profiles
-
         zoom = ag.Zoom2D(mask=fit.mask)
 
         extent = zoom.extent_from(buffer=0)
         shape_native = zoom.shape_native
 
         grid = ag.Grid2D.from_extent(extent=extent, shape_native=shape_native)
-
-        visuals_2d_of_planes_list = tracer_util.visuals_2d_of_planes_list_from(
-            tracer=fit.tracer,
-            grid=fit.grids.lp.mask.derive_grid.all_false
-        )
-
-        plotter_interface = PlotterInterfaceImaging(
-            image_path=paths.image_path,
-            title_prefix=analysis.title_prefix,
-        )
-
-        try:
-            plotter_interface.fit_imaging(
-                fit=fit,
-                visuals_2d_of_planes_list=visuals_2d_of_planes_list
-            )
-        except exc.InversionException:
-            pass
 
         plotter_interface.tracer(
             tracer=tracer,

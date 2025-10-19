@@ -38,6 +38,7 @@ class VisualizerPoint(af.Visualizer):
         paths: af.DirectoryPaths,
         instance: af.ModelInstance,
         during_analysis: bool,
+        quick_update: bool = False,
     ):
         """
         Output images of the maximum log likelihood model inferred by the model-fit. This function is called throughout
@@ -68,7 +69,10 @@ class VisualizerPoint(af.Visualizer):
             image_path=paths.image_path, title_prefix=analysis.title_prefix
         )
 
-        plotter_interface.fit_point(fit=fit)
+        plotter_interface.fit_point(fit=fit, quick_update=quick_update)
+
+        if quick_update:
+            return
 
         tracer = fit.tracer
 

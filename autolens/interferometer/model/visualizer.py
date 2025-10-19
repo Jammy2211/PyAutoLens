@@ -58,6 +58,7 @@ class VisualizerInterferometer(af.Visualizer):
         paths: af.DirectoryPaths,
         instance: af.ModelInstance,
         during_analysis: bool,
+        quick_update: bool = False,
     ):
         """
         Outputs images of the maximum log likelihood model inferred by the model-fit. This function is called
@@ -90,6 +91,24 @@ class VisualizerInterferometer(af.Visualizer):
         """
         fit = analysis.fit_from(instance=instance)
 
+        visuals_2d_of_planes_list = tracer_util.visuals_2d_of_planes_list_from(
+            tracer=fit.tracer, grid=fit.grids.lp.mask.derive_grid.all_false
+        )
+
+        plotter_interface = PlotterInterfaceInterferometer(
+            image_path=paths.image_path, title_prefix=analysis.title_prefix
+        )
+
+        try:
+            plotter_interface.fit_interferometer(
+                fit=fit, visuals_2d_of_planes_list=visuals_2d_of_planes_list, quick_update=quick_update,
+            )
+        except exc.InversionException:
+            pass
+
+        if quick_update:
+            return
+
         if analysis.positions_likelihood_list is not None:
 
             overwrite_file = True
@@ -110,9 +129,6 @@ class VisualizerInterferometer(af.Visualizer):
             except exc.InversionException:
                 return
 
-        visuals_2d_of_planes_list = tracer_util.visuals_2d_of_planes_list_from(
-            tracer=fit.tracer, grid=fit.grids.lp.mask.derive_grid.all_false
-        )
 
         tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
@@ -123,13 +139,9 @@ class VisualizerInterferometer(af.Visualizer):
 
         grid = ag.Grid2D.from_extent(extent=extent, shape_native=shape_native)
 
-        plotter_interface = PlotterInterfaceInterferometer(
-            image_path=paths.image_path, title_prefix=analysis.title_prefix
-        )
-
         try:
             plotter_interface.fit_interferometer(
-                fit=fit, visuals_2d_of_planes_list=visuals_2d_of_planes_list
+                fit=fit, visuals_2d_of_planes_list=visuals_2d_of_planes_list,
             )
         except exc.InversionException:
             pass

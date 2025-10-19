@@ -7,7 +7,7 @@ What is PyAutoLens?
 
 When two or more galaxies are aligned perfectly down our line-of-sight, the background galaxy appears multiple times.
 
-This is called strong gravitational lensing and **PyAutoLens** makes it simple to model strong gravitational lenses.
+This is called strong gravitational lensing and **PyAutoLens** makes it simple to model strong gravitational lenses, using JAX to **accelerate lens modeling on GPUs**.
 
 Getting Started
 ===============
@@ -221,7 +221,6 @@ strong gravitational lensing.
    installation/overview
    installation/conda
    installation/pip
-   installation/numba
    installation/source
    installation/troubleshooting
 

@@ -6,6 +6,8 @@ Start Here
 **PyAutoLens** is software for analysing strong gravitational lenses, an astrophysical phenomenon where a galaxy
 appears multiple times because its light is bent by the gravitational field of an intervening foreground lens galaxy.
 
+It uses JAX to accelerate lensing calculations, with the example code below all running significantly faster on GPU.
+
 Here is a schematic of a strong gravitational lens:
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/schematic.jpg
@@ -68,7 +70,7 @@ lens galaxy. We therefore need to ray-trace the ``Grid2D``'s coordinates from th
 This uses analytic functions representing a galaxy's light and mass distributions, referred to as ``LightProfile`` and
 ``MassProfile`` objects.
 
-The most common light profile in Astronomy is the elliptical Sersic, which we create an instance of below:
+A common light profile in Astronomy is the elliptical Sersic, which we create an instance of below:
 
 .. code:: python
 
@@ -340,312 +342,71 @@ the stellar components use a ``LightAndMassProfile`` via the ``lmp`` module.
   :width: 600
   :alt: Alternative text
 
-Simulating Data
----------------
 
-The strong lens images above are **not** what we would observe if we looked at the sky through a telescope.
+Simulator
+---------
 
-In reality, images of strong lenses are observed using a telescope and detector, for example a CCD Imaging device 
-attached to the Hubble Space Telescope.
+Let’s now switch gears and simulate our own strong lens imaging. This is a great way to:
 
-To make images that look like realistic Astronomy data, we must account for the effects like how the length of the
-exposure time change the signal-to-noise, how the optics of the telescope blur the galaxy's light and that
-there is a background sky which also contributes light to the image and adds noise.
+- Practice lens modeling before using real data.
+- Build large training sets (e.g. for machine learning).
+- Test lensing theory in a controlled environment.
 
-The ``SimulatorImaging`` object simulates this process, creating realistic CCD images of galaxies using the ``Imaging``
-object.
+In this example. we simulate “perfect” images without telescope effects. This means no blurring
+from a PSF and no noise — just the raw light from galaxies and deflections from gravity.
 
-.. code:: python
-
-    simulator = al.SimulatorImaging(
-        exposure_time=300.0,
-        background_sky_level=1.0,
-        psf=al.Kernel2D.from_gaussian(shape_native=(11, 11), sigma=0.1, pixel_scales=0.05),
-        add_poisson_noise_to_data=True,
-    )
-
-Once we have a simulator, we can use it to create an imaging dataset which consists of an image, noise-map and 
-Point Spread Function (PSF) by passing it a galaxies and grid.
-
-This uses the tracer above to create the image of the galaxy and then add the effects that occur during data
-acquisition.
-
-This data is used below to illustrate model-fitting, so lets simulate a very simple image of a strong lens.
+In fact, this exactly what the image above is: a perfect image of a double Einstein ring system. The only
+thing we need to do then, is output it to a .fits file so we can load it elsewhere.
 
 .. code:: python
 
-    lens_galaxy = al.Galaxy(
-        redshift=0.5,
-        light=al.lp.Sersic(
-            centre=(0.0, 0.0),
-            ell_comps=(
-                0.2,
-                0.1,
-            ),
-            intensity=0.005,
-            effective_radius=2.0,
-            sersic_index=4.0,
-        ),
-        mass=al.mp.Isothermal(centre=(0.0, 0.0), ell_comps=(0.1, 0.0), einstein_radius=1.6),
+    al.output_to_fits(
+        values=image.native,
+        file_path=Path("image.fits"),
+        overwrite=True,
     )
 
-    source_galaxy = al.Galaxy(
-        redshift=1.0,
-        light=al.lp.Exponential(
-            centre=(0.3, 0.2), ell_comps=(0.1, 0.0), intensity=0.1, effective_radius=0.5
-        ),
-    )
-
-    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], cosmology=al.cosmo.Planck15())
-
-    dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
-
-Observed Dataset
-----------------
-
-We now have an ``Imaging`` object, which is a realistic representation of the data we observe with a telescope.
-
-We use the ``ImagingPlotter`` to plot the dataset, showing that it contains the observed image, but also other
-import dataset attributes like the noise-map and PSF.
-
-.. code:: python
-
-    dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
-    dataset_plotter.figures_2d(data=True)
-
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/11_data.png
-  :width: 600
-  :alt: Alternative text
-
-If you have come to **PyAutoLens** to perform interferometry, the API above is easily adapted to use 
-a ``SimulatorInterferometer`` object to simulate an ``Interferometer`` dataset instead.
-
-However, you should finish reading this notebook before moving on to the interferometry examples, to get a full
-overview of the core **PyAutoLens** API.
-
-Masking
+Samples
 -------
 
-We are about to fit the data with a model, but first must define a mask, which defines the regions of the image that 
-are used to fit the data and which regions are not.
+Often we want to simulate *many* strong lenses — for example, to train a neural network
+or to explore population-level statistics.
 
-We create a ``Mask2D`` object which is a 3.0" circle, whereby all pixels within this 3.0" circle are used in the 
-model-fit and all pixels outside are omitted. 
+This uses the model composition API to define the distribution of the light and mass profiles
+of the lens and source galaxies we draw from. The model composition is a little too complex for
+the first example, thus we use a helper function to create a simple lens and source model.
 
-Inspection of the dataset above shows that no signal from the strong lens is observed outside of this radius, so 
-this is a sensible mask.
+We then generate 3 lenses for speed, and plot their images so you can see the variety of lenses
+we create.
 
-.. code:: python
+If you want to simulate lenses yourself (e.g. for training a neural network), checkout the
+`autolens_workspace/simulators` package for a full description of how to do this and customize
+the simulated lenses to your science.
 
-    mask = al.Mask2D.circular(
-        shape_native=dataset.shape_native,  # The mask's shape must match the dataset's to be applied to it.
-        pixel_scales=dataset.pixel_scales,  # It must also have the same pixel scales.
-        radius=3.0,  # The mask's circular radius [units of arc-seconds].
-    )
-
-Combine the imaging dataset with the mask.
+The images below are perfect lenses of strong lenses, the next examples will show us how to
+instead output realistic observations of strong lenses (e.g. CCD imaging, interferometer data, etc).
 
 .. code:: python
 
-    dataset = dataset.apply_mask(mask=mask)
+    lens_model, source_model = al.model_util.simulator_start_here_model_from()
 
-When we plot a masked dataset, the removed regions of the image (e.g. outside the 3.0") are automatically set to zero
-and the plot axis automatically zooms in around the mask.
+    total_datasets = 3
 
-.. code:: python
+    for sample_index in range(total_datasets):
 
-    dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
-    dataset_plotter.figures_2d(data=True)
+        lens_galaxy = lens_model.random_instance()
+        source_galaxy = source_model.random_instance()
 
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/12_data.png
-  :width: 600
-  :alt: Alternative text
+        tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
+        tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
+        tracer_plotter.figures_2d(image=True)
 
-Fitting
-_______
+Lens Modeling
+-------------
 
-We are now at the point a scientist would be after observing a strong lens - we have an image of it, have used to a 
-mask to determine where we observe signal from the galaxy, but cannot make any quantitative statements about its 
-mass or source morphology.
-
-We therefore must now fit a model to the data. This model is a representation of the lens galaxy's light and mass and
-source galaxy's light. We seek a way to determine whether a given model provides a good fit to the data.
-
-A fit is performing using a ``FitImaging`` object, which takes a dataset and tracer object as input and determine if 
-the galaxies are a good fit to the data.
-
-.. code:: python
-
-    fit = al.FitImaging(dataset=dataset, tracer=tracer)
-
-The fit creates ``model_data``, which is the image of the strong lens including effects which change its appearance
-during data acquisition.
-
-For example, by plotting the fit's ``model_data`` and comparing it to the image of the strong lens obtained via
-the ``TracerPlotter``, we can see the model data has been blurred by the dataset's PSF.
-
-.. code:: python
-
-    tracer_plotter = aplt.TracerPlotter(tracer=fit.tracer, grid=grid)
-    tracer_plotter.figures_2d(image=True)
-
-    fit_plotter = aplt.FitImagingPlotter(fit=fit)
-    fit_plotter.figures_2d(model_image=True)
-
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/13_image_2d.png
-  :width: 400
-  :alt: Alternative text
-
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/14_image_2d.png
-  :width: 400
-  :alt: Alternative text
-
-The fit also creates the following:
-
- - The ``residual_map``: The ``model_image`` subtracted from the observed dataset``s ``image``.
- - The ``normalized_residual_map``: The ``residual_map ``divided by the observed dataset's ``noise_map``.
- - The ``chi_squared_map``: The ``normalized_residual_map`` squared.
-
-We can plot all 3 of these on a subplot that also includes the data, signal-to-noise map and model data.
-
-In this example, the tracer used to simulate the data are used to fit it, thus the fit is good and residuals are minimized.
-
-.. code:: python
-
-    fit_plotter.subplot_fit()
-
-The overall quality of the fit is quantified with the ``log_likelihood``.
-
-.. code:: python
-
-    print(fit.log_likelihood)
-
-If you are familiar with statistical analysis, this quick run-through of the fitting tools will make sense and you
-will be familiar with concepts like model data, residuals and a likelihood. 
-
-If you are less familiar with these concepts, I recommend you finish this notebook and then go to the fitting API
-guide, which explains the concepts in more detail and provides a more thorough overview of the fitting tools.
-
-The take home point is that **PyAutoLens**'s API has extensive tools for fitting models to data and visualizing the
-results, which is what makes it a powerful tool for studying the morphologies of galaxies.
-
-Modeling
---------
-
-The fitting tools above are used to fit a model to the data given an input set of galaxies. Above, we used the true
-galaxies used to simulate the data to fit the data, but we do not know what this "truth" is in the real world and 
-is therefore not something a real scientist can do.
-
-Modeling is the processing of taking a dataset and inferring the model that best fits the data, for example
-the galaxy light and mass profile(s) that best fits the light observed in the data or equivalently the combination
-of Sersic profile parameters that maximize the likelihood of the fit.
-
-Lens modeling uses the probabilistic programming language **PyAutoFit**, an open-source project that allows complex
-model fitting techniques to be straightforwardly integrated into scientific modeling software. Check it out if you 
-are interested in developing your own software to perform advanced model-fitting:
-
-https://github.com/rhayes777/PyAutoFit
-
-We import **PyAutoFit** separately to **PyAutoLens**:
-
-.. code:: python
-
-    import autofit as af
-
-We now compose the galaxy model using ``af.Model`` objects. 
-
-These behave analogously to the ``Galaxy``, ``LightProfile`` and ``MassProfile`` objects above, however their parameters 
-are not specified and are instead determined by a fitting procedure.
-
-We will fit our galaxy data with a model which has one galaxy where:
-
-We will fit our strong lens data with two galaxies:
-
-- A lens galaxy with a ``Sersic`` ``LightProfile`` representing its light and an ``Isothermal`` ``MassProfile`` representing its mass.
-- A source galaxy with an ``Exponential`` ``LightProfile`` representing a disk.
-
-The redshifts of the lens (z=0.155) and source(z=0.517) are fixed, but as discussed above their values do not
-matter for a two-plane lens system because the units of angles in arc-seconds are independent of the redshifts.
-
-The light profiles below are linear light profiles, input via the ``lp_linear`` module. These solve for the intensity of
-the light profiles via linear algebra, making the modeling more efficient and accurate. They are explained in more
-detail in other workspace examples, but are a key reason why modeling with **PyAutoLens** performs well and
-can scale to complex models.
-
-.. code:: python
-
-    galaxy_model = af.Model(
-        al.Galaxy,
-        redshift=0.5,
-        bulge=al.lp_linear.Sersic,
-        disk=al.lp_linear.Exponential,
-    )
-
-    lens = af.Model(
-        al.Galaxy,
-        redshift=0.155,
-        bulge=al.lp_linear.Sersic,  # Note the use of ``lp_linear`` instead of ``lp``.
-        mass=al.mp.Isothermal,  # This uses linear light profiles explained in the modeling ``start_here`` example.
-    )
-
-    source = af.Model(al.Galaxy, redshift=0.517, disk=al.lp_linear.Exponential)
-
-We combine the lens and source model galaxies above into a ``Collection``, which is the model we will fit.
-
-Note how we could easily extend this object to compose highly complex models containing many galaxies.
-
-.. code:: python
-
-    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
-
-By printing the ``Model``'s we see that each parameters has a prior associated with it, which is used by the
-model-fitting procedure to fit the model.
-
-.. code:: python
-
-    print(model)
-
-The ``info`` attribute shows the model information in a more readable format:
-
-.. code:: python
-
-    print(model.info)
-
-We now choose the 'non-linear search', which is the fitting method used to determine the light profile parameters that 
-best-fit the data.
-
-In this example we use [nautilus](https://nautilus-sampler.readthedocs.io/en/stable/), a nested sampling algorithm 
-that in our experience has proven very effective at galaxy modeling.
-
-.. code:: python
-
-    search = af.Nautilus(name="start_here")
-
-To perform the model-fit, we create an ``AnalysisImaging`` object which contains the ``log_likelihood_function`` that the
-non-linear search calls to fit the galaxy model to the data.
-
-The ``AnalysisImaging`` object is expanded on in the modeling ``start_here`` example, but in brief performs many useful
-associated with modeling, including outputting results to hard-disk and visualizing the results of the fit.
-
-.. code:: python
-
-    analysis = al.AnalysisImaging(dataset=dataset)
-
-To perform the model-fit we pass the model and analysis to the search's fit method. This will output results (e.g.,
-Nautilus samples, model parameters, visualization) to your computer's storage device.
-
-However, the lens modeling of this system takes a minute or so. Therefore, to save time, we have commented out 
-the ``fit`` function below so you can skip through to the next section of the notebook. Feel free to uncomment the code 
-and run the galaxy modeling yourself!
-
-Once a model-fit is running, **PyAutoLens** outputs the results of the search to storage device on-the-fly. This
-includes galaxy model parameter estimates with errors non-linear samples and the visualization of the best-fit galaxy
-model inferred by the search so far.
-
-.. code:: python
-
-    result = search.fit(model=model, analysis=analysis)
+Lens modeling is the process where given data on a strong lens, we fit the data with a model to infer the properties
+of the lens and source galaxies.
 
 The animation below shows a slide-show of the lens modeling procedure. Many lens models are fitted to the data over
 and over, gradually improving the quality of the fit to the data and looking more and more like the observed image.
@@ -660,36 +421,14 @@ iterations are performed.
 
 **Credit: Amy Etherington**
 
-Results
--------
-
-The fit returns a ``Result`` object, which contains the best-fit galaxies and the full posterior information of the 
-non-linear search, including all parameter samples, log likelihood values and tools to compute the errors on the 
-galaxy model.
-
-Using results is explained in full in the ``guides/results`` section of the workspace, but for a quick illustration
-the commented out code below shows how easy it is to plot the fit and posterior of the model.
-
-.. code:: python
-
-    fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
-    fit_plotter.subplot_fit()
-
-    plotter = aplt.NestPlotter(samples=result.samples)
-    plotter.corner_cornerpy()
-
-Here is an example corner plot of the model-fit, which shows the probability density function of every parameter in the
-model:
-
-.. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/cornerplot.png
-  :width: 600
-  :alt: Alternative text
+**PyAutoLens**'s main goal is to make lens modeling **simple** for everyone, **scale** to large datasets
+and **run very fast** thanks to GPU acceleration via JAX.
 
 Wrap Up
 -------
 
 We have now completed the API overview of **PyAutoLens**, including a brief introduction to the core API for
-creating galaxies, simulating data, fitting data and performing galaxy modeling.
+creating galaxies, simulating data and performing lens modeling.
 
 The next overview describes how a new user should navigate the **PyAutoLens** workspace, which contains many examples
 and tutorials, in order to get up and running with the software.
