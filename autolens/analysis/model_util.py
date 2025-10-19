@@ -11,8 +11,8 @@ def mge_model_from(
     gaussian_per_basis: int = 1,
     centre_prior_is_uniform: bool = True,
     centre: Tuple[float, float] = (0.0, 0.0),
-    centre_fixed : Optional[Tuple[float, float]] = None,
-    use_spherical : bool = False
+    centre_fixed: Optional[Tuple[float, float]] = None,
+    use_spherical: bool = False,
 ) -> af.Collection:
     """
     Construct a Multi-Gaussian Expansion (MGE) for the lens or source galaxy light
@@ -128,8 +128,7 @@ def mge_model_from(
 
 
 def simulator_start_here_model_from(
-        include_lens_light : bool = True,
-        use_point_source : bool = False
+    include_lens_light: bool = True, use_point_source: bool = False
 ):
 
     if include_lens_light:
@@ -142,7 +141,9 @@ def simulator_start_here_model_from(
         bulge.ell_comps.ell_comps_1 = af.TruncatedGaussianPrior(
             mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
         )
-        bulge.signal_to_noise_ratio = af.UniformPrior(lower_limit=20.0, upper_limit=60.0)
+        bulge.signal_to_noise_ratio = af.UniformPrior(
+            lower_limit=20.0, upper_limit=60.0
+        )
         bulge.effective_radius = af.UniformPrior(lower_limit=1.0, upper_limit=5.0)
         bulge.sersic_index = af.TruncatedGaussianPrior(
             mean=4.0, sigma=0.5, lower_limit=0.8, upper_limit=5.0
@@ -190,7 +191,9 @@ def simulator_start_here_model_from(
         bulge.ell_comps.ell_comps_1 = af.TruncatedGaussianPrior(
             mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
         )
-        bulge.signal_to_noise_ratio = af.UniformPrior(lower_limit=10.0, upper_limit=30.0)
+        bulge.signal_to_noise_ratio = af.UniformPrior(
+            lower_limit=10.0, upper_limit=30.0
+        )
         bulge.effective_radius = af.UniformPrior(lower_limit=0.01, upper_limit=3.0)
         bulge.sersic_index = af.TruncatedGaussianPrior(
             mean=2.0, sigma=0.5, lower_limit=0.8, upper_limit=5.0

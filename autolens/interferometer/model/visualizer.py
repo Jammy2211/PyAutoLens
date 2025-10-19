@@ -101,7 +101,9 @@ class VisualizerInterferometer(af.Visualizer):
 
         try:
             plotter_interface.fit_interferometer(
-                fit=fit, visuals_2d_of_planes_list=visuals_2d_of_planes_list, quick_update=quick_update,
+                fit=fit,
+                visuals_2d_of_planes_list=visuals_2d_of_planes_list,
+                quick_update=quick_update,
             )
         except exc.InversionException:
             pass
@@ -129,7 +131,6 @@ class VisualizerInterferometer(af.Visualizer):
             except exc.InversionException:
                 return
 
-
         tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
         zoom = ag.Zoom2D(mask=fit.dataset.real_space_mask)
@@ -141,7 +142,8 @@ class VisualizerInterferometer(af.Visualizer):
 
         try:
             plotter_interface.fit_interferometer(
-                fit=fit, visuals_2d_of_planes_list=visuals_2d_of_planes_list,
+                fit=fit,
+                visuals_2d_of_planes_list=visuals_2d_of_planes_list,
             )
         except exc.InversionException:
             pass

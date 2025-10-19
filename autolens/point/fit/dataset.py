@@ -7,6 +7,7 @@ from autolens.lens.tracer import Tracer
 from autolens.point.fit.positions.image.pair import FitPositionsImagePair
 from autolens import exc
 
+
 class FitPointDataset:
     def __init__(
         self,
