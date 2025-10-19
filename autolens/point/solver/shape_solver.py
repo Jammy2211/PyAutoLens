@@ -329,25 +329,6 @@ class AbstractSolver:
 
             initial_triangles = up_sampled
 
-    def tree_flatten(self):
-        return (), (
-            self.scale,
-            self.pixel_scale_precision,
-            self.magnification_threshold,
-            self.initial_triangles,
-        )
-
-    @classmethod
-    def tree_unflatten(cls, aux_data, children):
-        return cls(
-            scale=aux_data[0],
-            pixel_scale_precision=aux_data[1],
-            magnification_threshold=aux_data[2],
-            initial_triangles=aux_data[3],
-        )
-
-
-@register_pytree_node_class
 class ShapeSolver(AbstractSolver):
     def find_magnification(
         self,

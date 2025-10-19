@@ -12,8 +12,6 @@ from .shape_solver import AbstractSolver
 
 logger = logging.getLogger(__name__)
 
-
-@register_pytree_node_class
 class PointSolver(AbstractSolver):
 
     def solve(
