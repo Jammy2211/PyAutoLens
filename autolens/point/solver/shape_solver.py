@@ -329,6 +329,7 @@ class AbstractSolver:
 
             initial_triangles = up_sampled
 
+
 class ShapeSolver(AbstractSolver):
     def find_magnification(
         self,

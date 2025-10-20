@@ -12,6 +12,7 @@ from .shape_solver import AbstractSolver
 
 logger = logging.getLogger(__name__)
 
+
 class PointSolver(AbstractSolver):
 
     def solve(
