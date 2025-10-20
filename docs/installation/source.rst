@@ -3,6 +3,22 @@
 Building From Source
 ====================
 
+JAX & GPU
+---------
+
+**PyAutoLens** runs significantly faster on GPUs — often **50x or more** compared to CPUs.
+
+This acceleration is achieved through [**JAX**](https://docs.jax.dev/en/latest/notebooks/thinking_in_jax.html), which provides GPU and TPU support.
+
+When you install **PyAutoLens** (see instructions below), JAX will also be installed. However, the default installation may not include GPU support.
+
+To ensure GPU acceleration, it is recommended that you install JAX with GPU support **before** installing **PyAutoLens**, by following the official [JAX installation guide](https://jax.readthedocs.io/en/latest/installation.html).
+
+If you install **PyAutoLens** without a proper GPU setup, a warning will be displayed.
+
+Packages
+--------
+
 Building from source means that you clone (or fork) the **PyAutoLens** GitHub repository and run **PyAutoLens** from
 there. Unlike ``conda`` and ``pip`` this provides a build of the source code that you can edit and change, to
 contribute the development **PyAutoLens** or experiment with yourself!

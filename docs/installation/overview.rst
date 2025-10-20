@@ -20,6 +20,19 @@ The installation guide for both approaches can be found at:
 Users who wish to build **PyAutoLens** from source (e.g. via a ``git clone``) should follow
 our `building from source installation guide <https://pyautolens.readthedocs.io/en/latest/installation/source.html>`_.
 
+JAX & GPU
+---------
+
+**PyAutoLens** runs significantly faster on GPUs — often **50x or more** compared to CPUs.
+
+This acceleration is achieved through [**JAX**](https://docs.jax.dev/en/latest/notebooks/thinking_in_jax.html), which provides GPU and TPU support.
+
+When you install **PyAutoLens** (see instructions below), JAX will also be installed. However, the default installation may not include GPU support.
+
+To ensure GPU acceleration, it is recommended that you install JAX with GPU support **before** installing **PyAutoLens**, by following the official [JAX installation guide](https://jax.readthedocs.io/en/latest/installation.html).
+
+If you install **PyAutoLens** without a proper GPU setup, a warning will be displayed.
+
 Dependencies
 ------------
 
