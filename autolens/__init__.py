@@ -117,8 +117,6 @@ from .quantity.model.analysis import AnalysisQuantity
 
 from .analysis.preloads import mapper_indices_from
 
-from .util.setup_util import setup_colab
-
 from . import exc
 from . import mock as m
 from . import util
