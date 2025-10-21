@@ -120,7 +120,6 @@ class PlotterInterfaceImaging(PlotterInterface):
         fit_list
             The list of imaging fits which are visualized.
         """
-        ddd
 
         def should_plot(name):
             return plot_setting(section=["fit", "fit_imaging"], name=name)
