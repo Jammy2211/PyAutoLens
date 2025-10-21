@@ -2,10 +2,12 @@ import logging
 from dataclasses import dataclass
 
 import autoarray as aa
+from autoarray.numpy_wrapper import register_pytree_node_class
 
 logger = logging.getLogger(__name__)
 
 
+@register_pytree_node_class
 @dataclass
 class Step:
     """
@@ -31,3 +33,16 @@ class Step:
     neighbourhood: aa.AbstractTriangles
     up_sampled: aa.AbstractTriangles
     plane_triangles: aa.AbstractTriangles
+
+    def tree_flatten(self):
+        return (
+            self.number,
+            self.initial_triangles,
+            self.filtered_triangles,
+            self.neighbourhood,
+            self.up_sampled,
+        ), ()
+
+    @classmethod
+    def tree_unflatten(cls, _, values):
+        return cls(*values)

@@ -60,7 +60,7 @@ class FitPositionsImagePairRepeat(AbstractFitPositionsImagePair):
         for position in self.data:
             distances = [
                 self.square_distance(model_position, position)
-                for model_position in self.model_data
+                for model_position in self.model_data.array
             ]
             residual_map.append(jnp.sqrt(jnp.min(jnp.array(distances))))
 

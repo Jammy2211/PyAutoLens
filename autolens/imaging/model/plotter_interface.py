@@ -96,7 +96,12 @@ class PlotterInterfaceImaging(PlotterInterface):
 
         fits_to_fits(should_plot=should_plot, image_path=self.image_path, fit=fit)
 
-    def fit_imaging_combined(self, fit_list: List[FitImaging], visuals_2d_of_planes_list : Optional[aplt.Visuals2D] = None):
+    def fit_imaging_combined(
+            self,
+            fit_list: List[FitImaging],
+            visuals_2d_of_planes_list : Optional[aplt.Visuals2D] = None,
+            quick_update: bool = False,
+    ):
         """
         Output visualization of all `FitImaging` objects in a summed combined analysis, typically during or after a
         model-fit is performed.
@@ -115,11 +120,12 @@ class PlotterInterfaceImaging(PlotterInterface):
         fit_list
             The list of imaging fits which are visualized.
         """
+        ddd
 
         def should_plot(name):
             return plot_setting(section=["fit", "fit_imaging"], name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from()
+        mat_plot_2d = self.mat_plot_2d_from(quick_update=quick_update)
 
         fit_plotter_list = [
             FitImagingPlotter(
@@ -136,7 +142,7 @@ class PlotterInterfaceImaging(PlotterInterface):
             plotter_list=fit_plotter_list, subplot_shape=subplot_shape
         )
 
-        if should_plot("subplot_fit"):
+        if should_plot("subplot_fit") or quick_update:
 
             def make_subplot_fit(filename_suffix):
 
@@ -214,6 +220,9 @@ class PlotterInterfaceImaging(PlotterInterface):
                 )
 
             make_subplot_fit(filename_suffix="fit_combined")
+
+            if quick_update:
+                return
 
             for plotter in multi_plotter.plotter_list:
                 plotter.mat_plot_2d.use_log10 = True

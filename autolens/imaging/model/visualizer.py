@@ -204,6 +204,7 @@ class VisualizerImaging(af.Visualizer):
         paths: af.AbstractPaths,
         instance: af.ModelInstance,
         during_analysis: bool,
+        quick_update: bool = False,
     ):
         """
         Performs visualization during the non-linear search of information which is shared across all analyses on a
@@ -223,6 +224,8 @@ class VisualizerImaging(af.Visualizer):
             The model object, which includes model components representing the galaxies that are fitted to
             the imaging data.
         """
+        fff
+
         if analyses is None:
             return
 
@@ -237,4 +240,5 @@ class VisualizerImaging(af.Visualizer):
 
         plotter.fit_imaging_combined(
             fit_list=fit_list,
+            quick_update=quick_update
         )
