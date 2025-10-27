@@ -7,9 +7,7 @@ name = "autolens"
 dynamic = ["version"]
 description="Open-Source Strong Lensing"
 readme = { file = "README.rst", content-type = "text/x-rst" }
-license-files = [
-    "LICENSE",
-]
+license = { text = "MIT" }
 requires-python = ">=3.9"
 authors = [
     { name = "James Nightingale", email = "James.Nightingale@newcastle.ac.uk" },
