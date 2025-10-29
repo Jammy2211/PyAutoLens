@@ -32,6 +32,7 @@ class AnalysisInterferometer(AnalysisDataset):
         adapt_image_maker: Optional[ag.AdaptImageMaker] = None,
         cosmology: ag.cosmo.LensingCosmology = None,
         settings_inversion: aa.SettingsInversion = None,
+        preloads: aa.Preloads = None,
         raise_inversion_positions_likelihood_exception: bool = True,
         title_prefix: str = None,
     ):
@@ -82,6 +83,7 @@ class AnalysisInterferometer(AnalysisDataset):
             adapt_image_maker=adapt_image_maker,
             cosmology=cosmology,
             settings_inversion=settings_inversion,
+            preloads=preloads,
             raise_inversion_positions_likelihood_exception=raise_inversion_positions_likelihood_exception,
             title_prefix=title_prefix,
         )
@@ -193,6 +195,7 @@ class AnalysisInterferometer(AnalysisDataset):
             tracer=tracer,
             adapt_images=adapt_images,
             settings_inversion=self.settings_inversion,
+            preloads=self.preloads
         )
 
     def save_attributes(self, paths: af.DirectoryPaths):

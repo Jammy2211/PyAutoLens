@@ -20,6 +20,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         dataset_model: Optional[aa.DatasetModel] = None,
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
+        preloads: aa.Preloads = None,
     ):
         """
         Fits an interferometer dataset using a `Tracer` object.
@@ -80,6 +81,8 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
             self=self, model_obj=tracer, settings_inversion=settings_inversion
         )
 
+        self.preloads = preloads
+
     @property
     def profile_visibilities(self) -> aa.Visibilities:
         """
@@ -113,6 +116,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
             tracer=self.tracer,
             adapt_images=self.adapt_images,
             settings_inversion=self.settings_inversion,
+            preloads=self.preloads
         )
 
     @cached_property
