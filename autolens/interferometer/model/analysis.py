@@ -195,7 +195,7 @@ class AnalysisInterferometer(AnalysisDataset):
             tracer=tracer,
             adapt_images=adapt_images,
             settings_inversion=self.settings_inversion,
-            preloads=self.preloads
+            preloads=self.preloads,
         )
 
     def save_attributes(self, paths: af.DirectoryPaths):

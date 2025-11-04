@@ -116,7 +116,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
             tracer=self.tracer,
             adapt_images=self.adapt_images,
             settings_inversion=self.settings_inversion,
-            preloads=self.preloads
+            preloads=self.preloads,
         )
 
     @cached_property
