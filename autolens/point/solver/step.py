@@ -1,8 +1,8 @@
 import logging
 from dataclasses import dataclass
+from jax._src.tree_util import register_pytree_node_class
 
 import autoarray as aa
-from autoarray.numpy_wrapper import register_pytree_node_class
 
 logger = logging.getLogger(__name__)
 

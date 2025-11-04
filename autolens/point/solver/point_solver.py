@@ -5,7 +5,7 @@ from typing import Tuple, Optional
 import autoarray as aa
 from autoarray.structures.triangles.shape import Point
 
-from autofit.jax_wrapper import register_pytree_node_class
+from autoconf.jax_wrapper import register_pytree_node_class
 from autogalaxy import OperateDeflections
 from .shape_solver import AbstractSolver
 

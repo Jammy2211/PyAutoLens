@@ -7,7 +7,7 @@ from typing import Tuple, List, Iterator, Optional
 import autoarray as aa
 
 from autoarray.structures.triangles.shape import Shape
-from autofit.jax_wrapper import register_pytree_node_class
+from autoconf.jax_wrapper import register_pytree_node_class
 
 from autoarray.structures.triangles.coordinate_array import (
     CoordinateArrayTriangles,

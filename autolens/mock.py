@@ -1,6 +1,6 @@
 import jax.numpy as jnp
 
-from autofit.jax_wrapper import register_pytree_node_class
+from autoconf.jax_wrapper import register_pytree_node_class
 from autofit.mock import *  # noqa
 from autoarray.mock import *  # noqa
 from autogalaxy.mock import *  # noqa
