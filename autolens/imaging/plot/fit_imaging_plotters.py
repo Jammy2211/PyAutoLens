@@ -568,7 +568,8 @@ class FitImagingPlotter(Plotter):
         self.set_title(label=None)
 
         self.mat_plot_2d.output.subplot_to_figure(
-            auto_filename=f"subplot_fit{plane_index_tag}", also_show=self.mat_plot_2d.quick_update
+            auto_filename=f"subplot_fit{plane_index_tag}",
+           # also_show=self.mat_plot_2d.quick_update
         )
         self.close_subplot_figure()
 
