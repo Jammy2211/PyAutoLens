@@ -431,14 +431,17 @@ class FitImagingPlotter(Plotter):
         self.set_title(label="Lens Light Subtracted Image")
         self.figures_2d(normalized_residual_map=True)
 
+        self.mat_plot_2d.cmap.kwargs["vmin"] = 0.0
+        self.set_title(label="Subtracted Image Zero Minimum")
+        self.figures_2d(normalized_residual_map=True)
+        self.mat_plot_2d.cmap.kwargs.pop("vmin")
+
         self.residuals_symmetric_cmap = True
         self.set_title(label="Normalized Residual Map")
         self.figures_2d(normalized_residual_map=True)
         self.set_title(label=None)
 
-        self.figures_2d(chi_squared_map=True)
-
-        self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_fit")
+        self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_fit_x1_plane")
         self.close_subplot_figure()
 
     def subplot_fit_log10_x1_plane(self):
