@@ -58,6 +58,21 @@ class SubplotTracer(Enum):
     deflections_x = (2, 2)
 
 
+class SubplotFitX1Plane(Enum):
+    """
+    The subplots that can be extracted from the subplot_fit image.
+
+    The values correspond to the position of the subplot in the 4x3 grid.
+    """
+
+    data = (0, 0)
+    signal_to_noise_map = (1, 0)
+    model_data = (2, 0)
+    lens_light_subtracted_image = (0, 1)
+    lens_light_subtracted_image_zero = (0, 1)
+    normalized_residual_map = (0, 2)
+
+
 class SubplotFit(Enum):
     """
     The subplots that can be extracted from the subplot_fit image.
