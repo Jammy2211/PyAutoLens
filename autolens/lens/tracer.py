@@ -212,7 +212,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
     @aa.grid_dec.to_grid
     def traced_grid_2d_list_from(
-        self, grid: aa.type.Grid2DLike, plane_index_limit: int = Optional[None]
+        self, grid: aa.type.Grid2DLike, xp=np, plane_index_limit: int = Optional[None]
     ) -> List[aa.type.Grid2DLike]:
         """
         Returns a ray-traced grid of 2D Cartesian (y,x) coordinates which accounts for multi-plane ray-tracing.
@@ -262,6 +262,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             grid=grid,
             cosmology=self.cosmology,
             plane_index_limit=plane_index_limit,
+            xp=xp
         )
 
         if isinstance(grid, aa.Grid2D):
@@ -270,6 +271,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                 grid=grid.over_sampled,
                 cosmology=self.cosmology,
                 plane_index_limit=plane_index_limit,
+                xp=xp
             )
 
             grid_2d_new_list = []
@@ -365,6 +367,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def image_2d_list_from(
         self,
         grid: aa.type.Grid2DLike,
+        xp=np,
         operated_only: Optional[bool] = None,
     ) -> List[aa.Array2D]:
         """
@@ -410,7 +413,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         """
 
         traced_grid_list = self.traced_grid_2d_list_from(
-            grid=grid, plane_index_limit=self.upper_plane_index_with_light_profile
+            grid=grid,
+            xp=xp,
+            plane_index_limit=self.upper_plane_index_with_light_profile
         )
 
         image_2d_list = []
@@ -423,6 +428,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                     galaxy.image_2d_from(
                         grid=traced_grid_list[plane_index],
                         operated_only=operated_only,
+                        xp=xp,
                     )
                     for galaxy in galaxies
                 ]
@@ -449,6 +455,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
     def image_2d_from(
         self,
         grid: aa.type.Grid2DLike,
+        xp=np,
         operated_only: Optional[bool] = None,
     ) -> aa.Array2D:
         """
@@ -470,7 +477,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             apply these operations to the images, which may have the `operated_only` input passed to them. This input
             therefore is used to pass the `operated_only` input to these methods.
         """
-        return sum(self.image_2d_list_from(grid=grid, operated_only=operated_only))
+        return sum(self.image_2d_list_from(grid=grid, operated_only=operated_only, xp=xp))
 
     def image_2d_via_input_plane_image_from(
         self,

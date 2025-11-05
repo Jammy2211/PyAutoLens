@@ -137,8 +137,8 @@ class PositionsLH:
             f.write("")
 
     def log_likelihood_penalty_from(
-        self, instance: af.ModelInstance, analysis: AnalysisDataset
-    ) -> jnp.array:
+        self, instance: af.ModelInstance, analysis: AnalysisDataset, xp=np
+    ) -> np.array:
         """
         Returns a log-likelihood penalty used to constrain lens models where multiple image-plane
         positions do not trace to within a threshold distance of one another in the source-plane.
@@ -176,7 +176,7 @@ class PositionsLH:
         tracer = analysis.tracer_via_instance_from(instance=instance)
 
         if not tracer.has(cls=ag.mp.MassProfile) or len(tracer.planes) == 1:
-            return (jnp.array(0.0),)
+            return xp.array(0.0)
 
         positions_fit = SourceMaxSeparation(
             data=self.positions,
@@ -185,7 +185,7 @@ class PositionsLH:
             plane_redshift=self.plane_redshift,
         )
 
-        max_separation = jnp.max(
+        max_separation = xp.max(
             positions_fit.furthest_separations_of_plane_positions.array
         )
 
@@ -194,5 +194,5 @@ class PositionsLH:
         return jax.lax.cond(
             max_separation > self.threshold,
             lambda: penalty,
-            lambda: jnp.array(0.0),
+            lambda: xp.array(0.0),
         )

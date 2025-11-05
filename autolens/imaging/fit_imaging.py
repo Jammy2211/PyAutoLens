@@ -24,6 +24,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads: aa.Preloads = None,
+        xp=np
     ):
         """
         Fits an imaging dataset using a `Tracer` object.
@@ -75,6 +76,8 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         self.settings_inversion = settings_inversion
         self.preloads = preloads
 
+        self.xp = xp
+
     @property
     def blurred_image(self) -> aa.Array2D:
         """
@@ -118,6 +121,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             adapt_images=self.adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=self.preloads,
+            xp=self.xp,
         )
 
     @cached_property

@@ -69,8 +69,8 @@ class SubplotFitX1Plane(Enum):
     signal_to_noise_map = (1, 0)
     model_data = (2, 0)
     lens_light_subtracted_image = (0, 1)
-    lens_light_subtracted_image_zero = (0, 1)
-    normalized_residual_map = (0, 2)
+    lens_light_subtracted_image_zero = (1, 1)
+    normalized_residual_map = (2, 1)
 
 
 class SubplotFit(Enum):

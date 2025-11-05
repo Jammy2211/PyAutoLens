@@ -96,7 +96,7 @@ class AnalysisLens:
         )
 
     def log_likelihood_penalty_from(
-        self, instance: af.ModelInstance
+        self, instance: af.ModelInstance, xp=np
     ) -> Optional[float]:
         """
         Call the positions overwrite log likelihood function, which add a penalty term to the likelihood if the
@@ -117,7 +117,7 @@ class AnalysisLens:
         The penalty value of the positions log likelihood, if the positions do not trace close in the source plane,
         else a None is returned to indicate there is no penalty.
         """
-        log_likelihood_penalty = jnp.array(0.0)
+        log_likelihood_penalty = xp.array(0.0)
 
         if self.positions_likelihood_list is not None:
 
@@ -125,7 +125,7 @@ class AnalysisLens:
                 for positions_likelihood in self.positions_likelihood_list:
                     log_likelihood_penalty = (
                         positions_likelihood.log_likelihood_penalty_from(
-                            instance=instance, analysis=self
+                            instance=instance, analysis=self, xp=xp
                         )
                     )
 

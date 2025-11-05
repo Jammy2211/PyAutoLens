@@ -18,6 +18,7 @@ class TracerToInversion(ag.AbstractToInversion):
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads: aa.Preloads = None,
+        xp=np
     ):
         """
         Interfaces a dataset and tracer with the inversion module, to setup a linear algebra calculation.
@@ -60,6 +61,7 @@ class TracerToInversion(ag.AbstractToInversion):
             dataset=dataset,
             adapt_images=adapt_images,
             settings_inversion=settings_inversion,
+            xp=xp,
         )
 
     @property
@@ -113,7 +115,8 @@ class TracerToInversion(ag.AbstractToInversion):
         The traced grids of the inversion, which are cached for efficiency.
         """
         return self.tracer.traced_grid_2d_list_from(
-            grid=self.dataset.grids.pixelization
+            grid=self.dataset.grids.pixelization,
+            xp=self.xp
         )
 
     @cached_property
@@ -155,12 +158,14 @@ class TracerToInversion(ag.AbstractToInversion):
         lp_linear_galaxy_dict_list = {}
 
         traced_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
-            grid=self.dataset.grids.lp
+            grid=self.dataset.grids.lp,
+            xp=self.xp
         )
 
         if self.dataset.grids.blurring is not None:
             traced_blurring_grids_of_planes_list = self.tracer.traced_grid_2d_list_from(
-                grid=self.dataset.grids.blurring
+                grid=self.dataset.grids.blurring,
+            xp=self.xp
             )
         else:
             traced_blurring_grids_of_planes_list = [None] * len(
@@ -192,6 +197,7 @@ class TracerToInversion(ag.AbstractToInversion):
                 galaxies=galaxies,
                 settings_inversion=self.settings_inversion,
                 adapt_images=self.adapt_images,
+                xp=self.xp
             )
 
             lp_linear_galaxy_dict_of_plane = (
@@ -410,6 +416,7 @@ class TracerToInversion(ag.AbstractToInversion):
                     galaxies=galaxies,
                     adapt_images=self.adapt_images,
                     settings_inversion=self.settings_inversion,
+                    xp=self.xp
                 )
 
                 galaxies_with_pixelization_list = galaxies.galaxies_with_cls_list_from(
