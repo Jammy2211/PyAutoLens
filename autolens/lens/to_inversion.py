@@ -481,6 +481,7 @@ class TracerToInversion(ag.AbstractToInversion):
             linear_obj_list=self.linear_obj_list,
             settings=self.settings_inversion,
             preloads=self.preloads,
+            xp=self.xp
         )
 
         inversion.linear_obj_galaxy_dict = self.linear_obj_galaxy_dict
