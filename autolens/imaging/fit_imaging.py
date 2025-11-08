@@ -65,7 +65,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
         """
 
-        super().__init__(dataset=dataset, dataset_model=dataset_model)
+        super().__init__(dataset=dataset, dataset_model=dataset_model, xp=xp)
         AbstractFitInversion.__init__(
             self=self, model_obj=tracer, settings_inversion=settings_inversion
         )
@@ -75,8 +75,6 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         self.adapt_images = adapt_images
         self.settings_inversion = settings_inversion
         self.preloads = preloads
-
-        self.xp = xp
 
     @property
     def blurred_image(self) -> aa.Array2D:
