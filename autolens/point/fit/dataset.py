@@ -1,3 +1,5 @@
+import numpy as np
+
 from autolens.point.dataset import PointDataset
 from autolens.point.solver import PointSolver
 from autolens.point.fit.fluxes import FitFluxes
@@ -15,6 +17,7 @@ class FitPointDataset:
         tracer: Tracer,
         solver: PointSolver,
         fit_positions_cls=FitPositionsImagePair,
+        xp=np,
     ):
         """
         Fits a point source dataset using a `Tracer` object, where the following components of the point source data
@@ -86,6 +89,7 @@ class FitPointDataset:
                 tracer=tracer,
                 solver=solver,
                 profile=profile,
+                xp=xp,
             )
         except exc.PointExtractionException:
             self.positions = None
@@ -98,6 +102,7 @@ class FitPointDataset:
                     noise_map=dataset.fluxes_noise_map,
                     positions=dataset.positions,
                     tracer=tracer,
+                    xp=xp,
                 )
             else:
                 self.flux = None
@@ -113,11 +118,14 @@ class FitPointDataset:
                     noise_map=dataset.time_delays_noise_map,
                     positions=dataset.positions,
                     tracer=tracer,
+                    xp=xp,
                 )
             else:
                 self.time_delays = None
         except exc.PointExtractionException:
             self.time_delays = None
+
+        self._xp = xp
 
     @property
     def model_obj(self):

@@ -1,10 +1,7 @@
 import jax
-import jax.numpy as jnp
 import numpy as np
-from typing import Optional, Union
+from typing import Optional
 from os import path
-import os
-from typing import Dict
 
 import autoarray as aa
 import autofit as af

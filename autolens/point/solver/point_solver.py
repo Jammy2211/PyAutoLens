@@ -1,4 +1,3 @@
-import jax.numpy as jnp
 import logging
 from typing import Tuple, Optional
 
@@ -46,6 +45,8 @@ class PointSolver(AbstractSolver):
         -------
         A list of image plane coordinates that are traced to the source plane coordinate.
         """
+        import jax.numpy as jnp
+
         kept_triangles = super().solve_triangles(
             tracer=tracer,
             shape=Point(*source_plane_coordinate),

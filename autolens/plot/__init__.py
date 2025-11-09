@@ -72,11 +72,8 @@ from autogalaxy.plot.visuals.two_d import Visuals2D
 
 from autogalaxy.profiles.plot.basis_plotters import BasisPlotter
 from autogalaxy.profiles.plot.light_profile_plotters import LightProfilePlotter
-from autogalaxy.profiles.plot.light_profile_plotters import LightProfilePDFPlotter
 from autogalaxy.profiles.plot.mass_profile_plotters import MassProfilePlotter
-from autogalaxy.profiles.plot.mass_profile_plotters import MassProfilePDFPlotter
 from autogalaxy.galaxy.plot.galaxy_plotters import GalaxyPlotter
-from autogalaxy.galaxy.plot.galaxy_plotters import GalaxyPDFPlotter
 from autogalaxy.quantity.plot.fit_quantity_plotters import FitQuantityPlotter
 
 from autogalaxy.imaging.plot.fit_imaging_plotters import FitImagingPlotter

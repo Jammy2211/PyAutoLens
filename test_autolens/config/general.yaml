@@ -17,8 +17,6 @@ inversion:
   use_positive_only_solver: false    # If True, inversion's use a positive-only linear algebra solver by default, which is slower but prevents unphysical negative values in the reconstructed solutuion.
   no_regularization_add_to_curvature_diag_value: 1.0e-8 # The default value added to the curvature matrix's diagonal when regularization is not applied to a linear object, which prevents inversion's failing due to the matrix being singular.
   positive_only_uses_p_initial: false  # If True, the positive-only solver of an inversion's uses an initial guess of the reconstructed data's values as which values should be positive, speeding up the solver.
-model:
-  ignore_prior_limits: true
 numba:
   cache: true
   nopython: true

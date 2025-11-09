@@ -29,6 +29,7 @@ from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.preloads import Preloads
+from autoarray.preloads import mapper_indices_from
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.arrays.rgb import Array2DRGB
@@ -114,8 +115,6 @@ from .point.solver import PointSolver
 from .point.solver.shape_solver import ShapeSolver
 from .quantity.fit_quantity import FitQuantity
 from .quantity.model.analysis import AnalysisQuantity
-
-from .analysis.preloads import mapper_indices_from
 
 from . import exc
 from . import mock as m

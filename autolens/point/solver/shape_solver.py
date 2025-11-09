@@ -1,4 +1,3 @@
-import jax.numpy as jnp
 import logging
 import math
 
@@ -254,6 +253,8 @@ class AbstractSolver:
         -------
         The points with an absolute magnification above the threshold.
         """
+        import jax.numpy as jnp
+
         points = jnp.array(points)
         magnifications = tracer.magnification_2d_via_hessian_from(
             grid=aa.Grid2DIrregular(points).array,

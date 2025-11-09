@@ -323,7 +323,7 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes(grid_2d_7x
     )
 
     assert image_via_light_profile[0] == pytest.approx(
-        image_via_input_plane_image[0].array, 1.0e-2
+        image_via_input_plane_image[0], 1.0e-2
     )
 
 
@@ -398,7 +398,7 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes__multi_pla
     )
 
     assert image_via_light_profile[0] == pytest.approx(
-        image_via_input_plane_image[0].array, 1.0e-2
+        image_via_input_plane_image[0], 1.0e-2
     )
 
     plane_image = g1.image_2d_from(grid=plane_grid)
@@ -411,7 +411,7 @@ def test__image_2d_via_input_plane_image_from__with_foreground_planes__multi_pla
     )
 
     assert image_via_light_profile[0] == pytest.approx(
-        image_via_input_plane_image[0].array, 1.0e-2
+        image_via_input_plane_image[0], 1.0e-2
     )
 
 

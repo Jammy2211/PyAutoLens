@@ -87,12 +87,14 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         ):
             return self.tracer.image_2d_from(
                 grid=self.grids.lp,
+                xp=self._xp,
             )
 
         return self.tracer.blurred_image_2d_from(
             grid=self.grids.lp,
             psf=self.dataset.psf,
             blurring_grid=self.grids.blurring,
+            xp=self._xp,
         )
 
     @property
@@ -119,7 +121,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             adapt_images=self.adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=self.preloads,
-            xp=self.xp,
+            xp=self._xp,
         )
 
     @cached_property

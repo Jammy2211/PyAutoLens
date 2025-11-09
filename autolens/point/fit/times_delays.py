@@ -1,4 +1,3 @@
-import jax.numpy as jnp
 import numpy as np
 from typing import Optional
 
@@ -18,6 +17,7 @@ class FitTimeDelays(AbstractFitPoint):
         positions: aa.Grid2DIrregular,
         tracer: Tracer,
         profile: Optional[ag.ps.Point] = None,
+        xp=np,
     ):
         """
         Fits the time delays of a point source dataset using a `Tracer` object,
@@ -63,6 +63,7 @@ class FitTimeDelays(AbstractFitPoint):
             tracer=tracer,
             solver=None,
             profile=profile,
+            xp=xp,
         )
 
     @property
@@ -74,7 +75,7 @@ class FitTimeDelays(AbstractFitPoint):
         delay have a value of zero. However, this subtraction is performed in the `residual_map` property, in order
         to ensure the residuals are computed relative to the shorter time delay.
         """
-        return self.tracer.time_delays_from(grid=self.positions)
+        return self.tracer.time_delays_from(grid=self.positions, xp=self._xp)
 
     @property
     def model_time_delays(self) -> aa.ArrayIrregular:
@@ -90,8 +91,8 @@ class FitTimeDelays(AbstractFitPoint):
         from the dataset time delays and model time delays before the subtraction.
         """
 
-        data = self.data - jnp.min(self.data.array)
-        model_data = self.model_data - jnp.min(self.model_data.array)
+        data = self.data - self._xp.min(self.data.array)
+        model_data = self.model_data - self._xp.min(self.model_data.array)
 
         residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
         return aa.ArrayIrregular(values=residual_map)

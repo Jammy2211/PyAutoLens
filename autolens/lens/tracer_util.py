@@ -89,7 +89,7 @@ def traced_grid_2d_list_from(
     grid: aa.type.Grid2DLike,
     cosmology: ag.cosmo.LensingCosmology = None,
     plane_index_limit: int = Optional[None],
-    xp=np
+    xp=np,
 ):
     """
     Returns a ray-traced grid of 2D Cartesian (y,x) coordinates which accounts for multi-plane ray-tracing.
@@ -258,6 +258,7 @@ def grid_2d_at_redshift_from(
 def time_delays_from(
     galaxies: List[ag.Galaxy],
     grid: aa.type.Grid2DLike,
+    xp=np,
     cosmology: ag.cosmo.LensingCosmology = None,
 ) -> aa.type.Grid2DLike:
     """

@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class MockTracer:
     def __init__(
         self, traced_grid_2d_list_from=None, image_plane_mesh_grid_pg_list=None
@@ -61,5 +64,5 @@ class MockTracerPoint(MockTracer):
     def einstein_mass_angular_from(self, grid):
         return self.einstein_mass
 
-    def time_delays_from(self, grid):
+    def time_delays_from(self, grid, xp=np):
         return self.time_delays

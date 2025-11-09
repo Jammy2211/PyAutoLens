@@ -1,4 +1,3 @@
-import jax.numpy as jnp
 import logging
 import numpy as np
 from typing import List, Optional
