@@ -50,7 +50,7 @@ delaunay.DelaunayMagnification:
     width_modifier:
       type: Absolute
       value: 8.0
-rectangular.Rectangular:
+rectangular.RectangularMagnification:
   shape_0:
     limits:
       lower: 3.0

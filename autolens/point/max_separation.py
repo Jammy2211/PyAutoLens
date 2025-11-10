@@ -1,3 +1,4 @@
+import numpy as np
 from typing import Optional
 
 import autoarray as aa
@@ -12,6 +13,7 @@ class SourceMaxSeparation:
         noise_map: Optional[aa.ArrayIrregular],
         tracer: Tracer,
         plane_redshift: float = Optional[None],
+        xp=np,
     ):
         """
         Given a positions dataset, which is a list of positions with names that associated them to model source
@@ -43,7 +45,7 @@ class SourceMaxSeparation:
             plane_index = -1
 
         self.plane_positions = aa.Grid2DIrregular(
-            values=tracer.traced_grid_2d_list_from(grid=data)[plane_index]
+            values=tracer.traced_grid_2d_list_from(grid=data, xp=xp)[plane_index], xp=xp
         )
 
     @property

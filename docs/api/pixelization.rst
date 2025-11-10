@@ -46,7 +46,7 @@ Mesh [ag.mesh]
    :template: custom-class-template.rst
    :recursive:
 
-   Rectangular
+   RectangularMagnification
    Delaunay
    Voronoi
    Voronoi
