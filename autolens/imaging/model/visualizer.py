@@ -1,3 +1,5 @@
+import logging
+
 from autoarray import exc
 
 import autofit as af
@@ -8,6 +10,7 @@ from autolens.imaging.model.plotter_interface import PlotterInterfaceImaging
 from autolens.lens import tracer_util
 from autolens import exc
 
+logger = logging.getLogger(__name__)
 
 class VisualizerImaging(af.Visualizer):
     @staticmethod
@@ -136,6 +139,9 @@ class VisualizerImaging(af.Visualizer):
             try:
                 fit.inversion.reconstruction
             except exc.InversionException:
+                logger(
+                    ag.exc.invalid_linear_algebra_for_visualization_message()
+                )
                 return
 
         zoom = ag.Zoom2D(mask=fit.mask)

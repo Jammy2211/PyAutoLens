@@ -1,3 +1,5 @@
+import logging
+
 import autofit as af
 import autogalaxy as ag
 
@@ -6,6 +8,8 @@ from autolens.interferometer.model.plotter_interface import (
 )
 from autolens.lens import tracer_util
 from autogalaxy import exc
+
+logger = logging.getLogger(__name__)
 
 
 class VisualizerInterferometer(af.Visualizer):
@@ -106,7 +110,10 @@ class VisualizerInterferometer(af.Visualizer):
                 quick_update=quick_update,
             )
         except exc.InversionException:
-            pass
+            logger(
+                ag.exc.invalid_linear_algebra_for_visualization_message()
+            )
+            return
 
         if quick_update:
             return
