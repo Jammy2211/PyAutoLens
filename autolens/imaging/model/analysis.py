@@ -94,7 +94,8 @@ class AnalysisImaging(AnalysisDataset):
 
     def fit_from(
         self,
-        instance: af.ModelInstance, xp=np
+        instance: af.ModelInstance,
+        xp=np
     ) -> FitImaging:
         """
         Given a model instance create a `FitImaging` object.

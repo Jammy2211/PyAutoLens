@@ -94,15 +94,15 @@ class VisualizerImaging(af.Visualizer):
             An instance of the model that is being fitted to the data by this analysis (whose parameters have been set
             via a non-linear search).
         """
+        import jax.numpy as jnp
 
-        fit = analysis.fit_from(instance=instance)
+        fit = analysis.fit_from(instance=instance, xp=jnp)
         tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
         visuals_2d_of_planes_list = tracer_util.visuals_2d_of_planes_list_from(
             tracer=fit.tracer,
             grid=fit.grids.lp.mask.derive_grid.all_false
         )
-
 
         plotter_interface = PlotterInterfaceImaging(
             image_path=paths.image_path,
