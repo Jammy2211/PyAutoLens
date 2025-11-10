@@ -24,6 +24,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads: aa.Preloads = None,
+        xp=np
     ):
         """
         Fits an imaging dataset using a `Tracer` object.
@@ -64,7 +65,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
         """
 
-        super().__init__(dataset=dataset, dataset_model=dataset_model)
+        super().__init__(dataset=dataset, dataset_model=dataset_model, xp=xp)
         AbstractFitInversion.__init__(
             self=self, model_obj=tracer, settings_inversion=settings_inversion
         )
@@ -86,12 +87,14 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         ):
             return self.tracer.image_2d_from(
                 grid=self.grids.lp,
+                xp=self._xp,
             )
 
         return self.tracer.blurred_image_2d_from(
             grid=self.grids.lp,
             psf=self.dataset.psf,
             blurring_grid=self.grids.blurring,
+            xp=self._xp,
         )
 
     @property
@@ -118,6 +121,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             adapt_images=self.adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=self.preloads,
+            xp=self._xp,
         )
 
     @cached_property

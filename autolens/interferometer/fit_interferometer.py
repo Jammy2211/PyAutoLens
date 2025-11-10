@@ -21,6 +21,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         adapt_images: Optional[ag.AdaptImages] = None,
         settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
         preloads: aa.Preloads = None,
+        xp=np,
     ):
         """
         Fits an interferometer dataset using a `Tracer` object.
@@ -76,12 +77,14 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         super().__init__(
             dataset=dataset,
             dataset_model=dataset_model,
+            xp=xp,
         )
         AbstractFitInversion.__init__(
             self=self, model_obj=tracer, settings_inversion=settings_inversion
         )
 
         self.preloads = preloads
+        self._xp = xp
 
     @property
     def profile_visibilities(self) -> aa.Visibilities:
@@ -90,7 +93,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         transform to the sum of light profile images.
         """
         return self.tracer.visibilities_from(
-            grid=self.grids.lp, transformer=self.dataset.transformer
+            grid=self.grids.lp, transformer=self.dataset.transformer, xp=self._xp
         )
 
     @property
@@ -117,6 +120,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
             adapt_images=self.adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=self.preloads,
+            xp=self._xp,
         )
 
     @cached_property

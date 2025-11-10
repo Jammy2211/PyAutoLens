@@ -1,6 +1,5 @@
-import jax.numpy as jnp
+import numpy as np
 
-from autoconf.jax_wrapper import register_pytree_node_class
 from autofit.mock import *  # noqa
 from autoarray.mock import *  # noqa
 from autogalaxy.mock import *  # noqa
@@ -17,13 +16,13 @@ class NullTracer(Tracer):
     def __init__(self):
         super().__init__([])
 
-    def deflections_yx_2d_from(self, grid):
-        return jnp.zeros_like(grid.array)
+    def deflections_yx_2d_from(self, grid, xp=np):
+        return xp.zeros_like(grid.array)
 
-    def deflections_between_planes_from(self, grid, plane_i=0, plane_j=-1):
-        return jnp.zeros_like(grid.array)
+    def deflections_between_planes_from(self, grid, xp=np, plane_i=0, plane_j=-1):
+        return xp.zeros_like(grid.array)
 
     def magnification_2d_via_hessian_from(
-        self, grid, buffer: float = 0.01, deflections_func=None
+        self, grid, xp=np, buffer: float = 0.01, deflections_func=None
     ) -> aa.ArrayIrregular:
-        return aa.ArrayIrregular(values=jnp.ones(grid.shape[0]))
+        return aa.ArrayIrregular(values=xp.ones(grid.shape[0]))

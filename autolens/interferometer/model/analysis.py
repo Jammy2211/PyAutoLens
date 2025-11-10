@@ -114,7 +114,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
         return self
 
-    def log_likelihood_function(self, instance):
+    def log_likelihood_function(self, instance, xp=np):
         """
         Given an instance of the model, where the model parameters are set via a non-linear search, fit the model
         instance to the interferometer dataset.
@@ -153,14 +153,16 @@ class AnalysisInterferometer(AnalysisDataset):
             The log likelihood indicating how well this model instance fitted the interferometer data.
         """
 
-        log_likelihood_penalty = self.log_likelihood_penalty_from(instance=instance)
+        log_likelihood_penalty = self.log_likelihood_penalty_from(
+            instance=instance, xp=xp
+        )
 
-        return self.fit_from(instance=instance).figure_of_merit - log_likelihood_penalty
+        return (
+            self.fit_from(instance=instance, xp=xp).figure_of_merit
+            - log_likelihood_penalty
+        )
 
-    def fit_from(
-        self,
-        instance: af.ModelInstance,
-    ) -> FitInterferometer:
+    def fit_from(self, instance: af.ModelInstance, xp=np) -> FitInterferometer:
         """
         Given a model instance create a `FitInterferometer` object.
 
@@ -196,6 +198,7 @@ class AnalysisInterferometer(AnalysisDataset):
             adapt_images=adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=self.preloads,
+            xp=xp,
         )
 
     def save_attributes(self, paths: af.DirectoryPaths):

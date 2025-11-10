@@ -1,5 +1,6 @@
 from abc import ABC
 from functools import partial
+import numpy as np
 from typing import Optional, Tuple
 
 import autoarray as aa
@@ -20,6 +21,7 @@ class AbstractFitPoint(aa.AbstractFit, ABC):
         tracer: Tracer,
         solver: PointSolver,
         profile: Optional[ag.ps.Point] = None,
+        xp=np,
     ):
         """
         Abstract class to fit a point source dataset using a `Tracer` object, including different components
@@ -70,6 +72,8 @@ class AbstractFitPoint(aa.AbstractFit, ABC):
                 f"in the tracer (make sure your tracer's point source name is the same the dataset name."
             )
 
+        self._xp = xp
+
     @property
     def data(self):
         return self._data
@@ -105,6 +109,7 @@ class AbstractFitPoint(aa.AbstractFit, ABC):
 
             return partial(
                 self.tracer.deflections_between_planes_from,
+                xp=self._xp,
                 plane_i=0,
                 plane_j=upper_plane_index,
             )

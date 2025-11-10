@@ -32,7 +32,6 @@ Create figures and subplots showing quantities of standard **PyAutoLens** object
     ImagingPlotter
     InterferometerPlotter
     LightProfilePlotter
-    LightProfilePDFPlotter
     GalaxyPlotter
     FitImagingPlotter
     FitInterferometerPlotter

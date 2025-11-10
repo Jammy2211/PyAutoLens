@@ -1,4 +1,3 @@
-import jax.numpy as jnp
 import numpy as np
 from typing import Optional
 
@@ -19,6 +18,7 @@ class FitPositionsSource(AbstractFitPositions):
         tracer: Tracer,
         solver: Optional[PointSolver],
         profile: Optional[ag.ps.Point] = None,
+        xp=np,
     ):
         """
         Fits the positions of a a point source dataset using a `Tracer` object with a source-plane chi-squared based on
@@ -79,6 +79,7 @@ class FitPositionsSource(AbstractFitPositions):
             tracer=tracer,
             solver=solver,
             profile=profile,
+            xp=xp,
         )
 
     @property
@@ -95,7 +96,7 @@ class FitPositionsSource(AbstractFitPositions):
             deflections = self.tracer.deflections_yx_2d_from(grid=self.data)
         else:
             deflections = self.tracer.deflections_between_planes_from(
-                grid=self.data, plane_i=0, plane_j=self.plane_index
+                grid=self.data, xp=self._xp, plane_i=0, plane_j=self.plane_index
             )
 
         return self.data.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
@@ -126,8 +127,8 @@ class FitPositionsSource(AbstractFitPositions):
         """
         Returns the normalization of the noise-map, which is the sum of the noise-map values squared.
         """
-        return jnp.sum(
-            jnp.log(
+        return self._xp.sum(
+            self._xp.log(
                 2
                 * np.pi
                 * (

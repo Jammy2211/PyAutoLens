@@ -1,4 +1,5 @@
 from abc import ABC
+import numpy as np
 from typing import Optional
 
 import autoarray as aa
@@ -18,6 +19,7 @@ class AbstractFitPositions(AbstractFitPoint, ABC):
         tracer: Tracer,
         solver: PointSolver,
         profile: Optional[ag.ps.Point] = None,
+        xp=np,
     ):
         """
         Abstract class to fit the positions of a a point source dataset using a `Tracer` object, where the specific
@@ -65,6 +67,7 @@ class AbstractFitPositions(AbstractFitPoint, ABC):
             tracer=tracer,
             solver=solver,
             profile=profile,
+            xp=xp,
         )
 
     @property

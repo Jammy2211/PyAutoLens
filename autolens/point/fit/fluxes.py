@@ -1,4 +1,4 @@
-import jax.numpy as jnp
+import numpy as np
 from typing import Optional
 
 import autoarray as aa
@@ -19,6 +19,7 @@ class FitFluxes(AbstractFitPoint):
         positions: aa.Grid2DIrregular,
         tracer: Tracer,
         profile: Optional[ag.ps.Point] = None,
+        xp=np,
     ):
         """
         Fits the fluxes of a a point source dataset using a `Tracer` object, where every model flux of the point-source
@@ -84,6 +85,7 @@ class FitFluxes(AbstractFitPoint):
             tracer=tracer,
             solver=None,
             profile=profile,
+            xp=xp,
         )
 
         if not hasattr(self.profile, "flux"):
@@ -102,7 +104,7 @@ class FitFluxes(AbstractFitPoint):
         are used.
         """
         return aa.ArrayIrregular(
-            values=jnp.array(
+            values=self._xp.array(
                 [
                     magnification * self.profile.flux
                     for magnification in self.magnifications_at_positions

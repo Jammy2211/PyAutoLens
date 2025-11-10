@@ -66,5 +66,3 @@ fit_quantity:                              # Settings for plots of fit quantitie
 galaxies:                                  # Settings for plots of galaxies (e.g. GalaxiesPlotter).
   subplot_galaxies: true                   # Plot subplot of all quantities in each galaxies group (e.g. images, convergence)?
   subplot_galaxy_images: false             # Plot subplot of the image of each galaxy in the model?
-  subplot_galaxies_1d: false               # Plot subplot of all quantities in 1D of each galaxies group (e.g. images, convergence)?
-  subplot_galaxies_1d_decomposed: false    # Plot subplot of all quantities in 1D decomposed of each galaxies group (e.g. images, convergence)?
