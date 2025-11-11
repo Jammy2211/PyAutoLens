@@ -110,9 +110,7 @@ class VisualizerInterferometer(af.Visualizer):
                 quick_update=quick_update,
             )
         except exc.InversionException:
-            logger(
-                ag.exc.invalid_linear_algebra_for_visualization_message()
-            )
+            logger(ag.exc.invalid_linear_algebra_for_visualization_message())
             return
 
         if quick_update:

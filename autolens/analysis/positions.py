@@ -180,7 +180,7 @@ class PositionsLH:
             noise_map=None,
             tracer=tracer,
             plane_redshift=self.plane_redshift,
-            xp=xp
+            xp=xp,
         )
 
         max_separation = xp.max(

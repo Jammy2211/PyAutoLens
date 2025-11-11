@@ -1,3 +1,4 @@
+import numpy as np
 from typing import List
 
 import autoarray as aa
@@ -7,7 +8,7 @@ from autolens.lens.tracer import Tracer
 
 class SimulatorImaging(aa.SimulatorImaging):
 
-    def via_tracer_from(self, tracer : Tracer, grid : aa.type.Grid2DLike) -> aa.Imaging:
+    def via_tracer_from(self, tracer : Tracer, grid : aa.type.Grid2DLike, xp=np) -> aa.Imaging:
         """
         Simulate an `Imaging` dataset from an input `Tracer` object and a 2D grid of (y,x) coordinates.
 
@@ -42,14 +43,14 @@ class SimulatorImaging(aa.SimulatorImaging):
         )
 
         image = tracer.padded_image_2d_from(
-            grid=grid, psf_shape_2d=self.psf.shape_native
+            grid=grid, psf_shape_2d=self.psf.shape_native, xp=xp
         )
 
         over_sample_size = grid.over_sample_size.resized_from(
             new_shape=image.shape_native, mask_pad_value=1
         )
 
-        dataset = self.via_image_from(image=image, over_sample_size=over_sample_size)
+        dataset = self.via_image_from(image=image, over_sample_size=over_sample_size, xp=xp)
 
         return dataset.trimmed_after_convolution_from(
             kernel_shape=self.psf.shape_native
