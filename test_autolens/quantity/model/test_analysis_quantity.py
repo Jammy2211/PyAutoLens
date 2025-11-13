@@ -12,7 +12,9 @@ def test__make_result__result_quantity_is_returned(dataset_quantity_7x7_array_2d
     model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
     analysis = al.AnalysisQuantity(
-        dataset=dataset_quantity_7x7_array_2d, func_str="convergence_2d_from"
+        dataset=dataset_quantity_7x7_array_2d,
+        func_str="convergence_2d_from",
+        use_jax=False,
     )
 
     search = al.m.MockSearch(name="test_search")
@@ -30,7 +32,9 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
     model = af.Collection(galaxies=af.Collection(galaxy=galaxy))
 
     analysis = al.AnalysisQuantity(
-        dataset=dataset_quantity_7x7_array_2d, func_str="convergence_2d_from"
+        dataset=dataset_quantity_7x7_array_2d,
+        func_str="convergence_2d_from",
+        use_jax=False,
     )
 
     instance = model.instance_from_unit_vector([])

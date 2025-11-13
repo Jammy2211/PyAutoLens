@@ -709,7 +709,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             The 2D (y, x) coordinates where values of the deflections are evaluated.
         """
 
-        traced_grids_list = self.traced_grid_2d_list_from(grid=grid)
+        traced_grids_list = self.traced_grid_2d_list_from(grid=grid, xp=xp)
 
         return traced_grids_list[plane_i] - traced_grids_list[plane_j]
 

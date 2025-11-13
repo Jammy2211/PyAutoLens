@@ -6,7 +6,6 @@ from typing import Tuple, List, Iterator, Optional
 import autoarray as aa
 
 from autoarray.structures.triangles.shape import Shape
-from autoconf.jax_wrapper import register_pytree_node_class
 
 from autoarray.structures.triangles.coordinate_array import (
     CoordinateArrayTriangles,
@@ -182,14 +181,15 @@ class AbstractSolver:
         -------
         The source plane grid computed by applying the deflections to the image plane grid.
         """
-
         if plane_redshift is None:
             plane_index = -1
         else:
             plane_index = tracer.plane_index_via_redshift_from(redshift=plane_redshift)
 
         deflections = tracer.deflections_between_planes_from(
-            grid=grid, plane_i=0, plane_j=plane_index
+            grid=grid,
+            plane_i=0,
+            plane_j=plane_index,  # xp=jnp
         )
         # noinspection PyTypeChecker
         return grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
@@ -348,7 +348,6 @@ class AbstractSolver:
         )
 
 
-@register_pytree_node_class
 class ShapeSolver(AbstractSolver):
     def find_magnification(
         self,

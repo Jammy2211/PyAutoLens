@@ -25,7 +25,7 @@ def test__modify_before_fit__inversion_no_positions_likelihood__raises_exception
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
-    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, use_jax=False)
 
     with pytest.raises(exc.AnalysisException):
         analysis.modify_before_fit(paths=af.DirectoryPaths(), model=model)
@@ -35,7 +35,9 @@ def test__modify_before_fit__inversion_no_positions_likelihood__raises_exception
     )
 
     analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7, positions_likelihood_list=[positions_likelihood]
+        dataset=masked_imaging_7x7,
+        positions_likelihood_list=[positions_likelihood],
+        use_jax=False,
     )
     analysis.modify_before_fit(paths=af.DirectoryPaths(), model=model)
 

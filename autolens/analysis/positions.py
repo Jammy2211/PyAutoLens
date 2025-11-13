@@ -1,4 +1,3 @@
-import jax
 import numpy as np
 from typing import Optional
 from os import path
@@ -188,6 +187,8 @@ class PositionsLH:
         )
 
         penalty = self.log_likelihood_penalty_factor * (max_separation - self.threshold)
+
+        import jax
 
         return jax.lax.cond(
             max_separation > self.threshold,

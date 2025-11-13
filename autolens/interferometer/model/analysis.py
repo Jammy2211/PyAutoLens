@@ -1,20 +1,16 @@
 import logging
 import numpy as np
-from typing import Dict, Optional, Tuple, Union
+from typing import Optional
 
 import autofit as af
 import autoarray as aa
 import autogalaxy as ag
-
-from autoarray.exc import PixelizationException
 
 from autolens.analysis.analysis.dataset import AnalysisDataset
 from autolens.analysis.positions import PositionsLH
 from autolens.interferometer.model.result import ResultInterferometer
 from autolens.interferometer.model.visualizer import VisualizerInterferometer
 from autolens.interferometer.fit_interferometer import FitInterferometer
-
-from autolens import exc
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +31,7 @@ class AnalysisInterferometer(AnalysisDataset):
         preloads: aa.Preloads = None,
         raise_inversion_positions_likelihood_exception: bool = True,
         title_prefix: str = None,
+        use_jax: bool = True,
     ):
         """
         Analysis classes are used by PyAutoFit to fit a model to a dataset via a non-linear search.
@@ -86,6 +83,7 @@ class AnalysisInterferometer(AnalysisDataset):
             preloads=preloads,
             raise_inversion_positions_likelihood_exception=raise_inversion_positions_likelihood_exception,
             title_prefix=title_prefix,
+            use_jax=use_jax,
         )
 
     @property
@@ -114,7 +112,7 @@ class AnalysisInterferometer(AnalysisDataset):
 
         return self
 
-    def log_likelihood_function(self, instance, xp=np):
+    def log_likelihood_function(self, instance):
         """
         Given an instance of the model, where the model parameters are set via a non-linear search, fit the model
         instance to the interferometer dataset.
@@ -154,15 +152,12 @@ class AnalysisInterferometer(AnalysisDataset):
         """
 
         log_likelihood_penalty = self.log_likelihood_penalty_from(
-            instance=instance, xp=xp
+            instance=instance, xp=self._xp
         )
 
-        return (
-            self.fit_from(instance=instance, xp=xp).figure_of_merit
-            - log_likelihood_penalty
-        )
+        return self.fit_from(instance=instance).figure_of_merit - log_likelihood_penalty
 
-    def fit_from(self, instance: af.ModelInstance, xp=np) -> FitInterferometer:
+    def fit_from(self, instance: af.ModelInstance) -> FitInterferometer:
         """
         Given a model instance create a `FitInterferometer` object.
 
@@ -198,7 +193,7 @@ class AnalysisInterferometer(AnalysisDataset):
             adapt_images=adapt_images,
             settings_inversion=self.settings_inversion,
             preloads=self.preloads,
-            xp=xp,
+            xp=self._xp,
         )
 
     def save_attributes(self, paths: af.DirectoryPaths):

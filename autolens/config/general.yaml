@@ -1,5 +1,3 @@
-jax:
-  use_jax: true                       # If True, uses JAX internally, whereas False uses normal Numpy.
 output:
   fit_dill: false
 test:

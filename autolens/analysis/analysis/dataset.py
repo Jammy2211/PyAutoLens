@@ -1,5 +1,6 @@
-import os
 import logging
+import numpy as np
+import os
 from typing import List, Optional
 
 from autoconf import conf
@@ -33,6 +34,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
         preloads: aa.Preloads = None,
         raise_inversion_positions_likelihood_exception: bool = True,
         title_prefix: str = None,
+        use_jax: bool = True,
         **kwargs,
     ):
         """
@@ -75,6 +77,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
             settings_inversion=settings_inversion,
             preloads=preloads,
             title_prefix=title_prefix,
+            use_jax=use_jax,
             **kwargs,
         )
 

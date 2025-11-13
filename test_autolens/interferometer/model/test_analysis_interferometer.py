@@ -13,7 +13,7 @@ directory = path.dirname(path.realpath(__file__))
 def test__make_result__result_interferometer_is_returned(interferometer_7):
     model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
-    analysis = al.AnalysisInterferometer(dataset=interferometer_7)
+    analysis = al.AnalysisInterferometer(dataset=interferometer_7, use_jax=False)
 
     search = al.m.MockSearch(name="test_search")
 
@@ -27,7 +27,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(interferome
 
     model = af.Collection(galaxies=af.Collection(lens=lens_galaxy))
 
-    analysis = al.AnalysisInterferometer(dataset=interferometer_7)
+    analysis = al.AnalysisInterferometer(dataset=interferometer_7, use_jax=False)
 
     instance = model.instance_from_unit_vector([])
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
@@ -47,7 +47,7 @@ def test__positions__likelihood_overwrite__changes_likelihood(
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
-    analysis = al.AnalysisInterferometer(dataset=interferometer_7)
+    analysis = al.AnalysisInterferometer(dataset=interferometer_7, use_jax=False)
 
     instance = model.instance_from_unit_vector([])
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
@@ -64,7 +64,9 @@ def test__positions__likelihood_overwrite__changes_likelihood(
     )
 
     analysis = al.AnalysisInterferometer(
-        dataset=interferometer_7, positions_likelihood_list=[positions_likelihood]
+        dataset=interferometer_7,
+        positions_likelihood_list=[positions_likelihood],
+        use_jax=False,
     )
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
