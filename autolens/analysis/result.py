@@ -146,7 +146,7 @@ class Result(AgResultDataset):
 
         grid = self.analysis.dataset.mask.derive_grid.all_false
 
-        centre = self.source_plane_centre.in_list[0]
+        centre = self.source_plane_centre_from(plane_redshift=plane_redshift).in_list[0]
 
         solver = PointSolver.for_grid(
             grid=grid,
@@ -308,7 +308,7 @@ class Result(AgResultDataset):
 
             positions = positions[distances > mass_centre_radial_distance_min]
 
-        mask = np.isfinite(positions.array).all(axis=1)
+        mask = np.isfinite(positions).all(axis=1)
 
         positions = aa.Grid2DIrregular(positions[mask])
 

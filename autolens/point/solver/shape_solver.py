@@ -1,3 +1,4 @@
+import numpy as np
 import logging
 import math
 
@@ -6,11 +7,6 @@ from typing import Tuple, List, Iterator, Optional
 import autoarray as aa
 
 from autoarray.structures.triangles.shape import Shape
-
-from autoarray.structures.triangles.coordinate_array import (
-    CoordinateArrayTriangles,
-)
-from autoarray.structures.triangles.abstract import AbstractTriangles
 
 from autogalaxy import OperateDeflections
 from .step import Step
@@ -23,10 +19,11 @@ class AbstractSolver:
     def __init__(
         self,
         scale: float,
-        initial_triangles: AbstractTriangles,
+        initial_triangles,
         pixel_scale_precision: float,
         magnification_threshold=0.1,
         neighbor_degree: int = 1,
+        xp = np
     ):
         """
         Determine the image plane coordinates that are traced to be a source plane coordinate.
@@ -50,6 +47,8 @@ class AbstractSolver:
 
         self.initial_triangles = initial_triangles
 
+        self._xp = xp
+
     # noinspection PyPep8Naming
     @classmethod
     def for_grid(
@@ -58,6 +57,7 @@ class AbstractSolver:
         pixel_scale_precision: float,
         magnification_threshold=0.1,
         neighbor_degree: int = 1,
+        xp=np,
     ):
         """
         Create a solver for a given grid.
@@ -101,6 +101,7 @@ class AbstractSolver:
             pixel_scale_precision=pixel_scale_precision,
             magnification_threshold=magnification_threshold,
             neighbor_degree=neighbor_degree,
+            xp=xp,
         )
 
     @classmethod
@@ -114,6 +115,7 @@ class AbstractSolver:
         pixel_scale_precision: float = 0.001,
         magnification_threshold=0.1,
         neighbor_degree: int = 1,
+        xp=np,
     ):
         """
         Create a solver for a given grid.
@@ -140,7 +142,13 @@ class AbstractSolver:
         -------
         The solver.
         """
-        initial_triangles = CoordinateArrayTriangles.for_limits_and_scale(
+
+        if xp.__name__.startswith("jax"):
+            from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles as triangle_cls
+        else:
+            from autoarray.structures.triangles.coordinate_array_np import CoordinateArrayTrianglesNp as triangle_cls
+
+        initial_triangles = triangle_cls.for_limits_and_scale(
             y_min=y_min,
             y_max=y_max,
             x_min=x_min,
@@ -154,6 +162,7 @@ class AbstractSolver:
             pixel_scale_precision=pixel_scale_precision,
             magnification_threshold=magnification_threshold,
             neighbor_degree=neighbor_degree,
+            xp=xp,
         )
 
     @property
@@ -163,8 +172,8 @@ class AbstractSolver:
         """
         return math.ceil(math.log2(self.scale / self.pixel_scale_precision))
 
-    @staticmethod
     def _plane_grid(
+        self,
         tracer: OperateDeflections,
         grid: aa.type.Grid2DLike,
         plane_redshift: Optional[float] = None,
@@ -189,7 +198,8 @@ class AbstractSolver:
         deflections = tracer.deflections_between_planes_from(
             grid=grid,
             plane_i=0,
-            plane_j=plane_index,  # xp=jnp
+            plane_j=plane_index,
+            xp=self._xp
         )
         # noinspection PyTypeChecker
         return grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
@@ -199,7 +209,7 @@ class AbstractSolver:
         tracer: OperateDeflections,
         shape: Shape,
         plane_redshift: Optional[float] = None,
-    ) -> AbstractTriangles:
+    ):
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
 
@@ -253,15 +263,14 @@ class AbstractSolver:
         -------
         The points with an absolute magnification above the threshold.
         """
-        import jax.numpy as jnp
-
-        points = jnp.array(points)
+        points = self._xp.array(points)
         magnifications = tracer.magnification_2d_via_hessian_from(
             grid=aa.Grid2DIrregular(points).array,
             buffer=self.scale,
+            xp=self._xp
         )
-        mask = jnp.abs(magnifications.array) > self.magnification_threshold
-        return jnp.where(mask[:, None], points, jnp.nan)
+        mask = self._xp.abs(magnifications.array) > self.magnification_threshold
+        return self._xp.where(mask[:, None], points, self._xp.nan)
 
     def _plane_triangles(
         self,
@@ -277,6 +286,7 @@ class AbstractSolver:
             grid=aa.Grid2DIrregular(triangles.vertices),
             plane_redshift=plane_redshift,
         )
+
         return triangles.with_vertices(plane_grid.array)
 
     def steps(

@@ -43,8 +43,6 @@ class PointSolver(AbstractSolver):
         -------
         A list of image plane coordinates that are traced to the source plane coordinate.
         """
-        import jax.numpy as jnp
-
         kept_triangles = super().solve_triangles(
             tracer=tracer,
             shape=Point(*source_plane_coordinate),
@@ -55,10 +53,10 @@ class PointSolver(AbstractSolver):
             tracer=tracer, points=kept_triangles.means
         )
 
-        solution = aa.Grid2DIrregular([pair for pair in filtered_means]).array
+        solution = aa.Grid2DIrregular([pair for pair in filtered_means], xp=self._xp).array
 
-        is_nan = jnp.isnan(solution).any(axis=1)
-        sentinel = jnp.full_like(solution[0], fill_value=jnp.inf)
-        solution = jnp.where(is_nan[:, None], sentinel, solution)
+        is_nan = self._xp.isnan(solution).any(axis=1)
+        sentinel = self._xp.full_like(solution[0], fill_value=self._xp.inf)
+        solution = self._xp.where(is_nan[:, None], sentinel, solution)
 
         return aa.Grid2DIrregular(solution)

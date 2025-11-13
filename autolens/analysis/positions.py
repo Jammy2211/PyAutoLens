@@ -188,10 +188,15 @@ class PositionsLH:
 
         penalty = self.log_likelihood_penalty_factor * (max_separation - self.threshold)
 
-        import jax
+        if xp.__name__.startswith("jax"):
 
-        return jax.lax.cond(
-            max_separation > self.threshold,
-            lambda: penalty,
-            lambda: xp.array(0.0),
-        )
+            import jax
+
+            return jax.lax.cond(
+                max_separation > self.threshold,
+                lambda: penalty,
+                lambda: xp.array(0.0),
+            )
+
+        return penalty if max_separation > self.threshold else np.array(0.0)
+

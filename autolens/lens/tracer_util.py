@@ -338,7 +338,7 @@ def time_delays_from(
     D_dt = (1 + plane_redshifts[0]) * Dd * Ds / Dds * mpc_in_m
 
     # Fermat potential
-    fermat_potential = galaxies.fermat_potential_from(grid=grid)
+    fermat_potential = galaxies.fermat_potential_from(grid=grid, xp=xp)
 
     # Final time delay in days
     return D_dt / c * fermat_potential * factor

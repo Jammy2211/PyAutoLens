@@ -68,9 +68,13 @@ def test_trivial(
 
 
 def test_real_example_jax(grid, tracer):
+
+    import jax.numpy as jnp
+
     jax_solver = PointSolver.for_grid(
         grid=grid,
         pixel_scale_precision=0.001,
+        xp=jnp
     )
 
     result = jax_solver.solve(

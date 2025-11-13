@@ -787,7 +787,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         return tracer_util.time_delays_from(
             galaxies=ag.Galaxies(self.galaxies_ascending_redshift),
             grid=grid,
-            xp=np,
+            xp=xp,
             cosmology=self.cosmology,
         )
 
