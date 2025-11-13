@@ -10,7 +10,7 @@ def test__tracer_randomly_drawn_via_pdf_gen_from(
     samples,
     model,
 ):
-    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, use_jax=False)
 
     agg = aggregator_from(
         database_file=database_file,

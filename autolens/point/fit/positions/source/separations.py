@@ -93,7 +93,9 @@ class FitPositionsSource(AbstractFitPositions):
         at its specific redshift are used.
         """
         if len(self.tracer.planes) <= 2:
-            deflections = self.tracer.deflections_yx_2d_from(grid=self.data)
+            deflections = self.tracer.deflections_yx_2d_from(
+                grid=self.data, xp=self._xp
+            )
         else:
             deflections = self.tracer.deflections_between_planes_from(
                 grid=self.data, xp=self._xp, plane_i=0, plane_j=self.plane_index

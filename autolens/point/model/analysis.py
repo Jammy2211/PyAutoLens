@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+import numpy as np
 
 import autofit as af
 import autogalaxy as ag
@@ -13,15 +13,6 @@ from autolens.point.model.result import ResultPoint
 from autolens.point.model.visualizer import VisualizerPoint
 from autolens.point.solver import PointSolver
 
-from autolens import exc
-
-try:
-    import numba
-
-    NumbaException = numba.errors.TypingError
-except ModuleNotFoundError:
-    NumbaException = ValueError
-
 
 class AnalysisPoint(AgAnalysis, AnalysisLens):
     Visualizer = VisualizerPoint
@@ -35,6 +26,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         image=None,
         cosmology: ag.cosmo.LensingCosmology = None,
         title_prefix: str = None,
+        use_jax: bool = True,
     ):
         """
         Fits a lens model to a point source dataset (e.g. positions, fluxes, time delays) via a non-linear search.
@@ -69,7 +61,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
             A string that is added before the title of all figures output by visualization, for example to
             put the name of the dataset and galaxy in the title.
         """
-        super().__init__(cosmology=cosmology)
+        super().__init__(cosmology=cosmology, use_jax=use_jax)
 
         AnalysisLens.__init__(self=self, cosmology=cosmology)
 
@@ -127,9 +119,6 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         self,
         instance,
     ) -> FitPointDataset:
-        tracer = self.tracer_via_instance_from(
-            instance=instance,
-        )
         """
         Given a model instance create a `FitPointDataset` object.
 
@@ -146,11 +135,16 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         -------
         The fit of the lens model to the point source dataset.
         """
+        tracer = self.tracer_via_instance_from(
+            instance=instance,
+        )
+
         return FitPointDataset(
             dataset=self.dataset,
             tracer=tracer,
             solver=self.solver,
             fit_positions_cls=self.fit_positions_cls,
+            xp=self._xp,
         )
 
     def save_attributes(self, paths: af.DirectoryPaths):

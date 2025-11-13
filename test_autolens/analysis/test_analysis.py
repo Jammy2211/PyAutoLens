@@ -100,6 +100,7 @@ def test__use_border_relocator__determines_if_border_pixel_relocation_is_used(
     analysis = al.AnalysisImaging(
         dataset=masked_imaging_7x7,
         settings_inversion=al.SettingsInversion(use_border_relocator=False),
+        use_jax=False,
     )
 
     instance = model.instance_from_unit_vector([])
@@ -112,6 +113,7 @@ def test__use_border_relocator__determines_if_border_pixel_relocation_is_used(
     analysis = al.AnalysisImaging(
         dataset=masked_imaging_7x7,
         settings_inversion=al.SettingsInversion(use_border_relocator=True),
+        use_jax=False,
     )
 
     instance = model.instance_from_unit_vector([])
@@ -135,7 +137,7 @@ def test__modify_before_fit__inversion_no_positions_likelihood__raises_exception
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
-    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, use_jax=False)
 
     with pytest.raises(exc.AnalysisException):
         analysis.modify_before_fit(paths=af.DirectoryPaths(), model=model)
@@ -145,7 +147,9 @@ def test__modify_before_fit__inversion_no_positions_likelihood__raises_exception
     )
 
     analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7, positions_likelihood_list=[positions_likelihood]
+        dataset=masked_imaging_7x7,
+        positions_likelihood_list=[positions_likelihood],
+        use_jax=False,
     )
     analysis.modify_before_fit(paths=af.DirectoryPaths(), model=model)
 

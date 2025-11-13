@@ -17,7 +17,7 @@ def test__make_result__result_imaging_is_returned(masked_imaging_7x7):
 
     model = af.Collection(galaxies=af.Collection(galaxy_0=al.Galaxy(redshift=0.5)))
 
-    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, use_jax=False)
 
     search = al.m.MockSearch(name="test_search")
 
@@ -33,7 +33,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
 
     model = af.Collection(galaxies=af.Collection(lens=lens))
 
-    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, use_jax=False)
     instance = model.instance_from_unit_vector([])
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
@@ -52,7 +52,7 @@ def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x
 
     instance = model.instance_from_unit_vector([])
 
-    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7)
+    analysis = al.AnalysisImaging(dataset=masked_imaging_7x7, use_jax=False)
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
     tracer = analysis.tracer_via_instance_from(instance=instance)
@@ -67,7 +67,7 @@ def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x
     )
 
     analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7, positions_likelihood_list=[positions_likelihood]
+        dataset=masked_imaging_7x7, positions_likelihood_list=[positions_likelihood], use_jax=False
     )
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
@@ -92,7 +92,7 @@ def test__positions__likelihood_overwrites__changes_likelihood__double_source_pl
     )
 
     analysis = al.AnalysisImaging(
-        dataset=masked_imaging_7x7, positions_likelihood_list=[positions_likelihood_0, positions_likelihood_1]
+        dataset=masked_imaging_7x7, positions_likelihood_list=[positions_likelihood_0, positions_likelihood_1], use_jax=False
     )
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 

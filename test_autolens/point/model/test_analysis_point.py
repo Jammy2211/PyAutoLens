@@ -19,7 +19,7 @@ def _test__make_result__result_imaging_is_returned(point_dataset):
 
     solver = al.m.MockPointSolver(model_positions=point_dataset.positions)
 
-    analysis = al.AnalysisPoint(dataset=point_dataset, solver=solver)
+    analysis = al.AnalysisPoint(dataset=point_dataset, solver=solver, use_jax=False)
 
     result = search.fit(model=model, analysis=analysis)
 
@@ -43,7 +43,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
 
     solver = al.m.MockPointSolver(model_positions=positions_x2)
 
-    analysis = al.AnalysisPoint(dataset=point_dataset, solver=solver)
+    analysis = al.AnalysisPoint(dataset=point_dataset, solver=solver, use_jax=False)
 
     instance = model.instance_from_unit_vector([])
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
@@ -64,7 +64,7 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
     model_positions = al.Grid2DIrregular([(0.0, 1.0), (1.0, 2.0)])
     solver = al.m.MockPointSolver(model_positions=model_positions)
 
-    analysis = al.AnalysisPoint(dataset=point_dataset, solver=solver)
+    analysis = al.AnalysisPoint(dataset=point_dataset, solver=solver, use_jax=False)
 
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
@@ -104,7 +104,7 @@ def test__figure_of_merit__includes_fit_fluxes(
 
     solver = al.m.MockPointSolver(model_positions=positions_x2)
 
-    analysis = al.AnalysisPoint(dataset=point_dataset, solver=solver)
+    analysis = al.AnalysisPoint(dataset=point_dataset, solver=solver, use_jax=False)
 
     instance = model.instance_from_unit_vector([])
 
@@ -136,7 +136,7 @@ def test__figure_of_merit__includes_fit_fluxes(
     model_positions = al.Grid2DIrregular([(0.0, 1.0), (1.0, 2.0)])
     solver = al.m.MockPointSolver(model_positions=model_positions)
 
-    analysis = al.AnalysisPoint(dataset=point_dataset, solver=solver)
+    analysis = al.AnalysisPoint(dataset=point_dataset, solver=solver, use_jax=False)
 
     instance = model.instance_from_unit_vector([])
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)

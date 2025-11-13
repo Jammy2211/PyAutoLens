@@ -4,7 +4,6 @@ from typing import Tuple, Optional
 import autoarray as aa
 from autoarray.structures.triangles.shape import Point
 
-from autoconf.jax_wrapper import register_pytree_node_class
 from autogalaxy import OperateDeflections
 from .shape_solver import AbstractSolver
 
@@ -12,7 +11,6 @@ from .shape_solver import AbstractSolver
 logger = logging.getLogger(__name__)
 
 
-@register_pytree_node_class
 class PointSolver(AbstractSolver):
 
     def solve(

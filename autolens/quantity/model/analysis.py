@@ -1,3 +1,5 @@
+import numpy as np
+
 import autofit as af
 import autogalaxy as ag
 
@@ -16,6 +18,7 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLens):
         dataset: ag.DatasetQuantity,
         func_str: str,
         cosmology: ag.cosmo.LensingCosmology = None,
+        use_jax: bool = True,
     ):
         """
         Analysis classes are used by PyAutoFit to fit a model to a dataset via a non-linear search.
@@ -47,7 +50,9 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLens):
         cosmology
             The Cosmology assumed for this analysis.
         """
-        super().__init__(dataset=dataset, func_str=func_str, cosmology=cosmology)
+        super().__init__(
+            dataset=dataset, func_str=func_str, cosmology=cosmology, use_jax=use_jax
+        )
 
         AnalysisLens.__init__(self=self, cosmology=cosmology)
 

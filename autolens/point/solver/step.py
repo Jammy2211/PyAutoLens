@@ -1,13 +1,11 @@
 import logging
 from dataclasses import dataclass
-from jax._src.tree_util import register_pytree_node_class
 
 import autoarray as aa
 
 logger = logging.getLogger(__name__)
 
 
-@register_pytree_node_class
 @dataclass
 class Step:
     """
