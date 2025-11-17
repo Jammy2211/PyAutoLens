@@ -7,25 +7,18 @@ New User Guide
 different data types and it is used for a variety of different science cases. This means the documentation is quite
 extensive, and it may initially be difficult to find the example script you need.
 
-The `autolens_workspace` has five `start_here.ipynb` notebooks, and you need to determine which is most relevant
-to your scientific interests:
+The ``autolens_workspace`` has five ``start_here.ipynb`` notebooks, and you need to determine which is most relevant
+to your scientific interests.
 
- - ``start_here_imaging.ipynb``: Galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, James Webb).
- - ``start_here_interferometer.ipynb``: Galaxy scale strong lenses observed with interferometer data (e.g. ALMA).
- - ``start_here_point_source.ipynb``: Galaxy scale strong lenses with a lensed point source (e.g. lensed quasars).
- - ``start_here_group.ipynb``: Group scale strong lenses where there are 2-10 lens galaxies.
- - ``start_here_cluster.ipynb``: Cluster scale strong lenses with 2+ lenses and 5+ source galaxies.
+You can access the notebooks by clicking on the embedded links below:
 
-You can access them via Google Colab using the following URLs:
+ - `imaging/start_here.ipynb <https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/start_here.ipynb>`_: Galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, James Webb).
+ - `interferometer/start_here.ipynb <https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/notebooks/interferometer/start_here.ipynb>`_: Galaxy scale strong lenses observed with interferometer data (e.g. ALMA).
+ - `point_source/start_here.ipynb <https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/notebooks/point_source/start_here.ipynb>`_: Galaxy scale strong lenses with a lensed point source (e.g. lensed quasars).
+ - `group/start_here.ipynb <https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/notebooks/group/start_here.ipynb>`_: Group scale strong lenses where there are 2-10 lens galaxies.
+ - `cluster/start_here.ipynb <https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/notebooks/cluster/start_here.ipynb>`_: Cluster scale strong lenses with 2+ lenses and 5+ source galaxies.
 
-- ``start_here_imaging.ipynb``: https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/start_here_imaging.ipynb
-- ``start_here_interferometer.ipynb``: https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/start_here_interferometer.ipynb
-- ``start_here_point_source.ipynb``: https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/start_here_point_source.ipynb
-- ``start_here_group.ipynb``: https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/start_here_group.ipynb
-- ``start_here_cluster.ipynb``: https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/start_here_cluster.ipynb
-
-If you are still unsure based on the brief descriptions above, answer the following two questions to work out
-where to start
+If you are unsure based on the brief descriptions above, answer the following two questions to work out where to start.
 
 What Scale Lens?
 ----------------
@@ -38,10 +31,10 @@ There are three scales to choose from:
   If you're interested in galaxy scale lenses, go to the question below called "What Data Type?".
 
 - **Group Scale**: Strong Lens Groups contains 2-10 lens galaxies, normally with one main large galaxy responsible for the majority of lensing.
-  They also typically lens just one source galaxy. If you are interested in groups, go to the `start_here_group.ipynb` notebook.
+  They also typically lens just one source galaxy. If you are interested in groups, go to the ``group/start_here.ipynb`` notebook.
 
 - **Cluster Scale**: Strong Lens Galaxy clusters often contained 20-50, or more, lens galaxies, lensing 10, or more, sources galaxies.
-  If you are interested in clusters, go to the `start_here_cluster.ipynb` notebook.
+  If you are interested in clusters, go to the ``cluster/start_here.ipynb`` notebook.
 
 What Dataset Type?
 ------------------
@@ -49,11 +42,11 @@ What Dataset Type?
 If you are interested in galaxy-scale strong lenses, you now need to decide what type of strong lens data you are
 interested in:
 
-- **CDD Imaging**: For image data from telescopes like Hubble and James Webb, go to `start_here_imaging.ipynb`.
+- **CDD Imaging**: For image data from telescopes like Hubble and James Webb, go to ``imaging/start_here.ipynb``.
 
-- **Interferometer**: For radio / sub-mm interferometer from instruments like ALMA, go to `start_here_interferometer.ipynb`.
+- **Interferometer**: For radio / sub-mm interferometer from instruments like ALMA, go to ``interferometer/start_here.ipynb``.
 
-- **Point Sources**: For strongly lensed point sources (e.g. lensed quasars, supernovae), go to `start_here_point_source.ipynb`.
+- **Point Sources**: For strongly lensed point sources (e.g. lensed quasars, supernovae), go to ``point_source/start_here.ipynb``.
 
 Still Unsure?
 -------------
