@@ -80,6 +80,16 @@ def test_real_example_jax(grid, tracer):
     result = jax_solver.solve(
         tracer=tracer,
         source_plane_coordinate=(0.07, 0.07),
+        remove_infinities=True
+    )
+
+    assert len(result) == 5
+
+
+    result = jax_solver.solve(
+        tracer=tracer,
+        source_plane_coordinate=(0.07, 0.07),
+        remove_infinities=False
     )
 
     assert len(result) == 15

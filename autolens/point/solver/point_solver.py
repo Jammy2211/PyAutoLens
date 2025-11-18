@@ -18,6 +18,7 @@ class PointSolver(AbstractSolver):
         tracer: OperateDeflections,
         source_plane_coordinate: Tuple[float, float],
         plane_redshift: Optional[float] = None,
+        remove_infinities: bool = True,
     ) -> aa.Grid2DIrregular:
         """
         Solve for the image plane coordinates that are traced to the source plane coordinate.
@@ -26,8 +27,14 @@ class PointSolver(AbstractSolver):
         within the triangle. The triangles are sub-sampled to increase the resolution with only the triangles that
         contain the source plane coordinate and their neighbours being kept.
 
-        The means of the triangles  are then filtered to keep only those with an absolute magnification above the
+        The means of the triangles are then filtered to keep only those with an absolute magnification above the
         threshold.
+
+        The positions are stored on an array of fixed shape defined by `MAX_CONTAINING_SIZE`. This ensures the
+        array is static, which is important for JAX compatibility. This array typically has many entries
+        which use the sentinel value of `inf`, subsequent JAX calculations incorporated. By default, these
+        sentinel values are removed from the output, for example general use outside of JAX when simulating
+        strong lenses.
 
         Parameters
         ----------
@@ -58,5 +65,9 @@ class PointSolver(AbstractSolver):
         is_nan = self._xp.isnan(solution).any(axis=1)
         sentinel = self._xp.full_like(solution[0], fill_value=self._xp.inf)
         solution = self._xp.where(is_nan[:, None], sentinel, solution)
+
+        if remove_infinities:
+
+            solution = solution[~self._xp.isinf(solution).any(axis=1)]
 
         return aa.Grid2DIrregular(solution)
