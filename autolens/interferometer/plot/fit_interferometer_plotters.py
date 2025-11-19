@@ -420,7 +420,7 @@ class FitInterferometerPlotter(Plotter):
         self.mat_plot_2d.cmap.kwargs["vmin"] = -1.0
         self.mat_plot_2d.cmap.kwargs["vmax"] = 1.0
 
-        self.set_title(label="Normalized Residual Map (1 sigma)")
+        self.set_title(label=r"Normalized Residual Map $1\sigma$")
         self.figures_2d(dirty_normalized_residual_map=True)
         self.set_title(label=None)
 
