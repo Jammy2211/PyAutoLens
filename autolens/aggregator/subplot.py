@@ -1,6 +1,15 @@
 from enum import Enum
 
 
+class FITSModelGalaxyImages(Enum):
+    """
+    The HDUs that can be extracted from the fit.fits file.
+    """
+
+    lens_light_image = "GALAXY_0"
+    lensed_source_image = "GALAXY_1"
+
+
 class FITSTracer(Enum):
     """
     The HDUs that can be extracted from the fit.fits file.

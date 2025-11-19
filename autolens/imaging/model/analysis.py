@@ -1,5 +1,4 @@
 import logging
-import numpy as np
 
 import autofit as af
 import autogalaxy as ag
