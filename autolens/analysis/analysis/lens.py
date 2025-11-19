@@ -120,8 +120,10 @@ class AnalysisLens:
 
         if self.positions_likelihood_list is not None:
 
-            try:
-                for positions_likelihood in self.positions_likelihood_list:
+            for positions_likelihood in self.positions_likelihood_list:
+
+                if positions_likelihood is not None:
+
                     log_likelihood_penalty = (
                         positions_likelihood.log_likelihood_penalty_from(
                             instance=instance, analysis=self, xp=xp
@@ -130,8 +132,6 @@ class AnalysisLens:
 
                     log_likelihood_penalty += log_likelihood_penalty
 
-                return log_likelihood_penalty
-            except (ValueError, np.linalg.LinAlgError) as e:
-                raise exc.FitException from e
+            return log_likelihood_penalty
 
         return log_likelihood_penalty
