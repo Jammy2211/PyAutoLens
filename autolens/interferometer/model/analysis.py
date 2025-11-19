@@ -90,28 +90,6 @@ class AnalysisInterferometer(AnalysisDataset):
     def interferometer(self):
         return self.dataset
 
-    def modify_before_fit(self, paths: af.DirectoryPaths, model: af.Collection):
-        """
-        This function is called immediately before the non-linear search begins and performs final tasks and checks
-        before it begins.
-
-        This function checks that the adapt-dataset is consistent with previous adapt-datasets if the model-fit is
-        being resumed from a previous run, and it visualizes objects which do not change throughout the model fit
-        like the dataset.
-
-        Parameters
-        ----------
-        paths
-            The paths object which manages all paths, e.g. where the non-linear search outputs are stored,
-            visualization and the pickled objects used by the aggregator output by this function.
-        model
-            The model object, which includes model components representing the galaxies that are fitted to
-            the imaging data.
-        """
-        super().modify_before_fit(paths=paths, model=model)
-
-        return self
-
     def log_likelihood_function(self, instance):
         """
         Given an instance of the model, where the model parameters are set via a non-linear search, fit the model

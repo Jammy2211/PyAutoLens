@@ -122,6 +122,8 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
 
         self.raise_exceptions(model=model)
 
+        return self
+
     def raise_exceptions(self, model):
         has_pix = model.has_model(cls=(aa.Pixelization,)) or model.has_instance(
             cls=(aa.Pixelization,)
