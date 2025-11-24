@@ -133,9 +133,7 @@ class AbstractFitPoint(aa.AbstractFit, ABC):
         """
         return abs(
             self.tracer.magnification_2d_via_hessian_from(
-                grid=self.positions,
-                deflections_func=self.deflections_func,
-                xp=self._xp
+                grid=self.positions, deflections_func=self.deflections_func, xp=self._xp
             )
         )
 

@@ -104,5 +104,5 @@ class AbstractFitPositionsImagePair(AbstractFitPositions, ABC):
             tracer=self.tracer,
             source_plane_coordinate=self.source_plane_coordinate,
             plane_redshift=self.plane_redshift,
-            remove_infinities=False
+            remove_infinities=False,
         )

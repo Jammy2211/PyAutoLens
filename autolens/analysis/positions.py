@@ -199,4 +199,3 @@ class PositionsLH:
             )
 
         return penalty if max_separation > self.threshold else np.array(0.0)
-
