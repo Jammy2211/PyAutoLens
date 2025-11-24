@@ -10,6 +10,6 @@ class MockPointSolver:
         tracer,
         source_plane_coordinate,
         plane_redshift: Optional[float] = None,
-        remove_infinities : bool = True
+        remove_infinities: bool = True,
     ):
         return self.model_positions

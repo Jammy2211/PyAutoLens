@@ -60,7 +60,9 @@ class PointSolver(AbstractSolver):
             tracer=tracer, points=kept_triangles.means
         )
 
-        solution = aa.Grid2DIrregular([pair for pair in filtered_means], xp=self._xp).array
+        solution = aa.Grid2DIrregular(
+            [pair for pair in filtered_means], xp=self._xp
+        ).array
 
         is_nan = self._xp.isnan(solution).any(axis=1)
         sentinel = self._xp.full_like(solution[0], fill_value=self._xp.inf)

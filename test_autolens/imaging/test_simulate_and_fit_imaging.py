@@ -179,7 +179,6 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
     fit_linear = al.FitImaging(
         dataset=masked_dataset,
         tracer=tracer_linear,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit_linear.inversion.reconstruction == pytest.approx(
@@ -286,7 +285,6 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     fit_linear = al.FitImaging(
         dataset=masked_dataset,
         tracer=tracer_linear,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit_linear.inversion.reconstruction == pytest.approx(
@@ -326,7 +324,6 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
         dataset=masked_dataset,
         tracer=tracer_linear,
         settings_inversion=al.SettingsInversion(
-            use_w_tilde=False,
             use_positive_only_solver=True,
         ),
         preloads=al.Preloads(
@@ -416,7 +413,6 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
     fit_linear = al.FitImaging(
         dataset=masked_dataset,
         tracer=tracer_linear,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit_linear.inversion.reconstruction == pytest.approx(
@@ -460,7 +456,6 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
         dataset=masked_dataset,
         tracer=tracer_linear,
         settings_inversion=al.SettingsInversion(
-            use_w_tilde=False,
             use_positive_only_solver=True,
             force_edge_pixels_to_zeros=True
         ),
@@ -572,13 +567,13 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
     fit_mapping = al.FitImaging(
         dataset=masked_dataset,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
+    masked_dataset_w_tilde = masked_dataset.apply_w_tilde()
+
     fit_w_tilde = al.FitImaging(
-        dataset=masked_dataset,
+        dataset=masked_dataset_w_tilde,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=True),
     )
 
     assert fit_mapping.inversion.curvature_matrix == pytest.approx(

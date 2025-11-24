@@ -72,7 +72,6 @@ def test__perfect_fit__chi_squared_0():
     fit = al.FitInterferometer(
         dataset=dataset,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit.chi_squared == pytest.approx(0.0)
@@ -95,7 +94,6 @@ def test__perfect_fit__chi_squared_0():
     fit = al.FitInterferometer(
         dataset=dataset,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
     assert abs(fit.chi_squared) < 1.0e-4
 
@@ -138,7 +136,6 @@ def test__simulate_interferometer_data_and_fit__known_likelihood():
     fit = al.FitInterferometer(
         dataset=dataset,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit.figure_of_merit == pytest.approx(-5.433894158056919, 1.0e-2)
@@ -181,7 +178,6 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
     fit = al.FitInterferometer(
         dataset=dataset,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     lens_galaxy_linear = al.Galaxy(
@@ -201,7 +197,6 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
     fit_linear = al.FitInterferometer(
         dataset=dataset,
         tracer=tracer_linear,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit_linear.inversion.reconstruction == pytest.approx(
@@ -301,7 +296,6 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_and_pixeli
     fit_linear = al.FitInterferometer(
         dataset=dataset,
         tracer=tracer_linear,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit_linear.inversion.reconstruction == pytest.approx(

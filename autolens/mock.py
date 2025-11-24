@@ -23,6 +23,10 @@ class NullTracer(Tracer):
         return xp.zeros_like(grid.array)
 
     def magnification_2d_via_hessian_from(
-        self, grid, buffer: float = 0.01, deflections_func=None, xp=np,
+        self,
+        grid,
+        buffer: float = 0.01,
+        deflections_func=None,
+        xp=np,
     ) -> aa.ArrayIrregular:
         return aa.ArrayIrregular(values=xp.ones(grid.shape[0]))

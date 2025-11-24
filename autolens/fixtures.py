@@ -88,7 +88,6 @@ def make_fit_interferometer_x1_plane_7x7():
     return al.FitInterferometer(
         dataset=make_interferometer_7(),
         tracer=make_tracer_x1_plane_7x7(),
-        settings_inversion=aa.SettingsInversion(use_w_tilde=False),
     )
 
 
@@ -96,7 +95,6 @@ def make_fit_interferometer_x2_plane_7x7():
     return al.FitInterferometer(
         dataset=make_interferometer_7(),
         tracer=make_tracer_x2_plane_7x7(),
-        settings_inversion=aa.SettingsInversion(use_w_tilde=False),
     )
 
 
@@ -104,7 +102,6 @@ def make_fit_interferometer_x2_plane_inversion_7x7():
     return al.FitInterferometer(
         dataset=make_interferometer_7(),
         tracer=make_tracer_x2_plane_inversion_7x7(),
-        settings_inversion=aa.SettingsInversion(use_w_tilde=False),
     )
 
 
@@ -144,7 +141,6 @@ def make_adapt_images_7x7():
 def make_analysis_imaging_7x7():
     analysis = al.AnalysisImaging(
         dataset=make_masked_imaging_7x7(),
-        settings_inversion=aa.SettingsInversion(use_w_tilde=False),
         use_jax=False,
     )
     analysis._adapt_images = make_adapt_images_7x7()
