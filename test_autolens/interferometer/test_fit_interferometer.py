@@ -68,7 +68,6 @@ def test__fit_figure_of_merit(interferometer_7):
     fit = al.FitInterferometer(
         dataset=interferometer_7,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit.perform_inversion is True
@@ -90,7 +89,6 @@ def test__fit_figure_of_merit(interferometer_7):
     fit = al.FitInterferometer(
         dataset=interferometer_7,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit.perform_inversion is True
@@ -154,7 +152,6 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
     fit = al.FitInterferometer(
         dataset=interferometer_7_grid,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     traced_grid_2d_list_from = tracer.traced_grid_2d_list_from(
@@ -181,7 +178,6 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
     fit = al.FitInterferometer(
         dataset=interferometer_7_grid,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit.galaxy_model_image_dict[g0_linear][4] == pytest.approx(
@@ -207,7 +203,6 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
     fit = al.FitInterferometer(
         dataset=interferometer_7,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert (fit.galaxy_model_image_dict[g0_no_light].native == np.zeros((7, 7))).all()
@@ -224,7 +219,6 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
     fit = al.FitInterferometer(
         dataset=interferometer_7_grid,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     assert fit.galaxy_model_image_dict[g0] == pytest.approx(g0_image.array, 1.0e-4)

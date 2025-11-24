@@ -175,7 +175,7 @@ class TracerToInversion(ag.AbstractToInversion):
                 blurring=traced_blurring_grids_of_planes_list[plane_index],
             )
 
-            if self.settings_inversion.use_w_tilde:
+            if self.dataset.w_tilde is not None:
                 w_tilde = self.dataset.w_tilde
             else:
                 w_tilde = None

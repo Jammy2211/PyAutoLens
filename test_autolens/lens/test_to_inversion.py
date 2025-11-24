@@ -489,7 +489,6 @@ def test__inversion_imaging_from(grid_2d_7x7, masked_imaging_7x7):
     tracer_to_inversion = al.TracerToInversion(
         dataset=dataset,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     inversion = tracer_to_inversion.inversion
@@ -508,7 +507,6 @@ def test__inversion_imaging_from(grid_2d_7x7, masked_imaging_7x7):
     tracer_to_inversion = al.TracerToInversion(
         dataset=dataset,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     inversion = tracer_to_inversion.inversion
@@ -544,7 +542,6 @@ def test__inversion_interferometer_from(grid_2d_7x7, interferometer_7):
     tracer_to_inversion = al.TracerToInversion(
         dataset=dataset,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     inversion = tracer_to_inversion.inversion
@@ -563,7 +560,6 @@ def test__inversion_interferometer_from(grid_2d_7x7, interferometer_7):
     tracer_to_inversion = al.TracerToInversion(
         dataset=dataset,
         tracer=tracer,
-        settings_inversion=al.SettingsInversion(use_w_tilde=False),
     )
 
     inversion = tracer_to_inversion.inversion
