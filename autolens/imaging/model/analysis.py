@@ -62,7 +62,13 @@ class AnalysisImaging(AnalysisDataset):
             xp=self._xp
         )
 
-        return self.fit_from(instance=instance).figure_of_merit - log_likelihood_penalty
+        if self.use_jax:
+            return self.fit_from(instance=instance).figure_of_merit - log_likelihood_penalty
+
+        try:
+            return self.fit_from(instance=instance).log_likelihood - log_likelihood_penalty
+        except Exception as e:
+            raise af.exc.FitException
 
     def fit_from(
         self,
