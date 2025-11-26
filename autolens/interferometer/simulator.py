@@ -89,6 +89,7 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
             mask=grid.mask,
             over_sample_size=1,
             over_sampled=grid - deflections,
+            over_sampler=grid.over_sampler
         )
 
         image = sum(map(lambda g: g.image_2d_from(grid=deflected_grid), galaxies))

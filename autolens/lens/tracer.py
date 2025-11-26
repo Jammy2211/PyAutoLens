@@ -282,6 +282,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
                     mask=grid.mask,
                     over_sampled=grid_2d_over_sampled_list[i],
                     over_sample_size=grid.over_sample_size,
+                    over_sampler=grid.over_sampler
                 )
 
                 grid_2d_new_list.append(grid_2d_new)
