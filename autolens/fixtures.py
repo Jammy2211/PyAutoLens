@@ -141,8 +141,8 @@ def make_adapt_galaxy_name_image_plane_mesh_grid_dict_7x7():
     )
 
     adapt_galaxy_name_image_plane_mesh_grid_dict = {
-        str(("galaxies", "g0")): image_plane_mesh_grid_0,
-        str(("galaxies", "g1")): image_plane_mesh_grid_1,
+        str(("galaxies", "lens")): image_plane_mesh_grid_0,
+        str(("galaxies", "source")): image_plane_mesh_grid_1,
     }
 
     return adapt_galaxy_name_image_plane_mesh_grid_dict
