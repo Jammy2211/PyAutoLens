@@ -142,14 +142,17 @@ def make_analysis_imaging_7x7():
     analysis = al.AnalysisImaging(
         dataset=make_masked_imaging_7x7(),
         use_jax=False,
+        adapt_images=make_adapt_images_7x7(),
     )
-    analysis._adapt_images = make_adapt_images_7x7()
     return analysis
 
 
 def make_analysis_interferometer_7():
-    analysis = al.AnalysisInterferometer(dataset=make_interferometer_7(), use_jax=False)
-    analysis._adapt_images = make_adapt_images_7x7()
+    analysis = al.AnalysisInterferometer(
+        dataset=make_interferometer_7(),
+        adapt_images=make_adapt_images_7x7(),
+        use_jax=False,
+    )
     return analysis
 
 

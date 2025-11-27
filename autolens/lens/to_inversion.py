@@ -261,7 +261,7 @@ class TracerToInversion(ag.AbstractToInversion):
                 for galaxy in galaxies_with_pixelization_list:
                     try:
                         image = self.adapt_images.galaxy_image_dict[galaxy]
-                    except (AttributeError, KeyError):
+                    except (AttributeError, KeyError, TypeError):
                         image = None
 
                     # Bug fix whereby for certain models the galaxy doesnt pair correctly.
