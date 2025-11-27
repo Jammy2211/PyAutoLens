@@ -28,7 +28,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
         self,
         dataset,
         positions_likelihood_list: Optional[List[PositionsLH]] = None,
-        adapt_image_maker: Optional[ag.AdaptImageMaker] = None,
+        adapt_images: Optional[ag.AdaptImages] = None,
         cosmology: ag.cosmo.LensingCosmology = None,
         settings_inversion: aa.SettingsInversion = None,
         preloads: aa.Preloads = None,
@@ -72,7 +72,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
 
         super().__init__(
             dataset=dataset,
-            adapt_image_maker=adapt_image_maker,
+            adapt_images=adapt_images,
             cosmology=cosmology,
             settings_inversion=settings_inversion,
             preloads=preloads,

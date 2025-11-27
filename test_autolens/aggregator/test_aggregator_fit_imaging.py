@@ -124,6 +124,15 @@ def test__fit_imaging__adapt_images(
                 == list(adapt_images_7x7.galaxy_name_image_dict.values())[0]
             ).all()
 
+            assert (
+                list(
+                    fit_list[0].adapt_images.galaxy_image_plane_mesh_grid_dict.values()
+                )[0]
+                == list(
+                    adapt_images_7x7.galaxy_name_image_plane_mesh_grid_dict.values()
+                )[0]
+            ).all()
+
     assert i == 2
 
     clean(database_file=database_file)

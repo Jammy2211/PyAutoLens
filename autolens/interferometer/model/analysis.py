@@ -25,7 +25,7 @@ class AnalysisInterferometer(AnalysisDataset):
         self,
         dataset,
         positions_likelihood_list: Optional[PositionsLH] = None,
-        adapt_image_maker: Optional[ag.AdaptImageMaker] = None,
+        adapt_images: Optional[ag.AdaptImages] = None,
         cosmology: ag.cosmo.LensingCosmology = None,
         settings_inversion: aa.SettingsInversion = None,
         preloads: aa.Preloads = None,
@@ -77,7 +77,7 @@ class AnalysisInterferometer(AnalysisDataset):
         super().__init__(
             dataset=dataset,
             positions_likelihood_list=positions_likelihood_list,
-            adapt_image_maker=adapt_image_maker,
+            adapt_images=adapt_images,
             cosmology=cosmology,
             settings_inversion=settings_inversion,
             preloads=preloads,

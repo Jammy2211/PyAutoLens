@@ -131,10 +131,26 @@ def make_adapt_galaxy_name_image_dict_7x7():
 
     return adapt_galaxy_name_image_dict
 
+def make_adapt_galaxy_name_image_plane_mesh_grid_dict_7x7():
+    image_plane_mesh_grid_0 = ag.Grid2DIrregular(
+        values=[(0.0, 0.0), (1.0, 1.0), (2.0, 2.0)]
+    )
+
+    image_plane_mesh_grid_1 = ag.Grid2DIrregular(
+        values=[(3.0, 3.0), (4.0, 4.0), (5.0, 5.0)]
+    )
+
+    adapt_galaxy_name_image_plane_mesh_grid_dict = {
+        str(("galaxies", "lens")): image_plane_mesh_grid_0,
+        str(("galaxies", "source")): image_plane_mesh_grid_1,
+    }
+
+    return adapt_galaxy_name_image_plane_mesh_grid_dict
 
 def make_adapt_images_7x7():
     return ag.AdaptImages(
         galaxy_name_image_dict=make_adapt_galaxy_name_image_dict_7x7(),
+        galaxy_name_image_plane_mesh_grid_dict=make_adapt_galaxy_name_image_plane_mesh_grid_dict_7x7(),
     )
 
 
@@ -142,14 +158,17 @@ def make_analysis_imaging_7x7():
     analysis = al.AnalysisImaging(
         dataset=make_masked_imaging_7x7(),
         use_jax=False,
+        adapt_images=make_adapt_images_7x7(),
     )
-    analysis._adapt_images = make_adapt_images_7x7()
     return analysis
 
 
 def make_analysis_interferometer_7():
-    analysis = al.AnalysisInterferometer(dataset=make_interferometer_7(), use_jax=False)
-    analysis._adapt_images = make_adapt_images_7x7()
+    analysis = al.AnalysisInterferometer(
+        dataset=make_interferometer_7(),
+        adapt_images=make_adapt_images_7x7(),
+        use_jax=False,
+    )
     return analysis
 
 
