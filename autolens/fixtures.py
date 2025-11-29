@@ -131,6 +131,7 @@ def make_adapt_galaxy_name_image_dict_7x7():
 
     return adapt_galaxy_name_image_dict
 
+
 def make_adapt_galaxy_name_image_plane_mesh_grid_dict_7x7():
     image_plane_mesh_grid_0 = ag.Grid2DIrregular(
         values=[(0.0, 0.0), (1.0, 1.0), (2.0, 2.0)]
@@ -146,6 +147,7 @@ def make_adapt_galaxy_name_image_plane_mesh_grid_dict_7x7():
     }
 
     return adapt_galaxy_name_image_plane_mesh_grid_dict
+
 
 def make_adapt_images_7x7():
     return ag.AdaptImages(
