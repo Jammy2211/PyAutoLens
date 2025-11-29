@@ -457,7 +457,6 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
         tracer=tracer_linear,
         settings_inversion=al.SettingsInversion(
             use_positive_only_solver=True,
-            force_edge_pixels_to_zeros=True
         ),
         preloads=al.Preloads(
             mapper_indices=range(1, 10),

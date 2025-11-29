@@ -194,6 +194,7 @@ class TracerToInversion(ag.AbstractToInversion):
                 galaxies=galaxies,
                 settings_inversion=self.settings_inversion,
                 adapt_images=self.adapt_images,
+                preloads=self.preloads,
                 xp=self._xp,
             )
 
@@ -318,6 +319,8 @@ class TracerToInversion(ag.AbstractToInversion):
                 galaxies=galaxies,
                 adapt_images=self.adapt_images,
                 settings_inversion=self.settings_inversion,
+                preloads=self.preloads,
+                xp=self._xp,
             )
 
             image_plane_mesh_grid_list = to_inversion.image_plane_mesh_grid_list
@@ -413,6 +416,7 @@ class TracerToInversion(ag.AbstractToInversion):
                     galaxies=galaxies,
                     adapt_images=self.adapt_images,
                     settings_inversion=self.settings_inversion,
+                    preloads=self.preloads,
                     xp=self._xp,
                 )
 
