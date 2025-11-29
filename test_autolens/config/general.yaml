@@ -4,8 +4,6 @@ fits:
   flip_for_ds9: true
 psf:
   use_fft_default: false              # If True, PSFs are convolved using FFTs by default, which is faster and uses less memory in all cases except for very small PSFs, False uses direct convolution.
-grid:
-  remove_projected_centre: false
 hpc:
   hpc_mode: false
   iterations_per_full_update: 5000

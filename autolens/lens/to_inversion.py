@@ -55,12 +55,12 @@ class TracerToInversion(ag.AbstractToInversion):
             The settings of the inversion, which controls how the linear algebra calculation is performed.
         """
         self.tracer = tracer
-        self.preloads = preloads
 
         super().__init__(
             dataset=dataset,
             adapt_images=adapt_images,
             settings_inversion=settings_inversion,
+            preloads=preloads,
             xp=xp,
         )
 
