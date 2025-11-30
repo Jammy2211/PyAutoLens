@@ -62,7 +62,7 @@ class AnalysisImaging(AnalysisDataset):
             xp=self._xp
         )
 
-        if self.use_jax:
+        if self._use_jax:
             return self.fit_from(instance=instance).figure_of_merit - log_likelihood_penalty
 
         try:
