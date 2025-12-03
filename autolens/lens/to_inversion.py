@@ -364,7 +364,8 @@ class TracerToInversion(ag.AbstractToInversion):
                     try:
                         traced_mesh_grids_list.append(
                             self.tracer.traced_grid_2d_list_from(
-                                grid=image_plane_mesh_grid
+                                grid=image_plane_mesh_grid,
+                                xp=self._xp
                             )[plane_index]
                         )
                     except AttributeError:
