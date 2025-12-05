@@ -484,6 +484,173 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
     assert fit_linear.figure_of_merit == pytest.approx(-86.61380401245304, abs=1.0e-4)
 
 
+def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization__delaunay_split():
+
+    grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, over_sample_size=2)
+
+    psf = al.Kernel2D.from_gaussian(
+        shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
+    )
+
+    lens_galaxy = al.Galaxy(
+        redshift=0.5,
+        light=al.lp.Sersic(centre=(0.1, 0.1), intensity=100.0),
+        mass=al.mp.Isothermal(centre=(0.1, 0.1), einstein_radius=1.8),
+    )
+    source_galaxy = al.Galaxy(
+        redshift=1.0,
+        bulge=al.lp.Sersic(intensity=0.1, sersic_index=1.0),
+        disk=al.lp.Sersic(intensity=0.2, sersic_index=4.0),
+    )
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+
+    dataset = al.SimulatorImaging(exposure_time=300.0, psf=psf, add_poisson_noise_to_data=False)
+
+    dataset = dataset.via_tracer_from(tracer=tracer, grid=grid)
+    dataset.noise_map = al.Array2D.ones(
+        shape_native=dataset.data.shape_native, pixel_scales=0.2
+    )
+
+    mask = al.Mask2D.circular(
+        shape_native=dataset.data.shape_native, pixel_scales=0.2, radius=0.81
+    )
+
+    dataset = al.Imaging(
+        data=dataset.data,
+        psf=dataset.psf,
+        noise_map=dataset.noise_map,
+        over_sample_size_lp=2,
+        over_sample_size_pixelization=2
+    )
+
+    masked_dataset = dataset.apply_mask(mask=mask)
+
+    lens_galaxy_linear = al.Galaxy(
+        redshift=0.5,
+        light=al.lp_linear.Sersic(centre=(0.1, 0.1)),
+        mass=al.mp.Isothermal(centre=(0.1, 0.1), einstein_radius=1.8),
+    )
+
+    pixelization = al.Pixelization(
+        mesh=al.mesh.Delaunay(),
+        regularization=al.reg.AdaptiveBrightnessSplit(inner_coefficient=0.01, outer_coefficient=0.1, signal_scale=0.1),
+    )
+
+    source_galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)
+
+    image_mesh = al.image_mesh.Overlay(shape=(7, 7))
+
+    image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
+        mask=masked_dataset.mask,
+    )
+
+    adapt_images = al.AdaptImages(
+        galaxy_image_dict={source_galaxy_pix: masked_dataset.data},
+        galaxy_image_plane_mesh_grid_dict={source_galaxy_pix: image_plane_mesh_grid},
+    )
+
+    total_mapper_pixels = image_plane_mesh_grid.shape[0]
+
+    total_linear_light_profiles = 1
+
+    mapper_indices = al.mapper_indices_from(
+        total_linear_light_profiles=total_linear_light_profiles,
+        total_mapper_pixels=total_mapper_pixels,
+    )
+
+    preloads = al.Preloads(
+        mapper_indices=mapper_indices,
+    )
+
+    tracer_linear = al.Tracer(
+        galaxies=[lens_galaxy_linear, source_galaxy_pix]
+    )
+
+    import jax.numpy as jnp
+
+    fit_linear = al.FitImaging(
+        dataset=masked_dataset,
+        tracer=tracer_linear,
+        preloads=preloads,
+        adapt_images=adapt_images,
+        settings_inversion=al.SettingsInversion(use_positive_only_solver=False),
+    )
+
+    assert fit_linear.inversion.reconstruction[0:3] == pytest.approx(
+        np.array(
+            [
+                9.99646681e+01, -5.67132908e-01, -1.46698482e+00
+            ]
+        ),
+        1.0e-4,
+    )
+
+    assert fit_linear.figure_of_merit == pytest.approx(-180.741826, 1.0e-4)
+
+    lens_galaxy_image = lens_galaxy.blurred_image_2d_from(
+        grid=masked_dataset.grids.lp,
+        blurring_grid=masked_dataset.grids.blurring,
+        psf=masked_dataset.psf
+    )
+
+    assert fit_linear.galaxy_model_image_dict[lens_galaxy_linear] == pytest.approx(
+        lens_galaxy_image, 1.0e-2
+    )
+    assert fit_linear.model_images_of_planes_list[0] == pytest.approx(
+        lens_galaxy_image, 1.0e-2
+    )
+
+    assert fit_linear.galaxy_model_image_dict[source_galaxy_pix][0] == pytest.approx(
+            0.1693805878359, 1.0e-4
+    )
+
+    assert fit_linear.model_images_of_planes_list[1][0] == pytest.approx(
+        0.169380587835933, 1.0e-4
+    )
+
+    assert fit_linear.subtracted_images_of_planes_list[1][0] == pytest.approx(
+        0.35104147050036, 1.0e-4
+    )
+
+    preloads = al.Preloads(
+        mapper_indices=mapper_indices,
+        source_pixel_zeroed_indices=[2, 4, 5, 7, 8, 9, 12, 14, 17, 19, 21, 22, 24]
+    )
+
+    fit_linear = al.FitImaging(
+        dataset=masked_dataset,
+        tracer=tracer_linear,
+        preloads=preloads,
+        adapt_images=adapt_images,
+        settings_inversion=al.SettingsInversion(
+            use_positive_only_solver=True,
+        ),
+    )
+
+    assert fit_linear.inversion.reconstruction[0:14] == pytest.approx(
+        np.array(
+            [
+                99.9897887,
+                1.04085235,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.376454064,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.58216720,
+                0.0,
+                0.4396882719985,
+            ]
+        ),
+        1.0e-4,
+    )
+    assert fit_linear.figure_of_merit == pytest.approx(-180.8284970580511, 1.0e-4)
+
+
 def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_tilde():
 
     grid = al.Grid2D.uniform(shape_native=(21, 21), pixel_scales=0.1)
