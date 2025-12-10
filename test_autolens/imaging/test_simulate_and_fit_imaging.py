@@ -566,8 +566,6 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
         galaxies=[lens_galaxy_linear, source_galaxy_pix]
     )
 
-    import jax.numpy as jnp
-
     fit_linear = al.FitImaging(
         dataset=masked_dataset,
         tracer=tracer_linear,
