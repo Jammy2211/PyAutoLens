@@ -574,6 +574,8 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
         settings_inversion=al.SettingsInversion(use_positive_only_solver=False),
     )
 
+    print(fit_linear.figure_of_merit)
+
     assert fit_linear.inversion.reconstruction[0:3] == pytest.approx(
         np.array(
             [

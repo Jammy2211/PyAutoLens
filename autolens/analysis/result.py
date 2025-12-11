@@ -88,6 +88,7 @@ class Result(AgResultDataset):
         solver = PointSolver.for_grid(
             grid=grid,
             pixel_scale_precision=0.001,
+            xp=self._xp
         )
 
         source_plane_centre = self.source_plane_centre_from(
@@ -151,6 +152,7 @@ class Result(AgResultDataset):
         solver = PointSolver.for_grid(
             grid=grid,
             pixel_scale_precision=0.001,
+            xp=self._xp
         )
 
         for i in range(1, increments):
