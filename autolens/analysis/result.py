@@ -86,9 +86,7 @@ class Result(AgResultDataset):
         grid = self.analysis.dataset.mask.derive_grid.all_false
 
         solver = PointSolver.for_grid(
-            grid=grid,
-            pixel_scale_precision=0.001,
-            xp=self.analysis._xp
+            grid=grid, pixel_scale_precision=0.001, xp=self.analysis._xp
         )
 
         source_plane_centre = self.source_plane_centre_from(
@@ -150,9 +148,7 @@ class Result(AgResultDataset):
         centre = self.source_plane_centre_from(plane_redshift=plane_redshift).in_list[0]
 
         solver = PointSolver.for_grid(
-            grid=grid,
-            pixel_scale_precision=0.001,
-            xp=self.analysis._xp
+            grid=grid, pixel_scale_precision=0.001, xp=self.analysis._xp
         )
 
         for i in range(1, increments):
