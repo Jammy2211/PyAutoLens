@@ -54,7 +54,7 @@ class AnalysisQuantity(ag.AnalysisQuantity, AnalysisLens):
             dataset=dataset, func_str=func_str, cosmology=cosmology, use_jax=use_jax
         )
 
-        AnalysisLens.__init__(self=self, cosmology=cosmology)
+        AnalysisLens.__init__(self=self, cosmology=cosmology, use_jax=use_jax)
 
     def fit_quantity_for_instance(self, instance: af.ModelInstance) -> FitQuantity:
         """

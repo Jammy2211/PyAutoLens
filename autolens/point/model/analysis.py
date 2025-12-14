@@ -63,7 +63,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         """
         super().__init__(cosmology=cosmology, use_jax=use_jax)
 
-        AnalysisLens.__init__(self=self, cosmology=cosmology)
+        AnalysisLens.__init__(self=self, cosmology=cosmology, use_jax=use_jax)
 
         self.dataset = dataset
 
