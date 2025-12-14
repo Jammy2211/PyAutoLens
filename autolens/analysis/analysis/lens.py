@@ -23,6 +23,7 @@ class AnalysisLens:
         self,
         positions_likelihood_list: Optional[List[PositionsLH]] = None,
         cosmology: ag.cosmo.LensingCosmology = None,
+        use_jax: bool = True,
     ):
         """
         Analysis classes are used by PyAutoFit to fit a model to a dataset via a non-linear search.
@@ -43,6 +44,15 @@ class AnalysisLens:
 
         self.cosmology = cosmology or Planck15()
         self.positions_likelihood_list = positions_likelihood_list
+
+        self._use_jax = use_jax
+
+    @property
+    def _xp(self):
+        if self._use_jax:
+            import jax.numpy as jnp
+            return jnp
+        return np
 
     def tracer_via_instance_from(
         self,
@@ -72,8 +82,9 @@ class AnalysisLens:
             subhalo_centre = tracer_util.grid_2d_at_redshift_from(
                 galaxies=instance.galaxies,
                 redshift=instance.galaxies.subhalo.redshift,
-                grid=aa.Grid2DIrregular(values=[instance.galaxies.subhalo.mass.centre]),
+                grid=aa.Grid2DIrregular(values=[instance.galaxies.subhalo.mass.centre], xp=self._xp),
                 cosmology=self.cosmology,
+                xp=self._xp
             )
 
             instance.galaxies.subhalo.mass.centre = tuple(subhalo_centre.in_list[0])
@@ -95,7 +106,7 @@ class AnalysisLens:
         )
 
     def log_likelihood_penalty_from(
-        self, instance: af.ModelInstance, xp=np
+        self, instance: af.ModelInstance,
     ) -> Optional[float]:
         """
         Call the positions overwrite log likelihood function, which add a penalty term to the likelihood if the
@@ -116,7 +127,7 @@ class AnalysisLens:
         The penalty value of the positions log likelihood, if the positions do not trace close in the source plane,
         else a None is returned to indicate there is no penalty.
         """
-        log_likelihood_penalty = xp.array(0.0)
+        log_likelihood_penalty = self._xp.array(0.0)
 
         if self.positions_likelihood_list is not None:
 
@@ -126,7 +137,7 @@ class AnalysisLens:
 
                     log_likelihood_penalty = (
                         positions_likelihood.log_likelihood_penalty_from(
-                            instance=instance, analysis=self, xp=xp
+                            instance=instance, analysis=self, xp=self._xp
                         )
                     )
 
