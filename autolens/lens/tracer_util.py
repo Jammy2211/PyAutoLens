@@ -179,6 +179,7 @@ def grid_2d_at_redshift_from(
     galaxies: List[ag.Galaxy],
     grid: aa.type.Grid2DLike,
     cosmology: ag.cosmo.LensingCosmology = None,
+    xp=np,
 ) -> aa.type.Grid2DLike:
     """
     Returns a ray-traced grid of 2D Cartesian (y,x) coordinates, which accounts for multi-plane ray-tracing, at a
@@ -237,7 +238,7 @@ def grid_2d_at_redshift_from(
 
     if plane_index_with_redshift:
         traced_grid_list = traced_grid_2d_list_from(
-            planes=planes, grid=grid, cosmology=cosmology
+            planes=planes, grid=grid, cosmology=cosmology, xp=xp
         )
 
         return traced_grid_list[plane_index_with_redshift[0]]
@@ -249,7 +250,7 @@ def grid_2d_at_redshift_from(
     planes.insert(plane_index_insert, [ag.Galaxy(redshift=redshift)])
 
     traced_grid_list = traced_grid_2d_list_from(
-        planes=planes, grid=grid, cosmology=cosmology
+        planes=planes, grid=grid, cosmology=cosmology, xp=xp
     )
 
     return traced_grid_list[plane_index_insert]

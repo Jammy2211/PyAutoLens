@@ -59,7 +59,6 @@ class AnalysisImaging(AnalysisDataset):
 
         log_likelihood_penalty = self.log_likelihood_penalty_from(
             instance=instance,
-            xp=self._xp
         )
 
         if self._use_jax:
