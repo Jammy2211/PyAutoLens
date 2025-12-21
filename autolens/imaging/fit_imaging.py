@@ -14,7 +14,7 @@ from autolens.lens.to_inversion import TracerToInversion
 
 from autolens import exc
 
- 
+
 class FitImaging(aa.FitImaging, AbstractFitInversion):
     def __init__(
         self,
