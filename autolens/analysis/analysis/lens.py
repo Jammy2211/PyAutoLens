@@ -51,6 +51,7 @@ class AnalysisLens:
     def _xp(self):
         if self._use_jax:
             import jax.numpy as jnp
+
             return jnp
         return np
 
@@ -82,9 +83,11 @@ class AnalysisLens:
             subhalo_centre = tracer_util.grid_2d_at_redshift_from(
                 galaxies=instance.galaxies,
                 redshift=instance.galaxies.subhalo.redshift,
-                grid=aa.Grid2DIrregular(values=[instance.galaxies.subhalo.mass.centre], xp=self._xp),
+                grid=aa.Grid2DIrregular(
+                    values=[instance.galaxies.subhalo.mass.centre], xp=self._xp
+                ),
                 cosmology=self.cosmology,
-                xp=self._xp
+                xp=self._xp,
             )
 
             instance.galaxies.subhalo.mass.centre = tuple(subhalo_centre.in_list[0])
@@ -106,7 +109,8 @@ class AnalysisLens:
         )
 
     def log_likelihood_penalty_from(
-        self, instance: af.ModelInstance,
+        self,
+        instance: af.ModelInstance,
     ) -> Optional[float]:
         """
         Call the positions overwrite log likelihood function, which add a penalty term to the likelihood if the

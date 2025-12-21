@@ -85,7 +85,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
             self=self,
             positions_likelihood_list=positions_likelihood_list,
             cosmology=cosmology,
-            use_jax=use_jax
+            use_jax=use_jax,
         )
 
         self.raise_inversion_positions_likelihood_exception = (

@@ -351,10 +351,13 @@ class SubhaloPlotter(AbstractPlotter):
             remove_zeros=remove_zeros,
         )
 
-        visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
-            array_overlay=array_overlay,
-            mass_profile_centres=self.result.subhalo_centres_grid,
-        )
+        try:
+            visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
+                array_overlay=array_overlay,
+                mass_profile_centres=self.result.subhalo_centres_grid,
+            )
+        except TypeError:
+            visuals_2d = self.visuals_2d
 
         self.update_mat_plot_array_overlay(evidence_max=np.max(array_overlay))
 

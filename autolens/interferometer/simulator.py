@@ -95,3 +95,40 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
         image = sum(map(lambda g: g.image_2d_from(grid=deflected_grid), galaxies))
 
         return self.via_image_from(image=image)
+
+    def via_source_image_from(self, tracer : Tracer, grid : aa.type.Grid2DLike, source_image : aa.Array2D) -> aa.Imaging:
+        """
+        Simulate an `Interferometer` dataset from an input image of a source galaxy.
+
+        This input image is on a uniform and regular 2D array, meaning it can simulate the source's irregular
+        and asymmetric source galaxy morphological features.
+
+        The typical use case is inputting the image of an irregular galaxy in the source-plane (whose values are
+        on a uniform array) and using this function to compute the lensed image of this source galaxy.
+
+        The tracer is used to perform ray-tracing and generate the image of the strong lens galaxies (e.g.
+        the lens light, lensed source light, etc) which is simulated.
+
+        The source galaxy light profiles are ignored in favour of the input source image, but the emission of
+        other galaxies (e.g. the lems galaxy's light) are included.
+
+        The steps of the `SimulatorInterferometer` simulation process (e.g. PSF convolution, noise addition) are
+        described in the `SimulatorInterferometer` `__init__` method docstring.
+
+        Parameters
+        ----------
+        tracer
+            The tracer, which describes the ray-tracing and strong lens configuration used to simulate the
+            Interferometer dataset.
+        grid
+            The image-plane 2D grid of (y,x) coordinates grid which the image of the strong lens is generated on.
+        source_image
+            The image of the source-plane and source galaxy which is interpolated to compute the lensed image.
+        """
+
+        image = tracer.image_2d_via_input_plane_image_from(
+            grid=grid,
+            plane_image=source_image
+        )
+
+        return self.via_image_from(image=image)
