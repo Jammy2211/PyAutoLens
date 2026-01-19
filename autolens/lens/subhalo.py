@@ -367,7 +367,10 @@ class SubhaloPlotter(AbstractPlotter):
             max_value = np.round(np.nanmax(array_overlay), 2)
             fit_plotter.set_title(label=f"Image {max_value}")
 
-        fit_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
+        try:
+            fit_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
+        except AttributeError:
+            pass
 
         if reset_filename:
             self.set_filename(filename=None)
@@ -384,10 +387,15 @@ class SubhaloPlotter(AbstractPlotter):
 
         array_overlay = self.result.subhalo_mass_array
 
-        visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
-            array_overlay=array_overlay,
-            mass_profile_centres=self.result.subhalo_centres_grid,
-        )
+        try:
+            visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
+                array_overlay=array_overlay,
+                mass_profile_centres=self.result.subhalo_centres_grid,
+            )
+        except TypeError:
+            visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
+                array_overlay=array_overlay,
+            )
 
         self.update_mat_plot_array_overlay(evidence_max=np.max(array_overlay))
         self.mat_plot_2d.colorbar.manual_log10 = True
