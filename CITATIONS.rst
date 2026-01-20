@@ -22,7 +22,7 @@ If you use decomposed mass models (e.g. stellar mass models like an ``Sersic`` o
 an ``NFW``) please cite the following paper https://arxiv.org/abs/2106.11464 under
 citation key ``Oguri2021``. Our deflection angle calculations are based on this method.
 
-If you specifically use a decomposed mass model with the ``GeneralizedNFW`` please cite the following paper https://academic.oup.com/mnras/article/488/1/1387/5526256 under
+If you specifically use a decomposed mass model with the ``gNFW`` please cite the following paper https://academic.oup.com/mnras/article/488/1/1387/5526256 under
 citation key ``Anowar2019``.
 
 The citations.bib file above also includes my work on `using strong lensing to study galaxy structure

@@ -96,7 +96,9 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
 
         return self.via_image_from(image=image)
 
-    def via_source_image_from(self, tracer : Tracer, grid : aa.type.Grid2DLike, source_image : aa.Array2D) -> aa.Imaging:
+    def via_source_image_from(
+        self, tracer: Tracer, grid: aa.type.Grid2DLike, source_image: aa.Array2D
+    ) -> aa.Imaging:
         """
         Simulate an `Interferometer` dataset from an input image of a source galaxy.
 
@@ -127,8 +129,7 @@ class SimulatorInterferometer(aa.SimulatorInterferometer):
         """
 
         image = tracer.image_2d_via_input_plane_image_from(
-            grid=grid,
-            plane_image=source_image
+            grid=grid, plane_image=source_image
         )
 
         return self.via_image_from(image=image)

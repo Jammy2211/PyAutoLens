@@ -1,7 +1,9 @@
 from autoconf import jax_wrapper
 from autoconf.dictable import from_dict, from_json, output_to_json, to_dict
 from autoarray import preprocess
-from autoarray.dataset.interferometer.w_tilde import load_curvature_preload_if_compatible
+from autoarray.dataset.interferometer.w_tilde import (
+    load_curvature_preload_if_compatible,
+)
 from autoarray.dataset.imaging.w_tilde import WTildeImaging
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.interferometer.dataset import (
@@ -40,6 +42,9 @@ from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
+from autoarray.structures.mesh.rectangular_2d_uniform import (
+    Mesh2DRectangularUniform,
+)  # noqa
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
 from autoarray.structures.triangles.shape import Circle
 from autoarray.structures.triangles.shape import Triangle
