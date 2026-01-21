@@ -402,7 +402,10 @@ class SubhaloPlotter(AbstractPlotter):
 
         fit_plotter = self.fit_imaging_with_subhalo_plotter_from(visuals_2d=visuals_2d)
 
-        fit_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
+        try:
+            fit_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
+        except AttributeError:
+            pass
 
         if reset_filename:
             self.set_filename(filename=None)
