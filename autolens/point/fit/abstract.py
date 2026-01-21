@@ -72,7 +72,15 @@ class AbstractFitPoint(aa.AbstractFit, ABC):
                 f"in the tracer (make sure your tracer's point source name is the same the dataset name."
             )
 
-        self._xp = xp
+        self.use_jax = xp is not np
+
+    @property
+    def _xp(self):
+        if self.use_jax:
+            import jax.numpy as jnp
+
+            return jnp
+        return np
 
     @property
     def data(self):

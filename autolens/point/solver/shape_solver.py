@@ -47,7 +47,15 @@ class AbstractSolver:
 
         self.initial_triangles = initial_triangles
 
-        self._xp = xp
+        self.use_jax = xp is not np
+
+    @property
+    def _xp(self):
+        if self.use_jax:
+            import jax.numpy as jnp
+
+            return jnp
+        return np
 
     # noinspection PyPep8Naming
     @classmethod

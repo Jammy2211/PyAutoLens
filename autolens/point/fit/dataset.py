@@ -125,7 +125,15 @@ class FitPointDataset:
         except exc.PointExtractionException:
             self.time_delays = None
 
-        self._xp = xp
+        self.use_jax = xp is not np
+
+    @property
+    def _xp(self):
+        if self.use_jax:
+            import jax.numpy as jnp
+
+            return jnp
+        return np
 
     @property
     def model_obj(self):
