@@ -6,7 +6,7 @@ Start Here
 **PyAutoLens** is software for analysing strong gravitational lenses, an astrophysical phenomenon where a galaxy
 appears multiple times because its light is bent by the gravitational field of an intervening foreground lens galaxy.
 
-It uses JAX to accelerate lensing calculations, with the example code below all running significantly faster on GPU.
+It uses **JAX** to **accelerate lensing calculations**, with the example code below all running **significantly faster on GPU**.
 
 Here is a schematic of a strong gravitational lens:
 
@@ -342,93 +342,46 @@ the stellar components use a ``LightAndMassProfile`` via the ``lmp`` module.
   :width: 600
   :alt: Alternative text
 
-
-Simulator
----------
-
-Let’s now switch gears and simulate our own strong lens imaging. This is a great way to:
-
-- Practice lens modeling before using real data.
-- Build large training sets (e.g. for machine learning).
-- Test lensing theory in a controlled environment.
-
-In this example. we simulate “perfect” images without telescope effects. This means no blurring
-from a PSF and no noise — just the raw light from galaxies and deflections from gravity.
-
-In fact, this exactly what the image above is: a perfect image of a double Einstein ring system. The only
-thing we need to do then, is output it to a .fits file so we can load it elsewhere.
-
-.. code:: python
-
-    al.output_to_fits(
-        values=image.native,
-        file_path=Path("image.fits"),
-        overwrite=True,
-    )
-
-Samples
--------
-
-Often we want to simulate *many* strong lenses — for example, to train a neural network
-or to explore population-level statistics.
-
-This uses the model composition API to define the distribution of the light and mass profiles
-of the lens and source galaxies we draw from. The model composition is a little too complex for
-the first example, thus we use a helper function to create a simple lens and source model.
-
-We then generate 3 lenses for speed, and plot their images so you can see the variety of lenses
-we create.
-
-If you want to simulate lenses yourself (e.g. for training a neural network), checkout the
-`autolens_workspace/simulators` package for a full description of how to do this and customize
-the simulated lenses to your science.
-
-The images below are perfect lenses of strong lenses, the next examples will show us how to
-instead output realistic observations of strong lenses (e.g. CCD imaging, interferometer data, etc).
-
-.. code:: python
-
-    lens_model, source_model = al.model_util.simulator_start_here_model_from()
-
-    total_datasets = 3
-
-    for sample_index in range(total_datasets):
-
-        lens_galaxy = lens_model.random_instance()
-        source_galaxy = source_model.random_instance()
-
-        tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
-
-        tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-        tracer_plotter.figures_2d(image=True)
-
 Lens Modeling
 -------------
 
-Lens modeling is the process where given data on a strong lens, we fit the data with a model to infer the properties
-of the lens and source galaxies.
+Lens modeling is the process of fitting a physical model to strong-lensing data in order to infer the properties of
+the lens and source galaxies.
 
-The animation below shows a slide-show of the lens modeling procedure. Many lens models are fitted to the data over
-and over, gradually improving the quality of the fit to the data and looking more and more like the observed image.
+The primary goal of **PyAutoLens** is to make lens modeling **simple, scalable to large datasets, and fast**, with
+GPU acceleration provided via JAX.
 
-We can see that initial models give a poor fit to the data but gradually improve (increasing the likelihood) as more
-iterations are performed.
+The animation below illustrates the lens modeling workflow. Many models are fitted to the data iteratively,
+progressively improving the quality of the fit until the model closely reproduces the observed image.
 
 .. image:: https://github.com/Jammy2211/auto_files/blob/main/lensmodel.gif?raw=true
   :width: 600
 
-![Lens Modeling Animation](https://github.com/Jammy2211/auto_files/blob/main/lensmodel.gif?raw=true "model")
-
 **Credit: Amy Etherington**
 
-**PyAutoLens**'s main goal is to make lens modeling **simple** for everyone, **scale** to large datasets
-and **run very fast** thanks to GPU acceleration via JAX.
+The next documentation page guides you through lens modeling for a variety of lensing regimes (e.g. galaxy–galaxy lenses,
+cluster-scale lenses) and data types (e.g. CCD imaging, interferometer data).
+
+Simulations
+-----------
+
+Simulating strong lenses is often essential, for example to:
+
+- Practice lens modeling before working with real data.
+- Generate large training sets (e.g. for machine learning).
+- Test lensing theory in a fully controlled environment.
+
+The next documentation page guides you through how to simulate lenses for different types of strong
+lenses (e.g. galaxy–galaxy lenses, cluster-scale lenses) and different types of data (e.g. CCD imaging, interferometer data).
 
 Wrap Up
 -------
 
-We have now completed the API overview of **PyAutoLens**, including a brief introduction to the core API for
-creating galaxies, simulating data and performing lens modeling.
+This completes the introduction to **PyAutoLens**, including a brief overview of the core API for lensing calculations,
+lens modeling, and data simulation.
 
-The next overview describes how a new user should navigate the **PyAutoLens** workspace, which contains many examples
-and tutorials, in order to get up and running with the software.
+Different users will be interested in strong lenses across different lensing regimes (e.g. galaxy-scale or
+cluster-scale lenses) and using different data types (e.g. CCD imaging or interferometer data).
+
+The autolens_workspace repository contains a wide range of examples and tutorials covering these use cases. The
+next documentation page helps new users identify the most appropriate starting point based on their scientific goals.
