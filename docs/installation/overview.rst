@@ -6,7 +6,7 @@ Overview
 **PyAutoLens** requires Python 3.9 - 3.12 and support the Linux, MacOS and Windows operating systems.
 
 **PyAutoLens** can be installed via the Python distribution `Anaconda <https://www.anaconda.com/>`_ or using
-`Pypi <https://pypi.org/>`_ to ``pip install`` **PyAutoLens** into your Python distribution.
+`Pypi <https://pypi.org/>`_ to ``pip install autolens`` into your Python distribution.
 
 We recommend Anaconda as it manages the installation of many major libraries (e.g. numpy, scipy,
 matplotlib, etc.) making installation more straight forward. Windows users must use Anaconda.

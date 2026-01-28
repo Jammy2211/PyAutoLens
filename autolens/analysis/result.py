@@ -385,11 +385,5 @@ class ResultDataset(Result):
                     mapper_index = 0
 
                 inversion = self.max_log_likelihood_fit.inversion
-                mapper = inversion.cls_list_from(cls=aa.AbstractMapper)[mapper_index]
 
-                mapper_valued = aa.MapperValued(
-                    values=inversion.reconstruction_dict[mapper],
-                    mapper=mapper,
-                )
-
-                return mapper_valued.max_pixel_centre
+                return inversion.max_pixel_centre(mapper_index=mapper_index)

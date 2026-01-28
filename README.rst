@@ -59,19 +59,19 @@ The following links are useful for new starters:
 
 - `The PyAutoLens readthedocs <https://pyautolens.readthedocs.io/en/latest>`_: which includes `an overview of PyAutoLens's core features <https://pyautolens.readthedocs.io/en/latest/overview/overview_1_start_here.html>`_, `a new user starting guide <https://pyautolens.readthedocs.io/en/latest/overview/overview_2_new_user_guide.html>`_ and `an installation guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_.
 
-- `The introduction Jupyter Notebook on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=start_here.ipynb>`_: try **PyAutoLens** in a web browser (without installation).
+- `The introduction Jupyter Notebook on Google Colab <https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/start_here.ipynb>`_: try **PyAutoLens** in a web browser (without installation).
 
 - `The autolens_workspace GitHub repository <https://github.com/Jammy2211/autolens_workspace>`_: example scripts and the HowToLens Jupyter notebook lectures.
 
-Support
--------
+Community & Support
+-------------------
 
-Support for installation issues, help with lens modeling and using **PyAutoLens** is available by
-`raising an issue on the GitHub issues page <https://github.com/Jammy2211/PyAutoLens/issues>`_.
+Support for **PyAutoLens** is available via our Slack workspace, where the community shares updates, discusses
+gravitational lensing analysis, and helps troubleshoot problems.
 
-We also offer support on the **PyAutoLens** `Slack channel <https://pyautolens.slack.com/>`_, where we also provide the
-latest updates on **PyAutoLens**. Slack is invitation-only, so if you'd like to join send
-an `email <https://github.com/Jammy2211>`_ requesting an invite.
+Slack is invitation-only. If you’d like to join, please send an email requesting an invite.
+
+For installation issues, bug reports, or feature requests, please raise an issue on the [GitHub issues page](https://github.com/Jammy2211/PyAutoLens/issues).
 
 HowToLens
 ---------
@@ -81,3 +81,15 @@ you may wish to read through the **HowToLens** lectures. These teach you the bas
 and Bayesian inference, with the content pitched at undergraduate level and above.
 
 A complete overview of the lectures `is provided on the HowToLens readthedocs page <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
+
+Citations
+---------
+
+Information on how to cite **PyAutoLens** in publications can be found `on the citations page <https://github.com/Jammy2211/PyAutoLens/blob/main/CITATIONS.rst>`_.
+
+Contributing
+------------
+
+Information on how to contribute to **PyAutoLens** can be found `on the contributing page <https://github.com/Jammy2211/PyAutoLens/blob/main/CONTRIBUTING.md>`_.
+
+Hands on support for contributions is available via our Slack workspace, again please email to request an invite.
