@@ -32,7 +32,8 @@ def plane_redshifts_from(galaxies: List[ag.Galaxy]) -> List[float]:
 
     galaxies_ascending_redshift = sorted(galaxies, key=lambda galaxy: galaxy.redshift)
 
-    plane_redshifts = [galaxy.redshift for galaxy in galaxies_ascending_redshift]
+    # Coerce to float to avoid issues with other float types not being hashable.
+    plane_redshifts = [float(galaxy.redshift) for galaxy in galaxies_ascending_redshift]
 
     return list(dict.fromkeys(plane_redshifts))
 

@@ -50,6 +50,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
             The cosmology used to perform ray-tracing calculations.
         """
 
+        # if isinstance(galaxies, af.ModelInstance):
+        #     galaxies = list(galaxies.values())
+
         self.galaxies = galaxies
 
         self.cosmology = cosmology or ag.cosmo.Planck15()
