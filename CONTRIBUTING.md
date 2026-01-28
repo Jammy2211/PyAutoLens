@@ -1,3 +1,21 @@
+## Community Guidelines
+
+We strive to maintain a welcoming, respectful, and inclusive community. All contributors—whether opening issues, submitting pull requests, reviewing code, or participating in discussions—are expected to follow these guidelines.
+
+- Be respectful and considerate of others.
+- Assume good intent and be patient, especially with newcomers.
+- Keep feedback constructive and focused on the work, not the person.
+- Communicate clearly and professionally.
+- Respect maintainers’ time and decisions.
+
+Harassment, discrimination, or abusive behavior of any kind will not be tolerated.
+
+This project follows our [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you agree to uphold it.
+
+### Reporting concerns
+If you experience or witness behavior that violates these guidelines or the Code of Conduct, please contact the project maintainers privately.
+
+
 # Contributing
 
 Contributions are welcome and greatly appreciated!

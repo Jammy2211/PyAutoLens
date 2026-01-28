@@ -302,7 +302,6 @@ class FitInterferometerPlotter(Plotter):
         plane_noise_map: bool = False,
         plane_signal_to_noise_map: bool = False,
         zoom_to_brightest: bool = True,
-        interpolate_to_uniform: bool = False,
     ):
         """
         Plots images representing each individual `Plane` in the fit's `Tracer` in 2D, which are computed via the
@@ -333,9 +332,6 @@ class FitInterferometerPlotter(Plotter):
         zoom_to_brightest
             For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
             the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
-        interpolate_to_uniform
-            If `True`, the mapper's reconstruction is interpolated to a uniform grid before plotting, for example
-            meaning that an irregular Delaunay grid can be plotted as a uniform grid.
         """
         if plane_image:
             if not self.tracer.planes[plane_index].has(cls=aa.Pixelization):
@@ -354,7 +350,6 @@ class FitInterferometerPlotter(Plotter):
                     pixelization_index=0,
                     reconstruction=True,
                     zoom_to_brightest=zoom_to_brightest,
-                    interpolate_to_uniform=interpolate_to_uniform,
                 )
 
         if plane_noise_map:
@@ -367,7 +362,6 @@ class FitInterferometerPlotter(Plotter):
                     pixelization_index=0,
                     reconstruction_noise_map=True,
                     zoom_to_brightest=zoom_to_brightest,
-                    interpolate_to_uniform=interpolate_to_uniform,
                 )
 
         if plane_signal_to_noise_map:
@@ -380,7 +374,6 @@ class FitInterferometerPlotter(Plotter):
                     pixelization_index=0,
                     signal_to_noise_map=True,
                     zoom_to_brightest=zoom_to_brightest,
-                    interpolate_to_uniform=interpolate_to_uniform,
                 )
 
     def subplot_fit(self):
@@ -462,12 +455,7 @@ class FitInterferometerPlotter(Plotter):
                 "total_mappings_pixels"
             ]
 
-            mapper = inversion_plotter.inversion.cls_list_from(cls=aa.AbstractMapper)[0]
-            mapper_valued = aa.MapperValued(
-                values=inversion_plotter.inversion.reconstruction_dict[mapper],
-                mapper=mapper,
-            )
-            pix_indexes = mapper_valued.max_pixel_list_from(
+            pix_indexes = inversion_plotter.inversion.max_pixel_list_from(
                 total_pixels=total_pixels, filter_neighbors=True
             )
 
