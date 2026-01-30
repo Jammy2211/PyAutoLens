@@ -293,7 +293,7 @@ def time_delays_from(
 
     with \( D_d, D_s, D_{ds} \) the angular diameter distances to the lens, to the source, and from lens to source.
 
-    The time delay is computed using the Fermat potential,
+    The time delay is computed using the Fermat potential, as described by the equations above.
 
     An input cosmology object can change the cosmological model, which is used to compute the scaling
     factors between planes (which are derived from their redshifts and angular diameter distances). It is these
