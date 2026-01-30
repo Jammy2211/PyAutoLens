@@ -152,7 +152,7 @@ def traced_grid_2d_list_from(
                     redshift_0=redshift_list[previous_plane_index],
                     redshift_1=galaxies[0].redshift,
                     redshift_final=redshift_list[-1],
-                    xp=xp
+                    xp=xp,
                 )
 
                 scaled_deflections = (
@@ -345,7 +345,9 @@ def time_delays_from(
     )
 
     # Time-delay distance in meters: (1+z_l) * Dd * Ds / Dds
-    D_dt_m = (xp.asarray(1.0) + xp.asarray(z_l)) * (Dd_kpc * Ds_kpc / Dds_kpc) * kpc_in_m
+    D_dt_m = (
+        (xp.asarray(1.0) + xp.asarray(z_l)) * (Dd_kpc * Ds_kpc / Dds_kpc) * kpc_in_m
+    )
 
     # Fermat potential (should be in arcsec^2 for this formula)
     fermat_potential = galaxies.fermat_potential_from(grid=grid, xp=xp)
