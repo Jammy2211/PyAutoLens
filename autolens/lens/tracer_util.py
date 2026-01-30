@@ -106,7 +106,7 @@ def traced_grid_2d_list_from(
     returned list of traced grids will contain three entries corresponding to the input grid after ray-tracing to
     redshifts 0.5, 1.0 and 2.0.
 
-    An input `AstroPy` cosmology object can change the cosmological model, which is used to compute the scaling
+    An input cosmology object can change the cosmological model, which is used to compute the scaling
     factors between planes (which are derived from their redshifts and angular diameter distances). It is these
     scaling factors that account for multi-plane ray tracing effects.
 
@@ -152,6 +152,7 @@ def traced_grid_2d_list_from(
                     redshift_0=redshift_list[previous_plane_index],
                     redshift_1=galaxies[0].redshift,
                     redshift_final=redshift_list[-1],
+                    xp=xp
                 )
 
                 scaled_deflections = (
@@ -193,7 +194,7 @@ def grid_2d_at_redshift_from(
     at a set of redshift. The galaxy mass profiles are used to compute deflection angles. Any redshift can be input
     even if a plane does not exist there, including redshifts before the first plane of the lens system.
 
-    An input `AstroPy` cosmology object can change the cosmological model, which is used to compute the scaling
+    An input cosmology object can change the cosmological model, which is used to compute the scaling
     factors between planes (which are derived from their redshifts and angular diameter distances). It is these
     scaling factors that account for multi-plane ray tracing effects.
 
@@ -294,7 +295,7 @@ def time_delays_from(
 
     The time delay is computed using the Fermat potential,
 
-    An input `AstroPy` cosmology object can change the cosmological model, which is used to compute the scaling
+    An input cosmology object can change the cosmological model, which is used to compute the scaling
     factors between planes (which are derived from their redshifts and angular diameter distances). It is these
     scaling factors that account for multi-plane ray tracing effects.
 

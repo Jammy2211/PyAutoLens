@@ -40,7 +40,7 @@ class AnalysisLens:
         cosmology
             The Cosmology assumed for this analysis.
         """
-        from autogalaxy.cosmology.wrap import Planck15
+        from autogalaxy.cosmology.model import Planck15
 
         self.cosmology = cosmology or Planck15()
         self.positions_likelihood_list = positions_likelihood_list

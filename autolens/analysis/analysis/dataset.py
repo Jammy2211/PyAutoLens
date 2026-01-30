@@ -59,7 +59,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
             Contains the adapt-images which are used to make a pixelization's mesh and regularization adapt to the
             reconstructed galaxy's morphology.
         cosmology
-            The AstroPy Cosmology assumed for this analysis.
+            The Cosmology assumed for this analysis.
         settings_inversion
             Settings controlling how an inversion is fitted during the model-fit, for example which linear algebra
             formalism is used.
