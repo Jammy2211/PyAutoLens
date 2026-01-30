@@ -171,6 +171,9 @@ def traced_grid_2d_list_from(
             map(lambda g: g.deflections_yx_2d_from(grid=scaled_grid, xp=xp), galaxies)
         )
 
+        # Remove NaN deflection values to sanitize the ray-tracing calculation for JAX.
+        deflections_yx_2d = xp.where(xp.isfinite(deflections_yx_2d.array), deflections_yx_2d.array, 0.0)
+
         traced_deflection_list.append(deflections_yx_2d)
 
     return traced_grid_list
