@@ -896,7 +896,7 @@ def test__output_to_and_load_from_json():
     g0 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
     g1 = al.Galaxy(redshift=1.0)
 
-    tracer = al.Tracer(galaxies=[g0, g1], cosmology=al.cosmo.wrap.Planck15())
+    tracer = al.Tracer(galaxies=[g0, g1], cosmology=al.cosmo.Planck15())
 
     output_to_json(tracer, file_path=json_file)
 
