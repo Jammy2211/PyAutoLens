@@ -328,7 +328,7 @@ def time_delays_from(
     # Constants (SI)
     # -----------------
     kpc_in_m = xp.asarray(3.085677581491367e19)  # kpc in meters
-    arcsec_to_rad = xp.asarray(np.pi / 648000.0)  # arcsec -> rad (pi / (180*3600))
+    arcsec_to_rad = xp.pi / 648000.0  # arcsec -> rad (pi / (180*3600))
     seconds_per_day = xp.asarray(86400.0)
     c = xp.asarray(299792458.0)  # m/s
 
