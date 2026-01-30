@@ -106,7 +106,7 @@ def traced_grid_2d_list_from(
     returned list of traced grids will contain three entries corresponding to the input grid after ray-tracing to
     redshifts 0.5, 1.0 and 2.0.
 
-    An input `AstroPy` cosmology object can change the cosmological model, which is used to compute the scaling
+    An input cosmology object can change the cosmological model, which is used to compute the scaling
     factors between planes (which are derived from their redshifts and angular diameter distances). It is these
     scaling factors that account for multi-plane ray tracing effects.
 
@@ -152,6 +152,7 @@ def traced_grid_2d_list_from(
                     redshift_0=redshift_list[previous_plane_index],
                     redshift_1=galaxies[0].redshift,
                     redshift_final=redshift_list[-1],
+                    xp=xp,
                 )
 
                 scaled_deflections = (
@@ -193,7 +194,7 @@ def grid_2d_at_redshift_from(
     at a set of redshift. The galaxy mass profiles are used to compute deflection angles. Any redshift can be input
     even if a plane does not exist there, including redshifts before the first plane of the lens system.
 
-    An input `AstroPy` cosmology object can change the cosmological model, which is used to compute the scaling
+    An input cosmology object can change the cosmological model, which is used to compute the scaling
     factors between planes (which are derived from their redshifts and angular diameter distances). It is these
     scaling factors that account for multi-plane ray tracing effects.
 
@@ -292,9 +293,9 @@ def time_delays_from(
 
     with \( D_d, D_s, D_{ds} \) the angular diameter distances to the lens, to the source, and from lens to source.
 
-    The time delay is computed using the Fermat potential,
+    The time delay is computed using the Fermat potential, as described by the equations above.
 
-    An input `AstroPy` cosmology object can change the cosmological model, which is used to compute the scaling
+    An input cosmology object can change the cosmological model, which is used to compute the scaling
     factors between planes (which are derived from their redshifts and angular diameter distances). It is these
     scaling factors that account for multi-plane ray tracing effects.
 
@@ -321,29 +322,38 @@ def time_delays_from(
             f"{len(plane_redshifts)} planes with redshifts {plane_redshifts}."
         )
 
-    # Constants
-    mpc_in_m = 3.08567758e22  # Mpc in meters
-    arcsec_to_rad = np.deg2rad(1.0 / 3600.0)  # arcsec to radians
-    seconds_per_day = 86400
-    c = 299792458  # speed of light in m/s
+    z_l, z_s = plane_redshifts[0], plane_redshifts[1]
 
-    factor = arcsec_to_rad**2 / seconds_per_day
+    # -----------------
+    # Constants (SI)
+    # -----------------
+    kpc_in_m = xp.asarray(3.085677581491367e19)  # kpc in meters
+    arcsec_to_rad = xp.pi / 648000.0  # arcsec -> rad (pi / (180*3600))
+    seconds_per_day = xp.asarray(86400.0)
+    c = xp.asarray(299792458.0)  # m/s
 
-    # Angular diameter distances
-    Dd = cosmology.angular_diameter_distance(plane_redshifts[0]).value  # [Mpc]
-    Ds = cosmology.angular_diameter_distance(plane_redshifts[1]).value  # [Mpc]
-    Dds = cosmology.angular_diameter_distance_z1z2(
-        z1=plane_redshifts[0], z2=plane_redshifts[1]
-    ).value  # [Mpc]
+    # This factor converts Fermat potential in arcsec^2 into days once multiplied by D_dt/c
+    factor = (arcsec_to_rad * arcsec_to_rad) / seconds_per_day
 
-    # Time-delay distance in meters
-    D_dt = (1 + plane_redshifts[0]) * Dd * Ds / Dds * mpc_in_m
+    # -----------------
+    # Angular diameter distances (kpc)
+    # -----------------
+    Dd_kpc = cosmology.angular_diameter_distance_to_earth_in_kpc_from(z_l, xp=xp)
+    Ds_kpc = cosmology.angular_diameter_distance_to_earth_in_kpc_from(z_s, xp=xp)
+    Dds_kpc = cosmology.angular_diameter_distance_between_redshifts_in_kpc_from(
+        redshift_0=z_l, redshift_1=z_s, xp=xp
+    )
 
-    # Fermat potential
+    # Time-delay distance in meters: (1+z_l) * Dd * Ds / Dds
+    D_dt_m = (
+        (1.0 + z_l) * (Dd_kpc * Ds_kpc / Dds_kpc) * kpc_in_m
+    )
+
+    # Fermat potential (should be in arcsec^2 for this formula)
     fermat_potential = galaxies.fermat_potential_from(grid=grid, xp=xp)
 
     # Final time delay in days
-    return D_dt / c * fermat_potential * factor
+    return (D_dt_m / c) * fermat_potential * factor
 
 
 def ordered_plane_redshifts_with_slicing_from(
