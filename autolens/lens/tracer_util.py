@@ -346,7 +346,7 @@ def time_delays_from(
 
     # Time-delay distance in meters: (1+z_l) * Dd * Ds / Dds
     D_dt_m = (
-        (xp.asarray(1.0) + xp.asarray(z_l)) * (Dd_kpc * Ds_kpc / Dds_kpc) * kpc_in_m
+        (1.0 + z_l) * (Dd_kpc * Ds_kpc / Dds_kpc) * kpc_in_m
     )
 
     # Fermat potential (should be in arcsec^2 for this formula)
