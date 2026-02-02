@@ -115,7 +115,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
             noise_map=self.noise_map,
             grids=self.grids,
             transformer=self.dataset.transformer,
-            w_tilde=self.w_tilde,
+            sparse_linalg=self.dataset.sparse_linalg,
         )
 
         return TracerToInversion(

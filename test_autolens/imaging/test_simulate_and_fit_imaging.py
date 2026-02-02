@@ -735,7 +735,7 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
         tracer=tracer,
     )
 
-    masked_dataset_w_tilde = masked_dataset.apply_w_tilde()
+    masked_dataset_w_tilde = masked_dataset.apply_sparse_linear_algebra()
 
     fit_w_tilde = al.FitImaging(
         dataset=masked_dataset_w_tilde,
