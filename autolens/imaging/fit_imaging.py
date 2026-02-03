@@ -112,7 +112,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             noise_map=self.noise_map,
             grids=self.grids,
             psf=self.dataset.psf,
-            w_tilde=self.w_tilde,
+            sparse_operator=self.dataset.sparse_operator,
         )
 
         return TracerToInversion(
