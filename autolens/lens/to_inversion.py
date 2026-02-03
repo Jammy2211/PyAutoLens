@@ -181,7 +181,7 @@ class TracerToInversion(ag.AbstractToInversion):
                 grids=grids,
                 psf=self.psf,
                 transformer=self.transformer,
-                sparse_linalg=self.dataset.sparse_linalg,
+                sparse_operator=self.dataset.sparse_operator,
             )
 
             galaxies_to_inversion = ag.GalaxiesToInversion(

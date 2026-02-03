@@ -172,7 +172,9 @@ def traced_grid_2d_list_from(
         )
 
         # Remove NaN deflection values to sanitize the ray-tracing calculation for JAX.
-        deflections_yx_2d = xp.where(xp.isfinite(deflections_yx_2d.array), deflections_yx_2d.array, 0.0)
+        deflections_yx_2d = xp.where(
+            xp.isfinite(deflections_yx_2d.array), deflections_yx_2d.array, 0.0
+        )
 
         traced_deflection_list.append(deflections_yx_2d)
 
@@ -348,9 +350,7 @@ def time_delays_from(
     )
 
     # Time-delay distance in meters: (1+z_l) * Dd * Ds / Dds
-    D_dt_m = (
-        (1.0 + z_l) * (Dd_kpc * Ds_kpc / Dds_kpc) * kpc_in_m
-    )
+    D_dt_m = (1.0 + z_l) * (Dd_kpc * Ds_kpc / Dds_kpc) * kpc_in_m
 
     # Fermat potential (should be in arcsec^2 for this formula)
     fermat_potential = galaxies.fermat_potential_from(grid=grid, xp=xp)

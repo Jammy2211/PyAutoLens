@@ -651,7 +651,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
     assert fit_linear.figure_of_merit == pytest.approx(-180.8284970580511, 1.0e-4)
 
 
-def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_tilde():
+def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_sparse_operator():
 
     grid = al.Grid2D.uniform(shape_native=(21, 21), pixel_scales=0.1)
 
@@ -735,20 +735,20 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_w_ti
         tracer=tracer,
     )
 
-    masked_dataset_w_tilde = masked_dataset.apply_sparse_linear_algebra()
+    masked_dataset_sparse_operator = masked_dataset.apply_sparse_operator()
 
-    fit_w_tilde = al.FitImaging(
-        dataset=masked_dataset_w_tilde,
+    fit_sparse_operator = al.FitImaging(
+        dataset=masked_dataset_sparse_operator,
         tracer=tracer,
     )
 
     assert fit_mapping.inversion.curvature_matrix == pytest.approx(
-            fit_w_tilde.inversion.curvature_matrix,
+            fit_sparse_operator.inversion.curvature_matrix,
         1.0e-4,
     )
 
     assert fit_mapping.inversion.regularization_matrix == pytest.approx(
-            fit_w_tilde.inversion.regularization_matrix,
+            fit_sparse_operator.inversion.regularization_matrix,
         1.0e-4,
     )
 
