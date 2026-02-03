@@ -71,7 +71,7 @@ gravitational lensing analysis, and helps troubleshoot problems.
 
 Slack is invitation-only. If you’d like to join, please send an email requesting an invite.
 
-For installation issues, bug reports, or feature requests, please raise an issue on the [GitHub issues page](https://github.com/Jammy2211/PyAutoLens/issues).
+For installation issues, bug reports, or feature requests, please raise an issue on the `GitHub issues page <https://github.com/Jammy2211/PyAutoLens/issues>`_.
 
 HowToLens
 ---------
@@ -80,7 +80,7 @@ For users less familiar with gravitational lensing, Bayesian inference and scien
 you may wish to read through the **HowToLens** lectures. These teach you the basic principles of gravitational lensing
 and Bayesian inference, with the content pitched at undergraduate level and above.
 
-A complete overview of the lectures `is provided on the HowToLens readthedocs page <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
+A complete overview of the lectures `is provided on the HowToLens readthedocs page <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_.
 
 Citations
 ---------
