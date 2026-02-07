@@ -144,9 +144,11 @@ def traced_grid_2d_list_from(
     redshift_list = [galaxies[0].redshift for galaxies in planes]
 
     for plane_index, galaxies in enumerate(planes):
-        scaled_grid = grid.copy()
+
+        scaled_grid = grid.array
 
         if plane_index > 0:
+
             for previous_plane_index in range(plane_index):
                 scaling_factor = cosmology.scaling_factor_between_redshifts_from(
                     redshift_0=redshift_list[previous_plane_index],
@@ -156,10 +158,14 @@ def traced_grid_2d_list_from(
                 )
 
                 scaled_deflections = (
-                    scaling_factor * traced_deflection_list[previous_plane_index]
+                    scaling_factor * traced_deflection_list[previous_plane_index].array
                 )
 
-                scaled_grid -= scaled_deflections
+                scaled_grid = scaled_grid - scaled_deflections
+
+        scaled_grid = aa.Grid2DIrregular(
+           values=scaled_grid,
+        )
 
         traced_grid_list.append(scaled_grid)
 
@@ -168,12 +174,7 @@ def traced_grid_2d_list_from(
                 return traced_grid_list
 
         deflections_yx_2d = sum(
-            map(lambda g: g.deflections_yx_2d_from(grid=scaled_grid, xp=xp), galaxies)
-        )
-
-        # Remove NaN deflection values to sanitize the ray-tracing calculation for JAX.
-        deflections_yx_2d = xp.where(
-            xp.isfinite(deflections_yx_2d.array), deflections_yx_2d.array, 0.0
+            (g.deflections_yx_2d_from(grid=scaled_grid, xp=xp) for g in galaxies)
         )
 
         traced_deflection_list.append(deflections_yx_2d)
