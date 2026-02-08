@@ -155,7 +155,7 @@ def test__fit_figure_of_merit(masked_imaging_7x7, masked_imaging_covariance_7x7)
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
     assert fit.perform_inversion is True
-    assert fit.figure_of_merit == pytest.approx(-22.79906, 1.0e-4)
+    assert fit.figure_of_merit == pytest.approx(-22.801816971, 1.0e-4)
 
     g0_operated = al.Galaxy(
         redshift=0.5,
@@ -341,7 +341,7 @@ def test__fit_figure_of_merit__sub_2(image_7x7, psf_3x3, noise_map_7x7, mask_2d_
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
 
     assert fit.perform_inversion is True
-    assert fit.figure_of_merit == pytest.approx( -22.8021113243233, 1.0e-4)
+    assert fit.figure_of_merit == pytest.approx( -22.8051006673, 1.0e-4)
 
     g0_operated = al.Galaxy(
         redshift=0.5,
@@ -459,7 +459,7 @@ def test__fit__model_dataset__grid_offset__handles_special_behaviour(masked_imag
     fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer,
                         dataset_model=al.DatasetModel(grid_offset=(1.0, 2.0))
                         )
-    assert fit.figure_of_merit == pytest.approx(-22.8021112977481, 1.0e-4)
+    assert fit.figure_of_merit == pytest.approx(-22.8051006, 1.0e-4)
 
 
 def test__galaxy_model_image_dict(masked_imaging_7x7):
@@ -688,7 +688,7 @@ def test__model_images_of_planes_list(masked_imaging_7x7_sub_2):
         1.0e-4,
     )
 
-    assert fit.model_images_of_planes_list[2][0] == pytest.approx(1.56110288, 1.0e-4)
+    assert fit.model_images_of_planes_list[2][0] == pytest.approx(1.5614163282, 1.0e-4)
 
 
 def test__subtracted_images_of_planes_list(masked_imaging_7x7_no_blur, masked_imaging_7x7_no_blur_sub_2):

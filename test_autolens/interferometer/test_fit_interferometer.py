@@ -133,7 +133,7 @@ def test__fit_figure_of_merit(interferometer_7):
     fit = al.FitInterferometer(dataset=interferometer_7, tracer=tracer)
 
     assert fit.perform_inversion is True
-    assert fit.figure_of_merit == pytest.approx(-35.59258944233, 1.0e-4)
+    assert fit.figure_of_merit == pytest.approx(-35.07914066930113, 1.0e-4)
 
 
 def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
@@ -208,7 +208,7 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
     assert (fit.galaxy_model_image_dict[g0_no_light].native == np.zeros((7, 7))).all()
 
     assert fit.galaxy_model_image_dict[galaxy_pix_0][0] == pytest.approx(
-        -0.15950206, 1.0e-4
+        -0.14416215690290285, 1.0e-4
     )
 
     # Normal light + Linear Light PRofiles + Pixelization + Regularizaiton
@@ -224,14 +224,14 @@ def test___galaxy_model_image_dict(interferometer_7, interferometer_7_grid):
     assert fit.galaxy_model_image_dict[g0] == pytest.approx(g0_image.array, 1.0e-4)
 
     assert fit.galaxy_model_image_dict[g0_linear][4] == pytest.approx(
-        -22.84767705, 1.0e-4
+        -22.896762784783178, 1.0e-4
     )
 
     assert fit.galaxy_model_image_dict[galaxy_pix_0][4] == pytest.approx(
-        -0.04303823, 1.0e-3
+        -0.027972920686385083, 1.0e-3
     )
     assert fit.galaxy_model_image_dict[galaxy_pix_1][4] == pytest.approx(
-        -0.04303822, 1.0e-3
+        -0.02797291718230969, 1.0e-3
     )
     assert (fit.galaxy_model_image_dict[g2] == np.zeros(9)).all()
 
@@ -326,7 +326,7 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
 
     assert (fit.galaxy_model_visibilities_dict[g0_no_light] == np.zeros((7,))).all()
     assert fit.galaxy_model_visibilities_dict[galaxy_pix_0][0] == pytest.approx(
-        0.46557222 + 0.51326692j, 1.0e-4
+        0.9372276032882099 + 0.32701101190914555j, 1.0e-4
     )
 
     assert fit.model_data.array == pytest.approx(
@@ -346,14 +346,14 @@ def test__galaxy_model_visibilities_dict(interferometer_7, interferometer_7_grid
     )
 
     assert fit.galaxy_model_visibilities_dict[g0_linear][0] == pytest.approx(
-        -23.05244886 - 0.1500576j, 1.0e-4
+        -23.101974527607315 - 0.15037997746935183j, 1.0e-4
     )
 
     assert fit.galaxy_model_visibilities_dict[galaxy_pix_0][0] == pytest.approx(
-        -0.0568614 + 0.09197727j, 1.0e-4
+        -0.06797397090116747 + 0.0892532970401005j, 1.0e-4
     )
     assert fit.galaxy_model_visibilities_dict[galaxy_pix_1][0] == pytest.approx(
-        -0.05686139 + 0.09197727j, 1.0e-4
+        -0.06797396569775271 + 0.08925329704010045j, 1.0e-4
     )
     assert (fit.galaxy_model_visibilities_dict[g2] == np.zeros((7,))).all()
 

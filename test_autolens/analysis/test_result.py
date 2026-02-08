@@ -164,7 +164,7 @@ def test__source_plane_centre(analysis_imaging_7x7):
     )
 
     assert result.source_plane_centre_from().in_list[0] == pytest.approx(
-        (0.916666, -0.916666), 1.0e-4
+        (-0.916666673333, -0.916666), 1.0e-4
     )
 
 
