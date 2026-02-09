@@ -1,6 +1,8 @@
 from enum import Enum
 
 
+
+
 class FITSModelGalaxyImages(Enum):
     """
     The HDUs that can be extracted from the fit.fits file.

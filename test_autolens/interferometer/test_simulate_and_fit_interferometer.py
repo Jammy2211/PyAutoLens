@@ -215,7 +215,7 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
 
     lens_galaxy_image = lens_galaxy.image_2d_from(grid=dataset.grids.lp)
 
-    assert fit_linear.galaxy_model_image_dict[lens_galaxy_linear] == pytest.approx(
+    assert fit_linear.galaxy_image_dict[lens_galaxy_linear] == pytest.approx(
         lens_galaxy_image.array, 1.0e-4
     )
 
@@ -223,7 +223,7 @@ def test__simulate_interferometer_data_and_fit__linear_light_profiles_agree_with
 
     source_galaxy_image = source_galaxy.image_2d_from(grid=traced_grid_2d_list[1])
 
-    assert fit_linear.galaxy_model_image_dict[source_galaxy_linear] == pytest.approx(
+    assert fit_linear.galaxy_image_dict[source_galaxy_linear] == pytest.approx(
         source_galaxy_image.array, 1.0e-4
     )
 
