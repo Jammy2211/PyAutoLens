@@ -211,7 +211,7 @@ def test___galaxy_image_dict(interferometer_7, interferometer_7_grid):
         -0.14416215690290285, 1.0e-4
     )
 
-    # Normal light + Linear Light PRofiles + Pixelization + Regularizaiton
+    # Normal light + Linear Light PRofiles + Pixelization + Regularization
 
     galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization)
     tracer = al.Tracer(galaxies=[g0, g0_linear, g2, galaxy_pix_0, galaxy_pix_1])
