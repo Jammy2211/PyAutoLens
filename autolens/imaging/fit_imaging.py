@@ -175,7 +175,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         )
 
         galaxy_linear_obj_image_dict = self.galaxy_linear_obj_data_dict_from(
-            use_operated=False, use_image=True,
+            use_operated=False,
         )
 
         return {**galaxy_image_2d_dict, **galaxy_linear_obj_image_dict}
@@ -202,7 +202,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         )
 
         galaxy_linear_obj_image_dict = self.galaxy_linear_obj_data_dict_from(
-            use_operated=True, use_image=False
+            use_operated=True,
         )
 
         return {**galaxy_blurred_image_2d_dict, **galaxy_linear_obj_image_dict}

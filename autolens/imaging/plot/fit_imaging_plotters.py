@@ -789,7 +789,7 @@ class FitImagingPlotter(Plotter):
                 inversion_plotter.visuals_2d.indexes = indexes
 
                 inversion_plotter.figures_2d_of_pixelization(
-                    pixelization_index=pixelization_index, reconstructed_image=True
+                    pixelization_index=pixelization_index, reconstructed_operated_data=True
                 )
 
                 self.visuals_2d.source_plane_mesh_indexes = [

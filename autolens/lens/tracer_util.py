@@ -165,7 +165,6 @@ def traced_grid_2d_list_from(
 
         scaled_grid = aa.Grid2DIrregular(
             values=scaled_grid,
-
         )
 
         traced_grid_list.append(scaled_grid)

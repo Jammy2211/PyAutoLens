@@ -284,7 +284,7 @@ class FitInterferometerPlotter(Plotter):
                 inversion_plotter = self.inversion_plotter_of_plane(
                     plane_index=plane_index
                 )
-                inversion_plotter.figures_2d(reconstructed_image=True)
+                inversion_plotter.figures_2d(reconstructed_operated_data=True)
 
         if dirty_model_image:
             self.mat_plot_2d.plot_array(
@@ -467,7 +467,7 @@ class FitInterferometerPlotter(Plotter):
             inversion_plotter.visuals_2d.radial_critical_curves = None
 
             inversion_plotter.figures_2d_of_pixelization(
-                pixelization_index=pixelization_index, reconstructed_image=True
+                pixelization_index=pixelization_index, reconstructed_operated_data=True
             )
 
             self.visuals_2d.source_plane_mesh_indexes = [
@@ -516,7 +516,7 @@ class FitInterferometerPlotter(Plotter):
             inversion_plotter = self.inversion_plotter_of_plane(plane_index=1)
 
             inversion_plotter.figures_2d_of_pixelization(
-                pixelization_index=0, reconstructed_image=True
+                pixelization_index=0, reconstructed_operated_data=True
             )
             inversion_plotter.figures_2d_of_pixelization(
                 pixelization_index=0, reconstruction=True

@@ -529,7 +529,7 @@ def test__inversion_imaging_from(grid_2d_7x7, masked_imaging_7x7):
 
     inversion = tracer_to_inversion.inversion
 
-    assert inversion.mapped_reconstructed_image == pytest.approx(
+    assert inversion.mapped_reconstructed_operated_data == pytest.approx(
         masked_imaging_7x7.data, 1.0e-2
     )
 

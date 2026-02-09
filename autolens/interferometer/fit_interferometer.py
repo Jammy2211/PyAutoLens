@@ -152,12 +152,15 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         """
 
         if self.perform_inversion:
-            return self.profile_visibilities + self.inversion.mapped_reconstructed_operated_data
+            return (
+                self.profile_visibilities
+                + self.inversion.mapped_reconstructed_operated_data
+            )
 
         return self.profile_visibilities
 
     @property
-    def galaxy_model_image_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
+    def galaxy_image_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
         """
         A dictionary which associates every galaxy in the tracer with its `image`.
 
@@ -170,15 +173,13 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         For modeling, this dictionary is used to set up the `adapt_images` that adapt certain pixelizations to the
         data being fitted.
         """
-        galaxy_model_image_dict = self.tracer.galaxy_image_2d_dict_from(
-            grid=self.grids.lp
-        )
+        galaxy_image_dict = self.tracer.galaxy_image_2d_dict_from(grid=self.grids.lp)
 
         galaxy_linear_obj_image_dict = self.galaxy_linear_obj_data_dict_from(
-            use_image=True
+            use_operated=False
         )
 
-        return {**galaxy_model_image_dict, **galaxy_linear_obj_image_dict}
+        return {**galaxy_image_dict, **galaxy_linear_obj_image_dict}
 
     @property
     def galaxy_model_visibilities_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
@@ -197,7 +198,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         )
 
         galaxy_linear_obj_visibilities_dict = self.galaxy_linear_obj_data_dict_from(
-            use_image=False
+            use_operated=True
         )
 
         return {**galaxy_model_visibilities_dict, **galaxy_linear_obj_visibilities_dict}
