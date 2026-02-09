@@ -462,6 +462,76 @@ def test__fit__model_dataset__grid_offset__handles_special_behaviour(masked_imag
     assert fit.figure_of_merit == pytest.approx(-22.8051006, 1.0e-4)
 
 
+def test__galaxy_image_dict(masked_imaging_7x7):
+
+    # Normal Light Profiles Only
+
+    g0 = al.Galaxy(
+        redshift=0.5,
+        bulge=al.lp.Sersic(centre=(0.05, 0.05), intensity=1.0),
+        mass_profile=al.mp.IsothermalSph(centre=(0.05, 0.05), einstein_radius=1.0),
+    )
+    g1 = al.Galaxy(redshift=1.0, bulge=al.lp.Sersic(centre=(0.05, 0.05), intensity=1.0))
+    g2 = al.Galaxy(redshift=1.0)
+
+    tracer = al.Tracer(galaxies=[g0, g1, g2])
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    image_2d_list = tracer.image_2d_list_from(
+        grid=masked_imaging_7x7.grids.lp,
+    )
+
+    assert fit.galaxy_image_dict[g0] == pytest.approx(
+        image_2d_list[0].array, 1.0e-4
+    )
+    assert fit.galaxy_image_dict[g1] == pytest.approx(
+        image_2d_list[1].array, 1.0e-4
+    )
+    assert (fit.galaxy_image_dict[g2] == np.zeros(9)).all()
+
+    # Normal light + Linear Light PRofiles + Pixelization + Regularizaiton
+
+    g0_linear = al.Galaxy(
+        redshift=0.5,
+        bulge=al.lp_linear.Sersic(),
+        mass_profile=al.mp.IsothermalSph(einstein_radius=1.0),
+    )
+
+    pixelization = al.Pixelization(
+        mesh=al.mesh.RectangularUniform(shape=(3, 3)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
+
+    galaxy_pix_0 = al.Galaxy(redshift=1.0, pixelization=pixelization)
+
+    galaxy_pix_1 = al.Galaxy(redshift=1.0, pixelization=pixelization)
+
+    tracer = al.Tracer(
+        galaxies=[g0, g0_linear, g2, galaxy_pix_0, galaxy_pix_1]
+    )
+
+    masked_imaging_7x7.data[0] = 3.0
+
+    fit = al.FitImaging(dataset=masked_imaging_7x7, tracer=tracer)
+
+    assert fit.galaxy_image_dict[g0] == pytest.approx(
+        image_2d_list[0].array, 1.0e-4
+    )
+
+    assert fit.galaxy_image_dict[g0_linear][4] == pytest.approx(
+        -9.31143037, 1.0e-4
+    )
+
+    assert fit.galaxy_image_dict[galaxy_pix_0][4] == pytest.approx(
+        0.94918443, 1.0e-4
+    )
+    assert fit.galaxy_image_dict[galaxy_pix_1][4] == pytest.approx(
+        0.94918442, 1.0e-4
+    )
+    assert (fit.galaxy_image_dict[g2] == np.zeros(9)).all()
+
+
 def test__galaxy_model_image_dict(masked_imaging_7x7):
 
     # Normal Light Profiles Only

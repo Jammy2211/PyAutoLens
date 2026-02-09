@@ -156,6 +156,31 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         return self.blurred_image
 
     @property
+    def galaxy_image_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
+        """
+        A dictionary which associates every galaxy in the tracer before operation (e.g. no PSF convolution
+        or NUFFT performed).
+
+        This image is the image of the sum of:
+
+        - The images of all ordinary light profiles in that plane summed before any operation is performed on them.
+        - The images of all linear objects (e.g. linear light profiles / pixelizations), where the images are solved
+          for first via the inversion.
+
+        This dictionary is used to output to .fits file the galaxy images.
+        """
+
+        galaxy_image_2d_dict = self.tracer.galaxy_image_2d_dict_from(
+            grid=self.grids.lp,
+        )
+
+        galaxy_linear_obj_image_dict = self.galaxy_linear_obj_data_dict_from(
+            use_operated=False, use_image=True,
+        )
+
+        return {**galaxy_image_2d_dict, **galaxy_linear_obj_image_dict}
+
+    @property
     def galaxy_model_image_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
         """
         A dictionary which associates every galaxy in the tracer with its `model_image`.
