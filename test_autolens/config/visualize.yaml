@@ -50,6 +50,7 @@ mat_wrap_2d:
       marker: .
       s: 17
 plots:
+  fits_are_zoomed: true
   dataset:
     subplot_dataset: true
   fit:
@@ -57,7 +58,7 @@ plots:
     subplots_of_planes: false
     fits_fit: true                          # Output a .fits file containing the fit model data, residual map, normalized residual map and chi-squared?
     fits_galaxy_images : true                # Output a .fits file containing the images (e.g. without PSF convolution) of every galaxy?
-  fits_model_galaxy_images : true          # Output a .fits file containing the model images (e.g. with PSF convolution) of every galaxy?
+    fits_model_galaxy_images : true          # Output a .fits file containing the model images (e.g. with PSF convolution) of every galaxy?
   fit_imaging: {}
   fit_interferometer:
     subplot_fit_real_space: true
