@@ -75,7 +75,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
             xp=xp,
         )
         AbstractFitInversion.__init__(
-            self=self, model_obj=tracer, settings_inversion=settings_inversion
+            self=self, model_obj=tracer, settings_inversion=settings_inversion, xp=xp
         )
 
         self.preloads = preloads
