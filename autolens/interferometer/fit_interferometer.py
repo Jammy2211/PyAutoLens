@@ -152,7 +152,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         """
 
         if self.perform_inversion:
-            return self.profile_visibilities + self.inversion.mapped_reconstructed_data
+            return self.profile_visibilities + self.inversion.mapped_reconstructed_operated_data
 
         return self.profile_visibilities
 

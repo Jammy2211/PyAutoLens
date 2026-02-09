@@ -520,14 +520,14 @@ def test__galaxy_image_dict(masked_imaging_7x7):
     )
 
     assert fit.galaxy_image_dict[g0_linear][4] == pytest.approx(
-        -9.31143037, 1.0e-4
+        -27.926926, 1.0e-4
     )
 
     assert fit.galaxy_image_dict[galaxy_pix_0][4] == pytest.approx(
-        0.94918443, 1.0e-4
+        0.94954435552, 1.0e-4
     )
     assert fit.galaxy_image_dict[galaxy_pix_1][4] == pytest.approx(
-        0.94918442, 1.0e-4
+        0.94954436798, 1.0e-4
     )
     assert (fit.galaxy_image_dict[g2] == np.zeros(9)).all()
 

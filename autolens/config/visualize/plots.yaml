@@ -11,7 +11,7 @@
 # These can be disabled to save on hard-disk space but will lead to certain database functionality being disabled.
 
 subplot_format: [png]                      # Output format of all subplots, can be png, pdf or both (e.g. [png, pdf])
-fits_are_zoomed: true                      # If true, output .fits files are zoomed in on the center of the unmasked region image, saving hard-disk space.
+fits_are_zoomed: false                     # If true, output .fits files are zoomed in on the center of the unmasked region image, saving hard-disk space.
 
 dataset:                                   # Settings for plots of all datasets (e.g. ImagingPlotter, InterferometerPlotter).
   subplot_dataset: true                    # Plot subplot containing all dataset quantities (e.g. the data, noise-map, etc.)?
@@ -26,7 +26,8 @@ fit:                                       # Settings for plots of all fits (e.g
   subplot_of_planes: false                 # Plot subplot of the model-image, subtracted image and other quantities of each plane?
   subplot_galaxies_images: false              # Plot subplot of the image of each plane in the model?
   fits_fit: false                          # Output a .fits file containing the fit model data, residual map, normalized residual map and chi-squared?
-  fits_model_galaxy_images : false         # Output a .fits file containing the model images of every galaxy?
+  fits_galaxy_images : false               # Output a .fits file containing the images (e.g. without PSF convolution) of every galaxy?
+  fits_model_galaxy_images : false         # Output a .fits file containing the model images (e.g. with PSF convolution) of every galaxy?
 
 fit_imaging: {}                            # Settings for plots of fits to imaging datasets (e.g. FitImagingPlotter).
 

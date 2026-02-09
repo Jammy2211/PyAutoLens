@@ -151,7 +151,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         if self.perform_inversion:
 
-            return self.blurred_image + self.inversion.mapped_reconstructed_data
+            return self.blurred_image + self.inversion.mapped_reconstructed_operated_data
 
         return self.blurred_image
 
@@ -202,7 +202,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
         )
 
         galaxy_linear_obj_image_dict = self.galaxy_linear_obj_data_dict_from(
-            use_image=True
+            use_operated=True, use_image=False
         )
 
         return {**galaxy_blurred_image_2d_dict, **galaxy_linear_obj_image_dict}
