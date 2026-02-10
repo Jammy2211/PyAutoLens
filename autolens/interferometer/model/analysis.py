@@ -2,6 +2,8 @@ import logging
 import numpy as np
 from typing import Optional
 
+from autoconf.dictable import to_dict
+
 import autofit as af
 import autoarray as aa
 import autogalaxy as ag
@@ -208,8 +210,7 @@ class AnalysisInterferometer(AnalysisDataset):
         """
         super().save_attributes(paths=paths)
 
-        analysis = ag.AnalysisInterferometer(
-            dataset=self.dataset,
+        paths.save_json(
+            "transformer_class",
+            to_dict(self.dataset.transformer.__class__),
         )
-
-        analysis.save_attributes(paths=paths)
