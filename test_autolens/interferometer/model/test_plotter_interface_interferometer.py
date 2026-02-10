@@ -32,7 +32,7 @@ def test__fit_interferometer(
     assert path.join(plot_path, "subplot_fit_dirty_images.png") in plot_patch.paths
 
     image = al.ndarray_via_fits_from(
-        file_path=path.join(plot_path, "model_galaxy_images.fits"), hdu=0
+        file_path=path.join(plot_path, "galaxy_images.fits"), hdu=0
     )
 
     assert image.shape == (5, 5)
