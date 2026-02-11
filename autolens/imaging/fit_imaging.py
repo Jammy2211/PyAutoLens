@@ -172,6 +172,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         galaxy_image_2d_dict = self.tracer.galaxy_image_2d_dict_from(
             grid=self.grids.lp,
+            xp=self._xp
         )
 
         galaxy_linear_obj_image_dict = self.galaxy_linear_obj_data_dict_from(
@@ -199,6 +200,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
             grid=self.grids.lp,
             psf=self.dataset.psf,
             blurring_grid=self.grids.blurring,
+            xp=self._xp
         )
 
         galaxy_linear_obj_image_dict = self.galaxy_linear_obj_data_dict_from(

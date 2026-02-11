@@ -579,7 +579,7 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         return aa.Array2D(values=image, mask=grid.mask, xp=xp)
 
     def galaxy_image_2d_dict_from(
-        self, grid: aa.type.Grid2DLike, operated_only: Optional[bool] = None
+        self, grid: aa.type.Grid2DLike, xp=np, operated_only: Optional[bool] = None
     ) -> Dict[ag.Galaxy, np.ndarray]:
         """
         Returns a dictionary associating every `Galaxy` object in the `Tracer` with its corresponding 2D image, using
@@ -605,12 +605,12 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
 
         galaxy_image_2d_dict = dict()
 
-        traced_grid_list = self.traced_grid_2d_list_from(grid=grid)
+        traced_grid_list = self.traced_grid_2d_list_from(grid=grid, xp=xp)
 
         for plane_index, galaxies in enumerate(self.planes):
             image_2d_list = [
                 galaxy.image_2d_from(
-                    grid=traced_grid_list[plane_index], operated_only=operated_only
+                    grid=traced_grid_list[plane_index], operated_only=operated_only, xp=xp
                 )
                 for galaxy in galaxies
             ]
