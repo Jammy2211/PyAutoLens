@@ -610,7 +610,9 @@ class Tracer(ABC, ag.OperateImageGalaxies, ag.OperateDeflections):
         for plane_index, galaxies in enumerate(self.planes):
             image_2d_list = [
                 galaxy.image_2d_from(
-                    grid=traced_grid_list[plane_index], operated_only=operated_only, xp=xp
+                    grid=traced_grid_list[plane_index],
+                    operated_only=operated_only,
+                    xp=xp,
                 )
                 for galaxy in galaxies
             ]
