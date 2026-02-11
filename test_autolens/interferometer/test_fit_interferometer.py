@@ -180,12 +180,8 @@ def test___galaxy_image_dict(interferometer_7, interferometer_7_grid):
         tracer=tracer,
     )
 
-    assert fit.galaxy_image_dict[g0_linear][4] == pytest.approx(
-        1.00018622848, 1.0e-2
-    )
-    assert fit.galaxy_image_dict[g1_linear][3] == pytest.approx(
-        -0.017435532289, 1.0e-2
-    )
+    assert fit.galaxy_image_dict[g0_linear][4] == pytest.approx(1.00018622848, 1.0e-2)
+    assert fit.galaxy_image_dict[g1_linear][3] == pytest.approx(-0.017435532289, 1.0e-2)
 
     pixelization = al.Pixelization(
         mesh=al.mesh.RectangularUniform(shape=(3, 3)),
