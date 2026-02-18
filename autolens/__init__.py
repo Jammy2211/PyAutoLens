@@ -28,8 +28,6 @@ from autoarray.inversion.pixelization.mappers.factory import mapper_from as Mapp
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.inversion.pixelization.mesh_grid.rectangular_2d import Mesh2DRectangular  # noqa
-from autoarray.inversion.pixelization.mesh_grid.delaunay_2d import Mesh2DDelaunay  # noqa
 from autoarray.preloads import Preloads
 from autoarray.preloads import mapper_indices_from
 from autoarray.structures.arrays.uniform_1d import Array1D
