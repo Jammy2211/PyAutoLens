@@ -534,7 +534,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
 
     pixelization = al.Pixelization(
         mesh=al.mesh.Delaunay(),
-        regularization=al.reg.AdaptiveBrightnessSplit(inner_coefficient=0.01, outer_coefficient=0.1, signal_scale=0.1),
+        regularization=al.reg.AdaptSplit(inner_coefficient=0.01, outer_coefficient=0.1, signal_scale=0.1),
     )
 
     source_galaxy_pix = al.Galaxy(redshift=1.0, pixelization=pixelization)

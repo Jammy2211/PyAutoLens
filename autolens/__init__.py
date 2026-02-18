@@ -37,11 +37,8 @@ from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
-from autoarray.structures.mesh.rectangular_2d_uniform import (
-    Mesh2DRectangularUniform,
-)  # noqa
-from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
+from autoarray.inversion.pixelization.mesh_grid.rectangular_2d import Mesh2DRectangular
+from autoarray.inversion.pixelization.mesh_grid.delaunay_2d import Mesh2DDelaunay
 from autoarray.structures.triangles.shape import Circle
 from autoarray.structures.triangles.shape import Triangle
 from autoarray.structures.triangles.shape import Square

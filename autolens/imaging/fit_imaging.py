@@ -67,7 +67,7 @@ class FitImaging(aa.FitImaging, AbstractFitInversion):
 
         super().__init__(dataset=dataset, dataset_model=dataset_model, xp=xp)
         AbstractFitInversion.__init__(
-            self=self, model_obj=tracer, settings_inversion=settings_inversion,xp=xp
+            self=self, model_obj=tracer, settings_inversion=settings_inversion, xp=xp
         )
 
         self.tracer = tracer

@@ -35,5 +35,5 @@ The chapter contains the following tutorials:
 `Tutorial 10: Brightness Adaption <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_4_pixelizations/tutorial_10_brightness_adaption.ipynb>`_
 - Adapting the pixelization to the source's morphology.
 
-`Tutorial 11: Adaptive Regularization <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_4_pixelizations/tutorial_11_adaptive_regularization.py.ipynb>`_
+`Tutorial 11: Adaptive Regularization <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=notebooks/howtolens/chapter_4_pixelizations/tutorial_11_adapt_regularization.py.ipynb>`_
 - Adapting the regularization to the source's morphology.

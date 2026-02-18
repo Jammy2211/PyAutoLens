@@ -1,4 +1,4 @@
-adaptive_brightness.AdaptiveBrightness:
+adaptive_brightness.Adapt:
   inner_coefficient:
     lower_limit: 0.0
     type: Uniform
