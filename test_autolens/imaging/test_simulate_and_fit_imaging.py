@@ -117,7 +117,7 @@ def test__simulate_imaging_data_and_fit__known_likelihood():
     masked_dataset = dataset.apply_mask(mask=mask)
 
     fit = al.FitImaging(dataset=masked_dataset, tracer=tracer,
-                        settings_inversion=al.SettingsInversion(use_border_relocator=True)
+                        settings=al.Settings(use_border_relocator=True)
                         )
 
     assert fit.figure_of_merit == pytest.approx(565.6348654, 1.0e-2)
@@ -287,7 +287,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     fit_linear = al.FitImaging(
         dataset=masked_dataset,
         tracer=tracer_linear,
-        settings_inversion=al.SettingsInversion(use_border_relocator=True)
+        settings=al.Settings(use_border_relocator=True)
     )
 
     assert fit_linear.inversion.reconstruction[0:2] == pytest.approx(
@@ -324,7 +324,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
     fit_linear = al.FitImaging(
         dataset=masked_dataset,
         tracer=tracer_linear,
-        settings_inversion=al.SettingsInversion(
+        settings=al.Settings(
             use_positive_only_solver=True,
         ),
         preloads=al.Preloads(
@@ -414,7 +414,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
     fit_linear = al.FitImaging(
         dataset=masked_dataset,
         tracer=tracer_linear,
-        settings_inversion=al.SettingsInversion(use_border_relocator=True)
+        settings=al.Settings(use_border_relocator=True)
     )
 
     assert fit_linear.inversion.reconstruction[0:2] == pytest.approx(
@@ -456,7 +456,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
     fit_linear = al.FitImaging(
         dataset=masked_dataset,
         tracer=tracer_linear,
-        settings_inversion=al.SettingsInversion(
+        settings=al.Settings(
             use_positive_only_solver=True,
         ),
         preloads=al.Preloads(
@@ -572,7 +572,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
         tracer=tracer_linear,
         preloads=preloads,
         adapt_images=adapt_images,
-        settings_inversion=al.SettingsInversion(use_positive_only_solver=False),
+        settings=al.Settings(use_positive_only_solver=False),
     )
 
     assert fit_linear.inversion.reconstruction[0:3] == pytest.approx(
@@ -621,7 +621,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
         tracer=tracer_linear,
         preloads=preloads,
         adapt_images=adapt_images,
-        settings_inversion=al.SettingsInversion(
+        settings=al.Settings(
             use_positive_only_solver=True,
         ),
     )

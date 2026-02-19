@@ -99,7 +99,7 @@ def test__use_border_relocator__determines_if_border_pixel_relocation_is_used(
 
     analysis = al.AnalysisImaging(
         dataset=masked_imaging_7x7,
-        settings_inversion=al.SettingsInversion(use_border_relocator=False),
+        settings=al.Settings(use_border_relocator=False),
         use_jax=False,
     )
 
@@ -112,7 +112,7 @@ def test__use_border_relocator__determines_if_border_pixel_relocation_is_used(
 
     analysis = al.AnalysisImaging(
         dataset=masked_imaging_7x7,
-        settings_inversion=al.SettingsInversion(use_border_relocator=True),
+        settings=al.Settings(use_border_relocator=True),
         use_jax=False,
     )
 

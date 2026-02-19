@@ -76,7 +76,7 @@ Settings
    :template: custom-class-template.rst
    :recursive:
 
-   SettingsInversion
+   Settings
 
 Mapper
 ------

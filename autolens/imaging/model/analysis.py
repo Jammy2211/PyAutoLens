@@ -107,7 +107,7 @@ class AnalysisImaging(AnalysisDataset):
             tracer=tracer,
             dataset_model=dataset_model,
             adapt_images=adapt_images,
-            settings_inversion=self.settings_inversion,
+            settings=self.settings,
             preloads=self.preloads,
             xp=self._xp
         )
