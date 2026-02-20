@@ -35,7 +35,9 @@ from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.inversion.pixelization.interpolator.rectangular import InterpolatorRectangular
+from autoarray.inversion.pixelization.interpolator.rectangular import (
+    InterpolatorRectangular,
+)
 from autoarray.inversion.pixelization.interpolator.delaunay import InterpolatorDelaunay
 from autoarray.structures.triangles.shape import Circle
 from autoarray.structures.triangles.shape import Triangle
@@ -46,7 +48,9 @@ from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
-from autoarray.inversion.pixelization.mesh_geometry.rectangular import rectangular_edge_pixel_list_from
+from autoarray.inversion.pixelization.mesh_geometry.rectangular import (
+    rectangular_edge_pixel_list_from,
+)
 
 from autogalaxy import cosmology as cosmo
 from autogalaxy.analysis.adapt_images.adapt_images import AdaptImages
