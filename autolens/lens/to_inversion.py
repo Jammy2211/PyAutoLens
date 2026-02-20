@@ -370,7 +370,7 @@ class TracerToInversion(ag.AbstractToInversion):
         return traced_mesh_grid_pg_list
 
     @cached_property
-    def mapper_galaxy_dict(self) -> Dict[aa.AbstractMapper, ag.Galaxy]:
+    def mapper_galaxy_dict(self) -> Dict[aa.Mapper, ag.Galaxy]:
         """
         Returns a dictionary associating each `Mapper` object with the galaxy it belongs to.
 

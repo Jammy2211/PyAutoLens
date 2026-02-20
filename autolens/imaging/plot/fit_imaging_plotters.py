@@ -777,7 +777,7 @@ class FitImagingPlotter(Plotter):
                 ]
 
                 mapper = inversion_plotter.inversion.cls_list_from(
-                    cls=aa.AbstractMapper
+                    cls=aa.Mapper
                 )[0]
 
                 pix_indexes = inversion_plotter.inversion.max_pixel_list_from(

@@ -368,7 +368,7 @@ class ResultDataset(Result):
         """
 
         if self.max_log_likelihood_fit.inversion is not None:
-            if self.max_log_likelihood_fit.inversion.has(cls=aa.AbstractMapper):
+            if self.max_log_likelihood_fit.inversion.has(cls=aa.Mapper):
 
                 try:
                     plane_index = (

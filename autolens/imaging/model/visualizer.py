@@ -159,7 +159,7 @@ class VisualizerImaging(af.Visualizer):
             grid=fit.grids.lp,
         )
         if fit.inversion is not None:
-            if fit.inversion.has(cls=ag.AbstractMapper):
+            if fit.inversion.has(cls=ag.Mapper):
                 plotter_interface.inversion(
                     inversion=fit.inversion,
                 )
