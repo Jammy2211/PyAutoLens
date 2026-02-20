@@ -20,11 +20,9 @@ from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMe
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.pixelization.pixelization import Pixelization
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 from autoarray.inversion.inversion.factory import inversion_from as Inversion
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
-from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
-from autoarray.inversion.pixelization.mappers.factory import mapper_from as Mapper
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
@@ -37,11 +35,8 @@ from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
-from autoarray.structures.mesh.rectangular_2d_uniform import (
-    Mesh2DRectangularUniform,
-)  # noqa
-from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
+from autoarray.inversion.pixelization.mesh_grid.rectangular import Mesh2DRectangular
+from autoarray.inversion.pixelization.mesh_grid.delaunay import Mesh2DDelaunay
 from autoarray.structures.triangles.shape import Circle
 from autoarray.structures.triangles.shape import Triangle
 from autoarray.structures.triangles.shape import Square

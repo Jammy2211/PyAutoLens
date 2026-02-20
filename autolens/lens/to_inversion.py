@@ -16,7 +16,7 @@ class TracerToInversion(ag.AbstractToInversion):
         dataset: Optional[Union[aa.Imaging, aa.Interferometer, aa.DatasetInterface]],
         tracer,
         adapt_images: Optional[ag.AdaptImages] = None,
-        settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
+        settings: aa.Settings = None,
         preloads: aa.Preloads = None,
         xp=np,
     ):
@@ -51,7 +51,7 @@ class TracerToInversion(ag.AbstractToInversion):
         adapt_images
             Images which certain pixelizations use to adapt their properties to the dataset, for example congregating
             the pixelization's pixels to the brightest regions of the image.
-        settings_inversion
+        settings
             The settings of the inversion, which controls how the linear algebra calculation is performed.
         """
         self.tracer = tracer
@@ -59,7 +59,7 @@ class TracerToInversion(ag.AbstractToInversion):
         super().__init__(
             dataset=dataset,
             adapt_images=adapt_images,
-            settings_inversion=settings_inversion,
+            settings=settings,
             preloads=preloads,
             xp=xp,
         )
@@ -187,7 +187,7 @@ class TracerToInversion(ag.AbstractToInversion):
             galaxies_to_inversion = ag.GalaxiesToInversion(
                 dataset=dataset,
                 galaxies=galaxies,
-                settings_inversion=self.settings_inversion,
+                settings=self.settings,
                 adapt_images=self.adapt_images,
                 preloads=self.preloads,
                 xp=self._xp,
@@ -313,7 +313,7 @@ class TracerToInversion(ag.AbstractToInversion):
                 dataset=self.dataset,
                 galaxies=galaxies,
                 adapt_images=self.adapt_images,
-                settings_inversion=self.settings_inversion,
+                settings=self.settings,
                 preloads=self.preloads,
                 xp=self._xp,
             )
@@ -410,7 +410,7 @@ class TracerToInversion(ag.AbstractToInversion):
                     dataset=self.dataset,
                     galaxies=galaxies,
                     adapt_images=self.adapt_images,
-                    settings_inversion=self.settings_inversion,
+                    settings=self.settings,
                     preloads=self.preloads,
                     xp=self._xp,
                 )
@@ -475,7 +475,7 @@ class TracerToInversion(ag.AbstractToInversion):
         inversion = inversion_from(
             dataset=self.dataset,
             linear_obj_list=self.linear_obj_list,
-            settings=self.settings_inversion,
+            settings=self.settings,
             preloads=self.preloads,
             xp=self._xp,
         )

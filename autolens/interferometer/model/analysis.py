@@ -29,7 +29,7 @@ class AnalysisInterferometer(AnalysisDataset):
         positions_likelihood_list: Optional[PositionsLH] = None,
         adapt_images: Optional[ag.AdaptImages] = None,
         cosmology: ag.cosmo.LensingCosmology = None,
-        settings_inversion: aa.SettingsInversion = None,
+        settings: aa.Settings = None,
         preloads: aa.Preloads = None,
         raise_inversion_positions_likelihood_exception: bool = True,
         title_prefix: str = None,
@@ -65,7 +65,7 @@ class AnalysisInterferometer(AnalysisDataset):
             reconstructed galaxy's morphology.
         cosmology
             The Cosmology assumed for this analysis.
-        settings_inversion
+        settings
             Settings controlling how an inversion is fitted, for example which linear algebra formalism is used.
         raise_inversion_positions_likelihood_exception
             If an inversion is used without the `positions_likelihood_list` it is likely a systematic solution will
@@ -81,7 +81,7 @@ class AnalysisInterferometer(AnalysisDataset):
             positions_likelihood_list=positions_likelihood_list,
             adapt_images=adapt_images,
             cosmology=cosmology,
-            settings_inversion=settings_inversion,
+            settings=settings,
             preloads=preloads,
             raise_inversion_positions_likelihood_exception=raise_inversion_positions_likelihood_exception,
             title_prefix=title_prefix,
@@ -171,7 +171,7 @@ class AnalysisInterferometer(AnalysisDataset):
             dataset=self.dataset,
             tracer=tracer,
             adapt_images=adapt_images,
-            settings_inversion=self.settings_inversion,
+            settings=self.settings,
             preloads=self.preloads,
             xp=self._xp,
         )

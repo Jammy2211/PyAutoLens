@@ -30,7 +30,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
         positions_likelihood_list: Optional[List[PositionsLH]] = None,
         adapt_images: Optional[ag.AdaptImages] = None,
         cosmology: ag.cosmo.LensingCosmology = None,
-        settings_inversion: aa.SettingsInversion = None,
+        settings: aa.Settings = None,
         preloads: aa.Preloads = None,
         raise_inversion_positions_likelihood_exception: bool = True,
         title_prefix: str = None,
@@ -60,7 +60,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
             reconstructed galaxy's morphology.
         cosmology
             The Cosmology assumed for this analysis.
-        settings_inversion
+        settings
             Settings controlling how an inversion is fitted during the model-fit, for example which linear algebra
             formalism is used.
         raise_inversion_positions_likelihood_exception
@@ -74,7 +74,7 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
             dataset=dataset,
             adapt_images=adapt_images,
             cosmology=cosmology,
-            settings_inversion=settings_inversion,
+            settings=settings,
             preloads=preloads,
             title_prefix=title_prefix,
             use_jax=use_jax,

@@ -19,7 +19,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         tracer: Tracer,
         dataset_model: Optional[aa.DatasetModel] = None,
         adapt_images: Optional[ag.AdaptImages] = None,
-        settings_inversion: aa.SettingsInversion = aa.SettingsInversion(),
+        settings: aa.Settings = None,
         preloads: aa.Preloads = None,
         xp=np,
     ):
@@ -59,7 +59,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         adapt_images
             Contains the adapt-images which are used to make a pixelization's mesh and regularization adapt to the
             reconstructed galaxy's morphology.
-        settings_inversion
+        settings
             Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
         """
 
@@ -67,7 +67,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
 
         self.adapt_images = adapt_images
 
-        self.settings_inversion = settings_inversion
+        self.settings = settings
 
         super().__init__(
             dataset=dataset,
@@ -75,7 +75,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
             xp=xp,
         )
         AbstractFitInversion.__init__(
-            self=self, model_obj=tracer, settings_inversion=settings_inversion, xp=xp
+            self=self, model_obj=tracer, settings=settings, xp=xp
         )
 
         self.preloads = preloads
@@ -122,7 +122,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
             dataset=dataset,
             tracer=self.tracer,
             adapt_images=self.adapt_images,
-            settings_inversion=self.settings_inversion,
+            settings=self.settings,
             preloads=self.preloads,
             xp=self._xp,
         )
