@@ -13,19 +13,17 @@ from autoarray.mask.mask_2d import Mask2D
 from autoarray.mask.derive.zoom_2d import Zoom2D
 from autoarray.operators.over_sampling.over_sampler import OverSampler  # noqa
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
-from autoarray.inversion.pixelization import image_mesh
-from autoarray.inversion.pixelization import mesh
+from autoarray.inversion.mesh import image_mesh
+from autoarray.inversion.mesh import mesh
 from autoarray.inversion import regularization as reg
-from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMesh
-from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
+from autoarray.inversion.mesh.image_mesh.abstract import AbstractImageMesh
+from autoarray.inversion.mesh.mesh.abstract import AbstractMesh
 from autoarray.inversion.regularization.abstract import AbstractRegularization
-from autoarray.inversion.pixelization.pixelization import Pixelization
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.inversion.pixelization import Pixelization
+from autoarray.settings import Settings
 from autoarray.inversion.inversion.factory import inversion_from as Inversion
-from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
-from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
-from autoarray.inversion.pixelization.mappers.factory import mapper_from as Mapper
-from autoarray.inversion.pixelization.border_relocator import BorderRelocator
+from autoarray.inversion.mappers.abstract import Mapper
+from autoarray.inversion.mesh.border_relocator import BorderRelocator
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.preloads import Preloads
@@ -37,11 +35,10 @@ from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
-from autoarray.structures.mesh.rectangular_2d_uniform import (
-    Mesh2DRectangularUniform,
-)  # noqa
-from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
+from autoarray.inversion.mesh.interpolator.rectangular import (
+    InterpolatorRectangular,
+)
+from autoarray.inversion.mesh.interpolator.delaunay import InterpolatorDelaunay
 from autoarray.structures.triangles.shape import Circle
 from autoarray.structures.triangles.shape import Triangle
 from autoarray.structures.triangles.shape import Square
@@ -51,7 +48,9 @@ from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
-
+from autoarray.inversion.mesh.mesh_geometry.rectangular import (
+    rectangular_edge_pixel_list_from,
+)
 
 from autogalaxy import cosmology as cosmo
 from autogalaxy.analysis.adapt_images.adapt_images import AdaptImages

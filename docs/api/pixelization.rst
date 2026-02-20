@@ -63,8 +63,8 @@ Regularization [ag.reg]
 
    Constant
    ConstantSplit
-   AdaptiveBrightness
-   AdaptiveBrightnessSplit
+   Adapt
+   AdaptSplit
 
 Settings
 --------
@@ -76,7 +76,7 @@ Settings
    :template: custom-class-template.rst
    :recursive:
 
-   SettingsInversion
+   Settings
 
 Mapper
 ------

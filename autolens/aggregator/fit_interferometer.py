@@ -15,7 +15,7 @@ from autolens.aggregator.tracer import _tracer_from
 def _fit_interferometer_from(
     fit: af.Fit,
     instance: Optional[af.ModelInstance] = None,
-    settings_inversion: aa.SettingsInversion = None,
+    settings: aa.Settings = None,
 ) -> List[FitInterferometer]:
     """
     Returns a list of `FitInterferometer` objects from a `PyAutoFit` loaded directory `Fit` or sqlite database `Fit` object.
@@ -25,7 +25,7 @@ def _fit_interferometer_from(
 
     - The interferometer data, noise-map, uv-wavelengths and settings as .fits files (e.g. `dataset/data.fits`).
     - The real space mask defining the grid of the interferometer for the FFT (`dataset/real_space_mask.fits`).
-    - The settings of inversions used by the fit (`dataset/settings_inversion.json`).
+    - The settings of inversions used by the fit (`dataset/settings.json`).
 
     Each individual attribute can be loaded from the database via the `fit.value()` method.
 
@@ -37,7 +37,7 @@ def _fit_interferometer_from(
     method is instead used to load lists of the data, noise-map, PSF and mask and combine them into a list of
     `FitInterferometer` objects.
 
-    The settings of an inversion can be overwritten by inputting a `settings_inversion` object, for
+    The settings of an inversion can be overwritten by inputting a `settings` object, for
     example if you want to use a grid with a different inversion solver.
 
     Parameters
@@ -48,8 +48,8 @@ def _fit_interferometer_from(
     instance
         A manual instance that overwrites the max log likelihood instance in fit (e.g. for drawing the instance
         randomly from the PDF).
-    settings_inversion
-        Optionally overwrite the `SettingsInversion` of the `Inversion` object that is created from the fit.
+    settings
+        Optionally overwrite the `Settings` of the `Inversion` object that is created from the fit.
     """
     dataset_list = _interferometer_from(
         fit=fit,
@@ -59,7 +59,7 @@ def _fit_interferometer_from(
 
     adapt_images_list = agg_util.adapt_images_from(fit=fit)
 
-    settings_inversion = settings_inversion or fit.value(name="settings_inversion")
+    settings = settings or fit.value(name="settings")
 
     fit_dataset_list = []
 
@@ -75,7 +75,7 @@ def _fit_interferometer_from(
                 tracer=tracer,
                 dataset_model=dataset_model,
                 adapt_images=adapt_images,
-                settings_inversion=settings_inversion,
+                settings=settings,
             )
         )
 
@@ -86,7 +86,7 @@ class FitInterferometerAgg(af.AggBase):
     def __init__(
         self,
         aggregator: af.Aggregator,
-        settings_inversion: Optional[aa.SettingsInversion] = None,
+        settings: Optional[aa.Settings] = None,
     ):
         """
             Interfaces with an `PyAutoFit` aggregator object to create instances of `FitInterferometer` objects from the
@@ -97,7 +97,7 @@ class FitInterferometerAgg(af.AggBase):
 
             - The interferometer data, noise-map, uv-wavelengths and settings as .fits files (e.g. `dataset/data.fits`).
             - The real space mask defining the grid of the interferometer for the FFT (`dataset/real_space_mask.fits`).
-            - The settings of inversions used by the fit (`dataset/settings_inversion.json`).
+            - The settings of inversions used by the fit (`dataset/settings.json`).
 
             The `aggregator` contains the path to each of these files, and they can be loaded individually. This class
             can load them all at once and create an `FitInterferometer` object via the `_fit_interferometer_from` method.
@@ -115,8 +115,8 @@ class FitInterferometerAgg(af.AggBase):
             ----------
             aggregator
                 A `PyAutoFit` aggregator object which can load the results of model-fits.
-            settings_inversion
-                Optionally overwrite the `SettingsInversion` of the `Inversion` object that is created from the fit.
+            settings
+                Optionally overwrite the `Settings` of the `Inversion` object that is created from the fit.
             use_preloaded_grid
                 Certain pixelization's construct their mesh in the source-plane from a stochastic KMeans algorithm. This
                 grid may be output to hard-disk after the model-fit and loaded via the database to ensure the same grid is
@@ -124,7 +124,7 @@ class FitInterferometerAgg(af.AggBase):
         """
         super().__init__(aggregator=aggregator)
 
-        self.settings_inversion = settings_inversion
+        self.settings = settings
 
     def object_via_gen_from(
         self, fit, instance: Optional[af.ModelInstance] = None
@@ -146,5 +146,5 @@ class FitInterferometerAgg(af.AggBase):
         return _fit_interferometer_from(
             fit=fit,
             instance=instance,
-            settings_inversion=self.settings_inversion,
+            settings=self.settings,
         )
