@@ -43,7 +43,7 @@ class SimulatorImaging(aa.SimulatorImaging):
         )
 
         image = tracer.padded_image_2d_from(
-            grid=grid, psf_shape_2d=self.psf.shape_native, xp=xp
+            grid=grid, psf_shape_2d=self.psf.kernel.shape_native, xp=xp
         )
 
         over_sample_size = grid.over_sample_size.resized_from(
@@ -53,7 +53,7 @@ class SimulatorImaging(aa.SimulatorImaging):
         dataset = self.via_image_from(image=image, over_sample_size=over_sample_size, xp=xp)
 
         return dataset.trimmed_after_convolution_from(
-            kernel_shape=self.psf.shape_native
+            kernel_shape=self.psf.kernel.shape_native
         )
 
     def via_galaxies_from(self, galaxies : List[ag.Galaxy], grid : aa.type.Grid2DLike) -> aa.Imaging:
@@ -166,10 +166,10 @@ class SimulatorImaging(aa.SimulatorImaging):
         )
 
         padded_image = image.padded_before_convolution_from(
-            kernel_shape=self.psf.shape_native
+            kernel_shape=self.psf.kernel.shape_native
         )
         dataset = self.via_image_from(image=padded_image)
 
         return dataset.trimmed_after_convolution_from(
-            kernel_shape=self.psf.shape_native
+            kernel_shape=self.psf.kernel.shape_native
         )

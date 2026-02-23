@@ -24,6 +24,7 @@ from autoarray.settings import Settings
 from autoarray.inversion.inversion.factory import inversion_from as Inversion
 from autoarray.inversion.mappers.abstract import Mapper
 from autoarray.inversion.mesh.border_relocator import BorderRelocator
+from autoarray.operators.convolver import Convolver
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.preloads import Preloads
@@ -45,7 +46,6 @@ from autoarray.structures.triangles.shape import Square
 from autoarray.structures.triangles.shape import Polygon
 from autoarray.structures.vectors.uniform import VectorYX2D
 from autoarray.structures.vectors.irregular import VectorYX2DIrregular
-from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.inversion.mesh.mesh_geometry.rectangular import (

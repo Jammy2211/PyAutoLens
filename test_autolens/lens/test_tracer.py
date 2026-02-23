@@ -457,7 +457,8 @@ def test__light_profile_snr__signal_to_noise_via_simulator_correct():
         ]
     )
 
-    psf = al.Kernel2D.no_mask(values=[[1.0]], pixel_scales=1.0)
+    kernel = al.Array2D.no_mask(values=[[1.0]], pixel_scales=1.0)
+    psf = al.Convolver(kernel=kernel)
 
     simulator = al.SimulatorImaging(
         psf=psf,
