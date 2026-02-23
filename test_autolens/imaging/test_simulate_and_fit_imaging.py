@@ -11,7 +11,7 @@ def test__perfect_fit__chi_squared_0():
 
     grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, over_sample_size=1)
 
-    psf = al.Kernel2D.from_gaussian(
+    psf = al.Convolver.from_gaussian(
         shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
     )
 
@@ -85,7 +85,7 @@ def test__simulate_imaging_data_and_fit__known_likelihood():
 
     grid = al.Grid2D.uniform(shape_native=(31, 31), pixel_scales=0.2)
 
-    psf = al.Kernel2D.from_gaussian(
+    psf = al.Convolver.from_gaussian(
         shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
     )
 
@@ -127,7 +127,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_agree_with_standa
 
     grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, over_sample_size=1)
 
-    psf = al.Kernel2D.from_gaussian(
+    psf = al.Convolver.from_gaussian(
         shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
     )
 
@@ -235,7 +235,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
 
     grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, over_sample_size=1)
 
-    psf = al.Kernel2D.from_gaussian(
+    psf = al.Convolver.from_gaussian(
         shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
     )
 
@@ -357,7 +357,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
 
     grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, over_sample_size=2)
 
-    psf = al.Kernel2D.from_gaussian(
+    psf = al.Convolver.from_gaussian(
         shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
     )
 
@@ -489,7 +489,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
 
     grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2, over_sample_size=2)
 
-    psf = al.Kernel2D.from_gaussian(
+    psf = al.Convolver.from_gaussian(
         shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
     )
 
@@ -645,7 +645,7 @@ def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_spar
 
     grid = al.Grid2D.uniform(shape_native=(21, 21), pixel_scales=0.1)
 
-    psf = al.Kernel2D.from_gaussian(
+    psf = al.Convolver.from_gaussian(
         shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
     )
 
@@ -748,7 +748,7 @@ def test__fit_figure_of_merit__mge_mass_model(masked_imaging_7x7, masked_imaging
     grid = al.Grid2D.uniform(shape_native=(11, 11), pixel_scales=0.2,
                              over_sample_size=8)
 
-    psf = al.Kernel2D.from_gaussian(
+    psf = al.Convolver.from_gaussian(
         shape_native=(3, 3), pixel_scales=0.2, sigma=0.75, normalize=True
     )
 
