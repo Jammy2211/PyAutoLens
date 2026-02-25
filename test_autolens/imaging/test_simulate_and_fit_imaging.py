@@ -329,8 +329,6 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization(
         ),
     )
 
-    print(fit_linear.inversion.reconstruction)
-
     assert fit_linear.inversion.reconstruction == pytest.approx(
         np.array(
             [
