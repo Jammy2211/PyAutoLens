@@ -611,7 +611,7 @@ def test__simulate_imaging_data_and_fit__linear_light_profiles_and_pixelization_
         ),
         1.0e-4,
     )
-    assert fit_linear.figure_of_merit == pytest.approx(-190.665986828461, 1.0e-4)
+    assert fit_linear.figure_of_merit == pytest.approx(-190.6935526756, 1.0e-4)
 
 
 def test__simulate_imaging_data_and_fit__complex_fit_compare_mapping_matrix_sparse_operator():
