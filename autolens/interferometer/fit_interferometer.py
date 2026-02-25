@@ -20,7 +20,6 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         dataset_model: Optional[aa.DatasetModel] = None,
         adapt_images: Optional[ag.AdaptImages] = None,
         settings: aa.Settings = None,
-        preloads: aa.Preloads = None,
         xp=np,
     ):
         """
@@ -78,8 +77,6 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
             self=self, model_obj=tracer, settings=settings, xp=xp
         )
 
-        self.preloads = preloads
-
         self.use_jax = xp is not np
 
     @property
@@ -123,7 +120,6 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
             tracer=self.tracer,
             adapt_images=self.adapt_images,
             settings=self.settings,
-            preloads=self.preloads,
             xp=self._xp,
         )
 
