@@ -180,6 +180,29 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         return {**galaxy_image_dict, **galaxy_linear_obj_image_dict}
 
     @property
+    def galaxy_signal_to_noise_map_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
+        """
+        A dictionary which associates every galaxy in the tracer with its signal-to-noise map.
+
+        This signal-to-noise map is the signal-to-noise map of the sum of:
+
+        - The images of all ordinary light profiles in that tracer summed.
+        - The images of all linear objects (e.g. linear light profiles / pixelizations), where the images are solved
+          for first via the inversion.
+
+        For modeling, this dictionary is used to set up the `adapt_images` that adapt certain pixelizations to the
+        data being fitted.
+        """
+        galaxy_image_dict = self.galaxy_image_dict
+
+        galaxy_signal_to_noise_map_dict = {}
+
+        for galaxy, image in galaxy_image_dict.items():
+            galaxy_signal_to_noise_map_dict[galaxy] = image / self.dirty_noise_map
+
+        return galaxy_signal_to_noise_map_dict
+
+    @property
     def galaxy_model_visibilities_dict(self) -> Dict[ag.Galaxy, np.ndarray]:
         """
         A dictionary which associates every galaxy in the tracer with its model visibilities.
