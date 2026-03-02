@@ -1,4 +1,3 @@
-from functools import partial
 import pytest
 
 import autolens as al
@@ -6,7 +5,7 @@ import autolens as al
 
 def test__one_set_of_fluxes__residuals_likelihood_correct():
     tracer = al.m.MockTracerPoint(
-        profile=al.ps.PointFlux(flux=2.0), magnification=al.ArrayIrregular([2.0, 2.0])
+        profile=al.ps.PointFlux(flux=2.0),
     )
 
     data = al.ArrayIrregular([1.0, 2.0])

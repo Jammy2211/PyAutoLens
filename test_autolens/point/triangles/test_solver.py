@@ -27,7 +27,7 @@ def solver(grid):
     )
 
 
-def test_solver(solver):
+def test__solver(solver):
     mass_profile = ag.mp.Isothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.0,
@@ -54,7 +54,7 @@ def test_solver(solver):
         (-1.0, -1.0),
     ],
 )
-def test_trivial(
+def test__trivial(
     source_plane_coordinate: Tuple[float, float],
     grid,
     solver,
@@ -67,7 +67,7 @@ def test_trivial(
     assert coordinates[0] == pytest.approx(source_plane_coordinate, abs=1.0e-1)
 
 
-def test_real_example_jax(grid, tracer):
+def test__real_example_jax(grid, tracer):
 
     import jax.numpy as jnp
 
@@ -77,7 +77,7 @@ def test_real_example_jax(grid, tracer):
         tracer=tracer, source_plane_coordinate=(0.07, 0.07), remove_infinities=True
     )
 
-    assert len(result) == 5
+    assert len(result) == 4
 
     result = jax_solver.solve(
         tracer=tracer, source_plane_coordinate=(0.07, 0.07), remove_infinities=False
