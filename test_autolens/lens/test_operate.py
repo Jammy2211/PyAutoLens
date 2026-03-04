@@ -194,7 +194,7 @@ def test__operate_lens__sums_individual_quantities():
         cosmology=al.cosmo.Planck15(),
     )
 
-    einstein_mass = ag.OperateDeflections.from_mass_obj(
+    einstein_mass = ag.LensCalc.from_mass_obj(
         tracer
     ).einstein_mass_angular_from(grid=grid)
 

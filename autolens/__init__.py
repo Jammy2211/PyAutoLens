@@ -81,7 +81,7 @@ from autogalaxy.profiles.light import (
 )
 from autogalaxy.profiles.light.linear import LightProfileLinearObjFuncList
 from autogalaxy.operate.image import OperateImage
-from autogalaxy.operate.deflections import OperateDeflections
+from autogalaxy.operate.lens_calc import LensCalc
 from autogalaxy.quantity.dataset_quantity import DatasetQuantity
 from autogalaxy import convert
 

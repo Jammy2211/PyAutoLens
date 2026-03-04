@@ -110,7 +110,7 @@ class AbstractFitPoint(aa.AbstractFit, ABC):
             if use_multi_plane
             else -1
         )
-        od = ag.OperateDeflections.from_tracer(
+        od = ag.LensCalc.from_tracer(
             tracer=self.tracer,
             use_multi_plane=use_multi_plane,
             plane_j=plane_j,

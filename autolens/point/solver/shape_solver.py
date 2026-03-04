@@ -274,7 +274,7 @@ class AbstractSolver:
         The points with an absolute magnification above the threshold.
         """
         points = self._xp.array(points)
-        magnifications = ag.OperateDeflections.from_mass_obj(
+        magnifications = ag.LensCalc.from_mass_obj(
             tracer
         ).magnification_2d_via_hessian_from(
             grid=aa.Grid2DIrregular(points).array, xp=self._xp
