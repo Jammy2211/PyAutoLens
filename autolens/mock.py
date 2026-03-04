@@ -20,4 +20,3 @@ class NullTracer(Tracer):
 
     def deflections_between_planes_from(self, grid, xp=np, plane_i=0, plane_j=-1):
         return xp.zeros_like(grid.array)
-

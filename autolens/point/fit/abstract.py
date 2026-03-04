@@ -115,7 +115,9 @@ class AbstractFitPoint(aa.AbstractFit, ABC):
             use_multi_plane=use_multi_plane,
             plane_j=plane_j,
         )
-        return abs(od.magnification_2d_via_hessian_from(grid=self.positions, xp=self._xp))
+        return abs(
+            od.magnification_2d_via_hessian_from(grid=self.positions, xp=self._xp)
+        )
 
     @property
     def source_plane_coordinate(self) -> Tuple[float, float]:
