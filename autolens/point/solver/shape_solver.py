@@ -279,7 +279,7 @@ class AbstractSolver:
         ).magnification_2d_via_hessian_from(
             grid=aa.Grid2DIrregular(points).array, xp=self._xp
         )
-        mask = self._xp.abs(magnifications.array) > self.magnification_threshold
+        mask = self._xp.abs(magnifications) > self.magnification_threshold
         return self._xp.where(mask[:, None], points, self._xp.nan)
 
     def _plane_triangles(
