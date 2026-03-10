@@ -1,3 +1,23 @@
+"""
+Imaging fit class for strong gravitational lens modeling.
+
+``FitImaging`` extends the ``autogalaxy`` ``FitImaging`` base class to work with a
+``Tracer`` instead of a plain ``Galaxies`` collection.  The fit pipeline is the same
+six-step process as the base class, with the critical addition that light profiles from
+source galaxies are evaluated *after* ray-tracing their image-plane grid through the
+lens mass distribution:
+
+1. Evaluate all light profiles of the tracer galaxies on the (ray-traced) grid.
+2. Blur the summed image with the imaging PSF.
+3. Subtract the blurred image from the data to form the profile-subtracted image.
+4. If the tracer contains linear light profiles or pixelizations, solve for their
+   amplitudes / reconstructed source via an inversion of the profile-subtracted image.
+5. Combine blurred image and inversion reconstruction into the ``model_data``.
+6. Compute residuals, chi-squared, and log likelihood (or log evidence when an inversion
+   is present).
+
+The ``TracerToInversion`` helper is used to assemble the linear system in step 4.
+"""
 import copy
 import numpy as np
 from typing import Dict, List, Optional

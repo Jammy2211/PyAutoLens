@@ -1,3 +1,17 @@
+"""
+Imaging simulator for strong gravitational lens observations.
+
+``SimulatorImaging`` extends ``aa.SimulatorImaging`` with a ``via_tracer_from`` method
+that accepts a ``Tracer`` object and:
+
+1. Uses the tracer's mass profiles to ray-trace the image-plane grid to the source plane.
+2. Evaluates the light profiles of all galaxies on the (traced) grid.
+3. Passes the result through the standard ``SimulatorImaging`` pipeline: PSF convolution,
+   background sky addition, and Poisson noise realisation.
+
+This is the primary entry point for generating synthetic lens datasets for testing,
+validation, and mock-data studies.
+"""
 import numpy as np
 from typing import List
 
