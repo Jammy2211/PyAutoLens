@@ -1,3 +1,17 @@
+"""
+Interferometer simulator for strong gravitational lens observations.
+
+``SimulatorInterferometer`` extends ``aa.SimulatorInterferometer`` with a
+``via_tracer_from`` method that accepts a ``Tracer`` object and:
+
+1. Uses the tracer's mass profiles to ray-trace the real-space grid to the source plane.
+2. Evaluates the light profiles of all galaxies on the (traced) grid.
+3. Applies the Fourier transform to map the real-space image to complex visibilities.
+4. Adds noise to the visibilities according to the noise-map stored in the simulator.
+
+This is the primary entry point for generating synthetic interferometer datasets for
+testing, validation, and mock-data studies of ALMA or JVLA observations.
+"""
 from typing import List
 
 import autoarray as aa

@@ -1,3 +1,17 @@
+"""
+Analysis class for fitting a ``Tracer`` lens model to an interferometer dataset.
+
+``AnalysisInterferometer`` implements the ``log_likelihood_function`` called by a
+``PyAutoFit`` non-linear search at each iteration.  It:
+
+1. Constructs a ``Tracer`` from the current model instance.
+2. Optionally applies adaptive galaxy images to linear components.
+3. Calls ``FitInterferometer`` to evaluate the log likelihood in the uv-plane.
+4. Returns the figure of merit (log likelihood or log evidence).
+
+It also manages result output (``ResultInterferometer``), on-the-fly visualisation
+(``VisualizerInterferometer``), and position-based priors via ``PositionsLH``.
+"""
 import logging
 import numpy as np
 from typing import Optional
