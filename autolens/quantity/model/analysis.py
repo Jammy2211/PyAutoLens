@@ -1,3 +1,14 @@
+"""
+Analysis class for fitting a ``Tracer`` model to a derived lensing quantity dataset.
+
+``AnalysisQuantity`` combines the ``autogalaxy`` quantity analysis with
+``AnalysisLens`` so that a ``Tracer`` is used to evaluate the derived quantity
+(e.g. convergence, deflection angles, potential) being fitted.
+
+It is used for model comparison workflows where two different mass profile families
+(e.g. power-law vs. NFW) are compared by fitting one's predicted lensing quantity to
+the other's, with a noise-map providing the figure-of-merit.
+"""
 import numpy as np
 
 import autofit as af
