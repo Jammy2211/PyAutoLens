@@ -1,3 +1,18 @@
+"""
+Dark-matter subhalo detection via grid searches of non-linear searches.
+
+This module provides result containers and visualisation helpers for a subhalo detection
+workflow in which a grid of ``PyAutoFit`` non-linear searches is run.  Each cell of the
+grid confines the subhalo's (y, x) centre to a small sub-region of the image plane using
+uniform priors and fits the lens model with a subhalo included.
+
+``SubhaloGridSearchResult`` wraps ``af.GridSearchResult`` with:
+
+- ``y`` / ``x`` — the physical centre coordinates of each grid cell.
+- ``log_evidence_differences`` — the Bayesian evidence improvement from adding a subhalo
+  relative to a smooth-model fit, useful for building a detection significance map.
+- Plotting helpers that overlay the detection map on the lens image.
+"""
 import numpy as np
 from typing import List, Optional, Tuple
 
