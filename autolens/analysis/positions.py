@@ -1,3 +1,21 @@
+"""
+Position-based likelihood penalties for strong lens model fitting.
+
+``PositionsLH`` objects add a penalty term to the log likelihood whenever the observed
+image-plane positions of a lensed point source do not self-consistently trace back to the
+same source-plane location in the current model.
+
+The check is performed by tracing each observed position through the tracer's deflection
+map and computing the maximum pairwise separation in the source plane
+(``SourceMaxSeparation``).  If this separation exceeds the user-specified ``threshold``,
+a large negative penalty is added to the log likelihood:
+
+  penalty = -log_likelihood_penalty_factor × (max_separation − threshold)
+
+This forces the non-linear search to explore models where the image positions are
+self-consistent, greatly improving convergence speed for systems with strong position
+constraints (e.g. quad-lens quasars).
+"""
 import numpy as np
 from typing import Optional
 from os import path

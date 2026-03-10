@@ -1,3 +1,19 @@
+"""
+Lensing-specific mixin for all **PyAutoLens** ``Analysis`` classes.
+
+``AnalysisLens`` is a mixin that adds lensing-specific behaviour to any analysis class.
+It is inherited (alongside dataset-specific base classes) by ``AnalysisDataset``,
+``AnalysisPoint``, and ``AnalysisQuantity``.
+
+Key responsibilities:
+
+- ``tracer_via_instance_from`` — constructs a ``Tracer`` from a ``PyAutoFit`` model
+  instance, including automatic multi-plane ordering of galaxies by redshift.
+- Position likelihood application — evaluates ``PositionsLH`` objects against the
+  current tracer and adds any penalty to the log likelihood.
+- ``use_jax`` flag — forwarded to ``FitImaging`` / ``FitInterferometer`` to enable JAX
+  acceleration of the likelihood evaluation.
+"""
 import logging
 import numpy as np
 from typing import List, Optional

@@ -1,3 +1,17 @@
+"""
+Abstract analysis class for fitting a ``Tracer`` to imaging or interferometer datasets.
+
+``AnalysisDataset`` is the common base class shared by ``AnalysisImaging`` and
+``AnalysisInterferometer``.  It combines the dataset-level machinery from the
+``autogalaxy`` base class (``AgAnalysisDataset``) with the lensing-specific logic from
+``AnalysisLens``:
+
+- Constructing a ``Tracer`` from a ``PyAutoFit`` model instance.
+- Applying optional ``PositionsLH`` priors that penalise mass models where image positions
+  do not trace self-consistently to the source plane.
+- Managing adaptive galaxy images (``AdaptImages``) for linear component fitting.
+- Serialising results and running on-the-fly visualisation during the search.
+"""
 import logging
 import numpy as np
 import os

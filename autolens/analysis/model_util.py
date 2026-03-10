@@ -1,3 +1,21 @@
+"""
+Model construction utilities for **PyAutoLens** example scripts and pipelines.
+
+This module provides convenience functions that build pre-configured ``af.Model``
+objects for common lens modeling scenarios.  They are primarily intended for use in
+the autolens_workspace ``start_here.py`` scripts and SLaM pipeline templates, where
+a sensible default model is needed without the user having to specify every prior
+explicitly.
+
+Key functions re-exported from ``autogalaxy``:
+- ``mge_model_from`` — build an MGE (Multi-Gaussian Expansion) light profile model.
+- ``mge_point_model_from`` — MGE model for point-source fitting.
+- ``hilbert_pixels_from_pixel_scale`` — estimate Hilbert image-mesh pixel count.
+
+PyAutoLens-specific:
+- ``simulator_start_here_model_from`` — builds a default imaging simulator model with
+  optional lens light and point-source components for start_here scripts.
+"""
 import autofit as af
 import autolens as al
 
