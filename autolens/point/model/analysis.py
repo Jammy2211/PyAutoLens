@@ -1,3 +1,19 @@
+"""
+Analysis class for fitting a ``Tracer`` model to a point-source dataset.
+
+``AnalysisPoint`` implements the ``log_likelihood_function`` called by a ``PyAutoFit``
+non-linear search at each iteration.  It:
+
+1. Constructs a ``Tracer`` from the current model instance.
+2. Calls ``FitPointDataset`` to fit the point-source positions (and optionally fluxes
+   and time delays) using the ``PointSolver`` to find predicted image positions.
+3. Optionally adds a position-based prior via ``PositionsLH`` that penalises models
+   where image positions are not self-consistent.
+4. Returns the total log likelihood as the figure of merit.
+
+It also manages result output (``ResultPoint``) and on-the-fly visualisation
+(``VisualizerPoint``).
+"""
 import numpy as np
 
 import autofit as af

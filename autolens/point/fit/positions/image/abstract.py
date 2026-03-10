@@ -1,3 +1,20 @@
+"""
+Abstract base for image-plane position fitting strategies.
+
+``AbstractFitPositionsImagePair`` solves for the predicted image positions using a
+``PointSolver`` and then pairs each observed position with the closest predicted image,
+computing a chi-squared from their separation.
+
+Three concrete pairing strategies are provided in this sub-package:
+
+- ``FitPositionsImagePair`` — pairs each observed to its nearest predicted image via
+  the Hungarian (linear sum assignment) algorithm.
+- ``FitPositionsImagePairAll`` — computes the chi-squared for every observed/predicted
+  pair combination and takes the minimum.
+- ``FitPositionsImagePairRepeat`` — allows predicted images to be paired to more than
+  one observed position, useful for highly magnified systems where some images may be
+  too close to separate.
+"""
 from abc import ABC
 import numpy as np
 from typing import Optional

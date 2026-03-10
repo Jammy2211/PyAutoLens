@@ -1,3 +1,20 @@
+"""
+Abstract base class for position-based point-source fit components.
+
+``AbstractFitPositions`` extends ``AbstractFitPoint`` with shared logic for all position
+fitting strategies (image-plane pair fits and source-plane separation fits).  It provides
+common attributes — observed positions, solved image positions, deflection angles — and
+leaves ``figure_of_merit`` to be implemented by each concrete subclass.
+
+The concrete subclasses (in the ``image/`` and ``source/`` sub-packages) implement
+different statistical approaches for fitting image positions:
+
+- **Image-plane pair fits** — compare each observed position to the nearest predicted
+  image position, computing a chi-squared from the separation in arcseconds.
+- **Source-plane separation fits** — trace each observed image back to the source plane
+  and compute the scatter of the traced positions around their mean, penalising poor
+  source-plane convergence.
+"""
 from abc import ABC
 import numpy as np
 from typing import Optional

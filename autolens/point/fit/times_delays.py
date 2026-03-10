@@ -1,3 +1,18 @@
+"""
+Time-delay fit component for point-source lensing.
+
+``FitTimeDelays`` computes the likelihood of the observed time delays between multiple
+images of a point source given the Fermat potential predicted by the tracer's mass and
+light models.
+
+The time delay between images i and j is:
+
+  Δt_{ij} = (D_Δt / c) × [φ(θ_i) − φ(θ_j)]
+
+where D_Δt is the time-delay distance computed from the cosmology and φ is the Fermat
+potential.  A chi-squared is computed against the observed delays and their noise map,
+contributing to the total ``FitPointDataset`` log likelihood.
+"""
 import numpy as np
 from typing import Optional
 

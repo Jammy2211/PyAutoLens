@@ -1,3 +1,15 @@
+"""
+Maximum source-plane separation statistic for point-source position fitting.
+
+``SourceMaxSeparation`` computes the maximum separation between the source-plane
+positions obtained by tracing each observed image-plane position through the lens model.
+For a perfect lens model all images of the same source trace back to exactly the same
+source-plane coordinate, so this maximum separation should be zero.
+
+This statistic is used as a fast figure-of-merit in settings where a full chi-squared
+calculation is not required, or as a hard prior threshold that rejects models for which
+the back-traced positions diverge by more than a user-specified amount.
+"""
 import numpy as np
 from typing import Optional
 

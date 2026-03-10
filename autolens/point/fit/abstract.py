@@ -1,3 +1,19 @@
+"""
+Abstract base class for all point-source fit components.
+
+``AbstractFitPoint`` provides shared functionality that is common to all point-source fit
+classes (position fits, flux fits, time-delay fits):
+
+- Solving for the image-plane positions of a source-plane coordinate using a
+  ``PointSolver``.
+- Computing the magnification at each image position from the tracer's mass model.
+- Computing deflection angles at each image position.
+- Providing the name-based pairing between a ``PointDataset`` and its ``Point`` model
+  component.
+
+Concrete subclasses implement ``figure_of_merit`` to compute the chi-squared or
+log-likelihood for the specific observable (positions, fluxes, time delays) being fitted.
+"""
 from abc import ABC
 import numpy as np
 from typing import Optional, Tuple

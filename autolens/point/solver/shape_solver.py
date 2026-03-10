@@ -1,3 +1,18 @@
+"""
+Abstract triangle-tiling solver and shape-based solver for point-source positions.
+
+``AbstractSolver`` (and its concrete subclass ``ShapeSolver``) implement the hierarchical
+triangle-refinement algorithm that underlies ``PointSolver``:
+
+1. An initial grid of triangles covers the image plane.
+2. Each triangle is ray-traced to the source plane; those that contain the target
+   source coordinate are kept.
+3. Kept triangles are sub-divided for the next refinement iteration.
+4. After ``n_steps`` levels the centroids of the finest triangles give the image positions.
+
+``ShapeSolver`` extends this base with support for fitting extended source *shapes*
+(e.g. rings, arcs) rather than point coordinates, used for morphological constraints.
+"""
 import numpy as np
 import logging
 import math

@@ -1,3 +1,14 @@
+"""
+Flux-ratio fit component for point-source lensing.
+
+``FitFluxes`` computes the likelihood of the observed image-plane fluxes given the
+predicted magnification ratios from the tracer's mass model.
+
+The predicted fluxes are proportional to the absolute magnification at each solved image
+position, normalised so that the brightest image has flux 1.0 (flux ratios).  A chi-squared
+is computed against the observed flux values and noise map, contributing to the total
+``FitPointDataset`` log likelihood.
+"""
 import numpy as np
 from typing import Optional
 

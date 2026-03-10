@@ -1,3 +1,18 @@
+"""
+Top-level fit class for a complete point-source dataset.
+
+``FitPointDataset`` orchestrates fitting of all observables in a ``PointDataset``
+(image-plane positions, fluxes, and/or time delays) simultaneously.  It creates and
+stores individual fit objects for each component that is present in the dataset:
+
+- ``FitPositionsImagePair`` (or another positions fit class) — fits image-plane positions.
+- ``FitFluxes`` — fits flux ratios (if fluxes are in the dataset).
+- ``FitTimeDelays`` — fits time delays (if time delays are in the dataset).
+
+The ``log_likelihood`` is the sum of the individual component log likelihoods.  This
+class is used by ``AnalysisPoint`` as the evaluation engine inside the
+``log_likelihood_function``.
+"""
 import numpy as np
 
 from autolens.point.dataset import PointDataset

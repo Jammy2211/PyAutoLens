@@ -1,3 +1,21 @@
+"""
+Image-plane point-source solver for strong gravitational lensing.
+
+Finding the multiple images of a point source requires solving the lens equation
+θ = β + α(θ) for θ given a fixed source-plane position β.  This is an inverse
+problem with no analytic solution for general mass distributions.
+
+``PointSolver`` solves this numerically using a triangle-tiling approach:
+
+1. The image plane is tiled with triangles.
+2. Each triangle is ray-traced to the source plane.
+3. Triangles that contain the source-plane coordinate β are refined recursively.
+4. The centroids of the final refined triangles give the image-plane positions.
+
+The output positions array is padded to a fixed size (``MAX_CONTAINING_SIZE``) using the
+sentinel value ``inf`` for JAX compatibility — these ``inf`` entries are stripped by
+default but can be retained for use inside a ``jax.jit``-traced function.
+"""
 import logging
 from typing import Tuple, Optional
 
