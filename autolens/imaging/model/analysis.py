@@ -1,3 +1,17 @@
+"""
+Analysis class for fitting a ``Tracer`` lens model to an imaging dataset.
+
+``AnalysisImaging`` implements the ``log_likelihood_function`` that a ``PyAutoFit``
+non-linear search calls on each iteration.  It:
+
+1. Constructs a ``Tracer`` from the current model instance.
+2. Optionally applies adaptive galaxy images to linear components.
+3. Calls ``FitImaging`` to evaluate the log likelihood.
+4. Returns the figure of merit (log likelihood or log evidence).
+
+It also manages result output (``ResultImaging``), on-the-fly visualisation
+(``VisualizerImaging``), and position-based priors via ``PositionLikelihood``.
+"""
 import logging
 
 import autofit as af
