@@ -1,3 +1,20 @@
+"""
+Data structures for point-source strong lens observations.
+
+Point-source lensing arises when the background source is compact enough to be treated
+as a point (e.g. a quasar, supernova, or compact radio source).  Gravitational lensing
+splits the source into multiple images whose positions, fluxes, and time delays constrain
+the lens mass distribution.
+
+Two concrete data classes are provided:
+
+- ``PointDataset`` — holds the image-plane positions, fluxes, and time delays of a
+  single named point source together with their noise maps.  The ``name`` attribute is
+  used to pair this dataset with the corresponding ``Point`` model component during
+  fitting.
+- ``PointDict`` — a dictionary of ``PointDataset`` objects keyed by name, used when
+  multiple point sources (e.g. different background quasars) are fitted simultaneously.
+"""
 from typing import List, Tuple, Optional, Union
 
 import autoarray as aa

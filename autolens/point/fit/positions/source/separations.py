@@ -1,3 +1,18 @@
+"""
+Source-plane position fitting via traced-position separations.
+
+Instead of comparing predicted and observed positions in the image plane,
+``FitPositionsSourcePlane`` traces each *observed* image position back to the source
+plane via the tracer's deflection angles and measures how tightly they converge.
+
+If the lens model is correct, all observed images of the same source should trace back
+to (approximately) the same source-plane coordinate.  The figure of merit is the mean
+squared separation of the back-traced positions from their common centroid, normalised by
+the position noise map.
+
+This approach avoids the need for a ``PointSolver`` (no forward-solving is required) and
+is well-suited to JAX-accelerated model fits.
+"""
 import numpy as np
 from typing import Optional
 
