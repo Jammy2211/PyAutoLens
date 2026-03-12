@@ -1,3 +1,20 @@
+"""
+Quantity fit class for comparing derived lensing quantities across different models.
+
+``FitQuantity`` extends the ``autogalaxy`` base class to accept a ``Tracer`` as the
+model object.  It fits a ``DatasetQuantity`` (e.g. a 2D convergence map, deflection
+angle map, or potential map) with the corresponding quantity derived from a tracer.
+
+Typical use cases include:
+
+- Comparing the convergence of a power-law mass profile with that of an NFW profile on
+  the same grid, to quantify how well one approximates the other.
+- Fitting deflection angles computed by one lens model to those of another model, to
+  propagate uncertainties from a parametric fit into a more complex model.
+
+The ``AnalysisQuantity`` class uses ``FitQuantity`` as its evaluation engine when
+performing a Bayesian model fit via a non-linear search.
+"""
 import autogalaxy as ag
 
 from autogalaxy.quantity.dataset_quantity import DatasetQuantity
