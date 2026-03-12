@@ -1,3 +1,20 @@
+"""
+Result classes for **PyAutoLens** model fits.
+
+This module defines the ``Result`` and ``ResultDataset`` classes that wrap the output of
+a ``PyAutoFit`` non-linear search for lensing model fits.  Key properties include:
+
+- ``max_log_likelihood_tracer`` — reconstructs the best-fit ``Tracer`` from the stored
+  model instance.
+- ``source_plane_light_profile_centre_from`` — extracts the source-plane light-profile
+  centre, used by automatic position updating to seed position priors for the next
+  search in a SLaM pipeline.
+- ``image_plane_multiple_image_positions_from`` — uses a ``PointSolver`` to compute the
+  image-plane multiple-image positions predicted by the best-fit tracer, optionally
+  filtered by a minimum flux threshold.
+
+These results feed directly into downstream pipeline stages and post-processing scripts.
+"""
 import logging
 import os
 import numpy as np
