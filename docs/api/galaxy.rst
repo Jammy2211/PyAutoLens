@@ -5,6 +5,11 @@ Galaxy / Tracer
 Galaxy / Tracer
 ---------------
 
+``Galaxy`` and ``Galaxies`` model individual galaxies with light and mass profiles at a
+given redshift.  ``Tracer`` groups galaxies by redshift into planes and performs
+multi-plane gravitational lensing ray-tracing, computing lensed images, convergence,
+deflection angles, magnification, critical curves, and caustics.
+
 .. currentmodule:: autolens
 
 .. autosummary::
