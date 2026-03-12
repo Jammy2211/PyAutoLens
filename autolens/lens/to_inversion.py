@@ -1,3 +1,21 @@
+"""
+Interface between a ``Tracer`` and the linear-algebra inversion module.
+
+``TracerToInversion`` extends the ``autogalaxy`` ``GalaxiesToInversion`` pattern to the
+multi-plane lensing setting.  It is responsible for:
+
+- Extracting every ``LightProfileLinear`` and ``Pixelization`` from the tracer's galaxies.
+- Ray-tracing each linear profile's grid to the correct source plane using the tracer's
+  multi-plane deflection calculations.
+- Assembling the ``mapping_matrix`` that maps source-plane parameters (intensities, mesh
+  coefficients) to image-plane pixels.
+- Passing the assembled objects to ``autoarray``'s ``inversion_from`` factory so that the
+  linear system  ``F x = d`` can be solved for the best-fit intensities / reconstructed
+  image.
+
+This class is not used directly by the user; it is instantiated inside
+``FitImaging`` / ``FitInterferometer`` whenever the tracer contains linear components.
+"""
 from typing import Dict, List, Optional, Tuple, Type, Union
 
 import numpy as np

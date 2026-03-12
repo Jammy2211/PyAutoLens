@@ -1,3 +1,16 @@
+"""
+Utility functions supporting the ``Tracer`` ray-tracing calculations.
+
+This module contains lower-level helpers that are called by ``Tracer`` but kept separate
+to avoid cluttering the main class.  Key functions:
+
+- ``plane_redshifts_from`` — derives the list of unique plane redshifts from a list of
+  galaxies, collapsing multiple galaxies at the same redshift into a single plane.
+- ``ordered_plane_redshifts_with_slicing_from`` — extends the above with optional
+  redshift slicing for multi-plane calculations that include intermediate planes.
+- ``positions_in_ordered_planes_from`` — distributes a set of image-plane positions
+  across the ordered plane list so that multi-plane tracing can propagate them.
+"""
 import numpy as np
 from typing import List, Optional
 
@@ -145,7 +158,7 @@ def traced_grid_2d_list_from(
 
     for plane_index, galaxies in enumerate(planes):
 
-        scaled_grid = grid.array
+        scaled_grid = xp.asarray(grid.array)
 
         if plane_index > 0:
 
@@ -164,7 +177,7 @@ def traced_grid_2d_list_from(
                 scaled_grid = scaled_grid - scaled_deflections
 
         scaled_grid = aa.Grid2DIrregular(
-            values=scaled_grid,
+            values=scaled_grid, xp=xp
         )
 
         traced_grid_list.append(scaled_grid)

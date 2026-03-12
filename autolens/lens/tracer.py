@@ -1,3 +1,23 @@
+"""
+The core gravitational-lensing ray-tracing module for **PyAutoLens**.
+
+The central class is ``Tracer``, which groups a list of ``Galaxy`` objects by redshift
+into a series of *planes* and performs multi-plane gravitational lensing calculations.
+Key capabilities:
+
+- **Multi-plane ray tracing** — images are traced from the source plane through
+  intermediate lens planes to the observer using the cosmology-dependent angular
+  diameter distances between each pair of planes.
+- **Lensed images** — the light of each galaxy is ray-traced to its correct position
+  and the contributions from all planes are summed.
+- **Lensing maps** — convergence, shear, magnification, deflection angles, and potential
+  maps can all be computed on arbitrary ``Grid2D`` grids.
+- **Critical curves & caustics** — the image-plane loci where magnification diverges and
+  their source-plane counterparts.
+- **Lens modeling** — the ``Tracer`` is the core object used by
+  ``FitImaging`` / ``FitInterferometer`` / ``FitPointDataset`` when performing a
+  Bayesian model fit via a ``PyAutoFit`` non-linear search.
+"""
 from abc import ABC
 import numpy as np
 from scipy.interpolate import griddata

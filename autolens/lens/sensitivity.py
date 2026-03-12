@@ -1,3 +1,19 @@
+"""
+Sensitivity mapping for dark-matter subhalo detection.
+
+Sensitivity mapping asks: *given a lens model, how detectable would a dark-matter subhalo
+of mass M at position (y, x) be?*  It works by:
+
+1. Fixing the smooth lens model to the best-fit result.
+2. Simulating many lens datasets, each with a subhalo at a different position and mass,
+   using the smooth model plus a perturbation.
+3. Fitting each simulated dataset with the smooth model (no subhalo) to measure the change
+   in log-evidence caused by the subhalo.
+
+``SubhaloSensitivityResult`` wraps the generic ``PyAutoFit`` ``SensitivityResult`` with
+convenience properties for the subhalo grid positions (``y``, ``x``), the detection
+significance map, and Matplotlib visualisation helpers.
+"""
 import numpy as np
 from typing import Optional, List, Tuple
 
