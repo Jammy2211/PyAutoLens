@@ -1,3 +1,20 @@
+"""
+Interferometer fit class for strong gravitational lens modeling in the uv-plane.
+
+``FitInterferometer`` extends the ``autogalaxy`` ``FitInterferometer`` base class to
+work with a ``Tracer`` instead of a plain ``Galaxies`` collection.  The fit pipeline
+mirrors the imaging analogue but operates entirely in the visibility (uv) domain:
+
+1. Evaluate all light profiles of the tracer galaxies on the (ray-traced) real-space grid.
+2. Apply the Fourier transform (DFT or NUFFT) to map the image to visibilities.
+3. Subtract the predicted visibilities from the observed visibilities.
+4. If the tracer contains linear light profiles or pixelizations, solve for their
+   amplitudes via a linear inversion of the residual visibilities.
+5. Combine direct and inversion visibilities into the ``model_data``.
+6. Compute residuals, chi-squared, and log likelihood (or log evidence).
+
+The ``TracerToInversion`` helper is used to assemble the linear system in step 4.
+"""
 import numpy as np
 from typing import Dict, List, Optional
 
