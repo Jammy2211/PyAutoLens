@@ -92,6 +92,8 @@ The following papers use **PyAutoLens**:
 
 **Surveys**
 
+`Gaia GraL X.: The GraL catalogue of gravitationally lensed quasars Matched with Gaia data, redshifts, and time delays <https://arxiv.org/abs/2603.12810>`_
+
 `When Spectral Modeling Meets Convolutional Networks: A Method for Discovering Reionization-era Lensed Quasars in Multi-band Imaging Data <https://arxiv.org/abs/2211.14543>`_
 
 `Modeling Strong Lenses from Wide-Field Ground-Based Observations in KiDS and GAMA <https://arxiv.org/abs/2301.05320>`_
