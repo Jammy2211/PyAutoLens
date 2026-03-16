@@ -19,6 +19,8 @@ The following papers use **PyAutoLens**:
 
 **Cosmology**
 
+`Kinematic cosmic dipole from a large sample of strong lenses <https://arxiv.org/abs/2603.11152>`_
+
 `Probing General Relativity in galactic scales at z ∼0.3 <https://arxiv.org/abs/2212.08463>`_
 
 `Why weak lensing cluster shapes are insensitive to self-interacting dark matter <https://arxiv.org/abs/2210.13474>`_
