@@ -287,7 +287,7 @@ class FitInterferometerPlotter(Plotter):
                 inversion_plotter.figures_2d(reconstructed_operated_data=True)
 
         if dirty_model_image:
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.fit.dirty_model_image,
                 visuals_2d=self.visuals_2d_of_planes_list[0],
                 auto_labels=AutoLabels(

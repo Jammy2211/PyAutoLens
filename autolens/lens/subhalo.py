@@ -20,7 +20,7 @@ import autofit as af
 import autoarray as aa
 import autogalaxy.plot as aplt
 
-from autoarray.plot.abstract_plotters import AbstractPlotter
+from autolens.plot.abstract_plotters import Plotter as AbstractPlotter
 
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.imaging.plot.fit_imaging_plotters import FitImagingPlotter
@@ -469,7 +469,7 @@ class SubhaloPlotter(AbstractPlotter):
             remove_zeros=remove_zeros,
         )
 
-        self.mat_plot_2d.plot_array(
+        self._plot_array(
             array=arr,
             visuals_2d=self.visuals_2d,
             auto_labels=aplt.AutoLabels(title="Increase in Log Evidence"),
@@ -477,7 +477,7 @@ class SubhaloPlotter(AbstractPlotter):
 
         arr = self.result.subhalo_mass_array
 
-        self.mat_plot_2d.plot_array(
+        self._plot_array(
             array=arr,
             visuals_2d=self.visuals_2d,
             auto_labels=aplt.AutoLabels(title="Subhalo Mass"),

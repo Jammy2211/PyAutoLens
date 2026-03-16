@@ -253,7 +253,7 @@ class FitImagingPlotter(Plotter):
                         title = "Lens Subtracted Image"
                         filename = "lens_subtracted_image"
 
-                self.mat_plot_2d.plot_array(
+                self._plot_array(
                     array=self.fit.subtracted_images_of_planes_list[plane_index],
                     visuals_2d=self.visuals_2d_from(
                         plane_index=plane_index,
@@ -279,7 +279,7 @@ class FitImagingPlotter(Plotter):
                         title = "Source Model Image"
                         filename = "source_model_image"
 
-                self.mat_plot_2d.plot_array(
+                self._plot_array(
                     array=self.fit.model_images_of_planes_list[plane_index],
                     visuals_2d=self.visuals_2d_from(
                         plane_index=plane_index,
@@ -879,7 +879,7 @@ class FitImagingPlotter(Plotter):
             if use_source_vmax:
                 self.mat_plot_2d.cmap.kwargs["vmax"] = source_vmax
 
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.fit.data,
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Data", filename=f"data{suffix}"),
@@ -890,7 +890,7 @@ class FitImagingPlotter(Plotter):
 
         if noise_map:
 
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.fit.noise_map,
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
@@ -900,12 +900,11 @@ class FitImagingPlotter(Plotter):
 
         if signal_to_noise_map:
 
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.fit.signal_to_noise_map,
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Signal-To-Noise Map",
-                    cb_unit=" S/N",
                     filename=f"signal_to_noise_map{suffix}",
                 ),
             )
@@ -915,7 +914,7 @@ class FitImagingPlotter(Plotter):
             if use_source_vmax:
                 self.mat_plot_2d.cmap.kwargs["vmax"] = source_vmax
 
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.fit.model_data,
                 visuals_2d=self.visuals_2d_from(plane_index=0),
                 auto_labels=AutoLabels(
@@ -934,7 +933,7 @@ class FitImagingPlotter(Plotter):
 
         if residual_map:
 
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.fit.residual_map,
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
@@ -944,12 +943,11 @@ class FitImagingPlotter(Plotter):
 
         if normalized_residual_map:
 
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.fit.normalized_residual_map,
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Normalized Residual Map",
-                    cb_unit=r" $\sigma$",
                     filename=f"normalized_residual_map{suffix}",
                 ),
             )
@@ -958,19 +956,18 @@ class FitImagingPlotter(Plotter):
 
         if chi_squared_map:
 
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.fit.chi_squared_map,
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Chi-Squared Map",
-                    cb_unit=r" $\chi^2$",
                     filename=f"chi_squared_map{suffix}",
                 ),
             )
 
         if residual_flux_fraction_map:
 
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.fit.residual_flux_fraction_map,
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(

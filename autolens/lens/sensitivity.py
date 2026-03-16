@@ -23,7 +23,7 @@ import autofit as af
 import autoarray as aa
 
 
-from autoarray.plot.abstract_plotters import AbstractPlotter
+from autolens.plot.abstract_plotters import Plotter as AbstractPlotter
 from autoarray.plot.auto_labels import AutoLabels
 
 from autolens.lens.tracer import Tracer
@@ -433,13 +433,13 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
 
         plotter.figure_2d()
 
-        self.mat_plot_2d.plot_array(
+        self._plot_array(
             array=log_evidences,
             visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Increase in Log Evidence"),
         )
 
-        self.mat_plot_2d.plot_array(
+        self._plot_array(
             array=log_likelihoods,
             visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Increase in Log Likelihood"),
@@ -449,7 +449,7 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
 
         above_threshold = aa.Array2D(values=above_threshold, mask=log_likelihoods.mask)
 
-        self.mat_plot_2d.plot_array(
+        self._plot_array(
             array=above_threshold,
             visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Log Likelihood > 5.0"),
@@ -483,13 +483,13 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
                 [log_evidences_base_max, log_evidences_perturbed_max]
             )
 
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=log_evidences_base,
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Log Evidence Base"),
             )
 
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=log_evidences_perturbed,
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Log Evidence Perturb"),
@@ -524,13 +524,13 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
             [log_likelihoods_base_max, log_likelihoods_perturbed_max]
         )
 
-        self.mat_plot_2d.plot_array(
+        self._plot_array(
             array=log_likelihoods_base,
             visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Log Likelihood Base"),
         )
 
-        self.mat_plot_2d.plot_array(
+        self._plot_array(
             array=log_likelihoods_perturbed,
             visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Log Likelihood Perturb"),
@@ -559,7 +559,7 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
 
         self.update_mat_plot_array_overlay(evidence_max=np.max(figures_of_merit))
 
-        self.mat_plot_2d.plot_array(
+        self._plot_array(
             array=figures_of_merit,
             visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Increase in Log Evidence"),

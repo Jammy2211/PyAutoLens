@@ -161,7 +161,7 @@ class TracerPlotter(Plotter):
         """
 
         if image:
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.tracer.image_2d_from(grid=self.grid),
                 visuals_2d=self._mass_plotter.visuals_2d_with_critical_curves,
                 auto_labels=aplt.AutoLabels(title="Image", filename="image_2d"),

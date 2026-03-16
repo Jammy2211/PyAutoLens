@@ -2,7 +2,7 @@ from autoarray.plot.wrap.base.abstract import set_backend
 
 set_backend()
 
-from autogalaxy.plot.abstract_plotters import AbstractPlotter
+from autogalaxy.plot.abstract_plotters import Plotter as _AGPlotter
 
 from autogalaxy.plot.mat_plot.one_d import MatPlot1D
 from autogalaxy.plot.mat_plot.two_d import MatPlot2D
@@ -10,7 +10,7 @@ from autogalaxy.plot.visuals.one_d import Visuals1D
 from autogalaxy.plot.visuals.two_d import Visuals2D
 
 
-class Plotter(AbstractPlotter):
+class Plotter(_AGPlotter):
 
     def __init__(
         self,
