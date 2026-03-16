@@ -19,6 +19,8 @@ The following papers use **PyAutoLens**:
 
 **Cosmology**
 
+`Kinematic cosmic dipole from a large sample of strong lenses <https://arxiv.org/abs/2603.11152>`_
+
 `Probing General Relativity in galactic scales at z ∼0.3 <https://arxiv.org/abs/2212.08463>`_
 
 `Why weak lensing cluster shapes are insensitive to self-interacting dark matter <https://arxiv.org/abs/2210.13474>`_
@@ -34,6 +36,8 @@ The following papers use **PyAutoLens**:
 `Microlensing and the type Ia supernova iPTF16geu <https://arxiv.org/abs/2112.04524>`_
 
 **Lens Modeling / Theory**
+
+`Spectroscopical Confirmation and Lens Modeling of a Complex Strong Lensing System Produced by a Close Galaxy Pair at z_d = 0.79 <https://arxiv.org/abs/2603.12790>`_
 
 `Strong gravitational lensings external shear is not shear <https://arxiv.org/abs/2301.05244>`_
 
@@ -87,6 +91,8 @@ The following papers use **PyAutoLens**:
 `Characterisation of Herschel-selected strong lens candidates through HST and sub-mm/mm observations <https://arxiv.org/abs/2311.01158>`_
 
 **Surveys**
+
+`Gaia GraL X.: The GraL catalogue of gravitationally lensed quasars Matched with Gaia data, redshifts, and time delays <https://arxiv.org/abs/2603.12810>`_
 
 `When Spectral Modeling Meets Convolutional Networks: A Method for Discovering Reionization-era Lensed Quasars in Multi-band Imaging Data <https://arxiv.org/abs/2211.14543>`_
 
