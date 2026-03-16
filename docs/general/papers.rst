@@ -35,6 +35,8 @@ The following papers use **PyAutoLens**:
 
 **Lens Modeling / Theory**
 
+`Spectroscopical Confirmation and Lens Modeling of a Complex Strong Lensing System Produced by a Close Galaxy Pair at z_d = 0.79 <https://arxiv.org/abs/2603.12790>`_
+
 `Strong gravitational lensings external shear is not shear <https://arxiv.org/abs/2301.05244>`_
 
 `Automated galaxy-galaxy strong lens modelling: no lens left behind <https://arxiv.org/abs/2202.09201>`_
