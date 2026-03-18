@@ -189,7 +189,6 @@ class SubhaloPlotter(AbstractPlotter):
         fit_imaging_with_subhalo: Optional[FitImaging] = None,
         fit_imaging_no_subhalo: Optional[FitImaging] = None,
         mat_plot_2d: aplt.MatPlot2D = None,
-        visuals_2d: aplt.Visuals2D = None,
     ):
         """
         Plots the results of scanning for a dark matter subhalo in strong lens imaging.
@@ -218,10 +217,8 @@ class SubhaloPlotter(AbstractPlotter):
             template SLaM pipelines).
         mat_plot_2d
             Contains objects which wrap the matplotlib function calls that make 2D plots.
-        visuals_2d
-            Contains 2D visuals that can be overlaid on 2D plots.
         """
-        super().__init__(mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d)
+        super().__init__(mat_plot_2d=mat_plot_2d)
 
         self.result = result
 
@@ -254,7 +251,6 @@ class SubhaloPlotter(AbstractPlotter):
         return FitImagingPlotter(
             fit=self.fit_imaging_no_subhalo,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=self.visuals_2d,
         )
 
     @property
@@ -265,25 +261,18 @@ class SubhaloPlotter(AbstractPlotter):
         This plot is used in figures such as `subplot_detection_fits` which compare the fits with and without a
         subhalo, or `subplot_detection_imaging` which overlays subhalo grid search results over the image.
         """
-        return self.fit_imaging_with_subhalo_plotter_from(visuals_2d=self.visuals_2d)
+        return FitImagingPlotter(
+            fit=self.fit_imaging_with_subhalo,
+            mat_plot_2d=self.mat_plot_2d,
+        )
 
-    def fit_imaging_with_subhalo_plotter_from(self, visuals_2d) -> FitImagingPlotter:
+    def fit_imaging_with_subhalo_plotter_from(self) -> FitImagingPlotter:
         """
-        Returns a plotter of the model-fit with a subhalo, using a specific set of visuals.
-
-        The input visuals are typically the overlay array of the grid search, so that the subhalo grid search results
-        can be plotted over the image.
-
-        Parameters
-        ----------
-        visuals_2d
-            The visuals that are plotted over the image of the fit, which are typically the results of the subhalo
-            grid search.
+        Returns a plotter of the model-fit with a subhalo.
         """
         return FitImagingPlotter(
             fit=self.fit_imaging_with_subhalo,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=visuals_2d,
         )
 
     def set_auto_filename(
@@ -366,26 +355,21 @@ class SubhaloPlotter(AbstractPlotter):
             remove_zeros=remove_zeros,
         )
 
-        try:
-            visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
-                array_overlay=array_overlay,
-                mass_profile_centres=self.result.subhalo_centres_grid,
-            )
-        except TypeError:
-            visuals_2d = self.visuals_2d
-
         self.update_mat_plot_array_overlay(evidence_max=np.max(array_overlay))
 
-        fit_plotter = self.fit_imaging_with_subhalo_plotter_from(visuals_2d=visuals_2d)
+        subtracted_image = self.fit_imaging_with_subhalo.subtracted_images_of_planes_list[-1]
+
+        plotter = aplt.Array2DPlotter(
+            array=subtracted_image,
+            mat_plot_2d=self.mat_plot_2d,
+            array_overlay=array_overlay,
+        )
 
         if show_max_in_title:
             max_value = np.round(np.nanmax(array_overlay), 2)
-            fit_plotter.set_title(label=f"Image {max_value}")
+            plotter.set_title(label=f"Image {max_value}")
 
-        try:
-            fit_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
-        except AttributeError:
-            pass
+        plotter.figure_2d()
 
         if reset_filename:
             self.set_filename(filename=None)
@@ -402,25 +386,17 @@ class SubhaloPlotter(AbstractPlotter):
 
         array_overlay = self.result.subhalo_mass_array
 
-        try:
-            visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
-                array_overlay=array_overlay,
-                mass_profile_centres=self.result.subhalo_centres_grid,
-            )
-        except TypeError:
-            visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
-                array_overlay=array_overlay,
-            )
-
         self.update_mat_plot_array_overlay(evidence_max=np.max(array_overlay))
         self.mat_plot_2d.colorbar.manual_log10 = True
 
-        fit_plotter = self.fit_imaging_with_subhalo_plotter_from(visuals_2d=visuals_2d)
+        subtracted_image = self.fit_imaging_with_subhalo.subtracted_images_of_planes_list[-1]
 
-        try:
-            fit_plotter.figures_2d_of_planes(plane_index=-1, subtracted_image=True)
-        except AttributeError:
-            pass
+        plotter = aplt.Array2DPlotter(
+            array=subtracted_image,
+            mat_plot_2d=self.mat_plot_2d,
+            array_overlay=array_overlay,
+        )
+        plotter.figure_2d()
 
         if reset_filename:
             self.set_filename(filename=None)
@@ -471,7 +447,6 @@ class SubhaloPlotter(AbstractPlotter):
 
         self._plot_array(
             array=arr,
-            visuals_2d=self.visuals_2d,
             auto_labels=aplt.AutoLabels(title="Increase in Log Evidence"),
         )
 
@@ -479,7 +454,6 @@ class SubhaloPlotter(AbstractPlotter):
 
         self._plot_array(
             array=arr,
-            visuals_2d=self.visuals_2d,
             auto_labels=aplt.AutoLabels(title="Subhalo Mass"),
         )
 

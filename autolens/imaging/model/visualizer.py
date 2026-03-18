@@ -7,7 +7,6 @@ import autogalaxy as ag
 
 from autolens.imaging.model.plotter_interface import PlotterInterfaceImaging
 
-from autolens.lens import tracer_util
 from autolens import exc
 
 logger = logging.getLogger(__name__)
@@ -97,11 +96,6 @@ class VisualizerImaging(af.Visualizer):
         fit = analysis.fit_from(instance=instance)
         tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
-        visuals_2d_of_planes_list = tracer_util.visuals_2d_of_planes_list_from(
-            tracer=fit.tracer,
-            grid=fit.grids.lp.mask.derive_grid.all_false
-        )
-
         plotter_interface = PlotterInterfaceImaging(
             image_path=paths.image_path,
             title_prefix=analysis.title_prefix,
@@ -110,7 +104,6 @@ class VisualizerImaging(af.Visualizer):
         try:
             plotter_interface.fit_imaging(
                 fit=fit,
-                visuals_2d_of_planes_list=visuals_2d_of_planes_list,
                 quick_update=quick_update,
             )
         except exc.InversionException:
@@ -152,7 +145,6 @@ class VisualizerImaging(af.Visualizer):
         plotter_interface.tracer(
             tracer=tracer,
             grid=grid,
-            visuals_2d_of_planes_list=visuals_2d_of_planes_list
         )
         plotter_interface.galaxies(
             galaxies=tracer.galaxies,

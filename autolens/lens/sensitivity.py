@@ -163,37 +163,8 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         result: Optional[SubhaloSensitivityResult] = None,
         data_subtracted: Optional[aa.Array2D] = None,
         mat_plot_2d: aplt.MatPlot2D = None,
-        visuals_2d: aplt.Visuals2D = None,
     ):
-        """
-        Plots the simulated datasets and results of a sensitivity mapping analysis, where dark matter halos are used
-        to simulate many strong lens datasets which are fitted to quantify how detectable they are.
-
-        The `mat_plot_1d` and `mat_plot_2d` attributes wrap matplotlib function calls to make the figure. By default,
-        the settings passed to every matplotlib function called are those specified in
-        the `config/visualize/mat_wrap/*.ini` files, but a user can manually input values into `MatPlot2D` to
-        customize the figure's appearance.
-
-        Overlaid on the figure are visuals, contained in the `Visuals1D` and `Visuals2D` objects. Attributes may be
-        extracted from the `MassProfile` and plotted via the visuals object.
-
-        Parameters
-        ----------
-        tracer
-            The tracer the plotter plots.
-        grid
-            The 2D (y,x) grid of coordinates used to evaluate the tracer's light and mass quantities that are plotted.
-        mat_plot_1d
-            Contains objects which wrap the matplotlib function calls that make 1D plots.
-        visuals_1d
-            Contains 1D visuals that can be overlaid on 1D plots.
-        mat_plot_2d
-            Contains objects which wrap the matplotlib function calls that make 2D plots.
-        visuals_2d
-            Contains 2D visuals that can be overlaid on 2D plots.
-        """
-
-        super().__init__(mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d)
+        super().__init__(mat_plot_2d=mat_plot_2d)
 
         self.mask = mask
         self.tracer_perturb = tracer_perturb
@@ -202,7 +173,6 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         self.result = result
         self.data_subtracted = data_subtracted
         self.mat_plot_2d = mat_plot_2d
-        self.visuals_2d = visuals_2d
 
     def update_mat_plot_array_overlay(self, evidence_max):
         evidence_half = evidence_max / 2.0
@@ -280,7 +250,7 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         plotter = aplt.Array2DPlotter(
             array=lensed_source_image,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=aplt.Visuals2D(mask=self.mask, lines=perturb_cc_lines),
+            lines=perturb_cc_lines,
         )
         plotter.set_title("Lensed Source Image")
         plotter.figure_2d()
@@ -288,7 +258,7 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         plotter = aplt.Array2DPlotter(
             array=self.source_image,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=aplt.Visuals2D(mask=self.mask, lines=perturb_ca_lines),
+            lines=perturb_ca_lines,
         )
         plotter.set_title("Source Image")
         plotter.figure_2d()
@@ -303,7 +273,7 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         plotter = aplt.Array2DPlotter(
             array=lensed_source_image,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=aplt.Visuals2D(mask=self.mask, lines=no_perturb_cc_lines),
+            lines=no_perturb_cc_lines,
         )
         plotter.set_title("Lensed Source Image (No Subhalo)")
         plotter.figure_2d()
@@ -313,7 +283,7 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         plotter = aplt.Array2DPlotter(
             array=residual_map,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=aplt.Visuals2D(mask=self.mask, lines=no_perturb_cc_lines),
+            lines=no_perturb_cc_lines,
         )
         plotter.set_title("Residual Map (Subhalo - No Subhalo)")
         plotter.figure_2d()
@@ -375,11 +345,10 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
             )
         )
 
-        mat_plot_2d.plot_array(
+        aplt.Array2DPlotter(
             array=log_likelihoods,
-            visuals_2d=self.visuals_2d,
-            auto_labels=AutoLabels(),
-        )
+            mat_plot_2d=mat_plot_2d,
+        ).figure_2d()
 
         try:
             log_evidences = self.result.figure_of_merit_array(
@@ -395,11 +364,10 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
                 )
             )
 
-            mat_plot_2d.plot_array(
+            aplt.Array2DPlotter(
                 array=log_evidences,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(),
-            )
+                mat_plot_2d=mat_plot_2d,
+            ).figure_2d()
 
         except TypeError:
             pass
@@ -429,13 +397,11 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
 
         self._plot_array(
             array=log_evidences,
-            visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Increase in Log Evidence"),
         )
 
         self._plot_array(
             array=log_likelihoods,
-            visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Increase in Log Likelihood"),
         )
 
@@ -445,7 +411,6 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
 
         self._plot_array(
             array=above_threshold,
-            visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Log Likelihood > 5.0"),
         )
 
@@ -479,13 +444,11 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
 
             self._plot_array(
                 array=log_evidences_base,
-                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Log Evidence Base"),
             )
 
             self._plot_array(
                 array=log_evidences_perturbed,
-                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Log Evidence Perturb"),
             )
         except TypeError:
@@ -520,13 +483,11 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
 
         self._plot_array(
             array=log_likelihoods_base,
-            visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Log Likelihood Base"),
         )
 
         self._plot_array(
             array=log_likelihoods_perturbed,
-            visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Log Likelihood Perturb"),
         )
 
@@ -555,7 +516,6 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
 
         self._plot_array(
             array=figures_of_merit,
-            visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Increase in Log Evidence"),
         )
 
@@ -602,16 +562,12 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
             remove_zeros=remove_zeros,
         )
 
-        visuals_2d = self.visuals_2d + self.visuals_2d.__class__(
-            array_overlay=array_overlay,
-        )
-
         self.update_mat_plot_array_overlay(evidence_max=np.max(array_overlay))
 
         plotter = aplt.Array2DPlotter(
             array=self.data_subtracted,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=visuals_2d,
+            array_overlay=array_overlay,
         )
 
         if show_max_in_title:

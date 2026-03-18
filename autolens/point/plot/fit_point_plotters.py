@@ -1,4 +1,10 @@
+import numpy as np
+
 import autogalaxy.plot as aplt
+
+from autoarray.plot.plots.grid import plot_grid
+from autoarray.plot.plots.yx import plot_yx
+from autoarray.structures.plot.structure_plotters import _output_for_mat_plot
 
 from autolens.plot.abstract_plotters import Plotter
 from autolens.point.fit.dataset import FitPointDataset
@@ -9,61 +15,17 @@ class FitPointDatasetPlotter(Plotter):
         self,
         fit: FitPointDataset,
         mat_plot_1d: aplt.MatPlot1D = None,
-        visuals_1d: aplt.Visuals1D = None,
         mat_plot_2d: aplt.MatPlot2D = None,
-        visuals_2d: aplt.Visuals2D = None,
     ):
-        """
-        Plots the attributes of `FitPointDataset` objects using matplotlib methods and functions which customize the
-        plot's appearance.
-
-        The `mat_plot_2d` attribute wraps matplotlib function calls to make the figure. By default, the settings
-        passed to every matplotlib function called are those specified in the `config/visualize/mat_wrap/*.ini` files,
-        but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
-
-        Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `FitImaging` and plotted via the visuals object.
-
-        Parameters
-        ----------
-        fit
-            The fit to a point source dataset, which includes the data, model positions and other quantities which can
-            be plotted like the residual_map and chi-squared map.
-        mat_plot_2d
-            Contains objects which wrap the matplotlib function calls that make the plot.
-        visuals_2d
-            Contains visuals that can be overlaid on the plot.
-        """
         super().__init__(
             mat_plot_1d=mat_plot_1d,
-            visuals_1d=visuals_1d,
             mat_plot_2d=mat_plot_2d,
-            visuals_2d=visuals_2d,
         )
 
         self.fit = fit
 
     def figures_2d(self, positions: bool = False, fluxes: bool = False):
-        """
-        Plots the individual attributes of the plotter's `FitPointDataset` object in 2D.
-
-        The API is such that every plottable attribute of the `FitPointDataset` object is an input parameter of type
-        bool of the function, which if switched to `True` means that it is plotted.
-
-        Parameters
-        ----------
-        positions
-            If `True`, the dataset's positions are plotted on the figure compared to the model positions.
-        fluxes
-            If `True`, the dataset's fluxes are plotted on the figure compared to the model fluxes.
-        """
         if positions:
-            visuals_2d = self.visuals_2d
-
-            visuals_2d += visuals_2d.__class__(
-                multiple_images=self.fit.positions.model_data
-            )
-
             if self.mat_plot_2d.axis.kwargs.get("extent") is None:
                 buffer = 0.1
 
@@ -96,25 +58,52 @@ class FitPointDatasetPlotter(Plotter):
                     - buffer
                 )
 
-                extent = [y_min, y_max, x_min, x_max]
+                self.mat_plot_2d.axis.kwargs["extent"] = [y_min, y_max, x_min, x_max]
 
-                self.mat_plot_2d.axis.kwargs["extent"] = extent
-
-            self.mat_plot_2d.plot_grid(
-                grid=self.fit.dataset.positions,
-                y_errors=self.fit.dataset.positions_noise_map,
-                x_errors=self.fit.dataset.positions_noise_map,
-                visuals_2d=visuals_2d,
-                auto_labels=aplt.AutoLabels(
-                    title=f"{self.fit.dataset.name} Fit Positions",
-                    filename="fit_point_positions",
-                ),
-                buffer=0.1,
+            is_sub = self.mat_plot_2d.is_for_subplot
+            ax = self.mat_plot_2d.setup_subplot() if is_sub else None
+            output_path, filename, fmt = _output_for_mat_plot(
+                self.mat_plot_2d, is_sub, "fit_point_positions"
             )
 
-        # nasty hack to ensure subplot index between 2d and 1d plots are syncs. Need a refactor that mvoes subplot
-        # functionality out of mat_plot and into plotter.
+            obs_grid = np.array(
+                self.fit.dataset.positions.array
+                if hasattr(self.fit.dataset.positions, "array")
+                else self.fit.dataset.positions
+            )
+            model_grid = np.array(
+                self.fit.positions.model_data.array
+                if hasattr(self.fit.positions.model_data, "array")
+                else self.fit.positions.model_data
+            )
 
+            import matplotlib.pyplot as plt
+            from autoarray.plot.plots.utils import save_figure
+
+            owns_figure = ax is None
+            if owns_figure:
+                fig, ax = plt.subplots(1, 1)
+
+            plot_grid(
+                grid=obs_grid,
+                ax=ax,
+                title=f"{self.fit.dataset.name} Fit Positions",
+                output_path=None,
+                output_filename=None,
+                output_format=fmt,
+            )
+
+            ax.scatter(model_grid[:, 1], model_grid[:, 0], c="r", s=20, zorder=5)
+
+            if owns_figure:
+                save_figure(
+                    ax.get_figure(),
+                    path=output_path or "",
+                    filename=filename,
+                    format=fmt,
+                )
+
+        # nasty hack to ensure subplot index between 2d and 1d plots are synced.
         if (
             self.mat_plot_1d.subplot_index is not None
             and self.mat_plot_2d.subplot_index is not None
@@ -125,27 +114,23 @@ class FitPointDatasetPlotter(Plotter):
 
         if fluxes:
             if self.fit.dataset.fluxes is not None:
-                visuals_1d = self.visuals_1d
+                is_sub = self.mat_plot_1d.is_for_subplot
+                ax = self.mat_plot_1d.setup_subplot() if is_sub else None
+                output_path, filename, fmt = _output_for_mat_plot(
+                    self.mat_plot_1d, is_sub, "fit_point_fluxes"
+                )
 
-                # Dataset may have flux but model may not
+                y = np.array(self.fit.dataset.fluxes)
+                x = np.arange(len(y))
 
-                try:
-                    visuals_1d += visuals_1d.__class__(
-                        model_fluxes=self.fit.flux.model_fluxes.array
-                    )
-                except AttributeError:
-                    pass
-
-                self.mat_plot_1d.plot_yx(
-                    y=self.fit.dataset.fluxes,
-                    y_errors=self.fit.dataset.fluxes_noise_map,
-                    visuals_1d=visuals_1d,
-                    auto_labels=aplt.AutoLabels(
-                        title=f" {self.fit.dataset.name} Fit Fluxes",
-                        filename="fit_point_fluxes",
-                        xlabel="Point Number",
-                    ),
-                    plot_axis_type_override="errorbar",
+                plot_yx(
+                    y=y,
+                    x=x,
+                    ax=ax,
+                    title=f"{self.fit.dataset.name} Fit Fluxes",
+                    output_path=output_path,
+                    output_filename=filename,
+                    output_format=fmt,
                 )
 
     def subplot(

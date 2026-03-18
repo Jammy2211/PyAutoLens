@@ -21,11 +21,8 @@ class FitInterferometerPlotter(Plotter):
         self,
         fit: FitInterferometer,
         mat_plot_1d: aplt.MatPlot1D = None,
-        visuals_1d: aplt.Visuals1D = None,
         mat_plot_2d: aplt.MatPlot2D = None,
-        visuals_2d: aplt.Visuals2D = None,
         residuals_symmetric_cmap: bool = True,
-        visuals_2d_of_planes_list: Optional = None,
     ):
         """
         Plots the attributes of `FitInterferometer` objects using the matplotlib method `imshow()` and many
@@ -57,9 +54,7 @@ class FitInterferometerPlotter(Plotter):
         """
         super().__init__(
             mat_plot_1d=mat_plot_1d,
-            visuals_1d=visuals_1d,
             mat_plot_2d=mat_plot_2d,
-            visuals_2d=visuals_2d,
         )
 
         self.fit = fit
@@ -67,9 +62,7 @@ class FitInterferometerPlotter(Plotter):
         self._fit_interferometer_meta_plotter = FitInterferometerPlotterMeta(
             fit=self.fit,
             mat_plot_1d=self.mat_plot_1d,
-            visuals_1d=self.visuals_1d,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=self.visuals_2d,
             residuals_symmetric_cmap=residuals_symmetric_cmap,
         )
 
@@ -78,7 +71,6 @@ class FitInterferometerPlotter(Plotter):
             self._fit_interferometer_meta_plotter.subplot_fit_dirty_images
         )
 
-        self._visuals_2d_of_planes_list = visuals_2d_of_planes_list
         self._lines_of_planes = None
 
     @property
@@ -94,17 +86,6 @@ class FitInterferometerPlotter(Plotter):
             )
         return self._lines_of_planes
 
-    @property
-    def visuals_2d_of_planes_list(self):
-        if self._visuals_2d_of_planes_list is None:
-            self._visuals_2d_of_planes_list = (
-                tracer_util.visuals_2d_of_planes_list_from(
-                    tracer=self.fit.tracer,
-                    grid=self._lensing_grid,
-                )
-            )
-        return self._visuals_2d_of_planes_list
-
     def _lines_for_plane(
         self, plane_index: int, remove_critical_caustic: bool = False
     ) -> Optional[List]:
@@ -115,27 +96,6 @@ class FitInterferometerPlotter(Plotter):
         except IndexError:
             return None
 
-    def visuals_2d_from(
-        self, plane_index: Optional[int] = None, remove_critical_caustic: bool = False
-    ) -> aplt.Visuals2D:
-        """
-        Returns the `Visuals2D` of the plotter with critical curves and caustics added, which are used to plot
-        the critical curves and caustics of the `Tracer` object.
-
-        If `remove_critical_caustic` is `True`, critical curves and caustics are not included in the visuals.
-
-        Parameters
-        ----------
-        plane_index
-            The index of the plane in the tracer which is used to extract quantities, as only one plane is plotted
-            at a time.
-        remove_critical_caustic
-            Whether to remove critical curves and caustics from the visuals.
-        """
-        if remove_critical_caustic:
-            return self.visuals_2d
-
-        return self.visuals_2d + self.visuals_2d_of_planes_list[plane_index]
 
     @property
     def tracer(self) -> Tracer:
@@ -157,9 +117,6 @@ class FitInterferometerPlotter(Plotter):
             tracer=self.tracer,
             grid=grid,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=self.visuals_2d_from(
-                plane_index=plane_index, remove_critical_caustic=remove_critical_caustic
-            ),
         )
 
     def inversion_plotter_of_plane(
@@ -180,12 +137,11 @@ class FitInterferometerPlotter(Plotter):
             An object that plots inversions which is used for plotting attributes of the inversion.
         """
 
+        lines = None if remove_critical_caustic else self._lines_for_plane(plane_index)
         inversion_plotter = aplt.InversionPlotter(
             inversion=self.fit.inversion,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=self.visuals_2d_from(
-                plane_index=plane_index, remove_critical_caustic=remove_critical_caustic
-            ),
+            lines=lines,
         )
         return inversion_plotter
 
@@ -481,20 +437,9 @@ class FitInterferometerPlotter(Plotter):
                 total_pixels=total_pixels, filter_neighbors=True
             )
 
-            inversion_plotter.visuals_2d.source_plane_mesh_indexes = [
-                [index] for index in pix_indexes[pixelization_index]
-            ]
-
-            inversion_plotter.visuals_2d.tangential_critical_curves = None
-            inversion_plotter.visuals_2d.radial_critical_curves = None
-
             inversion_plotter.figures_2d_of_pixelization(
                 pixelization_index=pixelization_index, reconstructed_operated_data=True
             )
-
-            self.visuals_2d.source_plane_mesh_indexes = [
-                [index] for index in pix_indexes[pixelization_index]
-            ]
 
             self.figures_2d_of_planes(
                 plane_index=plane_index,
@@ -508,8 +453,6 @@ class FitInterferometerPlotter(Plotter):
                 zoom_to_brightest=False,
             )
             self.set_title(label=None)
-
-            self.visuals_2d.source_plane_mesh_indexes = None
 
             inversion_plotter.mat_plot_2d.output.subplot_to_figure(
                 auto_filename=f"{auto_filename}_{pixelization_index}"

@@ -23,41 +23,14 @@ class TracerPlotter(Plotter):
         tracer: Tracer,
         grid: aa.type.Grid2DLike,
         mat_plot_1d: aplt.MatPlot1D = None,
-        visuals_1d: aplt.Visuals1D = None,
         mat_plot_2d: aplt.MatPlot2D = None,
-        visuals_2d: aplt.Visuals2D = None,
-        visuals_2d_of_planes_list: Optional = None,
+        positions=None,
+        tangential_critical_curves=None,
+        radial_critical_curves=None,
+        tangential_caustics=None,
+        radial_caustics=None,
     ):
-        """
-        Plots the attributes of `Tracer` objects using the matplotlib methods `plot()` and `imshow()` and many
-        other matplotlib functions which customize the plot's appearance.
-
-        The `mat_plot_1d` and `mat_plot_2d` attributes wrap matplotlib function calls to make the figure. By default,
-        the settings passed to every matplotlib function called are those specified in
-        the `config/visualize/mat_wrap/*.ini` files, but a user can manually input values into `MatPlot2D` to
-        customize the figure's appearance.
-
-        Overlaid on the figure are visuals, contained in the `Visuals1D` and `Visuals2D` objects. Attributes may be
-        extracted from the `MassProfile` and plotted via the visuals object.
-
-        Parameters
-        ----------
-        tracer
-            The tracer the plotter plots.
-        grid
-            The 2D (y,x) grid of coordinates used to evaluate the tracer's light and mass quantities that are plotted.
-        mat_plot_1d
-            Contains objects which wrap the matplotlib function calls that make 1D plots.
-        visuals_1d
-            Contains 1D visuals that can be overlaid on 1D plots.
-        mat_plot_2d
-            Contains objects which wrap the matplotlib function calls that make 2D plots.
-        visuals_2d
-            Contains 2D visuals that can be overlaid on 2D plots.
-        """
-        from autogalaxy.profiles.light.linear import (
-            LightProfileLinear,
-        )
+        from autogalaxy.profiles.light.linear import LightProfileLinear
 
         if tracer.has(cls=LightProfileLinear):
             raise exc.raise_linear_light_profile_in_plot(
@@ -66,115 +39,100 @@ class TracerPlotter(Plotter):
 
         super().__init__(
             mat_plot_1d=mat_plot_1d,
-            visuals_1d=visuals_1d,
             mat_plot_2d=mat_plot_2d,
-            visuals_2d=visuals_2d,
         )
 
         self.tracer = tracer
         self.grid = grid
+        self.positions = positions
+
+        self._tc = tangential_critical_curves
+        self._rc = radial_critical_curves
+        self._tc_caustic = tangential_caustics
+        self._rc_caustic = radial_caustics
 
         self._mass_plotter = MassPlotter(
             mass_obj=self.tracer,
             grid=self.grid,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=self.visuals_2d,
+            tangential_critical_curves=tangential_critical_curves,
+            radial_critical_curves=radial_critical_curves,
         )
-
-        self._visuals_2d_of_planes_list = visuals_2d_of_planes_list
 
     # ------------------------------------------------------------------
     # Cached critical-curve / caustic helpers (computed via LensCalc)
     # ------------------------------------------------------------------
 
     @cached_property
-    def _tangential_critical_curves(self) -> list:
-        tan_cc, _ = tracer_util.critical_curves_from(
+    def _critical_curves_pair(self):
+        tan_cc, rad_cc = tracer_util.critical_curves_from(
             tracer=self.tracer, grid=self.grid
         )
-        return list(tan_cc)
+        return list(tan_cc), list(rad_cc)
 
     @cached_property
-    def _radial_critical_curves(self) -> list:
-        _, rad_cc = tracer_util.critical_curves_from(
+    def _caustics_pair(self):
+        tan_ca, rad_ca = tracer_util.caustics_from(
             tracer=self.tracer, grid=self.grid
         )
-        return list(rad_cc)
-
-    @cached_property
-    def _tangential_caustics(self) -> list:
-        tan_ca, _ = tracer_util.caustics_from(tracer=self.tracer, grid=self.grid)
-        return list(tan_ca)
-
-    @cached_property
-    def _radial_caustics(self) -> list:
-        _, rad_ca = tracer_util.caustics_from(tracer=self.tracer, grid=self.grid)
-        return list(rad_ca)
-
-    def _lines_for_plane(self, plane_index: int) -> Optional[List[np.ndarray]]:
-        """Return the line overlays appropriate for the given plane index.
-
-        - Plane 0 (image plane): critical curves
-        - Plane 1+ (source planes): caustics
-        """
-        if plane_index == 0:
-            return _to_lines(self._tangential_critical_curves, self._radial_critical_curves)
-        return _to_lines(self._tangential_caustics, self._radial_caustics)
-
-    # ------------------------------------------------------------------
-    # Legacy property kept for callers that still use visuals_2d_of_planes_list
-    # ------------------------------------------------------------------
+        return list(tan_ca), list(rad_ca)
 
     @property
-    def visuals_2d_of_planes_list(self):
+    def tangential_critical_curves(self):
+        if self._tc is not None:
+            return self._tc
+        return self._critical_curves_pair[0]
 
-        if self._visuals_2d_of_planes_list is None:
-            self._visuals_2d_of_planes_list = (
-                tracer_util.visuals_2d_of_planes_list_from(
-                    tracer=self.tracer, grid=self.grid
-                )
-            )
+    @property
+    def radial_critical_curves(self):
+        if self._rc is not None:
+            return self._rc
+        return self._critical_curves_pair[1]
 
-        return self._visuals_2d_of_planes_list
+    @property
+    def tangential_caustics(self):
+        if self._tc_caustic is not None:
+            return self._tc_caustic
+        return self._caustics_pair[0]
+
+    @property
+    def radial_caustics(self):
+        if self._rc_caustic is not None:
+            return self._rc_caustic
+        return self._caustics_pair[1]
+
+    def _lines_for_image_plane(self) -> Optional[List[np.ndarray]]:
+        return _to_lines(self.tangential_critical_curves, self.radial_critical_curves)
+
+    def _lines_for_source_plane(self) -> Optional[List[np.ndarray]]:
+        return _to_lines(self.tangential_caustics, self.radial_caustics)
 
     def galaxies_plotter_from(
-        self, plane_index: int, retain_visuals: bool = False
+        self, plane_index: int, include_caustics: bool = True
     ) -> aplt.GalaxiesPlotter:
-        """
-        Returns an `GalaxiesPlotter` corresponding to a `Plane` in the `Tracer`.
-
-        Returns
-        -------
-        plane_index
-            The index of the plane in the `Tracer` used to make the `GalaxiesPlotter`.
-        """
-
         plane_grid = self.tracer.traced_grid_2d_list_from(grid=self.grid)[plane_index]
 
-        if retain_visuals:
-            visuals_2d = self.visuals_2d
+        if plane_index == 0:
+            tc = self.tangential_critical_curves
+            rc = self.radial_critical_curves
+            tc_ca = None
+            rc_ca = None
         else:
-            # Build a Visuals2D with the appropriate curves for GalaxiesPlotter
-            lines = self._lines_for_plane(plane_index)
-            if lines:
-                if plane_index == 0:
-                    visuals_2d = self.visuals_2d + aplt.Visuals2D(
-                        tangential_critical_curves=self._tangential_critical_curves or None,
-                        radial_critical_curves=self._radial_critical_curves or None,
-                    )
-                else:
-                    visuals_2d = self.visuals_2d + aplt.Visuals2D(
-                        tangential_caustics=self._tangential_caustics or None,
-                        radial_caustics=self._radial_caustics or None,
-                    )
+            tc = None
+            rc = None
+            if include_caustics:
+                tc_ca = self.tangential_caustics
+                rc_ca = self.radial_caustics
             else:
-                visuals_2d = self.visuals_2d
+                tc_ca = None
+                rc_ca = None
 
         return aplt.GalaxiesPlotter(
             galaxies=ag.Galaxies(galaxies=self.tracer.planes[plane_index]),
             grid=plane_grid,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=visuals_2d,
+            tangential_critical_curves=tc if tc is not None else tc_ca,
+            radial_critical_curves=rc if rc is not None else rc_ca,
         )
 
     def figures_2d(
@@ -187,40 +145,12 @@ class TracerPlotter(Plotter):
         deflections_x: bool = False,
         magnification: bool = False,
     ):
-        """
-        Plots the individual attributes of the plotter's `Tracer` object in 2D, which are computed via the plotter's 2D
-        grid object.
-
-        The API is such that every plottable attribute of the `Tracer` object is an input parameter of type bool of
-        the function, which if switched to `True` means that it is plotted.
-
-        Parameters
-        ----------
-        image
-            Whether to make a 2D plot (via `imshow`) of the image of tracer in its image-plane (e.g. after
-            lensing).
-        source_plane
-            Whether to make a 2D plot (via `imshow`) of the image of the tracer in the source-plane (e.g. its
-            unlensed light).
-        convergence
-            Whether to make a 2D plot (via `imshow`) of the convergence.
-        potential
-            Whether to make a 2D plot (via `imshow`) of the potential.
-        deflections_y
-            Whether to make a 2D plot (via `imshow`) of the y component of the deflection angles.
-        deflections_x
-            Whether to make a 2D plot (via `imshow`) of the x component of the deflection angles.
-        magnification
-            Whether to make a 2D plot (via `imshow`) of the magnification.
-        """
-
         if image:
             self._plot_array(
                 array=self.tracer.image_2d_from(grid=self.grid),
                 auto_labels=aplt.AutoLabels(title="Image", filename="image_2d"),
-                lines=_to_lines(
-                    self._tangential_critical_curves, self._radial_critical_curves
-                ),
+                lines=self._lines_for_image_plane(),
+                positions=_to_positions(self.positions),
             )
 
         if source_plane:
@@ -237,20 +167,6 @@ class TracerPlotter(Plotter):
         )
 
     def plane_indexes_from(self, plane_index: Optional[int]) -> List[int]:
-        """
-        Returns a list of all indexes of the planes in the fit, which is iterated over in figures that plot
-        individual figures of each plane in a tracer.
-
-        Parameters
-        ----------
-        plane_index
-            A specific plane index which when input means that only a single plane index is returned.
-
-        Returns
-        -------
-        list
-            A list of galaxy indexes corresponding to planes in the plane.
-        """
         if plane_index is None:
             return list(range(len(self.tracer.planes)))
         return [plane_index]
@@ -261,40 +177,16 @@ class TracerPlotter(Plotter):
         plane_grid: bool = False,
         plane_index: Optional[int] = None,
         zoom_to_brightest: bool = True,
-        retain_visuals: bool = False,
+        include_caustics: bool = True,
     ):
-        """
-        Plots source-plane images (e.g. the unlensed light) each individual `Plane` in the plotter's `Tracer` in 2D,
-        which are computed via the plotter's 2D grid object.
-
-        The API is such that every plottable attribute of the `Plane` object is an input parameter of type bool of
-        the function, which if switched to `True` means that it is plotted.
-
-        Parameters
-        ----------
-        plane_image
-            Whether to make a 2D plot (via `imshow`) of the image of the plane in the soure-plane (e.g. its
-            unlensed light).
-        plane_grid
-            Whether to make a 2D plot (via `scatter`) of the lensed (y,x) coordinates of the plane in the
-            source-plane.
-        plane_index
-            If input, plots for only a single plane based on its index in the tracer are created.
-        zoom_to_brightest
-            For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
-            the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
-        """
         plane_indexes = self.plane_indexes_from(plane_index=plane_index)
 
         for plane_index in plane_indexes:
             galaxies_plotter = self.galaxies_plotter_from(
-                plane_index=plane_index, retain_visuals=retain_visuals
+                plane_index=plane_index, include_caustics=include_caustics
             )
 
-            if plane_index == 1:
-                source_plane_title = True
-            else:
-                source_plane_title = False
+            source_plane_title = plane_index == 1
 
             if plane_image:
                 galaxies_plotter.figures_2d(
@@ -324,35 +216,6 @@ class TracerPlotter(Plotter):
         magnification: bool = False,
         auto_filename: str = "subplot_tracer",
     ):
-        """
-        Plots the individual attributes of the plotter's `Tracer` object in 2D on a subplot, which are computed via
-        the plotter's 2D grid object.
-
-        The API is such that every plottable attribute of the `Tracer` object is an input parameter of type bool of
-        the function, which if switched to `True` means that it is included on the subplot.
-
-        Parameters
-        ----------
-        image
-            Whether to include a 2D plot (via `imshow`) of the image of tracer in its image-plane (e.g. after
-            lensing).
-        source_plane
-            Whether to include a 2D plot (via `imshow`) of the image of the tracer in the source-plane (e.g. its
-            unlensed light).
-        convergence
-            Whether to include a 2D plot (via `imshow`) of the convergence.
-        potential
-            Whether to include a 2D plot (via `imshow`) of the potential.
-        deflections_y
-            Whether to include a 2D plot (via `imshow`) of the y component of the deflection angles.
-        deflections_x
-            Whether to include a 2D plot (via `imshow`) of the x component of the deflection angles.
-        magnification
-            Whether to include a 2D plot (via `imshow`) of the magnification.
-        auto_filename
-            The default filename of the output subplot if written to hard-disk.
-        """
-
         self._subplot_custom_plot(
             image=image,
             source_plane=source_plane,
@@ -365,10 +228,6 @@ class TracerPlotter(Plotter):
         )
 
     def subplot_tracer(self):
-        """
-        Standard subplot of the attributes of the plotter's `Tracer` object.
-        """
-
         final_plane_index = len(self.tracer.planes) - 1
 
         use_log10_original = self.mat_plot_2d.use_log10
@@ -379,14 +238,11 @@ class TracerPlotter(Plotter):
 
         self.set_title(label="Lensed Source Image")
 
-        galaxies_plotter = self.galaxies_plotter_from(plane_index=final_plane_index)
-
-        galaxies_plotter.visuals_2d.tangential_caustics = None
-        galaxies_plotter.visuals_2d.radial_caustics = None
-
-        galaxies_plotter.figures_2d(
-            image=True,
+        # Show lensed source image without caustics
+        galaxies_plotter = self.galaxies_plotter_from(
+            plane_index=final_plane_index, include_caustics=False
         )
+        galaxies_plotter.figures_2d(image=True)
 
         self.set_title(label="Source Plane Image")
         self.figures_2d(source_plane=True)
@@ -409,7 +265,6 @@ class TracerPlotter(Plotter):
             plane_image=True,
             plane_index=0,
             zoom_to_brightest=False,
-            retain_visuals=True,
         )
 
         self.mat_plot_2d.subplot_index = 5
@@ -426,13 +281,6 @@ class TracerPlotter(Plotter):
         self.figures_2d(deflections_x=True)
 
     def subplot_lensed_images(self):
-        """
-        Subplot of the lensed image of every plane.
-
-        For example, for a 2 plane `Tracer`, this creates a subplot with 2 panels, one for the image-plane image
-        and one for the source-plane lensed image. If there are 3 planes, 3 panels are created, showing
-        images at each plane.
-        """
         number_subplots = self.tracer.total_planes
 
         self.open_subplot_figure(number_subplots=number_subplots)
@@ -449,13 +297,6 @@ class TracerPlotter(Plotter):
         self.close_subplot_figure()
 
     def subplot_galaxies_images(self):
-        """
-        Subplot of the image of every plane in its own plane.
-
-        For example, for a 2 plane `Tracer`, this creates a subplot with 2 panels, one for the image-plane image
-        and one for the source-plane (e.g. unlensed) image. If there are 3 planes, 3 panels are created, showing
-        images at each plane.
-        """
         number_subplots = 2 * self.tracer.total_planes - 1
 
         self.open_subplot_figure(number_subplots=number_subplots)

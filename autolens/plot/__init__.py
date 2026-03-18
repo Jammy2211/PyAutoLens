@@ -66,8 +66,6 @@ from autogalaxy.plot.wrap import (
 
 from autogalaxy.plot.mat_plot.one_d import MatPlot1D
 from autogalaxy.plot.mat_plot.two_d import MatPlot2D
-from autogalaxy.plot.visuals.one_d import Visuals1D
-from autogalaxy.plot.visuals.two_d import Visuals2D
 
 from autogalaxy.profiles.plot.basis_plotters import BasisPlotter
 from autogalaxy.profiles.plot.light_profile_plotters import LightProfilePlotter

@@ -36,7 +36,6 @@ class PlotterInterface(AgPlotterInterface):
         self,
         tracer: Tracer,
         grid: aa.type.Grid2DLike,
-        visuals_2d_of_planes_list: Optional[aplt.Visuals2D] = None,
     ):
         """
         Visualizes a `Tracer` object.
@@ -69,7 +68,6 @@ class PlotterInterface(AgPlotterInterface):
             tracer=tracer,
             grid=grid,
             mat_plot_2d=mat_plot_2d,
-            visuals_2d_of_planes_list=visuals_2d_of_planes_list,
         )
 
         if should_plot("subplot_galaxies_images"):
@@ -170,12 +168,14 @@ class PlotterInterface(AgPlotterInterface):
         mat_plot_2d = self.mat_plot_2d_from()
 
         if positions is not None:
-            visuals_2d = aplt.Visuals2D(positions=positions)
+            pos_arr = np.array(
+                positions.array if hasattr(positions, "array") else positions
+            )
 
             image_plotter = aplt.Array2DPlotter(
                 array=image,
                 mat_plot_2d=mat_plot_2d,
-                visuals_2d=visuals_2d,
+                positions=[pos_arr],
             )
 
             image_plotter.set_filename("image_with_positions")

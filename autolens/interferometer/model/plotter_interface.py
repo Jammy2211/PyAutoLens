@@ -1,7 +1,3 @@
-from typing import Optional
-
-import autoarray.plot as aplt
-
 from autogalaxy.interferometer.model.plotter_interface import (
     PlotterInterfaceInterferometer as AgPlotterInterfaceInterferometer,
 )
@@ -23,7 +19,6 @@ class PlotterInterfaceInterferometer(PlotterInterface):
     def fit_interferometer(
         self,
         fit: FitInterferometer,
-        visuals_2d_of_planes_list: Optional[aplt.Visuals2D] = None,
         quick_update: bool = False,
     ):
         """
@@ -75,7 +70,6 @@ class PlotterInterfaceInterferometer(PlotterInterface):
             fit=fit,
             mat_plot_1d=mat_plot_1d,
             mat_plot_2d=mat_plot_2d,
-            visuals_2d_of_planes_list=visuals_2d_of_planes_list,
         )
 
         if plot_setting(section="inversion", name="subplot_mappings"):
