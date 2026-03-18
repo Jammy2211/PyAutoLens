@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from autoconf import conf
 
@@ -11,7 +11,7 @@ from autoarray.plot.auto_labels import AutoLabels
 from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.lens.tracer import Tracer
 from autolens.lens.plot.tracer_plotters import TracerPlotter
-from autolens.plot.abstract_plotters import Plotter
+from autolens.plot.abstract_plotters import Plotter, _to_lines
 
 from autolens.lens import tracer_util
 
@@ -79,19 +79,41 @@ class FitInterferometerPlotter(Plotter):
         )
 
         self._visuals_2d_of_planes_list = visuals_2d_of_planes_list
+        self._lines_of_planes = None
+
+    @property
+    def _lensing_grid(self):
+        return self.fit.grids.lp.mask.derive_grid.all_false
+
+    @property
+    def lines_of_planes(self) -> List[List]:
+        if self._lines_of_planes is None:
+            self._lines_of_planes = tracer_util.lines_of_planes_from(
+                tracer=self.fit.tracer,
+                grid=self._lensing_grid,
+            )
+        return self._lines_of_planes
 
     @property
     def visuals_2d_of_planes_list(self):
-
         if self._visuals_2d_of_planes_list is None:
             self._visuals_2d_of_planes_list = (
                 tracer_util.visuals_2d_of_planes_list_from(
                     tracer=self.fit.tracer,
-                    grid=self.fit.grids.lp.mask.derive_grid.all_false,
+                    grid=self._lensing_grid,
                 )
             )
-
         return self._visuals_2d_of_planes_list
+
+    def _lines_for_plane(
+        self, plane_index: int, remove_critical_caustic: bool = False
+    ) -> Optional[List]:
+        if remove_critical_caustic:
+            return None
+        try:
+            return self.lines_of_planes[plane_index] or None
+        except IndexError:
+            return None
 
     def visuals_2d_from(
         self, plane_index: Optional[int] = None, remove_critical_caustic: bool = False
@@ -289,10 +311,10 @@ class FitInterferometerPlotter(Plotter):
         if dirty_model_image:
             self._plot_array(
                 array=self.fit.dirty_model_image,
-                visuals_2d=self.visuals_2d_of_planes_list[0],
                 auto_labels=AutoLabels(
                     title="Dirty Model Image", filename="dirty_model_image_2d"
                 ),
+                lines=_to_lines(self._lines_for_plane(plane_index=0)),
             )
 
     def figures_2d_of_planes(

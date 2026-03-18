@@ -1,6 +1,6 @@
 import copy
 import numpy as np
-from typing import Optional
+from typing import Optional, List
 
 from autoconf import conf
 
@@ -10,7 +10,7 @@ import autogalaxy.plot as aplt
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.fit.plot.fit_imaging_plotters import FitImagingPlotterMeta
 
-from autolens.plot.abstract_plotters import Plotter
+from autolens.plot.abstract_plotters import Plotter, _to_lines
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.lens.plot.tracer_plotters import TracerPlotter
 
@@ -63,18 +63,44 @@ class FitImagingPlotter(Plotter):
         self.residuals_symmetric_cmap = residuals_symmetric_cmap
 
         self._visuals_2d_of_planes_list = visuals_2d_of_planes_list
+        self._lines_of_planes = None
+
+    @property
+    def _lensing_grid(self):
+        return self.fit.grids.lp.mask.derive_grid.all_false
+
+    @property
+    def lines_of_planes(self) -> List[List]:
+        """Lists of line overlays (numpy arrays) per plane: critical curves for
+        plane 0, caustics for higher planes."""
+        if self._lines_of_planes is None:
+            self._lines_of_planes = tracer_util.lines_of_planes_from(
+                tracer=self.fit.tracer,
+                grid=self._lensing_grid,
+            )
+        return self._lines_of_planes
 
     @property
     def visuals_2d_of_planes_list(self):
-
+        """Legacy property: returns Visuals2D objects per plane for backward-
+        compatible callers (e.g. InversionPlotter)."""
         if self._visuals_2d_of_planes_list is None:
-
             self._visuals_2d_of_planes_list = tracer_util.visuals_2d_of_planes_list_from(
                 tracer=self.fit.tracer,
-                grid=self.fit.grids.lp.mask.derive_grid.all_false,
+                grid=self._lensing_grid,
             )
-
         return self._visuals_2d_of_planes_list
+
+    def _lines_for_plane(
+        self, plane_index: int, remove_critical_caustic: bool = False
+    ) -> Optional[List]:
+        """Return the line overlays for a given plane, or None if suppressed."""
+        if remove_critical_caustic:
+            return None
+        try:
+            return self.lines_of_planes[plane_index] or None
+        except IndexError:
+            return None
 
     def visuals_2d_from(
         self, plane_index: Optional[int] = None, remove_critical_caustic: bool = False
@@ -255,11 +281,13 @@ class FitImagingPlotter(Plotter):
 
                 self._plot_array(
                     array=self.fit.subtracted_images_of_planes_list[plane_index],
-                    visuals_2d=self.visuals_2d_from(
-                        plane_index=plane_index,
-                        remove_critical_caustic=remove_critical_caustic,
-                    ),
                     auto_labels=aplt.AutoLabels(title=title, filename=filename),
+                    lines=_to_lines(
+                        self._lines_for_plane(
+                            plane_index=plane_index,
+                            remove_critical_caustic=remove_critical_caustic,
+                        )
+                    ),
                 )
 
             if model_image:
@@ -281,11 +309,13 @@ class FitImagingPlotter(Plotter):
 
                 self._plot_array(
                     array=self.fit.model_images_of_planes_list[plane_index],
-                    visuals_2d=self.visuals_2d_from(
-                        plane_index=plane_index,
-                        remove_critical_caustic=remove_critical_caustic,
-                    ),
                     auto_labels=aplt.AutoLabels(title=title, filename=filename),
+                    lines=_to_lines(
+                        self._lines_for_plane(
+                            plane_index=plane_index,
+                            remove_critical_caustic=remove_critical_caustic,
+                        )
+                    ),
                 )
 
             if plane_image:
@@ -881,7 +911,6 @@ class FitImagingPlotter(Plotter):
 
             self._plot_array(
                 array=self.fit.data,
-                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Data", filename=f"data{suffix}"),
             )
 
@@ -892,7 +921,6 @@ class FitImagingPlotter(Plotter):
 
             self._plot_array(
                 array=self.fit.noise_map,
-                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Noise-Map", filename=f"noise_map{suffix}"
                 ),
@@ -902,7 +930,6 @@ class FitImagingPlotter(Plotter):
 
             self._plot_array(
                 array=self.fit.signal_to_noise_map,
-                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Signal-To-Noise Map",
                     filename=f"signal_to_noise_map{suffix}",
@@ -916,10 +943,10 @@ class FitImagingPlotter(Plotter):
 
             self._plot_array(
                 array=self.fit.model_data,
-                visuals_2d=self.visuals_2d_from(plane_index=0),
                 auto_labels=AutoLabels(
                     title="Model Image", filename=f"model_image{suffix}"
                 ),
+                lines=_to_lines(self._lines_for_plane(plane_index=0)),
             )
 
             if use_source_vmax:
@@ -935,7 +962,6 @@ class FitImagingPlotter(Plotter):
 
             self._plot_array(
                 array=self.fit.residual_map,
-                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Residual Map", filename=f"residual_map{suffix}"
                 ),
@@ -945,7 +971,6 @@ class FitImagingPlotter(Plotter):
 
             self._plot_array(
                 array=self.fit.normalized_residual_map,
-                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Normalized Residual Map",
                     filename=f"normalized_residual_map{suffix}",
@@ -958,7 +983,6 @@ class FitImagingPlotter(Plotter):
 
             self._plot_array(
                 array=self.fit.chi_squared_map,
-                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Chi-Squared Map",
                     filename=f"chi_squared_map{suffix}",
@@ -969,7 +993,6 @@ class FitImagingPlotter(Plotter):
 
             self._plot_array(
                 array=self.fit.residual_flux_fraction_map,
-                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Residual Flux Fraction Map",
                     filename=f"residual_flux_fraction_map{suffix}",

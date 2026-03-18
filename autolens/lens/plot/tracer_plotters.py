@@ -1,12 +1,15 @@
 from typing import Optional, List
 
+import numpy as np
+
 import autoarray as aa
 import autogalaxy as ag
 import autogalaxy.plot as aplt
 
+from autoconf import cached_property
 from autogalaxy.plot.mass_plotter import MassPlotter
 
-from autolens.plot.abstract_plotters import Plotter
+from autolens.plot.abstract_plotters import Plotter, _to_lines, _to_positions
 from autolens.lens.tracer import Tracer
 
 from autolens import exc
@@ -80,6 +83,48 @@ class TracerPlotter(Plotter):
 
         self._visuals_2d_of_planes_list = visuals_2d_of_planes_list
 
+    # ------------------------------------------------------------------
+    # Cached critical-curve / caustic helpers (computed via LensCalc)
+    # ------------------------------------------------------------------
+
+    @cached_property
+    def _tangential_critical_curves(self) -> list:
+        tan_cc, _ = tracer_util.critical_curves_from(
+            tracer=self.tracer, grid=self.grid
+        )
+        return list(tan_cc)
+
+    @cached_property
+    def _radial_critical_curves(self) -> list:
+        _, rad_cc = tracer_util.critical_curves_from(
+            tracer=self.tracer, grid=self.grid
+        )
+        return list(rad_cc)
+
+    @cached_property
+    def _tangential_caustics(self) -> list:
+        tan_ca, _ = tracer_util.caustics_from(tracer=self.tracer, grid=self.grid)
+        return list(tan_ca)
+
+    @cached_property
+    def _radial_caustics(self) -> list:
+        _, rad_ca = tracer_util.caustics_from(tracer=self.tracer, grid=self.grid)
+        return list(rad_ca)
+
+    def _lines_for_plane(self, plane_index: int) -> Optional[List[np.ndarray]]:
+        """Return the line overlays appropriate for the given plane index.
+
+        - Plane 0 (image plane): critical curves
+        - Plane 1+ (source planes): caustics
+        """
+        if plane_index == 0:
+            return _to_lines(self._tangential_critical_curves, self._radial_critical_curves)
+        return _to_lines(self._tangential_caustics, self._radial_caustics)
+
+    # ------------------------------------------------------------------
+    # Legacy property kept for callers that still use visuals_2d_of_planes_list
+    # ------------------------------------------------------------------
+
     @property
     def visuals_2d_of_planes_list(self):
 
@@ -107,14 +152,23 @@ class TracerPlotter(Plotter):
         plane_grid = self.tracer.traced_grid_2d_list_from(grid=self.grid)[plane_index]
 
         if retain_visuals:
-
             visuals_2d = self.visuals_2d
-
         else:
-
-            visuals_2d = self.visuals_2d.add_critical_curves_or_caustics(
-                mass_obj=self.tracer, grid=self.grid, plane_index=plane_index
-            )
+            # Build a Visuals2D with the appropriate curves for GalaxiesPlotter
+            lines = self._lines_for_plane(plane_index)
+            if lines:
+                if plane_index == 0:
+                    visuals_2d = self.visuals_2d + aplt.Visuals2D(
+                        tangential_critical_curves=self._tangential_critical_curves or None,
+                        radial_critical_curves=self._radial_critical_curves or None,
+                    )
+                else:
+                    visuals_2d = self.visuals_2d + aplt.Visuals2D(
+                        tangential_caustics=self._tangential_caustics or None,
+                        radial_caustics=self._radial_caustics or None,
+                    )
+            else:
+                visuals_2d = self.visuals_2d
 
         return aplt.GalaxiesPlotter(
             galaxies=ag.Galaxies(galaxies=self.tracer.planes[plane_index]),
@@ -163,8 +217,10 @@ class TracerPlotter(Plotter):
         if image:
             self._plot_array(
                 array=self.tracer.image_2d_from(grid=self.grid),
-                visuals_2d=self._mass_plotter.visuals_2d_with_critical_curves,
                 auto_labels=aplt.AutoLabels(title="Image", filename="image_2d"),
+                lines=_to_lines(
+                    self._tangential_critical_curves, self._radial_critical_curves
+                ),
             )
 
         if source_plane:

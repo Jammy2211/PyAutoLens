@@ -3,6 +3,7 @@ from os import path
 
 import pytest
 from matplotlib import pyplot
+import matplotlib.figure
 
 from autofit import conf
 from autolens import fixtures
@@ -26,6 +27,7 @@ class PlotPatch:
 def make_plot_patch(monkeypatch):
     plot_patch = PlotPatch()
     monkeypatch.setattr(pyplot, "savefig", plot_patch)
+    monkeypatch.setattr(matplotlib.figure.Figure, "savefig", plot_patch)
     return plot_patch
 
 
