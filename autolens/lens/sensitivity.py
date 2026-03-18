@@ -255,36 +255,40 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
 
         grid = self.mask.derive_grid.unmasked
 
-        visuals_2d = aplt.Visuals2D(
-            mask=self.mask,
-            tangential_critical_curves=self.tracer_perturb.tangential_critical_curve_list_from(
-                grid=grid
-            ),
-            radial_critical_curves=self.tracer_perturb.radial_critical_curve_list_from(
-                grid=grid
-            ),
+        from autolens.lens.tracer_util import critical_curves_from, caustics_from
+
+        tan_cc_p, rad_cc_p = critical_curves_from(tracer=self.tracer_perturb, grid=grid)
+        perturb_cc_lines = [
+            np.array(c.array if hasattr(c, "array") else c)
+            for c in list(tan_cc_p) + list(rad_cc_p)
+        ] or None
+
+        tan_ca_p, rad_ca_p = caustics_from(tracer=self.tracer_perturb, grid=grid)
+        perturb_ca_lines = [
+            np.array(c.array if hasattr(c, "array") else c)
+            for c in list(tan_ca_p) + list(rad_ca_p)
+        ] or None
+
+        tan_cc_n, rad_cc_n = critical_curves_from(
+            tracer=self.tracer_no_perturb, grid=grid
         )
+        no_perturb_cc_lines = [
+            np.array(c.array if hasattr(c, "array") else c)
+            for c in list(tan_cc_n) + list(rad_cc_n)
+        ] or None
 
         plotter = aplt.Array2DPlotter(
             array=lensed_source_image,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=visuals_2d,
+            visuals_2d=aplt.Visuals2D(mask=self.mask, lines=perturb_cc_lines),
         )
         plotter.set_title("Lensed Source Image")
         plotter.figure_2d()
 
-        visuals_2d = aplt.Visuals2D(
-            mask=self.mask,
-            tangential_caustics=self.tracer_perturb.tangential_caustic_list_from(
-                grid=grid
-            ),
-            radial_caustics=self.tracer_perturb.radial_caustic_list_from(grid=grid),
-        )
-
         plotter = aplt.Array2DPlotter(
             array=self.source_image,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=visuals_2d,
+            visuals_2d=aplt.Visuals2D(mask=self.mask, lines=perturb_ca_lines),
         )
         plotter.set_title("Source Image")
         plotter.figure_2d()
@@ -296,20 +300,10 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         plotter.set_title("Convergence")
         plotter.figure_2d()
 
-        visuals_2d = aplt.Visuals2D(
-            mask=self.mask,
-            tangential_critical_curves=self.tracer_no_perturb.tangential_critical_curve_list_from(
-                grid=grid
-            ),
-            radial_critical_curves=self.tracer_no_perturb.radial_critical_curve_list_from(
-                grid=grid
-            ),
-        )
-
         plotter = aplt.Array2DPlotter(
             array=lensed_source_image,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=visuals_2d,
+            visuals_2d=aplt.Visuals2D(mask=self.mask, lines=no_perturb_cc_lines),
         )
         plotter.set_title("Lensed Source Image (No Subhalo)")
         plotter.figure_2d()
@@ -319,7 +313,7 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         plotter = aplt.Array2DPlotter(
             array=residual_map,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=visuals_2d,
+            visuals_2d=aplt.Visuals2D(mask=self.mask, lines=no_perturb_cc_lines),
         )
         plotter.set_title("Residual Map (Subhalo - No Subhalo)")
         plotter.figure_2d()
