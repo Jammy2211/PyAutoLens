@@ -283,7 +283,7 @@ def time_delays_from(
     xp=np,
     cosmology: ag.cosmo.LensingCosmology = None,
 ) -> aa.type.Grid2DLike:
-    """
+    r"""
     Returns the gravitational lensing time delay in days for a grid of 2D (y, x) coordinates.
 
     This function calculates the time delay at each image-plane position due to both geometric and gravitational
