@@ -1,6 +1,9 @@
+import matplotlib.pyplot as plt
+import numpy as np
 from typing import List
 
-import autoarray.plot as aplt
+import autogalaxy.plot as aplt
+from autogalaxy.plot.abstract_plotters import _save_subplot
 
 from autogalaxy.imaging.model.plotter_interface import PlotterInterfaceImaging as AgPlotterInterfaceImaging
 
@@ -24,8 +27,8 @@ class PlotterInterfaceImaging(PlotterInterface):
         """
         Visualizes a `FitImaging` object, which fits an imaging dataset.
 
-        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path` 
-        points to the search's results folder and this function visualizes the maximum log likelihood `FitImaging` 
+        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path`
+        points to the search's results folder and this function visualizes the maximum log likelihood `FitImaging`
         inferred by the search so far.
 
         Visualization includes a subplot of individual images of attributes of the `FitImaging` (e.g. the model data,
@@ -43,17 +46,15 @@ class PlotterInterfaceImaging(PlotterInterface):
         def should_plot(name):
             return plot_setting(section=["fit", "fit_imaging"], name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from(quick_update=quick_update)
+        output = self.output_from()
 
         fit_plotter = FitImagingPlotter(
-            fit=fit, mat_plot_2d=mat_plot_2d,
+            fit=fit, output=output,
         )
 
         plane_indexes_to_plot = [i for i in fit.tracer.plane_indexes_with_images if i != 0]
 
         if should_plot("subplot_fit") or quick_update:
-
-            # This loop means that multiple subplot_fit objects are output for a double source plane lens.
 
             if len(fit.tracer.planes) > 2:
                 for plane_index in plane_indexes_to_plot:
@@ -66,10 +67,10 @@ class PlotterInterfaceImaging(PlotterInterface):
 
         if plot_setting(section="tracer", name="subplot_tracer"):
 
-            mat_plot_2d = self.mat_plot_2d_from()
+            output = self.output_from()
 
             fit_plotter = FitImagingPlotter(
-                fit=fit, mat_plot_2d=mat_plot_2d,
+                fit=fit, output=output,
             )
 
             fit_plotter.subplot_tracer()
@@ -102,17 +103,7 @@ class PlotterInterfaceImaging(PlotterInterface):
             quick_update: bool = False,
     ):
         """
-        Output visualization of all `FitImaging` objects in a summed combined analysis, typically during or after a
-        model-fit is performed.
-
-        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path`
-        is the output folder of the non-linear search.
-
-        Visualization includes a subplot of individual images of attributes of each fit (e.g. data, normalized
-        residual-map) on a single subplot, such that the full suite of multiple datasets can be viewed on the same figure.
-
-        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under
-        the `fit` and `fit_imaging` headers.
+        Output visualization of all `FitImaging` objects in a summed combined analysis.
 
         Parameters
         ----------
@@ -123,106 +114,76 @@ class PlotterInterfaceImaging(PlotterInterface):
         def should_plot(name):
             return plot_setting(section=["fit", "fit_imaging"], name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from(quick_update=quick_update)
+        output = self.output_from()
 
         fit_plotter_list = [
-            FitImagingPlotter(
-                fit=fit, mat_plot_2d=mat_plot_2d,
-            )
+            FitImagingPlotter(fit=fit, output=output)
             for fit in fit_list
         ]
 
-        subplot_columns = 6
-
-        subplot_shape = (len(fit_list), subplot_columns)
-
-        multi_plotter = aplt.MultiFigurePlotter(
-            plotter_list=fit_plotter_list, subplot_shape=subplot_shape
-        )
-
         if should_plot("subplot_fit") or quick_update:
 
-            def make_subplot_fit(filename_suffix):
+            def make_subplot_fit(filename_suffix, use_log10=False):
+                n_fits = len(fit_plotter_list)
+                n_cols = 6
+                fig, axes = plt.subplots(n_fits, n_cols, figsize=(7 * n_cols, 7 * n_fits))
+                if n_fits == 1:
+                    axes = [axes]
+                axes = np.array(axes)
 
-                multi_plotter.subplot_of_figures_multi(
-                    func_name_list=["figures_2d"],
-                    figure_name_list=[
-                        "data",
-                    ],
-                    filename_suffix=filename_suffix,
-                    number_subplots=len(fit_list) * subplot_columns,
-                    close_subplot=False,
-                )
+                final_plane_index = len(fit_list[0].tracer.planes) - 1
 
-                multi_plotter.subplot_of_figures_multi(
-                    func_name_list=["figures_2d_of_planes"],
-                    figure_name_list=[
-                        "subtracted_image",
-                    ],
-                    filename_suffix=filename_suffix,
-                    number_subplots=len(fit_list) * subplot_columns,
-                    open_subplot=False,
-                    close_subplot=False,
-                    subplot_index_offset=1,
-                    plane_index=1
-                )
+                for row, (plotter, fit) in enumerate(zip(fit_plotter_list, fit_list)):
+                    if use_log10:
+                        plotter.use_log10 = True
 
-                multi_plotter.subplot_of_figures_multi(
-                    func_name_list=["figures_2d_of_planes"],
-                    figure_name_list=[
-                        "model_image",
-                    ],
-                    filename_suffix=filename_suffix,
-                    number_subplots=len(fit_list) * subplot_columns,
-                    open_subplot=False,
-                    close_subplot=False,
-                    subplot_index_offset=2,
-                    plane_index=0
-                )
+                    row_axes = axes[row] if n_fits > 1 else axes[0]
 
-                multi_plotter.subplot_of_figures_multi(
-                    func_name_list=["figures_2d_of_planes"],
-                    figure_name_list=[
-                        "model_image",
-                    ],
-                    filename_suffix=filename_suffix,
-                    number_subplots=len(fit_list) * subplot_columns,
-                    open_subplot=False,
-                    close_subplot=False,
-                    subplot_index_offset=3,
-                    plane_index=len(fit_list[0].tracer.planes) - 1
-                )
+                    plotter._fit_imaging_meta_plotter._plot_array(
+                        fit.data, "data", "Data", ax=row_axes[0]
+                    )
 
-                multi_plotter.subplot_of_figures_multi(
-                    func_name_list=["figures_2d_of_planes"],
-                    figure_name_list=[
-                        "plane_image",
-                    ],
-                    filename_suffix=filename_suffix,
-                    number_subplots=len(fit_list) * subplot_columns,
-                    open_subplot=False,
-                    close_subplot=False,
-                    subplot_index_offset=4,
-                    plane_index=len(fit_list[0].tracer.planes) - 1
-                )
+                    try:
+                        subtracted = fit.subtracted_images_of_planes_list[1]
+                        plotter._fit_imaging_meta_plotter._plot_array(
+                            subtracted, "subtracted_image", "Subtracted Image", ax=row_axes[1]
+                        )
+                    except (IndexError, AttributeError):
+                        row_axes[1].axis("off")
 
-                multi_plotter.subplot_of_figures_multi(
-                    func_name_list=["figures_2d"],
-                    figure_name_list=[
-                        "normalized_residual_map",
-                    ],
-                    filename_suffix=filename_suffix,
-                    number_subplots=len(fit_list) * subplot_columns,
-                    subplot_index_offset=5,
-                    open_subplot=False,
-                )
+                    try:
+                        lens_model = fit.model_images_of_planes_list[0]
+                        plotter._fit_imaging_meta_plotter._plot_array(
+                            lens_model, "lens_model_image", "Lens Model Image", ax=row_axes[2]
+                        )
+                    except (IndexError, AttributeError):
+                        row_axes[2].axis("off")
 
-            make_subplot_fit(filename_suffix="fit_combined")
+                    try:
+                        source_model = fit.model_images_of_planes_list[final_plane_index]
+                        plotter._fit_imaging_meta_plotter._plot_array(
+                            source_model, "source_model_image", "Source Model Image", ax=row_axes[3]
+                        )
+                    except (IndexError, AttributeError):
+                        row_axes[3].axis("off")
+
+                    try:
+                        plotter.figures_2d_of_planes(
+                            plane_index=final_plane_index, plane_image=True, ax=row_axes[4]
+                        )
+                    except Exception:
+                        row_axes[4].axis("off")
+
+                    plotter._fit_imaging_meta_plotter._plot_array(
+                        fit.normalized_residual_map, "normalized_residual_map", "Normalized Residual Map", ax=row_axes[5]
+                    )
+
+                plt.tight_layout()
+                _save_subplot(fig, output, filename_suffix)
+
+            make_subplot_fit(filename_suffix="subplot_fit_combined")
 
             if quick_update:
                 return
 
-            for plotter in multi_plotter.plotter_list:
-                plotter.mat_plot_2d.use_log10 = True
-
-            make_subplot_fit(filename_suffix="fit_combined_log10")
+            make_subplot_fit(filename_suffix="fit_combined_log10", use_log10=True)

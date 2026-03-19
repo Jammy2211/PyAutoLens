@@ -13,12 +13,17 @@ uniform priors and fits the lens model with a subhalo included.
   relative to a smooth-model fit, useful for building a detection significance map.
 - Plotting helpers that overlay the detection map on the lens image.
 """
+import matplotlib.pyplot as plt
 import numpy as np
 from typing import List, Optional, Tuple
 
 import autofit as af
 import autoarray as aa
 import autogalaxy.plot as aplt
+
+from autoarray.plot.wrap.base.output import Output
+from autoarray.plot.wrap.base.cmap import Cmap
+from autogalaxy.plot.abstract_plotters import _save_subplot
 
 from autolens.plot.abstract_plotters import Plotter as AbstractPlotter
 
@@ -188,21 +193,12 @@ class SubhaloPlotter(AbstractPlotter):
         result: Optional[SubhaloGridSearchResult] = None,
         fit_imaging_with_subhalo: Optional[FitImaging] = None,
         fit_imaging_no_subhalo: Optional[FitImaging] = None,
-        mat_plot_2d: aplt.MatPlot2D = None,
+        output: Output = None,
+        cmap: Cmap = None,
+        use_log10: bool = False,
     ):
         """
         Plots the results of scanning for a dark matter subhalo in strong lens imaging.
-
-        This produces the following style of plots:
-
-        - Grid Overlay: The subhalo grid search of non-linear searches fits lens models where the (y,x) coordinates of
-          each DM subhalo are confined to a small region of the image plane via uniform priors. Corresponding plots
-          overlay the grid of results (e.g. the log evidence increase, subhalo mass) over the images of the fit. This
-          provides spatial information of where DM subhalos are detected.
-
-        - Comparison Plots: Plots comparing the results of the model-fit with and without a subhalo, including the
-          best-fit lens model, residuals. This illuminates how the inclusion of a subhalo impacts the fit and why the
-          DM subhalo is inferred.
 
         Parameters
         ----------
@@ -210,94 +206,53 @@ class SubhaloPlotter(AbstractPlotter):
             The results of a grid search of non-linear searches where each DM subhalo's (y,x) coordinates are
             confined to a small region of the image plane via uniform priors.
         fit_imaging_with_subhalo
-            The `FitImaging` of the model-fit for the lens model with a subhalo (the `subhalo[3]` search in template
-            SLaM pipelines).
+            The `FitImaging` of the model-fit for the lens model with a subhalo.
         fit_imaging_no_subhalo
-            The `FitImaging` of the model-fit for the lens model without a subhalo (the `subhalo[1]` search in
-            template SLaM pipelines).
-        mat_plot_2d
-            Contains objects which wrap the matplotlib function calls that make 2D plots.
+            The `FitImaging` of the model-fit for the lens model without a subhalo.
+        output
+            Wraps the matplotlib output settings.
+        cmap
+            Wraps the matplotlib colormap settings.
+        use_log10
+            Whether to plot on a log10 scale.
         """
-        super().__init__(mat_plot_2d=mat_plot_2d)
+        super().__init__(output=output, cmap=cmap, use_log10=use_log10)
 
         self.result = result
 
         self.fit_imaging_with_subhalo = fit_imaging_with_subhalo
         self.fit_imaging_no_subhalo = fit_imaging_no_subhalo
 
-    def update_mat_plot_array_overlay(self, evidence_max):
-        evidence_half = evidence_max / 2.0
-
-        self.mat_plot_2d.array_overlay = aplt.ArrayOverlay(
-            alpha=0.6, vmin=0.0, vmax=evidence_max
-        )
-        self.mat_plot_2d.colorbar = aplt.Colorbar(
-            manual_tick_values=[0.0, evidence_half, evidence_max],
-            manual_tick_labels=[
-                0.0,
-                np.round(evidence_half, 1),
-                np.round(evidence_max, 1),
-            ],
-        )
-
     @property
     def fit_imaging_no_subhalo_plotter(self) -> FitImagingPlotter:
-        """
-        The plotter which plots the results of the model-fit without a subhalo.
-
-        This plot is used in figures such as `subplot_detection_fits` which compare the fits with and without a
-        subhalo.
-        """
         return FitImagingPlotter(
             fit=self.fit_imaging_no_subhalo,
-            mat_plot_2d=self.mat_plot_2d,
+            output=self.output,
+            cmap=self.cmap,
+            use_log10=self.use_log10,
         )
 
     @property
     def fit_imaging_with_subhalo_plotter(self) -> FitImagingPlotter:
-        """
-        The plotter which plots the results of the model-fit with a subhalo.
-
-        This plot is used in figures such as `subplot_detection_fits` which compare the fits with and without a
-        subhalo, or `subplot_detection_imaging` which overlays subhalo grid search results over the image.
-        """
         return FitImagingPlotter(
             fit=self.fit_imaging_with_subhalo,
-            mat_plot_2d=self.mat_plot_2d,
+            output=self.output,
+            cmap=self.cmap,
+            use_log10=self.use_log10,
         )
 
     def fit_imaging_with_subhalo_plotter_from(self) -> FitImagingPlotter:
-        """
-        Returns a plotter of the model-fit with a subhalo.
-        """
         return FitImagingPlotter(
             fit=self.fit_imaging_with_subhalo,
-            mat_plot_2d=self.mat_plot_2d,
+            output=self.output,
+            cmap=self.cmap,
+            use_log10=self.use_log10,
         )
 
     def set_auto_filename(
         self, filename: str, use_log_evidences: Optional[bool] = None
     ) -> bool:
-        """
-        If a subplot figure does not have an input filename, this function is used to set one automatically.
-
-        The filename is appended with a string that describes the figure of merit plotted, which is either the
-        log evidence or log likelihood.
-
-        Parameters
-        ----------
-        filename
-            The filename of the figure, e.g. 'subhalo_mass'
-        use_log_evidences
-            If `True`, figures which overlay the goodness-of-fit merit use the `log_evidence`, if `False` the
-            `log_likelihood` if used.
-
-        Returns
-        -------
-
-        """
-
-        if self.mat_plot_2d.output.filename is None:
+        if self.output.filename is None:
             if use_log_evidences is None:
                 figure_of_merit = ""
             elif use_log_evidences:
@@ -305,10 +260,7 @@ class SubhaloPlotter(AbstractPlotter):
             else:
                 figure_of_merit = "_log_likelihood"
 
-            self.set_filename(
-                filename=f"{filename}{figure_of_merit}",
-            )
-
+            self.set_filename(filename=f"{filename}{figure_of_merit}")
             return True
 
         return False
@@ -320,30 +272,6 @@ class SubhaloPlotter(AbstractPlotter):
         remove_zeros: bool = True,
         show_max_in_title: bool = True,
     ):
-        """
-        Plot the results of the subhalo grid search, where the figures of merit (e.g. `log_evidence`) of the
-        grid search are plotted over the image of the lensed source galaxy.
-
-        The figures of merit can be customized to be relative to the lens model without a subhalo, or with zeros
-        rounded up to 0.0 to remove negative values. These produce easily to interpret and visually appealing
-        figure of merit overlays.
-
-        Parameters
-        ----------
-        use_log_evidences
-            If `True`, figures which overlay the goodness-of-fit merit use the `log_evidence`, if `False` the
-            `log_likelihood` if used.
-        relative_to_value
-            The value to subtract from every figure of merit, for example which will typically be that of the no
-            subhalo lens model so Bayesian model comparison can be easily performed.
-        remove_zeros
-            If `True`, the figure of merit array is altered so that all values below 0.0 and set to 0.0. For plotting
-            relative figures of merit for Bayesian model comparison, this is convenient to remove negative values
-            and produce a clearer visualization of the overlay.
-        show_max_in_title
-            Shows the maximum figure of merit value in the title of the figure, for easy reference.
-        """
-
         reset_filename = self.set_auto_filename(
             filename="subhalo_grid",
             use_log_evidences=use_log_evidences,
@@ -355,13 +283,13 @@ class SubhaloPlotter(AbstractPlotter):
             remove_zeros=remove_zeros,
         )
 
-        self.update_mat_plot_array_overlay(evidence_max=np.max(array_overlay))
-
         subtracted_image = self.fit_imaging_with_subhalo.subtracted_images_of_planes_list[-1]
 
         plotter = aplt.Array2DPlotter(
             array=subtracted_image,
-            mat_plot_2d=self.mat_plot_2d,
+            output=self.output,
+            cmap=self.cmap,
+            use_log10=self.use_log10,
             array_overlay=array_overlay,
         )
 
@@ -375,25 +303,17 @@ class SubhaloPlotter(AbstractPlotter):
             self.set_filename(filename=None)
 
     def figure_mass_grid(self):
-        """
-        Plots the results of the subhalo grid search, where the subhalo mass of every grid search is plotted over
-        the image of the lensed source galaxy.
-        """
-
-        reset_filename = self.set_auto_filename(
-            filename="subhalo_mass",
-        )
+        reset_filename = self.set_auto_filename(filename="subhalo_mass")
 
         array_overlay = self.result.subhalo_mass_array
-
-        self.update_mat_plot_array_overlay(evidence_max=np.max(array_overlay))
-        self.mat_plot_2d.colorbar.manual_log10 = True
 
         subtracted_image = self.fit_imaging_with_subhalo.subtracted_images_of_planes_list[-1]
 
         plotter = aplt.Array2DPlotter(
             array=subtracted_image,
-            mat_plot_2d=self.mat_plot_2d,
+            output=self.output,
+            cmap=self.cmap,
+            use_log10=self.use_log10,
             array_overlay=array_overlay,
         )
         plotter.figure_2d()
@@ -407,94 +327,48 @@ class SubhaloPlotter(AbstractPlotter):
         relative_to_value: float = 0.0,
         remove_zeros: bool = False,
     ):
-        """
-        Plots a subplot showing the image, signal-to-noise-map, figures of merit and subhalo masses of the subhalo
-        grid search.
+        fig, axes = plt.subplots(1, 4, figsize=(28, 7))
 
-        The figures of merits are plotted as an array, which can be customized to be relative to the lens model without
-        a  subhalo, or with zeros rounded up to 0.0 to remove negative values. These produce easily to interpret and
-        visually appealing figure of merit overlays.
-
-        Parameters
-        ----------
-        use_log_evidences
-            If `True`, figures which overlay the goodness-of-fit merit use the `log_evidence`, if `False` the
-            `log_likelihood` if used.
-        relative_to_value
-            The value to subtract from every figure of merit, for example which will typically be that of the no
-            subhalo lens model so Bayesian model comparison can be easily performed.
-        remove_zeros
-            If `True`, the figure of merit array is altered so that all values below 0.0 and set to 0.0. For plotting
-            relative figures of merit for Bayesian model comparison, this is convenient to remove negative values
-            and produce a clearer visualization of the overlay.
-        show_max_in_title
-            Shows the maximum figure of merit value in the title of the figure, for easy reference.
-        """
-        self.open_subplot_figure(number_subplots=4)
-
-        self.set_title("Image")
-        self.fit_imaging_with_subhalo_plotter.figures_2d(data=True)
-
-        self.set_title("Signal-To-Noise Map")
-        self.fit_imaging_with_subhalo_plotter.figures_2d(signal_to_noise_map=True)
-        self.set_title(None)
+        self.fit_imaging_with_subhalo_plotter.figures_2d(data=True, ax=axes[0])
+        self.fit_imaging_with_subhalo_plotter.figures_2d(signal_to_noise_map=True, ax=axes[1])
 
         arr = self.result.figure_of_merit_array(
             use_log_evidences=use_log_evidences,
             relative_to_value=relative_to_value,
             remove_zeros=remove_zeros,
         )
-
         self._plot_array(
             array=arr,
-            auto_labels=aplt.AutoLabels(title="Increase in Log Evidence"),
+            auto_filename="increase_in_log_evidence",
+            title="Increase in Log Evidence",
+            ax=axes[2],
         )
 
         arr = self.result.subhalo_mass_array
-
         self._plot_array(
             array=arr,
-            auto_labels=aplt.AutoLabels(title="Subhalo Mass"),
+            auto_filename="subhalo_mass",
+            title="Subhalo Mass",
+            ax=axes[3],
         )
 
-        self.mat_plot_2d.output.subplot_to_figure(
-            auto_filename="subplot_detection_imaging"
-        )
-        self.close_subplot_figure()
+        plt.tight_layout()
+        _save_subplot(fig, self.output, "subplot_detection_imaging")
 
     def subplot_detection_fits(self):
-        """
-        Plots a subplot comparing the results of the best fit lens models with and without a subhalo.
+        fig, axes = plt.subplots(2, 3, figsize=(21, 14))
 
-        This subplot shows the normalized residuals, chi-squared map and source reconstructions of the model-fits
-        with and without a subhalo.
-        """
-
-        self.open_subplot_figure(number_subplots=6)
-
-        self.set_title("Normalized Residuals (No Subhalo)")
-        self.fit_imaging_no_subhalo_plotter.figures_2d(normalized_residual_map=True)
-
-        self.set_title("Chi-Squared Map (No Subhalo)")
-        self.fit_imaging_no_subhalo_plotter.figures_2d(chi_squared_map=True)
-
-        self.set_title("Source Reconstruction (No Subhalo)")
+        self.fit_imaging_no_subhalo_plotter.figures_2d(normalized_residual_map=True, ax=axes[0][0])
+        self.fit_imaging_no_subhalo_plotter.figures_2d(chi_squared_map=True, ax=axes[0][1])
         self.fit_imaging_no_subhalo_plotter.figures_2d_of_planes(
-            plane_index=1, plane_image=True
+            plane_index=1, plane_image=True, ax=axes[0][2]
         )
 
-        self.set_title("Normailzed Residuals (With Subhalo)")
-        self.fit_imaging_with_subhalo_plotter.figures_2d(normalized_residual_map=True)
-
-        self.set_title("Chi-Squared Map (With Subhalo)")
-        self.fit_imaging_with_subhalo_plotter.figures_2d(chi_squared_map=True)
-
-        self.set_title("Source Reconstruction (With Subhalo)")
+        self.fit_imaging_with_subhalo_plotter.figures_2d(normalized_residual_map=True, ax=axes[1][0])
+        self.fit_imaging_with_subhalo_plotter.figures_2d(chi_squared_map=True, ax=axes[1][1])
         self.fit_imaging_with_subhalo_plotter.figures_2d_of_planes(
-            plane_index=1, plane_image=True
+            plane_index=1, plane_image=True, ax=axes[1][2]
         )
 
-        self.mat_plot_2d.output.subplot_to_figure(
-            auto_filename="subplot_detection_fits"
-        )
-        self.close_subplot_figure()
+        plt.tight_layout()
+        _save_subplot(fig, self.output, "subplot_detection_fits")

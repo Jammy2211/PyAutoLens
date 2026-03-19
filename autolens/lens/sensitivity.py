@@ -14,6 +14,7 @@ of mass M at position (y, x) be?*  It works by:
 convenience properties for the subhalo grid positions (``y``, ``x``), the detection
 significance map, and Matplotlib visualisation helpers.
 """
+import matplotlib.pyplot as plt
 import numpy as np
 from typing import Optional, List, Tuple
 
@@ -22,9 +23,11 @@ from autofit.non_linear.grid.sensitivity.result import SensitivityResult
 import autofit as af
 import autoarray as aa
 
+from autoarray.plot.wrap.base.output import Output
+from autoarray.plot.wrap.base.cmap import Cmap
+from autogalaxy.plot.abstract_plotters import _save_subplot
 
 from autolens.plot.abstract_plotters import Plotter as AbstractPlotter
-from autoarray.plot.auto_labels import AutoLabels
 
 from autolens.lens.tracer import Tracer
 
@@ -162,9 +165,11 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         source_image: Optional[aa.Array2D] = None,
         result: Optional[SubhaloSensitivityResult] = None,
         data_subtracted: Optional[aa.Array2D] = None,
-        mat_plot_2d: aplt.MatPlot2D = None,
+        output: Output = None,
+        cmap: Cmap = None,
+        use_log10: bool = False,
     ):
-        super().__init__(mat_plot_2d=mat_plot_2d)
+        super().__init__(output=output, cmap=cmap, use_log10=use_log10)
 
         self.mask = mask
         self.tracer_perturb = tracer_perturb
@@ -172,37 +177,8 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         self.source_image = source_image
         self.result = result
         self.data_subtracted = data_subtracted
-        self.mat_plot_2d = mat_plot_2d
-
-    def update_mat_plot_array_overlay(self, evidence_max):
-        evidence_half = evidence_max / 2.0
-
-        self.mat_plot_2d.array_overlay = aplt.ArrayOverlay(
-            alpha=0.6, vmin=0.0, vmax=evidence_max
-        )
-        self.mat_plot_2d.colorbar = aplt.Colorbar(
-            manual_tick_values=[0.0, evidence_half, evidence_max],
-            manual_tick_labels=[
-                0.0,
-                np.round(evidence_half, 1),
-                np.round(evidence_max, 1),
-            ],
-        )
 
     def subplot_tracer_images(self):
-        """
-        Output the tracer images of the dataset simulated for sensitivity mapping as a .png subplot.
-
-        This dataset corresponds to a single grid-cell on the sensitivity mapping grid and therefore will be output
-        many times over the entire sensitivity mapping grid.
-
-        The subplot includes the overall image, the lens galaxy image, the lensed source galaxy image and the source
-        galaxy image interpolated to a uniform grid.
-
-        Images are masked before visualization, so that they zoom in on the region of interest which is actually
-        fitted.
-        """
-
         grid = aa.Grid2D.from_mask(mask=self.mask)
 
         image = self.tracer_perturb.image_2d_from(grid=grid)
@@ -215,107 +191,57 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
             )
         )
 
-        plotter = aplt.Array2DPlotter(
-            array=image,
-            mat_plot_2d=self.mat_plot_2d,
-        )
-        plotter.open_subplot_figure(number_subplots=6)
-        plotter.set_title("Image")
-        plotter.figure_2d()
-
-        grid = self.mask.derive_grid.unmasked
+        unmasked_grid = self.mask.derive_grid.unmasked
 
         from autolens.lens.tracer_util import critical_curves_from, caustics_from
 
-        tan_cc_p, rad_cc_p = critical_curves_from(tracer=self.tracer_perturb, grid=grid)
+        tan_cc_p, rad_cc_p = critical_curves_from(tracer=self.tracer_perturb, grid=unmasked_grid)
         perturb_cc_lines = [
             np.array(c.array if hasattr(c, "array") else c)
             for c in list(tan_cc_p) + list(rad_cc_p)
         ] or None
 
-        tan_ca_p, rad_ca_p = caustics_from(tracer=self.tracer_perturb, grid=grid)
+        tan_ca_p, rad_ca_p = caustics_from(tracer=self.tracer_perturb, grid=unmasked_grid)
         perturb_ca_lines = [
             np.array(c.array if hasattr(c, "array") else c)
             for c in list(tan_ca_p) + list(rad_ca_p)
         ] or None
 
-        tan_cc_n, rad_cc_n = critical_curves_from(
-            tracer=self.tracer_no_perturb, grid=grid
-        )
+        tan_cc_n, rad_cc_n = critical_curves_from(tracer=self.tracer_no_perturb, grid=unmasked_grid)
         no_perturb_cc_lines = [
             np.array(c.array if hasattr(c, "array") else c)
             for c in list(tan_cc_n) + list(rad_cc_n)
         ] or None
 
-        plotter = aplt.Array2DPlotter(
-            array=lensed_source_image,
-            mat_plot_2d=self.mat_plot_2d,
-            lines=perturb_cc_lines,
-        )
-        plotter.set_title("Lensed Source Image")
-        plotter.figure_2d()
-
-        plotter = aplt.Array2DPlotter(
-            array=self.source_image,
-            mat_plot_2d=self.mat_plot_2d,
-            lines=perturb_ca_lines,
-        )
-        plotter.set_title("Source Image")
-        plotter.figure_2d()
-
-        plotter = aplt.Array2DPlotter(
-            array=self.tracer_perturb.convergence_2d_from(grid=grid),
-            mat_plot_2d=self.mat_plot_2d,
-        )
-        plotter.set_title("Convergence")
-        plotter.figure_2d()
-
-        plotter = aplt.Array2DPlotter(
-            array=lensed_source_image,
-            mat_plot_2d=self.mat_plot_2d,
-            lines=no_perturb_cc_lines,
-        )
-        plotter.set_title("Lensed Source Image (No Subhalo)")
-        plotter.figure_2d()
-
         residual_map = lensed_source_image - lensed_source_image_no_perturb
 
-        plotter = aplt.Array2DPlotter(
-            array=residual_map,
-            mat_plot_2d=self.mat_plot_2d,
-            lines=no_perturb_cc_lines,
-        )
-        plotter.set_title("Residual Map (Subhalo - No Subhalo)")
-        plotter.figure_2d()
+        fig, axes = plt.subplots(1, 6, figsize=(42, 7))
 
-        plotter.mat_plot_2d.output.subplot_to_figure(
-            auto_filename=f"subplot_lensed_images"
-        )
-        plotter.close_subplot_figure()
+        aplt.Array2DPlotter(array=image, output=self.output, cmap=self.cmap, use_log10=self.use_log10).figure_2d(ax=axes[0])
+        axes[0].set_title("Image")
+
+        aplt.Array2DPlotter(array=lensed_source_image, output=self.output, cmap=self.cmap, use_log10=self.use_log10, lines=perturb_cc_lines).figure_2d(ax=axes[1])
+        axes[1].set_title("Lensed Source Image")
+
+        aplt.Array2DPlotter(array=self.source_image, output=self.output, cmap=self.cmap, use_log10=self.use_log10, lines=perturb_ca_lines).figure_2d(ax=axes[2])
+        axes[2].set_title("Source Image")
+
+        aplt.Array2DPlotter(array=self.tracer_perturb.convergence_2d_from(grid=grid), output=self.output, cmap=self.cmap, use_log10=self.use_log10).figure_2d(ax=axes[3])
+        axes[3].set_title("Convergence")
+
+        aplt.Array2DPlotter(array=lensed_source_image, output=self.output, cmap=self.cmap, use_log10=self.use_log10, lines=no_perturb_cc_lines).figure_2d(ax=axes[4])
+        axes[4].set_title("Lensed Source Image (No Subhalo)")
+
+        aplt.Array2DPlotter(array=residual_map, output=self.output, cmap=self.cmap, use_log10=self.use_log10, lines=no_perturb_cc_lines).figure_2d(ax=axes[5])
+        axes[5].set_title("Residual Map (Subhalo - No Subhalo)")
+
+        plt.tight_layout()
+        _save_subplot(fig, self.output, "subplot_lensed_images")
 
     def set_auto_filename(
         self, filename: str, use_log_evidences: Optional[bool] = None
     ) -> bool:
-        """
-        If a subplot figure does not have an input filename, this function is used to set one automatically.
-
-        The filename is appended with a string that describes the figure of merit plotted, which is either the
-        log evidence or log likelihood.
-
-        Parameters
-        ----------
-        filename
-            The filename of the figure, e.g. 'subhalo_mass'
-        use_log_evidences
-            If `True`, figures which overlay the goodness-of-fit merit use the `log_evidence`, if `False` the
-            `log_likelihood` if used.
-
-        Returns
-        -------
-
-        """
-
-        if self.mat_plot_2d.output.filename is None:
+        if self.output.filename is None:
             if use_log_evidences is None:
                 figure_of_merit = ""
             elif use_log_evidences:
@@ -323,10 +249,7 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
             else:
                 figure_of_merit = "_log_likelihood"
 
-            self.set_filename(
-                filename=f"{filename}{figure_of_merit}",
-            )
-
+            self.set_filename(filename=f"{filename}{figure_of_merit}")
             return True
 
         return False
@@ -337,18 +260,12 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
             remove_zeros=False,
         )
 
-        mat_plot_2d = aplt.MatPlot2D(
-            output=aplt.Output(
-                path=self.mat_plot_2d.output.path,
-                filename="sensitivity_log_likelihood",
-                format="fits",
-            )
+        fits_output = Output(
+            path=self.output.path,
+            filename="sensitivity_log_likelihood",
+            format="fits",
         )
-
-        aplt.Array2DPlotter(
-            array=log_likelihoods,
-            mat_plot_2d=mat_plot_2d,
-        ).figure_2d()
+        aplt.Array2DPlotter(array=log_likelihoods, output=fits_output).figure_2d()
 
         try:
             log_evidences = self.result.figure_of_merit_array(
@@ -356,18 +273,12 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
                 remove_zeros=False,
             )
 
-            mat_plot_2d = aplt.MatPlot2D(
-                output=aplt.Output(
-                    path=self.mat_plot_2d.output.path,
-                    filename="sensitivity_log_evidence",
-                    format="fits",
-                )
+            fits_output = Output(
+                path=self.output.path,
+                filename="sensitivity_log_evidence",
+                format="fits",
             )
-
-            aplt.Array2DPlotter(
-                array=log_evidences,
-                mat_plot_2d=mat_plot_2d,
-            ).figure_2d()
+            aplt.Array2DPlotter(array=log_evidences, output=fits_output).figure_2d()
 
         except TypeError:
             pass
@@ -386,114 +297,55 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         except TypeError:
             log_evidences = np.zeros_like(log_likelihoods)
 
-        self.open_subplot_figure(number_subplots=8, subplot_shape=(2, 4))
-
-        plotter = aplt.Array2DPlotter(
-            array=self.data_subtracted,
-            mat_plot_2d=self.mat_plot_2d,
-        )
-
-        plotter.figure_2d()
-
-        self._plot_array(
-            array=log_evidences,
-            auto_labels=AutoLabels(title="Increase in Log Evidence"),
-        )
-
-        self._plot_array(
-            array=log_likelihoods,
-            auto_labels=AutoLabels(title="Increase in Log Likelihood"),
-        )
-
         above_threshold = np.where(log_likelihoods > 5.0, 1.0, 0.0)
-
         above_threshold = aa.Array2D(values=above_threshold, mask=log_likelihoods.mask)
 
-        self._plot_array(
-            array=above_threshold,
-            auto_labels=AutoLabels(title="Log Likelihood > 5.0"),
-        )
+        fig, axes = plt.subplots(2, 4, figsize=(28, 14))
+        axes_flat = list(axes.flatten())
 
+        aplt.Array2DPlotter(array=self.data_subtracted, output=self.output, cmap=self.cmap, use_log10=self.use_log10).figure_2d(ax=axes_flat[0])
+
+        self._plot_array(array=log_evidences, auto_filename="increase_in_log_evidence", title="Increase in Log Evidence", ax=axes_flat[1])
+        self._plot_array(array=log_likelihoods, auto_filename="increase_in_log_likelihood", title="Increase in Log Likelihood", ax=axes_flat[2])
+        self._plot_array(array=above_threshold, auto_filename="log_likelihood_above_5", title="Log Likelihood > 5.0", ax=axes_flat[3])
+
+        ax_idx = 4
         try:
-            log_evidences_base = self.result._array_2d_from(
-                self.result.log_evidences_base
-            )
-            log_evidences_perturbed = self.result._array_2d_from(
-                self.result.log_evidences_perturbed
-            )
+            log_evidences_base = self.result._array_2d_from(self.result.log_evidences_base)
+            log_evidences_perturbed = self.result._array_2d_from(self.result.log_evidences_perturbed)
 
-            log_evidences_base_min = np.nanmin(
-                np.where(log_evidences_base == 0, np.nan, log_evidences_base)
-            )
-            log_evidences_base_max = np.nanmax(
-                np.where(log_evidences_base == 0, np.nan, log_evidences_base)
-            )
-            log_evidences_perturbed_min = np.nanmin(
-                np.where(log_evidences_perturbed == 0, np.nan, log_evidences_perturbed)
-            )
-            log_evidences_perturbed_max = np.nanmax(
-                np.where(log_evidences_perturbed == 0, np.nan, log_evidences_perturbed)
-            )
+            log_evidences_base_min = np.nanmin(np.where(log_evidences_base == 0, np.nan, log_evidences_base))
+            log_evidences_base_max = np.nanmax(np.where(log_evidences_base == 0, np.nan, log_evidences_base))
+            log_evidences_perturbed_min = np.nanmin(np.where(log_evidences_perturbed == 0, np.nan, log_evidences_perturbed))
+            log_evidences_perturbed_max = np.nanmax(np.where(log_evidences_perturbed == 0, np.nan, log_evidences_perturbed))
 
-            self.mat_plot_2d.cmap.kwargs["vmin"] = np.min(
-                [log_evidences_base_min, log_evidences_perturbed_min]
-            )
-            self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(
-                [log_evidences_base_max, log_evidences_perturbed_max]
-            )
+            self.cmap.kwargs["vmin"] = np.min([log_evidences_base_min, log_evidences_perturbed_min])
+            self.cmap.kwargs["vmax"] = np.max([log_evidences_base_max, log_evidences_perturbed_max])
 
-            self._plot_array(
-                array=log_evidences_base,
-                auto_labels=AutoLabels(title="Log Evidence Base"),
-            )
-
-            self._plot_array(
-                array=log_evidences_perturbed,
-                auto_labels=AutoLabels(title="Log Evidence Perturb"),
-            )
+            self._plot_array(array=log_evidences_base, auto_filename="log_evidence_base", title="Log Evidence Base", ax=axes_flat[ax_idx])
+            ax_idx += 1
+            self._plot_array(array=log_evidences_perturbed, auto_filename="log_evidence_perturb", title="Log Evidence Perturb", ax=axes_flat[ax_idx])
+            ax_idx += 1
         except TypeError:
             pass
 
-        log_likelihoods_base = self.result._array_2d_from(
-            self.result.log_likelihoods_base
-        )
-        log_likelihoods_perturbed = self.result._array_2d_from(
-            self.result.log_likelihoods_perturbed
-        )
+        log_likelihoods_base = self.result._array_2d_from(self.result.log_likelihoods_base)
+        log_likelihoods_perturbed = self.result._array_2d_from(self.result.log_likelihoods_perturbed)
 
-        log_likelihoods_base_min = np.nanmin(
-            np.where(log_likelihoods_base == 0, np.nan, log_likelihoods_base)
-        )
-        log_likelihoods_base_max = np.nanmax(
-            np.where(log_likelihoods_base == 0, np.nan, log_likelihoods_base)
-        )
-        log_likelihoods_perturbed_min = np.nanmin(
-            np.where(log_likelihoods_perturbed == 0, np.nan, log_likelihoods_perturbed)
-        )
-        log_likelihoods_perturbed_max = np.nanmax(
-            np.where(log_likelihoods_perturbed == 0, np.nan, log_likelihoods_perturbed)
-        )
+        log_likelihoods_base_min = np.nanmin(np.where(log_likelihoods_base == 0, np.nan, log_likelihoods_base))
+        log_likelihoods_base_max = np.nanmax(np.where(log_likelihoods_base == 0, np.nan, log_likelihoods_base))
+        log_likelihoods_perturbed_min = np.nanmin(np.where(log_likelihoods_perturbed == 0, np.nan, log_likelihoods_perturbed))
+        log_likelihoods_perturbed_max = np.nanmax(np.where(log_likelihoods_perturbed == 0, np.nan, log_likelihoods_perturbed))
 
-        self.mat_plot_2d.cmap.kwargs["vmin"] = np.min(
-            [log_likelihoods_base_min, log_likelihoods_perturbed_min]
-        )
-        self.mat_plot_2d.cmap.kwargs["vmax"] = np.max(
-            [log_likelihoods_base_max, log_likelihoods_perturbed_max]
-        )
+        self.cmap.kwargs["vmin"] = np.min([log_likelihoods_base_min, log_likelihoods_perturbed_min])
+        self.cmap.kwargs["vmax"] = np.max([log_likelihoods_base_max, log_likelihoods_perturbed_max])
 
-        self._plot_array(
-            array=log_likelihoods_base,
-            auto_labels=AutoLabels(title="Log Likelihood Base"),
-        )
+        self._plot_array(array=log_likelihoods_base, auto_filename="log_likelihood_base", title="Log Likelihood Base", ax=axes_flat[ax_idx])
+        ax_idx += 1
+        self._plot_array(array=log_likelihoods_perturbed, auto_filename="log_likelihood_perturb", title="Log Likelihood Perturb", ax=axes_flat[ax_idx])
 
-        self._plot_array(
-            array=log_likelihoods_perturbed,
-            auto_labels=AutoLabels(title="Log Likelihood Perturb"),
-        )
-
-        self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_sensitivity")
-
-        self.close_subplot_figure()
+        plt.tight_layout()
+        _save_subplot(fig, self.output, "subplot_sensitivity")
 
     def subplot_figures_of_merit_grid(
         self,
@@ -501,26 +353,21 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         remove_zeros: bool = True,
         show_max_in_title: bool = True,
     ):
-        self.open_subplot_figure(number_subplots=1)
-
         figures_of_merit = self.result.figure_of_merit_array(
             use_log_evidences=use_log_evidences,
             remove_zeros=remove_zeros,
         )
 
+        fig, ax = plt.subplots(1, 1, figsize=(7, 7))
+
         if show_max_in_title:
             max_value = np.round(np.nanmax(figures_of_merit), 2)
-            self.set_title(label=f"Sensitivity Map {max_value}")
+            ax.set_title(f"Sensitivity Map {max_value}")
 
-        self.update_mat_plot_array_overlay(evidence_max=np.max(figures_of_merit))
+        self._plot_array(array=figures_of_merit, auto_filename="sensitivity", title="Increase in Log Evidence", ax=ax)
 
-        self._plot_array(
-            array=figures_of_merit,
-            auto_labels=AutoLabels(title="Increase in Log Evidence"),
-        )
-
-        self.mat_plot_2d.output.subplot_to_figure(auto_filename="sensitivity")
-        self.close_subplot_figure()
+        plt.tight_layout()
+        _save_subplot(fig, self.output, "sensitivity")
 
     def figure_figures_of_merit_grid(
         self,
@@ -528,30 +375,6 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
         remove_zeros: bool = True,
         show_max_in_title: bool = True,
     ):
-        """
-        Plot the results of the subhalo grid search, where the figures of merit (e.g. `log_evidence`) of the
-        grid search are plotted over the image of the lensed source galaxy.
-
-        The figures of merit can be customized to be relative to the lens model without a subhalo, or with zeros
-        rounded up to 0.0 to remove negative values. These produce easily to interpret and visually appealing
-        figure of merit overlays.
-
-        Parameters
-        ----------
-        use_log_evidences
-            If `True`, figures which overlay the goodness-of-fit merit use the `log_evidence`, if `False` the
-            `log_likelihood` if used.
-        relative_to_value
-            The value to subtract from every figure of merit, for example which will typically be that of the no
-            subhalo lens model so Bayesian model comparison can be easily performed.
-        remove_zeros
-            If `True`, the figure of merit array is altered so that all values below 0.0 and set to 0.0. For plotting
-            relative figures of merit for Bayesian model comparison, this is convenient to remove negative values
-            and produce a clearer visualization of the overlay.
-        show_max_in_title
-            Shows the maximum figure of merit value in the title of the figure, for easy reference.
-        """
-
         reset_filename = self.set_auto_filename(
             filename="sensitivity",
             use_log_evidences=use_log_evidences,
@@ -562,11 +385,11 @@ class SubhaloSensitivityPlotter(AbstractPlotter):
             remove_zeros=remove_zeros,
         )
 
-        self.update_mat_plot_array_overlay(evidence_max=np.max(array_overlay))
-
         plotter = aplt.Array2DPlotter(
             array=self.data_subtracted,
-            mat_plot_2d=self.mat_plot_2d,
+            output=self.output,
+            cmap=self.cmap,
+            use_log10=self.use_log10,
             array_overlay=array_overlay,
         )
 

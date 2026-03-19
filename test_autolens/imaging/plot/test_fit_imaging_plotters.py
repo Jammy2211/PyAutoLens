@@ -20,7 +20,7 @@ def test__fit_quantities_are_output(
 
     fit_plotter = aplt.FitImagingPlotter(
         fit=fit_imaging_x2_plane_7x7,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
+        output=aplt.Output(path=plot_path, format="png"),
     )
 
     fit_plotter.figures_2d(
@@ -66,7 +66,7 @@ def test__figures_of_plane(
 
     fit_plotter = aplt.FitImagingPlotter(
         fit=fit_imaging_x2_plane_7x7,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
+        output=aplt.Output(path=plot_path, format="png"),
     )
 
     fit_plotter.figures_2d_of_planes(
@@ -102,7 +102,7 @@ def test_subplot_fit_is_output(
 
     fit_plotter = aplt.FitImagingPlotter(
         fit=fit_imaging_x2_plane_7x7,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
+        output=aplt.Output(plot_path, format="png"),
     )
 
     fit_plotter.subplot_fit()
@@ -118,7 +118,7 @@ def test__subplot_of_planes(
 
     fit_plotter = aplt.FitImagingPlotter(
         fit=fit_imaging_x2_plane_7x7,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
+        output=aplt.Output(plot_path, format="png"),
     )
 
     fit_plotter.subplot_of_planes()

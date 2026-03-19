@@ -62,12 +62,12 @@ class PlotterInterface(AgPlotterInterface):
         def should_plot(name):
             return plot_setting(section="tracer", name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from()
+        output = self.output_from()
 
         tracer_plotter = TracerPlotter(
             tracer=tracer,
             grid=grid,
-            mat_plot_2d=mat_plot_2d,
+            output=output,
         )
 
         if should_plot("subplot_galaxies_images"):
@@ -165,7 +165,7 @@ class PlotterInterface(AgPlotterInterface):
         def should_plot(name):
             return plot_setting(section=["positions"], name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from()
+        output = self.output_from()
 
         if positions is not None:
             pos_arr = np.array(
@@ -174,7 +174,7 @@ class PlotterInterface(AgPlotterInterface):
 
             image_plotter = aplt.Array2DPlotter(
                 array=image,
-                mat_plot_2d=mat_plot_2d,
+                output=output,
                 positions=[pos_arr],
             )
 

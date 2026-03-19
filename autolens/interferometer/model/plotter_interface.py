@@ -24,15 +24,6 @@ class PlotterInterfaceInterferometer(PlotterInterface):
         """
         Visualizes a `FitInterferometer` object, which fits an interferometer dataset.
 
-        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path`
-        is the output folder of the non-linear search.
-
-        Visualization includes a subplot of individual images of attributes of the `FitInterferometer` (e.g. the model
-        data,residual map) and .fits files containing its attributes grouped together.
-
-        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under
-        the `fit` and `fit_interferometer` headers.
-
         Parameters
         ----------
         fit
@@ -42,13 +33,11 @@ class PlotterInterfaceInterferometer(PlotterInterface):
         def should_plot(name):
             return plot_setting(section=["fit", "fit_interferometer"], name=name)
 
-        mat_plot_1d = self.mat_plot_1d_from()
-        mat_plot_2d = self.mat_plot_2d_from()
+        output = self.output_from()
 
         fit_plotter = FitInterferometerPlotter(
             fit=fit,
-            mat_plot_1d=mat_plot_1d,
-            mat_plot_2d=mat_plot_2d,
+            output=output,
         )
 
         if should_plot("subplot_fit"):
@@ -63,13 +52,11 @@ class PlotterInterfaceInterferometer(PlotterInterface):
         if should_plot("subplot_fit_real_space"):
             fit_plotter.subplot_fit_real_space()
 
-        mat_plot_1d = self.mat_plot_1d_from()
-        mat_plot_2d = self.mat_plot_2d_from()
+        output = self.output_from()
 
         fit_plotter = FitInterferometerPlotter(
             fit=fit,
-            mat_plot_1d=mat_plot_1d,
-            mat_plot_2d=mat_plot_2d,
+            output=output,
         )
 
         if plot_setting(section="inversion", name="subplot_mappings"):

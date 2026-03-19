@@ -15,8 +15,7 @@ def test__fit_quantities_are_output(
 ):
     fit_plotter = aplt.FitInterferometerPlotter(
         fit=fit_interferometer_x2_plane_7x7,
-        mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
+        output=aplt.Output(path=plot_path, format="png"),
     )
 
     fit_plotter.figures_2d(
@@ -112,8 +111,7 @@ def test__fit_sub_plot_real_space(
 ):
     fit_plotter = aplt.FitInterferometerPlotter(
         fit=fit_interferometer_x2_plane_7x7,
-        mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(plot_path, format="png")),
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
+        output=aplt.Output(plot_path, format="png"),
     )
 
     fit_plotter.subplot_fit_real_space()

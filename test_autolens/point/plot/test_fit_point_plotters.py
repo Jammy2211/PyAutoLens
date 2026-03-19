@@ -22,8 +22,7 @@ def test__fit_point_quantities_are_output(
 ):
     fit_point_plotter = aplt.FitPointDatasetPlotter(
         fit=fit_point_dataset_x2_plane,
-        mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
+        output=aplt.Output(path=plot_path, format="png"),
     )
 
     fit_point_plotter.figures_2d(positions=True, fluxes=True)
@@ -44,7 +43,7 @@ def test__fit_point_quantities_are_output(
 
     fit_point_plotter = aplt.FitPointDatasetPlotter(
         fit=fit_point_dataset_x2_plane,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
+        output=aplt.Output(path=plot_path, format="png"),
     )
 
     fit_point_plotter.figures_2d(positions=True, fluxes=True)
@@ -56,8 +55,7 @@ def test__fit_point_quantities_are_output(
 def test__subplot_fit(fit_point_dataset_x2_plane, plot_path, plot_patch):
     fit_point_plotter = aplt.FitPointDatasetPlotter(
         fit=fit_point_dataset_x2_plane,
-        mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
+        output=aplt.Output(path=plot_path, format="png"),
     )
 
     fit_point_plotter.subplot_fit()

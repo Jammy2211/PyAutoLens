@@ -27,7 +27,7 @@ def test__all_individual_plotter(
     tracer_plotter = aplt.TracerPlotter(
         tracer=tracer_x2_plane_7x7,
         grid=grid_2d_7x7,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
+        output=aplt.Output(plot_path, format="png"),
     )
 
     tracer_plotter.figures_2d(
@@ -53,7 +53,7 @@ def test__all_individual_plotter(
     tracer_plotter = aplt.TracerPlotter(
         tracer=tracer_x2_plane_7x7,
         grid=grid_2d_7x7,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
+        output=aplt.Output(plot_path, format="png"),
     )
 
     tracer_plotter.figures_2d(
@@ -79,7 +79,7 @@ def test__figures_of_plane(
     tracer_plotter = aplt.TracerPlotter(
         tracer=tracer_x2_plane_7x7,
         grid=grid_2d_7x7,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
+        output=aplt.Output(path=plot_path, format="png"),
     )
 
     tracer_plotter.figures_2d_of_planes(plane_image=True, plane_grid=True)
@@ -99,7 +99,7 @@ def test__tracer_plot_output(tracer_x2_plane_7x7, grid_2d_7x7, plot_path, plot_p
     tracer_plotter = aplt.TracerPlotter(
         tracer=tracer_x2_plane_7x7,
         grid=grid_2d_7x7,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
+        output=aplt.Output(plot_path, format="png"),
     )
 
     tracer_plotter.subplot_tracer()

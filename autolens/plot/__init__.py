@@ -49,9 +49,6 @@ from autoarray.inversion.plot.inversion_plotters import InversionPlotter
 from autoarray.dataset.plot.imaging_plotters import ImagingPlotter
 from autoarray.dataset.plot.interferometer_plotters import InterferometerPlotter
 
-from autoarray.plot.multi_plotters import MultiFigurePlotter
-from autoarray.plot.multi_plotters import MultiYX1DPlotter
-
 from autogalaxy.plot.wrap import (
     HalfLightRadiusAXVLine,
     EinsteinRadiusAXVLine,
@@ -63,9 +60,6 @@ from autogalaxy.plot.wrap import (
     RadialCausticsPlot,
     MultipleImagesScatter,
 )
-
-from autogalaxy.plot.mat_plot.one_d import MatPlot1D
-from autogalaxy.plot.mat_plot.two_d import MatPlot2D
 
 from autogalaxy.profiles.plot.basis_plotters import BasisPlotter
 from autogalaxy.profiles.plot.light_profile_plotters import LightProfilePlotter
