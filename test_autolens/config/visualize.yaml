@@ -3,52 +3,6 @@ general:
     backend: default
     imshow_origin: upper
     zoom_around_mask: true
-mat_wrap_2d:
-  CausticsLine:
-    figure:
-      c: w,g
-      linestyle: --
-      linewidth: 5
-    subplot:
-      c: g
-      linestyle: --
-      linewidth: 7
-  CriticalCurvesLine:
-    figure:
-      c: w,k
-      linestyle: '-'
-      linewidth: 4
-    subplot:
-      c: b
-      linestyle: '-'
-      linewidth: 6
-  LightProfileCentreScatter:
-    figure:
-      c: k,r
-      marker: +
-      s: 1
-    subplot:
-      c: b
-      marker: .
-      s: 15
-  MassProfileCentreScatter:
-    figure:
-      c: r,k
-      marker: x
-      s: 2
-    subplot:
-      c: k
-      marker: o
-      s: 16
-  MultipleImagesScatter:
-    figure:
-      c: k,w
-      marker: o
-      s: 3
-    subplot:
-      c: g
-      marker: .
-      s: 17
 plots:
   fits_are_zoomed: true
   dataset:

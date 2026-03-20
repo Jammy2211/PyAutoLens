@@ -3,41 +3,9 @@ from autofit.non_linear.plot.mcmc_plotters import MCMCPlotter
 from autofit.non_linear.plot.mle_plotters import MLEPlotter
 
 from autoarray.plot.wrap.base import (
-    Units,
-    Figure,
-    Axis,
     Cmap,
     Colorbar,
-    ColorbarTickParams,
-    TickParams,
-    YTicks,
-    XTicks,
-    Title,
-    YLabel,
-    XLabel,
-    Legend,
-    Annotate,
-    Text,
     Output,
-)
-from autoarray.plot.wrap.one_d import YXPlot, FillBetween
-from autoarray.plot.wrap.two_d import (
-    ArrayOverlay,
-    Contour,
-    GridScatter,
-    GridPlot,
-    VectorYXQuiver,
-    PatchOverlay,
-    DelaunayDrawer,
-    OriginScatter,
-    MaskScatter,
-    BorderScatter,
-    PositionsScatter,
-    IndexScatter,
-    MeshGridScatter,
-    ParallelOverscanPlot,
-    SerialPrescanPlot,
-    SerialOverscanPlot,
 )
 
 from autoarray.structures.plot.structure_plotters import Array2DPlotter
