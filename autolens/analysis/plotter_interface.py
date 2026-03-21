@@ -7,7 +7,6 @@ from autoconf.fitsable import hdu_list_for_output_from
 
 import autoarray as aa
 import autogalaxy as ag
-import autogalaxy.plot as aplt
 
 from autogalaxy.analysis.plotter_interface import plot_setting
 
@@ -15,6 +14,7 @@ from autogalaxy.analysis.plotter_interface import PlotterInterface as AgPlotterI
 
 from autolens.lens.tracer import Tracer
 from autolens.lens.plot.tracer_plots import subplot_galaxies_images
+from autolens.plot.plot_utils import plot_array
 
 
 class PlotterInterface(AgPlotterInterface):
@@ -145,20 +145,19 @@ class PlotterInterface(AgPlotterInterface):
         def should_plot(name):
             return plot_setting(section=["positions"], name=name)
 
-        output = self.output_from()
-
-        if positions is not None:
+        if positions is not None and should_plot("image_with_positions"):
             pos_arr = np.array(
                 positions.array if hasattr(positions, "array") else positions
             )
 
-            image_plotter = aplt.Array2DPlotter(
+            fmt = self.fmt
+            if isinstance(fmt, (list, tuple)):
+                fmt = fmt[0]
+
+            plot_array(
                 array=image,
-                output=output,
                 positions=[pos_arr],
+                output_path=str(self.image_path),
+                output_filename="image_with_positions",
+                output_format=fmt,
             )
-
-            image_plotter.set_filename("image_with_positions")
-
-            if should_plot("image_with_positions"):
-                image_plotter.figure_2d()

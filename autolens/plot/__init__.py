@@ -8,15 +8,6 @@ from autoarray.plot.wrap.base import (
     Output,
 )
 
-from autoarray.structures.plot.structure_plotters import Array2DPlotter
-from autoarray.structures.plot.structure_plotters import Grid2DPlotter
-from autoarray.inversion.plot.mapper_plotters import MapperPlotter
-from autoarray.structures.plot.structure_plotters import YX1DPlotter
-from autoarray.structures.plot.structure_plotters import YX1DPlotter as Array1DPlotter
-from autoarray.inversion.plot.inversion_plotters import InversionPlotter
-from autoarray.dataset.plot.imaging_plotters import ImagingPlotter
-from autoarray.dataset.plot.interferometer_plotters import InterferometerPlotter
-
 from autogalaxy.plot.wrap import (
     HalfLightRadiusAXVLine,
     EinsteinRadiusAXVLine,
@@ -28,19 +19,6 @@ from autogalaxy.plot.wrap import (
     RadialCausticsPlot,
     MultipleImagesScatter,
 )
-
-from autogalaxy.profiles.plot.basis_plotters import BasisPlotter
-from autogalaxy.profiles.plot.light_profile_plotters import LightProfilePlotter
-from autogalaxy.profiles.plot.mass_profile_plotters import MassProfilePlotter
-from autogalaxy.galaxy.plot.galaxy_plotters import GalaxyPlotter
-from autogalaxy.quantity.plot.fit_quantity_plotters import FitQuantityPlotter
-
-from autogalaxy.imaging.plot.fit_imaging_plotters import FitImagingPlotter as AgFitImagingPlotter
-from autogalaxy.interferometer.plot.fit_interferometer_plotters import (
-    FitInterferometerPlotter as AgFitInterferometerPlotter,
-)
-from autogalaxy.galaxy.plot.galaxies_plotters import GalaxiesPlotter
-from autogalaxy.galaxy.plot.adapt_plotters import AdaptPlotter
 
 # ---------------------------------------------------------------------------
 # Standalone plot helpers
@@ -72,5 +50,12 @@ from autolens.interferometer.plot.fit_interferometer_plots import (
 from autolens.point.plot.fit_point_plots import subplot_fit as subplot_fit_point
 from autolens.point.plot.point_dataset_plots import subplot_dataset as subplot_point_dataset
 
-from autolens.lens.subhalo import SubhaloPlotter
-from autolens.lens.sensitivity import SubhaloSensitivityPlotter
+from autolens.lens.plot.subhalo_plots import (
+    subplot_detection_imaging,
+    subplot_detection_fits,
+)
+from autolens.lens.plot.sensitivity_plots import (
+    subplot_tracer_images as subplot_sensitivity_tracer_images,
+    subplot_sensitivity,
+    subplot_figures_of_merit_grid as subplot_sensitivity_figures_of_merit,
+)
