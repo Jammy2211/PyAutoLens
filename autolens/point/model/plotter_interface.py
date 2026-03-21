@@ -1,11 +1,9 @@
-from os import path
-
 from autolens.analysis.plotter_interface import PlotterInterface
 
 from autolens.point.fit.dataset import FitPointDataset
-from autolens.point.plot.fit_point_plotters import FitPointDatasetPlotter
+from autolens.point.plot.fit_point_plots import subplot_fit as subplot_fit_point
 from autolens.point.dataset import PointDataset
-from autolens.point.plot.point_dataset_plotters import PointDatasetPlotter
+from autolens.point.plot.point_dataset_plots import subplot_dataset
 
 from autolens.analysis.plotter_interface import plot_setting
 
@@ -13,23 +11,22 @@ from autolens.analysis.plotter_interface import plot_setting
 class PlotterInterfacePoint(PlotterInterface):
     def dataset_point(self, dataset: PointDataset):
         """
-        Output visualization of an `PointDataset` dataset, typically before a model-fit is performed.
+        Output visualization of a `PointDataset` dataset.
 
         Parameters
         ----------
         dataset
-            The imaging dataset which is visualized.
+            The point dataset which is visualized.
         """
 
         def should_plot(name):
             return plot_setting(section=["point_dataset"], name=name)
 
-        output = self.output_from()
-
-        dataset_plotter = PointDatasetPlotter(dataset=dataset, output=output)
+        output_path = str(self.image_path)
+        fmt = self.fmt
 
         if should_plot("subplot_dataset"):
-            dataset_plotter.subplot_dataset()
+            subplot_dataset(dataset, output_path=output_path, output_format=fmt)
 
     def fit_point(
         self,
@@ -37,23 +34,22 @@ class PlotterInterfacePoint(PlotterInterface):
         quick_update: bool = False,
     ):
         """
-        Visualizes a `FitPointDataset` object, which fits an imaging dataset.
+        Visualizes a `FitPointDataset` object.
 
         Parameters
         ----------
         fit
-            The maximum log likelihood `FitPointDataset` of the non-linear search which is used to plot the fit.
+            The maximum log likelihood `FitPointDataset` of the non-linear search.
         """
 
         def should_plot(name):
             return plot_setting(section=["fit", "fit_point_dataset"], name=name)
 
-        output = self.output_from()
-
-        fit_plotter = FitPointDatasetPlotter(fit=fit, output=output)
+        output_path = str(self.image_path)
+        fmt = self.fmt
 
         if should_plot("subplot_fit") or quick_update:
-            fit_plotter.subplot_fit()
+            subplot_fit_point(fit, output_path=output_path, output_format=fmt)
 
         if quick_update:
             return

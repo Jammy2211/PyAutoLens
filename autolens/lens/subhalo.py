@@ -28,7 +28,8 @@ from autogalaxy.plot.abstract_plotters import _save_subplot
 from autolens.plot.abstract_plotters import Plotter as AbstractPlotter
 
 from autolens.imaging.fit_imaging import FitImaging
-from autolens.imaging.plot.fit_imaging_plotters import FitImagingPlotter
+from autolens.plot.plot_utils import plot_array as _plot_array_standalone
+from autolens.imaging.plot.fit_imaging_plots import _plot_source_plane as _plot_source_plane_fn
 
 
 class SubhaloGridSearchResult(af.GridSearchResult):
@@ -223,31 +224,23 @@ class SubhaloPlotter(AbstractPlotter):
         self.fit_imaging_with_subhalo = fit_imaging_with_subhalo
         self.fit_imaging_no_subhalo = fit_imaging_no_subhalo
 
-    @property
-    def fit_imaging_no_subhalo_plotter(self) -> FitImagingPlotter:
-        return FitImagingPlotter(
-            fit=self.fit_imaging_no_subhalo,
-            output=self.output,
-            cmap=self.cmap,
-            use_log10=self.use_log10,
-        )
+    def _cmap_str(self):
+        try:
+            return self.cmap.cmap
+        except AttributeError:
+            return "jet"
 
-    @property
-    def fit_imaging_with_subhalo_plotter(self) -> FitImagingPlotter:
-        return FitImagingPlotter(
-            fit=self.fit_imaging_with_subhalo,
-            output=self.output,
-            cmap=self.cmap,
-            use_log10=self.use_log10,
-        )
+    def _output_path(self):
+        try:
+            return str(self.output.path)
+        except AttributeError:
+            return None
 
-    def fit_imaging_with_subhalo_plotter_from(self) -> FitImagingPlotter:
-        return FitImagingPlotter(
-            fit=self.fit_imaging_with_subhalo,
-            output=self.output,
-            cmap=self.cmap,
-            use_log10=self.use_log10,
-        )
+    def _output_fmt(self):
+        try:
+            return self.output.format
+        except AttributeError:
+            return "png"
 
     def set_auto_filename(
         self, filename: str, use_log_evidences: Optional[bool] = None
@@ -327,10 +320,17 @@ class SubhaloPlotter(AbstractPlotter):
         relative_to_value: float = 0.0,
         remove_zeros: bool = False,
     ):
+        colormap = self._cmap_str()
         fig, axes = plt.subplots(1, 4, figsize=(28, 7))
 
-        self.fit_imaging_with_subhalo_plotter.figures_2d(data=True, ax=axes[0])
-        self.fit_imaging_with_subhalo_plotter.figures_2d(signal_to_noise_map=True, ax=axes[1])
+        _plot_array_standalone(
+            array=self.fit_imaging_with_subhalo.data, ax=axes[0],
+            title="Data", colormap=colormap, use_log10=self.use_log10,
+        )
+        _plot_array_standalone(
+            array=self.fit_imaging_with_subhalo.signal_to_noise_map, ax=axes[1],
+            title="Signal-To-Noise Map", colormap=colormap, use_log10=self.use_log10,
+        )
 
         arr = self.result.figure_of_merit_array(
             use_log_evidences=use_log_evidences,
@@ -356,19 +356,30 @@ class SubhaloPlotter(AbstractPlotter):
         _save_subplot(fig, self.output, "subplot_detection_imaging")
 
     def subplot_detection_fits(self):
+        colormap = self._cmap_str()
         fig, axes = plt.subplots(2, 3, figsize=(21, 14))
 
-        self.fit_imaging_no_subhalo_plotter.figures_2d(normalized_residual_map=True, ax=axes[0][0])
-        self.fit_imaging_no_subhalo_plotter.figures_2d(chi_squared_map=True, ax=axes[0][1])
-        self.fit_imaging_no_subhalo_plotter.figures_2d_of_planes(
-            plane_index=1, plane_image=True, ax=axes[0][2]
+        _plot_array_standalone(
+            array=self.fit_imaging_no_subhalo.normalized_residual_map, ax=axes[0][0],
+            title="Normalized Residual Map (No Subhalo)", colormap=colormap,
         )
+        _plot_array_standalone(
+            array=self.fit_imaging_no_subhalo.chi_squared_map, ax=axes[0][1],
+            title="Chi-Squared Map (No Subhalo)", colormap=colormap,
+        )
+        _plot_source_plane_fn(self.fit_imaging_no_subhalo, axes[0][2], plane_index=1,
+                               colormap=colormap)
 
-        self.fit_imaging_with_subhalo_plotter.figures_2d(normalized_residual_map=True, ax=axes[1][0])
-        self.fit_imaging_with_subhalo_plotter.figures_2d(chi_squared_map=True, ax=axes[1][1])
-        self.fit_imaging_with_subhalo_plotter.figures_2d_of_planes(
-            plane_index=1, plane_image=True, ax=axes[1][2]
+        _plot_array_standalone(
+            array=self.fit_imaging_with_subhalo.normalized_residual_map, ax=axes[1][0],
+            title="Normalized Residual Map (With Subhalo)", colormap=colormap,
         )
+        _plot_array_standalone(
+            array=self.fit_imaging_with_subhalo.chi_squared_map, ax=axes[1][1],
+            title="Chi-Squared Map (With Subhalo)", colormap=colormap,
+        )
+        _plot_source_plane_fn(self.fit_imaging_with_subhalo, axes[1][2], plane_index=1,
+                               colormap=colormap)
 
         plt.tight_layout()
         _save_subplot(fig, self.output, "subplot_detection_fits")

@@ -14,7 +14,7 @@ from autogalaxy.analysis.plotter_interface import plot_setting
 from autogalaxy.analysis.plotter_interface import PlotterInterface as AgPlotterInterface
 
 from autolens.lens.tracer import Tracer
-from autolens.lens.plot.tracer_plotters import TracerPlotter
+from autolens.lens.plot.tracer_plots import subplot_galaxies_images
 
 
 class PlotterInterface(AgPlotterInterface):
@@ -40,38 +40,27 @@ class PlotterInterface(AgPlotterInterface):
         """
         Visualizes a `Tracer` object.
 
-        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path`
-        points to the search's results folder and this function visualizes the maximum log likelihood `Tracer`
-        inferred by the search so far.
-
-        Visualization includes a subplot of individual images of attributes of the tracer (e.g. its image, convergence,
-        deflection angles) and .fits files containing its attributes grouped together.
-
-        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under
-        the `tracer` header.
-
         Parameters
         ----------
         tracer
             The maximum log likelihood `Tracer` of the non-linear search.
         grid
-            A 2D grid of (y,x) arc-second coordinates used to perform ray-tracing, which is the masked grid tied to
-            the dataset.
+            A 2D grid of (y,x) arc-second coordinates used to perform ray-tracing.
         """
 
         def should_plot(name):
             return plot_setting(section="tracer", name=name)
 
-        output = self.output_from()
-
-        tracer_plotter = TracerPlotter(
-            tracer=tracer,
-            grid=grid,
-            output=output,
-        )
+        output_path = str(self.image_path)
+        fmt = self.fmt
 
         if should_plot("subplot_galaxies_images"):
-            tracer_plotter.subplot_galaxies_images()
+            subplot_galaxies_images(
+                tracer=tracer,
+                grid=grid,
+                output_path=output_path,
+                output_format=fmt,
+            )
 
         if should_plot("fits_tracer"):
 
@@ -143,20 +132,11 @@ class PlotterInterface(AgPlotterInterface):
 
     def image_with_positions(self, image: aa.Array2D, positions: aa.Grid2DIrregular):
         """
-        Visualizes the positions of a model-fit, where these positions are used to penalize lens models where
-        the positions to do trace within an input threshold of one another in the source-plane.
-
-        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path`
-        is the output folder of the non-linear search.
-
-        The visualization is an image of the strong lens with the positions overlaid.
-
-        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under the
-        `positions` header.
+        Visualizes the positions of a model-fit.
 
         Parameters
         ----------
-        imaging
+        image
             The imaging dataset whose image the positions are overlaid.
         positions
             The 2D (y,x) arc-second positions used to penalize inaccurate mass models.

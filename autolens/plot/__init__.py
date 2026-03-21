@@ -35,19 +35,42 @@ from autogalaxy.profiles.plot.mass_profile_plotters import MassProfilePlotter
 from autogalaxy.galaxy.plot.galaxy_plotters import GalaxyPlotter
 from autogalaxy.quantity.plot.fit_quantity_plotters import FitQuantityPlotter
 
-from autogalaxy.imaging.plot.fit_imaging_plotters import FitImagingPlotter
+from autogalaxy.imaging.plot.fit_imaging_plotters import FitImagingPlotter as AgFitImagingPlotter
 from autogalaxy.interferometer.plot.fit_interferometer_plotters import (
-    FitInterferometerPlotter,
+    FitInterferometerPlotter as AgFitInterferometerPlotter,
 )
 from autogalaxy.galaxy.plot.galaxies_plotters import GalaxiesPlotter
 from autogalaxy.galaxy.plot.adapt_plotters import AdaptPlotter
 
-from autolens.point.plot.point_dataset_plotters import PointDatasetPlotter
-from autolens.imaging.plot.fit_imaging_plotters import FitImagingPlotter
-from autolens.interferometer.plot.fit_interferometer_plotters import (
-    FitInterferometerPlotter,
+# ---------------------------------------------------------------------------
+# Standalone plot helpers
+# ---------------------------------------------------------------------------
+from autolens.plot.plot_utils import plot_array, plot_grid
+
+# ---------------------------------------------------------------------------
+# subplot_* public API
+# ---------------------------------------------------------------------------
+from autolens.lens.plot.tracer_plots import (
+    subplot_tracer,
+    subplot_lensed_images,
+    subplot_galaxies_images,
 )
-from autolens.point.plot.fit_point_plotters import FitPointDatasetPlotter
-from autolens.lens.plot.tracer_plotters import TracerPlotter
+from autolens.imaging.plot.fit_imaging_plots import (
+    subplot_fit as subplot_fit_imaging,
+    subplot_fit_log10 as subplot_fit_imaging_log10,
+    subplot_fit_x1_plane as subplot_fit_imaging_x1_plane,
+    subplot_fit_log10_x1_plane as subplot_fit_imaging_log10_x1_plane,
+    subplot_of_planes as subplot_fit_imaging_of_planes,
+    subplot_tracer_from_fit as subplot_fit_imaging_tracer,
+    subplot_fit_combined,
+    subplot_fit_combined_log10,
+)
+from autolens.interferometer.plot.fit_interferometer_plots import (
+    subplot_fit as subplot_fit_interferometer,
+    subplot_fit_real_space as subplot_fit_interferometer_real_space,
+)
+from autolens.point.plot.fit_point_plots import subplot_fit as subplot_fit_point
+from autolens.point.plot.point_dataset_plots import subplot_dataset as subplot_point_dataset
+
 from autolens.lens.subhalo import SubhaloPlotter
 from autolens.lens.sensitivity import SubhaloSensitivityPlotter

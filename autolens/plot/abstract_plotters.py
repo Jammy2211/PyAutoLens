@@ -1,6 +1,4 @@
-import numpy as np
-from typing import List, Optional
-
+"""Compatibility shim — re-exports helpers used by subhalo.py and sensitivity.py."""
 from autoarray.plot.wrap.base.abstract import set_backend
 
 set_backend()

@@ -3,6 +3,11 @@ from os import path
 import pytest
 
 import autolens.plot as aplt
+from autolens.lens.plot.tracer_plots import (
+    subplot_tracer,
+    subplot_lensed_images,
+    subplot_galaxies_images,
+)
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -17,93 +22,35 @@ def make_tracer_plotter_setup():
     )
 
 
-def test__all_individual_plotter(
-    tracer_x2_plane_7x7,
-    grid_2d_7x7,
-    mask_2d_7x7,
-    plot_path,
-    plot_patch,
-):
-    tracer_plotter = aplt.TracerPlotter(
+def test__subplot_tracer(tracer_x2_plane_7x7, grid_2d_7x7, plot_path, plot_patch):
+    subplot_tracer(
         tracer=tracer_x2_plane_7x7,
         grid=grid_2d_7x7,
-        output=aplt.Output(plot_path, format="png"),
+        output_path=plot_path,
+        output_format="png",
     )
-
-    tracer_plotter.figures_2d(
-        image=True,
-        source_plane=True,
-        convergence=True,
-        potential=True,
-        deflections_y=True,
-        deflections_x=True,
-        magnification=True,
-    )
-
-    assert path.join(plot_path, "image_2d.png") in plot_patch.paths
-    assert path.join(plot_path, "plane_image_of_plane_1.png") in plot_patch.paths
-    assert path.join(plot_path, "convergence_2d.png") in plot_patch.paths
-    assert path.join(plot_path, "potential_2d.png") in plot_patch.paths
-    assert path.join(plot_path, "deflections_y_2d.png") in plot_patch.paths
-    assert path.join(plot_path, "deflections_x_2d.png") in plot_patch.paths
-    assert path.join(plot_path, "magnification_2d.png") in plot_patch.paths
-
-    plot_patch.paths = []
-
-    tracer_plotter = aplt.TracerPlotter(
-        tracer=tracer_x2_plane_7x7,
-        grid=grid_2d_7x7,
-        output=aplt.Output(plot_path, format="png"),
-    )
-
-    tracer_plotter.figures_2d(
-        image=True, source_plane=True, potential=True, magnification=True
-    )
-
-    assert path.join(plot_path, "image_2d.png") in plot_patch.paths
-    assert path.join(plot_path, "plane_image_of_plane_1.png") in plot_patch.paths
-    assert path.join(plot_path, "convergence_2d.png") not in plot_patch.paths
-    assert path.join(plot_path, "potential_2d.png") in plot_patch.paths
-    assert path.join(plot_path, "deflections_y_2d.png") not in plot_patch.paths
-    assert path.join(plot_path, "deflections_x_2d.png") not in plot_patch.paths
-    assert path.join(plot_path, "magnification_2d.png") in plot_patch.paths
-
-
-def test__figures_of_plane(
-    tracer_x2_plane_7x7,
-    grid_2d_7x7,
-    mask_2d_7x7,
-    plot_path,
-    plot_patch,
-):
-    tracer_plotter = aplt.TracerPlotter(
-        tracer=tracer_x2_plane_7x7,
-        grid=grid_2d_7x7,
-        output=aplt.Output(path=plot_path, format="png"),
-    )
-
-    tracer_plotter.figures_2d_of_planes(plane_image=True, plane_grid=True)
-
-    assert path.join(plot_path, "plane_image_of_plane_0.png") in plot_patch.paths
-    assert path.join(plot_path, "plane_image_of_plane_1.png") in plot_patch.paths
-
-    plot_patch.paths = []
-
-    tracer_plotter.figures_2d_of_planes(plane_index=0, plane_image=True)
-
-    assert path.join(plot_path, "plane_image_of_plane_0.png") in plot_patch.paths
-    assert path.join(plot_path, "plane_image_of_plane_1.png") not in plot_patch.paths
-
-
-def test__tracer_plot_output(tracer_x2_plane_7x7, grid_2d_7x7, plot_path, plot_patch):
-    tracer_plotter = aplt.TracerPlotter(
-        tracer=tracer_x2_plane_7x7,
-        grid=grid_2d_7x7,
-        output=aplt.Output(plot_path, format="png"),
-    )
-
-    tracer_plotter.subplot_tracer()
     assert path.join(plot_path, "subplot_tracer.png") in plot_patch.paths
 
-    tracer_plotter.subplot_galaxies_images()
+
+def test__subplot_galaxies_images(
+    tracer_x2_plane_7x7, grid_2d_7x7, plot_path, plot_patch
+):
+    subplot_galaxies_images(
+        tracer=tracer_x2_plane_7x7,
+        grid=grid_2d_7x7,
+        output_path=plot_path,
+        output_format="png",
+    )
     assert path.join(plot_path, "subplot_galaxies_images.png") in plot_patch.paths
+
+
+def test__subplot_lensed_images(
+    tracer_x2_plane_7x7, grid_2d_7x7, plot_path, plot_patch
+):
+    subplot_lensed_images(
+        tracer=tracer_x2_plane_7x7,
+        grid=grid_2d_7x7,
+        output_path=plot_path,
+        output_format="png",
+    )
+    assert path.join(plot_path, "subplot_lensed_images.png") in plot_patch.paths
