@@ -1,3 +1,19 @@
+"""
+Aggregator interface for loading ``Tracer`` objects from model-fit results.
+
+After a **PyAutoLens** model-fit the best-fit galaxy model parameters are stored in the
+output directory or SQLite database as part of the model JSON file.  This module
+reconstructs ``Tracer`` instances from those stored parameters so that the full
+ray-tracing model can be re-evaluated and inspected without re-running the fit.
+
+Two public objects are provided:
+
+- ``_tracer_from`` — a free function that accepts a single ``PyAutoFit`` ``Fit`` entry
+  and returns the list of ``Tracer`` objects (one per summed ``Analysis``) for the
+  requested model instance.
+- ``TracerAgg`` — a ``PyAutoFit`` ``AggBase`` subclass wrapping an ``Aggregator`` that
+  exposes a generator of tracer lists, one entry per stored model-fit.
+"""
 import logging
 from typing import List, Optional
 

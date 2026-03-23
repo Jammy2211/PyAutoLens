@@ -1,3 +1,20 @@
+"""
+Aggregator interface for loading ``FitInterferometer`` objects from lens model-fit results.
+
+This module assembles ``FitInterferometer`` instances offline by combining the
+interferometer dataset, ``Tracer``, dataset model, and adapt images stored in a
+``PyAutoFit`` output directory or SQLite database — reproducing exactly the fit that was
+evaluated during the original non-linear search.
+
+Two public objects are provided:
+
+- ``_fit_interferometer_from`` — a free function that accepts a single ``PyAutoFit``
+  ``Fit`` entry and returns a list of ``FitInterferometer`` objects (one per summed
+  ``Analysis``).
+- ``FitInterferometerAgg`` — a ``PyAutoFit`` ``AggBase`` subclass wrapping an
+  ``Aggregator`` that exposes a generator of ``FitInterferometer`` objects, enabling
+  memory-efficient iteration over large result sets.
+"""
 from typing import Optional, List
 
 import autofit as af
