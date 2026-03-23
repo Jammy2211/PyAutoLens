@@ -1,3 +1,15 @@
+"""
+Aggregator interface for dark-matter subhalo grid-search results.
+
+``SubhaloAgg`` wraps a ``PyAutoFit`` ``GridSearchAggregator`` to provide a convenient
+interface for loading and comparing the results of a subhalo detection grid search.
+
+A subhalo grid search runs an independent non-linear search in each cell of an image-plane
+grid, with the subhalo's (y, x) centre confined to that cell's region.  ``SubhaloAgg``
+collates these per-cell results and exposes generators that yield ``FitImaging`` objects
+for the best-fit model in each cell — both the "with subhalo" fit and (optionally) the
+"no subhalo" baseline — enabling the per-cell log-evidence difference map to be computed.
+"""
 from typing import Optional
 
 import autofit as af
