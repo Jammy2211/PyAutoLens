@@ -5,7 +5,6 @@ import autofit as af
 from autogalaxy.quantity.model.plotter_interface import PlotterInterfaceQuantity
 
 from autolens.analysis.plotter_interface import PlotterInterface
-from autogalaxy.quantity.plot.fit_quantity_plotters import FitQuantityPlotter
 
 
 class VisualizerQuantity(af.Visualizer):
@@ -46,9 +45,7 @@ class VisualizerQuantity(af.Visualizer):
         fit = analysis.fit_quantity_for_instance(instance=instance)
 
         plotter_interface = PlotterInterfaceQuantity(image_path=paths.image_path)
-        plotter_interface.fit_quantity(
-            fit=fit, fit_quanaity_plotter_cls=FitQuantityPlotter
-        )
+        plotter_interface.fit_quantity(fit=fit)
 
         plotter_interface = PlotterInterface(image_path=paths.image_path)
         plotter_interface.tracer(

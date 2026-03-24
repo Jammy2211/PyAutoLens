@@ -64,7 +64,7 @@ autolens/
   quantity/        FitQuantity for arbitrary lensing quantities
   analysis/        Shared analysis base classes, adapt images
   aggregator/      Scraping results from autofit output directories
-  plot/            Visualisation (Plotter classes for all data types)
+  plot/            Visualisation for all data types
 ```
 
 ## Decorator System (from autoarray)

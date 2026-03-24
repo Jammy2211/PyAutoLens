@@ -2,23 +2,11 @@ from autofit.non_linear.plot.nest_plotters import NestPlotter
 from autofit.non_linear.plot.mcmc_plotters import MCMCPlotter
 from autofit.non_linear.plot.mle_plotters import MLEPlotter
 
-from autogalaxy.plot.wrap import (
-    HalfLightRadiusAXVLine,
-    EinsteinRadiusAXVLine,
-    LightProfileCentresScatter,
-    MassProfileCentresScatter,
-    TangentialCriticalCurvesPlot,
-    TangentialCausticsPlot,
-    RadialCriticalCurvesPlot,
-    RadialCausticsPlot,
-    MultipleImagesScatter,
-)
-
 # ---------------------------------------------------------------------------
 # Standalone plot helpers
 # ---------------------------------------------------------------------------
-from autoarray.plot.plots.array import plot_array
-from autoarray.plot.plots.grid import plot_grid
+from autoarray.plot.array import plot_array
+from autoarray.plot.grid import plot_grid
 
 # ---------------------------------------------------------------------------
 # subplot_* public API

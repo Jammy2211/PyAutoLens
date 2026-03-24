@@ -152,9 +152,9 @@ This is often used to set up new ``Analysis`` objects with a positions penalty c
 
     analysis = al.AnalysisImaging(
         dataset=dataset,
-        positions_likelihood=result_1.positions_likelihood_from(
+        positions_likelihood_list=[result_1.positions_likelihood_from(
             factor=3.0, minimum_threshold=0.2
-        ),
+        )],
     )
 
 Multiple Source Plane Systems

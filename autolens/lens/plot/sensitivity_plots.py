@@ -5,8 +5,8 @@ from typing import Optional
 
 import autoarray as aa
 
-from autoarray.plot.plots.array import plot_array
-from autoarray.plot.plots.utils import save_figure
+from autoarray.plot.array import plot_array
+from autoarray.plot.utils import save_figure
 
 
 def subplot_tracer_images(

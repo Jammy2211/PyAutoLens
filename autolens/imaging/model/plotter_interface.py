@@ -75,24 +75,6 @@ class PlotterInterfaceImaging(PlotterInterface):
         if should_plot("subplot_of_planes"):
             subplot_of_planes(fit, output_path=output_path, output_format=fmt)
 
-        if plot_setting(section="inversion", name="subplot_mappings"):
-            try:
-                import autogalaxy.plot as aplt
-                output = self.output_from()
-                inversion_plotter = aplt.InversionPlotter(
-                    inversion=fit.inversion,
-                    mat_plot_2d=aplt.MatPlot2D(
-                        output=aplt.Output(path=self.image_path, format=fmt),
-                    ),
-                )
-                pixelization_index = 0
-                inversion_plotter.subplot_of_mapper(
-                    mapper_index=pixelization_index,
-                    auto_filename=f"subplot_mappings_{pixelization_index}",
-                )
-            except (IndexError, AttributeError, TypeError, Exception):
-                pass
-
         fits_to_fits(should_plot=should_plot, image_path=self.image_path, fit=fit)
 
     def fit_imaging_combined(
