@@ -10,7 +10,28 @@ def subplot_fit(
     output_path: Optional[str] = None,
     output_format: str = "png",
 ):
-    """Subplot of a FitPointDataset: positions panel and (optionally) fluxes panel."""
+    """
+    Produce a subplot summarising a `FitPointDataset`.
+
+    The subplot contains one or two panels depending on whether flux
+    measurements are present in the dataset:
+
+    * **Positions panel** (always shown): observed point-source positions
+      plotted as a grid, with the model-predicted positions overlaid as
+      red scatter points.
+    * **Fluxes panel** (shown only when ``fit.dataset.fluxes`` is not
+      ``None``): a bar/line plot of the observed flux values.
+
+    Parameters
+    ----------
+    fit : FitPointDataset
+        The point-source dataset fit to visualise.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    """
     from autoarray.plot.grid import plot_grid
     from autoarray.plot.yx import plot_yx
 

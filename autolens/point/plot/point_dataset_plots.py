@@ -10,7 +10,28 @@ def subplot_dataset(
     output_path: Optional[str] = None,
     output_format: str = "png",
 ):
-    """Subplot of a PointDataset: positions panel and (optionally) fluxes panel."""
+    """
+    Produce a subplot visualising a `PointDataset`.
+
+    The subplot contains one or two panels depending on whether flux
+    measurements are present:
+
+    * **Positions panel** (always shown): the observed point-source
+      positions rendered as a grid scatter plot.
+    * **Fluxes panel** (shown only when ``dataset.fluxes`` is not
+      ``None``): a line/bar plot of the observed flux values indexed by
+      image position.
+
+    Parameters
+    ----------
+    dataset : PointDataset
+        The point-source dataset to visualise.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    """
     from autoarray.plot.grid import plot_grid
     from autoarray.plot.yx import plot_yx
 

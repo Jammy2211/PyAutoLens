@@ -18,7 +18,45 @@ def subplot_detection_imaging(
     relative_to_value: float = 0.0,
     remove_zeros: bool = False,
 ):
-    """4-panel subplot: data, S/N map, log-evidence increase, subhalo mass grid."""
+    """
+    Produce a 4-panel subplot summarising subhalo detection from imaging data.
+
+    This function is the primary summary diagnostic for a subhalo
+    detection analysis run on imaging data.  The four panels are:
+
+    1. Imaging data (from the fit that includes the subhalo).
+    2. Signal-to-noise map of that fit.
+    3. Figure-of-merit (log-evidence or log-likelihood increase) grid,
+       indicating where a subhalo improves the fit.
+    4. Best-fit subhalo mass at each grid position.
+
+    Parameters
+    ----------
+    result : SubhaloResult
+        The subhalo detection result object exposing
+        ``figure_of_merit_array`` and ``subhalo_mass_array``.
+    fit_imaging_with_subhalo : FitImaging
+        The best-fit imaging fit that includes the subhalo, used for the
+        data and S/N panels.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    colormap : str, optional
+        Matplotlib colormap name.
+    use_log10 : bool, optional
+        If ``True`` a log10 stretch is applied to the data and S/N panels.
+    use_log_evidences : bool, optional
+        If ``True`` (default) log-evidence increases are shown in the
+        figure-of-merit panel; otherwise log-likelihood increases are used.
+    relative_to_value : float, optional
+        Value subtracted from each figure-of-merit entry before plotting.
+        Defaults to ``0.0`` (no subtraction).
+    remove_zeros : bool, optional
+        If ``True`` grid positions where the figure of merit is exactly
+        zero are masked out before plotting.
+    """
     fig, axes = plt.subplots(1, 4, figsize=(28, 7))
 
     plot_array(
@@ -67,7 +105,42 @@ def subplot_detection_fits(
     output_format: str = "png",
     colormap: str = "jet",
 ):
-    """6-panel subplot comparing fits with and without a subhalo."""
+    """
+    Produce a 6-panel subplot comparing imaging fits with and without a subhalo.
+
+    Displays residual maps and source-plane images in a 2 × 3 grid,
+    with the top row corresponding to the no-subhalo baseline and the
+    bottom row to the fit that includes the subhalo:
+
+    * Top row (no subhalo):
+
+      1. Normalised residual map.
+      2. Chi-squared map.
+      3. Source-plane image (plane 1).
+
+    * Bottom row (with subhalo):
+
+      4. Normalised residual map.
+      5. Chi-squared map.
+      6. Source-plane image (plane 1).
+
+    A visually improved source-plane reconstruction in the bottom row
+    indicates that the subhalo is detected.
+
+    Parameters
+    ----------
+    fit_imaging_no_subhalo : FitImaging
+        The imaging fit from the model *without* a subhalo.
+    fit_imaging_with_subhalo : FitImaging
+        The imaging fit from the model *with* a subhalo included.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    colormap : str, optional
+        Matplotlib colormap name.
+    """
     fig, axes = plt.subplots(2, 3, figsize=(21, 14))
 
     plot_array(

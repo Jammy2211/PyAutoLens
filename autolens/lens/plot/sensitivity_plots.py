@@ -19,7 +19,46 @@ def subplot_tracer_images(
     colormap: str = "jet",
     use_log10: bool = False,
 ):
-    """6-panel subplot showing lensed images and residuals from a perturbed tracer."""
+    """
+    Produce a 6-panel subplot comparing a perturbed and unperturbed tracer.
+
+    This is the primary diagnostic plot for subhalo sensitivity analysis.
+    The six panels show:
+
+    1. Full lensed model image from the perturbed tracer.
+    2. Lensed source image (perturbed tracer) with critical curves.
+    3. Unlensed source image in the source plane with caustics.
+    4. Convergence map of the perturbed tracer.
+    5. Lensed source image from the unperturbed (no-subhalo) tracer with
+       its critical curves.
+    6. Residual map: (perturbed lensed source) − (unperturbed lensed source).
+
+    Critical curves and caustics are computed from the unmasked grid
+    derived from ``mask``; failures are handled gracefully so that the
+    subplot is still produced even if curve computation fails.
+
+    Parameters
+    ----------
+    mask : aa.Mask2D
+        The imaging mask used to derive the unmasked grid and to build the
+        image-plane ``Grid2D``.
+    tracer_perturb : Tracer
+        The tracer *with* the perturbing substructure (e.g. a subhalo).
+    tracer_no_perturb : Tracer
+        The baseline tracer *without* any substructure perturbation.
+    source_image : Array2D
+        A pixelated source-plane image passed to
+        ``image_2d_via_input_plane_image_from`` for both tracers.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    colormap : str, optional
+        Matplotlib colormap name.
+    use_log10 : bool, optional
+        If ``True`` the colour scale is applied on a log10 stretch.
+    """
     from autogalaxy.plot.plot_utils import _critical_curves_from, _caustics_from
     from autoarray.plot.utils import numpy_lines as _to_lines
 
@@ -84,7 +123,47 @@ def subplot_sensitivity(
     colormap: str = "jet",
     use_log10: bool = False,
 ):
-    """8-panel sensitivity subplot: log-likelihood/evidence maps and above-threshold map."""
+    """
+    Produce an 8-panel sensitivity-mapping summary subplot.
+
+    Displays the key figures of merit and raw statistics from a sensitivity
+    mapping analysis in a 2 × 4 grid.  Panels that cannot be computed (e.g.
+    because log-evidence values are unavailable) are silently skipped.
+
+    The standard panels are:
+
+    1. Lens-light-subtracted data image.
+    2. Increase in log-evidence map.
+    3. Increase in log-likelihood map.
+    4. Binary detection map (log-likelihood increase > 5.0).
+    5. Base (no-subhalo) log-evidence map (if available).
+    6. Perturbed (with-subhalo) log-evidence map (if available).
+    7. Base log-likelihood map (if available).
+    8. Perturbed log-likelihood map (if available).
+
+    Panels 5–8 share a common colour scale so that absolute evidence /
+    likelihood values can be compared across the two models.
+
+    Parameters
+    ----------
+    result : SensitivityResult
+        A sensitivity-mapping result object exposing
+        ``figure_of_merit_array``, ``log_evidences_base``,
+        ``log_evidences_perturbed``, ``log_likelihoods_base``, and
+        ``log_likelihoods_perturbed``.
+    data_subtracted : Array2D
+        The lens-light-subtracted imaging data shown in the first panel.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    colormap : str, optional
+        Matplotlib colormap name.
+    use_log10 : bool, optional
+        If ``True`` a log10 stretch is applied to the ``data_subtracted``
+        panel.
+    """
     log_likelihoods = result.figure_of_merit_array(
         use_log_evidences=False,
         remove_zeros=True,
@@ -173,7 +252,34 @@ def subplot_figures_of_merit_grid(
     use_log_evidences: bool = True,
     remove_zeros: bool = True,
 ):
-    """Single-panel subplot: the figures-of-merit grid for sensitivity mapping."""
+    """
+    Produce a single-panel subplot showing the sensitivity figures-of-merit grid.
+
+    Extracts the 2-D array of figures of merit (either log-evidence or
+    log-likelihood increases) from the sensitivity-mapping result and
+    renders it as a single image.  This is the compact version of the
+    sensitivity diagnostic; see :func:`subplot_sensitivity` for the full
+    multi-panel version.
+
+    Parameters
+    ----------
+    result : SensitivityResult
+        A sensitivity-mapping result object exposing
+        ``figure_of_merit_array``.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    colormap : str, optional
+        Matplotlib colormap name.
+    use_log_evidences : bool, optional
+        If ``True`` (default) the log-evidence increase is used as the
+        figure of merit; otherwise the log-likelihood increase is used.
+    remove_zeros : bool, optional
+        If ``True`` (default) grid positions where the figure of merit is
+        exactly zero are masked out before plotting.
+    """
     figures_of_merit = result.figure_of_merit_array(
         use_log_evidences=use_log_evidences,
         remove_zeros=remove_zeros,

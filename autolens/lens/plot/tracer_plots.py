@@ -97,7 +97,31 @@ def subplot_lensed_images(
     colormap: str = "jet",
     use_log10: bool = False,
 ):
-    """One panel per plane showing the image of the galaxies in that plane."""
+    """
+    Produce a subplot with one panel per tracer plane showing each plane's image.
+
+    For each plane in the tracer the galaxies in that plane are evaluated on
+    the ray-traced grid for that plane, producing the lensed image
+    contribution from those galaxies.  Each panel is titled
+    ``"Image Of Plane <index>"``.
+
+    Parameters
+    ----------
+    tracer : Tracer
+        The tracer whose planes are ray-traced and imaged.
+    grid : aa.type.Grid2DLike
+        The 2-D (y, x) arc-second grid on which the lensed images are
+        evaluated.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    colormap : str, optional
+        Matplotlib colormap name.
+    use_log10 : bool, optional
+        If ``True`` the colour scale is applied on a log10 stretch.
+    """
     traced_grids = tracer.traced_grid_2d_list_from(grid=grid)
     n = tracer.total_planes
 
@@ -127,7 +151,37 @@ def subplot_galaxies_images(
     colormap: str = "jet",
     use_log10: bool = False,
 ):
-    """Plane 0 image + for each plane > 0: lensed image + source plane image."""
+    """
+    Produce a subplot showing per-galaxy images for every plane in the tracer.
+
+    Renders the following panels in a single row:
+
+    1. Lens-plane (plane 0) image.
+    2. For each subsequent plane *i* (i ≥ 1):
+
+       a. The lensed image of galaxies in plane *i* evaluated on the
+          ray-traced grid (titled ``"Image Of Plane <i>"``).
+       b. The source-plane image of galaxies in plane *i* (titled
+          ``"Plane Image Of Plane <i>"``).
+
+    The total number of panels is ``2 * total_planes - 1``.
+
+    Parameters
+    ----------
+    tracer : Tracer
+        The tracer whose planes are ray-traced and imaged.
+    grid : aa.type.Grid2DLike
+        The 2-D (y, x) arc-second grid on which the images are evaluated.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    colormap : str, optional
+        Matplotlib colormap name.
+    use_log10 : bool, optional
+        If ``True`` the colour scale is applied on a log10 stretch.
+    """
     traced_grids = tracer.traced_grid_2d_list_from(grid=grid)
     n = 2 * tracer.total_planes - 1
 

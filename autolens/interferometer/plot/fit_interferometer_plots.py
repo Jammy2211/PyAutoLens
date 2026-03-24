@@ -12,7 +12,24 @@ from autogalaxy.plot.plot_utils import _critical_curves_from
 
 
 def _plot_yx(y, x, ax, title, xlabel="", ylabel=""):
-    """Scatter plot of y vs x into an axes."""
+    """
+    Render a scatter plot of *y* versus *x* into an existing axes object.
+
+    Parameters
+    ----------
+    y : array-like
+        Dependent-variable values (y-axis).
+    x : array-like
+        Independent-variable values (x-axis).
+    ax : matplotlib.axes.Axes
+        The axes into which the scatter plot is drawn.
+    title : str
+        Axes title.
+    xlabel : str, optional
+        Label for the x-axis.
+    ylabel : str, optional
+        Label for the y-axis.
+    """
     ax.scatter(x, y, s=1)
     ax.set_title(title)
     ax.set_xlabel(xlabel)
@@ -21,6 +38,32 @@ def _plot_yx(y, x, ax, title, xlabel="", ylabel=""):
 
 def _plot_source_plane(fit, ax, plane_index, zoom_to_brightest=True,
                        colormap="jet", use_log10=False):
+    """
+    Plot the source-plane image (or a blank inversion placeholder) into an axes.
+
+    For parametric sources the function ray-traces a zoomed real-space grid
+    to the source plane and renders the resulting image via
+    :func:`~autoarray.plot.array.plot_array`.  When the plane contains a
+    pixelization (inversion source), the axes are turned off and labelled
+    as a placeholder, because the reconstruction is rendered separately.
+
+    Parameters
+    ----------
+    fit : FitInterferometer
+        The interferometer fit providing the tracer and real-space mask.
+    ax : matplotlib.axes.Axes or None
+        The axes into which the source-plane image is drawn.  Passing
+        ``None`` is a no-op.
+    plane_index : int
+        Index of the plane in ``fit.tracer.planes`` to visualise.
+    zoom_to_brightest : bool, optional
+        Reserved for future zoomed rendering; currently unused in the
+        rendering call.
+    colormap : str, optional
+        Matplotlib colormap name.
+    use_log10 : bool, optional
+        If ``True`` the colour scale is applied on a log10 stretch.
+    """
     tracer = fit.tracer_linear_light_profiles_to_light_profiles
     if not tracer.planes[plane_index].has(cls=aa.Pixelization):
         zoom = aa.Zoom2D(mask=fit.dataset.real_space_mask)
@@ -47,7 +90,37 @@ def subplot_fit(
     output_format: str = "png",
     colormap: str = "jet",
 ):
-    """12-panel subplot for an interferometer fit."""
+    """
+    Produce a 12-panel subplot summarising an interferometer fit.
+
+    Arranges the following panels in a 3 × 4 grid:
+
+    * Amplitudes vs UV-distance (scatter)
+    * Dirty image
+    * Dirty signal-to-noise map
+    * Dirty model image
+    * Source plane image (final plane)
+    * Normalised residual (real part) vs UV-distance (scatter)
+    * Normalised residual (imaginary part) vs UV-distance (scatter)
+    * Source plane image zoomed (final plane)
+    * Dirty normalised residual map
+    * Dirty normalised residual map clipped to ± 1 σ
+    * (panel 9 re-used for 1σ clip — see implementation note)
+    * Dirty chi-squared map
+    * Source plane image (full extent)
+
+    Parameters
+    ----------
+    fit : FitInterferometer
+        The interferometer fit to visualise.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    colormap : str, optional
+        Matplotlib colormap name applied to all image panels.
+    """
     tracer = fit.tracer_linear_light_profiles_to_light_profiles
     final_plane_index = len(fit.tracer.planes) - 1
 
@@ -126,7 +199,31 @@ def subplot_fit_real_space(
     output_format: str = "png",
     colormap: str = "jet",
 ):
-    """Real-space subplot: image + source plane (or inversion panels)."""
+    """
+    Produce a real-space subplot for an interferometer fit.
+
+    Renders the model in image space rather than the visibility (UV)
+    domain.  The layout depends on whether the fit uses an inversion:
+
+    * **No inversion** — two panels: the full lensed model image and the
+      source-plane image of the final plane evaluated on the zoomed
+      real-space grid.
+    * **With inversion** — two placeholder panels are shown (axes turned
+      off), because the inversion reconstruction is rendered by the
+      inversion plotter.
+
+    Parameters
+    ----------
+    fit : FitInterferometer
+        The interferometer fit to visualise.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    colormap : str, optional
+        Matplotlib colormap name applied to all image panels.
+    """
     tracer = fit.tracer_linear_light_profiles_to_light_profiles
     final_plane_index = len(fit.tracer.planes) - 1
 

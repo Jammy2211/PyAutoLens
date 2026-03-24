@@ -12,7 +12,26 @@ from autogalaxy.plot.plot_utils import _critical_curves_from, _caustics_from
 
 
 def _get_source_vmax(fit):
-    """Return vmax based on source-plane model images, or None."""
+    """
+    Return the colour-scale maximum for source-plane panels.
+
+    Computes the global maximum pixel value across all source-plane model
+    images (planes with index >= 1), so that source and subtracted panels
+    share a common colour scale.  Returns ``None`` when no source-plane
+    model images exist (e.g. a lens-only fit) so callers can fall back to
+    automatic scaling.
+
+    Parameters
+    ----------
+    fit : FitImaging
+        The imaging fit whose ``model_images_of_planes_list`` is inspected.
+
+    Returns
+    -------
+    float or None
+        Global maximum pixel value of all source-plane model images, or
+        ``None`` if none are available.
+    """
     try:
         return float(np.max([mi.array for mi in fit.model_images_of_planes_list[1:]]))
     except (ValueError, IndexError):
@@ -21,7 +40,35 @@ def _get_source_vmax(fit):
 
 def _plot_source_plane(fit, ax, plane_index, zoom_to_brightest=True,
                        colormap="jet", use_log10=False):
-    """Plot source plane image or inversion reconstruction into *ax*."""
+    """
+    Plot the source-plane image (or a blank inversion placeholder) into an axes.
+
+    When the plane at ``plane_index`` does not contain a
+    `~autoarray.Pixelization` (i.e. it is a parametric source), the
+    function ray-traces a zoomed image-plane grid to the source plane,
+    evaluates the source-galaxy light, and renders the resulting 2-D array
+    via :func:`~autoarray.plot.array.plot_array`.  When the plane *does*
+    contain a pixelization (an inversion source), the axes are turned off
+    and labelled as "Source Reconstruction" instead, because the inversion
+    reconstruction is rendered separately by the inversion plotter.
+
+    Parameters
+    ----------
+    fit : FitImaging
+        The imaging fit providing the tracer, mask, and inversion state.
+    ax : matplotlib.axes.Axes or None
+        The axes into which the source-plane image is drawn.  Passing
+        ``None`` is a no-op.
+    plane_index : int
+        Index of the plane in ``fit.tracer.planes`` to visualise.
+    zoom_to_brightest : bool, optional
+        Passed through to the zoom logic (currently unused in the
+        rendering call but reserved for future use).
+    colormap : str, optional
+        Matplotlib colormap name.
+    use_log10 : bool, optional
+        If ``True`` the colour scale is applied on a log10 stretch.
+    """
     tracer = fit.tracer_linear_light_profiles_to_light_profiles
     if not tracer.planes[plane_index].has(cls=aa.Pixelization):
         zoom = aa.Zoom2D(mask=fit.mask)
@@ -50,9 +97,41 @@ def subplot_fit(
     colormap: str = "jet",
     plane_index: Optional[int] = None,
 ):
-    """12-panel subplot of the imaging fit.
+    """
+    Produce a 12-panel subplot summarising an imaging fit.
 
-    For single-plane tracers delegates to :func:`subplot_fit_x1_plane`.
+    Arranges the following panels in a 3 × 4 grid:
+
+    * Data (full scale and source scale)
+    * Signal-to-noise map
+    * Model image
+    * Lens-light model image
+    * Lens-light-subtracted image (source scale)
+    * Source model image (source scale)
+    * Source plane image (zoomed)
+    * Normalised residual map (symmetric scale)
+    * Normalised residual map clipped to ± 1 σ
+    * Chi-squared map
+    * Source plane image (full extent)
+
+    For single-plane tracers the function delegates to
+    :func:`subplot_fit_x1_plane`, which uses a simpler 2 × 3 layout.
+
+    Parameters
+    ----------
+    fit : FitImaging
+        The imaging fit to visualise.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`
+        (e.g. ``"png"``, ``"pdf"``).
+    colormap : str, optional
+        Matplotlib colormap name applied to all image panels.
+    plane_index : int, optional
+        Index of the source plane to use for the source-scale panels.
+        Defaults to the final plane in the tracer.
     """
     if len(fit.tracer.planes) == 1:
         return subplot_fit_x1_plane(fit, output_path=output_path,
@@ -145,7 +224,33 @@ def subplot_fit_x1_plane(
     output_format: str = "png",
     colormap: str = "jet",
 ):
-    """6-panel subplot for a single-plane tracer fit."""
+    """
+    Produce a 6-panel subplot for a single-plane tracer imaging fit.
+
+    Arranges the following panels in a 2 × 3 grid:
+
+    * Data
+    * Signal-to-noise map
+    * Model image
+    * Normalised residual map (lens-light subtracted proxy)
+    * Normalised residual map with zero minimum
+    * Normalised residual map (symmetric scale)
+
+    This simplified layout is used automatically by :func:`subplot_fit`
+    when the tracer has only one plane (no source plane).
+
+    Parameters
+    ----------
+    fit : FitImaging
+        The single-plane imaging fit to visualise.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    colormap : str, optional
+        Matplotlib colormap name applied to all image panels.
+    """
     fig, axes = plt.subplots(2, 3, figsize=(21, 14))
     axes_flat = list(axes.flatten())
 
@@ -184,7 +289,33 @@ def subplot_fit_log10(
     colormap: str = "jet",
     plane_index: Optional[int] = None,
 ):
-    """12-panel log10 subplot of the imaging fit."""
+    """
+    Produce a 12-panel subplot summarising an imaging fit with log10 colour scaling.
+
+    Equivalent to :func:`subplot_fit` but applies a log10 stretch to all
+    positive-valued panels (data, model image, lens-light model, subtracted
+    image, source model image, chi-squared map, source plane images).
+    Residual panels are left on a linear scale because they contain negative
+    values.
+
+    For single-plane tracers the function delegates to
+    :func:`subplot_fit_log10_x1_plane`.
+
+    Parameters
+    ----------
+    fit : FitImaging
+        The imaging fit to visualise.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    colormap : str, optional
+        Matplotlib colormap name applied to all image panels.
+    plane_index : int, optional
+        Index of the source plane to use for the source-scale panels.
+        Defaults to the final plane in the tracer.
+    """
     if len(fit.tracer.planes) == 1:
         return subplot_fit_log10_x1_plane(fit, output_path=output_path,
                                           output_format=output_format, colormap=colormap)
@@ -266,7 +397,28 @@ def subplot_fit_log10_x1_plane(
     output_format: str = "png",
     colormap: str = "jet",
 ):
-    """6-panel log10 subplot for a single-plane tracer fit."""
+    """
+    Produce a 6-panel log10 subplot for a single-plane tracer imaging fit.
+
+    Equivalent to :func:`subplot_fit_x1_plane` but applies a log10 colour
+    stretch to the data, model image, and chi-squared panels.  Residual
+    panels remain on a linear scale.
+
+    This simplified layout is used automatically by
+    :func:`subplot_fit_log10` when the tracer has only one plane.
+
+    Parameters
+    ----------
+    fit : FitImaging
+        The single-plane imaging fit to visualise.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    colormap : str, optional
+        Matplotlib colormap name applied to all image panels.
+    """
     fig, axes = plt.subplots(2, 3, figsize=(21, 14))
     axes_flat = list(axes.flatten())
 
@@ -307,7 +459,36 @@ def subplot_of_planes(
     colormap: str = "jet",
     plane_index: Optional[int] = None,
 ):
-    """4-panel subplot per plane: data, subtracted, model image, plane image."""
+    """
+    Produce a 4-panel subplot for each plane in the tracer.
+
+    For every plane (or the single plane specified by ``plane_index``), a
+    1 × 4 row is saved to its own figure containing:
+
+    * Data
+    * Lens-light-subtracted image for that plane
+    * Model image contributed by that plane
+    * Source-plane image evaluated at that plane
+
+    Each figure is saved with the filename
+    ``subplot_of_plane_<plane_index>``.
+
+    Parameters
+    ----------
+    fit : FitImaging
+        The imaging fit whose planes are visualised.
+    output_path : str, optional
+        Directory in which to save the figures.  If ``None`` the figures
+        are not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    colormap : str, optional
+        Matplotlib colormap name applied to all image panels.
+    plane_index : int, optional
+        If provided, only the subplot for that specific plane is produced.
+        If ``None`` (default) a subplot is produced for every plane in the
+        tracer.
+    """
     if plane_index is None:
         plane_indexes = range(len(fit.tracer.planes))
     else:
@@ -345,7 +526,33 @@ def subplot_tracer_from_fit(
     output_format: str = "png",
     colormap: str = "jet",
 ):
-    """9-panel tracer subplot derived from a FitImaging object."""
+    """
+    Produce a 9-panel tracer subplot derived from a `FitImaging` object.
+
+    Uses the best-fit linear-light-profile tracer to render:
+
+    * Model image (full lensed image)
+    * Source model image (source-plane brightness at image scale)
+    * Source plane image (evaluated on the image-plane grid, full extent)
+    * Lens-plane image with critical curves (log10 scale)
+    * Panels 5–9 are reserved (currently blank) for future mass-map panels
+
+    The critical curves are computed from the tracer via
+    :func:`~autogalaxy.plot.plot_utils._critical_curves_from` and overlaid
+    on the lens-plane image.
+
+    Parameters
+    ----------
+    fit : FitImaging
+        The imaging fit whose best-fit tracer is visualised.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    colormap : str, optional
+        Matplotlib colormap name applied to all image panels.
+    """
     final_plane_index = len(fit.tracer.planes) - 1
 
     fig, axes = plt.subplots(3, 3, figsize=(21, 21))
@@ -395,7 +602,34 @@ def subplot_fit_combined(
     output_format: str = "png",
     colormap: str = "jet",
 ):
-    """Combined multi-row subplot for a list of FitImaging objects."""
+    """
+    Produce a combined multi-row subplot for a list of `FitImaging` objects.
+
+    Each row corresponds to one fit and contains six panels:
+
+    * Data
+    * Lens-light-subtracted image (plane 1)
+    * Lens model image (plane 0)
+    * Source model image (final plane)
+    * Source plane image (final plane)
+    * Normalised residual map
+
+    This layout is useful for visually comparing fits from multiple
+    datasets or epochs side by side.
+
+    Parameters
+    ----------
+    fit_list : list of FitImaging
+        The imaging fits to display.  Each fit occupies one row of the
+        figure.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    colormap : str, optional
+        Matplotlib colormap name applied to all image panels.
+    """
     n_fits = len(fit_list)
     n_cols = 6
     fig, axes = plt.subplots(n_fits, n_cols, figsize=(7 * n_cols, 7 * n_fits))
@@ -450,7 +684,26 @@ def subplot_fit_combined_log10(
     output_format: str = "png",
     colormap: str = "jet",
 ):
-    """Combined log10 multi-row subplot for a list of FitImaging objects."""
+    """
+    Produce a combined log10 multi-row subplot for a list of `FitImaging` objects.
+
+    Equivalent to :func:`subplot_fit_combined` but applies a log10 colour
+    stretch to the data, lens model, and source model panels.  The
+    normalised residual panel remains on a linear scale.
+
+    Parameters
+    ----------
+    fit_list : list of FitImaging
+        The imaging fits to display.  Each fit occupies one row of the
+        figure.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    colormap : str, optional
+        Matplotlib colormap name applied to all image panels.
+    """
     n_fits = len(fit_list)
     n_cols = 6
     fig, axes = plt.subplots(n_fits, n_cols, figsize=(7 * n_cols, 7 * n_fits))
@@ -502,7 +755,25 @@ def subplot_fit_combined_log10(
 
 
 def _symmetric_vmax(array) -> float:
-    """Return abs-max finite value for symmetric colormap scaling."""
+    """
+    Return the absolute-maximum finite value for symmetric colormap scaling.
+
+    Zooms into the unmasked region of ``array``, extracts all finite pixel
+    values, and returns their absolute maximum.  Used to set ``vmin`` and
+    ``vmax`` symmetrically around zero for residual-map panels so that the
+    zero-residual colour is centred in the colormap.
+
+    Parameters
+    ----------
+    array : Array2D or array-like
+        The array from which the symmetric colour limit is computed.
+
+    Returns
+    -------
+    float
+        The absolute maximum of all finite pixel values in the (zoomed)
+        array.  Returns ``1.0`` if the array contains no finite values.
+    """
     try:
         vals = _zoom_array_2d(array).native.array
     except AttributeError:
