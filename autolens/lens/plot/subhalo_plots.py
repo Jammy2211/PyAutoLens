@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from typing import Optional
 
 from autoarray.plot.plots.array import plot_array
-from autolens.plot.plot_utils import _save_subplot
+from autoarray.plot.plots.utils import save_figure
 from autolens.imaging.plot.fit_imaging_plots import _plot_source_plane
 
 
@@ -57,7 +57,7 @@ def subplot_detection_imaging(
     )
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, "subplot_detection_imaging", output_format)
+    save_figure(fig, path=output_path, filename="subplot_detection_imaging", format=output_format)
 
 
 def subplot_detection_fits(
@@ -101,4 +101,4 @@ def subplot_detection_fits(
                        colormap=colormap)
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, "subplot_detection_fits", output_format)
+    save_figure(fig, path=output_path, filename="subplot_detection_fits", format=output_format)

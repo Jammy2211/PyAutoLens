@@ -6,9 +6,9 @@ import autoarray as aa
 import autogalaxy as ag
 
 from autoarray.plot.plots.array import plot_array, _zoom_array_2d
+from autoarray.plot.plots.utils import save_figure
 from autolens.plot.plot_utils import (
     _to_lines,
-    _save_subplot,
     _critical_curves_from,
     _caustics_from,
 )
@@ -139,7 +139,7 @@ def subplot_fit(
                        colormap=colormap)
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, f"subplot_fit{plane_index_tag}", output_format)
+    save_figure(fig, path=output_path, filename=f"subplot_fit{plane_index_tag}", format=output_format)
 
 
 def subplot_fit_x1_plane(
@@ -177,7 +177,7 @@ def subplot_fit_x1_plane(
                colormap=colormap, vmin=-_abs_max, vmax=_abs_max)
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, "subplot_fit_x1_plane", output_format)
+    save_figure(fig, path=output_path, filename="subplot_fit_x1_plane", format=output_format)
 
 
 def subplot_fit_log10(
@@ -260,7 +260,7 @@ def subplot_fit_log10(
                        colormap=colormap, use_log10=True)
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, f"subplot_fit_log10{plane_index_tag}", output_format)
+    save_figure(fig, path=output_path, filename=f"subplot_fit_log10{plane_index_tag}", format=output_format)
 
 
 def subplot_fit_log10_x1_plane(
@@ -300,7 +300,7 @@ def subplot_fit_log10_x1_plane(
                colormap=colormap, use_log10=True)
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, "subplot_fit_log10", output_format)
+    save_figure(fig, path=output_path, filename="subplot_fit_log10", format=output_format)
 
 
 def subplot_of_planes(
@@ -339,7 +339,7 @@ def subplot_of_planes(
         _plot_source_plane(fit, axes_flat[3], pidx, colormap=colormap)
 
         plt.tight_layout()
-        _save_subplot(fig, output_path, f"subplot_of_plane_{pidx}", output_format)
+        save_figure(fig, path=output_path, filename=f"subplot_of_plane_{pidx}", format=output_format)
 
 
 def subplot_tracer_from_fit(
@@ -389,7 +389,7 @@ def subplot_tracer_from_fit(
         axes_flat[i].axis("off")
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, "subplot_tracer", output_format)
+    save_figure(fig, path=output_path, filename="subplot_tracer", format=output_format)
 
 
 def subplot_fit_combined(
@@ -444,7 +444,7 @@ def subplot_fit_combined(
                    title="Normalized Residual Map", colormap=colormap)
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, "subplot_fit_combined", output_format)
+    save_figure(fig, path=output_path, filename="subplot_fit_combined", format=output_format)
 
 
 def subplot_fit_combined_log10(
@@ -501,7 +501,7 @@ def subplot_fit_combined_log10(
                    title="Normalized Residual Map", colormap=colormap)
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, "fit_combined_log10", output_format)
+    save_figure(fig, path=output_path, filename="fit_combined_log10", format=output_format)
 
 
 def _symmetric_vmax(array) -> float:

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from typing import Optional
 
-from autolens.plot.plot_utils import _save_subplot
+from autoarray.plot.plots.utils import save_figure
 
 
 def subplot_fit(
@@ -57,4 +57,4 @@ def subplot_fit(
         )
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, "subplot_fit", output_format)
+    save_figure(fig, path=output_path, filename="subplot_fit", format=output_format)

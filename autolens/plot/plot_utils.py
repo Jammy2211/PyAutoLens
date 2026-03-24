@@ -1,6 +1,4 @@
-import os
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 def _to_lines(*items):
@@ -30,26 +28,6 @@ def _to_lines(*items):
 def _to_positions(*items):
     """Convert multiple position sources into a flat list of (N, 2) numpy arrays."""
     return _to_lines(*items)
-
-
-def _save_subplot(fig, output_path, filename, output_format="png"):
-    """Save a subplot figure to disk (or show it when output_path is None)."""
-    if isinstance(output_format, (list, tuple)):
-        fmts = output_format
-    else:
-        fmts = [output_format]
-
-    if output_path:
-        os.makedirs(output_path, exist_ok=True)
-        for fmt in fmts:
-            fig.savefig(
-                os.path.join(output_path, f"{filename}.{fmt}"),
-                bbox_inches="tight",
-                pad_inches=0.1,
-            )
-    else:
-        plt.show()
-    plt.close(fig)
 
 
 def _critical_curves_from(tracer, grid):
