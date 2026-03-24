@@ -6,7 +6,6 @@ import autogalaxy as ag
 from autolens.interferometer.model.plotter_interface import (
     PlotterInterfaceInterferometer,
 )
-from autolens.lens import tracer_util
 from autogalaxy import exc
 
 logger = logging.getLogger(__name__)
@@ -95,10 +94,6 @@ class VisualizerInterferometer(af.Visualizer):
         """
         fit = analysis.fit_from(instance=instance)
 
-        visuals_2d_of_planes_list = tracer_util.visuals_2d_of_planes_list_from(
-            tracer=fit.tracer, grid=fit.grids.lp.mask.derive_grid.all_false
-        )
-
         plotter_interface = PlotterInterfaceInterferometer(
             image_path=paths.image_path, title_prefix=analysis.title_prefix
         )
@@ -106,7 +101,6 @@ class VisualizerInterferometer(af.Visualizer):
         try:
             plotter_interface.fit_interferometer(
                 fit=fit,
-                visuals_2d_of_planes_list=visuals_2d_of_planes_list,
                 quick_update=quick_update,
             )
         except exc.InversionException:
@@ -146,17 +140,13 @@ class VisualizerInterferometer(af.Visualizer):
         grid = ag.Grid2D.from_extent(extent=extent, shape_native=shape_native)
 
         try:
-            plotter_interface.fit_interferometer(
-                fit=fit,
-                visuals_2d_of_planes_list=visuals_2d_of_planes_list,
-            )
+            plotter_interface.fit_interferometer(fit=fit)
         except exc.InversionException:
             pass
 
         plotter_interface.tracer(
             tracer=tracer,
             grid=grid,
-            visuals_2d_of_planes_list=visuals_2d_of_planes_list,
         )
         plotter_interface.galaxies(
             galaxies=tracer.galaxies,

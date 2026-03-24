@@ -25,7 +25,7 @@ classifiers = [
 ]
 keywords = ["cli"]
 dependencies = [
-    "autogalaxy",
+    "autogalaxy @ git+https://github.com/Jammy2211/PyAutoGalaxy.git@claude/refactor-plotting-module-3ZdD8",
     "nautilus-sampler==1.0.5"
 ]
 

@@ -1,7 +1,3 @@
-from typing import Optional
-
-import autoarray.plot as aplt
-
 from autogalaxy.interferometer.model.plotter_interface import (
     PlotterInterfaceInterferometer as AgPlotterInterfaceInterferometer,
 )
@@ -9,8 +5,9 @@ from autogalaxy.interferometer.model.plotter_interface import (
 from autogalaxy.interferometer.model.plotter_interface import fits_to_fits
 
 from autolens.interferometer.fit_interferometer import FitInterferometer
-from autolens.interferometer.plot.fit_interferometer_plotters import (
-    FitInterferometerPlotter,
+from autolens.interferometer.plot.fit_interferometer_plots import (
+    subplot_fit,
+    subplot_fit_real_space,
 )
 from autolens.analysis.plotter_interface import PlotterInterface
 
@@ -23,65 +20,61 @@ class PlotterInterfaceInterferometer(PlotterInterface):
     def fit_interferometer(
         self,
         fit: FitInterferometer,
-        visuals_2d_of_planes_list: Optional[aplt.Visuals2D] = None,
         quick_update: bool = False,
     ):
         """
-        Visualizes a `FitInterferometer` object, which fits an interferometer dataset.
-
-        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path`
-        is the output folder of the non-linear search.
-
-        Visualization includes a subplot of individual images of attributes of the `FitInterferometer` (e.g. the model
-        data,residual map) and .fits files containing its attributes grouped together.
-
-        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under
-        the `fit` and `fit_interferometer` headers.
+        Visualizes a `FitInterferometer` object.
 
         Parameters
         ----------
         fit
-            The maximum log likelihood `FitInterferometer` of the non-linear search which is used to plot the fit.
+            The maximum log likelihood `FitInterferometer` of the non-linear search.
         """
 
         def should_plot(name):
             return plot_setting(section=["fit", "fit_interferometer"], name=name)
 
-        mat_plot_1d = self.mat_plot_1d_from()
-        mat_plot_2d = self.mat_plot_2d_from()
-
-        fit_plotter = FitInterferometerPlotter(
-            fit=fit,
-            mat_plot_1d=mat_plot_1d,
-            mat_plot_2d=mat_plot_2d,
-        )
+        output_path = str(self.image_path)
+        fmt = self.fmt
 
         if should_plot("subplot_fit"):
-            fit_plotter.subplot_fit()
+            subplot_fit(fit, output_path=output_path, output_format=fmt)
 
         if should_plot("subplot_fit_dirty_images"):
-            fit_plotter.subplot_fit_dirty_images()
+            # Use the autoarray FitInterferometerMeta plotter for dirty images subplot
+            try:
+                import autogalaxy.plot as aplt
+                from autoarray.fit.plot.fit_interferometer_plotters import FitInterferometerPlotterMeta
+                output = self.output_from()
+                meta_plotter = FitInterferometerPlotterMeta(
+                    fit=fit,
+                    output=output,
+                )
+                meta_plotter.subplot_fit_dirty_images()
+            except Exception:
+                pass
 
         if quick_update:
             return
 
         if should_plot("subplot_fit_real_space"):
-            fit_plotter.subplot_fit_real_space()
-
-        mat_plot_1d = self.mat_plot_1d_from()
-        mat_plot_2d = self.mat_plot_2d_from()
-
-        fit_plotter = FitInterferometerPlotter(
-            fit=fit,
-            mat_plot_1d=mat_plot_1d,
-            mat_plot_2d=mat_plot_2d,
-            visuals_2d_of_planes_list=visuals_2d_of_planes_list,
-        )
+            subplot_fit_real_space(fit, output_path=output_path, output_format=fmt)
 
         if plot_setting(section="inversion", name="subplot_mappings"):
-            fit_plotter.subplot_mappings_of_plane(
-                plane_index=len(fit.tracer.planes) - 1
-            )
+            try:
+                import autogalaxy.plot as aplt
+                inversion_plotter = aplt.InversionPlotter(
+                    inversion=fit.inversion,
+                    mat_plot_2d=aplt.MatPlot2D(
+                        output=aplt.Output(path=self.image_path, format=fmt),
+                    ),
+                )
+                inversion_plotter.subplot_of_mapper(
+                    mapper_index=0,
+                    auto_filename="subplot_mappings_0",
+                )
+            except (IndexError, AttributeError, TypeError, Exception):
+                pass
 
         fits_to_fits(
             should_plot=should_plot,

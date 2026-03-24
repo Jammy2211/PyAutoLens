@@ -7,14 +7,14 @@ from autoconf.fitsable import hdu_list_for_output_from
 
 import autoarray as aa
 import autogalaxy as ag
-import autogalaxy.plot as aplt
 
 from autogalaxy.analysis.plotter_interface import plot_setting
 
 from autogalaxy.analysis.plotter_interface import PlotterInterface as AgPlotterInterface
 
 from autolens.lens.tracer import Tracer
-from autolens.lens.plot.tracer_plotters import TracerPlotter
+from autolens.lens.plot.tracer_plots import subplot_galaxies_images
+from autoarray.plot.plots.array import plot_array
 
 
 class PlotterInterface(AgPlotterInterface):
@@ -36,44 +36,31 @@ class PlotterInterface(AgPlotterInterface):
         self,
         tracer: Tracer,
         grid: aa.type.Grid2DLike,
-        visuals_2d_of_planes_list: Optional[aplt.Visuals2D] = None,
     ):
         """
         Visualizes a `Tracer` object.
-
-        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path`
-        points to the search's results folder and this function visualizes the maximum log likelihood `Tracer`
-        inferred by the search so far.
-
-        Visualization includes a subplot of individual images of attributes of the tracer (e.g. its image, convergence,
-        deflection angles) and .fits files containing its attributes grouped together.
-
-        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under
-        the `tracer` header.
 
         Parameters
         ----------
         tracer
             The maximum log likelihood `Tracer` of the non-linear search.
         grid
-            A 2D grid of (y,x) arc-second coordinates used to perform ray-tracing, which is the masked grid tied to
-            the dataset.
+            A 2D grid of (y,x) arc-second coordinates used to perform ray-tracing.
         """
 
         def should_plot(name):
             return plot_setting(section="tracer", name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from()
-
-        tracer_plotter = TracerPlotter(
-            tracer=tracer,
-            grid=grid,
-            mat_plot_2d=mat_plot_2d,
-            visuals_2d_of_planes_list=visuals_2d_of_planes_list,
-        )
+        output_path = str(self.image_path)
+        fmt = self.fmt
 
         if should_plot("subplot_galaxies_images"):
-            tracer_plotter.subplot_galaxies_images()
+            subplot_galaxies_images(
+                tracer=tracer,
+                grid=grid,
+                output_path=output_path,
+                output_format=fmt,
+            )
 
         if should_plot("fits_tracer"):
 
@@ -145,20 +132,11 @@ class PlotterInterface(AgPlotterInterface):
 
     def image_with_positions(self, image: aa.Array2D, positions: aa.Grid2DIrregular):
         """
-        Visualizes the positions of a model-fit, where these positions are used to penalize lens models where
-        the positions to do trace within an input threshold of one another in the source-plane.
-
-        Images are output to the `image` folder of the `image_path`. When used with a non-linear search the `image_path`
-        is the output folder of the non-linear search.
-
-        The visualization is an image of the strong lens with the positions overlaid.
-
-        The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml` under the
-        `positions` header.
+        Visualizes the positions of a model-fit.
 
         Parameters
         ----------
-        imaging
+        image
             The imaging dataset whose image the positions are overlaid.
         positions
             The 2D (y,x) arc-second positions used to penalize inaccurate mass models.
@@ -167,18 +145,19 @@ class PlotterInterface(AgPlotterInterface):
         def should_plot(name):
             return plot_setting(section=["positions"], name=name)
 
-        mat_plot_2d = self.mat_plot_2d_from()
-
-        if positions is not None:
-            visuals_2d = aplt.Visuals2D(positions=positions)
-
-            image_plotter = aplt.Array2DPlotter(
-                array=image,
-                mat_plot_2d=mat_plot_2d,
-                visuals_2d=visuals_2d,
+        if positions is not None and should_plot("image_with_positions"):
+            pos_arr = np.array(
+                positions.array if hasattr(positions, "array") else positions
             )
 
-            image_plotter.set_filename("image_with_positions")
+            fmt = self.fmt
+            if isinstance(fmt, (list, tuple)):
+                fmt = fmt[0]
 
-            if should_plot("image_with_positions"):
-                image_plotter.figure_2d()
+            plot_array(
+                array=image,
+                positions=[pos_arr],
+                output_path=str(self.image_path),
+                output_filename="image_with_positions",
+                output_format=fmt,
+            )

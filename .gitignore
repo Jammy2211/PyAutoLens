@@ -16,7 +16,6 @@ MultiNest/
 hyper
 hyper_galaxies
 files
-imaging
 Nonesubplots
 scripts
 subplots
@@ -66,3 +65,4 @@ docs/_static
 docs/_templates
 docs/generated
 docs/api/generated
+autolens_workspace_test/

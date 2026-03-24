@@ -283,7 +283,7 @@ def time_delays_from(
     xp=np,
     cosmology: ag.cosmo.LensingCosmology = None,
 ) -> aa.type.Grid2DLike:
-    """
+    r"""
     Returns the gravitational lensing time delay in days for a grid of 2D (y, x) coordinates.
 
     This function calculates the time delay at each image-plane position due to both geometric and gravitational
@@ -388,15 +388,15 @@ def ordered_plane_redshifts_with_slicing_from(
     The source-plane redshift is removed from the ordered plane redshifts that are returned, so that galaxies are not \
     planed at the source-plane redshift.
 
-    For example, if the main plane redshifts are [1.0, 2.0], and the bin sizes are [1,3], the following redshift \
-    slices for planes will be used:
+    For example, if the main plane redshifts are [1.0, 2.0], and the bin sizes are [1,3], the following redshift
+    slices for planes will be used::
 
-    z=0.5
-    z=1.0
-    z=1.25
-    z=1.5
-    z=1.75
-    z=2.0
+        z=0.5
+        z=1.0
+        z=1.25
+        z=1.5
+        z=1.75
+        z=2.0
 
     Parameters
     ----------
@@ -436,18 +436,80 @@ def ordered_plane_redshifts_with_slicing_from(
     return plane_redshifts[0:-1]
 
 
-def visuals_2d_of_planes_list_from(tracer, grid) -> aplt.Visuals2D:
+def critical_curves_from(tracer, grid):
+    """
+    Compute tangential and radial critical curves for the tracer via LensCalc and
+    return them as plain lists of numpy arrays.
 
-    visuals_2d_of_planes_list = []
+    Returns
+    -------
+    tuple[list, list]
+        ``(tangential_critical_curves, radial_critical_curves)`` where each element
+        is a list of (N, 2) numpy arrays.  *radial_critical_curves* may be an empty
+        list when the radial curve area is below the pixel-scale threshold.
+    """
+    from autogalaxy.operate.lens_calc import LensCalc
+    import numpy as np
 
+    od = LensCalc.from_mass_obj(tracer)
+
+    tangential_critical_curves = od.tangential_critical_curve_list_from(grid=grid)
+
+    radial_critical_curve_area_list = od.radial_critical_curve_area_list_from(grid=grid)
+    if any(area > grid.pixel_scale for area in radial_critical_curve_area_list):
+        radial_critical_curves = od.radial_critical_curve_list_from(grid=grid)
+    else:
+        radial_critical_curves = []
+
+    return tangential_critical_curves, radial_critical_curves
+
+
+def caustics_from(tracer, grid):
+    """
+    Compute tangential and radial caustics for the tracer via LensCalc and
+    return them as plain lists of numpy arrays.
+
+    Returns
+    -------
+    tuple[list, list]
+        ``(tangential_caustics, radial_caustics)`` where each element is a list
+        of (N, 2) numpy arrays.
+    """
+    from autogalaxy.operate.lens_calc import LensCalc
+
+    od = LensCalc.from_mass_obj(tracer)
+
+    tangential_caustics = od.tangential_caustic_list_from(grid=grid)
+    radial_caustics = od.radial_caustic_list_from(grid=grid)
+
+    return tangential_caustics, radial_caustics
+
+
+def lines_of_planes_from(tracer, grid):
+    """
+    For each plane in the tracer return the appropriate line overlays:
+      - plane 0 (image plane): critical curves
+      - plane 1+ (source planes): caustics
+
+    Returns
+    -------
+    list[list[np.ndarray]]
+        One entry per plane; each entry is a (possibly empty) list of (N, 2) numpy
+        arrays suitable for passing as ``lines=`` to ``_plot_array``.
+    """
+    tan_cc, rad_cc = critical_curves_from(tracer=tracer, grid=grid)
+    tan_ca, rad_ca = caustics_from(tracer=tracer, grid=grid)
+
+    critical_curve_lines = list(tan_cc) + list(rad_cc)
+    caustic_lines = list(tan_ca) + list(rad_ca)
+
+    lines_of_planes = []
     for plane_index in range(len(tracer.planes)):
+        if plane_index == 0:
+            lines_of_planes.append(critical_curve_lines)
+        else:
+            lines_of_planes.append(caustic_lines)
 
-        visuals_2d_of_planes_list.append(
-            aplt.Visuals2D().add_critical_curves_or_caustics(
-                mass_obj=tracer,
-                grid=grid,
-                plane_index=plane_index,
-            )
-        )
+    return lines_of_planes
 
-    return visuals_2d_of_planes_list
+
