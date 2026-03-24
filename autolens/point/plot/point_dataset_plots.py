@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from typing import Optional
 
-from autolens.plot.plot_utils import _save_subplot
+from autoarray.plot.plots.utils import save_figure
 
 
 def subplot_dataset(
@@ -49,4 +49,4 @@ def subplot_dataset(
         )
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, "subplot_dataset_point", output_format)
+    save_figure(fig, path=output_path, filename="subplot_dataset_point", format=output_format)

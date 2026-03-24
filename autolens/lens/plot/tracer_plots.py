@@ -6,10 +6,10 @@ import autoarray as aa
 import autogalaxy as ag
 
 from autoarray.plot.plots.array import plot_array
+from autoarray.plot.plots.utils import save_figure
 from autolens.plot.plot_utils import (
     _to_lines,
     _to_positions,
-    _save_subplot,
     _critical_curves_from,
     _caustics_from,
 )
@@ -90,7 +90,7 @@ def subplot_tracer(
                lines=image_plane_lines, colormap=colormap)
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, "subplot_tracer", output_format)
+    save_figure(fig, path=output_path, filename="subplot_tracer", format=output_format)
 
 
 def subplot_lensed_images(
@@ -120,7 +120,7 @@ def subplot_lensed_images(
         )
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, "subplot_lensed_images", output_format)
+    save_figure(fig, path=output_path, filename="subplot_lensed_images", format=output_format)
 
 
 def subplot_galaxies_images(
@@ -177,4 +177,4 @@ def subplot_galaxies_images(
             idx += 1
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, "subplot_galaxies_images", output_format)
+    save_figure(fig, path=output_path, filename="subplot_galaxies_images", format=output_format)

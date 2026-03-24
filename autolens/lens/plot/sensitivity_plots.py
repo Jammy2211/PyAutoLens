@@ -6,7 +6,7 @@ from typing import Optional
 import autoarray as aa
 
 from autoarray.plot.plots.array import plot_array
-from autolens.plot.plot_utils import _save_subplot
+from autoarray.plot.plots.utils import save_figure
 
 
 def subplot_tracer_images(
@@ -73,7 +73,7 @@ def subplot_tracer_images(
                colormap=colormap, use_log10=use_log10, lines=no_perturb_cc_lines)
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, "subplot_lensed_images", output_format)
+    save_figure(fig, path=output_path, filename="subplot_lensed_images", format=output_format)
 
 
 def subplot_sensitivity(
@@ -162,7 +162,7 @@ def subplot_sensitivity(
         pass
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, "subplot_sensitivity", output_format)
+    save_figure(fig, path=output_path, filename="subplot_sensitivity", format=output_format)
 
 
 def subplot_figures_of_merit_grid(
@@ -183,4 +183,4 @@ def subplot_figures_of_merit_grid(
     plot_array(array=figures_of_merit, ax=ax, title="Increase in Log Evidence",
                colormap=colormap)
     plt.tight_layout()
-    _save_subplot(fig, output_path, "sensitivity", output_format)
+    save_figure(fig, path=output_path, filename="sensitivity", format=output_format)

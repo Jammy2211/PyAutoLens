@@ -6,9 +6,9 @@ import autoarray as aa
 import autogalaxy as ag
 
 from autoarray.plot.plots.array import plot_array
+from autoarray.plot.plots.utils import save_figure
 from autolens.plot.plot_utils import (
     _to_lines,
-    _save_subplot,
     _critical_curves_from,
 )
 
@@ -115,7 +115,7 @@ def subplot_fit(
                        zoom_to_brightest=False, colormap=colormap)
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, "subplot_fit", output_format)
+    save_figure(fig, path=output_path, filename="subplot_fit", format=output_format)
 
 
 def subplot_fit_real_space(
@@ -158,4 +158,4 @@ def subplot_fit_real_space(
         axes_flat[1].set_title("Source Reconstruction")
 
     plt.tight_layout()
-    _save_subplot(fig, output_path, "subplot_fit_real_space", output_format)
+    save_figure(fig, path=output_path, filename="subplot_fit_real_space", format=output_format)
