@@ -11,6 +11,7 @@ from autolens.plot.plot_utils import (
     _save_subplot,
     _critical_curves_from,
     _caustics_from,
+    _zoom_array,
 )
 
 
@@ -74,14 +75,8 @@ def subplot_fit(
     plot_array(array=fit.data, ax=axes_flat[0], title="Data", colormap=colormap)
 
     # Data at source scale
-    if source_vmax is not None:
-        from autoarray.structures.plot.structure_plotters import _zoom_array
-        import matplotlib as mpl
-        _ax = axes_flat[1]
-        _plot_with_vmax(fit.data, _ax, "Data (Source Scale)", colormap, vmax=source_vmax)
-    else:
-        plot_array(array=fit.data, ax=axes_flat[1], title="Data (Source Scale)",
-                   colormap=colormap)
+    plot_array(array=fit.data, ax=axes_flat[1], title="Data (Source Scale)",
+               colormap=colormap, vmax=source_vmax)
 
     plot_array(array=fit.signal_to_noise_map, ax=axes_flat[2],
                title="Signal-To-Noise Map", colormap=colormap)
@@ -105,12 +100,9 @@ def subplot_fit(
     except (IndexError, AttributeError):
         subtracted_img = None
     if subtracted_img is not None:
-        if source_vmax is not None:
-            _plot_with_vmin_vmax(subtracted_img, axes_flat[5],
-                                 "Lens Light Subtracted", colormap, vmin=0.0, vmax=source_vmax)
-        else:
-            plot_array(array=subtracted_img, ax=axes_flat[5],
-                       title="Lens Light Subtracted", colormap=colormap)
+        plot_array(array=subtracted_img, ax=axes_flat[5], title="Lens Light Subtracted",
+                   colormap=colormap, vmin=0.0 if source_vmax is not None else None,
+                   vmax=source_vmax)
     else:
         axes_flat[5].axis("off")
 
@@ -120,12 +112,8 @@ def subplot_fit(
     except (IndexError, AttributeError):
         source_model_img = None
     if source_model_img is not None:
-        if source_vmax is not None:
-            _plot_with_vmax(source_model_img, axes_flat[6], "Source Model Image",
-                            colormap, vmax=source_vmax)
-        else:
-            plot_array(array=source_model_img, ax=axes_flat[6],
-                       title="Source Model Image", colormap=colormap)
+        plot_array(array=source_model_img, ax=axes_flat[6], title="Source Model Image",
+                   colormap=colormap, vmax=source_vmax)
     else:
         axes_flat[6].axis("off")
 
@@ -135,12 +123,14 @@ def subplot_fit(
 
     # Normalized residual map (symmetric)
     norm_resid = fit.normalized_residual_map
-    _plot_symmetric(norm_resid, axes_flat[8], "Normalized Residual Map", colormap)
+    _abs_max = _symmetric_vmax(norm_resid)
+    plot_array(array=norm_resid, ax=axes_flat[8], title="Normalized Residual Map",
+               colormap=colormap, vmin=-_abs_max, vmax=_abs_max)
 
     # Normalized residual map clipped to [-1, 1]
-    _plot_with_vmin_vmax(norm_resid, axes_flat[9],
-                         r"Normalized Residual Map $1\sigma$", colormap,
-                         vmin=-1.0, vmax=1.0)
+    plot_array(array=norm_resid, ax=axes_flat[9],
+               title=r"Normalized Residual Map $1\sigma$",
+               colormap=colormap, vmin=-1.0, vmax=1.0)
 
     plot_array(array=fit.chi_squared_map, ax=axes_flat[10],
                title="Chi-Squared Map", colormap=colormap)
@@ -168,28 +158,24 @@ def subplot_fit_x1_plane(
     except (IndexError, AttributeError, ValueError):
         vmax = None
 
-    if vmax is not None:
-        _plot_with_vmax(fit.data, axes_flat[0], "Data", colormap, vmax=vmax)
-    else:
-        plot_array(array=fit.data, ax=axes_flat[0], title="Data", colormap=colormap)
+    plot_array(array=fit.data, ax=axes_flat[0], title="Data", colormap=colormap, vmax=vmax)
 
     plot_array(array=fit.signal_to_noise_map, ax=axes_flat[1],
                title="Signal-To-Noise Map", colormap=colormap)
 
-    if vmax is not None:
-        _plot_with_vmax(fit.model_data, axes_flat[2], "Model Image", colormap, vmax=vmax)
-    else:
-        plot_array(array=fit.model_data, ax=axes_flat[2], title="Model Image",
-                   colormap=colormap)
+    plot_array(array=fit.model_data, ax=axes_flat[2], title="Model Image",
+               colormap=colormap, vmax=vmax)
 
     norm_resid = fit.normalized_residual_map
     plot_array(array=norm_resid, ax=axes_flat[3], title="Lens Light Subtracted",
                colormap=colormap)
 
-    _plot_with_vmin(norm_resid, axes_flat[4], "Subtracted Image Zero Minimum",
-                    colormap, vmin=0.0)
+    plot_array(array=norm_resid, ax=axes_flat[4], title="Subtracted Image Zero Minimum",
+               colormap=colormap, vmin=0.0)
 
-    _plot_symmetric(norm_resid, axes_flat[5], "Normalized Residual Map", colormap)
+    _abs_max = _symmetric_vmax(norm_resid)
+    plot_array(array=norm_resid, ax=axes_flat[5], title="Normalized Residual Map",
+               colormap=colormap, vmin=-_abs_max, vmax=_abs_max)
 
     plt.tight_layout()
     _save_subplot(fig, output_path, "subplot_fit_x1_plane", output_format)
@@ -260,11 +246,13 @@ def subplot_fit_log10(
                        colormap=colormap, use_log10=True)
 
     norm_resid = fit.normalized_residual_map
-    _plot_symmetric(norm_resid, axes_flat[8], "Normalized Residual Map", colormap)
+    _abs_max = _symmetric_vmax(norm_resid)
+    plot_array(array=norm_resid, ax=axes_flat[8], title="Normalized Residual Map",
+               colormap=colormap, vmin=-_abs_max, vmax=_abs_max)
 
-    _plot_with_vmin_vmax(norm_resid, axes_flat[9],
-                         r"Normalized Residual Map $1\sigma$", colormap,
-                         vmin=-1.0, vmax=1.0)
+    plot_array(array=norm_resid, ax=axes_flat[9],
+               title=r"Normalized Residual Map $1\sigma$",
+               colormap=colormap, vmin=-1.0, vmax=1.0)
 
     plot_array(array=fit.chi_squared_map, ax=axes_flat[10], title="Chi-Squared Map",
                colormap=colormap, use_log10=True)
@@ -291,12 +279,8 @@ def subplot_fit_log10_x1_plane(
     except (IndexError, AttributeError, ValueError):
         vmax = None
 
-    if vmax is not None:
-        _plot_with_vmax(fit.data, axes_flat[0], "Data", colormap, vmax=vmax,
-                        use_log10=True)
-    else:
-        plot_array(array=fit.data, ax=axes_flat[0], title="Data", colormap=colormap,
-                   use_log10=True)
+    plot_array(array=fit.data, ax=axes_flat[0], title="Data", colormap=colormap,
+               vmax=vmax, use_log10=True)
 
     try:
         plot_array(array=fit.signal_to_noise_map, ax=axes_flat[1],
@@ -304,17 +288,15 @@ def subplot_fit_log10_x1_plane(
     except ValueError:
         axes_flat[1].axis("off")
 
-    if vmax is not None:
-        _plot_with_vmax(fit.model_data, axes_flat[2], "Model Image", colormap,
-                        vmax=vmax, use_log10=True)
-    else:
-        plot_array(array=fit.model_data, ax=axes_flat[2], title="Model Image",
-                   colormap=colormap, use_log10=True)
+    plot_array(array=fit.model_data, ax=axes_flat[2], title="Model Image",
+               colormap=colormap, vmax=vmax, use_log10=True)
 
     norm_resid = fit.normalized_residual_map
     plot_array(array=norm_resid, ax=axes_flat[3], title="Lens Light Subtracted",
                colormap=colormap)
-    _plot_symmetric(norm_resid, axes_flat[4], "Normalized Residual Map", colormap)
+    _abs_max = _symmetric_vmax(norm_resid)
+    plot_array(array=norm_resid, ax=axes_flat[4], title="Normalized Residual Map",
+               colormap=colormap, vmin=-_abs_max, vmax=_abs_max)
     plot_array(array=fit.chi_squared_map, ax=axes_flat[5], title="Chi-Squared Map",
                colormap=colormap, use_log10=True)
 
@@ -381,8 +363,8 @@ def subplot_tracer_from_fit(
     try:
         source_model_img = fit.model_images_of_planes_list[final_plane_index]
         source_vmax = float(np.max(source_model_img.array))
-        _plot_with_vmax(source_model_img, axes_flat[1], "Source Model Image",
-                        colormap, vmax=source_vmax)
+        plot_array(array=source_model_img, ax=axes_flat[1], title="Source Model Image",
+                   colormap=colormap, vmax=source_vmax)
     except (IndexError, AttributeError, ValueError):
         axes_flat[1].axis("off")
 
@@ -523,71 +505,11 @@ def subplot_fit_combined_log10(
     _save_subplot(fig, output_path, "fit_combined_log10", output_format)
 
 
-# ---------------------------------------------------------------------------
-# Private helpers for vmin/vmax manipulation without Cmap objects
-# ---------------------------------------------------------------------------
-
-def _plot_with_vmax(array, ax, title, colormap, vmax, use_log10=False):
-    from autoarray.plot.plots.array import plot_array as _aa_plot_array
-    from autoarray.structures.plot.structure_plotters import (
-        _auto_mask_edge, _zoom_array,
-    )
-    array = _zoom_array(array)
+def _symmetric_vmax(array) -> float:
+    """Return abs-max finite value for symmetric colormap scaling."""
     try:
-        arr = array.native.array
-        extent = array.geometry.extent
+        vals = _zoom_array(array).native.array
     except AttributeError:
-        arr = np.asarray(array)
-        extent = None
-    mask = _auto_mask_edge(array) if hasattr(array, "mask") else None
-    _aa_plot_array(array=arr, ax=ax, extent=extent, mask=mask,
-                   title=title, colormap=colormap, use_log10=use_log10,
-                   vmax=vmax, structure=array)
-
-
-def _plot_with_vmin(array, ax, title, colormap, vmin, use_log10=False):
-    from autoarray.plot.plots.array import plot_array as _aa_plot_array
-    from autoarray.structures.plot.structure_plotters import (
-        _auto_mask_edge, _zoom_array,
-    )
-    array = _zoom_array(array)
-    try:
-        arr = array.native.array
-        extent = array.geometry.extent
-    except AttributeError:
-        arr = np.asarray(array)
-        extent = None
-    mask = _auto_mask_edge(array) if hasattr(array, "mask") else None
-    _aa_plot_array(array=arr, ax=ax, extent=extent, mask=mask,
-                   title=title, colormap=colormap, use_log10=use_log10,
-                   vmin=vmin, structure=array)
-
-
-def _plot_with_vmin_vmax(array, ax, title, colormap, vmin, vmax, use_log10=False):
-    from autoarray.plot.plots.array import plot_array as _aa_plot_array
-    from autoarray.structures.plot.structure_plotters import (
-        _auto_mask_edge, _zoom_array,
-    )
-    array = _zoom_array(array)
-    try:
-        arr = array.native.array
-        extent = array.geometry.extent
-    except AttributeError:
-        arr = np.asarray(array)
-        extent = None
-    mask = _auto_mask_edge(array) if hasattr(array, "mask") else None
-    _aa_plot_array(array=arr, ax=ax, extent=extent, mask=mask,
-                   title=title, colormap=colormap, use_log10=use_log10,
-                   vmin=vmin, vmax=vmax, structure=array)
-
-
-def _plot_symmetric(array, ax, title, colormap):
-    """Plot with symmetric colormap (vmin = -vmax)."""
-    from autoarray.structures.plot.structure_plotters import _zoom_array
-    _arr = _zoom_array(array)
-    try:
-        vals = _arr.native.array
-    except AttributeError:
-        vals = np.asarray(_arr)
-    abs_max = float(np.max(np.abs(vals[np.isfinite(vals)]))) if np.any(np.isfinite(vals)) else 1.0
-    _plot_with_vmin_vmax(array, ax, title, colormap, vmin=-abs_max, vmax=abs_max)
+        vals = np.asarray(array)
+    finite = vals[np.isfinite(vals)]
+    return float(np.max(np.abs(finite))) if finite.size else 1.0
