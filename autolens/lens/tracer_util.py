@@ -374,7 +374,7 @@ def time_delays_from(
     )
 
     # Final time delay in days
-    return (D_dt_m / c) * fermat_potential * factor11
+    return (D_dt_m / c) * fermat_potential * factor
 
 
 def ordered_plane_redshifts_with_slicing_from(
