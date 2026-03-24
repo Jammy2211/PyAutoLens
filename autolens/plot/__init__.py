@@ -23,7 +23,8 @@ from autogalaxy.plot.wrap import (
 # ---------------------------------------------------------------------------
 # Standalone plot helpers
 # ---------------------------------------------------------------------------
-from autolens.plot.plot_utils import plot_array, plot_grid
+from autoarray.plot.plots.array import plot_array
+from autoarray.plot.plots.grid import plot_grid
 
 # ---------------------------------------------------------------------------
 # subplot_* public API

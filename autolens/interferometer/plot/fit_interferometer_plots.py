@@ -5,8 +5,8 @@ from typing import Optional
 import autoarray as aa
 import autogalaxy as ag
 
+from autoarray.plot.plots.array import plot_array
 from autolens.plot.plot_utils import (
-    plot_array,
     _to_lines,
     _save_subplot,
     _critical_curves_from,

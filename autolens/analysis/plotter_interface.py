@@ -14,7 +14,7 @@ from autogalaxy.analysis.plotter_interface import PlotterInterface as AgPlotterI
 
 from autolens.lens.tracer import Tracer
 from autolens.lens.plot.tracer_plots import subplot_galaxies_images
-from autolens.plot.plot_utils import plot_array
+from autoarray.plot.plots.array import plot_array
 
 
 class PlotterInterface(AgPlotterInterface):

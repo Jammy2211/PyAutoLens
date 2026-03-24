@@ -5,13 +5,12 @@ from typing import Optional, List
 import autoarray as aa
 import autogalaxy as ag
 
+from autoarray.plot.plots.array import plot_array, _zoom_array_2d
 from autolens.plot.plot_utils import (
-    plot_array,
     _to_lines,
     _save_subplot,
     _critical_curves_from,
     _caustics_from,
-    _zoom_array,
 )
 
 
@@ -508,7 +507,7 @@ def subplot_fit_combined_log10(
 def _symmetric_vmax(array) -> float:
     """Return abs-max finite value for symmetric colormap scaling."""
     try:
-        vals = _zoom_array(array).native.array
+        vals = _zoom_array_2d(array).native.array
     except AttributeError:
         vals = np.asarray(array)
     finite = vals[np.isfinite(vals)]
