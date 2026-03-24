@@ -2,7 +2,7 @@ from autofit.non_linear.plot.nest_plotters import NestPlotter
 from autofit.non_linear.plot.mcmc_plotters import MCMCPlotter
 from autofit.non_linear.plot.mle_plotters import MLEPlotter
 
-from autoarray.plot.wrap.base import (
+from autoarray.plot.wrap import (
     Cmap,
     Colorbar,
     Output,
@@ -23,7 +23,8 @@ from autogalaxy.plot.wrap import (
 # ---------------------------------------------------------------------------
 # Standalone plot helpers
 # ---------------------------------------------------------------------------
-from autolens.plot.plot_utils import plot_array, plot_grid
+from autoarray.plot.plots.array import plot_array
+from autoarray.plot.plots.grid import plot_grid
 
 # ---------------------------------------------------------------------------
 # subplot_* public API
