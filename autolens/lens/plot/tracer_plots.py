@@ -7,12 +7,8 @@ import autogalaxy as ag
 
 from autoarray.plot.array import plot_array
 from autoarray.plot.utils import save_figure
-from autolens.plot.plot_utils import (
-    _to_lines,
-    _to_positions,
-    _critical_curves_from,
-    _caustics_from,
-)
+from autoarray.plot.utils import numpy_lines as _to_lines, numpy_positions as _to_positions
+from autogalaxy.plot.plot_utils import _critical_curves_from, _caustics_from
 
 
 def subplot_tracer(

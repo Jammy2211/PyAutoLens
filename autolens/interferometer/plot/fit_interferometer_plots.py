@@ -7,10 +7,8 @@ import autogalaxy as ag
 
 from autoarray.plot.array import plot_array
 from autoarray.plot.utils import save_figure
-from autolens.plot.plot_utils import (
-    _to_lines,
-    _critical_curves_from,
-)
+from autoarray.plot.utils import numpy_lines as _to_lines
+from autogalaxy.plot.plot_utils import _critical_curves_from
 
 
 def _plot_yx(y, x, ax, title, xlabel="", ylabel=""):

@@ -20,8 +20,8 @@ def subplot_tracer_images(
     use_log10: bool = False,
 ):
     """6-panel subplot showing lensed images and residuals from a perturbed tracer."""
-    from autolens.lens.tracer_util import critical_curves_from, caustics_from
-    from autolens.plot.plot_utils import _to_lines
+    from autogalaxy.plot.plot_utils import _critical_curves_from, _caustics_from
+    from autoarray.plot.utils import numpy_lines as _to_lines
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
@@ -36,13 +36,13 @@ def subplot_tracer_images(
     unmasked_grid = mask.derive_grid.unmasked
 
     try:
-        tan_cc_p, rad_cc_p = critical_curves_from(tracer=tracer_perturb, grid=unmasked_grid)
+        tan_cc_p, rad_cc_p = _critical_curves_from(tracer_perturb, unmasked_grid)
         perturb_cc_lines = _to_lines(list(tan_cc_p), list(rad_cc_p))
     except Exception:
         perturb_cc_lines = None
 
     try:
-        tan_ca_p, rad_ca_p = caustics_from(tracer=tracer_perturb, grid=unmasked_grid)
+        tan_ca_p, rad_ca_p = _caustics_from(tracer_perturb, unmasked_grid)
         perturb_ca_lines = _to_lines(list(tan_ca_p), list(rad_ca_p))
     except Exception:
         perturb_ca_lines = None
