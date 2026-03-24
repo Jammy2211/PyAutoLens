@@ -5,8 +5,8 @@ from typing import Optional
 import autoarray as aa
 import autogalaxy as ag
 
-from autoarray.plot.plots.array import plot_array
-from autoarray.plot.plots.utils import save_figure
+from autoarray.plot.array import plot_array
+from autoarray.plot.utils import save_figure
 from autolens.plot.plot_utils import (
     _to_lines,
     _critical_curves_from,
@@ -102,10 +102,14 @@ def subplot_fit(
                title="Dirty Normalized Residual Map", colormap=colormap)
 
     # Panel 9: clipped to [-1, 1]
-    from autolens.imaging.plot.fit_imaging_plots import _plot_with_vmin_vmax
-    _plot_with_vmin_vmax(fit.dirty_normalized_residual_map, axes_flat[9],
-                         r"Normalized Residual Map $1\sigma$", colormap,
-                         vmin=-1.0, vmax=1.0)
+    plot_array(
+        fit.dirty_normalized_residual_map,
+        ax=axes_flat[8],
+        title=r"Normalized Residual Map $1\sigma$",
+        colormap=colormap,
+        use_log10=False,
+        vmin=-1.0, vmax=1.0
+    )
 
     plot_array(array=fit.dirty_chi_squared_map, ax=axes_flat[10],
                title="Dirty Chi-Squared Map", colormap=colormap)

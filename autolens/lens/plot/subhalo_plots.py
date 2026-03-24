@@ -2,8 +2,8 @@
 import matplotlib.pyplot as plt
 from typing import Optional
 
-from autoarray.plot.plots.array import plot_array
-from autoarray.plot.plots.utils import save_figure
+from autoarray.plot.array import plot_array
+from autoarray.plot.utils import save_figure
 from autolens.imaging.plot.fit_imaging_plots import _plot_source_plane
 
 

@@ -5,8 +5,8 @@ from typing import Optional, List
 import autoarray as aa
 import autogalaxy as ag
 
-from autoarray.plot.plots.array import plot_array
-from autoarray.plot.plots.utils import save_figure
+from autoarray.plot.array import plot_array
+from autoarray.plot.utils import save_figure
 from autolens.plot.plot_utils import (
     _to_lines,
     _to_positions,

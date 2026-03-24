@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from typing import Optional
 
-from autoarray.plot.plots.utils import save_figure
+from autoarray.plot.utils import save_figure
 
 
 def subplot_fit(
@@ -11,8 +11,8 @@ def subplot_fit(
     output_format: str = "png",
 ):
     """Subplot of a FitPointDataset: positions panel and (optionally) fluxes panel."""
-    from autoarray.plot.plots.grid import plot_grid
-    from autoarray.plot.plots.yx import plot_yx
+    from autoarray.plot.grid import plot_grid
+    from autoarray.plot.yx import plot_yx
 
     has_fluxes = fit.dataset.fluxes is not None
     n = 2 if has_fluxes else 1
