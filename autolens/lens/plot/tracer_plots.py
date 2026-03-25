@@ -6,7 +6,7 @@ import autoarray as aa
 import autogalaxy as ag
 
 from autoarray.plot.array import plot_array
-from autoarray.plot.utils import save_figure
+from autoarray.plot.utils import save_figure, hide_unused_axes
 from autoarray.plot.utils import numpy_lines as _to_lines, numpy_positions as _to_positions
 from autogalaxy.plot.plot_utils import _critical_curves_from, _caustics_from
 
@@ -16,7 +16,7 @@ def subplot_tracer(
     grid: aa.type.Grid2DLike,
     output_path: Optional[str] = None,
     output_format: str = "png",
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
     use_log10: bool = False,
     positions=None,
 ):
@@ -85,6 +85,7 @@ def subplot_tracer(
     plot_array(array=magnification, ax=axes_flat[8], title="Magnification",
                lines=image_plane_lines, colormap=colormap)
 
+    hide_unused_axes(axes_flat)
     plt.tight_layout()
     save_figure(fig, path=output_path, filename="subplot_tracer", format=output_format)
 
@@ -94,7 +95,7 @@ def subplot_lensed_images(
     grid: aa.type.Grid2DLike,
     output_path: Optional[str] = None,
     output_format: str = "png",
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
     use_log10: bool = False,
 ):
     """
@@ -148,7 +149,7 @@ def subplot_galaxies_images(
     grid: aa.type.Grid2DLike,
     output_path: Optional[str] = None,
     output_format: str = "png",
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
     use_log10: bool = False,
 ):
     """
@@ -228,3 +229,107 @@ def subplot_galaxies_images(
 
     plt.tight_layout()
     save_figure(fig, path=output_path, filename="subplot_galaxies_images", format=output_format)
+
+
+def save_tracer_fits(
+    tracer,
+    grid: aa.type.Grid2DLike,
+    output_path,
+) -> None:
+    """Write a FITS file containing lensing maps for the tracer.
+
+    Produces ``tracer.fits`` in *output_path*.  The file contains extensions:
+    ``mask``, ``convergence``, ``potential``, ``deflections_y``,
+    ``deflections_x``, all evaluated on a zoomed grid derived from
+    *grid*'s mask.
+
+    Parameters
+    ----------
+    tracer : Tracer
+        The tracer whose lensing maps are evaluated.
+    grid : aa.type.Grid2DLike
+        Image-plane grid; a zoomed version is derived internally.
+    output_path : str or Path
+        Directory in which to write ``tracer.fits``.
+    """
+    from pathlib import Path
+    from autoconf.fitsable import hdu_list_for_output_from
+
+    output_path = Path(output_path)
+    zoom = aa.Zoom2D(mask=grid.mask)
+    grid_zoom = aa.Grid2D.from_mask(mask=zoom.mask_2d_from(buffer=1))
+
+    deflections = tracer.deflections_yx_2d_from(grid=grid_zoom).native
+    image_list = [
+        tracer.convergence_2d_from(grid=grid_zoom).native,
+        tracer.potential_2d_from(grid=grid_zoom).native,
+        deflections[:, :, 0],
+        deflections[:, :, 1],
+    ]
+    hdu_list = hdu_list_for_output_from(
+        values_list=[image_list[0].mask.astype("float")] + image_list,
+        ext_name_list=["mask", "convergence", "potential", "deflections_y", "deflections_x"],
+        header_dict=grid_zoom.mask.header_dict,
+    )
+    hdu_list.writeto(output_path / "tracer.fits", overwrite=True)
+
+
+def save_source_plane_images_fits(
+    tracer,
+    grid: aa.type.Grid2DLike,
+    output_path,
+) -> None:
+    """Write a FITS file containing source-plane images for each source plane.
+
+    Produces ``source_plane_images.fits`` in *output_path*.  One HDU is
+    written per source plane (``tracer.planes[1:]``), named
+    ``source_plane_image_1``, ``source_plane_image_2``, …, plus a ``mask``
+    extension.  Planes without a
+    :class:`~autogalaxy.profiles.light.abstract.LightProfile` produce a
+    zero-valued array.
+
+    The shape of the source-plane grid is read from config key
+    ``visualize / plots / tracer / fits_source_plane_shape``.
+
+    Parameters
+    ----------
+    tracer : Tracer
+        The tracer whose source-plane images are evaluated.
+    grid : aa.type.Grid2DLike
+        Image-plane grid; used to derive the zoomed extent for the
+        source-plane grid.
+    output_path : str or Path
+        Directory in which to write ``source_plane_images.fits``.
+    """
+    import ast
+    from pathlib import Path
+    from autoconf import conf
+    from autoconf.fitsable import hdu_list_for_output_from
+
+    output_path = Path(output_path)
+    shape_native = tuple(ast.literal_eval(
+        conf.instance["visualize"]["plots"]["tracer"]["fits_source_plane_shape"]
+    ))
+
+    zoom = aa.Zoom2D(mask=grid.mask)
+    grid_source = aa.Grid2D.from_extent(
+        extent=zoom.mask_2d_from(buffer=1).geometry.extent,
+        shape_native=shape_native,
+    )
+
+    image_list = [grid_source.mask.astype("float")]
+    ext_name_list = ["mask"]
+    for i, plane in enumerate(tracer.planes[1:]):
+        if plane.has(cls=ag.LightProfile):
+            image = plane.image_2d_from(grid=grid_source).native
+        else:
+            image = np.zeros(grid_source.shape_native)
+        image_list.append(image)
+        ext_name_list.append(f"source_plane_image_{i + 1}")
+
+    hdu_list = hdu_list_for_output_from(
+        values_list=image_list,
+        ext_name_list=ext_name_list,
+        header_dict=grid_source.mask.header_dict,
+    )
+    hdu_list.writeto(output_path / "source_plane_images.fits", overwrite=True)

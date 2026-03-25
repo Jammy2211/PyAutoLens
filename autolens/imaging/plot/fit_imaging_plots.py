@@ -6,7 +6,7 @@ import autoarray as aa
 import autogalaxy as ag
 
 from autoarray.plot.array import plot_array, _zoom_array_2d
-from autoarray.plot.utils import save_figure
+from autoarray.plot.utils import save_figure, hide_unused_axes
 from autoarray.plot.utils import numpy_lines as _to_lines
 from autogalaxy.plot.plot_utils import _critical_curves_from, _caustics_from
 
@@ -39,7 +39,7 @@ def _get_source_vmax(fit):
 
 
 def _plot_source_plane(fit, ax, plane_index, zoom_to_brightest=True,
-                       colormap="jet", use_log10=False):
+                       colormap=None, use_log10=False):
     """
     Plot the source-plane image (or a blank inversion placeholder) into an axes.
 
@@ -94,7 +94,7 @@ def subplot_fit(
     fit,
     output_path: Optional[str] = None,
     output_format: str = "png",
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
     plane_index: Optional[int] = None,
 ):
     """
@@ -214,6 +214,7 @@ def subplot_fit(
     _plot_source_plane(fit, axes_flat[11], final_plane_index, zoom_to_brightest=False,
                        colormap=colormap)
 
+    hide_unused_axes(axes_flat)
     plt.tight_layout()
     save_figure(fig, path=output_path, filename=f"subplot_fit{plane_index_tag}", format=output_format)
 
@@ -222,7 +223,7 @@ def subplot_fit_x1_plane(
     fit,
     output_path: Optional[str] = None,
     output_format: str = "png",
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
 ):
     """
     Produce a 6-panel subplot for a single-plane tracer imaging fit.
@@ -286,7 +287,7 @@ def subplot_fit_log10(
     fit,
     output_path: Optional[str] = None,
     output_format: str = "png",
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
     plane_index: Optional[int] = None,
 ):
     """
@@ -395,7 +396,7 @@ def subplot_fit_log10_x1_plane(
     fit,
     output_path: Optional[str] = None,
     output_format: str = "png",
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
 ):
     """
     Produce a 6-panel log10 subplot for a single-plane tracer imaging fit.
@@ -456,7 +457,7 @@ def subplot_of_planes(
     fit,
     output_path: Optional[str] = None,
     output_format: str = "png",
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
     plane_index: Optional[int] = None,
 ):
     """
@@ -524,7 +525,7 @@ def subplot_tracer_from_fit(
     fit,
     output_path: Optional[str] = None,
     output_format: str = "png",
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
 ):
     """
     Produce a 9-panel tracer subplot derived from a `FitImaging` object.
@@ -600,7 +601,7 @@ def subplot_fit_combined(
     fit_list: List,
     output_path: Optional[str] = None,
     output_format: str = "png",
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
 ):
     """
     Produce a combined multi-row subplot for a list of `FitImaging` objects.
@@ -682,7 +683,7 @@ def subplot_fit_combined_log10(
     fit_list: List,
     output_path: Optional[str] = None,
     output_format: str = "png",
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
 ):
     """
     Produce a combined log10 multi-row subplot for a list of `FitImaging` objects.

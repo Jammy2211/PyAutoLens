@@ -12,7 +12,7 @@ def subplot_detection_imaging(
     fit_imaging_with_subhalo,
     output_path: Optional[str] = None,
     output_format: str = "png",
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
     use_log10: bool = False,
     use_log_evidences: bool = True,
     relative_to_value: float = 0.0,
@@ -103,7 +103,7 @@ def subplot_detection_fits(
     fit_imaging_with_subhalo,
     output_path: Optional[str] = None,
     output_format: str = "png",
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
 ):
     """
     Produce a 6-panel subplot comparing imaging fits with and without a subhalo.
