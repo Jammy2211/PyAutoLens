@@ -1,4 +1,3 @@
-import numpy as np
 import pytest
 
 import autolens as al
@@ -41,6 +40,6 @@ def test__abstract_fit_positions_image_pair__multi_plane_tracer__model_positions
     assert fit_0.model_data[0, :] == pytest.approx(
         scaling_factor * fit_1.model_data.array[0, :], 1.0e-1
     )
-    assert fit_0.model_data[0, :] == pytest.approx(
-        scaling_factor * fit_1.model_data.array[0, :], 1.0e-1
+    assert fit_0.model_data[1, :] == pytest.approx(
+        scaling_factor * fit_1.model_data.array[1, :], 1.0e-1
     )

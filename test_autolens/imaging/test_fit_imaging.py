@@ -549,16 +549,8 @@ def test__figure_of_merit__sub_2_oversampling__linear_operated_profiles__inversi
 
 
 def test__figure_of_merit__sub_2_oversampling__covariance_noise_matrix__expected_log_likelihood(
-    masked_imaging_covariance_7x7, image_7x7, psf_3x3, noise_map_7x7, mask_2d_7x7
+    masked_imaging_covariance_7x7,
 ):
-    dataset = al.Imaging(
-        data=image_7x7,
-        psf=psf_3x3,
-        noise_map=noise_map_7x7,
-        over_sample_size_lp=2,
-    )
-    masked_imaging_7x7 = dataset.apply_mask(mask=mask_2d_7x7)
-
     g0 = al.Galaxy(
         redshift=0.5,
         bulge=al.lp.Sersic(centre=(0.05, 0.05), intensity=1.0),
