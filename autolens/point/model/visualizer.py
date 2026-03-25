@@ -1,7 +1,7 @@
 import autofit as af
 import autogalaxy as ag
 
-from autolens.point.model.plotter_interface import PlotterInterfacePoint
+from autolens.point.model.plotter import PlotterPoint
 
 
 class VisualizerPoint(af.Visualizer):
@@ -26,11 +26,11 @@ class VisualizerPoint(af.Visualizer):
             the imaging data.
         """
 
-        plotter_interface = PlotterInterfacePoint(
+        plotter = PlotterPoint(
             image_path=paths.image_path, title_prefix=analysis.title_prefix
         )
 
-        plotter_interface.dataset_point(dataset=analysis.dataset)
+        plotter.dataset_point(dataset=analysis.dataset)
 
     @staticmethod
     def visualize(
@@ -65,11 +65,11 @@ class VisualizerPoint(af.Visualizer):
         """
         fit = analysis.fit_from(instance=instance)
 
-        plotter_interface = PlotterInterfacePoint(
+        plotter = PlotterPoint(
             image_path=paths.image_path, title_prefix=analysis.title_prefix
         )
 
-        plotter_interface.fit_point(fit=fit, quick_update=quick_update)
+        plotter.fit_point(fit=fit, quick_update=quick_update)
 
         if quick_update:
             return
@@ -80,11 +80,11 @@ class VisualizerPoint(af.Visualizer):
             extent=fit.dataset.extent_from(), shape_native=(100, 100)
         )
 
-        plotter_interface.tracer(
+        plotter.tracer(
             tracer=tracer,
             grid=grid,
         )
-        plotter_interface.galaxies(
+        plotter.galaxies(
             galaxies=tracer.galaxies,
             grid=grid,
         )

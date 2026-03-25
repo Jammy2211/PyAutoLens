@@ -2,10 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from typing import List
 
-from autogalaxy.imaging.model.plotter_interface import PlotterInterfaceImaging as AgPlotterInterfaceImaging
-from autogalaxy.imaging.model.plotter_interface import fits_to_fits
+from autogalaxy.imaging.model.plotter import PlotterImaging as AgPlotterImaging
+from autogalaxy.imaging.model.plotter import fits_to_fits
 
-from autolens.analysis.plotter_interface import PlotterInterface
+from autolens.analysis.plotter import Plotter
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.imaging.plot.fit_imaging_plots import (
     subplot_fit,
@@ -16,13 +16,13 @@ from autolens.imaging.plot.fit_imaging_plots import (
     subplot_fit_combined_log10,
 )
 
-from autolens.analysis.plotter_interface import plot_setting
+from autolens.analysis.plotter import plot_setting
 
 
-class PlotterInterfaceImaging(PlotterInterface):
+class PlotterImaging(Plotter):
 
-    imaging = AgPlotterInterfaceImaging.imaging
-    imaging_combined = AgPlotterInterfaceImaging.imaging_combined
+    imaging = AgPlotterImaging.imaging
+    imaging_combined = AgPlotterImaging.imaging_combined
 
     def fit_imaging(
         self, fit: FitImaging, quick_update: bool = False

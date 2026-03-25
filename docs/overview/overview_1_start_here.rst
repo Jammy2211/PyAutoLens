@@ -29,10 +29,8 @@ You'll see these imports in the majority of workspace examples.
 .. code:: python
 
     import autolens as al
+    import autoarray as aa
     import autolens.plot as aplt
-
-    import matplotlib.pyplot as plt
-    from os import path
 
 Lets illustrate a simple gravitational lensing calculation, creating an an image of a lensed galaxy using a
 light profile and mass profile.
@@ -52,8 +50,7 @@ We make and plot a uniform Cartesian grid:
         pixel_scales=0.05,  # The pixel-scale describes the conversion from pixel units to arc-seconds.
     )
 
-    grid_plotter = aplt.Grid2DPlotter(grid=grid)
-    grid_plotter.figure_2d()
+    aplt.plot_grid(grid=grid, title="")
 
 The ``Grid2D`` looks like this:
 
@@ -99,19 +96,16 @@ Plotting
 In-built plotting methods are provided for plotting objects and their properties, like the image of
 a light profile we just created.
 
-By using a ``LightProfilePlotter`` to plot the light profile's image, the figured is improved. 
+By using ``aplt.plot_array`` to plot the light profile's image, the figure is improved.
 
-Its axis units are scaled to arc-seconds, a color-bar is added, its given a descriptive labels, etc.
+Its axis units are scaled to arc-seconds, a color-bar is added, descriptive labels are included, etc.
 
 The plot module is highly customizable and designed to make it straight forward to create clean and informative figures
 for fits to large datasets.
 
 .. code:: python
 
-    light_profile_plotter = aplt.LightProfilePlotter(
-        light_profile=sersic_light_profile, grid=grid
-    )
-    light_profile_plotter.figures_2d(image=True)
+    aplt.plot_array(array=sersic_light_profile.image_2d_from(grid=grid), title="Image")
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/1_image_2d.png
   :width: 600
@@ -140,19 +134,19 @@ the deflection angles describe how the lens galaxy’s mass bends the source’s
 
 The deflection angles are easily plotted using the **PyAutoLens** plot module.
 
-(Many other lensing quantities are also easily plotted, for example the ``convergence`` and ``potential``).
+Many other lensing quantities are also easily plotted, for example the ``convergence`` and ``potential``.
 
 .. code:: python
 
-    mass_profile_plotter = aplt.MassProfilePlotter(
-        mass_profile=isothermal_mass_profile, grid=grid
-    )
-    mass_profile_plotter.figures_2d(
-        deflections_y=True,
-        deflections_x=True,
-        # convergence=True,
-        # potential=True
-    )
+    deflections_y = aa.Array2D(values=deflections.slim[:, 0], mask=grid.mask)
+    aplt.plot_array(array=deflections_y, title="Deflections Y")
+
+    deflections = isothermal_mass_profile.deflections_yx_2d_from(grid=grid)
+    deflections_x = aa.Array2D(values=deflections.slim[:, 1], mask=grid.mask)
+    aplt.plot_array(array=deflections_x, title="Deflections X")
+
+    aplt.plot_array(array=isothermal_mass_profile.convergence_2d_from(grid=grid), title="Convergence")
+    aplt.plot_array(array=isothermal_mass_profile.potential_2d_from(grid=grid), title="Potential")
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/2_deflections_y_2d.png
   :width: 600
@@ -194,15 +188,12 @@ We create two galaxies representing the lens and source galaxies shown in the st
 
     source_galaxy = al.Galaxy(redshift=1.0, light=source_light_profile)
 
-The ``GalaxyPlotter`` object plots properties of the lens and source galaxies.
+We can plot properties of the lens and source galaxies using ``aplt.plot_array``:
 
 .. code:: python
 
-    lens_galaxy_plotter = aplt.GalaxyPlotter(galaxy=lens_galaxy, grid=grid)
-    lens_galaxy_plotter.figures_2d(image=True, deflections_y=True, deflections_x=True)
-
-    source_galaxy_plotter = aplt.GalaxyPlotter(galaxy=source_galaxy, grid=grid)
-    source_galaxy_plotter.figures_2d(image=True)
+    aplt.plot_array(array=lens_galaxy.image_2d_from(grid=grid), title="Lens Galaxy Image")
+    aplt.plot_array(array=source_galaxy.image_2d_from(grid=grid), title="Source Galaxy Image")
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/4_image_2d.png
   :width: 400
@@ -220,12 +211,11 @@ The ``GalaxyPlotter`` object plots properties of the lens and source galaxies.
   :width: 400
   :alt: Alternative text
 
-One example of the plotter's customizability is the ability to plot the individual light profiles of the galaxy
-on a subplot.
+The individual light profiles of the galaxy can be plotted on a subplot:
 
 .. code:: python
 
-    lens_galaxy_plotter.subplot_of_light_profiles(image=True)
+    aplt.subplot_galaxy_light_profiles(galaxy=lens_galaxy, grid=grid)
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/8_subplot_image.png
   :width: 600
@@ -247,10 +237,7 @@ This is shown below, where the image of the tracer shows a distinct Einstein rin
 
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], cosmology=al.cosmo.Planck15())
 
-    image = tracer.image_2d_from(grid=grid)
-
-    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-    tracer_plotter.figures_2d(image=True)
+    aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/9_image_2d.png
   :width: 600
@@ -335,8 +322,7 @@ the stellar components use a ``LightAndMassProfile`` via the ``lmp`` module.
 
     tracer = al.Tracer(galaxies=[lens_galaxy_0, lens_galaxy_1, source_galaxy])
 
-    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-    tracer_plotter.figures_2d(image=True)
+    aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 
 .. image:: https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1/10_image_2d.png
   :width: 600

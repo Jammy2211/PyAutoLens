@@ -4,13 +4,13 @@ from os import path
 
 import pytest
 import autolens as al
-from autolens.imaging.model.plotter_interface import PlotterInterfaceImaging
+from autolens.imaging.model.plotter import PlotterImaging
 
 directory = path.dirname(path.realpath(__file__))
 
 
 @pytest.fixture(name="plot_path")
-def make_plotter_interface_plotter_setup():
+def make_plotter_plotter_setup():
     return path.join("{}".format(directory), "files")
 
 
@@ -20,9 +20,9 @@ def test__fit_imaging(
     if os.path.exists(plot_path):
         shutil.rmtree(plot_path)
 
-    plotter_interface = PlotterInterfaceImaging(image_path=plot_path)
+    plotter = PlotterImaging(image_path=plot_path)
 
-    plotter_interface.fit_imaging(
+    plotter.fit_imaging(
         fit=fit_imaging_x2_plane_inversion_7x7,
     )
 
@@ -48,7 +48,7 @@ def test__fit_imaging_combined(
     if path.exists(plot_path):
         shutil.rmtree(plot_path)
 
-    visualizer = PlotterInterfaceImaging(image_path=plot_path)
+    visualizer = PlotterImaging(image_path=plot_path)
 
     visualizer.fit_imaging_combined(fit_list=2 * [fit_imaging_x2_plane_inversion_7x7])
 

@@ -13,14 +13,14 @@
 subplot_format: [png]                      # Output format of all subplots, can be png, pdf or both (e.g. [png, pdf])
 fits_are_zoomed: false                     # If true, output .fits files are zoomed in on the center of the unmasked region image, saving hard-disk space.
 
-dataset:                                   # Settings for plots of all datasets (e.g. ImagingPlotter, InterferometerPlotter).
+dataset:                                   # Settings for plots of all datasets (e.g. Imaging, Interferometer).
   subplot_dataset: true                    # Plot subplot containing all dataset quantities (e.g. the data, noise-map, etc.)?
   fits_dataset: true                      # Output a .fits file containing the dataset data, noise-map and other quantities?
 
 positions:                                 # Settings for plots with resampling image-positions on (e.g. the image).
   image_with_positions: true
 
-fit:                                       # Settings for plots of all fits (e.g. FitImagingPlotter, FitInterferometerPlotter).
+fit:                                       # Settings for plots of all fits (e.g. FitImaging, FitInterferometer).
   subplot_fit: true                        # Plot subplot of all fit quantities for any dataset (e.g. the model data, residual-map, etc.)?
   subplot_fit_log10: true                  # Plot subplot of all fit quantities for any dataset using log10 color maps (e.g. the model data, residual-map, etc.)?
   subplot_of_planes: false                 # Plot subplot of the model-image, subtracted image and other quantities of each plane?
@@ -29,9 +29,9 @@ fit:                                       # Settings for plots of all fits (e.g
   fits_galaxy_images : true                # Output a .fits file containing the images (e.g. without PSF convolution) of every galaxy?
   fits_model_galaxy_images : true          # Output a .fits file containing the model images (e.g. with PSF convolution) of every galaxy?
 
-fit_imaging: {}                            # Settings for plots of fits to imaging datasets (e.g. FitImagingPlotter).
+fit_imaging: {}                            # Settings for plots of fits to imaging datasets (e.g. FitImaging).
 
-tracer:                                    # Settings for plots of tracers (e.g. TracerPlotter).
+tracer:                                    # Settings for plots of tracers (e.g. Tracer).
   subplot_tracer: true                     # Plot subplot of all quantities in each tracer (e.g. images, convergence)?
   subplot_galaxies_images: false           # Plot subplot of the image of each plane in the tracer?
   fits_tracer: true                        # Output tracer.fits file of tracer's convergence, potential, deflections_y and deflections_x?
@@ -47,7 +47,7 @@ adapt:                                     # Settings for plots of adapt images 
   subplot_adapt_images: true               # Plot subplot showing each adapt image used for adaptive pixelization?
   fits_adapt_images: true                  # Output a .fits file containing the adapt images used for adaptive pixelization?
 
-fit_interferometer:                        # Settings for plots of fits to interferometer datasets (e.g. FitInterferometerPlotter).
+fit_interferometer:                        # Settings for plots of fits to interferometer datasets (e.g. FitInterferometer).
   subplot_fit_dirty_images: false          # Plot subplot of the dirty-images of all interferometer datasets?
   subplot_fit_real_space: false            # Plot subplot of the real-space images of all interferometer datasets?
   fits_dirty_images: true                  # output dirty_images.fits showing the dirty image, noise-map, model-data, resiual-map, normalized residual map and chi-squared map?
@@ -61,9 +61,9 @@ fit_ellipse:                               # Settings for plots of ellipse fitti
   data : true                              # Plot the data of the ellipse fit?
   data_no_ellipse: true                    # Plot the data without the black data ellipses, which obscure noisy data?
 
-fit_quantity:                              # Settings for plots of fit quantities (e.g. FitQuantityPlotter).
+fit_quantity:                              # Settings for plots of fit quantities (e.g. FitQuantity).
   subplot_fit: true
 
-galaxies:                                  # Settings for plots of galaxies (e.g. GalaxiesPlotter).
+galaxies:                                  # Settings for plots of galaxies (e.g. Galaxies).
   subplot_galaxies: true                   # Plot subplot of all quantities in each galaxies group (e.g. images, convergence)?
   subplot_galaxy_images: false             # Plot subplot of the image of each galaxy in the model?

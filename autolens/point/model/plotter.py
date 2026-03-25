@@ -1,14 +1,14 @@
-from autolens.analysis.plotter_interface import PlotterInterface
+from autolens.analysis.plotter import Plotter
 
 from autolens.point.fit.dataset import FitPointDataset
 from autolens.point.plot.fit_point_plots import subplot_fit as subplot_fit_point
 from autolens.point.dataset import PointDataset
 from autolens.point.plot.point_dataset_plots import subplot_dataset
 
-from autolens.analysis.plotter_interface import plot_setting
+from autolens.analysis.plotter import plot_setting
 
 
-class PlotterInterfacePoint(PlotterInterface):
+class PlotterPoint(Plotter):
     def dataset_point(self, dataset: PointDataset):
         """
         Output visualization of a `PointDataset` dataset.

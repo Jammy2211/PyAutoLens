@@ -8,23 +8,23 @@ from autoconf.fitsable import hdu_list_for_output_from
 import autoarray as aa
 import autogalaxy as ag
 
-from autogalaxy.analysis.plotter_interface import plot_setting
+from autogalaxy.analysis.plotter import plot_setting
 
-from autogalaxy.analysis.plotter_interface import PlotterInterface as AgPlotterInterface
+from autogalaxy.analysis.plotter import Plotter as AgPlotter
 
 from autolens.lens.tracer import Tracer
 from autolens.lens.plot.tracer_plots import subplot_galaxies_images
 from autoarray.plot.array import plot_array
 
 
-class PlotterInterface(AgPlotterInterface):
+class Plotter(AgPlotter):
     """
     Visualizes the maximum log likelihood model of a model-fit, including components of the model and fit objects.
 
-    The methods of the `PlotterInterface` are called throughout a non-linear search using the `Analysis`
+    The methods of the `Plotter` are called throughout a non-linear search using the `Analysis`
     classes `visualize` method.
 
-    The images output by the `PlotterInterface` are customized using the file `config/visualize/plots.yaml`.
+    The images output by the `Plotter` are customized using the file `config/visualize/plots.yaml`.
 
     Parameters
     ----------

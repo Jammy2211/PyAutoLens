@@ -3,10 +3,34 @@ from autofit.non_linear.plot.mcmc_plotters import MCMCPlotter
 from autofit.non_linear.plot.mle_plotters import MLEPlotter
 
 # ---------------------------------------------------------------------------
-# Standalone plot helpers
+# Standalone plot helpers (autoarray)
 # ---------------------------------------------------------------------------
 from autoarray.plot.array import plot_array
 from autoarray.plot.grid import plot_grid
+
+from autoarray.dataset.plot.imaging_plots import (
+    subplot_imaging,
+    subplot_imaging_dataset_list,
+)
+from autoarray.dataset.plot.interferometer_plots import subplot_interferometer_dirty_images
+
+# ---------------------------------------------------------------------------
+# Galaxy / profile subplots (autogalaxy)
+# ---------------------------------------------------------------------------
+from autogalaxy.plot import (
+    subplot_galaxy_light_profiles,
+    subplot_galaxy_mass_profiles,
+    subplot_basis_image,
+    subplot_galaxies,
+    subplot_galaxy_images,
+    subplot_adapt_images,
+    subplot_fit_imaging_of_galaxy,
+    subplot_fit_dirty_images,
+    subplot_fit_real_space,
+    subplot_fit_quantity,
+    subplot_fit_ellipse,
+    subplot_ellipse_errors,
+)
 
 # ---------------------------------------------------------------------------
 # subplot_* public API

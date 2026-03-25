@@ -1,8 +1,8 @@
-from autogalaxy.interferometer.model.plotter_interface import (
-    PlotterInterfaceInterferometer as AgPlotterInterfaceInterferometer,
+from autogalaxy.interferometer.model.plotter import (
+    PlotterInterferometer as AgPlotterInterferometer,
 )
 
-from autogalaxy.interferometer.model.plotter_interface import fits_to_fits
+from autogalaxy.interferometer.model.plotter import fits_to_fits
 from autogalaxy.interferometer.plot import fit_interferometer_plots as ag_fit_interferometer_plots
 
 from autolens.interferometer.fit_interferometer import FitInterferometer
@@ -10,13 +10,13 @@ from autolens.interferometer.plot.fit_interferometer_plots import (
     subplot_fit,
     subplot_fit_real_space,
 )
-from autolens.analysis.plotter_interface import PlotterInterface
+from autolens.analysis.plotter import Plotter
 
-from autolens.analysis.plotter_interface import plot_setting
+from autolens.analysis.plotter import plot_setting
 
 
-class PlotterInterfaceInterferometer(PlotterInterface):
-    interferometer = AgPlotterInterfaceInterferometer.interferometer
+class PlotterInterferometer(Plotter):
+    interferometer = AgPlotterInterferometer.interferometer
 
     def fit_interferometer(
         self,
