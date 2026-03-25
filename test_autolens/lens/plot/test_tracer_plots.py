@@ -7,6 +7,8 @@ from autolens.lens.plot.tracer_plots import (
     subplot_tracer,
     subplot_lensed_images,
     subplot_galaxies_images,
+    save_tracer_fits,
+    save_source_plane_images_fits,
 )
 
 directory = path.dirname(path.realpath(__file__))
@@ -22,7 +24,9 @@ def make_tracer_plotter_setup():
     )
 
 
-def test__subplot_tracer(tracer_x2_plane_7x7, grid_2d_7x7, plot_path, plot_patch):
+def test__subplot_tracer__two_plane_tracer__output_file_created(
+    tracer_x2_plane_7x7, grid_2d_7x7, plot_path, plot_patch
+):
     subplot_tracer(
         tracer=tracer_x2_plane_7x7,
         grid=grid_2d_7x7,
@@ -32,7 +36,7 @@ def test__subplot_tracer(tracer_x2_plane_7x7, grid_2d_7x7, plot_path, plot_patch
     assert path.join(plot_path, "subplot_tracer.png") in plot_patch.paths
 
 
-def test__subplot_galaxies_images(
+def test__subplot_galaxies_images__two_plane_tracer__output_file_created(
     tracer_x2_plane_7x7, grid_2d_7x7, plot_path, plot_patch
 ):
     subplot_galaxies_images(
@@ -44,7 +48,7 @@ def test__subplot_galaxies_images(
     assert path.join(plot_path, "subplot_galaxies_images.png") in plot_patch.paths
 
 
-def test__subplot_lensed_images(
+def test__subplot_lensed_images__two_plane_tracer__output_file_created(
     tracer_x2_plane_7x7, grid_2d_7x7, plot_path, plot_patch
 ):
     subplot_lensed_images(
@@ -54,3 +58,25 @@ def test__subplot_lensed_images(
         output_format="png",
     )
     assert path.join(plot_path, "subplot_lensed_images.png") in plot_patch.paths
+
+
+def test__save_tracer_fits__two_plane_tracer__tracer_fits_file_written(
+    tracer_x2_plane_7x7, grid_2d_7x7, tmp_path
+):
+    save_tracer_fits(
+        tracer=tracer_x2_plane_7x7,
+        grid=grid_2d_7x7,
+        output_path=tmp_path,
+    )
+    assert (tmp_path / "tracer.fits").exists()
+
+
+def test__save_source_plane_images_fits__two_plane_tracer__source_plane_fits_file_written(
+    tracer_x2_plane_7x7, grid_2d_7x7, tmp_path
+):
+    save_source_plane_images_fits(
+        tracer=tracer_x2_plane_7x7,
+        grid=grid_2d_7x7,
+        output_path=tmp_path,
+    )
+    assert (tmp_path / "source_plane_images.fits").exists()

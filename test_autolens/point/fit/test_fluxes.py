@@ -3,7 +3,7 @@ import pytest
 import autolens as al
 
 
-def test__one_set_of_fluxes__residuals_likelihood_correct():
+def test__fit_fluxes__all_residual_quantities_computed_correctly_with_mock_tracer():
     tracer = al.m.MockTracerPoint(profile=al.ps.PointFlux(flux=2.0))
 
     data = al.ArrayIrregular([1.0, 2.0])
@@ -29,7 +29,9 @@ def test__one_set_of_fluxes__residuals_likelihood_correct():
     assert fit.log_likelihood == pytest.approx(-2.992044910633, 1.0e-4)
 
 
-def test__use_real_tracer(gal_x1_mp):
+def test__fit_fluxes__model_flux_magnified_correctly_with_real_isothermal_tracer(
+    gal_x1_mp,
+):
     point_source = al.ps.PointFlux(centre=(0.1, 0.1), flux=2.0)
     galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
     tracer = al.Tracer(galaxies=[gal_x1_mp, galaxy_point_source])

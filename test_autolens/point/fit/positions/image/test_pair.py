@@ -4,7 +4,7 @@ import pytest
 import autolens as al
 
 
-def test__three_sets_of_positions__model_is_repeated__does_not_double_count():
+def test__fit_positions_image_pair__three_observed_positions__model_not_repeated__residuals_correct():
     point = al.ps.Point(centre=(0.1, 0.1))
     galaxy = al.Galaxy(redshift=1.0, point_0=point)
     tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), galaxy])

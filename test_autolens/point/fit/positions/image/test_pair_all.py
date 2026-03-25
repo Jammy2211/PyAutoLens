@@ -10,6 +10,7 @@ import pytest
 
 import autolens as al
 
+
 point = al.ps.Point(centre=(0.1, 0.1))
 galaxy = al.Galaxy(redshift=1.0, point_0=point)
 tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), galaxy])
@@ -43,7 +44,9 @@ def fit(data, noise_map):
     )
 
 
-def test_andrew_implementation(fit):
+def test__fit_positions_image_pair_all__two_model_positions__per_permutation_likelihoods_and_chi_squared_correct(
+    fit,
+):
     assert np.allclose(
         fit.all_permutations_log_likelihoods(),
         [
@@ -54,12 +57,7 @@ def test_andrew_implementation(fit):
     assert fit.chi_squared == -2.0 * -4.40375330990644
 
 
-# @pytest.mark.skipif(not JAX_INSTALLED, reason="JAX is not installed")
-# def test_jax(fit):
-#     assert jax.jit(fit.log_likelihood)() == -4.40375330990644
-
-
-def test_inf_model_positions(
+def test__fit_positions_image_pair_all__model_has_inf_position__inf_excluded_from_permutations(
     data,
     noise_map,
 ):
@@ -78,8 +76,6 @@ def test_inf_model_positions(
         solver=al.mock.MockPointSolver(model_positions),
     )
 
-    print(fit.all_permutations_log_likelihoods())
-
     assert np.allclose(
         fit.all_permutations_log_likelihoods(),
         [
@@ -90,7 +86,7 @@ def test_inf_model_positions(
     assert fit.chi_squared == -2.0 * -4.40375330990644
 
 
-def test_duplicate_model_position(
+def test__fit_positions_image_pair_all__model_has_duplicate_position__duplicate_permutations_handled(
     data,
     noise_map,
 ):
