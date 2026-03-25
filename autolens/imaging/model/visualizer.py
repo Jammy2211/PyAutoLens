@@ -5,7 +5,7 @@ from autoarray import exc
 import autofit as af
 import autogalaxy as ag
 
-from autolens.imaging.model.plotter_interface import PlotterInterfaceImaging
+from autolens.imaging.model.plotter import PlotterImaging
 
 from autolens import exc
 
@@ -33,11 +33,11 @@ class VisualizerImaging(af.Visualizer):
             the imaging data.
         """
 
-        plotter_interface = PlotterInterfaceImaging(
+        plotter = PlotterImaging(
             image_path=paths.image_path, title_prefix=analysis.title_prefix
         )
 
-        plotter_interface.imaging(dataset=analysis.dataset)
+        plotter.imaging(dataset=analysis.dataset)
 
         if analysis.positions_likelihood_list is not None:
 
@@ -51,13 +51,13 @@ class VisualizerImaging(af.Visualizer):
 
             positions = ag.Grid2DIrregular(positions_list)
 
-            plotter_interface.image_with_positions(
+            plotter.image_with_positions(
                 image=analysis.dataset.data,
                 positions=positions,
             )
 
         if analysis.adapt_images is not None:
-            plotter_interface.adapt_images(adapt_images=analysis.adapt_images)
+            plotter.adapt_images(adapt_images=analysis.adapt_images)
 
     @staticmethod
     def visualize(
@@ -96,13 +96,13 @@ class VisualizerImaging(af.Visualizer):
         fit = analysis.fit_from(instance=instance)
         tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
-        plotter_interface = PlotterInterfaceImaging(
+        plotter = PlotterImaging(
             image_path=paths.image_path,
             title_prefix=analysis.title_prefix,
         )
 
         try:
-            plotter_interface.fit_imaging(
+            plotter.fit_imaging(
                 fit=fit,
                 quick_update=quick_update,
             )
@@ -142,17 +142,17 @@ class VisualizerImaging(af.Visualizer):
 
         grid = ag.Grid2D.from_extent(extent=extent, shape_native=shape_native)
 
-        plotter_interface.tracer(
+        plotter.tracer(
             tracer=tracer,
             grid=grid,
         )
-        plotter_interface.galaxies(
+        plotter.galaxies(
             galaxies=tracer.galaxies,
             grid=fit.grids.lp,
         )
         if fit.inversion is not None:
             if fit.inversion.has(cls=ag.Mapper):
-                plotter_interface.inversion(
+                plotter.inversion(
                     inversion=fit.inversion,
                 )
 
@@ -184,7 +184,7 @@ class VisualizerImaging(af.Visualizer):
         if analyses is None:
             return
 
-        plotter = PlotterInterfaceImaging(
+        plotter = PlotterImaging(
             image_path=paths.image_path, title_prefix=analyses[0].title_prefix
         )
 
@@ -224,7 +224,7 @@ class VisualizerImaging(af.Visualizer):
         if analyses is None:
             return
 
-        plotter = PlotterInterfaceImaging(
+        plotter = PlotterImaging(
             image_path=paths.image_path, title_prefix=analyses[0].title_prefix
         )
 

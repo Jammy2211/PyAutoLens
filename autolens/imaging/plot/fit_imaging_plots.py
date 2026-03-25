@@ -581,7 +581,7 @@ def subplot_tracer_from_fit(
     )
 
     tan_cc, rad_cc = _critical_curves_from(tracer, grid)
-    image_plane_lines = _to_lines(tan_cc, rad_cc)
+    image_plane_lines = _to_lines(list(tan_cc) + list(rad_cc))
 
     traced_grids = tracer.traced_grid_2d_list_from(grid=grid)
     lens_galaxies = ag.Galaxies(galaxies=tracer.planes[0])

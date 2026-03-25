@@ -17,30 +17,71 @@ Plotters [aplt]
 
 Create figures and subplots showing quantities of standard **PyAutoLens** objects.
 
-.. currentmodule:: autogalaxy.plot
+.. currentmodule:: autolens.plot
+
+**Basic Plot Functions:**
 
 .. autosummary::
    :toctree: _autosummary
-   :template: custom-class-template.rst
-   :recursive:
 
-    Array2DPlotter
-    Grid2DPlotter
-    MapperPlotter
-    YX1DPlotter
-    InversionPlotter
-    ImagingPlotter
-    InterferometerPlotter
-    LightProfilePlotter
-    GalaxyPlotter
-    FitImagingPlotter
-    FitInterferometerPlotter
-    GalaxiesPlotter
-    AdaptPlotter
-    FitImagingPlotter
-    FitInterferometerPlotter
-    MultiFigurePlotter
-    MultiYX1DPlotter
+    plot_array
+    plot_grid
+
+**Tracer and Galaxies Subplots:**
+
+.. autosummary::
+   :toctree: _autosummary
+
+    subplot_tracer
+    subplot_lensed_images
+    subplot_galaxies_images
+
+**Imaging Fit Subplots:**
+
+.. autosummary::
+   :toctree: _autosummary
+
+    subplot_fit_imaging
+    subplot_fit_imaging_log10
+    subplot_fit_imaging_x1_plane
+    subplot_fit_imaging_log10_x1_plane
+    subplot_fit_imaging_of_planes
+    subplot_fit_imaging_tracer
+    subplot_fit_combined
+    subplot_fit_combined_log10
+
+**Interferometer Fit Subplots:**
+
+.. autosummary::
+   :toctree: _autosummary
+
+    subplot_fit_interferometer
+    subplot_fit_interferometer_real_space
+
+**Point Source Subplots:**
+
+.. autosummary::
+   :toctree: _autosummary
+
+    subplot_fit_point
+    subplot_point_dataset
+
+**Subhalo Detection Subplots:**
+
+.. autosummary::
+   :toctree: _autosummary
+
+    subplot_detection_imaging
+    subplot_detection_fits
+
+**Sensitivity Mapping Subplots:**
+
+.. autosummary::
+   :toctree: _autosummary
+
+    subplot_sensitivity_tracer_images
+    subplot_sensitivity
+    subplot_sensitivity_figures_of_merit
 
 Non-linear Search Plotters [aplt]
 ---------------------------------

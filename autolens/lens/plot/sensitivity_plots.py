@@ -76,19 +76,19 @@ def subplot_tracer_images(
 
     try:
         tan_cc_p, rad_cc_p = _critical_curves_from(tracer_perturb, unmasked_grid)
-        perturb_cc_lines = _to_lines(list(tan_cc_p), list(rad_cc_p))
+        perturb_cc_lines = _to_lines(list(tan_cc_p) + list(rad_cc_p))
     except Exception:
         perturb_cc_lines = None
 
     try:
         tan_ca_p, rad_ca_p = _caustics_from(tracer_perturb, unmasked_grid)
-        perturb_ca_lines = _to_lines(list(tan_ca_p), list(rad_ca_p))
+        perturb_ca_lines = _to_lines(list(tan_ca_p) + list(rad_ca_p))
     except Exception:
         perturb_ca_lines = None
 
     try:
         tan_cc_n, rad_cc_n = critical_curves_from(tracer=tracer_no_perturb, grid=unmasked_grid)
-        no_perturb_cc_lines = _to_lines(list(tan_cc_n), list(rad_cc_n))
+        no_perturb_cc_lines = _to_lines(list(tan_cc_n) + list(rad_cc_n))
     except Exception:
         no_perturb_cc_lines = None
 

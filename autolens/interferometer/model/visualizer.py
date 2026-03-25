@@ -3,8 +3,8 @@ import logging
 import autofit as af
 import autogalaxy as ag
 
-from autolens.interferometer.model.plotter_interface import (
-    PlotterInterfaceInterferometer,
+from autolens.interferometer.model.plotter import (
+    PlotterInterferometer,
 )
 from autogalaxy import exc
 
@@ -33,11 +33,11 @@ class VisualizerInterferometer(af.Visualizer):
             the imaging data.
         """
 
-        plotter_interface = PlotterInterfaceInterferometer(
+        plotter = PlotterInterferometer(
             image_path=paths.image_path, title_prefix=analysis.title_prefix
         )
 
-        plotter_interface.interferometer(dataset=analysis.interferometer)
+        plotter.interferometer(dataset=analysis.interferometer)
 
         if analysis.positions_likelihood_list is not None:
 
@@ -48,12 +48,12 @@ class VisualizerInterferometer(af.Visualizer):
 
             positions = ag.Grid2DIrregular(positions_list)
 
-            plotter_interface.image_with_positions(
+            plotter.image_with_positions(
                 image=analysis.dataset.dirty_image, positions=positions
             )
 
         if analysis.adapt_images is not None:
-            plotter_interface.adapt_images(adapt_images=analysis.adapt_images)
+            plotter.adapt_images(adapt_images=analysis.adapt_images)
 
     @staticmethod
     def visualize(
@@ -94,12 +94,12 @@ class VisualizerInterferometer(af.Visualizer):
         """
         fit = analysis.fit_from(instance=instance)
 
-        plotter_interface = PlotterInterfaceInterferometer(
+        plotter = PlotterInterferometer(
             image_path=paths.image_path, title_prefix=analysis.title_prefix
         )
 
         try:
-            plotter_interface.fit_interferometer(
+            plotter.fit_interferometer(
                 fit=fit,
                 quick_update=quick_update,
             )
@@ -140,21 +140,21 @@ class VisualizerInterferometer(af.Visualizer):
         grid = ag.Grid2D.from_extent(extent=extent, shape_native=shape_native)
 
         try:
-            plotter_interface.fit_interferometer(fit=fit)
+            plotter.fit_interferometer(fit=fit)
         except exc.InversionException:
             pass
 
-        plotter_interface.tracer(
+        plotter.tracer(
             tracer=tracer,
             grid=grid,
         )
-        plotter_interface.galaxies(
+        plotter.galaxies(
             galaxies=tracer.galaxies,
             grid=fit.grids.lp,
         )
         if fit.inversion is not None:
             try:
-                plotter_interface.inversion(
+                plotter.inversion(
                     inversion=fit.inversion,
                 )
             except IndexError:

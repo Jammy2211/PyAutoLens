@@ -40,8 +40,8 @@ def subplot_tracer(
 
     tan_cc, rad_cc = _critical_curves_from(tracer, grid)
     tan_ca, rad_ca = _caustics_from(tracer, grid)
-    image_plane_lines = _to_lines(tan_cc, rad_cc)
-    source_plane_lines = _to_lines(tan_ca, rad_ca)
+    image_plane_lines = _to_lines(list(tan_cc) + list(rad_cc))
+    source_plane_lines = _to_lines(list(tan_ca) + list(rad_ca))
     pos_list = _to_positions(positions)
 
     # --- compute arrays ---

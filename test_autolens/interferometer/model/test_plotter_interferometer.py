@@ -4,15 +4,15 @@ import pytest
 
 import autolens as al
 
-from autolens.interferometer.model.plotter_interface import (
-    PlotterInterfaceInterferometer,
+from autolens.interferometer.model.plotter import (
+    PlotterInterferometer,
 )
 
 directory = path.dirname(path.realpath(__file__))
 
 
 @pytest.fixture(name="plot_path")
-def make_plotter_interface_plotter_setup():
+def make_plotter_plotter_setup():
     return path.join("{}".format(directory), "files")
 
 
@@ -21,9 +21,9 @@ def test__fit_interferometer(
     plot_path,
     plot_patch,
 ):
-    plotter_interface = PlotterInterfaceInterferometer(image_path=plot_path)
+    plotter = PlotterInterferometer(image_path=plot_path)
 
-    plotter_interface.fit_interferometer(
+    plotter.fit_interferometer(
         fit=fit_interferometer_x2_plane_7x7,
     )
 

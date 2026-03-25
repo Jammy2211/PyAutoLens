@@ -276,7 +276,7 @@ class FitInterferometer(aa.FitInterferometer, AbstractFitInversion):
         The `Tracer` where all linear light profiles have been converted to ordinary light profiles, where their
         `intensity` values are set to the values inferred by this fit.
 
-        This is typically used for visualization, because linear light profiles cannot be used in `LightProfilePlotter`
-        or `GalaxyPlotter` objects.
+        This is typically used for visualization, because linear light profiles cannot be used in `LightProfile`
+        or `Galaxy` objects.
         """
         return self.model_obj_linear_light_profiles_to_light_profiles
