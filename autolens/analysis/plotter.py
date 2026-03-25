@@ -1,9 +1,5 @@
-import ast
 import numpy as np
 from typing import Optional
-
-from autoconf import conf
-from autoconf.fitsable import hdu_list_for_output_from
 
 import autoarray as aa
 import autogalaxy as ag
@@ -13,7 +9,11 @@ from autogalaxy.analysis.plotter import plot_setting
 from autogalaxy.analysis.plotter import Plotter as AgPlotter
 
 from autolens.lens.tracer import Tracer
-from autolens.lens.plot.tracer_plots import subplot_galaxies_images
+from autolens.lens.plot.tracer_plots import (
+    subplot_galaxies_images,
+    save_tracer_fits,
+    save_source_plane_images_fits,
+)
 from autoarray.plot.array import plot_array
 
 
@@ -63,72 +63,10 @@ class Plotter(AgPlotter):
             )
 
         if should_plot("fits_tracer"):
-
-            zoom = aa.Zoom2D(mask=grid.mask)
-            mask = zoom.mask_2d_from(buffer=1)
-            grid_zoom = aa.Grid2D.from_mask(mask=mask)
-
-            image_list = [
-                tracer.convergence_2d_from(grid=grid_zoom).native,
-                tracer.potential_2d_from(grid=grid_zoom).native,
-                tracer.deflections_yx_2d_from(grid=grid_zoom).native[:, :, 0],
-                tracer.deflections_yx_2d_from(grid=grid_zoom).native[:, :, 1],
-            ]
-
-            hdu_list = hdu_list_for_output_from(
-                values_list=[image_list[0].mask.astype("float")] + image_list,
-                ext_name_list=[
-                    "mask",
-                    "convergence",
-                    "potential",
-                    "deflections_y",
-                    "deflections_x",
-                ],
-                header_dict=grid_zoom.mask.header_dict,
-            )
-
-            hdu_list.writeto(self.image_path / "tracer.fits", overwrite=True)
+            save_tracer_fits(tracer=tracer, grid=grid, output_path=self.image_path)
 
         if should_plot("fits_source_plane_images"):
-
-            shape_native = conf.instance["visualize"]["plots"]["tracer"][
-                "fits_source_plane_shape"
-            ]
-            shape_native = ast.literal_eval(shape_native)
-
-            zoom = aa.Zoom2D(mask=grid.mask)
-            mask = zoom.mask_2d_from(buffer=1)
-            grid_source_plane = aa.Grid2D.from_extent(
-                extent=mask.geometry.extent, shape_native=tuple(shape_native)
-            )
-
-            image_list = [grid_source_plane.mask.astype("float")]
-            ext_name_list = ["mask"]
-
-            for i, plane in enumerate(tracer.planes[1:]):
-
-                if plane.has(cls=ag.LightProfile):
-
-                    image = plane.image_2d_from(
-                        grid=grid_source_plane,
-                    ).native
-
-                else:
-
-                    image = np.zeros(grid_source_plane.shape_native)
-
-                image_list.append(image)
-                ext_name_list.append(f"source_plane_image_{i+1}")
-
-            hdu_list = hdu_list_for_output_from(
-                values_list=image_list,
-                ext_name_list=ext_name_list,
-                header_dict=grid_source_plane.mask.header_dict,
-            )
-
-            hdu_list.writeto(
-                self.image_path / "source_plane_images.fits", overwrite=True
-            )
+            save_source_plane_images_fits(tracer=tracer, grid=grid, output_path=self.image_path)
 
     def image_with_positions(self, image: aa.Array2D, positions: aa.Grid2DIrregular):
         """

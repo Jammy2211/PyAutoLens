@@ -9,9 +9,9 @@ Subject: [PATCH] PR G1-G2: replace mat_plot_2d.plot_array with _plot_array()
 - Add _plot_array() and _plot_grid() bridge methods to the Plotter base class
   that route to the new direct-matplotlib plot_array()/plot_grid() functions
 - Update all autogalaxy plotters to use self._plot_array() instead of
-  self.mat_plot_2d.plot_array(), covering: LightProfilePlotter, BasisPlotter,
-  MassPlotter, GalaxyPlotter, GalaxiesPlotter, AdaptPlotter,
-  FitImagingPlotter, FitEllipsePlotter, FitEllipsePDFPlotter
+  self.mat_plot_2d.plot_array(), covering: LightProfile, BasisPlotter,
+  MassPlotter, Galaxy, Galaxies, AdaptPlotter,
+  FitImaging, FitEllipsePlotter, FitEllipsePDFPlotter
 
 https://claude.ai/code/session_01CzJBy8KvFXiNchoNdk5i9k
 ---
@@ -78,7 +78,7 @@ diff --git a/autogalaxy/galaxy/plot/galaxies_plotters.py b/autogalaxy/galaxy/plo
 index e49a8e1a..c3b1ed1b 100644
 --- a/autogalaxy/galaxy/plot/galaxies_plotters.py
 +++ b/autogalaxy/galaxy/plot/galaxies_plotters.py
-@@ -146,7 +146,7 @@ class GalaxiesPlotter(Plotter):
+@@ -146,7 +146,7 @@ class Galaxies(Plotter):
              Add a suffix to the end of the filename the plot is saved to hard-disk using.
          """
          if image:
@@ -87,7 +87,7 @@ index e49a8e1a..c3b1ed1b 100644
                  array=self.galaxies.image_2d_from(grid=self.grid),
                  visuals_2d=self.visuals_2d,
                  auto_labels=aplt.AutoLabels(
-@@ -160,7 +160,7 @@ class GalaxiesPlotter(Plotter):
+@@ -160,7 +160,7 @@ class Galaxies(Plotter):
              else:
                  title = f"Plane Image{title_suffix}"
  
@@ -96,7 +96,7 @@ index e49a8e1a..c3b1ed1b 100644
                  array=self.galaxies.plane_image_2d_from(
                      grid=self.grid, zoom_to_brightest=zoom_to_brightest
                  ),
-@@ -177,7 +177,7 @@ class GalaxiesPlotter(Plotter):
+@@ -177,7 +177,7 @@ class Galaxies(Plotter):
              else:
                  title = f"Plane Grid{title_suffix}"
  
@@ -109,7 +109,7 @@ diff --git a/autogalaxy/galaxy/plot/galaxy_plotters.py b/autogalaxy/galaxy/plot/
 index d1a37283..d2464f81 100644
 --- a/autogalaxy/galaxy/plot/galaxy_plotters.py
 +++ b/autogalaxy/galaxy/plot/galaxy_plotters.py
-@@ -201,7 +201,7 @@ class GalaxyPlotter(Plotter):
+@@ -201,7 +201,7 @@ class Galaxy(Plotter):
              Whether to make a 2D plot (via `imshow`) of the magnification.
          """
          if image:
@@ -122,7 +122,7 @@ diff --git a/autogalaxy/imaging/plot/fit_imaging_plotters.py b/autogalaxy/imagin
 index 3f21b5a2..8a68222a 100644
 --- a/autogalaxy/imaging/plot/fit_imaging_plotters.py
 +++ b/autogalaxy/imaging/plot/fit_imaging_plotters.py
-@@ -131,14 +131,7 @@ class FitImagingPlotter(Plotter):
+@@ -131,14 +131,7 @@ class FitImaging(Plotter):
  
          for galaxy_index in galaxy_indices:
              if subtracted_image:
@@ -138,7 +138,7 @@ index 3f21b5a2..8a68222a 100644
                      array=self.fit.subtracted_images_of_galaxies_list[galaxy_index],
                      visuals_2d=self.visuals_2d,
                      auto_labels=aplt.AutoLabels(
-@@ -148,7 +141,7 @@ class FitImagingPlotter(Plotter):
+@@ -148,7 +141,7 @@ class FitImaging(Plotter):
                  )
  
              if model_image:
@@ -452,7 +452,7 @@ diff --git a/autogalaxy/profiles/plot/light_profile_plotters.py b/autogalaxy/pro
 index 7292f5eb..07b21f29 100644
 --- a/autogalaxy/profiles/plot/light_profile_plotters.py
 +++ b/autogalaxy/profiles/plot/light_profile_plotters.py
-@@ -89,7 +89,7 @@ class LightProfilePlotter(Plotter):
+@@ -89,7 +89,7 @@ class LightProfile(Plotter):
              Whether to make a 2D plot (via `imshow`) of the image.
          """
          if image:

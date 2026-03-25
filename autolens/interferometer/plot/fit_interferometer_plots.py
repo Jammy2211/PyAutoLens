@@ -37,7 +37,7 @@ def _plot_yx(y, x, ax, title, xlabel="", ylabel=""):
 
 
 def _plot_source_plane(fit, ax, plane_index, zoom_to_brightest=True,
-                       colormap="jet", use_log10=False):
+                       colormap=None, use_log10=False):
     """
     Plot the source-plane image (or a blank inversion placeholder) into an axes.
 
@@ -88,7 +88,7 @@ def subplot_fit(
     fit,
     output_path: Optional[str] = None,
     output_format: str = "png",
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
 ):
     """
     Produce a 12-panel subplot summarising an interferometer fit.
@@ -197,7 +197,7 @@ def subplot_fit_real_space(
     fit,
     output_path: Optional[str] = None,
     output_format: str = "png",
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
 ):
     """
     Produce a real-space subplot for an interferometer fit.
