@@ -109,7 +109,7 @@ below shows this in action:
     We can use the Grid2D and Tracer to perform many lensing calculations, for example
     plotting the image of the lensed source.
     """
-    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
+    tracer_plotter = aplt.Tracer(tracer=tracer, grid=grid)
     tracer_plotter.figures_2d(image=True)
 
 To perform lens modeling, **PyAutoLens** adopts the probabilistic programming

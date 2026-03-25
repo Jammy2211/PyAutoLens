@@ -2,9 +2,9 @@ From ebbb315cdd0eee0a3cc4e7c2ea0600859cc95330 Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
 Date: Mon, 16 Mar 2026 17:31:52 +0000
 Subject: [PATCH 3/3] PR A3: replace mat_plot_2d.plot_array in
- FitImagingPlotterMeta with plot_array()
+ FitImagingMeta with plot_array()
 
-Bridge FitImagingPlotterMeta.figures_2d() to use the new direct-matplotlib
+Bridge FitImagingMeta.figures_2d() to use the new direct-matplotlib
 plot_array() function via a _plot_array() helper method, eliminating the
 MatWrap system for fit imaging plots.
 
@@ -36,8 +36,8 @@ index 86aa0d34..20552945 100644
 +)
  
  
- class FitImagingPlotterMeta(AbstractPlotter):
-@@ -43,6 +52,44 @@ class FitImagingPlotterMeta(AbstractPlotter):
+ class FitImagingMeta(AbstractPlotter):
+@@ -43,6 +52,44 @@ class FitImagingMeta(AbstractPlotter):
          self.fit = fit
          self.residuals_symmetric_cmap = residuals_symmetric_cmap
  
@@ -82,7 +82,7 @@ index 86aa0d34..20552945 100644
      def figures_2d(
          self,
          data: bool = False,
-@@ -82,57 +129,50 @@ class FitImagingPlotterMeta(AbstractPlotter):
+@@ -82,57 +129,50 @@ class FitImagingMeta(AbstractPlotter):
          """
  
          if data:
@@ -146,7 +146,7 @@ index 86aa0d34..20552945 100644
                  auto_labels=AutoLabels(
                      title="Normalized Residual Map",
                      filename=f"normalized_residual_map{suffix}",
-@@ -142,18 +182,16 @@ class FitImagingPlotterMeta(AbstractPlotter):
+@@ -142,18 +182,16 @@ class FitImagingMeta(AbstractPlotter):
          self.mat_plot_2d.cmap = cmap_original
  
          if chi_squared_map:

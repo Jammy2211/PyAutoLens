@@ -46,7 +46,7 @@ Problems:
   describes the workaround as a "nasty hack"
 - The config system switches every wrap object between `figure:` and `subplot:` sections
   based on whether `subplot_index is not None`, adding hidden state to every config lookup
-- Nested plotters (FitImagingPlotter → TracerPlotter → InversionPlotter) share one
+- Nested plotters (FitImaging → Tracer → InversionPlotter) share one
   mat_plot object so their indices accumulate in the same global counter
 
 The fix is to use matplotlib's native `plt.subplots()` and pass `ax` objects directly.
@@ -272,7 +272,7 @@ constructor accepts `output_path` and `output_filename` strings.
 
 ---
 
-#### PR A3 · Update `ImagingPlotter`, `InversionPlotter`, `MapperPlotter`, `InterferometerPlotter`
+#### PR A3 · Update `Imaging`, `InversionPlotter`, `MapperPlotter`, `Interferometer`
 
 Same `ax`-passing pattern.  Mixed 1D/2D subplots (e.g. interferometer) use:
 
@@ -365,13 +365,13 @@ They have no config dependency.
 
 ---
 
-#### PR G2 · Update `LightProfilePlotter`, `MassProfilePlotter`, `GalaxyPlotter`, `GalaxiesPlotter`
+#### PR G2 · Update `LightProfile`, `MassProfilePlotter`, `Galaxy`, `Galaxies`
 
 Each plotter computes its own overlay data from its galaxy/profile then passes it
 to `plot_array`:
 
 ```python
-class GalaxiesPlotter(AbstractPlotter):
+class Galaxies(AbstractPlotter):
     def figure_image(self, ax=None):
         owns = ax is None
         if owns:
@@ -390,7 +390,7 @@ Remove autogalaxy `MatPlot2D` subclass and autogalaxy `Visuals2D` subclass.
 
 ---
 
-#### PR G3 · Update autogalaxy `FitImagingPlotter` and `FitInterferometerPlotter`
+#### PR G3 · Update autogalaxy `FitImaging` and `FitInterferometer`
 
 ```python
 def subplot_fit(self):
@@ -420,13 +420,13 @@ Update `autogalaxy/plot/__init__.py`.
 
 ---
 
-#### PR L1 · Update `TracerPlotter`
+#### PR L1 · Update `Tracer`
 
 The plotter computes critical curves / caustics itself from the tracer, then passes
 them as `lines` to `plot_array`:
 
 ```python
-class TracerPlotter(AbstractPlotter):
+class Tracer(AbstractPlotter):
     def figure_convergence(self, ax=None):
         owns = ax is None
         if owns:
@@ -464,7 +464,7 @@ Add `show_critical_curves: bool = True`, `show_caustics: bool = True`.
 
 ---
 
-#### PR L2 · Update `FitImagingPlotter`
+#### PR L2 · Update `FitImaging`
 
 Largest single plotter.  The 12-panel `subplot_fit` becomes:
 
@@ -511,7 +511,7 @@ def subplot_of_planes(self):
 
 ---
 
-#### PR L3 · Update `FitInterferometerPlotter`, `PointDatasetPlotter`, `FitPointDatasetPlotter`
+#### PR L3 · Update `FitInterferometer`, `PointDatasetPlotter`, `FitPointDatasetPlotter`
 
 **PointDatasetPlotter** — mixed 1D/2D, which was the "nasty hack" case:
 
@@ -566,15 +566,15 @@ plot_array(
 |---|---|---|---|
 | A1 | autoarray | Add `plots/` module | New unit tests |
 | A2 | autoarray | Rewrite Array2D/Grid2DPlotter | Update existing |
-| A3 | autoarray | Rewrite Imaging/Inversion/Mapper/InterferometerPlotter | Update existing |
+| A3 | autoarray | Rewrite Imaging/Inversion/Mapper/Interferometer | Update existing |
 | A4 | autoarray | Delete mat_plot/, wrap/, visuals/ | Delete wrap tests |
 | A5 | autoarray | Config cleanup, finalise helpers | Smoke tests |
 | G1 | autogalaxy | Add overlay helpers | New unit tests |
 | G2 | autogalaxy | Rewrite Galaxy/Mass/LightProfile plotters | Update existing |
 | G3 | autogalaxy | Rewrite FitImaging/FitInterferometer plotters | Update existing |
 | G4 | autogalaxy | Delete MatPlot2D/Visuals2D extensions | Delete wrap tests |
-| L1 | autolens | Rewrite TracerPlotter | Update existing |
-| L2 | autolens | Rewrite FitImagingPlotter | Update existing |
+| L1 | autolens | Rewrite Tracer | Update existing |
+| L2 | autolens | Rewrite FitImaging | Update existing |
 | L3 | autolens | Rewrite FitInterferometer/Point plotters | Update existing |
 | L4 | autolens | Rewrite Subhalo plotters, clean abstract_plotters | Update existing |
 

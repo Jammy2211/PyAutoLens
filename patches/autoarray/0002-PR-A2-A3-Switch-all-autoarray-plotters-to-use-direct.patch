@@ -10,7 +10,7 @@ Array2DPlotter, Grid2DPlotter, YX1DPlotter (structure_plotters.py):
 - Overlay data extracted from Visuals2D to typed numpy arrays via helpers
 - _output_for_mat_plot() bridges mat_plot.output to path/filename/format args
 
-ImagingPlotterMeta (imaging_plotters.py):
+ImagingMeta (imaging_plotters.py):
 - figures_2d() uses new _plot_array() helper calling plot_array() directly
 - subplot_dataset() unchanged: open/close subplot still via old mechanism
 
@@ -55,7 +55,7 @@ index ac1f23de..afc2cff5 100644
  from autoarray.dataset.imaging.dataset import Imaging
  
  
-@@ -15,35 +24,49 @@ class ImagingPlotterMeta(AbstractPlotter):
+@@ -15,35 +24,49 @@ class ImagingMeta(AbstractPlotter):
          mat_plot_2d: MatPlot2D = None,
          visuals_2d: Visuals2D = None,
      ):
@@ -127,7 +127,7 @@ index ac1f23de..afc2cff5 100644
      def figures_2d(
          self,
          data: bool = False,
-@@ -54,86 +77,47 @@ class ImagingPlotterMeta(AbstractPlotter):
+@@ -54,86 +77,47 @@ class ImagingMeta(AbstractPlotter):
          over_sample_size_pixelization: bool = False,
          title_str: Optional[str] = None,
      ):
@@ -232,7 +232,7 @@ index ac1f23de..afc2cff5 100644
              )
  
      def subplot(
-@@ -146,30 +130,6 @@ class ImagingPlotterMeta(AbstractPlotter):
+@@ -146,30 +130,6 @@ class ImagingMeta(AbstractPlotter):
          over_sampling_pixelization: bool = False,
          auto_filename: str = "subplot_dataset",
      ):
@@ -263,7 +263,7 @@ index ac1f23de..afc2cff5 100644
          self._subplot_custom_plot(
              data=data,
              noise_map=noise_map,
-@@ -181,9 +141,6 @@ class ImagingPlotterMeta(AbstractPlotter):
+@@ -181,9 +141,6 @@ class ImagingMeta(AbstractPlotter):
          )
  
      def subplot_dataset(self):
@@ -273,7 +273,7 @@ index ac1f23de..afc2cff5 100644
          use_log10_original = self.mat_plot_2d.use_log10
  
          self.open_subplot_figure(number_subplots=9)
-@@ -199,7 +156,6 @@ class ImagingPlotterMeta(AbstractPlotter):
+@@ -199,7 +156,6 @@ class ImagingMeta(AbstractPlotter):
          self.mat_plot_2d.contour = contour_original
  
          self.figures_2d(noise_map=True)
@@ -281,7 +281,7 @@ index ac1f23de..afc2cff5 100644
          self.figures_2d(psf=True)
  
          self.mat_plot_2d.use_log10 = True
-@@ -207,7 +163,6 @@ class ImagingPlotterMeta(AbstractPlotter):
+@@ -207,7 +163,6 @@ class ImagingMeta(AbstractPlotter):
          self.mat_plot_2d.use_log10 = False
  
          self.figures_2d(signal_to_noise_map=True)
@@ -289,7 +289,7 @@ index ac1f23de..afc2cff5 100644
          self.figures_2d(over_sample_size_lp=True)
          self.figures_2d(over_sample_size_pixelization=True)
  
-@@ -224,27 +179,6 @@ class ImagingPlotter(AbstractPlotter):
+@@ -224,27 +179,6 @@ class Imaging(AbstractPlotter):
          mat_plot_2d: MatPlot2D = None,
          visuals_2d: Visuals2D = None,
      ):
