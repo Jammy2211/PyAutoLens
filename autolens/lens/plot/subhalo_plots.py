@@ -95,7 +95,7 @@ def subplot_detection_imaging(
     )
 
     plt.tight_layout()
-    save_figure(fig, path=output_path, filename="subplot_detection_imaging", format=output_format)
+    save_figure(fig, path=output_path, filename="detection_imaging", format=output_format)
 
 
 def subplot_detection_fits(
@@ -174,4 +174,4 @@ def subplot_detection_fits(
                        colormap=colormap)
 
     plt.tight_layout()
-    save_figure(fig, path=output_path, filename="subplot_detection_fits", format=output_format)
+    save_figure(fig, path=output_path, filename="detection_fits", format=output_format)

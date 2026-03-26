@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from typing import Optional
 
-from autoarray.plot.utils import save_figure
+from autoarray.plot.utils import save_figure, conf_subplot_figsize
 
 
 def subplot_dataset(
@@ -38,7 +38,7 @@ def subplot_dataset(
     has_fluxes = dataset.fluxes is not None
     n = 2 if has_fluxes else 1
 
-    fig, axes = plt.subplots(1, n, figsize=(7 * n, 7))
+    fig, axes = plt.subplots(1, n, figsize=conf_subplot_figsize(1, n))
     axes_flat = [axes] if n == 1 else list(np.array(axes).flatten())
 
     grid = np.array(
@@ -70,4 +70,4 @@ def subplot_dataset(
         )
 
     plt.tight_layout()
-    save_figure(fig, path=output_path, filename="subplot_dataset_point", format=output_format)
+    save_figure(fig, path=output_path, filename="dataset_point", format=output_format)

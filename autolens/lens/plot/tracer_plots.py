@@ -6,7 +6,7 @@ import autoarray as aa
 import autogalaxy as ag
 
 from autoarray.plot.array import plot_array
-from autoarray.plot.utils import save_figure, hide_unused_axes
+from autoarray.plot.utils import save_figure, hide_unused_axes, conf_subplot_figsize
 from autoarray.plot.utils import numpy_lines as _to_lines, numpy_positions as _to_positions
 from autogalaxy.plot.plot_utils import _critical_curves_from, _caustics_from
 
@@ -62,7 +62,7 @@ def subplot_tracer(
 
     magnification = LensCalc.from_mass_obj(tracer).magnification_2d_from(grid=grid)
 
-    fig, axes = plt.subplots(3, 3, figsize=(21, 21))
+    fig, axes = plt.subplots(3, 3, figsize=conf_subplot_figsize(3, 3))
     axes_flat = list(axes.flatten())
 
     plot_array(array=image, ax=axes_flat[0], title="Image",
@@ -87,7 +87,7 @@ def subplot_tracer(
 
     hide_unused_axes(axes_flat)
     plt.tight_layout()
-    save_figure(fig, path=output_path, filename="subplot_tracer", format=output_format)
+    save_figure(fig, path=output_path, filename="tracer", format=output_format)
 
 
 def subplot_lensed_images(
@@ -126,7 +126,7 @@ def subplot_lensed_images(
     traced_grids = tracer.traced_grid_2d_list_from(grid=grid)
     n = tracer.total_planes
 
-    fig, axes = plt.subplots(1, n, figsize=(7 * n, 7))
+    fig, axes = plt.subplots(1, n, figsize=conf_subplot_figsize(1, n))
     axes_flat = [axes] if n == 1 else list(np.array(axes).flatten())
 
     for plane_index in range(n):
@@ -141,7 +141,7 @@ def subplot_lensed_images(
         )
 
     plt.tight_layout()
-    save_figure(fig, path=output_path, filename="subplot_lensed_images", format=output_format)
+    save_figure(fig, path=output_path, filename="lensed_images", format=output_format)
 
 
 def subplot_galaxies_images(
@@ -186,7 +186,7 @@ def subplot_galaxies_images(
     traced_grids = tracer.traced_grid_2d_list_from(grid=grid)
     n = 2 * tracer.total_planes - 1
 
-    fig, axes = plt.subplots(1, n, figsize=(7 * n, 7))
+    fig, axes = plt.subplots(1, n, figsize=conf_subplot_figsize(1, n))
     axes_flat = [axes] if n == 1 else list(np.array(axes).flatten())
 
     idx = 0
@@ -228,7 +228,7 @@ def subplot_galaxies_images(
             idx += 1
 
     plt.tight_layout()
-    save_figure(fig, path=output_path, filename="subplot_galaxies_images", format=output_format)
+    save_figure(fig, path=output_path, filename="galaxies_images", format=output_format)
 
 
 def save_tracer_fits(

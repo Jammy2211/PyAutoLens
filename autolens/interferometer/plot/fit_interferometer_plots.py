@@ -170,7 +170,7 @@ def subplot_fit(
     _plot_source_plane(fit, axes_flat[7], final_plane_index, colormap=colormap)
 
     plot_array(array=fit.dirty_normalized_residual_map, ax=axes_flat[8],
-               title="Dirty Normalized Residual Map", colormap=colormap)
+               title="Dirty Normalized Residual Map", colormap=colormap, cb_unit=r"$\sigma$")
 
     # Panel 9: clipped to [-1, 1]
     plot_array(
@@ -179,18 +179,19 @@ def subplot_fit(
         title=r"Normalized Residual Map $1\sigma$",
         colormap=colormap,
         use_log10=False,
-        vmin=-1.0, vmax=1.0
+        vmin=-1.0, vmax=1.0,
+        cb_unit=r"$\sigma$",
     )
 
     plot_array(array=fit.dirty_chi_squared_map, ax=axes_flat[10],
-               title="Dirty Chi-Squared Map", colormap=colormap)
+               title="Dirty Chi-Squared Map", colormap=colormap, cb_unit=r"$\chi^2$")
 
     # Panel 11: source plane not zoomed
     _plot_source_plane(fit, axes_flat[11], final_plane_index,
                        zoom_to_brightest=False, colormap=colormap)
 
     plt.tight_layout()
-    save_figure(fig, path=output_path, filename="subplot_fit", format=output_format)
+    save_figure(fig, path=output_path, filename="fit", format=output_format)
 
 
 def subplot_fit_real_space(
@@ -257,4 +258,4 @@ def subplot_fit_real_space(
         axes_flat[1].set_title("Source Reconstruction")
 
     plt.tight_layout()
-    save_figure(fig, path=output_path, filename="subplot_fit_real_space", format=output_format)
+    save_figure(fig, path=output_path, filename="fit_real_space", format=output_format)
