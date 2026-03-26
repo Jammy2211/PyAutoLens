@@ -23,4 +23,4 @@ def test__subplot_dataset(point_dataset, plot_path, plot_patch):
         output_path=plot_path,
         output_format="png",
     )
-    assert path.join(plot_path, "subplot_dataset_point.png") in plot_patch.paths
+    assert path.join(plot_path, "dataset_point.png") in plot_patch.paths

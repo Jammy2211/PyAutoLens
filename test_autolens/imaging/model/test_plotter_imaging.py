@@ -26,9 +26,9 @@ def test__fit_imaging(
         fit=fit_imaging_x2_plane_inversion_7x7,
     )
 
-    assert path.join(plot_path, "subplot_tracer.png") in plot_patch.paths
-    assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
-    assert path.join(plot_path, "subplot_fit_log10.png") in plot_patch.paths
+    assert path.join(plot_path, "tracer.png") in plot_patch.paths
+    assert path.join(plot_path, "fit.png") in plot_patch.paths
+    assert path.join(plot_path, "fit_log10.png") in plot_patch.paths
 
     image = al.ndarray_via_fits_from(
         file_path=path.join(plot_path, "fit.fits"), hdu=0
@@ -52,4 +52,4 @@ def test__fit_imaging_combined(
 
     visualizer.fit_imaging_combined(fit_list=2 * [fit_imaging_x2_plane_inversion_7x7])
 
-    assert path.join(plot_path, "subplot_fit_combined.png") in plot_patch.paths
+    assert path.join(plot_path, "fit_combined.png") in plot_patch.paths

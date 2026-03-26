@@ -27,9 +27,9 @@ def test__fit_interferometer(
         fit=fit_interferometer_x2_plane_7x7,
     )
 
-    assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
-    assert path.join(plot_path, "subplot_fit_real_space.png") in plot_patch.paths
-    assert path.join(plot_path, "subplot_fit_dirty_images.png") in plot_patch.paths
+    assert path.join(plot_path, "fit.png") in plot_patch.paths
+    assert path.join(plot_path, "fit_real_space.png") in plot_patch.paths
+    assert path.join(plot_path, "fit_dirty_images.png") in plot_patch.paths
 
     image = al.ndarray_via_fits_from(
         file_path=path.join(plot_path, "galaxy_images.fits"), hdu=0

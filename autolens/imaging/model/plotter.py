@@ -3,7 +3,11 @@ import numpy as np
 from typing import List
 
 from autogalaxy.imaging.model.plotter import PlotterImaging as AgPlotterImaging
-from autogalaxy.imaging.model.plotter import fits_to_fits
+from autogalaxy.imaging.plot.fit_imaging_plots import (
+    fits_fit,
+    fits_galaxy_images,
+    fits_model_galaxy_images,
+)
 
 from autolens.analysis.plotter import Plotter
 from autolens.imaging.fit_imaging import FitImaging
@@ -75,7 +79,14 @@ class PlotterImaging(Plotter):
         if should_plot("subplot_of_planes"):
             subplot_of_planes(fit, output_path=output_path, output_format=fmt)
 
-        fits_to_fits(should_plot=should_plot, image_path=self.image_path, fit=fit)
+        if should_plot("fits_fit"):
+            fits_fit(fit=fit, output_path=self.image_path)
+
+        if should_plot("fits_galaxy_images"):
+            fits_galaxy_images(fit=fit, output_path=self.image_path)
+
+        if should_plot("fits_model_galaxy_images"):
+            fits_model_galaxy_images(fit=fit, output_path=self.image_path)
 
     def fit_imaging_combined(
             self,
