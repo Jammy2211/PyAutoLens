@@ -25,7 +25,7 @@ def test__tracer(masked_imaging_7x7, tracer_x2_plane_7x7, plot_path, plot_patch)
         grid=masked_imaging_7x7.grids.lp,
     )
 
-    assert path.join(plot_path, "subplot_galaxies_images.png") in plot_patch.paths
+    assert path.join(plot_path, "galaxies_images.png") in plot_patch.paths
 
     image = al.ndarray_via_fits_from(
         file_path=path.join(plot_path, "tracer.fits"), hdu=0

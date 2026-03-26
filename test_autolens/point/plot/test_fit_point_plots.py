@@ -23,4 +23,4 @@ def test__subplot_fit(fit_point_dataset_x2_plane, plot_path, plot_patch):
         output_path=plot_path,
         output_format="png",
     )
-    assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
+    assert path.join(plot_path, "fit.png") in plot_patch.paths

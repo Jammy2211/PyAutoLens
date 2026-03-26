@@ -518,7 +518,7 @@ def subplot_of_planes(
         _plot_source_plane(fit, axes_flat[3], pidx, colormap=colormap)
 
         plt.tight_layout()
-        save_figure(fig, path=output_path, filename=f"of_plane_{pidx}", format=output_format)
+        save_figure(fig, path=output_path, filename=f"fit_of_plane_{pidx}", format=output_format)
 
 
 def subplot_tracer_from_fit(

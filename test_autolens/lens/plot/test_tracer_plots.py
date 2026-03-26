@@ -7,8 +7,8 @@ from autolens.lens.plot.tracer_plots import (
     subplot_tracer,
     subplot_lensed_images,
     subplot_galaxies_images,
-    save_tracer_fits,
-    save_source_plane_images_fits,
+    fits_tracer,
+    fits_source_plane_images,
 )
 
 directory = path.dirname(path.realpath(__file__))
@@ -33,7 +33,7 @@ def test__subplot_tracer__two_plane_tracer__output_file_created(
         output_path=plot_path,
         output_format="png",
     )
-    assert path.join(plot_path, "subplot_tracer.png") in plot_patch.paths
+    assert path.join(plot_path, "tracer.png") in plot_patch.paths
 
 
 def test__subplot_galaxies_images__two_plane_tracer__output_file_created(
@@ -45,7 +45,7 @@ def test__subplot_galaxies_images__two_plane_tracer__output_file_created(
         output_path=plot_path,
         output_format="png",
     )
-    assert path.join(plot_path, "subplot_galaxies_images.png") in plot_patch.paths
+    assert path.join(plot_path, "galaxies_images.png") in plot_patch.paths
 
 
 def test__subplot_lensed_images__two_plane_tracer__output_file_created(
@@ -57,13 +57,13 @@ def test__subplot_lensed_images__two_plane_tracer__output_file_created(
         output_path=plot_path,
         output_format="png",
     )
-    assert path.join(plot_path, "subplot_lensed_images.png") in plot_patch.paths
+    assert path.join(plot_path, "lensed_images.png") in plot_patch.paths
 
 
-def test__save_tracer_fits__two_plane_tracer__tracer_fits_file_written(
+def test__fits_tracer__two_plane_tracer__tracer_fits_file_written(
     tracer_x2_plane_7x7, grid_2d_7x7, tmp_path
 ):
-    save_tracer_fits(
+    fits_tracer(
         tracer=tracer_x2_plane_7x7,
         grid=grid_2d_7x7,
         output_path=tmp_path,
@@ -71,10 +71,10 @@ def test__save_tracer_fits__two_plane_tracer__tracer_fits_file_written(
     assert (tmp_path / "tracer.fits").exists()
 
 
-def test__save_source_plane_images_fits__two_plane_tracer__source_plane_fits_file_written(
+def test__fits_source_plane_images__two_plane_tracer__source_plane_fits_file_written(
     tracer_x2_plane_7x7, grid_2d_7x7, tmp_path
 ):
-    save_source_plane_images_fits(
+    fits_source_plane_images(
         tracer=tracer_x2_plane_7x7,
         grid=grid_2d_7x7,
         output_path=tmp_path,

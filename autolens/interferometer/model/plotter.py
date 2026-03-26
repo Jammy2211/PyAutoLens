@@ -2,8 +2,11 @@ from autogalaxy.interferometer.model.plotter import (
     PlotterInterferometer as AgPlotterInterferometer,
 )
 
-from autogalaxy.interferometer.model.plotter import fits_to_fits
 from autogalaxy.interferometer.plot import fit_interferometer_plots as ag_fit_interferometer_plots
+from autogalaxy.interferometer.plot.fit_interferometer_plots import (
+    fits_galaxy_images,
+    fits_dirty_images,
+)
 
 from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.interferometer.plot.fit_interferometer_plots import (
@@ -54,8 +57,8 @@ class PlotterInterferometer(Plotter):
         if should_plot("subplot_fit_real_space"):
             subplot_fit_real_space(fit, output_path=output_path, output_format=fmt)
 
-        fits_to_fits(
-            should_plot=should_plot,
-            image_path=self.image_path,
-            fit=fit,
-        )
+        if should_plot("fits_galaxy_images"):
+            fits_galaxy_images(fit=fit, output_path=self.image_path)
+
+        if should_plot("fits_dirty_images"):
+            fits_dirty_images(fit=fit, output_path=self.image_path)

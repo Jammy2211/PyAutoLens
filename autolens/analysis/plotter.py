@@ -12,8 +12,8 @@ from autolens.lens.tracer import Tracer
 from autolens.lens.plot.tracer_plots import (
     subplot_tracer,
     subplot_galaxies_images,
-    save_tracer_fits,
-    save_source_plane_images_fits,
+    fits_tracer,
+    fits_source_plane_images,
 )
 from autoarray.plot.array import plot_array
 
@@ -72,10 +72,10 @@ class Plotter(AgPlotter):
             )
 
         if should_plot("fits_tracer"):
-            save_tracer_fits(tracer=tracer, grid=grid, output_path=self.image_path)
+            fits_tracer(tracer=tracer, grid=grid, output_path=self.image_path)
 
         if should_plot("fits_source_plane_images"):
-            save_source_plane_images_fits(tracer=tracer, grid=grid, output_path=self.image_path)
+            fits_source_plane_images(tracer=tracer, grid=grid, output_path=self.image_path)
 
     def image_with_positions(self, image: aa.Array2D, positions: aa.Grid2DIrregular):
         """

@@ -22,7 +22,7 @@ def test__subplot_fit(
         output_path=plot_path,
         output_format="png",
     )
-    assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
+    assert path.join(plot_path, "fit.png") in plot_patch.paths
 
 
 def test__subplot_fit_real_space(
@@ -36,4 +36,4 @@ def test__subplot_fit_real_space(
         output_path=plot_path,
         output_format="png",
     )
-    assert path.join(plot_path, "subplot_fit_real_space.png") in plot_patch.paths
+    assert path.join(plot_path, "fit_real_space.png") in plot_patch.paths

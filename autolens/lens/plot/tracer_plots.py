@@ -231,7 +231,7 @@ def subplot_galaxies_images(
     save_figure(fig, path=output_path, filename="galaxies_images", format=output_format)
 
 
-def save_tracer_fits(
+def fits_tracer(
     tracer,
     grid: aa.type.Grid2DLike,
     output_path,
@@ -274,7 +274,7 @@ def save_tracer_fits(
     hdu_list.writeto(output_path / "tracer.fits", overwrite=True)
 
 
-def save_source_plane_images_fits(
+def fits_source_plane_images(
     tracer,
     grid: aa.type.Grid2DLike,
     output_path,
