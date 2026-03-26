@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from typing import Optional
 
-from autoarray.plot.utils import save_figure
+from autoarray.plot.utils import save_figure, conf_subplot_figsize
 
 
 def subplot_fit(
@@ -38,7 +38,7 @@ def subplot_fit(
     has_fluxes = fit.dataset.fluxes is not None
     n = 2 if has_fluxes else 1
 
-    fig, axes = plt.subplots(1, n, figsize=(7 * n, 7))
+    fig, axes = plt.subplots(1, n, figsize=conf_subplot_figsize(1, n))
     axes_flat = [axes] if n == 1 else list(np.array(axes).flatten())
 
     # Positions panel
@@ -78,4 +78,4 @@ def subplot_fit(
         )
 
     plt.tight_layout()
-    save_figure(fig, path=output_path, filename="subplot_fit", format=output_format)
+    save_figure(fig, path=output_path, filename="fit", format=output_format)

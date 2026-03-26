@@ -112,7 +112,7 @@ def subplot_tracer_images(
                colormap=colormap, use_log10=use_log10, lines=no_perturb_cc_lines)
 
     plt.tight_layout()
-    save_figure(fig, path=output_path, filename="subplot_lensed_images", format=output_format)
+    save_figure(fig, path=output_path, filename="lensed_images", format=output_format)
 
 
 def subplot_sensitivity(
@@ -241,7 +241,7 @@ def subplot_sensitivity(
         pass
 
     plt.tight_layout()
-    save_figure(fig, path=output_path, filename="subplot_sensitivity", format=output_format)
+    save_figure(fig, path=output_path, filename="sensitivity", format=output_format)
 
 
 def subplot_figures_of_merit_grid(

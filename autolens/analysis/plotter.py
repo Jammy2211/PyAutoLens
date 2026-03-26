@@ -10,6 +10,7 @@ from autogalaxy.analysis.plotter import Plotter as AgPlotter
 
 from autolens.lens.tracer import Tracer
 from autolens.lens.plot.tracer_plots import (
+    subplot_tracer,
     subplot_galaxies_images,
     save_tracer_fits,
     save_source_plane_images_fits,
@@ -54,6 +55,14 @@ class Plotter(AgPlotter):
         output_path = str(self.image_path)
         fmt = self.fmt
 
+        if should_plot("subplot_tracer"):
+            subplot_tracer(
+                tracer=tracer,
+                grid=grid,
+                output_path=output_path,
+                output_format=fmt,
+            )
+
         if should_plot("subplot_galaxies_images"):
             subplot_galaxies_images(
                 tracer=tracer,
@@ -95,6 +104,7 @@ class Plotter(AgPlotter):
             plot_array(
                 array=image,
                 positions=[pos_arr],
+                title="Image With Positions",
                 output_path=str(self.image_path),
                 output_filename="image_with_positions",
                 output_format=fmt,

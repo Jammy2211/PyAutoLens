@@ -6,7 +6,7 @@ import autoarray as aa
 import autogalaxy as ag
 
 from autoarray.plot.array import plot_array, _zoom_array_2d
-from autoarray.plot.utils import save_figure, hide_unused_axes
+from autoarray.plot.utils import save_figure, hide_unused_axes, conf_subplot_figsize
 from autoarray.plot.utils import numpy_lines as _to_lines
 from autogalaxy.plot.plot_utils import _critical_curves_from, _caustics_from
 
@@ -144,7 +144,7 @@ def subplot_fit(
 
     source_vmax = _get_source_vmax(fit)
 
-    fig, axes = plt.subplots(3, 4, figsize=(28, 21))
+    fig, axes = plt.subplots(3, 4, figsize=conf_subplot_figsize(3, 4))
     axes_flat = list(axes.flatten())
 
     plot_array(array=fit.data, ax=axes_flat[0], title="Data", colormap=colormap)
@@ -200,15 +200,15 @@ def subplot_fit(
     norm_resid = fit.normalized_residual_map
     _abs_max = _symmetric_vmax(norm_resid)
     plot_array(array=norm_resid, ax=axes_flat[8], title="Normalized Residual Map",
-               colormap=colormap, vmin=-_abs_max, vmax=_abs_max)
+               colormap=colormap, vmin=-_abs_max, vmax=_abs_max, cb_unit=r"$\sigma$")
 
     # Normalized residual map clipped to [-1, 1]
     plot_array(array=norm_resid, ax=axes_flat[9],
                title=r"Normalized Residual Map $1\sigma$",
-               colormap=colormap, vmin=-1.0, vmax=1.0)
+               colormap=colormap, vmin=-1.0, vmax=1.0, cb_unit=r"$\sigma$")
 
     plot_array(array=fit.chi_squared_map, ax=axes_flat[10],
-               title="Chi-Squared Map", colormap=colormap)
+               title="Chi-Squared Map", colormap=colormap, cb_unit=r"$\chi^2$")
 
     # Source plane not zoomed
     _plot_source_plane(fit, axes_flat[11], final_plane_index, zoom_to_brightest=False,
@@ -216,7 +216,7 @@ def subplot_fit(
 
     hide_unused_axes(axes_flat)
     plt.tight_layout()
-    save_figure(fig, path=output_path, filename=f"subplot_fit{plane_index_tag}", format=output_format)
+    save_figure(fig, path=output_path, filename=f"fit{plane_index_tag}", format=output_format)
 
 
 def subplot_fit_x1_plane(
@@ -252,7 +252,7 @@ def subplot_fit_x1_plane(
     colormap : str, optional
         Matplotlib colormap name applied to all image panels.
     """
-    fig, axes = plt.subplots(2, 3, figsize=(21, 14))
+    fig, axes = plt.subplots(2, 3, figsize=conf_subplot_figsize(2, 3))
     axes_flat = list(axes.flatten())
 
     try:
@@ -270,17 +270,17 @@ def subplot_fit_x1_plane(
 
     norm_resid = fit.normalized_residual_map
     plot_array(array=norm_resid, ax=axes_flat[3], title="Lens Light Subtracted",
-               colormap=colormap)
+               colormap=colormap, cb_unit=r"$\sigma$")
 
     plot_array(array=norm_resid, ax=axes_flat[4], title="Subtracted Image Zero Minimum",
-               colormap=colormap, vmin=0.0)
+               colormap=colormap, vmin=0.0, cb_unit=r"$\sigma$")
 
     _abs_max = _symmetric_vmax(norm_resid)
     plot_array(array=norm_resid, ax=axes_flat[5], title="Normalized Residual Map",
-               colormap=colormap, vmin=-_abs_max, vmax=_abs_max)
+               colormap=colormap, vmin=-_abs_max, vmax=_abs_max, cb_unit=r"$\sigma$")
 
     plt.tight_layout()
-    save_figure(fig, path=output_path, filename="subplot_fit_x1_plane", format=output_format)
+    save_figure(fig, path=output_path, filename="fit_x1_plane", format=output_format)
 
 
 def subplot_fit_log10(
@@ -328,7 +328,7 @@ def subplot_fit_log10(
 
     source_vmax = _get_source_vmax(fit)
 
-    fig, axes = plt.subplots(3, 4, figsize=(28, 21))
+    fig, axes = plt.subplots(3, 4, figsize=conf_subplot_figsize(3, 4))
     axes_flat = list(axes.flatten())
 
     plot_array(array=fit.data, ax=axes_flat[0], title="Data", colormap=colormap,
@@ -376,20 +376,20 @@ def subplot_fit_log10(
     norm_resid = fit.normalized_residual_map
     _abs_max = _symmetric_vmax(norm_resid)
     plot_array(array=norm_resid, ax=axes_flat[8], title="Normalized Residual Map",
-               colormap=colormap, vmin=-_abs_max, vmax=_abs_max)
+               colormap=colormap, vmin=-_abs_max, vmax=_abs_max, cb_unit=r"$\sigma$")
 
     plot_array(array=norm_resid, ax=axes_flat[9],
                title=r"Normalized Residual Map $1\sigma$",
-               colormap=colormap, vmin=-1.0, vmax=1.0)
+               colormap=colormap, vmin=-1.0, vmax=1.0, cb_unit=r"$\sigma$")
 
     plot_array(array=fit.chi_squared_map, ax=axes_flat[10], title="Chi-Squared Map",
-               colormap=colormap, use_log10=True)
+               colormap=colormap, use_log10=True, cb_unit=r"$\chi^2$")
 
     _plot_source_plane(fit, axes_flat[11], final_plane_index, zoom_to_brightest=False,
                        colormap=colormap, use_log10=True)
 
     plt.tight_layout()
-    save_figure(fig, path=output_path, filename=f"subplot_fit_log10{plane_index_tag}", format=output_format)
+    save_figure(fig, path=output_path, filename=f"fit_log10{plane_index_tag}", format=output_format)
 
 
 def subplot_fit_log10_x1_plane(
@@ -420,7 +420,7 @@ def subplot_fit_log10_x1_plane(
     colormap : str, optional
         Matplotlib colormap name applied to all image panels.
     """
-    fig, axes = plt.subplots(2, 3, figsize=(21, 14))
+    fig, axes = plt.subplots(2, 3, figsize=conf_subplot_figsize(2, 3))
     axes_flat = list(axes.flatten())
 
     try:
@@ -442,15 +442,15 @@ def subplot_fit_log10_x1_plane(
 
     norm_resid = fit.normalized_residual_map
     plot_array(array=norm_resid, ax=axes_flat[3], title="Lens Light Subtracted",
-               colormap=colormap)
+               colormap=colormap, cb_unit=r"$\sigma$")
     _abs_max = _symmetric_vmax(norm_resid)
     plot_array(array=norm_resid, ax=axes_flat[4], title="Normalized Residual Map",
-               colormap=colormap, vmin=-_abs_max, vmax=_abs_max)
+               colormap=colormap, vmin=-_abs_max, vmax=_abs_max, cb_unit=r"$\sigma$")
     plot_array(array=fit.chi_squared_map, ax=axes_flat[5], title="Chi-Squared Map",
-               colormap=colormap, use_log10=True)
+               colormap=colormap, use_log10=True, cb_unit=r"$\chi^2$")
 
     plt.tight_layout()
-    save_figure(fig, path=output_path, filename="subplot_fit_log10", format=output_format)
+    save_figure(fig, path=output_path, filename="fit_log10", format=output_format)
 
 
 def subplot_of_planes(
@@ -496,7 +496,7 @@ def subplot_of_planes(
         plane_indexes = [plane_index]
 
     for pidx in plane_indexes:
-        fig, axes = plt.subplots(1, 4, figsize=(28, 7))
+        fig, axes = plt.subplots(1, 4, figsize=conf_subplot_figsize(1, 4))
         axes_flat = list(axes.flatten())
 
         plot_array(array=fit.data, ax=axes_flat[0], title="Data", colormap=colormap)
@@ -518,7 +518,7 @@ def subplot_of_planes(
         _plot_source_plane(fit, axes_flat[3], pidx, colormap=colormap)
 
         plt.tight_layout()
-        save_figure(fig, path=output_path, filename=f"subplot_of_plane_{pidx}", format=output_format)
+        save_figure(fig, path=output_path, filename=f"of_plane_{pidx}", format=output_format)
 
 
 def subplot_tracer_from_fit(
@@ -556,7 +556,7 @@ def subplot_tracer_from_fit(
     """
     final_plane_index = len(fit.tracer.planes) - 1
 
-    fig, axes = plt.subplots(3, 3, figsize=(21, 21))
+    fig, axes = plt.subplots(3, 3, figsize=conf_subplot_figsize(3, 3))
     axes_flat = list(axes.flatten())
 
     tracer = fit.tracer_linear_light_profiles_to_light_profiles
@@ -594,7 +594,7 @@ def subplot_tracer_from_fit(
         axes_flat[i].axis("off")
 
     plt.tight_layout()
-    save_figure(fig, path=output_path, filename="subplot_tracer", format=output_format)
+    save_figure(fig, path=output_path, filename="tracer", format=output_format)
 
 
 def subplot_fit_combined(
@@ -633,7 +633,7 @@ def subplot_fit_combined(
     """
     n_fits = len(fit_list)
     n_cols = 6
-    fig, axes = plt.subplots(n_fits, n_cols, figsize=(7 * n_cols, 7 * n_fits))
+    fig, axes = plt.subplots(n_fits, n_cols, figsize=conf_subplot_figsize(n_fits, n_cols))
     if n_fits == 1:
         all_axes = [list(axes)]
     else:
@@ -673,10 +673,10 @@ def subplot_fit_combined(
             row_axes[4].axis("off")
 
         plot_array(array=fit.normalized_residual_map, ax=row_axes[5],
-                   title="Normalized Residual Map", colormap=colormap)
+                   title="Normalized Residual Map", colormap=colormap, cb_unit=r"$\sigma$")
 
     plt.tight_layout()
-    save_figure(fig, path=output_path, filename="subplot_fit_combined", format=output_format)
+    save_figure(fig, path=output_path, filename="fit_combined", format=output_format)
 
 
 def subplot_fit_combined_log10(
@@ -707,7 +707,7 @@ def subplot_fit_combined_log10(
     """
     n_fits = len(fit_list)
     n_cols = 6
-    fig, axes = plt.subplots(n_fits, n_cols, figsize=(7 * n_cols, 7 * n_fits))
+    fig, axes = plt.subplots(n_fits, n_cols, figsize=conf_subplot_figsize(n_fits, n_cols))
     if n_fits == 1:
         all_axes = [list(axes)]
     else:
@@ -749,7 +749,7 @@ def subplot_fit_combined_log10(
             row_axes[4].axis("off")
 
         plot_array(array=fit.normalized_residual_map, ax=row_axes[5],
-                   title="Normalized Residual Map", colormap=colormap)
+                   title="Normalized Residual Map", colormap=colormap, cb_unit=r"$\sigma$")
 
     plt.tight_layout()
     save_figure(fig, path=output_path, filename="fit_combined_log10", format=output_format)
