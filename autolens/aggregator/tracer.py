@@ -65,12 +65,6 @@ def _tracer_from(
 
     for instance in instance_list:
 
-        galaxies = instance.galaxies
-
-        if hasattr(instance, "extra_galaxies"):
-            if instance.extra_galaxies is not None:
-                galaxies = galaxies + instance.extra_galaxies
-
         try:
             cosmology = instance.cosmology
         except AttributeError:
@@ -82,7 +76,7 @@ def _tracer_from(
         # TODO : These are ugly as hell (>_<)
 
         if hasattr(instance, "perturb"):
-            galaxies.subhalo = instance.perturb
+            instance.galaxies.subhalo = instance.perturb
 
         if hasattr(instance.galaxies, "subhalo"):
             subhalo_centre = tracer_util.grid_2d_at_redshift_from(
@@ -92,9 +86,19 @@ def _tracer_from(
                 cosmology=cosmology,
             )
 
-            galaxies.subhalo.mass.centre = tuple(subhalo_centre.in_list[0])
+            instance.galaxies.subhalo.mass.centre = tuple(subhalo_centre.in_list[0])
 
-        tracer = Tracer(galaxies=galaxies, cosmology=cosmology)
+        galaxy_list = list(instance.galaxies)
+
+        if hasattr(instance, "extra_galaxies"):
+            if instance.extra_galaxies is not None:
+                galaxy_list += list(instance.extra_galaxies)
+
+        if hasattr(instance, "scaling_galaxies"):
+            if instance.scaling_galaxies is not None:
+                galaxy_list += list(instance.scaling_galaxies)
+
+        tracer = Tracer(galaxies=galaxy_list, cosmology=cosmology)
 
         tracer_list.append(tracer)
 
