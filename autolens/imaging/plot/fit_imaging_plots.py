@@ -85,7 +85,7 @@ def _plot_source_plane(fit, ax, plane_index, zoom_to_brightest=True,
         )
         traced_grids = tracer.traced_grid_2d_list_from(grid=grid)
         plane_galaxies = ag.Galaxies(galaxies=tracer.planes[plane_index])
-        image = plane_galaxies.image_2d_from(grid=traced_grids[plane_index])
+        image = plane_galaxies.image_2d_from(grid=traced_grids[0])
         plot_array(
             array=image, ax=ax,
             title=title if title is not None else f"Source Plane {plane_index}",
