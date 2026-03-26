@@ -40,8 +40,14 @@ def subplot_tracer(
 
     tan_cc, rad_cc = _critical_curves_from(tracer, grid)
     tan_ca, rad_ca = _caustics_from(tracer, grid)
-    image_plane_lines = _to_lines((list(tan_cc) if tan_cc is not None else []) + (list(rad_cc) if rad_cc is not None else []))
-    source_plane_lines = _to_lines((list(tan_ca) if tan_ca is not None else []) + (list(rad_ca) if rad_ca is not None else []))
+    _tan_cc_lines = _to_lines(list(tan_cc) if tan_cc is not None else []) or []
+    _rad_cc_lines = _to_lines(list(rad_cc) if rad_cc is not None else []) or []
+    _tan_ca_lines = _to_lines(list(tan_ca) if tan_ca is not None else []) or []
+    _rad_ca_lines = _to_lines(list(rad_ca) if rad_ca is not None else []) or []
+    image_plane_lines = (_tan_cc_lines + _rad_cc_lines) or None
+    image_plane_line_colors = ["black"] * len(_tan_cc_lines) + ["white"] * len(_rad_cc_lines)
+    source_plane_lines = (_tan_ca_lines + _rad_ca_lines) or None
+    source_plane_line_colors = ["black"] * len(_tan_ca_lines) + ["white"] * len(_rad_ca_lines)
     pos_list = _to_positions(positions)
 
     # --- compute arrays ---
@@ -49,6 +55,10 @@ def subplot_tracer(
 
     source_galaxies = ag.Galaxies(galaxies=tracer.planes[final_plane_index])
     source_image = source_galaxies.image_2d_from(grid=traced_grids[final_plane_index])
+    try:
+        source_vmax = float(np.max(source_image.array))
+    except (AttributeError, ValueError):
+        source_vmax = None
 
     lens_galaxies = ag.Galaxies(galaxies=tracer.planes[0])
     lens_image = lens_galaxies.image_2d_from(grid=traced_grids[0])
@@ -65,25 +75,27 @@ def subplot_tracer(
     fig, axes = plt.subplots(3, 3, figsize=conf_subplot_figsize(3, 3))
     axes_flat = list(axes.flatten())
 
-    plot_array(array=image, ax=axes_flat[0], title="Image",
-               lines=image_plane_lines, positions=pos_list, colormap=colormap,
-               use_log10=use_log10)
-    plot_array(array=source_image, ax=axes_flat[1], title="Source Image",
+    plot_array(array=image, ax=axes_flat[0], title="Model Image",
+               lines=image_plane_lines, line_colors=image_plane_line_colors,
+               positions=pos_list, colormap=colormap, use_log10=use_log10)
+    plot_array(array=source_image, ax=axes_flat[1], title="Source Model Image",
+               colormap=colormap, use_log10=use_log10, vmax=source_vmax)
+    plot_array(array=source_image, ax=axes_flat[2], title="Source Plane (No Zoom)",
+               lines=source_plane_lines, line_colors=source_plane_line_colors,
                colormap=colormap, use_log10=use_log10)
-    plot_array(array=source_image, ax=axes_flat[2], title="Source Plane Image",
-               lines=source_plane_lines, colormap=colormap, use_log10=use_log10)
     plot_array(array=lens_image, ax=axes_flat[3], title="Lens Image",
-               colormap=colormap, use_log10=use_log10)
+               lines=image_plane_lines, line_colors=image_plane_line_colors,
+               colormap=colormap, use_log10=True)
     plot_array(array=convergence, ax=axes_flat[4], title="Convergence",
-               lines=image_plane_lines, colormap=colormap, use_log10=use_log10)
+               colormap=colormap, use_log10=True)
     plot_array(array=potential, ax=axes_flat[5], title="Potential",
-               lines=image_plane_lines, colormap=colormap, use_log10=use_log10)
+               colormap=colormap, use_log10=True)
     plot_array(array=deflections_y, ax=axes_flat[6], title="Deflections Y",
-               lines=image_plane_lines, colormap=colormap)
+               lines=image_plane_lines, line_colors=image_plane_line_colors, colormap=colormap)
     plot_array(array=deflections_x, ax=axes_flat[7], title="Deflections X",
-               lines=image_plane_lines, colormap=colormap)
+               lines=image_plane_lines, line_colors=image_plane_line_colors, colormap=colormap)
     plot_array(array=magnification, ax=axes_flat[8], title="Magnification",
-               lines=image_plane_lines, colormap=colormap)
+               lines=image_plane_lines, line_colors=image_plane_line_colors, colormap=colormap)
 
     hide_unused_axes(axes_flat)
     plt.tight_layout()
