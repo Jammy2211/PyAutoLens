@@ -55,14 +55,6 @@ class Plotter(AgPlotter):
         output_path = str(self.image_path)
         fmt = self.fmt
 
-        if should_plot("subplot_tracer"):
-            subplot_tracer(
-                tracer=tracer,
-                grid=grid,
-                output_path=output_path,
-                output_format=fmt,
-            )
-
         if should_plot("subplot_galaxies_images"):
             subplot_galaxies_images(
                 tracer=tracer,
