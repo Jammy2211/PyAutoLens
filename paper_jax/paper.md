@@ -20,15 +20,38 @@ bibliography: paper.bib
 
 # Summary
 
-Gravitational lensing probes luminous and dark matter across galaxy-, group-, and cluster-scale systems using observations that increasingly provide multiple complementary forms of information. A single system may include strong- and weak-lensing constraints, multi-band optical or infrared imaging, radio interferometer visibilities, and point-source measurements from lensed quasars or supernovae. Fully exploiting modern lensing datasets therefore warrants joint probabilistic modelling across galaxy, group, and cluster scales, combining strong and weak lensing with diverse observational data types.
+Gravitational lensing probes luminous and dark matter in galaxy-, group-, and cluster-scale systems. Lensing datasets 
+are growing rapidly in size: Stage IV surveys such as Euclid [@EuclidCollaboration2025] and the Vera C. Rubin 
+Observatory [@LSSTDarkEnergyScienceCollaboration2012] will measure billions of galaxies across large fractions of the 
+sky. They are also growing in diversity: a single system may include strong- and weak-lensing constraints, multi-band 
+optical and infrared imaging, radio-interferometric visibilities, and point-source measurements of lensed quasars or
+supernovae. Fully exploiting these observations requires joint probabilistic modelling across lensing scales and data types. 
+However, the increasing volume of data and complexity of lens models make these analyses increasingly computationally expensive.
 
-PyAutoLens is now implemented using JAX throughout its core modelling framework, providing just-in-time compilation, GPU acceleration, and automatic differentiation without introducing a separate package or replacing its established object-oriented API. Galaxy-, group-, and cluster-scale mass models can be constrained using CCD imaging, interferometer visibilities, point-source observables, and weak-lensing catalogues. Crucially, these are not isolated capabilities: users can combine multiple datasets, strong- and weak-lensing constraints, lens planes, and mass components within a single differentiable, GPU-accelerated probabilistic model.
+PyAutoLens is now implemented using JAX throughout its core modelling framework, providing just-in-time compilation, 
+GPU acceleration, and automatic differentiation without introducing a separate package or replacing its established 
+object-oriented API. Galaxy-, group-, and cluster-scale lens models can be constrained using CCD imaging, 
+interferometer visibilities, point-source observables, and weak-lensing catalogues fully in JAX. Crucially, 
+these are not isolated capabilities: users can combine multiple datasets and strong- and weak-lensing constraints 
+within a single differentiable, GPU-accelerated probabilistic model. In doing so, PyAutoLens-JAX allows 
+gravitational-lensing analyses to scale with the size and complexity of next-generation datasets.
 
 # Statement of need
 
-The number of known gravitational lenses is increasing rapidly as wide-field surveys discover large samples of galaxy-, group-, and cluster-scale systems. At the same time, the information available for each lens is becoming richer. High-resolution imaging constrains extended arcs and lens-galaxy light, interferometer observations probe source structure in the visibility domain, point-source measurements constrain image positions and time delays, and weak lensing probes mass on larger spatial scales. Group and cluster lenses further introduce multiple deflectors, multiple source planes, and more complex mass distributions. Jointly modelling these observables can break degeneracies and provide more complete physical constraints, but it also creates increasingly expensive and high-dimensional likelihood functions.
+Modern lensing analyses must handle both rapidly growing samples and far more information for each system. 
+High-resolution imaging constrains extended arcs and lens-galaxy light; interferometric observations probe 
+source structure in the visibility domain; strongly lensed variable and transient sources, including quasars and 
+supernovae, provide image positions and time delays; and weak lensing traces mass on larger spatial scales. 
+Group and cluster lenses add multiple deflectors, source planes, and complex mass distributions. Joint modelling 
+can break degeneracies and yield more complete physical constraints, but it also increases model dimensionality and 
+the cost of each likelihood evaluation. Providing the required lensing calculations for all these datasets within a 
+single GPU-accelerated, automatically differentiable package therefore offers a compelling route to making the compelling
+science possible with these data feasible.
 
-Conventional derivative-free inference becomes difficult as analyses combine pixelized source reconstructions, multi-band datasets, millions of interferometer visibilities, strong- and weak-lensing constraints, and multi-scale mass models across increasingly large lens samples. PyAutoLens-JAX addresses this computational bottleneck by making the complete modelling framework compatible with GPU execution and automatic differentiation. This enables faster likelihood evaluation and the use of gradient-based optimisation and sampling methods across the full range of PyAutoLens datasets and lensing regimes.
+Conventional derivative-free inference becomes difficult as analyses combine pixelized source reconstructions, 
+multi-band datasets, millions of interferometer visibilities, strong- and weak-lensing constraints, and multi-scale m
+ass models across increasingly large lens samples. PyAutoLens-JAX addresses this computational bottleneck by 
+making the complete modelling framework compatible with GPU execution and automatic differentiation. This enables faster likelihood evaluation and the use of gradient-based optimisation and sampling methods across the full range of PyAutoLens datasets and lensing regimes.
 
 # State of the field
 
