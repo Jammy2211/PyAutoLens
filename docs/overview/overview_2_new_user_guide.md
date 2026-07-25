@@ -8,7 +8,7 @@ The [**PyAutoLens AI Assistant**](https://github.com/PyAutoLabs/autolens_assista
 
 ## Human-Readable Guide
 
-**PyAutoLens** can analyse strong lens systems across a range of physical scales (e.g. galaxy, group, and cluster) and for
+**PyAutoLens** can analyse strong lens systems across a range of physical scales (e.g. galaxy, multi-galaxy, group, and cluster) and for
 different types of data (e.g. imaging, interferometer, and point-source observations). Depending on the scientific questions you are interested in, the analysis you perform may differ significantly.
 
 The autolens_workspace contains a suite of example Jupyter Notebooks, organised by lens scale and dataset type.
@@ -23,9 +23,10 @@ There are four scales to choose from, which form a ladder: every group and clust
 but not vice versa. What changes as you climb is first the mass model, then the entire analysis strategy:
 
 - **Galaxy Scale**: Made up of a single lens galaxy lensing a single source galaxy, the simplest strong lens you can get!
-  If you're interested in galaxy scale lenses, go to the question below called "What Data Type?".
-- **Multi Galaxy**: Two or more galaxies of comparable mass all contribute significantly to the lensing, with no shared
-  dark-matter halo — each co-dominant deflector gets its own free light and mass model, and the source is a single
+  If you're interested in galaxy scale lenses, go to the question below called "What Dataset Type?".
+- **Multi Galaxy**: Two or more galaxies of comparable mass all contribute significantly to the lensing, with no
+  dominant shared dark-matter halo (systems with one belong on the group or cluster rungs below) — each co-dominant
+  deflector gets its own free light and mass model, and the source is a single
   extended galaxy fitted at pixel level exactly as at galaxy scale. If this is your system, go to the
   [multi_galaxy/start_here.ipynb](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/start_here.ipynb) notebook.
 - **Group Scale**: Strong lens groups contain 2-10 lens galaxies and typically lens just one source galaxy. A dominant
@@ -63,7 +64,7 @@ so you can check its the right software for you before going through the install
 > - [point_source/start_here.ipynb](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.7.25.2/notebooks/point_source/start_here.ipynb): Galaxy scale strong lenses with a lensed point source (e.g. lensed quasars).
 > - [multi_galaxy/start_here.ipynb](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.7.25.2/notebooks/multi_galaxy/start_here.ipynb): Multi-galaxy strong lenses with 2+ co-dominant lens galaxies and no host halo.
 > - [group/start_here.ipynb](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.7.25.2/notebooks/group/start_here.ipynb): Group scale strong lenses where there are 2-10 lens galaxies.
-> - [cluster/start_here.ipynb](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.7.25.2/notebooks/cluster/start_here.ipynb): Cluster scale strong lenses with 2+ lenses and 5+ source galaxies.
+> - [cluster/start_here.ipynb](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.7.25.2/notebooks/cluster/start_here.ipynb): Cluster scale strong lenses with 20+ lens galaxies and 10+ source galaxies.
 
 ## Still Unsure?
 
