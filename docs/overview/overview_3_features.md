@@ -126,10 +126,15 @@ The following paper gives a detailed overview of MGEs and their applications in 
 
 Checkout `autolens_workspace/notebooks/features/multi_gaussian_expansion.ipynb` to learn how to use an MGE.
 
-## Groups
+## Multi-Galaxy Lenses, Groups and Clusters
 
-The strong lenses we've discussed so far have just a single lens galaxy responsible for the lensing. Group-scale
-strong lenses are systems where there two or more lens galaxies deflecting one or more background sources:
+The strong lenses we've discussed so far have just a single lens galaxy responsible for the lensing. Above that
+scale, **PyAutoLens** organises lenses into a ladder of three regimes (see the New User Guide for the full
+routing): *multi-galaxy* lenses have two or more co-dominant lens galaxies and no shared dark-matter halo
+(`autolens_workspace/*/multi_galaxy`); *group-scale* lenses add a group dark-matter halo as an explicit modelling
+choice, with fainter members on scaling relations; and *cluster-scale* lenses keep the group's mass framework but
+switch the analysis to point-source multiple-image positions of many sources. The image below shows a group-scale
+system, where multiple lens galaxies deflect one or more background sources:
 
 ```{image} https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/group.png
 :alt: Alternative text
