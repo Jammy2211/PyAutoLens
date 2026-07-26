@@ -39,6 +39,12 @@ but not vice versa. What changes as you climb is first the mass model, then the 
   reconstructing extended sources, and the lens galaxies' light is not modeled. If you are interested in clusters, go
   to the [cluster/start_here.ipynb](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/cluster/start_here.ipynb) notebook.
 
+For a sense of the real science each rung anchors to: multi-galaxy lenses include merging-pair systems like
+SDSS J1011+0143 (two SIEs + shear; Shu et al. 2016) and the famous time-delay lens B1608+656; group-scale
+lenses include CSWA 19 (Ding et al. 2025, modeled with **PyAutoLens**) and the SL2S group sample; cluster-scale
+lenses include the Hubble Frontier Fields clusters, most notably Abell 2744 (Bergamini et al. 2023) — the
+system the workspace's cluster `start_here` models.
+
 ## What Dataset Type?
 
 If you are interested in galaxy-scale strong lenses, you now need to decide what type of strong lens data you are

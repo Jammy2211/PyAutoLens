@@ -365,6 +365,52 @@ as manually customize it in the .json file directory.
 
 This is used for composing complex models of group scale lenses.
 
+## Multi Galaxy, Group and Cluster Models
+
+Above galaxy scale, models are composed for three regimes (see the New User Guide's "What Scale
+System?" ladder — all groups and clusters are multi-galaxy systems, but not vice versa):
+
+**Multi-galaxy lenses** (2+ co-dominant deflectors, no host halo): one free light + mass model per
+deflector, composed in a loop with **untruncated** isothermals (no host halo means no tidal
+truncation):
+
+```python
+lens_dict = {}
+
+for i, centre in enumerate(main_lens_centres):
+    mass = af.Model(al.mp.Isothermal)
+    mass.centre = (centre[0], centre[1])
+
+    lens_dict[f"lens_{i}"] = af.Model(al.Galaxy, redshift=0.5, mass=mass)
+
+model = af.Collection(galaxies=af.Collection(**lens_dict, source=source))
+```
+
+**Group-scale lenses** add two things as explicit modelling choices: an optional dark-matter
+**group halo**, and faint members whose masses are tied to their luminosities through a shared
+scaling relation, so N galaxies cost one free parameter (composed via prior arithmetic on a
+shared prior):
+
+```python
+einstein_radius_ref = af.UniformPrior(lower_limit=0.0, upper_limit=1.0)
+
+for i, (centre, luminosity) in enumerate(zip(centres, luminosities)):
+    mass = af.Model(al.mp.IsothermalSph)
+    mass.centre = (centre[0], centre[1])
+    mass.einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5
+```
+
+**Cluster-scale lenses** keep the group mass framework (halo + tidally truncated ``dPIE``
+members on scaling relations) but change the source strategy: many point-source multiple-image
+position datasets, each at its own redshift, fitted via ``AnalysisPoint``.
+
+The following example notebooks show each regime's full model composition:
+
+<https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/modeling.ipynb>
+<https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/start_here.ipynb>
+<https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/group_halo/modeling.ipynb>
+<https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/cluster/start_here.ipynb>
+
 ## Many Profile Models (Advanced)
 
 Features such as the Multi Gaussian Expansion (MGE) and shapelets compose models consisting of 50 - 500+ light

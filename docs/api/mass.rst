@@ -5,6 +5,13 @@ Mass Profiles
 Total [ag.mp]
 -------------
 
+The ``Isothermal`` / ``PowerLaw`` family are the standard **untruncated** profiles for
+galaxy-scale and multi-galaxy lenses (no host halo, so no tidal truncation). The ``dPIE``
+family are **tidally truncated** profiles for the member galaxies of group- and
+cluster-scale lenses, whose ``r_cut`` encodes stripping by the host halo's potential
+(``dPIEMass`` is parameterized by Lenstool's native ``sigma`` — the fiducial dispersion
+sigma_LT; ``dPIEMassB0`` by the deflection normalization ``b0``).
+
 .. currentmodule:: autogalaxy.profiles.mass
 
 .. autosummary::
