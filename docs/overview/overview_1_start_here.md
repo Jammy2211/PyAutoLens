@@ -352,8 +352,8 @@ progressively improving the quality of the fit until the model closely reproduce
 
 **Credit: Amy Etherington**
 
-The next documentation page guides you through lens modeling for a variety of lensing regimes (e.g. galaxy–galaxy lenses,
-cluster-scale lenses) and data types (e.g. CCD imaging, interferometer data).
+The next documentation page guides you through lens modeling for a variety of lensing regimes (galaxy-scale,
+multi-galaxy, group-scale and cluster-scale lenses) and data types (e.g. CCD imaging, interferometer data).
 
 ## Simulations
 
@@ -364,15 +364,16 @@ Simulating strong lenses is often essential, for example to:
 - Test lensing theory in a fully controlled environment.
 
 The next documentation page guides you through how to simulate lenses for different types of strong
-lenses (e.g. galaxy–galaxy lenses, cluster-scale lenses) and different types of data (e.g. CCD imaging, interferometer data).
+lenses (galaxy-scale, multi-galaxy, group-scale and cluster-scale) and different types of data (e.g. CCD imaging,
+interferometer data).
 
 ## Wrap Up
 
 This completes the introduction to **PyAutoLens**, including a brief overview of the core API for lensing calculations,
 lens modeling, and data simulation.
 
-Different users will be interested in strong lenses across different lensing regimes (e.g. galaxy-scale or
-cluster-scale lenses) and using different data types (e.g. CCD imaging or interferometer data).
+Different users will be interested in strong lenses across different lensing regimes (galaxy-scale, multi-galaxy,
+group-scale or cluster-scale lenses) and using different data types (e.g. CCD imaging or interferometer data).
 
 The autolens_workspace repository contains a wide range of examples and tutorials covering these use cases. The
 next documentation page helps new users identify the most appropriate starting point based on their scientific goals.

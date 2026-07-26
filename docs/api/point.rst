@@ -6,6 +6,10 @@ Point sources arise when the background object is compact (e.g. a quasar, supern
 compact radio source) and is modelled by its image-plane positions, flux ratios, and/or
 time delays rather than by a resolved surface-brightness distribution.
 
+They are also the standard source strategy of **cluster-scale** lens modeling, where each
+of many background sources contributes its multiple-image positions (each at its own
+redshift, ray-traced multi-plane) — see the ``cluster`` package of the ``autolens_workspace``.
+
 Dataset
 -------
 

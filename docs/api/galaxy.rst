@@ -34,3 +34,19 @@ The ``Redshift`` object does not need to be used for general **PyAutoGalaxy** us
    :recursive:
 
     Redshift
+
+Galaxy Catalogues (CSV)
+-----------------------
+
+Load many galaxies from a ``y, x, luminosity`` CSV catalogue — the input format of the
+scaling-relation galaxy tier used at multi-galaxy, group and cluster scale (see the
+``multi_galaxy``, ``group`` and ``cluster`` packages of the ``autolens_workspace``).
+``galaxy_table_from_csv`` reads the catalogue; the two ``*_from_csv_tables`` functions
+build instances or model components from it.
+
+.. autosummary::
+   :toctree: _autosummary
+
+   galaxy_table_from_csv
+   galaxies_from_csv_tables
+   galaxy_af_models_from_csv_tables
