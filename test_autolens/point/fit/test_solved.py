@@ -332,7 +332,7 @@ class TestLoudFailures:
             name="point_0", data=positions, noise_map=noise_map, tracer=tracer, solver=None
         )
 
-        with pytest.raises(al.exc.PointExtractionException, match="FitPositionsSource"):
+        with pytest.raises(al.exc.PointProfileMismatchException, match="FitPositionsSource"):
             fit.source_plane_coordinate
 
     def test__centre_requiring_fit_given_solved_profile__raises_naming_alternative(self):
@@ -344,7 +344,7 @@ class TestLoudFailures:
             name="point_0", data=positions, noise_map=noise_map, tracer=tracer, solver=None
         )
 
-        with pytest.raises(al.exc.PointExtractionException, match="PointSolved"):
+        with pytest.raises(al.exc.PointProfileMismatchException, match="PointSolved"):
             fit.source_plane_coordinate
 
     def test__pair_repeat_solved_given_centre_bearing_profile__raises(self):
@@ -362,7 +362,7 @@ class TestLoudFailures:
         )
 
         with pytest.raises(
-            al.exc.PointExtractionException, match="FitPositionsImagePairRepeat"
+            al.exc.PointProfileMismatchException, match="FitPositionsImagePairRepeat"
         ):
             fit.source_plane_coordinate
 
@@ -381,7 +381,7 @@ class TestLoudFailures:
         )
 
         with pytest.raises(
-            al.exc.PointExtractionException, match="FitPositionsImagePairAll"
+            al.exc.PointProfileMismatchException, match="FitPositionsImagePairAll"
         ):
             fit.source_plane_coordinate
 
@@ -398,7 +398,7 @@ class TestLoudFailures:
             name="point_0", data=positions, noise_map=noise_map, tracer=tracer, solver=None
         )
 
-        with pytest.raises(al.exc.PointExtractionException):
+        with pytest.raises(al.exc.PointProfileMismatchException):
             fit.source_plane_coordinate
 
     def test__point_given_fit_fluxes__raises(self):
@@ -440,3 +440,57 @@ class TestLoudFailures:
                 positions=positions,
                 tracer=tracer,
             )
+
+
+class RecordingMockSolver:
+    """
+    Mock solver that records the `source_plane_coordinate` it was called with — `al.m.MockPointSolver`
+    ignores it, so the parity tests above cannot detect a stale or unforwarded solved centre
+    (codex-review finding 8).
+    """
+
+    def __init__(self, model_positions):
+        self.model_positions = model_positions
+        self.last_source_plane_coordinate = None
+
+    def solve(
+        self,
+        tracer,
+        source_plane_coordinate,
+        xp=np,
+        plane_redshift=None,
+        remove_infinities=True,
+    ):
+        self.last_source_plane_coordinate = source_plane_coordinate
+        return self.model_positions
+
+
+def test__solved_image_plane_fits_forward_beta_star_to_the_solver():
+    lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph(einstein_radius=1.0))
+    tracer = al.Tracer(
+        galaxies=[lens, al.Galaxy(redshift=1.0, point_0=al.ps.PointSolved())]
+    )
+    observed = al.Grid2DIrregular([(1.1, 0.2), (-0.9, -0.3), (0.3, 1.0), (-0.2, -1.05)])
+    noise_map = al.ArrayIrregular([0.05] * 4)
+
+    for fit_cls in [
+        al.FitPositionsImagePairAllSolved,
+        al.FitPositionsImagePairRepeatSolved,
+    ]:
+        solver = RecordingMockSolver(model_positions=observed)
+        fit = fit_cls(
+            name="point_0",
+            data=observed,
+            noise_map=noise_map,
+            tracer=tracer,
+            solver=solver,
+        )
+        _ = fit.model_data
+
+        assert solver.last_source_plane_coordinate is not None
+        assert solver.last_source_plane_coordinate[0] == pytest.approx(
+            fit.source_plane_coordinate[0], rel=1e-12
+        )
+        assert solver.last_source_plane_coordinate[1] == pytest.approx(
+            fit.source_plane_coordinate[1], rel=1e-12
+        )

@@ -157,7 +157,7 @@ class AbstractFitPoint(aa.AbstractFit, ABC):
         The (y,x) arc-second coordinates of the point-source in the source-plane.
         """
         if not hasattr(self.profile, "centre"):
-            raise exc.PointExtractionException(
+            raise exc.PointProfileMismatchException(
                 f"The point-source profile paired to dataset '{self.name}' "
                 f"({self.profile.__class__.__name__}) has no `centre` attribute, so {self.__class__.__name__} "
                 f"cannot read a source-plane coordinate from it. Use a `centre`-bearing profile (e.g. "

@@ -42,12 +42,12 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         dataset: PointDataset,
         solver: PointSolver,
         fit_positions_cls=FitPositionsImagePairRepeat,
-        fit_flux_cls=FitFluxes,
-        fit_time_delays_cls=FitTimeDelays,
         image=None,
         cosmology: ag.cosmo.LensingCosmology = None,
         title_prefix: str = None,
         use_jax: bool = True,
+        fit_flux_cls=FitFluxes,
+        fit_time_delays_cls=FitTimeDelays,
         **kwargs,
     ):
         """

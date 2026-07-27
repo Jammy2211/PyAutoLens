@@ -187,8 +187,15 @@ class FitPositionsSourceSolved(SolvedCentre, FitPositionsSource):
         `log_likelihood = -0.5*(χ² + noise_norm) - 0.5*log(det(Σᵢ Wᵢ) / (2π)²)`
 
     where `χ² = Σᵢ (β̂ᵢ−β*)ᵀ Wᵢ (β̂ᵢ−β*)` (`chi_squared_map` / `chi_squared`) and
-    `noise_norm = Σᵢ log((2π)²/det Wᵢ)` (`noise_normalization`), each a separately-testable property, alongside
-    the marginalization term itself (`marginalization_term`).
+    `noise_norm = Σᵢ log((2π)²/det Θᵢ) = Σᵢ log((2π)² σᵢ⁴)` (`noise_normalization`), each a separately-testable
+    property, alongside the marginalization term itself (`marginalization_term`).
+
+    The normalization deliberately uses the observed-plane precision `Θᵢ` (model-independent), NOT `det Wᵢ`:
+    this is a likelihood of the *observed image-plane positions* under the linearized lens equation (Lombardi
+    2024 Eq. 46), so the Gaussian normalization is over the data space. A `det Wᵢ` normalization would add
+    `-2Σᵢ log|µᵢ|`-like model-dependent terms that spuriously favour high-magnification models. (The
+    long-standing `FitPositionsSource` uses the magnified-noise source-plane-data convention instead — its
+    normalization is intentionally unchanged.)
 
     Must be paired (by name) with a parameter-free profile such as `ag.ps.PointSolved`: a `centre`-bearing
     profile (`ag.ps.Point` / `ag.ps.PointFlux`) raises (see `SolvedCentre.source_plane_coordinate`), since its
@@ -233,11 +240,12 @@ class FitPositionsSourceSolved(SolvedCentre, FitPositionsSource):
     @property
     def noise_normalization(self) -> float:
         """
-        `noise_norm = Σᵢ log((2π)² / det Wᵢ)`.
+        `noise_norm = Σᵢ log((2π)² / det Θᵢ) = Σᵢ log((2π)² σᵢ⁴)` — the observed-plane (model-independent)
+        Gaussian normalization of the linearized image-plane likelihood (see class docstring; NOT `det Wᵢ`,
+        which would spuriously favour high-magnification models).
         """
-        w11, w12, w21, w22 = precision_tensor_components_from(self, self.weighting)
-        det_w = w11 * w22 - w12 * w21
-        return self._xp.sum(self._xp.log((2.0 * np.pi) ** 2.0 / det_w))
+        sigma_sq = self.noise_map.array**2.0
+        return self._xp.sum(self._xp.log((2.0 * np.pi) ** 2.0 * sigma_sq**2.0))
 
     @property
     def marginalization_term(self) -> float:

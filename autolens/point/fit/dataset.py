@@ -32,9 +32,9 @@ class FitPointDataset:
         tracer: Tracer,
         solver: PointSolver,
         fit_positions_cls=FitPositionsImagePair,
+        xp=np,
         fit_flux_cls=FitFluxes,
         fit_time_delays_cls=FitTimeDelays,
-        xp=np,
     ):
         """
         Fits a point source dataset using a `Tracer` object, where the following components of the point source data

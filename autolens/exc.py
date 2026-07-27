@@ -52,3 +52,15 @@ class PointExtractionException(Exception):
     """
 
     pass
+
+
+class PointProfileMismatchException(Exception):
+    """
+    Raised when a point-source profile is paired with a fit class that cannot honestly use it — e.g. a
+    centre-bearing `ps.Point` / `ps.PointFlux` with a `*Solved` fit (whose analytic solve would leave the centre
+    or flux priors sampled but silently ignored), or a profile without the attribute a fit class requires.
+
+    Deliberately NOT a subclass of `PointExtractionException`: `FitPointDataset` swallows that exception to skip
+    absent dataset components (its long-standing name-pairing semantics), and profile/fit mismatches must never
+    be silently skipped — they invalidate the composed model.
+    """

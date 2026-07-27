@@ -99,8 +99,8 @@ def precision_tensor_components_from(fit, weighting: str) -> Tuple:
     weighting
         `"jacobian"` — the tensor weighting `Wᵢ = Aᵢ⁻ᵀΘᵢAᵢ⁻¹`, with `Aᵢ` the lensing Jacobian at the observed
         position (see module docstring).
-        `"magnification"` — the scalar isotropic weighting `Wᵢ = (µᵢ²/σᵢ²) I₂`, matching
-        `FitPositionsSource.chi_squared_map`.
+        `"magnification"` — the traditional scalar weighting `Wᵢ = (µᵢ²/σᵢ²) I₂`, matching
+        `FitPositionsSource.chi_squared_map` (the near-critical tangential limit of the tensor).
     """
     xp = fit._xp
     precision_scalar = _as_array(fit.noise_map) ** -2.0  # Θ = σ⁻² I
@@ -112,7 +112,7 @@ def precision_tensor_components_from(fit, weighting: str) -> Tuple:
         return w, zero, zero, w
 
     if weighting != "jacobian":
-        raise exc.PointExtractionException(
+        raise exc.PointProfileMismatchException(
             f"Unsupported weighting '{weighting}' for the analytically-solved source-plane centre. "
             f"Valid options are 'jacobian' (tensor weighting, the default) or 'magnification' "
             f"(scalar isotropic weighting)."
@@ -206,7 +206,7 @@ class SolvedCentre:
         `self._beta_hat`.
         """
         if hasattr(self.profile, "centre"):
-            raise exc.PointExtractionException(
+            raise exc.PointProfileMismatchException(
                 f"The point-source profile paired to dataset '{self.name}' "
                 f"({self.profile.__class__.__name__}) has a `centre` attribute, so its free-centre priors "
                 f"would be sampled by the non-linear search but silently ignored by "

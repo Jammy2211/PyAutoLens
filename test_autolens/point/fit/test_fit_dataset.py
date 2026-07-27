@@ -176,3 +176,45 @@ def test__fit_dataset__fit_flux_cls_hook_is_actually_used_to_construct_the_flux_
 
     assert isinstance(fit.flux, al.FitFluxesSolved)
     assert np.isfinite(fit.flux.log_likelihood)
+
+
+def test__profile_fit_mismatches_are_not_swallowed_by_component_skipping():
+    # Codex-review finding 4: FitPointDataset swallows PointExtractionException to skip absent
+    # dataset components; profile/fit mismatches raise PointProfileMismatchException instead and
+    # must propagate loudly rather than silently dropping the component.
+    lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph(einstein_radius=1.0))
+    positions = al.Grid2DIrregular([(0.0, 1.5), (0.0, -1.3), (1.4, 0.05)])
+
+    dataset = al.PointDataset(
+        name="point_0",
+        positions=positions,
+        positions_noise_map=al.ArrayIrregular([0.1] * 3),
+        fluxes=al.ArrayIrregular([1.0, 2.0, 3.0]),
+        fluxes_noise_map=al.ArrayIrregular([0.3] * 3),
+    )
+
+    # PointFlux profile + solved-flux fit: the flux prior would be sampled but ignored.
+    tracer_flux = al.Tracer(
+        galaxies=[
+            lens,
+            al.Galaxy(redshift=1.0, point_0=al.ps.PointFlux(centre=(0.07, 0.07))),
+        ]
+    )
+    with pytest.raises(al.exc.PointProfileMismatchException):
+        fit = al.FitPointDataset(
+            dataset=dataset,
+            tracer=tracer_flux,
+            solver=al.m.MockPointSolver(model_positions=positions),
+            fit_flux_cls=al.FitFluxesSolved,
+        )
+        _ = fit.log_likelihood
+
+    # Centre-bearing profile + solved-centre positions fit: the centre priors would be ignored.
+    with pytest.raises(al.exc.PointProfileMismatchException):
+        fit = al.FitPointDataset(
+            dataset=dataset,
+            tracer=tracer_flux,
+            solver=al.m.MockPointSolver(model_positions=positions),
+            fit_positions_cls=al.FitPositionsSourceSolved,
+        )
+        _ = fit.log_likelihood

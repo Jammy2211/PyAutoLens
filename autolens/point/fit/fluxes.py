@@ -210,7 +210,7 @@ class FitFluxesSolved(AbstractFitPoint):
         )
 
         if hasattr(self.profile, "flux"):
-            raise exc.PointExtractionException(
+            raise exc.PointProfileMismatchException(
                 f"For the point-source named {name} the extracted point source was the class "
                 f"{self.profile.__class__.__name__}, which has a `flux` attribute. `FitFluxesSolved` solves "
                 f"for the source flux analytically (F*), so a free `flux` prior would be sampled by the "

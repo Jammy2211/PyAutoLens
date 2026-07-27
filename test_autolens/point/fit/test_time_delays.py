@@ -110,3 +110,30 @@ def test__fit_time_delays_solved__works_with_point_flux_profile_too():
     )
 
     assert np.isfinite(float(fit.log_likelihood))
+
+
+def test__fit_time_delays_solved__marginalization_and_normalization_constants_pinned():
+    # Codex-review finding 9: pin each likelihood term to its closed form.
+    lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph(einstein_radius=1.0))
+    tracer = al.Tracer(
+        galaxies=[lens, al.Galaxy(redshift=1.0, point_0=al.ps.PointSolved())]
+    )
+    positions = al.Grid2DIrregular([(0.0, 1.5), (0.0, -1.3), (1.4, 0.05)])
+    data = al.ArrayIrregular([10.0, 14.5, 21.0])
+    noise_map = al.ArrayIrregular([0.5, 0.7, 0.4])
+
+    fit = al.FitTimeDelaysSolved(
+        name="point_0", data=data, noise_map=noise_map, positions=positions, tracer=tracer
+    )
+
+    tau = 1.0 / noise_map.array**2.0
+    assert fit.marginalization_term == pytest.approx(
+        -0.5 * np.log(np.sum(tau) / (2.0 * np.pi)), rel=1e-10
+    )
+    assert fit.noise_normalization == pytest.approx(
+        np.sum(np.log(2.0 * np.pi * noise_map.array**2.0)), rel=1e-10
+    )
+    assert fit.log_likelihood == pytest.approx(
+        -0.5 * (fit.chi_squared + fit.noise_normalization) + fit.marginalization_term,
+        rel=1e-10,
+    )
