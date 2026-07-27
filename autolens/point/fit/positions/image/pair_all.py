@@ -1,6 +1,7 @@
 import numpy as np
 
 from autolens.point.fit.positions.image.abstract import AbstractFitPositionsImagePair
+from autolens.point.fit.solved import SolvedCentre
 
 
 class FitPositionsImagePairAll(AbstractFitPositionsImagePair):
@@ -22,8 +23,10 @@ class FitPositionsImagePairAll(AbstractFitPositionsImagePair):
 
     The fit performs the following steps:
 
-    1) Determine the source-plane centre of the point source, which could be a free model parameter or computed
-       as the barycenter of ray-traced positions in the source-plane, using name pairing (see below).
+    1) Determine the source-plane centre of the point source, which is either a free model parameter read from
+       the profile's `centre` (`ag.ps.Point` / `ag.ps.PointFlux`) or, for `FitPositionsImagePairAllSolved`,
+       solved for analytically given the current tracer (see `autolens.point.fit.solved.SolvedCentre`), using
+       name pairing (see below).
 
     2) Determine the image-plane model positions using the `PointSolver` and the source-plane centre of the point
        source (e.g. ray tracing triangles to and from  the image and source planes), including accounting for
@@ -152,3 +155,22 @@ class FitPositionsImagePairAll(AbstractFitPositionsImagePair):
             -self._xp.log(n_permutations)
             + self._xp.sum(self.all_permutations_log_likelihoods())
         )
+
+
+class FitPositionsImagePairAllSolved(SolvedCentre, FitPositionsImagePairAll):
+    """
+    ``FitPositionsImagePairAll`` with the source-plane centre fed into the `PointSolver` forward solve
+    (`model_data`, inherited unchanged from `AbstractFitPositionsImagePair`) solved for analytically
+    (`SolvedCentre.source_plane_coordinate`, `β*`) rather than read from a free `centre` model parameter.
+
+    This is **not** a result from Lombardi 2024 (arXiv:2406.15280) — the paper never substitutes a solved
+    source-plane centre into an image-plane likelihood. It is an extension in the spirit of glafic's
+    source-position-optimized image-plane chi-squared: the all-to-all pairing chi-squared itself
+    (`chi_squared`, `all_permutations_log_likelihoods`) is completely unchanged from `FitPositionsImagePairAll`.
+
+    Must be paired (by name) with a parameter-free profile such as `ag.ps.PointSolved`: a `centre`-bearing
+    profile (`ag.ps.Point` / `ag.ps.PointFlux`) raises (see `SolvedCentre.source_plane_coordinate`), since its
+    centre priors would otherwise be sampled but silently ignored.
+    """
+
+    _non_solved_alternative_name = "FitPositionsImagePairAll"

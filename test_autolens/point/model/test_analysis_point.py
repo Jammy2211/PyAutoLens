@@ -206,3 +206,40 @@ def test__figure_of_merit__includes_fit_fluxes(
         fit_positions.log_likelihood + fit_fluxes.log_likelihood
         == analysis_log_likelihood
     )
+
+
+def test__fit_flux_cls_and_fit_time_delays_cls_hooks__forwarded_and_default_unchanged(
+    point_dataset,
+):
+    solver = al.m.MockPointSolver(model_positions=point_dataset.positions)
+
+    default_analysis = al.AnalysisPoint(
+        dataset=point_dataset, solver=solver, use_jax=False
+    )
+
+    # Defaults preserve current behaviour exactly.
+    assert default_analysis.fit_flux_cls is al.FitFluxes
+    assert default_analysis.fit_time_delays_cls is al.FitTimeDelays
+
+    explicit_analysis = al.AnalysisPoint(
+        dataset=point_dataset,
+        solver=solver,
+        fit_flux_cls=al.FitFluxesSolved,
+        fit_time_delays_cls=al.FitTimeDelaysSolved,
+        use_jax=False,
+    )
+
+    assert explicit_analysis.fit_flux_cls is al.FitFluxesSolved
+    assert explicit_analysis.fit_time_delays_cls is al.FitTimeDelaysSolved
+
+    model = af.Collection(
+        galaxies=af.Collection(
+            lens=al.Galaxy(redshift=0.5, point_0=al.ps.Point(centre=(0.0, 0.0)))
+        )
+    )
+    instance = model.instance_from_unit_vector([])
+
+    fit = explicit_analysis.fit_from(instance=instance)
+
+    assert fit.fit_flux_cls is al.FitFluxesSolved
+    assert fit.fit_time_delays_cls is al.FitTimeDelaysSolved

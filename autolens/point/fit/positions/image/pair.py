@@ -24,10 +24,16 @@ class FitPositionsImagePair(AbstractFitPositionsImagePair):
     contributes the ``no_image_residual`` floor. ``FitPositionsImagePairRepeat`` remains the model-fit default;
     it additionally offers over-prediction policies.
 
+    **No analytically-solved-centre variant**: unlike ``FitPositionsImagePairAll`` /
+    ``FitPositionsImagePairRepeat``, this class has no ``*Solved`` counterpart. Its Hungarian assignment
+    (``scipy.optimize.linear_sum_assignment``) is not JAX-jittable, and its behaviour is superseded by
+    ``FitPositionsImagePairAllSolved`` / ``FitPositionsImagePairRepeatSolved`` for solved-centre fits.
+
     The fit performs the following steps:
 
-    1) Determine the source-plane centre of the point source, which could be a free model parameter or computed
-       as the barycenter of ray-traced positions in the source-plane, using name pairing (see below).
+    1) Determine the source-plane centre of the point source, which is either a free model parameter read from
+       the profile's `centre` (`ag.ps.Point` / `ag.ps.PointFlux`) — this class has no `*Solved` counterpart, see
+       above — using name pairing (see below).
 
     2) Determine the image-plane model positions using the `PointSolver` and the source-plane centre of the point
        source (e.g. ray tracing triangles to and from  the image and source planes), including accounting for

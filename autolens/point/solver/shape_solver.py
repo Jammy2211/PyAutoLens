@@ -251,7 +251,7 @@ class AbstractSolver:
             grid=grid, plane_i=0, plane_j=plane_index, xp=xp
         )
         # noinspection PyTypeChecker
-        return grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
+        return grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections, xp=xp)
 
     def solve_triangles(
         self,

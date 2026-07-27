@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 
 import autolens as al
@@ -77,3 +78,31 @@ def test__fit_positions_source__multi_plane_tracer__model_data_traces_to_correct
     )
 
     assert (fit_1.model_data == traced_grids[2]).all()
+
+
+def test__fit_positions_source_solved__source_plane_centre_matches_no_free_centre_prior():
+    point_source = al.ps.PointSolved()
+    galaxy_point_source = al.Galaxy(redshift=1.0, point_0=point_source)
+    galaxy_mass = al.Galaxy(
+        redshift=0.5, mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=0.1)
+    )
+    tracer = al.Tracer(galaxies=[galaxy_mass, galaxy_point_source])
+
+    positions = al.Grid2DIrregular([(0.0, 1.0), (0.0, 2.0)])
+    noise_map = al.ArrayIrregular([0.5, 1.0])
+
+    fit = al.FitPositionsSourceSolved(
+        name="point_0", data=positions, noise_map=noise_map, tracer=tracer, solver=None
+    )
+
+    beta_star = fit.source_plane_coordinate
+
+    assert np.isfinite(beta_star[0])
+    assert np.isfinite(beta_star[1])
+    assert np.isfinite(fit.chi_squared)
+    assert np.isfinite(fit.noise_normalization)
+    assert np.isfinite(fit.marginalization_term)
+    assert np.isfinite(float(fit.log_likelihood))
+
+    # Default weighting is the tensor ("jacobian") weighting.
+    assert fit.weighting == "jacobian"

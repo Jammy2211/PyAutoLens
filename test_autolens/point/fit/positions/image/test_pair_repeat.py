@@ -168,3 +168,30 @@ def test__under_prediction__no_model_images_hits_finite_floor():
 
     assert fit.residual_map.in_list == [1.0e4, 1.0e4]
     assert np.isfinite(float(fit.log_likelihood))
+
+
+def test__fit_positions_image_pair_repeat_solved__source_plane_coordinate_feeds_solver():
+    galaxy_solved = al.Galaxy(redshift=1.0, point_0=al.ps.PointSolved())
+    tracer_solved = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), galaxy_solved])
+
+    data = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
+    noise_map = al.ArrayIrregular([0.5, 1.0])
+    model_data = al.Grid2DIrregular([(3.0, 1.0), (2.0, 3.0)])
+
+    solver = al.m.MockPointSolver(model_positions=model_data)
+
+    fit = al.FitPositionsImagePairRepeatSolved(
+        name="point_0",
+        data=data,
+        noise_map=noise_map,
+        tracer=tracer_solved,
+        solver=solver,
+    )
+
+    assert np.isfinite(fit.source_plane_coordinate[0])
+    assert np.isfinite(fit.source_plane_coordinate[1])
+    # The pairing chi-squared itself is untouched (solver is mocked, so model positions are
+    # fixed regardless of the solved centre): matches the plain FitPositionsImagePairRepeat
+    # value from the equivalent free-centre test above.
+    assert fit.chi_squared == pytest.approx(42.0, 1.0e-4)
+    assert fit.log_likelihood == pytest.approx(-22.14472, 1.0e-4)

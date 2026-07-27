@@ -44,8 +44,10 @@ class AbstractFitPositions(AbstractFitPoint, ABC):
 
         The fit performs the following steps:
 
-        1) Determine the source-plane centre of the point source, which could be a free model parameter or computed
-           as the barycenter of ray-traced positions in the source-plane, using name pairing (see below).
+        1) Determine the source-plane centre of the point source, which is either a free model parameter read
+           from the profile's `centre` (`ag.ps.Point` / `ag.ps.PointFlux`) or, for the `*Solved` fit classes
+           (e.g. `FitPositionsSourceSolved`), solved for analytically given the current tracer (see
+           `autolens.point.fit.solved.SolvedCentre`), using name pairing (see below).
 
         2) Using the sub-class specific chi-squared, compute the residuals of each image-plane position, chi-squared
            and overall log likelihood of the fit.

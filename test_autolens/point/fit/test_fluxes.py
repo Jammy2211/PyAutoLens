@@ -1,3 +1,5 @@
+import numpy as np
+from scipy.optimize import minimize_scalar
 import pytest
 
 import autolens as al
@@ -50,3 +52,102 @@ def test__fit_fluxes__model_flux_magnified_correctly_with_real_isothermal_tracer
 
     assert fit.model_fluxes.in_list[1] == pytest.approx(2.5, 1.0e-4)
     assert fit.log_likelihood == pytest.approx(-3.11702, 1.0e-4)
+
+
+def test__fit_fluxes_solved__solved_flux_equals_brute_force_scan():
+    lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph(einstein_radius=1.0))
+    galaxy_point_source = al.Galaxy(redshift=1.0, point_0=al.ps.PointSolved())
+    tracer = al.Tracer(galaxies=[lens, galaxy_point_source])
+
+    positions = al.Grid2DIrregular([(0.0, 1.5), (0.0, -1.3), (1.4, 0.05)])
+    data = al.ArrayIrregular([5.0, 3.2, 4.1])
+    noise_map = al.ArrayIrregular([0.3, 0.4, 0.2])
+
+    fit = al.FitFluxesSolved(
+        name="point_0",
+        data=data,
+        noise_map=noise_map,
+        positions=positions,
+        tracer=tracer,
+    )
+
+    mu = fit.magnifications_at_positions.array
+
+    def chi_squared(flux):
+        return np.sum((data.array - mu * flux) ** 2 / noise_map.array**2)
+
+    brute_force = minimize_scalar(chi_squared)
+
+    assert fit.solved_flux == pytest.approx(brute_force.x, 1.0e-6)
+    assert fit.model_data.in_list == pytest.approx((mu * fit.solved_flux).tolist(), 1.0e-8)
+
+
+def test__fit_fluxes_solved__profile_with_flux_attribute__raises_naming_alternative():
+    galaxy_point_source = al.Galaxy(redshift=1.0, point_0=al.ps.PointFlux(flux=2.0))
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source])
+
+    data = al.ArrayIrregular([1.0, 2.0])
+    noise_map = al.ArrayIrregular([3.0, 1.0])
+    positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
+
+    with pytest.raises(al.exc.PointProfileMismatchException, match="FitFluxes"):
+        al.FitFluxesSolved(
+            name="point_0",
+            data=data,
+            noise_map=noise_map,
+            positions=positions,
+            tracer=tracer,
+        )
+
+
+def test__fit_fluxes_solved__works_with_plain_point_profile_no_flux_attribute():
+    galaxy_point_source = al.Galaxy(
+        redshift=1.0, point_0=al.ps.Point(centre=(0.1, 0.1))
+    )
+    tracer = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), galaxy_point_source])
+
+    data = al.ArrayIrregular([1.0, 2.0])
+    noise_map = al.ArrayIrregular([3.0, 1.0])
+    positions = al.Grid2DIrregular([(0.0, 0.0), (3.0, 4.0)])
+
+    fit = al.FitFluxesSolved(
+        name="point_0",
+        data=data,
+        noise_map=noise_map,
+        positions=positions,
+        tracer=tracer,
+    )
+
+    assert np.isfinite(fit.solved_flux)
+    assert np.isfinite(float(fit.log_likelihood))
+
+
+def test__fit_fluxes_solved__marginalization_and_normalization_constants_pinned():
+    # Codex-review finding 9: pin each likelihood term to its closed form so a deleted or
+    # sign-flipped marginalization term cannot pass silently.
+    lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph(einstein_radius=1.0))
+    tracer = al.Tracer(
+        galaxies=[lens, al.Galaxy(redshift=1.0, point_0=al.ps.PointSolved())]
+    )
+    positions = al.Grid2DIrregular([(0.0, 1.5), (0.0, -1.3), (1.4, 0.05)])
+    data = al.ArrayIrregular([5.0, 3.2, 4.1])
+    noise_map = al.ArrayIrregular([0.3, 0.4, 0.2])
+
+    fit = al.FitFluxesSolved(
+        name="point_0", data=data, noise_map=noise_map, positions=positions, tracer=tracer
+    )
+
+    mu = fit.magnifications_at_positions.array
+    sigma = noise_map.array
+    precision_sum = np.sum(mu**2.0 / sigma**2.0)
+
+    assert fit.marginalization_term == pytest.approx(
+        -0.5 * np.log(precision_sum / (2.0 * np.pi)), rel=1e-10
+    )
+    assert fit.noise_normalization == pytest.approx(
+        np.sum(np.log(2.0 * np.pi * sigma**2.0)), rel=1e-10
+    )
+    assert fit.log_likelihood == pytest.approx(
+        -0.5 * (fit.chi_squared + fit.noise_normalization) + fit.marginalization_term,
+        rel=1e-10,
+    )

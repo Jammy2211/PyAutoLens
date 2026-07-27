@@ -33,6 +33,8 @@ class FitPointDataset:
         solver: PointSolver,
         fit_positions_cls=FitPositionsImagePair,
         xp=np,
+        fit_flux_cls=FitFluxes,
+        fit_time_delays_cls=FitTimeDelays,
     ):
         """
         Fits a point source dataset using a `Tracer` object, where the following components of the point source data
@@ -84,6 +86,12 @@ class FitPointDataset:
         fit_positions_cls
             The class used to fit the positions of the point source dataset, which could be an image-plane or
             source-plane chi-squared.
+        fit_flux_cls
+            The class used to fit the fluxes of the point source dataset, which could be a free-flux
+            (`FitFluxes`) or analytically-solved-flux (`FitFluxesSolved`) fit.
+        fit_time_delays_cls
+            The class used to fit the time delays of the point source dataset, which could be the
+            min-subtraction (`FitTimeDelays`) or analytically-solved-reference-time (`FitTimeDelaysSolved`) fit.
         profile
             Manually input the profile of the point source, which is used instead of the one extracted from the
             tracer via name pairing if that profile is not found.
@@ -95,6 +103,8 @@ class FitPointDataset:
         profile = self.tracer.extract_profile(profile_name=dataset.name)
 
         self.fit_positions_cls = fit_positions_cls
+        self.fit_flux_cls = fit_flux_cls
+        self.fit_time_delays_cls = fit_time_delays_cls
 
         try:
             self.positions = self.fit_positions_cls(
@@ -111,7 +121,7 @@ class FitPointDataset:
 
         try:
             if dataset.fluxes is not None:
-                self.flux = FitFluxes(
+                self.flux = self.fit_flux_cls(
                     name=dataset.name,
                     data=dataset.fluxes,
                     noise_map=dataset.fluxes_noise_map,
@@ -127,7 +137,7 @@ class FitPointDataset:
 
         try:
             if dataset.time_delays is not None:
-                self.time_delays = FitTimeDelays(
+                self.time_delays = self.fit_time_delays_cls(
                     name=dataset.name,
                     data=dataset.time_delays,
                     noise_map=dataset.time_delays_noise_map,
