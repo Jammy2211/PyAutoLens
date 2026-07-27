@@ -1,3 +1,5 @@
+import importlib.util
+
 import numpy as np
 import pytest
 
@@ -5,6 +7,17 @@ import autoarray as aa
 import autolens as al
 from autolens.potential_correction.fit_interferometer import (
     FitDpsiSrcInterferometer,
+)
+
+# `apply_sparse_operator` is a JAX-only code path: `InterferometerSparseOperator`
+# builds its FFT kernel with `jax.numpy` and projects with `jax.ops.segment_sum`
+# / `jax.lax`, with no NumPy equivalent. `autonerves[jax]` gates jax to
+# Python >= 3.11, so the sparse-route case cannot run on the 3.9/3.10 matrix
+# legs — skip it there rather than fail. The dense-route cases stay NumPy-only
+# and run everywhere, which is what those legs exist to prove.
+requires_jax = pytest.mark.skipif(
+    importlib.util.find_spec("jax") is None,
+    reason="apply_sparse_operator is a JAX-only path; jax requires Python >= 3.11",
 )
 
 
@@ -50,6 +63,7 @@ def test__dense_route__end_to_end_evidence_is_finite(interferometer_7):
     )
 
 
+@requires_jax
 def test__sparse_route__matches_dense_route(interferometer_7):
     dataset_sparse = interferometer_7.apply_sparse_operator()
 

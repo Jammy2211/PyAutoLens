@@ -1,8 +1,21 @@
+import importlib.util
+
 import numpy as np
 import pytest
 
 import autoarray as aa
 import autolens as al
+
+# `apply_sparse_operator` is a JAX-only code path: `InterferometerSparseOperator`
+# builds its FFT kernel with `jax.numpy` and projects with `jax.ops.segment_sum`
+# / `jax.lax`, with no NumPy equivalent. `autonerves[jax]` gates jax to
+# Python >= 3.11, so the cases below cannot run on the 3.9/3.10 matrix legs —
+# skip them there rather than fail. The dense-route cases stay NumPy-only and
+# run everywhere, which is what those legs exist to prove.
+requires_jax = pytest.mark.skipif(
+    importlib.util.find_spec("jax") is None,
+    reason="apply_sparse_operator is a JAX-only path; jax requires Python >= 3.11",
+)
 
 
 def iter_fit_from(dataset, gauge_constraints=False, n_iter=2):
@@ -33,6 +46,7 @@ def test__requires_sparse_operator(interferometer_7):
         iter_fit_from(interferometer_7)
 
 
+@requires_jax
 def test__solve_joint_optimization__finite_state_and_decreasing_cost(
     interferometer_7,
 ):
@@ -56,6 +70,7 @@ def test__solve_joint_optimization__finite_state_and_decreasing_cost(
     assert cost_opt < 0.5 * fit.data_weighted_norm
 
 
+@requires_jax
 def test__cost_identity_matches_direct_visibility_chi2(interferometer_7):
     """
     The normal-equation chi^2 identity (d^H C^-1 d - 2 x^T D + x^T F x) must
@@ -88,6 +103,7 @@ def test__cost_identity_matches_direct_visibility_chi2(interferometer_7):
     assert chi2_half == pytest.approx(chi2_direct, rel=1e-3)
 
 
+@requires_jax
 def test__gauge_constraints_are_satisfied(interferometer_7):
     dataset = interferometer_7.apply_sparse_operator()
     fit = iter_fit_from(dataset, gauge_constraints=True)
@@ -103,6 +119,7 @@ def test__gauge_constraints_are_satisfied(interferometer_7):
     assert G @ dpsi_opt == pytest.approx(np.zeros(3), abs=1.0e-6)
 
 
+@requires_jax
 def test__log_evidence__finite_at_optimum(interferometer_7):
     dataset = interferometer_7.apply_sparse_operator()
     fit = iter_fit_from(dataset)
