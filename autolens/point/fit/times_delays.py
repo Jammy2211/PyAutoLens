@@ -121,3 +121,85 @@ class FitTimeDelays(AbstractFitPoint):
         return ag.util.fit.chi_squared_from(
             chi_squared_map=self.chi_squared_map.array,
         )
+
+
+class FitTimeDelaysSolved(FitTimeDelays):
+    """
+    Fits the time delays of a point source dataset with the reference time solved for analytically, following
+    Lombardi 2024 (arXiv:2406.15280) §6.1, rather than by subtracting the shortest delay from both the data and
+    the model (`FitTimeDelays.residual_map`, left unchanged for continuity).
+
+    With model per-image delays `Tᵢ` (`tracer.time_delays_from`, `model_data`, inherited unchanged) and per-image
+    precision `τᵢ = σᵢ⁻²` (`tau`):
+
+        `T* = Σᵢ τᵢ(t̂ᵢ − Tᵢ) / Σᵢ τᵢ`  (`solved_reference_time`)
+
+    with residuals `t̂ᵢ − (Tᵢ + T*)` (`residual_map`), a standard chi-squared and noise normalization, and the
+    likelihood analytically marginalized over `T*` (flat prior):
+
+        `log_likelihood = -0.5*(χ² + noise_norm) - 0.5*log((Σᵢ τᵢ)/(2π))`
+
+    Does not depend on which profile is paired to the dataset (time delays are computed from the tracer alone),
+    so works with `ag.ps.Point`, `ag.ps.PointFlux` or `ag.ps.PointSolved` interchangeably.
+    """
+
+    @property
+    def tau(self) -> np.ndarray:
+        """
+        `τᵢ = σᵢ⁻²` — the per-image time-delay precision.
+        """
+        return self.noise_map.array**-2.0
+
+    @property
+    def tau_sum(self) -> float:
+        """
+        `Σᵢ τᵢ` — the precision of the solved reference time `T*`, and the marginalization normalization.
+        """
+        return self._xp.sum(self.tau)
+
+    @property
+    def solved_reference_time(self) -> float:
+        """
+        `T* = Σᵢ τᵢ(t̂ᵢ − Tᵢ) / Σᵢ τᵢ`.
+        """
+        t_hat = self.data.array
+        model_delays = self.model_data.array
+        return self._xp.sum(self.tau * (t_hat - model_delays)) / self.tau_sum
+
+    @property
+    def residual_map(self) -> aa.ArrayIrregular:
+        """
+        Returns the difference between the observed time delays and the model time delays offset by the solved
+        reference time: `t̂ᵢ − (Tᵢ + T*)`.
+        """
+        residual_map = self.data.array - (
+            self.model_data.array + self.solved_reference_time
+        )
+        return aa.ArrayIrregular(values=residual_map)
+
+    @property
+    def chi_squared(self) -> float:
+        """
+        Returns the chi-squared of the fit of the point source time delays.
+        """
+        return ag.util.fit.chi_squared_from(
+            chi_squared_map=self.chi_squared_map.array,
+        )
+
+    @property
+    def marginalization_term(self) -> float:
+        """
+        The analytic-marginalization contribution to the log likelihood from integrating out the (flat-prior)
+        reference time: `-0.5 * log((Σᵢ τᵢ)/(2π))`.
+        """
+        return -0.5 * self._xp.log(self.tau_sum / (2.0 * np.pi))
+
+    @property
+    def log_likelihood(self) -> float:
+        """
+        `log_likelihood = -0.5*(χ² + noise_norm) - 0.5*log((Σᵢ τᵢ)/(2π))`.
+        """
+        return (
+            -0.5 * (self.chi_squared + self.noise_normalization)
+            + self.marginalization_term
+        )

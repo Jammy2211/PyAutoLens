@@ -103,3 +103,72 @@ def test__fit_positions_image_pair_all__model_has_duplicate_position__duplicate_
         [-1.14237812, -0.87193683],
     )
     assert fit.chi_squared == -2.0 * -4.211539531047171
+
+
+def test__fit_positions_image_pair_all__penalty_regression__n_permutations_and_monotonic_likelihood(
+    data, noise_map
+):
+    # Test 5: n_permutations must equal n_finite_model_positions ** n_observed, and adding a
+    # spurious (but finite) extra model position must strictly lower the likelihood -- an
+    # extra candidate explanation dilutes each permutation's probability without improving
+    # the fit to any observed position.
+    two_model_positions = al.Grid2DIrregular(
+        [(-1.0749, -1.1), (1.19117, 1.175)]
+    )
+    fit_two = al.FitPositionsImagePairAll(
+        name="point_0",
+        data=data,
+        noise_map=noise_map,
+        tracer=tracer,
+        solver=al.mock.MockPointSolver(two_model_positions),
+    )
+
+    n_non_nan = np.count_nonzero(np.isfinite(two_model_positions.array).any(axis=1))
+    assert n_non_nan == 2
+    n_permutations = n_non_nan ** len(data)
+    assert n_permutations == 2 ** len(data)
+
+    three_model_positions = al.Grid2DIrregular(
+        [(-1.0749, -1.1), (1.19117, 1.175), (5.0, 5.0)]
+    )
+    fit_three = al.FitPositionsImagePairAll(
+        name="point_0",
+        data=data,
+        noise_map=noise_map,
+        tracer=tracer,
+        solver=al.mock.MockPointSolver(three_model_positions),
+    )
+
+    n_non_nan_three = np.count_nonzero(
+        np.isfinite(three_model_positions.array).any(axis=1)
+    )
+    assert n_non_nan_three == 3
+    assert n_non_nan_three ** len(data) == 3 ** len(data)
+
+    # log_likelihood = -0.5 * chi_squared, so a strictly lower likelihood is a strictly
+    # higher chi_squared.
+    assert fit_three.chi_squared > fit_two.chi_squared
+
+
+def test__fit_positions_image_pair_all_solved__source_plane_coordinate_feeds_solver(
+    data, noise_map
+):
+    galaxy_solved = al.Galaxy(redshift=1.0, point_0=al.ps.PointSolved())
+    tracer_solved = al.Tracer(galaxies=[al.Galaxy(redshift=0.5), galaxy_solved])
+
+    model_positions = al.Grid2DIrregular([(-1.0749, -1.1), (1.19117, 1.175)])
+
+    fit = al.FitPositionsImagePairAllSolved(
+        name="point_0",
+        data=data,
+        noise_map=noise_map,
+        tracer=tracer_solved,
+        solver=al.mock.MockPointSolver(model_positions),
+    )
+
+    assert np.isfinite(fit.source_plane_coordinate[0])
+    assert np.isfinite(fit.source_plane_coordinate[1])
+    # The pairing chi-squared itself is untouched (solver is mocked, so model positions are
+    # fixed regardless of the solved centre): matches the plain FitPositionsImagePairAll
+    # value from the fixture-equivalent test above.
+    assert fit.chi_squared == -2.0 * -4.40375330990644

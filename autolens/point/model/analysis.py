@@ -25,6 +25,8 @@ from autolens.analysis.analysis.lens import AnalysisLens
 from autolens.analysis.exceptions import raise_fit_exception
 from autolens.point.fit.positions.image.pair_repeat import FitPositionsImagePairRepeat
 from autolens.point.fit.dataset import FitPointDataset
+from autolens.point.fit.fluxes import FitFluxes
+from autolens.point.fit.times_delays import FitTimeDelays
 from autolens.point.dataset import PointDataset
 from autolens.point.model.result import ResultPoint
 from autolens.point.model.visualizer import VisualizerPoint
@@ -40,6 +42,8 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         dataset: PointDataset,
         solver: PointSolver,
         fit_positions_cls=FitPositionsImagePairRepeat,
+        fit_flux_cls=FitFluxes,
+        fit_time_delays_cls=FitTimeDelays,
         image=None,
         cosmology: ag.cosmo.LensingCosmology = None,
         title_prefix: str = None,
@@ -73,6 +77,12 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         fit_positions_cls
             The class used to fit the positions of the point source dataset, which could be an image-plane or
             source-plane chi-squared.
+        fit_flux_cls
+            The class used to fit the fluxes of the point source dataset, which could be a free-flux
+            (`FitFluxes`) or analytically-solved-flux (`FitFluxesSolved`) fit.
+        fit_time_delays_cls
+            The class used to fit the time delays of the point source dataset, which could be the
+            min-subtraction (`FitTimeDelays`) or analytically-solved-reference-time (`FitTimeDelaysSolved`) fit.
         cosmology
             The Cosmology assumed for this analysis.
         title_prefix
@@ -90,6 +100,8 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
 
         self.solver = solver
         self.fit_positions_cls = fit_positions_cls
+        self.fit_flux_cls = fit_flux_cls
+        self.fit_time_delays_cls = fit_time_delays_cls
         self.title_prefix = title_prefix
 
     def log_likelihood_function(self, instance):
@@ -175,6 +187,8 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
             tracer=tracer,
             solver=self.solver,
             fit_positions_cls=self.fit_positions_cls,
+            fit_flux_cls=self.fit_flux_cls,
+            fit_time_delays_cls=self.fit_time_delays_cls,
             xp=self._xp,
         )
 
@@ -189,14 +203,32 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         """
         from autoarray.abstract_ndarray import register_instance_pytree
         from autolens.lens.tracer import Tracer
-        from autolens.point.fit.positions.image.pair_all import FitPositionsImagePairAll
-        from autolens.point.fit.positions.image.pair_repeat import FitPositionsImagePairRepeat
+        from autolens.point.fit.positions.image.pair_all import (
+            FitPositionsImagePairAll,
+            FitPositionsImagePairAllSolved,
+        )
+        from autolens.point.fit.positions.image.pair_repeat import (
+            FitPositionsImagePairRepeat,
+            FitPositionsImagePairRepeatSolved,
+        )
         from autolens.point.fit.positions.image.pair import FitPositionsImagePair
+        from autolens.point.fit.positions.source.separations import (
+            FitPositionsSource,
+            FitPositionsSourceSolved,
+        )
+        from autolens.point.fit.fluxes import FitFluxesSolved
+        from autolens.point.fit.times_delays import FitTimeDelaysSolved
         import autogalaxy as ag
 
         register_instance_pytree(
             FitPointDataset,
-            no_flatten=("dataset", "solver", "fit_positions_cls"),
+            no_flatten=(
+                "dataset",
+                "solver",
+                "fit_positions_cls",
+                "fit_flux_cls",
+                "fit_time_delays_cls",
+            ),
         )
         register_instance_pytree(Tracer, no_flatten=("cosmology",))
         # fit-point-pytree: observed data/noise are per-analysis constants; solver/name/use_jax are non-JAX
@@ -214,7 +246,35 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
             FitPositionsImagePair,
             no_flatten=("solver", "name", "use_jax", "_data", "_noise_map"),
         )
-        # fit-point-pytree: ag.ps.Point / PointFlux are handled by
+        # fit-point-pytree: no solver is used (source-plane / analytic fits), so only
+        # name/use_jax/observed data+noise are non-JAX.
+        register_instance_pytree(
+            FitPositionsSource,
+            no_flatten=("name", "use_jax", "_data", "_noise_map"),
+        )
+        register_instance_pytree(
+            FitPositionsSourceSolved,
+            no_flatten=("name", "use_jax", "_data", "_noise_map"),
+        )
+        # fit-point-pytree: solved image-plane variants still forward-solve via `solver`.
+        register_instance_pytree(
+            FitPositionsImagePairAllSolved,
+            no_flatten=("solver", "name", "use_jax", "_data", "_noise_map"),
+        )
+        register_instance_pytree(
+            FitPositionsImagePairRepeatSolved,
+            no_flatten=("solver", "name", "use_jax", "_data", "_noise_map"),
+        )
+        # fit-point-pytree: flux/time-delay fits carry no solver, only observed positions.
+        register_instance_pytree(
+            FitFluxesSolved,
+            no_flatten=("name", "use_jax", "_data", "_noise_map", "positions"),
+        )
+        register_instance_pytree(
+            FitTimeDelaysSolved,
+            no_flatten=("name", "use_jax", "_data", "_noise_map", "positions"),
+        )
+        # fit-point-pytree: ag.ps.Point / PointFlux / PointSolved are handled by
         # autofit.jax.pytrees.register_model before jit is called; skip here.
 
     def save_attributes(self, paths: af.DirectoryPaths):

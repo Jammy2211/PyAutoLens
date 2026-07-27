@@ -146,10 +146,26 @@ class AbstractFitPoint(aa.AbstractFit, ABC):
         Returns the centre of the point-source in the source-plane, which is used when computing the model
         image-plane positions from the tracer.
 
+        This is the single funnel every position-based fit reads the source-plane centre from. By default it
+        reads the `centre` of the paired point-source profile (a free model parameter on `ag.ps.Point` /
+        `ag.ps.PointFlux`). The `autolens.point.fit.solved.SolvedCentre` mixin overrides this property on the
+        `*Solved` fit classes (e.g. `FitPositionsSourceSolved`) to instead return a centre solved for
+        analytically given the current tracer.
+
         Returns
         -------
         The (y,x) arc-second coordinates of the point-source in the source-plane.
         """
+        if not hasattr(self.profile, "centre"):
+            raise exc.PointExtractionException(
+                f"The point-source profile paired to dataset '{self.name}' "
+                f"({self.profile.__class__.__name__}) has no `centre` attribute, so {self.__class__.__name__} "
+                f"cannot read a source-plane coordinate from it. Use a `centre`-bearing profile (e.g. "
+                f"`ag.ps.Point` / `ag.ps.PointFlux`), or use one of the analytically-solved fit classes (e.g. "
+                f"`FitPositionsSourceSolved`, `FitPositionsImagePairAllSolved`, "
+                f"`FitPositionsImagePairRepeatSolved`) which solve for the source-plane centre analytically "
+                f"and require a parameter-free profile such as `ag.ps.PointSolved`."
+            )
         return self.profile.centre
 
     @property

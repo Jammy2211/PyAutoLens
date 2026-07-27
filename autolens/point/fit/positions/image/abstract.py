@@ -45,8 +45,11 @@ class AbstractFitPositionsImagePair(AbstractFitPositions, ABC):
 
         The fit performs the following steps:
 
-        1) Determine the source-plane centre of the point source, which could be a free model parameter or computed
-           as the barycenter of ray-traced positions in the source-plane, using name pairing (see below).
+        1) Determine the source-plane centre of the point source, which is either a free model parameter read
+           from the profile's `centre` (`ag.ps.Point` / `ag.ps.PointFlux`) or, for the `*Solved` fit classes
+           (e.g. `FitPositionsImagePairAllSolved`, `FitPositionsImagePairRepeatSolved`), solved for
+           analytically given the current tracer (see `autolens.point.fit.solved.SolvedCentre`), using name
+           pairing (see below).
 
         2) Determine the image-plane model positions using the `PointSolver` and the source-plane centre of the point
            source (e.g. ray tracing triangles to and from  the image and source planes), including accounting for

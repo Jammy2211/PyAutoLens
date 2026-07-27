@@ -146,3 +146,144 @@ class FitFluxes(AbstractFitPoint):
         return ag.util.fit.chi_squared_from(
             chi_squared_map=self.chi_squared_map.array,
         )
+
+
+class FitFluxesSolved(AbstractFitPoint):
+    """
+    Fits the fluxes of a point source dataset with the source-plane flux solved for analytically (in flux space,
+    magnification-first), following Lombardi 2024 (arXiv:2406.15280) §6.1, rather than read from a free `flux`
+    model parameter.
+
+    With image-plane magnifications `µᵢ` (`magnifications_at_positions`), observed fluxes `f̂ᵢ` and noise `σᵢ`:
+
+        `F* = (Σᵢ µᵢ f̂ᵢ/σᵢ²) / (Σᵢ µᵢ²/σᵢ²)`  (`solved_flux`)
+
+    with model fluxes `µᵢF*` (`model_data`), a standard chi-squared and noise normalization, and the likelihood
+    analytically marginalized over `F*` (flat prior):
+
+        `log_likelihood = -0.5*(χ² + noise_norm) - 0.5*log((Σᵢ µᵢ²/σᵢ²)/(2π))`
+
+    The paper's magnitude-space form is not used here: the flux noise maps in this fit are flux-space Gaussians,
+    and converting to magnitude space would change the error model, not just its parametrization.
+
+    Works with any profile that has **no** `flux` attribute (`ag.ps.Point` or `ag.ps.PointSolved`); a profile
+    with a `flux` attribute (`ag.ps.PointFlux`) raises, since its flux prior would otherwise be sampled by the
+    non-linear search but silently ignored by the analytic solve. Use `FitFluxes` for a free-flux fit.
+    """
+
+    def __init__(
+        self,
+        name: str,
+        data: aa.ArrayIrregular,
+        noise_map: aa.ArrayIrregular,
+        positions: aa.Grid2DIrregular,
+        tracer: Tracer,
+        profile: Optional[ag.ps.Point] = None,
+        xp=np,
+    ):
+        """
+        Parameters
+        ----------
+        name
+            The name of the point source dataset which is paired to a `Point` profile.
+        data
+            The observed fluxes of the point source.
+        noise_map
+            The noise-map of the fluxes which are used to compute the log likelihood.
+        positions
+            The image-plane positions of the point source where the fluxes and magnifications are calculated.
+        tracer
+            The tracer of galaxies whose point source profile is used to fit the fluxes.
+        profile
+            Manually input the profile of the point source, used instead of one extracted from the tracer.
+        """
+        self.positions = positions
+
+        super().__init__(
+            name=name,
+            data=data,
+            noise_map=noise_map,
+            tracer=tracer,
+            solver=None,
+            profile=profile,
+            xp=xp,
+        )
+
+        if hasattr(self.profile, "flux"):
+            raise exc.PointExtractionException(
+                f"For the point-source named {name} the extracted point source was the class "
+                f"{self.profile.__class__.__name__}, which has a `flux` attribute. `FitFluxesSolved` solves "
+                f"for the source flux analytically (F*), so a free `flux` prior would be sampled by the "
+                f"non-linear search but silently ignored. Use `FitFluxes` with `ag.ps.PointFlux` for a "
+                f"free-flux fit, or use a profile with no `flux` attribute (e.g. `ag.ps.Point` / "
+                f"`ag.ps.PointSolved`) with `FitFluxesSolved`."
+            )
+
+    @property
+    def flux_precision_sum(self) -> float:
+        """
+        `Σᵢ µᵢ²/σᵢ²` — the precision of the solved flux `F*`, and the marginalization normalization.
+        """
+        mu = self.magnifications_at_positions.array
+        sigma_squared = self.noise_map.array**2.0
+        return self._xp.sum(mu**2.0 / sigma_squared)
+
+    @property
+    def solved_flux(self) -> float:
+        """
+        `F* = (Σᵢ µᵢ f̂ᵢ/σᵢ²) / (Σᵢ µᵢ²/σᵢ²)`.
+        """
+        mu = self.magnifications_at_positions.array
+        f_hat = self.data.array
+        sigma_squared = self.noise_map.array**2.0
+        numerator = self._xp.sum(mu * f_hat / sigma_squared)
+        return numerator / self.flux_precision_sum
+
+    @property
+    def model_data(self) -> aa.ArrayIrregular:
+        """
+        The model fluxes `µᵢF*`.
+        """
+        return aa.ArrayIrregular(
+            values=self.magnifications_at_positions.array * self.solved_flux
+        )
+
+    @property
+    def model_fluxes(self) -> aa.ArrayIrregular:
+        return self.model_data
+
+    @property
+    def residual_map(self) -> aa.ArrayIrregular:
+        """
+        Returns the difference between the observed and model fluxes of the point source.
+        """
+        residual_map = super().residual_map
+
+        return aa.ArrayIrregular(values=residual_map)
+
+    @property
+    def chi_squared(self) -> float:
+        """
+        Returns the chi-squared of the fit of the point source fluxes.
+        """
+        return ag.util.fit.chi_squared_from(
+            chi_squared_map=self.chi_squared_map.array,
+        )
+
+    @property
+    def marginalization_term(self) -> float:
+        """
+        The analytic-marginalization contribution to the log likelihood from integrating out the (flat-prior)
+        source flux: `-0.5 * log((Σᵢ µᵢ²/σᵢ²)/(2π))`.
+        """
+        return -0.5 * self._xp.log(self.flux_precision_sum / (2.0 * np.pi))
+
+    @property
+    def log_likelihood(self) -> float:
+        """
+        `log_likelihood = -0.5*(χ² + noise_norm) - 0.5*log((Σᵢ µᵢ²/σᵢ²)/(2π))`.
+        """
+        return (
+            -0.5 * (self.chi_squared + self.noise_normalization)
+            + self.marginalization_term
+        )
