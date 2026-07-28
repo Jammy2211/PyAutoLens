@@ -38,41 +38,39 @@ gravitational-lensing analyses to scale with the size and complexity of next-gen
 
 # Statement of need
 
-Gravitational lensing analysis of modern lensing datasets is limited by computational run times and an ability to fix
-more complex models with more parameters. For example, strong lens are often observed across multiple optical and 
+Gravitational lensing analysis of modern lensing datasets is limited by computational run times and by the ability to fit
+more complex models with more parameters. For example, strong lenses are often observed across multiple optical and 
 submm wavelengths, however joint multiwavelength modeling is rarely performed. The most complex lensing clusters, 
-such as the Hubble Frontier Fields, requires months of CPU time to analyse, even though the majority of galaxies are
-tired to some form of scaling relatiojn. This resticts model complexity and makes inclusion of complementary data, notably
-weak lensing catalogues unfeasibles. Measuring the Hubble constant via time delay quasars also takes thousands of human hours partly driven by
+such as the Hubble Frontier Fields, require months of CPU time to analyse, even though the majority of galaxies are
+tied to some form of scaling relation. This restricts model complexity and makes inclusion of complementary data, notably
+weak lensing catalogues, unfeasible. Measuring the Hubble constant via time delay quasars also takes thousands of human hours partly driven by
 computational overheads, thus studies of lensed supernovae, which require rapid mass models and time-delay 
 predictions to guide time-sensitive follow-up [@Peng2023; @Lange2025; @Schaefer2020], are also infeasible.
 Euclid, Rubin and other wide-field surveys are poised to discover more than 100,000 galaxy-scale lenses and thousands of 
 group- and cluster-scale systems [@Collett2015; @Bergamini2025]. This influx of lensing data combined with a critical assessment of
 existing gravitational lensing studies shows new software and approaches are required to fully scale-up and exploit
-the data for its fully scientific potential.
+the data to its full scientific potential.
 
-PyAutoLens-JAX provides the solution. 
+PyAutoLens-JAX provides the solution. It 
 extends the established automation of PyAutoLens beyond this computational boundary by making its 
 complete modelling framework compatible with just-in-time compilation, GPU execution, and automatic differentiation. 
 The same accelerated framework supports galaxy-, group-, and cluster-scale models constrained by imaging, 
 interferometric visibilities, point-source observables, and weak-lensing catalogues, including joint analyses across 
 these data types. Faster likelihood evaluation makes richer models and larger samples practical, while automatic 
-differentiation enables gradient-based optimisation and sampling methods that can scale to significant more free parameters. 
+differentiation enables gradient-based optimisation and sampling methods that can scale to significantly more free parameters. 
 PyAutoLens-JAX therefore provides the computational foundation required to combine the richest available datasets, 
 model next-generation lens samples at scale, accelerate complex cluster analyses, and deliver rapid inference for time-critical transient lensing.
 
 The pre-JAX implementation of PyAutoLens has already demonstrated that automated lens modelling can scale to large 
 samples. COWLS I modelled 419 JWST-selected candidates across four NIRCam bands, while the Euclid Q1 analysis 
 successfully modelled more than 300 additional systems [@Nightingale2025; @Lines2025]. Existing lens analysis is therefore 
-prohibited by analysis run time and complexity, massive speed up is required for the orders of magnitude increase of lens 
+limited by analysis run time and complexity; a massive speed up is required for the orders of magnitude increase in lens 
 numbers now being found. 
-
-
 
 This rapid advance in lens analysis run time is paired with PyAutoLens-Assistant, which allows a scientist to describe
 lens modeling using natural language, such that agentic AI then performs it. In doing so, this makes performing bespoke
-and complex lens modeling of individual lenses or large lens samples feasibles. PyAutoLens-JAX is therefore
-vital in making the actual computartional run times paired with this make the science possible. 
+and complex lens modeling of individual lenses or large lens samples feasible. PyAutoLens-JAX is therefore
+vital in delivering the computational run times that make this science possible. 
 
 # State of the field
 
