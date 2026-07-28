@@ -45,12 +45,12 @@ supernovae, provide image positions and time delays; and weak lensing traces mas
 Group and cluster lenses add multiple deflectors, source planes, and complex mass distributions. Joint modelling 
 can break degeneracies and yield more complete physical constraints, but it also increases model dimensionality and 
 the cost of each likelihood evaluation. Providing the required lensing calculations for all these datasets within a 
-single GPU-accelerated, automatically differentiable package therefore offers a compelling route to making the compelling
-science possible with these data feasible.
+single GPU-accelerated, automatically differentiable package therefore offers a compelling route to making the
+science these data enable feasible.
 
 Conventional derivative-free inference becomes difficult as analyses combine pixelized source reconstructions, 
-multi-band datasets, millions of interferometer visibilities, strong- and weak-lensing constraints, and multi-scale m
-ass models across increasingly large lens samples. PyAutoLens-JAX addresses this computational bottleneck by 
+multi-band datasets, millions of interferometer visibilities, strong- and weak-lensing constraints, and multi-scale
+mass models across increasingly large lens samples. PyAutoLens-JAX addresses this computational bottleneck by 
 making the complete modelling framework compatible with GPU execution and automatic differentiation. This enables faster likelihood evaluation and the use of gradient-based optimisation and sampling methods across the full range of PyAutoLens datasets and lensing regimes.
 
 # State of the field
