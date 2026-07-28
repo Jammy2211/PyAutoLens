@@ -304,7 +304,7 @@ class AbstractSolver:
                 would require {self.n_steps} subdivision steps.
 
                 Decrease `pixel_scale_precision` (e.g. to {self.scale / 10.0:.3g} or smaller) so the
-                solver can resolve an image.
+                solver can refine the tiling.
                 """
             )
 

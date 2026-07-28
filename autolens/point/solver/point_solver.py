@@ -123,36 +123,56 @@ class PointSolver(AbstractSolver):
         )
 
         # When no triangle traces to the source-plane coordinate -- e.g. the coordinate lies
-        # outside the region the image-plane grid tiles -- `filtered_means` is empty. The
+        # outside the region the image-plane grid tiles -- `filtered_means` comes back with shape
+        # (0, 2). The `[pair for pair in ...]` comprehension below then yields `[]`, and the
         # `Grid2DIrregular` built from it exposes `.array` as a bare list rather than a 2D array,
-        # so the `axis=1` reductions below used to raise
+        # so the `axis=1` reductions raised
         # `numpy.exceptions.AxisError: axis 1 is out of bounds for array of dimension 1`.
         #
-        # Zero images is a legitimate answer, not a failure, so return a correctly-shaped empty
-        # grid. `filtered_means` is a Python list, so its length is static (including under a
-        # `jax.jit` trace) and this branch is trace-safe. The JAX path pads to
-        # `MAX_CONTAINING_SIZE` and never reaches it.
+        # Zero images is a legitimate answer, not a failure, so build a correctly-shaped empty
+        # grid instead.
+        #
+        # `_filter_low_magnification` returns an `xp` array (its `List[Tuple[float, float]]`
+        # annotation is inaccurate), so `len(...)` is a leading-dimension query. Array shapes are
+        # static under a `jax.jit` trace, so this reads no traced *value* and the branch is
+        # trace-safe. In practice the JAX path builds its triangles at a padded fixed size
+        # (`MAX_CONTAINING_SIZE`), so it is the NumPy path that reaches this.
         if len(filtered_means) == 0:
+
+            solution = xp.zeros((0, 2))
+
+        else:
+
+            solution = aa.Grid2DIrregular(
+                [pair for pair in filtered_means], xp=xp
+            ).array
+
+            is_nan = xp.isnan(solution).any(axis=1)
+            sentinel = xp.full_like(solution[0], fill_value=xp.inf)
+            solution = xp.where(is_nan[:, None], sentinel, solution)
+
+            if remove_infinities:
+
+                solution = solution[~xp.isinf(solution).any(axis=1)]
+
+        # Warn on the *final* result rather than only on the branch above, because there are two
+        # distinct routes to an empty answer and only one goes through it:
+        #
+        #   1. no triangle contained the coordinate  -> `filtered_means` is already length 0
+        #   2. every candidate failed the magnification threshold -> `_filter_low_magnification`
+        #      preserves the length and writes NaN rows, which become `inf` and are then stripped
+        #      by `remove_infinities`, landing here at length 0
+        #
+        # Only reachable on the NumPy path: the JAX path keeps its padded static shape, so
+        # `len(solution)` is non-zero there and this reads no traced value.
+        if len(solution) == 0:
 
             logger.warning(
                 f"PointSolver.solve found no images for source-plane coordinate "
-                f"{tuple(source_plane_coordinate)}, so an empty grid is returned. This usually "
-                f"means the coordinate lies outside the region traced by the image-plane grid, or "
-                f"that every candidate image was removed by the magnification threshold."
+                f"{tuple(source_plane_coordinate)}, so an empty grid is returned. This means "
+                f"either that the coordinate lies outside the region traced by the image-plane "
+                f"grid, or that every candidate image was rejected by "
+                f"`magnification_threshold` (currently {self.magnification_threshold})."
             )
-
-            return aa.Grid2DIrregular(xp.zeros((0, 2)))
-
-        solution = aa.Grid2DIrregular(
-            [pair for pair in filtered_means], xp=xp
-        ).array
-
-        is_nan = xp.isnan(solution).any(axis=1)
-        sentinel = xp.full_like(solution[0], fill_value=xp.inf)
-        solution = xp.where(is_nan[:, None], sentinel, solution)
-
-        if remove_infinities:
-
-            solution = solution[~xp.isinf(solution).any(axis=1)]
 
         return aa.Grid2DIrregular(solution)

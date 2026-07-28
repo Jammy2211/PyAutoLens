@@ -61,6 +61,11 @@ class FitPositionsImagePairAll(AbstractFitPositionsImagePair):
         tracer via name pairing if that profile is not found.
     """
 
+    # The floor every observed position contributes when the solver returns no images, matching
+    # `FitPositionsImagePair` and `FitPositionsImagePairRepeat`: loudly bad, but finite, so the
+    # model is scored rather than silently resampled.
+    no_image_residual = 1.0e4
+
     def log_p(
         self,
         data_position: np.ndarray,
@@ -150,11 +155,37 @@ class FitPositionsImagePairAll(AbstractFitPositionsImagePair):
                 self.model_data.array,
             ).any(axis=1)
         )
-        n_permutations = n_non_nan_model_positions ** len(self.data)
-        return -2.0 * (
+
+        # With no finite model positions `n_permutations` is 0, so `-log(0)` is `+inf` while the
+        # permutation sum is `-inf`, and the two combine to NaN. `fitness.py` converts a NaN
+        # log-likelihood into `resample_figure_of_merit`, so the model would be silently rejected
+        # rather than scored -- the exact outcome `no_image_residual` exists to avoid.
+        #
+        # `FitPositionsImagePair` and `FitPositionsImagePairRepeat` both fall back to the
+        # `no_image_residual` floor for every observed position; do the same here, on the same
+        # (residual / noise) ** 2 scale their chi-squared ends up on.
+        #
+        # `n_non_nan_model_positions` is a traced value under `jax.jit`, so this selects with
+        # `xp.where` rather than a Python `if`. `where` evaluates both branches, so the log is
+        # taken on a clamped count to keep the NaN from forming in the discarded branch.
+        noise_map = self._xp.asarray(np.asarray(self.noise_map))
+
+        no_image_chi_squared = self._xp.sum(
+            (self.no_image_residual / noise_map) ** 2.0
+        )
+
+        has_image = n_non_nan_model_positions > 0
+
+        n_permutations = (
+            self._xp.where(has_image, n_non_nan_model_positions, 1)
+        ) ** len(self.data)
+
+        chi_squared = -2.0 * (
             -self._xp.log(n_permutations)
             + self._xp.sum(self.all_permutations_log_likelihoods())
         )
+
+        return self._xp.where(has_image, chi_squared, no_image_chi_squared)
 
 
 class FitPositionsImagePairAllSolved(SolvedCentre, FitPositionsImagePairAll):

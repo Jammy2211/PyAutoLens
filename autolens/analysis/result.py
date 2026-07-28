@@ -119,7 +119,14 @@ class Result(AgResultDataset):
             plane_redshift=plane_redshift,
         )
 
-        if multiple_images.shape[0] == 1:
+        # `<= 1` rather than `== 1`: the solver can legitimately return zero images (the
+        # source-plane coordinate falls outside the region the image-plane grid tiles, or every
+        # candidate is rejected by the magnification threshold), and that is the case that most
+        # needs the inward-walk recovery below. Zero used to be unreachable here because
+        # `PointSolver.solve` raised before returning; now it returns an empty grid, and letting
+        # it through would give `SourceMaxSeparation` an empty array to reduce over
+        # (`max()` on an empty sequence).
+        if multiple_images.shape[0] <= 1:
             return self.image_plane_multiple_image_positions_for_single_image_from()
 
         return aa.Grid2DIrregular(values=multiple_images)

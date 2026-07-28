@@ -75,6 +75,53 @@ def test__source_outside_tiled_region__warns(solver_grid, lens_galaxy, caplog):
     assert "found no images" in caplog.text
 
 
+def test__all_candidates_rejected_by_magnification__returns_empty_and_warns(
+    solver_grid, lens_galaxy, caplog
+):
+    """
+    The second route to an empty answer, which does NOT go through the length-0 branch.
+
+    `_filter_low_magnification` preserves the array length and writes NaN rows, which become
+    `inf` and are stripped by `remove_infinities`. An earlier revision warned only on the
+    length-0 branch, so this route returned an empty grid silently.
+    """
+
+    source_plane_coordinate = (0.05, 0.02)
+
+    solver = al.PointSolver.for_grid(
+        grid=solver_grid,
+        pixel_scale_precision=0.001,
+        magnification_threshold=1.0e100,
+    )
+
+    with caplog.at_level("WARNING"):
+        result = solver.solve(
+            tracer=_tracer(lens_galaxy, source_plane_coordinate),
+            source_plane_coordinate=source_plane_coordinate,
+        )
+
+    assert len(result) == 0
+    assert "found no images" in caplog.text
+    assert "magnification_threshold" in caplog.text
+
+
+def test__successful_solve__does_not_warn(solver_grid, lens_galaxy, caplog):
+    """The warning must not fire on the ordinary path."""
+
+    source_plane_coordinate = (0.05, 0.02)
+
+    solver = al.PointSolver.for_grid(grid=solver_grid, pixel_scale_precision=0.001)
+
+    with caplog.at_level("WARNING"):
+        result = solver.solve(
+            tracer=_tracer(lens_galaxy, source_plane_coordinate),
+            source_plane_coordinate=source_plane_coordinate,
+        )
+
+    assert len(result) == 4
+    assert "found no images" not in caplog.text
+
+
 @pytest.mark.parametrize("pixel_scale_precision", [0.05, 0.1, 0.2, 0.5])
 def test__precision_coarser_than_triangle_scale__raises_naming_the_parameter(
     solver_grid, lens_galaxy, pixel_scale_precision

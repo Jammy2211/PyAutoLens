@@ -172,3 +172,60 @@ def test__fit_positions_image_pair_all_solved__source_plane_coordinate_feeds_sol
     # fixed regardless of the solved centre): matches the plain FitPositionsImagePairAll
     # value from the fixture-equivalent test above.
     assert fit.chi_squared == -2.0 * -4.40375330990644
+
+
+def test__no_model_positions__finite_no_image_floor_matching_siblings(data, noise_map):
+    """
+    Regression: with no model positions, `n_permutations` is 0, so `-log(0)` is `+inf` while the
+    permutation sum is `-inf` and the two combined to NaN.
+
+    `fitness.py` converts a NaN log-likelihood into `resample_figure_of_merit`, so the model was
+    silently resampled rather than scored -- exactly what the `no_image_residual` floor exists to
+    prevent. `FitPositionsImagePair` and `FitPositionsImagePairRepeat` already applied that floor;
+    `FitPositionsImagePairAll` did not.
+
+    Surfaced by @rhayes777's PyAutoLens#531 once `PointSolver.solve` began returning an empty grid
+    instead of raising.
+    """
+
+    no_positions = al.Grid2DIrregular(np.zeros((0, 2)))
+
+    kwargs = dict(
+        name="point_0",
+        data=data,
+        noise_map=noise_map,
+        tracer=tracer,
+        solver=al.mock.MockPointSolver(no_positions),
+    )
+
+    fit_all = al.FitPositionsImagePairAll(**kwargs)
+
+    # `log_likelihood` is not asserted here: the module's `noise_map` fixture is a raw ndarray,
+    # which `fit_dataset.noise_normalization` cannot consume. That predates this fix and is why
+    # every test in this file asserts `chi_squared` only. `log_likelihood` finiteness is covered
+    # end-to-end against a real solver and an `ArrayIrregular` noise-map.
+    assert np.isfinite(fit_all.chi_squared)
+
+    # the floor is on the same scale as the siblings', not merely finite
+    assert fit_all.chi_squared == pytest.approx(
+        al.FitPositionsImagePair(**kwargs).chi_squared
+    )
+    assert fit_all.chi_squared == pytest.approx(
+        al.FitPositionsImagePairRepeat(**kwargs).chi_squared
+    )
+
+
+def test__model_positions_present__chi_squared_unchanged(data, noise_map):
+    """The no-image branch must not perturb the ordinary path."""
+
+    fit = al.FitPositionsImagePairAll(
+        name="point_0",
+        data=data,
+        noise_map=noise_map,
+        tracer=tracer,
+        solver=al.mock.MockPointSolver(
+            al.Grid2DIrregular([(-1.0749, -1.1), (1.19117, 1.175)])
+        ),
+    )
+
+    assert fit.chi_squared == -2.0 * -4.40375330990644
