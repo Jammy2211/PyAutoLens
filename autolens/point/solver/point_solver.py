@@ -122,6 +122,27 @@ class PointSolver(AbstractSolver):
             tracer=tracer, points=kept_triangles.means, xp=xp
         )
 
+        # When no triangle traces to the source-plane coordinate -- e.g. the coordinate lies
+        # outside the region the image-plane grid tiles -- `filtered_means` is empty. The
+        # `Grid2DIrregular` built from it exposes `.array` as a bare list rather than a 2D array,
+        # so the `axis=1` reductions below used to raise
+        # `numpy.exceptions.AxisError: axis 1 is out of bounds for array of dimension 1`.
+        #
+        # Zero images is a legitimate answer, not a failure, so return a correctly-shaped empty
+        # grid. `filtered_means` is a Python list, so its length is static (including under a
+        # `jax.jit` trace) and this branch is trace-safe. The JAX path pads to
+        # `MAX_CONTAINING_SIZE` and never reaches it.
+        if len(filtered_means) == 0:
+
+            logger.warning(
+                f"PointSolver.solve found no images for source-plane coordinate "
+                f"{tuple(source_plane_coordinate)}, so an empty grid is returned. This usually "
+                f"means the coordinate lies outside the region traced by the image-plane grid, or "
+                f"that every candidate image was removed by the magnification threshold."
+            )
+
+            return aa.Grid2DIrregular(xp.zeros((0, 2)))
+
         solution = aa.Grid2DIrregular(
             [pair for pair in filtered_means], xp=xp
         ).array

@@ -285,9 +285,27 @@ class AbstractSolver:
         -------
         A list of image plane coordinates that are traced to the source plane coordinate.
         """
-        if self.n_steps == 0:
+        # `n_steps` is `ceil(log2(scale / pixel_scale_precision))`, which is <= 0 whenever the
+        # requested precision is coarser than (or equal to) the initial triangle scale. A negative
+        # value used to slip past an `== 0` check and make `steps` an empty list, surfacing as
+        # `IndexError: list index out of range` on `steps[-1]` below. Reject it here, naming the
+        # parameter the caller controls -- do NOT clamp to 1, which would silently solve at a
+        # precision the caller did not ask for.
+        if self.n_steps <= 0:
             raise ValueError(
-                "The target pixel scale is too large to subdivide the triangles."
+                f"""
+                The requested `pixel_scale_precision` is too large to subdivide the triangles.
+
+                pixel_scale_precision = {self.pixel_scale_precision}
+                initial triangle scale = {self.scale}
+
+                The solver refines triangles by repeated bisection, so it needs
+                `pixel_scale_precision` to be smaller than the initial triangle scale; here it
+                would require {self.n_steps} subdivision steps.
+
+                Decrease `pixel_scale_precision` (e.g. to {self.scale / 10.0:.3g} or smaller) so the
+                solver can resolve an image.
+                """
             )
 
         steps = list(
