@@ -47,7 +47,7 @@ NUMBA_CACHE_DIR=/tmp/numba_cache MPLCONFIGDIR=/tmp/matplotlib python -m pytest t
 
 PRs must pass `pytest --cov` on the CI matrix (Python 3.12 **and** 3.13). There
 is no black/ruff/flake8 gate — formatting is advisory. (`requires-python` in
-`pyproject.toml` is `>=3.9`.)
+`pyproject.toml` is `>=3.12`.)
 
 ## Configuration & defaults
 

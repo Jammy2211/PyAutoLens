@@ -8,13 +8,11 @@ import autolens as al
 
 # `apply_sparse_operator` is a JAX-only code path: `InterferometerSparseOperator`
 # builds its FFT kernel with `jax.numpy` and projects with `jax.ops.segment_sum`
-# / `jax.lax`, with no NumPy equivalent. `autonerves[jax]` gates jax to
-# Python >= 3.11, so the cases below cannot run on the 3.9/3.10 matrix legs —
-# skip them there rather than fail. The dense-route cases stay NumPy-only and
-# run everywhere, which is what those legs exist to prove.
+# / `jax.lax`, with no NumPy equivalent. Skip these cases when the optional JAX
+# dependency is not installed. The dense-route cases stay NumPy-only.
 requires_jax = pytest.mark.skipif(
     importlib.util.find_spec("jax") is None,
-    reason="apply_sparse_operator is a JAX-only path; jax requires Python >= 3.11",
+    reason="apply_sparse_operator requires the optional JAX dependency",
 )
 
 
