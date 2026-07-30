@@ -24,7 +24,7 @@ class SourceMaxSeparation:
         data: aa.Grid2DIrregular,
         noise_map: Optional[aa.ArrayIrregular],
         tracer: Tracer,
-        plane_redshift: float = Optional[None],
+        plane_redshift: Optional[float] = None,
         xp=np,
     ):
         """
