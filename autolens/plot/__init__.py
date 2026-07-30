@@ -60,6 +60,7 @@ from autolens.imaging.plot.fit_imaging_plots import (
 from autolens.interferometer.plot.fit_interferometer_plots import (
     subplot_fit as subplot_fit_interferometer,
     subplot_fit_real_space as subplot_fit_interferometer_real_space,
+    subplot_fit_dirty_images as subplot_fit_interferometer_dirty_images,
     subplot_tracer_from_fit as subplot_fit_interferometer_tracer,
     subplot_fit_interferometer_combined,
 )
