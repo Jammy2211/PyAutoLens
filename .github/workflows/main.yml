@@ -1,7 +1,17 @@
 name: Tests
 
-on: [push, pull_request]
+# One run per commit: PR events carry the CI; pushes only build main
+# (Heart's ws_ci gate reads main-HEAD conclusions). Superseded runs are
+# cancelled on PR refs only — a cancelled main run would read as red CI
+# (cancelled is in Heart's FAILURE_CONCLUSIONS).
+on:
+  push:
+    branches: [main]
+  pull_request:
 
+concurrency:
+  group: main-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 # Unit tests are defined once, centrally, in PyAutoHeart's reusable workflow
 # (Heart owns all health/readiness checking). This thin caller preserves PR-time
 # gating: the `unittest` job is the required status check on this repo.
