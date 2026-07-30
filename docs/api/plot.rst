@@ -50,13 +50,15 @@ Create figures and subplots showing quantities of standard **PyAutoLens** object
     subplot_fit_combined
     subplot_fit_combined_log10
 
-**Interferometer Fit Subplots:**
+**Interferometer Subplots:**
 
 .. autosummary::
    :toctree: _autosummary
 
+    subplot_interferometer_dataset
     subplot_fit_interferometer
     subplot_fit_interferometer_real_space
+    subplot_fit_interferometer_combined
 
 **Point Source Subplots:**
 
