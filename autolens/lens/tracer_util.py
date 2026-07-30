@@ -175,7 +175,7 @@ def traced_grid_2d_list_from(
     planes: List[List[ag.Galaxy]],
     grid: aa.type.Grid2DLike,
     cosmology: ag.cosmo.LensingCosmology = None,
-    plane_index_limit: int = Optional[None],
+    plane_index_limit: Optional[int] = None,
     xp=np,
 ):
     """

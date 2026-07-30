@@ -247,7 +247,7 @@ class Tracer(ABC, ag.OperateImageGalaxies):
 
     @aa.decorators.to_grid
     def traced_grid_2d_list_from(
-        self, grid: aa.type.Grid2DLike, xp=np, plane_index_limit: int = Optional[None]
+        self, grid: aa.type.Grid2DLike, xp=np, plane_index_limit: Optional[int] = None
     ) -> List[aa.type.Grid2DLike]:
         """
         Returns a ray-traced grid of 2D Cartesian (y,x) coordinates which accounts for multi-plane ray-tracing.
