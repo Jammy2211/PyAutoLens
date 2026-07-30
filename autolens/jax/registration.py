@@ -7,10 +7,16 @@ and unflatten across the JIT boundary.
 
 This module is the counterpart of ``AnalysisImaging._register_fit_imaging_pytrees``
 for code paths that do not go through ``Analysis`` (point-source solving,
-custom forward models, hand-built simulators). It is called automatically
-by ``PointSolver(use_jax=True).solve(tracer, ...)`` on the first invocation
-and by ``Simulator(use_jax=True).via_tracer_from(tracer, ...)`` in PyAutoLens
-once Phase 2 ships the Simulator changes.
+custom forward models, hand-built simulators).
+
+**Calling it is the user's responsibility.** Nothing in the library calls it
+for you, and nothing can: JAX flattens a jitted function's arguments at trace
+time, i.e. *before* entering the callee, so a ``solve()`` or
+``via_tracer_from()`` that registered internally would already be too late.
+``PointSolver.solve_triangles`` carries the same note at its own call site.
+Register once, before the first ``@jax.jit`` invocation.
+
+The autogalaxy counterpart is ``autogalaxy.jax.register_galaxies_classes``.
 
 Mirrors PyAutoFit's ``autofit/jax/pytrees.py`` layout. Idempotent: re-registration
 of a class is a silent no-op.
