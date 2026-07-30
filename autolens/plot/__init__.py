@@ -17,6 +17,7 @@ from autoarray.dataset.plot.imaging_plots import (
     fits_imaging,
 )
 from autoarray.dataset.plot.interferometer_plots import (
+    subplot_interferometer_dataset,
     subplot_interferometer_dirty_images,
     fits_interferometer,
 )
@@ -60,6 +61,7 @@ from autolens.interferometer.plot.fit_interferometer_plots import (
     subplot_fit as subplot_fit_interferometer,
     subplot_fit_real_space as subplot_fit_interferometer_real_space,
     subplot_tracer_from_fit as subplot_fit_interferometer_tracer,
+    subplot_fit_interferometer_combined,
 )
 from autolens.point.plot.fit_point_plots import subplot_fit as subplot_fit_point
 from autolens.point.plot.point_dataset_plots import subplot_dataset as subplot_point_dataset
