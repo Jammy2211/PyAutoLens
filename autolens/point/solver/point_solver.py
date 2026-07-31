@@ -16,6 +16,7 @@ The output positions array is padded to a fixed size (``MAX_CONTAINING_SIZE``) u
 sentinel value ``inf`` for JAX compatibility — these ``inf`` entries are stripped by
 default but can be retained for use inside a ``jax.jit``-traced function.
 """
+
 import logging
 import os
 from typing import Tuple, Optional
@@ -84,6 +85,13 @@ class PointSolver(AbstractSolver):
 
         Notes
         -----
+        Gradients (JAX path): the returned positions carry a ``jax.custom_jvp`` implicit
+        fixed-point rule (``dθ = A⁻¹ (dα + dβ)`` at the solved positions — the gravity.jl
+        / Lombardi 2024 Eq. 30 mechanism), so ``jax.grad`` through a solver-chained
+        likelihood is exact between image-count events instead of identically zero. See
+        ``autolens.point.solver.implicit_diff`` for the differentiability contract
+        (staircase quantization, caustic-crossing seams, near-critical divergence).
+
         Smoke-test short-circuit (``PYAUTO_SMALL_DATASETS``): the triangle-tiling solve
         is the dominant cost in many simulator scripts and is meaningless on the
         downsized grids used for fast smoke tests. When ``PYAUTO_SMALL_DATASETS=1`` is
@@ -111,6 +119,93 @@ class PointSolver(AbstractSolver):
         if os.environ.get("PYAUTO_SMALL_DATASETS") == "1":
             return aa.Grid2DIrregular(values=[(1.0, 0.0), (0.0, 1.0)])
 
+        if xp is not np:
+            from .implicit_diff import solve_padded_factory, tracer_is_jax_compatible
+
+            if not tracer_is_jax_compatible(tracer):
+                # Unregistered tracer (e.g. a simulator script's hand-built Tracer):
+                # cannot cross the custom_jvp boundary. Plain forward solve, gradient
+                # behaviour unchanged (identically zero, as before this rule existed).
+                solution = self._solve_array(
+                    tracer=tracer,
+                    source_plane_coordinate=source_plane_coordinate,
+                    xp=xp,
+                    plane_redshift=plane_redshift,
+                    remove_infinities=remove_infinities,
+                )
+                return aa.Grid2DIrregular(solution)
+
+            plane_index = (
+                -1
+                if plane_redshift is None
+                else tracer.plane_index_via_redshift_from(redshift=plane_redshift)
+            )
+            solve_padded = solve_padded_factory(
+                solver=self,
+                plane_redshift=plane_redshift,
+                plane_index=plane_index,
+                xp=xp,
+            )
+            beta = xp.stack(
+                [
+                    xp.asarray(source_plane_coordinate[0]),
+                    xp.asarray(source_plane_coordinate[1]),
+                ]
+            )
+            solution = solve_padded(tracer, beta)
+
+            if remove_infinities:
+                solution = solution[~xp.isinf(solution).any(axis=1)]
+
+            return aa.Grid2DIrregular(solution)
+
+        solution = self._solve_array(
+            tracer=tracer,
+            source_plane_coordinate=source_plane_coordinate,
+            xp=xp,
+            plane_redshift=plane_redshift,
+            remove_infinities=remove_infinities,
+        )
+
+        # Warn on the *final* result rather than only on the empty branch inside
+        # `_solve_array`, because there are two distinct routes to an empty answer:
+        #
+        #   1. no triangle contained the coordinate  -> `filtered_means` is already length 0
+        #   2. every candidate failed the magnification threshold -> `_filter_low_magnification`
+        #      preserves the length and writes NaN rows, which become `inf` and are then stripped
+        #      by `remove_infinities`, landing here at length 0
+        #
+        # Only reachable on the NumPy path: the JAX path keeps its padded static shape, so
+        # `len(solution)` is non-zero there and this reads no traced value.
+        if len(solution) == 0:
+
+            logger.warning(
+                f"PointSolver.solve found no images for source-plane coordinate "
+                f"{tuple(source_plane_coordinate)}, so an empty grid is returned. This means "
+                f"either that the coordinate lies outside the region traced by the image-plane "
+                f"grid, or that every candidate image was rejected by "
+                f"`magnification_threshold` (currently {self.magnification_threshold})."
+            )
+
+        return aa.Grid2DIrregular(solution)
+
+    def _solve_array(
+        self,
+        tracer: Tracer,
+        source_plane_coordinate: Tuple[float, float],
+        xp,
+        plane_redshift: Optional[float] = None,
+        remove_infinities: bool = False,
+    ):
+        """
+        The raw solve: triangle refinement, magnification filtering and sentinel padding,
+        returning the bare ``xp`` positions array (no ``Grid2DIrregular`` wrap, no logging).
+
+        On the JAX path this is the primal of the ``custom_jvp`` wrapper built by
+        ``implicit_diff.solve_padded_factory`` — gradients are supplied by the implicit
+        fixed-point rule at the solved positions, never by differentiating through the
+        refinement iteration (see ``implicit_diff``'s module docstring for the contract).
+        """
         kept_triangles = super().solve_triangles(
             tracer=tracer,
             shape=Point(*source_plane_coordinate),
@@ -155,24 +250,4 @@ class PointSolver(AbstractSolver):
 
                 solution = solution[~xp.isinf(solution).any(axis=1)]
 
-        # Warn on the *final* result rather than only on the branch above, because there are two
-        # distinct routes to an empty answer and only one goes through it:
-        #
-        #   1. no triangle contained the coordinate  -> `filtered_means` is already length 0
-        #   2. every candidate failed the magnification threshold -> `_filter_low_magnification`
-        #      preserves the length and writes NaN rows, which become `inf` and are then stripped
-        #      by `remove_infinities`, landing here at length 0
-        #
-        # Only reachable on the NumPy path: the JAX path keeps its padded static shape, so
-        # `len(solution)` is non-zero there and this reads no traced value.
-        if len(solution) == 0:
-
-            logger.warning(
-                f"PointSolver.solve found no images for source-plane coordinate "
-                f"{tuple(source_plane_coordinate)}, so an empty grid is returned. This means "
-                f"either that the coordinate lies outside the region traced by the image-plane "
-                f"grid, or that every candidate image was rejected by "
-                f"`magnification_threshold` (currently {self.magnification_threshold})."
-            )
-
-        return aa.Grid2DIrregular(solution)
+        return solution
