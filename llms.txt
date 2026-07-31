@@ -5,6 +5,7 @@
 ## Use it (examples & tutorials)
 
 - [autolens_workspace navigator](https://github.com/PyAutoLabs/autolens_workspace/blob/main/llms.txt): end-to-end example scripts and notebooks per science case — the paste-friendly task router. Send any "how do I model / simulate / analyse X?" question here.
+- [autolens_assistant](https://github.com/PyAutoLabs/autolens_assistant): the PyAutoLens AI assistant — task skills, curated API reference, and a science wiki in one repo you drive by conversation (browser chat via a GitHub connector, or a local coding agent); start from its `llms.txt` front door.
 - [HowToLens](https://github.com/PyAutoLabs/HowToLens): from-first-principles lecture series for beginners new to gravitational lensing.
 
 ## API reference & docs
