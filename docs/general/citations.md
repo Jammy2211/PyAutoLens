@@ -28,6 +28,28 @@ interferometer non-uniform FFT (`nufftax` and its FINUFFT algorithm, keys `nufft
 `finufft`, see below), and the critical-curve/caustic solver (`Jax-Zero-Contour`, key
 `jax_zero_contour`, see below).
 
+If you use the learning-rate-free `af.MultiStartProdigy` search, also cite the Prodigy
+method under the key `prodigy`. It is a published algorithm in its own right, run through
+Optax's implementation (`optax.contrib.prodigy`), so cite it alongside `optax` rather than
+in place of it:
+
+```bibtex
+@inproceedings{prodigy,
+author = {Mishchenko, Konstantin and Defazio, Aaron},
+title = {{Prodigy: An Expeditiously Adaptive Parameter-Free Learner}},
+booktitle = {Proceedings of the 41st International Conference on Machine Learning},
+series = {Proceedings of Machine Learning Research},
+volume = {235},
+pages = {35779--35804},
+publisher = {PMLR},
+url = {https://proceedings.mlr.press/v235/mishchenko24a.html},
+year = {2024}
+}
+```
+
+The reference implementation is at <https://github.com/konstmish/prodigy> and the preprint
+at <https://arxiv.org/abs/2306.06101>.
+
 ## Jax-Zero-Contour
 
 If you use the zero-contour method for critical curve and caustic computation (the default in
