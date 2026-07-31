@@ -233,6 +233,38 @@ def test__solve_lm_step_from__unconstrained_and_constrained():
     assert float((C @ (x + step_c))[0]) == pytest.approx(0.0, abs=1.0e-8)
 
 
+def test__solve_lm_step_from__identity_damping():
+    data, noise, mapping, src_reg, dpsi_reg = joint_problem()
+    n_src = src_reg.shape[0]
+    inv_var = 1.0 / noise**2
+    x = np.zeros(mapping.shape[1])
+
+    H, minus_gradient, *_ = dense_util.lm_hessian_and_gradient_from(
+        data, inv_var, x, mapping[:, :n_src], mapping[:, n_src:], src_reg, dpsi_reg
+    )
+
+    mu = 0.7
+    step = dense_util.solve_lm_step_from(H, minus_gradient, mu, damping="identity")
+    assert (H + mu * np.eye(H.shape[0])) @ step == pytest.approx(
+        minus_gradient, rel=1.0e-8
+    )
+
+    # the two damping forms genuinely differ once diag(H) is not ~1
+    step_m = dense_util.solve_lm_step_from(H, minus_gradient, mu, damping="marquardt")
+    assert not np.allclose(step, step_m)
+
+    # constrained identity step stays on the constraint surface
+    C = np.zeros((1, mapping.shape[1]))
+    C[0, n_src:] = 1.0
+    step_c = dense_util.solve_lm_step_from(
+        H, minus_gradient, mu, constraint_matrix=C, x=x, damping="identity"
+    )
+    assert float((C @ (x + step_c))[0]) == pytest.approx(0.0, abs=1.0e-8)
+
+    with pytest.raises(ValueError):
+        dense_util.solve_lm_step_from(H, minus_gradient, mu, damping="not-a-mode")
+
+
 def test__log_evidence_lm_from__matches_hand_computed():
     data, noise, mapping, src_reg, dpsi_reg = joint_problem()
     n_src = src_reg.shape[0]

@@ -70,6 +70,8 @@ class IterFitDpsiSrcInterferometer:
         preloads: Optional[dict] = None,
         n_iter: int = 20,
         tol: float = 1e-6,
+        damping: str = "marquardt",
+        max_consecutive_rejections: int = 10,
         reg_optimize_every: Optional[int] = None,
         reg_optimize_grid: int = 5,
         verbose: bool = False,
@@ -119,7 +121,14 @@ class IterFitDpsiSrcInterferometer:
         n_iter
             The maximum number of outer LM iterations.
         tol
-            The step-norm convergence tolerance.
+            The step-norm convergence tolerance; also applied to rejected
+            steps (a sub-tolerance rejected step means converged).
+        damping
+            LM damping matrix (see ``IterFitDpsiSrcImaging``): default
+            ``"marquardt"`` here — visibility-weighted curvatures (~1e11)
+            need the scale-invariant form.
+        max_consecutive_rejections
+            Stop after this many consecutive rejected trial steps.
         reg_optimize_every
             When set, every N accepted outer iterations (and once at the
             start) the regularization strength multipliers (a_src, a_dpsi)
@@ -144,6 +153,8 @@ class IterFitDpsiSrcInterferometer:
         self.dpsi_mask = dpsi_mask
         self.n_iter = int(n_iter)
         self.tol = float(tol)
+        self.damping = str(damping)
+        self.max_consecutive_rejections = int(max_consecutive_rejections)
         self.reg_optimize_every = reg_optimize_every
         self.reg_optimize_grid = int(reg_optimize_grid)
         self.reg_scales = (1.0, 1.0)
@@ -565,12 +576,14 @@ class IterFitDpsiSrcInterferometer:
                 )
 
             step_accepted = False
+            consecutive_rejections = 0
             while not step_accepted:
                 delta_x = None
                 try:
                     delta_x = dense_util.solve_lm_step_from(
                         H, minus_gradient, mu,
                         constraint_matrix=constraint_matrix, x=x,
+                        damping=self.damping,
                     )
                     if np.any(np.isnan(np.asarray(delta_x))):
                         delta_x = None
@@ -622,6 +635,24 @@ class IterFitDpsiSrcInterferometer:
                             self._final_state = (F, D, A, R)
                             return self.s_opt, self.dpsi_opt
                     else:
+                        # rejected step below the step tolerance: growing mu
+                        # only shrinks it further — the state is converged.
+                        if float(np.linalg.norm(delta_x)) < self.tol:
+                            if self.verbose:
+                                logger.info(
+                                    "Converged at iteration %d (rejected step "
+                                    "below tolerance).",
+                                    i,
+                                )
+                            break
+                        consecutive_rejections += 1
+                        if consecutive_rejections >= self.max_consecutive_rejections:
+                            logger.warning(
+                                "%d consecutive rejected LM steps; stopping at "
+                                "the current state.",
+                                consecutive_rejections,
+                            )
+                            break
                         mu *= 5.0
                         if mu > 1e15:
                             logger.warning(
@@ -629,6 +660,14 @@ class IterFitDpsiSrcInterferometer:
                             )
                             break
                 else:
+                    consecutive_rejections += 1
+                    if consecutive_rejections >= self.max_consecutive_rejections:
+                        logger.warning(
+                            "%d consecutive failed LM solves; stopping at the "
+                            "current state.",
+                            consecutive_rejections,
+                        )
+                        break
                     mu *= 5.0
                     if mu > 1e15:
                         logger.warning("LM solver failed repeatedly; stopping.")

@@ -16,7 +16,7 @@ requires_jax = pytest.mark.skipif(
 )
 
 
-def iter_fit_from(dataset, gauge_constraints=False, n_iter=2):
+def iter_fit_from(dataset, gauge_constraints=False, n_iter=2, **kwargs):
     lens = al.Galaxy(
         redshift=0.5,
         mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
@@ -36,6 +36,7 @@ def iter_fit_from(dataset, gauge_constraints=False, n_iter=2):
         src_pixelization=src_pixelization,
         gauge_constraints=gauge_constraints,
         n_iter=n_iter,
+        **kwargs,
     )
 
 
@@ -56,6 +57,16 @@ def test__solve_joint_optimization__finite_state_and_decreasing_cost(
     n_dpsi = np.count_nonzero(~fit.pair_dpsi_data_obj.mask_dpsi)
     assert s_opt.shape == (fit.src_reg_mat.shape[0],)
     assert dpsi_opt.shape == (n_dpsi,)
+    assert np.isfinite(s_opt).all()
+    assert np.isfinite(dpsi_opt).all()
+
+
+def test__solve_joint_optimization__identity_damping_finite(interferometer_7):
+    dataset = interferometer_7.apply_sparse_operator()
+    fit = iter_fit_from(dataset, damping="identity", max_consecutive_rejections=3)
+
+    s_opt, dpsi_opt = fit.solve_joint_optimization()
+
     assert np.isfinite(s_opt).all()
     assert np.isfinite(dpsi_opt).all()
 
