@@ -29,6 +29,13 @@ from autolens.point.solver import PointSolver
 
 
 class FitPositionsSource(AbstractFitPositions):
+    #: How each back-traced position's residual from the source-plane centre is weighted:
+    #: `"magnification"` — the traditional scalar `µᵢ²/σᵢ²` weighting with the magnified-noise
+    #: normalization (the long-standing behaviour of this class, and the Lenstool convention);
+    #: `"jacobian"` — the per-image precision tensor `Wᵢ = Aᵢ⁻ᵀΘᵢAᵢ⁻¹` with the observed-plane
+    #: normalization, matching `FitPositionsSourceSolved` but with the centre a free parameter.
+    weighting = "magnification"
+
     def __init__(
         self,
         name: str,
@@ -65,6 +72,13 @@ class FitPositionsSource(AbstractFitPositions):
            divided by the RMS noise-map value.
 
         7) Sum the chi-squared values to compute the overall log likelihood of the fit.
+
+        Steps 4-6 describe the default `weighting = "magnification"` scalar convention. Setting the
+        `weighting` class attribute to `"jacobian"` instead weights each vector residual `β̂ᵢ − c` (with `c`
+        the profile's free `centre`) by the per-image precision tensor `Wᵢ = Aᵢ⁻ᵀΘᵢAᵢ⁻¹` (see
+        `autolens.point.fit.solved.precision_tensor_components_from`), with the observed-plane noise
+        normalization matching `FitPositionsSourceSolved` — the same tensor likelihood as that class, but
+        with the centre sampled as a free parameter rather than solved and marginalized.
 
         Point source fitting uses name pairing, whereby the `name` of the `Point` object is paired to the name of the
         point source dataset to ensure that point source datasets are fitted to the correct point source.
@@ -137,31 +151,67 @@ class FitPositionsSource(AbstractFitPositions):
         )
 
     @property
+    def residual_vectors(self) -> np.ndarray:
+        """
+        The (n_positions, 2) array of vector residuals `β̂ᵢ − c`: the back-traced source-plane positions
+        minus the source-plane centre `c` (here the profile's free `centre`; `FitPositionsSourceSolved`
+        overrides this to use the solved `β*` via `_beta_hat`, tolerating plain-ndarray test inputs).
+        """
+        beta_hat = self.model_data.array
+        centre_y, centre_x = self.source_plane_coordinate
+        centre = self._xp.array([centre_y, centre_x])
+        return beta_hat - centre
+
+    @property
     def chi_squared_map(self) -> float:
         """
-        Returns the chi-squared of the point-source source-plane fit, which is the sum of the squared residuals
-        multiplied by the magnifications squared, divided by the noise-map values squared.
-        """
+        Returns the chi-squared of the point-source source-plane fit.
 
-        return self.residual_map**2.0 / (
-            self.magnifications_at_positions.array**-2.0 * self.noise_map.array**2.0
-        )
+        For `weighting = "magnification"` this is the squared residuals multiplied by the magnifications
+        squared, divided by the noise-map values squared. For `weighting = "jacobian"` it is the per-image
+        quadratic form `(β̂ᵢ−c)ᵀ Wᵢ (β̂ᵢ−c)` with the precision tensor `Wᵢ = Aᵢ⁻ᵀΘᵢAᵢ⁻¹`.
+        """
+        if self.weighting == "magnification":
+            return self.residual_map**2.0 / (
+                self.magnifications_at_positions.array**-2.0
+                * self.noise_map.array**2.0
+            )
+
+        w11, w12, w21, w22 = precision_tensor_components_from(self, self.weighting)
+
+        delta = self.residual_vectors
+        dy = delta[:, 0]
+        dx = delta[:, 1]
+
+        terms = dy * (w11 * dy + w12 * dx) + dx * (w21 * dy + w22 * dx)
+
+        return aa.ArrayIrregular(values=terms)
 
     @property
     def noise_normalization(self) -> float:
         """
-        Returns the normalization of the noise-map, which is the sum of the noise-map values squared.
+        Returns the noise normalization of the fit's Gaussian likelihood.
+
+        For `weighting = "magnification"` this is the long-standing magnified-noise source-plane-data
+        convention `Σᵢ log(2π µᵢ⁻²σᵢ²)`. For `weighting = "jacobian"` it is the observed-plane
+        (model-independent) convention `Σᵢ log((2π)² σᵢ⁴)` matching `FitPositionsSourceSolved` (see that
+        class's docstring for why a model-dependent normalization would spuriously favour
+        high-magnification models).
         """
-        return self._xp.sum(
-            self._xp.log(
-                2
-                * np.pi
-                * (
-                    self.magnifications_at_positions.array**-2.0
-                    * self.noise_map.array**2.0
+        if self.weighting == "magnification":
+            return self._xp.sum(
+                self._xp.log(
+                    2
+                    * np.pi
+                    * (
+                        self.magnifications_at_positions.array**-2.0
+                        * self.noise_map.array**2.0
+                    )
                 )
             )
-        )
+
+        sigma_sq = self.noise_map.array**2.0
+        return self._xp.sum(self._xp.log((2.0 * np.pi) ** 2.0 * sigma_sq**2.0))
 
     @property
     def log_likelihood(self) -> float:

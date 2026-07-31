@@ -215,6 +215,73 @@ def test__no_model_positions__finite_no_image_floor_matching_siblings(data, nois
     )
 
 
+def test__extreme_mismatch__log_sum_exp_stays_finite(data, noise_map):
+    """
+    Regression: the literal `log(sum(exp(log_p)))` underflows to `log(0) = -inf` once the best
+    model/observed pairing is ~38 sigma or worse (`exp` underflows below the smallest float64),
+    strangling gradient flow across the exact region gradient searches traverse to find the basin.
+    The max-shifted log-sum-exp must stay finite at arbitrarily large mismatch and equal the
+    directly-computed shifted reduction.
+    """
+    model_positions = al.Grid2DIrregular([(40.0, 40.0), (50.0, 50.0)])
+
+    fit = al.FitPositionsImagePairAll(
+        name="point_0",
+        data=data,
+        noise_map=noise_map,
+        tracer=tracer,
+        solver=al.mock.MockPointSolver(model_positions),
+    )
+
+    log_likelihoods = fit.all_permutations_log_likelihoods()
+
+    assert np.all(np.isfinite(log_likelihoods))
+    assert np.isfinite(fit.chi_squared)
+
+    # ~56 sigma worst pairing: every log_p is far below the ~-745 underflow threshold of exp().
+    for data_position, sigma, log_likelihood in zip(data, noise_map, log_likelihoods):
+        log_ps = np.array(
+            [
+                fit.log_p(data_position, model_position, sigma)
+                for model_position in model_positions.array
+            ]
+        )
+        assert np.all(log_ps < -745.0)
+        expected = log_ps.max() + np.log(np.sum(np.exp(log_ps - log_ps.max())))
+        assert log_likelihood == pytest.approx(expected, rel=1.0e-12)
+
+
+def test__moderate_mismatch__log_sum_exp_matches_literal_form(data, noise_map):
+    """Where the literal `log(sum(exp(...)))` is finite, the shifted form must equal it."""
+
+    model_positions = al.Grid2DIrregular([(-1.0749, -1.1), (1.19117, 1.175)])
+
+    fit = al.FitPositionsImagePairAll(
+        name="point_0",
+        data=data,
+        noise_map=noise_map,
+        tracer=tracer,
+        solver=al.mock.MockPointSolver(model_positions),
+    )
+
+    for data_position, sigma, log_likelihood in zip(
+        data, noise_map, fit.all_permutations_log_likelihoods()
+    ):
+        literal = np.log(
+            np.sum(
+                np.exp(
+                    np.array(
+                        [
+                            fit.log_p(data_position, model_position, sigma)
+                            for model_position in model_positions.array
+                        ]
+                    )
+                )
+            )
+        )
+        assert log_likelihood == pytest.approx(literal, rel=1.0e-14)
+
+
 def test__model_positions_present__chi_squared_unchanged(data, noise_map):
     """The no-image branch must not perturb the ordinary path."""
 
