@@ -5,7 +5,7 @@ import autoarray as aa
 import autolens as al
 
 
-def iter_fit_from(masked_imaging, gauge_constraints=False, n_iter=2):
+def iter_fit_from(masked_imaging, gauge_constraints=False, n_iter=2, **kwargs):
     lens = al.Galaxy(
         redshift=0.5,
         mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
@@ -25,6 +25,7 @@ def iter_fit_from(masked_imaging, gauge_constraints=False, n_iter=2):
         src_pixelization=src_pixelization,
         gauge_constraints=gauge_constraints,
         n_iter=n_iter,
+        **kwargs,
     )
 
 
@@ -132,3 +133,40 @@ def test__log_evidence__requires_state_or_solve(masked_imaging_7x7):
 
     with pytest.raises(ValueError):
         fit.log_evidence()
+
+
+def test__damping_marquardt__solves_finite(masked_imaging_7x7):
+    fit = iter_fit_from(masked_imaging_7x7, damping="marquardt")
+
+    s_opt, dpsi_opt = fit.solve_joint_optimization()
+
+    assert np.isfinite(s_opt).all()
+    assert np.isfinite(dpsi_opt).all()
+
+
+def test__warm_start_at_optimum__stall_guards_bound_the_rebuilds(
+    masked_imaging_7x7,
+):
+    # solving again from the converged optimum admits no cost-decreasing step;
+    # the tol-on-rejected-step / consecutive-rejection guards must return after
+    # a bounded number of Jacobian rebuilds instead of rejecting mu to 1e15
+    # (mu grows x5 per rejection: reaching 1e15 from 1.0 takes ~22 rejections).
+    fit0 = iter_fit_from(masked_imaging_7x7)
+    s_opt, dpsi_opt = fit0.solve_joint_optimization()
+    x0 = np.concatenate([s_opt, dpsi_opt])
+
+    fit = iter_fit_from(masked_imaging_7x7, n_iter=5, max_consecutive_rejections=3)
+    original = fit.get_L_Js_Jdpsi
+    calls = {"n": 0}
+
+    def counting(*args, **kwargs):
+        calls["n"] += 1
+        return original(*args, **kwargs)
+
+    fit.get_L_Js_Jdpsi = counting
+    s_new, dpsi_new = fit.solve_joint_optimization(x0=x0)
+
+    assert np.isfinite(s_new).all()
+    assert np.isfinite(dpsi_new).all()
+    # init + at most (accepts + rejections-per-iteration capped at 3) trials
+    assert calls["n"] <= 1 + 5 * 4

@@ -57,6 +57,8 @@ class IterFitDpsiSrcImaging:
         preloads: Optional[dict] = None,
         n_iter: int = 20,
         tol: float = 1e-6,
+        damping: str = "identity",
+        max_consecutive_rejections: int = 10,
         verbose: bool = False,
         visualize_output_dir: Optional[str] = None,
         visualize_every_n: int = 1000000,
@@ -98,7 +100,22 @@ class IterFitDpsiSrcImaging:
         n_iter
             The maximum number of outer LM iterations.
         tol
-            The step-norm convergence tolerance.
+            The step-norm convergence tolerance. Also applied to rejected
+            steps: once a proposed step is smaller than ``tol``, growing the
+            damping can only shrink it further, so the solve returns rather
+            than rejecting its way to the mu ceiling.
+        damping
+            The LM damping matrix (``dense_util.solve_lm_step_from``):
+            ``"identity"`` (default) is the reference implementation's
+            ``H + mu I`` — near Gauss-Newton early steps, converging the
+            imaging problem in a few iterations from a cold start;
+            ``"marquardt"`` is the scale-invariant ``H + mu diag(H)``, whose
+            conservative steps need a much larger iteration budget.
+        max_consecutive_rejections
+            Stop after this many consecutive rejected trial steps (each costs
+            a full Jacobian rebuild); at a cost minimum no decreasing step
+            exists and unbounded rejection wastes the runtime driving mu to
+            its ceiling.
         verbose
             Whether to log per-iteration costs.
         visualize_output_dir
@@ -115,6 +132,8 @@ class IterFitDpsiSrcImaging:
         self.src_image_mesh = src_image_mesh
         self.n_iter = int(n_iter)
         self.tol = float(tol)
+        self.damping = str(damping)
+        self.max_consecutive_rejections = int(max_consecutive_rejections)
         self.verbose = bool(verbose)
         self.visualize_output_dir = visualize_output_dir
         self.visualize_every_n = int(visualize_every_n)
@@ -486,12 +505,14 @@ class IterFitDpsiSrcImaging:
                 )
 
             step_accepted = False
+            consecutive_rejections = 0
             while not step_accepted:
                 delta_x = None
                 try:
                     delta_x = dense_util.solve_lm_step_from(
                         H, minus_gradient, mu,
                         constraint_matrix=constraint_matrix, x=x, xp=xp,
+                        damping=self.damping,
                     )
                     if np.any(np.isnan(np.asarray(delta_x))):
                         delta_x = None
@@ -530,6 +551,30 @@ class IterFitDpsiSrcImaging:
                             self.dpsi_opt = np.asarray(x[n_s:])
                             return self.s_opt, self.dpsi_opt
                     else:
+                        # rejected step below the step tolerance: growing mu
+                        # only shrinks it further — the state is converged
+                        # (at a cost minimum no decreasing step exists), so
+                        # return instead of rejecting to the mu ceiling.
+                        if float(xp.linalg.norm(delta_x)) < self.tol:
+                            if self.verbose:
+                                logger.info(
+                                    "Converged at iteration %d (rejected step "
+                                    "below tolerance).",
+                                    i,
+                                )
+                            self.s_opt = np.asarray(x[:n_s])
+                            self.dpsi_opt = np.asarray(x[n_s:])
+                            return self.s_opt, self.dpsi_opt
+                        consecutive_rejections += 1
+                        if consecutive_rejections >= self.max_consecutive_rejections:
+                            logger.warning(
+                                "%d consecutive rejected LM steps (each a full "
+                                "Jacobian rebuild); stopping at the current state.",
+                                consecutive_rejections,
+                            )
+                            self.s_opt = np.asarray(x[:n_s])
+                            self.dpsi_opt = np.asarray(x[n_s:])
+                            return self.s_opt, self.dpsi_opt
                         mu *= 5.0
                         if mu > 1e15:
                             logger.warning(
@@ -539,6 +584,16 @@ class IterFitDpsiSrcImaging:
                             self.dpsi_opt = np.asarray(x[n_s:])
                             return self.s_opt, self.dpsi_opt
                 else:
+                    consecutive_rejections += 1
+                    if consecutive_rejections >= self.max_consecutive_rejections:
+                        logger.warning(
+                            "%d consecutive failed LM solves; stopping at the "
+                            "current state.",
+                            consecutive_rejections,
+                        )
+                        self.s_opt = np.asarray(x[:n_s])
+                        self.dpsi_opt = np.asarray(x[n_s:])
+                        return self.s_opt, self.dpsi_opt
                     mu *= 5.0
                     if mu > 1e15:
                         logger.warning("LM solver failed repeatedly; stopping.")

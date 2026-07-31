@@ -374,22 +374,38 @@ def lm_hessian_and_gradient_from(
     return H, minus_gradient, residual, chi2, reg_s, reg_dpsi, cost
 
 
-def solve_lm_step_from(H, minus_gradient, mu, constraint_matrix=None, x=None, xp=np):
+def solve_lm_step_from(
+    H, minus_gradient, mu, constraint_matrix=None, x=None, xp=np, damping="marquardt"
+):
     """
-    The damped LM step delta_x solving (H + mu D) dx = -g with Marquardt
-    scaling D = diag(diag(H)) (clipped below at the mean diagonal times
-    1e-12 so zero diagonal entries stay damped) — scale-invariant damping,
-    required when H's magnitude varies over many orders between datasets
-    (e.g. visibility-weighted interferometer curvatures ~1e11 vs imaging
-    ~1e4). When a ``constraint_matrix`` C is given, the equality-constrained
-    step solves the KKT system enforcing C (x + dx) = 0.
+    The damped LM step delta_x solving (H + mu D) dx = -g.
+
+    ``damping="identity"`` uses D = I — the damping of the reference
+    implementation (Cao et al. 2025): at moderate mu it barely perturbs
+    high-curvature directions, so early steps are near full Gauss-Newton and
+    the imaging problem converges in a few iterations from a cold start.
+    ``damping="marquardt"`` uses the scale-invariant D = diag(diag(H))
+    (clipped below at the mean diagonal times 1e-12 so zero diagonal entries
+    stay damped), required when H's magnitude varies over many orders between
+    datasets (e.g. visibility-weighted interferometer curvatures ~1e11 vs
+    imaging ~1e4); its steps are far more conservative at the same mu, so a
+    small iteration budget under-converges relative to identity damping.
+    When a ``constraint_matrix`` C is given, the equality-constrained step
+    solves the KKT system enforcing C (x + dx) = 0.
     """
     H_d = as_dense(H, xp=xp)
     g = xp.asarray(minus_gradient)
     n_x = H_d.shape[0]
-    diag = xp.diag(H_d)
-    diag = xp.clip(diag, 1e-12 * xp.mean(xp.abs(diag)), None)
-    H_lm = H_d + mu * xp.diag(diag)
+    if damping == "identity":
+        H_lm = H_d + mu * xp.eye(n_x, dtype=H_d.dtype)
+    elif damping == "marquardt":
+        diag = xp.diag(H_d)
+        diag = xp.clip(diag, 1e-12 * xp.mean(xp.abs(diag)), None)
+        H_lm = H_d + mu * xp.diag(diag)
+    else:
+        raise ValueError(
+            f"damping must be 'identity' or 'marquardt', got {damping!r}"
+        )
 
     if constraint_matrix is None:
         return xp.linalg.solve(H_lm, g)
