@@ -9,6 +9,7 @@ position, normalised so that the brightest image has flux 1.0 (flux ratios).  A 
 is computed against the observed flux values and noise map, contributing to the total
 ``FitPointDataset`` log likelihood.
 """
+
 import numpy as np
 from typing import Optional
 
@@ -115,12 +116,7 @@ class FitFluxes(AbstractFitPoint):
         are used.
         """
         return aa.ArrayIrregular(
-            values=self._xp.array(
-                [
-                    magnification * self.profile.flux
-                    for magnification in self.magnifications_at_positions
-                ]
-            )
+            values=self.magnifications_at_positions.array * self.profile.flux
         )
 
     @property

@@ -66,6 +66,14 @@ class FitPositionsImagePairRepeat(AbstractFitPositionsImagePair):
     Penalty terms are normalized by the mean of the position noise-map, and all policy computations are
     fixed-shape (NaN-padded model positions are masked, never dropped), so the fit remains JAX-compilable.
 
+    **Gradient (subgradient) semantics**: under JAX autodiff the solver positions carry implicit-rule
+    gradients (see ``autolens.point.solver.implicit_diff``), but this fit's likelihood is only
+    piecewise-smooth in them: nearest-neighbour pairing (``min`` over the distance matrix) and the
+    unmatched-model policy masks are piecewise-constant selections, so autodiff returns the subgradient of
+    the currently-selected pairing and the policy mask contributes zero derivative. Gradients are exact
+    between pairing/policy flips and undefined at the measure-zero flip events — the same contract as the
+    all-pairs mixture fit, which is smooth in the pairings and preferred for gradient-based searches.
+
     Point source fitting uses name pairing, whereby the `name` of the `Point` object is paired to the name of the
     point source dataset to ensure that point source datasets are fitted to the correct point source.
 
