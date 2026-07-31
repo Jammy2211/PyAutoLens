@@ -113,9 +113,9 @@ def precision_tensor_components_from(fit, weighting: str) -> Tuple:
 
     if weighting != "jacobian":
         raise exc.PointProfileMismatchException(
-            f"Unsupported weighting '{weighting}' for the analytically-solved source-plane centre. "
-            f"Valid options are 'jacobian' (tensor weighting, the default) or 'magnification' "
-            f"(scalar isotropic weighting)."
+            f"Unsupported weighting '{weighting}' for the source-plane position residuals. "
+            f"Valid options are 'jacobian' (tensor weighting, the default of the *Solved fit classes) or "
+            f"'magnification' (scalar isotropic weighting, the default of `FitPositionsSource`)."
         )
 
     lens_calc = _lens_calc_for(fit)
