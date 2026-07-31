@@ -224,9 +224,84 @@ accounted for in the model to ensure robust and accurate fits.
 Checkout `autogalaxy_workspace/notebooks/features/sky_background.ipynb` to learn how to use include the sky
 background in your model.
 
-## Other
+## Mass Models
 
-- mass models (aris paper)
-- Automated pipelines / SLaM.
-- Dark matter subhalos.
-- Graphical models.
+The examples above model the lens's mass with an isothermal profile, but **PyAutoLens** supports a wide
+range of mass models:
+
+Total mass profiles (e.g. the isothermal and power-law) represent the combined stellar and dark matter mass of the
+lens galaxy with a single profile. Decomposed mass models fit the stellar and dark matter separately, tying the
+stellar mass to the light (e.g. via an MGE) and adding an NFW dark matter halo, directly measuring the balance of
+stellar and dark matter in the galaxy.
+
+Multipole perturbations (m=1, m=3 and m=4) extend any mass model with departures from elliptical symmetry, capturing
+lopsidedness, boxiness / disciness and bar-like structures in the mass distribution. Accounting for this angular
+complexity is critical for many science cases, as unmodeled angular structure can masquerade as other signals,
+for example dark matter substructure.
+
+The following paper measures angular mass complexity alongside dark matter substructure in JWST
+strong lens imaging: <https://arxiv.org/abs/2410.12987>
+
+The role of the m=1 multipole (lopsidedness) is detailed in: <https://arxiv.org/abs/2407.12983>
+
+Checkout `autolens_workspace/*/guides/profiles` for the full range of mass profiles
+and `autolens_workspace/*/imaging/features/advanced/mass_stellar_dark` for decomposed stellar + dark matter
+modeling.
+
+## Automated Pipelines / SLaM
+
+Fitting complex lens models (e.g. a decomposed mass model with a pixelized source) in one non-linear search is
+often infeasible: the parameter space is too complex for the fit to converge reliably or efficiently.
+
+Search chaining breaks the fit into a sequence of simpler searches, where the results of each search initialize
+the model of the next. The Source, Light and Mass (SLaM) pipelines are **PyAutoLens**'s pre-built implementation
+of this approach: they first build a robust model of the source, then the lens's light, and finally its mass,
+gradually increasing model complexity. The SLaM pipelines have been used in many published **PyAutoLens** analyses
+and are the recommended way to perform detailed lens modeling of large samples.
+
+Checkout `autolens_workspace/*/guides/modeling/slam_start_here.py` to get started with the SLaM pipelines.
+
+## Dark Matter Subhalos
+
+The dark matter model predicts that galaxies are surrounded by many low-mass dark matter subhalos, which host no
+stars and are therefore invisible to ordinary observations. Strong lensing is one of the only probes which can
+detect them, via the small perturbations they imprint on a lensed source's light, testing the nature of
+dark matter (e.g. cold, warm or self-interacting).
+
+**PyAutoLens** provides a complete dark matter subhalo analysis: lens models with and without a subhalo are fitted
+and compared via their Bayesian evidence, quantifying whether the data favors the subhalo's presence. Sensitivity
+mapping then simulates subhalos of different masses at different locations in the data, quantifying which
+subhalos a given dataset could actually detect.
+
+The following paper performs this analysis on a sample of HST strong lenses: <https://arxiv.org/abs/2209.10566>
+
+Checkout `autolens_workspace/*/imaging/features/advanced/subhalo/detect` for subhalo detection
+and `autolens_workspace/*/imaging/features/advanced/subhalo/sensitivity` for sensitivity mapping.
+
+## Graphical Models
+
+The examples above fit each strong lens dataset one-by-one. However, many lens properties are shared across a
+sample (e.g. population-level mass distributions, cosmological parameters), and fitting lenses independently does
+not exploit this shared structure.
+
+Graphical models fit multiple datasets simultaneously, explicitly defining which parameters are unique to each
+lens and which are shared across the sample. For example, the Hubble constant can be inferred jointly from many
+time-delay lenses, with each lens having its own mass model but all sharing a single H0. Hierarchical extensions
+assume parameters are drawn from a parent distribution (e.g. the population's distribution of mass slopes), whose
+properties are inferred from the full sample, extracting significantly more information than one-by-one fitting.
+
+Checkout `autolens_workspace/*/guides/modeling/advanced/graphical.py` to learn how to fit a graphical model
+and `autolens_workspace/*/guides/modeling/advanced/hierarchical.py` for hierarchical models.
+
+## Weak Lensing
+
+In the weak lensing regime, a foreground mass distribution (e.g. a galaxy cluster) subtly distorts the shapes of
+many background galaxies, coherently aligning their ellipticities, without producing the multiple images and
+giant arcs of strong lensing.
+
+**PyAutoLens** fits weak lensing shear catalogues using the same mass profiles and non-linear search tools as
+strong lensing: model-independent mass maps, parametric halo model fits and tangential shear profiles. Its
+quickstart example fits the real JWST-era shape catalogue of Abell 2744, and strong and weak lensing data can
+be combined in joint analyses of the same cluster.
+
+Checkout `autolens_workspace/*/weak/start_here.py` to fit your first weak lensing dataset.
