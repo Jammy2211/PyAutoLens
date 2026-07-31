@@ -12,7 +12,6 @@ from autogalaxy.interferometer.plot.fit_interferometer_plots import (
 from autolens.interferometer.fit_interferometer import FitInterferometer
 from autolens.interferometer.plot.fit_interferometer_plots import (
     subplot_fit,
-    subplot_fit_quick,
     subplot_fit_dirty_images,
     subplot_fit_interferometer_combined,
     subplot_fit_real_space,
@@ -70,13 +69,16 @@ class PlotterInterferometer(Plotter):
                 source_plane_lines, source_plane_line_colors,
             )
 
-        if should_plot("subplot_fit"):
+        if should_plot("subplot_fit") or quick_update:
             subplot_fit(
                 fit, output_path=output_path, output_format=fmt,
                 image_plane_lines=ip_lines, image_plane_line_colors=ip_colors,
                 source_plane_lines=sp_lines, source_plane_line_colors=sp_colors,
                 title_prefix=self.title_prefix,
             )
+
+        if quick_update:
+            return
 
         if plot_setting(section="tracer", name="subplot_tracer"):
             subplot_tracer_from_fit(
@@ -85,13 +87,6 @@ class PlotterInterferometer(Plotter):
                 source_plane_lines=sp_lines, source_plane_line_colors=sp_colors,
                 title_prefix=self.title_prefix,
             )
-
-        if quick_update:
-            subplot_fit_quick(
-                fit, output_path=output_path, output_format=fmt,
-                title_prefix=self.title_prefix,
-            )
-            return
 
         if should_plot("subplot_fit_dirty_images"):
             subplot_fit_dirty_images(

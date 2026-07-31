@@ -41,6 +41,22 @@ def test__fit_imaging(
 
     assert image.shape == (5, 5)
 
+def test__fit_imaging__quick_update__writes_normal_fit_subplot_only(
+    fit_imaging_x2_plane_inversion_7x7, plot_path, plot_patch
+):
+    if plot_path.exists():
+        shutil.rmtree(plot_path)
+
+    plotter = PlotterImaging(image_path=plot_path)
+
+    plotter.fit_imaging(fit=fit_imaging_x2_plane_inversion_7x7, quick_update=True)
+
+    assert str(plot_path / "fit.png") in plot_patch.paths
+    assert str(plot_path / "fit_quick.png") not in plot_patch.paths
+    assert str(plot_path / "tracer.png") not in plot_patch.paths
+    assert str(plot_path / "fit_log10.png") not in plot_patch.paths
+
+
 def test__fit_imaging_combined(
     fit_imaging_x2_plane_inversion_7x7, plot_path, plot_patch
 ):
