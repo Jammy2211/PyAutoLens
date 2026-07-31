@@ -13,7 +13,6 @@ from autolens.analysis.plotter import Plotter
 from autolens.imaging.fit_imaging import FitImaging
 from autolens.imaging.plot.fit_imaging_plots import (
     subplot_fit,
-    subplot_fit_quick,
     subplot_fit_log10,
     subplot_of_planes,
     subplot_tracer_from_fit,
@@ -76,8 +75,11 @@ class PlotterImaging(Plotter):
                 source_plane_lines, source_plane_line_colors,
             )
 
+        # Quick updates write the normal fit subplot (plain `fit.png`, final
+        # plane as source) regardless of plane count, so the live display
+        # always has one canonical filename to refresh.
         if quick_update:
-            subplot_fit_quick(
+            subplot_fit(
                 fit, output_path=output_path, output_format=fmt,
                 image_plane_lines=ip_lines, image_plane_line_colors=ip_colors,
                 source_plane_lines=sp_lines, source_plane_line_colors=sp_colors,

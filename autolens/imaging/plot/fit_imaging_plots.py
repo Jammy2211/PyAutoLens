@@ -312,94 +312,6 @@ def subplot_fit(
     save_figure(fig, path=output_path, filename=f"fit{plane_index_tag}", format=output_format)
 
 
-def subplot_fit_quick(
-    fit,
-    output_path: Optional[str] = None,
-    output_format: str = None,
-    colormap: Optional[str] = None,
-    image_plane_lines=None,
-    image_plane_line_colors=None,
-    source_plane_lines=None,
-    source_plane_line_colors=None,
-    title_prefix: str = None,
-):
-    """
-    Produce a 6-panel quick-update subplot summarising an imaging fit.
-
-    Arranges the following panels in a 2 × 3 grid:
-
-    * Data
-    * Model image
-    * Normalised residual map (symmetric scale)
-    * Lens-light-subtracted image
-    * Source model image
-    * Source plane image
-
-    Uses the standard ``plot_array`` / ``_plot_source_plane`` for
-    consistent styling with arcsecond axes. Fit properties are now
-    ``@cached_property`` so repeated access is cheap.
-
-    For single-plane tracers the function delegates to
-    :func:`subplot_fit_x1_plane`.
-    """
-    if len(fit.tracer.planes) == 1:
-        return subplot_fit_x1_plane(
-            fit, output_path=output_path,
-            output_format=output_format, colormap=colormap,
-            title_prefix=title_prefix,
-        )
-
-    final_plane_index = len(fit.tracer.planes) - 1
-    source_vmax = _get_source_vmax(fit)
-
-    _pf = (lambda t: f"{title_prefix.rstrip()} {t}") if title_prefix else (lambda t: t)
-    fig, axes = subplots(2, 3, figsize=conf_subplot_figsize(2, 3))
-    axes_flat = list(axes.flatten())
-
-    # Top row: Data, Model Image, Normalized Residual Map
-    plot_array(array=fit.data, ax=axes_flat[0],
-               title=_pf("Data"), colormap=colormap)
-
-    plot_array(array=fit.model_data, ax=axes_flat[1],
-               title=_pf("Model Image"), colormap=colormap)
-
-    plot_array(array=fit.normalized_residual_map, ax=axes_flat[2],
-               title=_pf("Normalized Residual"), colormap=colormap,
-               symmetric=True)
-
-    # Bottom row: Lens Light Subtracted, Source Model Image, Source Plane
-    try:
-        subtracted = fit.subtracted_images_of_planes_list[final_plane_index]
-    except (IndexError, AttributeError):
-        subtracted = None
-    if subtracted is not None:
-        plot_array(array=subtracted, ax=axes_flat[3],
-                   title=_pf("Lens Light Subtracted"), colormap=colormap,
-                   vmin=0.0 if source_vmax else None, vmax=source_vmax)
-    else:
-        axes_flat[3].axis("off")
-
-    try:
-        source_model = fit.model_images_of_planes_list[final_plane_index]
-    except (IndexError, AttributeError):
-        source_model = None
-    if source_model is not None:
-        plot_array(array=source_model, ax=axes_flat[4],
-                   title=_pf("Source Model Image"), colormap=colormap,
-                   vmax=source_vmax)
-    else:
-        axes_flat[4].axis("off")
-
-    _plot_source_plane(
-        fit, axes_flat[5], final_plane_index, zoom_to_brightest=False,
-        colormap=colormap, title=_pf("Source Plane"), vmax=source_vmax,
-    )
-
-    hide_unused_axes(axes_flat)
-    tight_layout()
-    save_figure(fig, path=output_path, filename="fit_quick", format=output_format, dpi=100)
-
-
 def subplot_fit_x1_plane(
     fit,
     output_path: Optional[str] = None,
@@ -943,28 +855,6 @@ def subplot_fit_combined(
 
     tight_layout()
     save_figure(fig, path=output_path, filename="fit_combined", format=output_format)
-
-
-def subplot_fit_combined_quick(
-    fit_list: List,
-    output_path: Optional[str] = None,
-    output_format: str = None,
-    colormap: Optional[str] = None,
-    title_prefix: str = None,
-):
-    """
-    Placeholder quick-update subplot for combined multi-dataset imaging fits.
-
-    Currently delegates to :func:`subplot_fit_combined` but writes
-    ``fit_quick.png`` so the live display picks it up.
-    """
-    subplot_fit_combined(
-        fit_list,
-        output_path=output_path,
-        output_format=output_format,
-        colormap=colormap,
-        title_prefix=title_prefix,
-    )
 
 
 def subplot_fit_combined_log10(

@@ -5,7 +5,6 @@ from autolens.weak.dataset import WeakDataset
 from autolens.weak.fit import FitWeak
 from autolens.weak.plot.weak_dataset_plots import subplot_weak_dataset
 from autolens.weak.plot.fit_weak_plots import subplot_fit_weak
-from autolens.weak.plot.fit_weak_plots import subplot_fit_quick as subplot_fit_quick_weak
 
 
 class PlotterWeak(Plotter):
@@ -42,7 +41,7 @@ class PlotterWeak(Plotter):
         fit
             The maximum log likelihood `FitWeak` of the non-linear search.
         quick_update
-            If `True`, a lighter-weight quick-update subplot is output instead of the full fit subplot.
+            If `True`, the fit subplot is always output and all other outputs are skipped.
         """
 
         def should_plot(name):
@@ -52,7 +51,7 @@ class PlotterWeak(Plotter):
         fmt = self.fmt
 
         if quick_update:
-            subplot_fit_quick_weak(
+            subplot_fit_weak(
                 fit,
                 output_path=output_path,
                 output_format=fmt,
