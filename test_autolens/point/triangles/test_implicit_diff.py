@@ -37,6 +37,34 @@ def test_implicit_tangents_solve_the_linear_system():
             np.testing.assert_array_equal(dtheta[i], 0.0)
 
 
+def test_implicit_tangents_padded_nan_rows_never_reach_the_solve():
+    """
+    Padded rows carry whatever the Jacobian evaluated at their placeholder position
+    produced — NaN when that position sits on a profile centre. The rule must
+    sanitize those rows before the solve (identity ``a_mat``, zero ``rhs``): in
+    reverse mode the transpose solves against ``a_mat`` row-by-row and sums the
+    cotangents, so a NaN padded row would contaminate every parameter's gradient
+    even though the forward output masks it (#678 phase B, cluster cells).
+    """
+    jac_alpha = np.array(
+        [
+            [[0.5, 0.0], [0.0, 0.5]],
+            [[np.nan, np.nan], [np.nan, np.nan]],
+        ]
+    )
+    dalpha = np.array([[1.0, 2.0], [np.nan, np.nan]])
+    dbeta = np.array([0.1, -0.2])
+    finite = np.array([True, False])
+
+    dtheta = implicit_diff.implicit_tangents_from(
+        jac_alpha=jac_alpha, dalpha=dalpha, dbeta=dbeta, finite=finite, xp=np
+    )
+
+    assert np.isfinite(dtheta).all()
+    np.testing.assert_allclose(dtheta[0], (dalpha[0] + dbeta) / 0.5, rtol=1e-12)
+    np.testing.assert_array_equal(dtheta[1], 0.0)
+
+
 def test_implicit_tangents_near_critical_diverge_unclamped():
     # det(I - J) -> 0: the tangent must diverge with the true solve, never be clamped.
     eps = 1e-12
