@@ -34,7 +34,13 @@ Differentiability contract (mirrors the frozen-Delaunay-tables contract):
 
 Padded rows (the ``inf`` sentinels of the fixed ``MAX_CONTAINING_SIZE`` output) are
 constants of the output shape; their tangent is forced to zero so they cannot inject
-NaNs into the batch.
+NaNs into the batch. Because reverse mode transposes the rule into row-summed
+cotangents, masking the *output* alone is not enough: the padded rows' solve inputs
+are also sanitized (Jacobian evaluated at a real solved image, ``a_mat`` replaced by
+the identity, ``rhs`` zeroed) so no NaN ever enters the linear algebra. Evaluating
+the Jacobian at the padded rows' former ``(0, 0)`` placeholder was itself a NaN
+source — profile centres typically sit at the origin, where deflection Jacobians
+are singular (cluster host halos; PyAutoLens#678 phase B).
 
 Known limitation — free cosmology parameters: ``Tracer`` is registered with
 ``cosmology`` as ``no_flatten`` aux, so a cosmology carrying traced parameters (a free
@@ -83,7 +89,15 @@ def implicit_tangents_from(jac_alpha, dalpha, dbeta, finite, xp):
     """
     identity = xp.eye(2)
     a_mat = identity[None, :, :] - jac_alpha
+    # Sanitize padded rows before the solve: a non-finite padded ``a_mat`` row
+    # survives the output masking in forward mode but not in reverse mode,
+    # where the transpose solves against ``a_mat`` row-by-row and sums the
+    # cotangents — one NaN padded row contaminates every parameter's gradient.
+    # Real (finite) rows are untouched, so legitimate near-critical divergence
+    # is still surfaced.
+    a_mat = xp.where(finite[:, None, None], a_mat, identity[None, :, :])
     rhs = dalpha + dbeta[None, :]
+    rhs = xp.where(finite[:, None], rhs, 0.0)
     dtheta = xp.linalg.solve(a_mat, rhs[..., None])[..., 0]
     return xp.where(finite[:, None], dtheta, 0.0)
 
@@ -171,7 +185,17 @@ def solve_padded_factory(solver, plane_redshift, plane_index: int, xp):
 
         theta = solve_padded(tracer, beta)
         finite = xp.isfinite(theta).all(axis=1)
-        theta_safe = xp.where(finite[:, None], theta, 0.0)
+        # Padded rows are anchored at the first real solved image rather than
+        # (0, 0): profile centres typically sit at the origin, where deflection
+        # Jacobians are singular (an NFW's jacfwd at its own centre is NaN),
+        # and although the padded rows' tangents are masked below, reverse mode
+        # transposes the rule into row-summed cotangents — one NaN row poisons
+        # the gradient of every parameter. At a real image the Jacobian is
+        # finite and the padded rows' contributions are exactly zeroed. With
+        # zero solved images the anchor row is itself non-finite and the
+        # gradient is NaN — the likelihood is already invalid there.
+        anchor = theta[xp.argmax(finite)]
+        theta_safe = xp.where(finite[:, None], theta, anchor[None, :])
 
         def deflections_single(position, tracer_):
             return deflections_from(position[None, :], tracer_)[0]
