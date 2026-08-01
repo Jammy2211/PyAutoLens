@@ -23,7 +23,7 @@ from autogalaxy.analysis.analysis.analysis import Analysis as AgAnalysis
 
 from autolens.analysis.analysis.lens import AnalysisLens
 from autolens.analysis.exceptions import raise_fit_exception
-from autolens.point.fit.positions.image.pair_repeat import FitPositionsImagePairRepeat
+from autolens.point.fit.positions.image.pair_all import FitPositionsImagePairAllSolved
 from autolens.point.fit.dataset import FitPointDataset
 from autolens.point.fit.fluxes import FitFluxes
 from autolens.point.fit.times_delays import FitTimeDelays
@@ -41,7 +41,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         self,
         dataset: PointDataset,
         solver: PointSolver,
-        fit_positions_cls=FitPositionsImagePairRepeat,
+        fit_positions_cls=FitPositionsImagePairAllSolved,
         image=None,
         cosmology: ag.cosmo.LensingCosmology = None,
         title_prefix: str = None,

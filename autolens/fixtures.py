@@ -112,6 +112,9 @@ def make_fit_point_dataset_x2_plane():
         dataset=make_point_dataset(),
         tracer=make_tracer_x2_plane_point(),
         solver=make_solver(),
+        # The tracer's point source is centre-bearing (`ps.Point`), which the
+        # solved-centre default fit class rejects — use the free-centre pair fit.
+        fit_positions_cls=al.FitPositionsImagePair,
     )
 
 

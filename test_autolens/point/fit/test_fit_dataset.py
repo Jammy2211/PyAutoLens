@@ -33,7 +33,10 @@ def test__fit_dataset__matching_point_name__positions_log_likelihood_correct(
     )
 
     fit = al.FitPointDataset(
-        dataset=dataset, tracer=point_source_tracer, solver=mock_solver
+        dataset=dataset,
+        tracer=point_source_tracer,
+        solver=mock_solver,
+        fit_positions_cls=al.FitPositionsImagePair,
     )
 
     assert fit.positions.log_likelihood == pytest.approx(-22.14472, 1.0e-4)
@@ -111,11 +114,62 @@ def test__fit_dataset__positions_and_flux__both_log_likelihoods_correct_and_sum(
         fluxes_noise_map=flux_noise_map,
     )
 
-    fit = al.FitPointDataset(dataset=dataset, tracer=tracer, solver=solver)
+    fit = al.FitPointDataset(
+        dataset=dataset,
+        tracer=tracer,
+        solver=solver,
+        fit_positions_cls=al.FitPositionsImagePair,
+    )
 
     assert fit.positions.log_likelihood == pytest.approx(-22.14472, 1.0e-4)
     assert fit.flux.log_likelihood == pytest.approx(-2.9920449, 1.0e-4)
     assert fit.log_likelihood == fit.positions.log_likelihood + fit.flux.log_likelihood
+
+
+def test__fit_dataset__default_positions_fit_is_all_to_all_solved(
+    positions_and_noise, mock_solver
+):
+    """
+    The #678 phase B evidence campaign moved the demonstrated defaults to
+    solved centres with all-to-all pairing: the missing-image discriminator
+    showed repeat pairing catastrophically mis-ranks truth when an observed
+    image is absent, while the all-to-all Occam mixture absorbs it.
+    """
+    positions, noise_map = positions_and_noise
+    dataset = al.PointDataset(
+        name="point_0", positions=positions, positions_noise_map=noise_map
+    )
+
+    solved_tracer = al.Tracer(
+        galaxies=[
+            al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph(einstein_radius=1.0)),
+            al.Galaxy(redshift=1.0, point_0=al.ps.PointSolved()),
+        ]
+    )
+
+    fit = al.FitPointDataset(dataset=dataset, tracer=solved_tracer, solver=mock_solver)
+
+    assert fit.fit_positions_cls is al.FitPositionsImagePairAllSolved
+    assert isinstance(fit.positions, al.FitPositionsImagePairAllSolved)
+    assert np.isfinite(fit.log_likelihood)
+
+
+def test__fit_dataset__default_with_centre_bearing_profile_raises_loudly(
+    point_source_tracer, positions_and_noise, mock_solver
+):
+    # A `ps.Point` centre would be silently ignored by a solved-centre fit, so
+    # the mismatch must raise, pointing the user at the free-centre class.
+    positions, noise_map = positions_and_noise
+    dataset = al.PointDataset(
+        name="point_0", positions=positions, positions_noise_map=noise_map
+    )
+
+    fit = al.FitPointDataset(
+        dataset=dataset, tracer=point_source_tracer, solver=mock_solver
+    )
+
+    with pytest.raises(al.exc.PointProfileMismatchException):
+        fit.positions.log_likelihood
 
 
 def test__fit_dataset__fit_flux_cls_and_fit_time_delays_cls_hooks_are_forwarded_and_default_unchanged(

@@ -5,7 +5,7 @@ Top-level fit class for a complete point-source dataset.
 (image-plane positions, fluxes, and/or time delays) simultaneously.  It creates and
 stores individual fit objects for each component that is present in the dataset:
 
-- ``FitPositionsImagePair`` (or another positions fit class) — fits image-plane positions.
+- ``FitPositionsImagePairAllSolved`` (or another positions fit class) — fits image-plane positions.
 - ``FitFluxes`` — fits flux ratios (if fluxes are in the dataset).
 - ``FitTimeDelays`` — fits time delays (if time delays are in the dataset).
 
@@ -21,7 +21,7 @@ from autolens.point.fit.fluxes import FitFluxes
 from autolens.point.fit.times_delays import FitTimeDelays
 from autolens.lens.tracer import Tracer
 
-from autolens.point.fit.positions.image.pair import FitPositionsImagePair
+from autolens.point.fit.positions.image.pair_all import FitPositionsImagePairAllSolved
 from autolens import exc
 
 
@@ -31,7 +31,7 @@ class FitPointDataset:
         dataset: PointDataset,
         tracer: Tracer,
         solver: PointSolver,
-        fit_positions_cls=FitPositionsImagePair,
+        fit_positions_cls=FitPositionsImagePairAllSolved,
         xp=np,
         fit_flux_cls=FitFluxes,
         fit_time_delays_cls=FitTimeDelays,
