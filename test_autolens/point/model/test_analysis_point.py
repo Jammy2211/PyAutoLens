@@ -69,6 +69,15 @@ def _test__make_result__result_imaging_is_returned(point_dataset):
     assert isinstance(result, ResultPoint)
 
 
+def test__default_fit_positions_cls_is_all_to_all_solved(point_dataset):
+    # #678 phase B defaults decision: solved centres + all-to-all pairing.
+    solver = al.m.MockPointSolver(model_positions=point_dataset.positions)
+
+    analysis = al.AnalysisPoint(dataset=point_dataset, solver=solver, use_jax=False)
+
+    assert analysis.fit_positions_cls is al.FitPositionsImagePairAllSolved
+
+
 def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
     positions_x2, positions_x2_noise_map
 ):
@@ -86,7 +95,12 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
 
     solver = al.m.MockPointSolver(model_positions=positions_x2)
 
-    analysis = al.AnalysisPoint(dataset=point_dataset, solver=solver, use_jax=False)
+    analysis = al.AnalysisPoint(
+        dataset=point_dataset,
+        solver=solver,
+        fit_positions_cls=al.FitPositionsImagePairRepeat,
+        use_jax=False,
+    )
 
     instance = model.instance_from_unit_vector([])
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
@@ -107,7 +121,12 @@ def test__figure_of_merit__matches_correct_fit_given_galaxy_profiles(
     model_positions = al.Grid2DIrregular([(0.0, 1.0), (1.0, 2.0)])
     solver = al.m.MockPointSolver(model_positions=model_positions)
 
-    analysis = al.AnalysisPoint(dataset=point_dataset, solver=solver, use_jax=False)
+    analysis = al.AnalysisPoint(
+        dataset=point_dataset,
+        solver=solver,
+        fit_positions_cls=al.FitPositionsImagePairRepeat,
+        use_jax=False,
+    )
 
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
@@ -147,7 +166,12 @@ def test__figure_of_merit__includes_fit_fluxes(
 
     solver = al.m.MockPointSolver(model_positions=positions_x2)
 
-    analysis = al.AnalysisPoint(dataset=point_dataset, solver=solver, use_jax=False)
+    analysis = al.AnalysisPoint(
+        dataset=point_dataset,
+        solver=solver,
+        fit_positions_cls=al.FitPositionsImagePairRepeat,
+        use_jax=False,
+    )
 
     instance = model.instance_from_unit_vector([])
 
@@ -179,7 +203,12 @@ def test__figure_of_merit__includes_fit_fluxes(
     model_positions = al.Grid2DIrregular([(0.0, 1.0), (1.0, 2.0)])
     solver = al.m.MockPointSolver(model_positions=model_positions)
 
-    analysis = al.AnalysisPoint(dataset=point_dataset, solver=solver, use_jax=False)
+    analysis = al.AnalysisPoint(
+        dataset=point_dataset,
+        solver=solver,
+        fit_positions_cls=al.FitPositionsImagePairRepeat,
+        use_jax=False,
+    )
 
     instance = model.instance_from_unit_vector([])
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)

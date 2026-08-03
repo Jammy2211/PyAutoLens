@@ -42,9 +42,20 @@ def register_tracer_classes(tracer) -> bool:
         return False
 
     from autoarray.abstract_ndarray import register_instance_pytree
+    from autogalaxy.galaxy.galaxy import Galaxy
     from autolens.lens.tracer import Tracer
 
     register_instance_pytree(Tracer, no_flatten=("cosmology",))
+
+    # ``redshift`` rides as aux data, like the cosmology: plane bookkeeping
+    # (``Tracer.plane_index_via_redshift_from``, reached by any jitted
+    # ``PointSolver.solve(..., plane_redshift=...)`` on a multi-plane tracer)
+    # compares redshifts to derive a static plane index, which is impossible
+    # if the redshift enters the trace as a leaf. On this hand-built /
+    # simulator path redshifts are per-fit constants; the model-fit path uses
+    # ``autofit.jax.register_model``, whose classifier already keeps declared
+    # redshifts constant.
+    register_instance_pytree(Galaxy, no_flatten=("redshift",))
 
     for galaxy in tracer.galaxies:
         _register_object_classes(galaxy)
