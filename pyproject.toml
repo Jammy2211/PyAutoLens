@@ -24,7 +24,13 @@ classifiers = [
 ]
 keywords = ["cli"]
 dependencies = [
-    "autogalaxy",
+    # Floor, not a pin. Without one, pip backtracking the extras chain
+    # (autolens[jax] -> autogalaxy[jax] -> autofit[jax] -> autonerves[jax]) may
+    # walk the release history to 2022: "version X does not provide the extra
+    # 'jax'" is a pip *warning*, not an error, so a pre-extras release is a
+    # legal solution. That is how `autolens[optional]` came to install autofit
+    # 2026.4.30.582 and fail on `af.Latent` (#687).
+    "autogalaxy>=2026.7.29.2",
     "nautilus-sampler==1.0.5"
 ]
 
@@ -43,7 +49,7 @@ local_scheme = "no-local-version"
 
 
 [project.optional-dependencies]
-jax = ["autogalaxy[jax]"]
+jax = ["autogalaxy[jax]>=2026.7.29.2"]
 coolest = ["coolest"]
 optional = [
     "autolens[jax]",
