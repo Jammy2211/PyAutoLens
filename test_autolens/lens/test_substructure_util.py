@@ -79,3 +79,54 @@ def test__galaxies_to_halo_arrays__raises_for_unsupported_profile_class():
             max_n=1,
             profile_cls=al.mp.IsothermalSph,
         )
+
+
+requires_yang = pytest.mark.skipif(
+    not hasattr(al.mp, "YangSIDMSph"),
+    reason="Yang SIDM profiles are provided by the pending PyAutoGalaxy release.",
+)
+
+
+@requires_yang
+def test__autolens_exposes_yang_profiles_from_autogalaxy():
+    assert hasattr(al.mp, "YangSIDMSph")
+    assert hasattr(al.mp, "YangSIDMMCRLudlowSph")
+
+
+@requires_jax
+@requires_yang
+def test__galaxies_to_halo_arrays__packs_yang_profile_parameters():
+    profile = al.mp.YangSIDMSph(
+        centre=(0.1, -0.2),
+        kappa_s=0.03,
+        scale_radius=1.7,
+        tau=0.5,
+    )
+    galaxies = [
+        al.Galaxy(redshift=0.5, mass=profile),
+        al.Galaxy(redshift=1.0, mass_sheet=al.mp.MassSheet(kappa=-0.01)),
+    ]
+
+    params, mask, sheet_kappas = substructure_util.galaxies_to_halo_arrays(
+        galaxies=galaxies,
+        plane_redshifts=[0.5, 1.0],
+        max_n=2,
+        profile_cls=al.mp.YangSIDMSph,
+    )
+
+    assert params.shape == (2, 2, 5)
+    assert mask.tolist() == [[True, False], [False, False]]
+    assert sheet_kappas.tolist() == [0.0, -0.01]
+
+    np.testing.assert_allclose(
+        np.asarray(params[0, 0]),
+        np.array(
+            [
+                0.1,
+                -0.2,
+                profile.rho_s_evolved,
+                profile.scale_radius_evolved,
+                profile.core_radius_evolved,
+            ]
+        ),
+    )
