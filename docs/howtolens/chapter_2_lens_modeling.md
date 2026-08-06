@@ -1,6 +1,7 @@
 # Chapter 2: Lens Modeling
 
-In chapter 2, we'll take you through how to model strong lenses using a non-linear search.
+In chapter 2, we'll take you through how to model strong lenses using a non-linear search, ending with how
+searches are chained together into automated lens modeling pipelines.
 
 The chapter contains the following tutorials:
 
@@ -27,3 +28,12 @@ The chapter contains the following tutorials:
 
 [Tutorial 8: Need for Speed](https://colab.research.google.com/github/PyAutoLabs/HowToLens/blob/2026.8.4.1/notebooks/chapter_2_lens_modeling/tutorial_8_need_for_speed.ipynb)
 \- How to fit complex models whilst balancing efficiency and run-time.
+
+[Tutorial 9: Search Chaining](https://colab.research.google.com/github/PyAutoLabs/HowToLens/blob/2026.8.4.1/notebooks/chapter_2_lens_modeling/tutorial_9_search_chaining.ipynb)
+\- Breaking the lens modeling procedure into a chained sequence of model-fits.
+
+[Tutorial 10: Prior Passing](https://colab.research.google.com/github/PyAutoLabs/HowToLens/blob/2026.8.4.1/notebooks/chapter_2_lens_modeling/tutorial_10_prior_passing.ipynb)
+\- How the results of earlier searches are passed to later searches.
+
+[Tutorial 11: SLaM](https://colab.research.google.com/github/PyAutoLabs/HowToLens/blob/2026.8.4.1/notebooks/chapter_2_lens_modeling/tutorial_11_slam.ipynb)
+\- Template pipelines for fitting lens models in standardized ways.

@@ -6,16 +6,18 @@ The best way to learn **PyAutoLens** is by going through the **HowToLens** lectu
 repository at [PyAutoLabs/HowToLens](https://github.com/PyAutoLabs/HowToLens).
 
 The lectures are provided as Jupyter notebooks (and Python scripts), and they are linked to via this readthedocs. The
-lectures are composed of five chapters
+lectures are composed of four chapters
 
 - **Introduction** - An introduction to strong gravitational lensing and **PyAutolens**.
-- **Lens Modeling** - How to model strong lenses, including a primer on Bayesian non-linear analysis.
-- **Search Chaining** - How to fit complex lens models using non-linear search chaining.
+- **Lens Modeling** - How to model strong lenses, including a primer on Bayesian non-linear analysis and
+  non-linear search chaining.
 - **Pixelizations** - How to perform pixelized reconstructions of the source-galaxy.
+- **Scaling Up Lensing** - Extra galaxies, multi-galaxy lenses, scaling relations, group and cluster
+  scales, and weak lensing.
 
 ## How to Tackle HowToLens
 
-The HowToLens lecture series currently sits at 5 chapters, and each will take around 3-6 hours to go through thoroughly.
+The HowToLens lecture series currently sits at 4 chapters, and each will take around 3-6 hours to go through thoroughly.
 You probably want to be modeling lenses faster than that! Furthermore, the concepts in the
 later chapters are pretty challenging, and familiarity and lens modeling is desirable before you
 tackle them.
@@ -24,7 +26,7 @@ Therefore, we recommend that you complete chapters 1 & 2 and then apply what you
 and real strong lenses imaging, using the scripts found in the
 [autolens_workspace](https://github.com/PyAutoLabs/autolens_workspace) `modeling` packages. Once you're
 confident with your use of **PyAutoLens**, you can then begin to cover the advanced functionality covered in chapters
-3, 4 & 5.
+3 & 4.
 
 ## Lensing Theory
 
