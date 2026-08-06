@@ -12,6 +12,14 @@ def _halo_parameter_extractor_from(profile_cls):
         )
         if cls is not None
     )
+    yang_profile_classes = tuple(
+        cls
+        for cls in (
+            getattr(ag.mp, "YangSIDMSph", None),
+            getattr(ag.mp, "YangSIDMMCRLudlowSph", None),
+        )
+        if cls is not None
+    )
 
     if profile_cls is ag.mp.cNFWSph:
 
@@ -40,6 +48,19 @@ def _halo_parameter_extractor_from(profile_cls):
             ]
 
         return 7, extract
+
+    if profile_cls in yang_profile_classes:
+
+        def extract(prof):
+            return [
+                prof.centre[0],
+                prof.centre[1],
+                prof.rho_s_evolved,
+                prof.scale_radius_evolved,
+                prof.core_radius_evolved,
+            ]
+
+        return 5, extract
 
     if profile_cls is ag.mp.NFWTruncatedSph:
 
