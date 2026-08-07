@@ -52,6 +52,7 @@ interested in:
 
 - **CDD Imaging**: For image data from telescopes like Hubble and James Webb, go to [imaging/start_here.ipynb](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/start_here.ipynb).
 - **Interferometer**: For radio / sub-mm interferometer from instruments like ALMA, go to [interferometer/start_here.ipynb](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/start_here.ipynb).
+- **Data Cubes**: For spectral-line data cubes (e.g. ALMA CO cubes), where many frequency channels are fitted simultaneously with a shared lens model, go to [interferometer/features/datacube/start_here.ipynb](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/start_here.ipynb).
 - **Point Sources**: For strongly lensed point sources (e.g. lensed quasars, supernovae), go to [point_source/start_here.ipynb](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/start_here.ipynb).
 
 ## Google Colab
