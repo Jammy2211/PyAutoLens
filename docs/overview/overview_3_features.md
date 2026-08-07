@@ -13,6 +13,8 @@ links to the relevant workspace examples.
 
 **Interferometry**: Modeling of interferometer data (e.g. ALMA, LOFAR) directly in the uv-plane.
 
+**Data Cubes**: Modeling spectral-line data cubes (e.g. ALMA CO cubes), fitting every channel simultaneously with a shared lens model.
+
 **Multi Gaussian Expansion (MGE)**: Decomposing the lens galaxy into hundreds of Gaussians, for a clean lens subtraction.
 
 **Groups**: Modeling group-scale strong lenses with multiple lens galaxies and multiple source galaxies.
@@ -102,6 +104,22 @@ such as correlated noise. This uses the non-uniform fast fourier transform algor
 \[PyNUFFT\](<https://github.com/jyhmiinlin/pynufft>) to efficiently map the galaxy model images to the uv-plane.
 
 Checkout the `autolens_workspace/*/interferometer` package to get started.
+
+## Data Cubes
+
+Spectral-line observations produce a data cube: the same field observed in many adjacent frequency channels, so that
+the source's emission-line kinematics can be studied alongside the lens model.
+
+A cube is modeled as a list of `Interferometer` datasets, one per channel, combined into a single fit with
+`af.FactorGraphModel`. Every channel shares one lens mass model, while each channel reconstructs its own source, so
+the lens is constrained by the whole cube simultaneously rather than channel by channel. There is no separate cube
+dataset type to learn — the existing `Interferometer` and `AnalysisInterferometer` objects are reused throughout.
+
+Channel-invariant quantities (the lensing operator's curvature matrix) are computed once and shared across channels
+rather than rebuilt per channel, which is what makes fitting a many-channel cube tractable.
+
+Checkout the `autolens_workspace/*/interferometer/features/datacube` package to get started, which includes a
+`data_preparation` example covering the conversion from a CASA-style 4D FITS cube to the inputs the fit expects.
 
 ## Multi Gaussian Expansion (MGE)
 
