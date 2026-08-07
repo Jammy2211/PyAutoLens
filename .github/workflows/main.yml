@@ -4,10 +4,18 @@ name: Tests
 # (Heart's ws_ci gate reads main-HEAD conclusions). Superseded runs are
 # cancelled on PR refs only — a cancelled main run would read as red CI
 # (cancelled is in Heart's FAILURE_CONCLUSIONS).
+#
+# `workflow_dispatch` exists so a main-HEAD run can be re-requested on demand.
+# On 2026-08-06 a GitHub Actions outage dropped the push triggers for several
+# main merges, leaving main-HEAD with no Tests conclusion at all — which reads
+# to Heart's ws_ci gate as missing evidence and blocks a release. Without a
+# manual trigger the only recovery was an empty commit to main, since re-running
+# an existing run re-tests its own (older) sha.
 on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: main-${{ github.ref }}
