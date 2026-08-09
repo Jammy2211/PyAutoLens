@@ -33,6 +33,63 @@ from autogalaxy.profiles.light.snr import LightProfileSNR
 from autolens.lens import tracer_util
 
 
+def _validate_galaxies(galaxies):
+    """
+    Raise if ``galaxies`` is not something the tracer can treat as a collection of
+    galaxies.
+
+    Without this, ``Tracer(galaxies="not a list")`` constructs happily and fails much
+    later with ``AttributeError: 'str' object has no attribute 'redshift'`` — an error
+    naming nothing the caller passed. Integers, ``None`` and dicts were accepted at
+    construction too.
+
+    A string is the trap worth naming: it *is* iterable, so an ``isinstance(x,
+    Iterable)`` check alone does not catch it. The element type is what matters, not
+    iterability.
+
+    ``af.ModelInstance`` is accepted unexamined — that is how PyAutoFit hands a model's
+    galaxies to the tracer during a fit.
+
+    Elements are duck-typed on ``redshift`` rather than required to be exactly
+    ``ag.Galaxy``, so mocks and ``Galaxy`` subclasses keep working. ``redshift`` is
+    precisely the attribute whose absence produced the original confusing failure.
+
+    No tracer gate is needed here: this validates the *container*. A JAX trace makes a
+    galaxy's parameters traced, never the list of galaxies itself.
+
+    Parameters
+    ----------
+    galaxies
+        The input to validate.
+    """
+    if isinstance(galaxies, af.ModelInstance):
+        return
+
+    if isinstance(galaxies, (str, bytes)):
+        raise TypeError(
+            f"galaxies must be an iterable of Galaxy objects, but a "
+            f"{type(galaxies).__name__} was input: {galaxies!r}. A string is itself "
+            f"iterable, so this is not caught by an iterability check — pass a list "
+            f"of Galaxy objects, e.g. Tracer(galaxies=[lens, source])"
+        )
+
+    if not isinstance(galaxies, (list, tuple)):
+        raise TypeError(
+            f"galaxies must be an iterable of Galaxy objects, but a "
+            f"{type(galaxies).__name__} was input: {galaxies!r}. Pass a list of "
+            f"Galaxy objects, e.g. Tracer(galaxies=[lens, source])"
+        )
+
+    for index, galaxy in enumerate(galaxies):
+        if not hasattr(galaxy, "redshift"):
+            raise TypeError(
+                f"galaxies must be an iterable of Galaxy objects, but the entry at "
+                f"index {index} is a {type(galaxy).__name__}: {galaxy!r}. Every entry "
+                f"needs a redshift, which is what the ray-tracing calculation groups "
+                f"galaxies into planes by"
+            )
+
+
 class Tracer(ABC, ag.OperateImageGalaxies):
     def __init__(
         self,
@@ -72,6 +129,8 @@ class Tracer(ABC, ag.OperateImageGalaxies):
 
         # if isinstance(galaxies, af.ModelInstance):
         #     galaxies = list(galaxies.values())
+
+        _validate_galaxies(galaxies=galaxies)
 
         self.galaxies = galaxies
 
