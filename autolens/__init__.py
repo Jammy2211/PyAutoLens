@@ -39,6 +39,7 @@ from autoarray.inversion.mesh.interpolator.rectangular import (
     InterpolatorRectangular,
 )
 from autoarray.inversion.mesh.interpolator.delaunay import InterpolatorDelaunay
+from autoarray.inversion.mesh.interpolator.sibson import InterpolatorDelaunayNN
 from autoarray.structures.triangles.shape import Circle
 from autoarray.structures.triangles.shape import Triangle
 from autoarray.structures.triangles.shape import Square
