@@ -20,6 +20,7 @@ Key capabilities:
 """
 from abc import ABC
 import numpy as np
+import warnings
 from scipy.interpolate import griddata
 from typing import Dict, List, Optional, Type, Union
 
@@ -27,10 +28,144 @@ import autofit as af
 import autoarray as aa
 import autogalaxy as ag
 
+from autoarray import validate
+
 from autogalaxy.profiles.geometry_profiles import GeometryProfile
+from autogalaxy.profiles.light.abstract import LightProfile
 from autogalaxy.profiles.light.snr import LightProfileSNR
+from autogalaxy.profiles.mass.abstract.abstract import MassProfile
+from autogalaxy.profiles.point_sources import Point, PointSolved
 
 from autolens.lens import tracer_util
+
+
+LENSABLE_CLS = (LightProfile, aa.Pixelization, Point, PointSolved)
+"""
+Everything a tracer can gravitationally lens.
+
+Emphatically **not** just ``LightProfile``: a source reconstructed by a
+``Pixelization`` carries no light profile, and a point source carries neither — yet
+both are light to be lensed. Enumerating only light profiles made the redshift-ordering
+warning below fire on every pixelized-source and point-source configuration in the test
+suite, which is precisely the "would a warning be noise?" failure it must avoid.
+"""
+
+
+class MultiPlaneRedshiftWarning(UserWarning):
+    """
+    Warned when a tracer's redshifts describe a system in which no light lies behind
+    any mass, so nothing in it can be gravitationally lensed.
+
+    This has its own category so it can be silenced with a single filter, without
+    suppressing unrelated warnings:
+
+    ::
+
+        import warnings
+        from autolens.lens.tracer import MultiPlaneRedshiftWarning
+
+        warnings.filterwarnings("ignore", category=MultiPlaneRedshiftWarning)
+
+    It is a **warning and never an error**, deliberately. Multi-plane ray tracing
+    genuinely supports geometries that look wrong under two-plane "lens and source"
+    naming, so a configuration this flags may still be exactly what the user intended.
+    """
+
+
+def _warn_if_no_light_is_behind_any_mass(galaxies):
+    """
+    Warn if every light-bearing galaxy lies in front of (or level with) every
+    mass-bearing galaxy, across more than one redshift plane.
+
+    In that configuration no light can be deflected by any mass, so the tracer
+    produces an unlensed image while looking like a lens model. The usual cause is
+    the lens and source redshifts being the wrong way round — the case reported on
+    PyAutoLens#532, where ``z_lens=1.0`` with ``z_source=0.5`` returned a finite image
+    and said nothing.
+
+    __Why this warns and does not raise__
+
+    Multi-plane lensing legitimately supports geometries that look inverted under
+    two-plane naming, so this cannot be an error. The test on the ordering is
+    deliberately narrow for the same reason: it fires only when *no* light at all
+    sits behind *any* mass. A system with mass at z=1.0 and light at both z=0.5 and
+    z=1.5 is a real multi-plane configuration and is not flagged, because some of its
+    light is genuinely lensed.
+
+    Single-plane systems (one distinct redshift) are never flagged — a galaxy with its
+    own light and mass at one redshift is ordinary PyAutoGalaxy usage, not a mistake.
+
+    __Tracer safety__
+
+    Redshifts can be free model parameters (e.g. a subhalo redshift under
+    ``jax.jit``), so only concrete redshifts are compared; a traced redshift makes the
+    check skip rather than coerce a traced boolean.
+
+    Parameters
+    ----------
+    galaxies
+        The galaxies the tracer was constructed with.
+    """
+    try:
+        galaxy_list = list(galaxies)
+    except TypeError:
+        return
+
+    mass_redshifts = []
+    light_redshifts = []
+    all_redshifts = []
+
+    for galaxy in galaxy_list:
+        redshift = getattr(galaxy, "redshift", None)
+
+        if not validate.is_concrete_scalar(redshift):
+            return
+
+        all_redshifts.append(redshift)
+
+        has = getattr(galaxy, "has", None)
+
+        if has is None:
+            return
+
+        is_mass = has(cls=MassProfile)
+        is_lensable = any(has(cls=cls) for cls in LENSABLE_CLS)
+
+        # An entirely empty galaxy is a scaffold — a placeholder in a model being
+        # composed, or a source not yet filled in. We cannot judge the geometry of a
+        # system that is still being built, so say nothing rather than warn someone
+        # mid-construction.
+        if not is_mass and not is_lensable:
+            return
+
+        if is_mass:
+            mass_redshifts.append(redshift)
+
+        if is_lensable:
+            light_redshifts.append(redshift)
+
+    if not mass_redshifts or not light_redshifts:
+        return
+
+    if len(set(all_redshifts)) < 2:
+        return
+
+    if max(light_redshifts) > min(mass_redshifts):
+        return
+
+    warnings.warn(
+        f"No light in this tracer lies behind any mass, so nothing in it is "
+        f"gravitationally lensed: the light-bearing galaxies are at redshifts "
+        f"{sorted(set(light_redshifts))} and the mass-bearing galaxies at "
+        f"{sorted(set(mass_redshifts))}. The usual cause is the lens and source "
+        f"redshifts being the wrong way round.\n\n"
+        f"This is a warning, not an error — multi-plane ray tracing supports "
+        f"geometries that look inverted under two-plane naming, so this may be "
+        f"intended. Silence it with:\n\n"
+        f"    warnings.filterwarnings('ignore', category=MultiPlaneRedshiftWarning)",
+        MultiPlaneRedshiftWarning,
+        stacklevel=3,
+    )
 
 
 def _validate_galaxies(galaxies):
@@ -131,6 +266,7 @@ class Tracer(ABC, ag.OperateImageGalaxies):
         #     galaxies = list(galaxies.values())
 
         _validate_galaxies(galaxies=galaxies)
+        _warn_if_no_light_is_behind_any_mass(galaxies=galaxies)
 
         self.galaxies = galaxies
 
