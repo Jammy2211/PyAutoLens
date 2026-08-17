@@ -98,7 +98,13 @@ def test__positions__likelihood_overwrites__changes_likelihood(masked_imaging_7x
     )
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    assert analysis_log_likelihood == pytest.approx(-44097289521.734665, 1.0e-4)
+    analysis_log_likelihood_penalty = analysis.log_likelihood_penalty_from(instance=instance)
+    positions_log_likelihood_penalty = positions_likelihood.log_likelihood_penalty_from(
+        instance=instance, analysis=analysis
+    )
+
+    assert analysis_log_likelihood_penalty == pytest.approx(positions_log_likelihood_penalty, 1.0e-8)
+    assert analysis_log_likelihood == pytest.approx(-22048644768.175858, 1.0e-4)
 
 
 def test__positions__likelihood_overwrites__changes_likelihood__double_source_plane_example(masked_imaging_7x7):
@@ -123,7 +129,22 @@ def test__positions__likelihood_overwrites__changes_likelihood__double_source_pl
     )
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    assert analysis_log_likelihood == pytest.approx(-44097289521.734665, 1.0e-4)
+    analysis_log_likelihood_penalty = analysis.log_likelihood_penalty_from(instance=instance)
+    positions_log_likelihood_penalty_0 = positions_likelihood_0.log_likelihood_penalty_from(
+        instance=instance, analysis=analysis
+    )
+    positions_log_likelihood_penalty_1 = positions_likelihood_1.log_likelihood_penalty_from(
+        instance=instance, analysis=analysis
+    )
+
+    # The analysis penalty is the SUM of every entry in `positions_likelihood_list` -- a regression
+    # test against the historical bug where the loop returned 2x the last entry's penalty and
+    # discarded all earlier entries.
+    assert analysis_log_likelihood_penalty == pytest.approx(
+        positions_log_likelihood_penalty_0 + positions_log_likelihood_penalty_1, 1.0e-8
+    )
+    assert positions_log_likelihood_penalty_0 != pytest.approx(positions_log_likelihood_penalty_1, 1.0e-4)
+    assert analysis_log_likelihood == pytest.approx(-44140499627.74848, 1.0e-4)
 
 
 

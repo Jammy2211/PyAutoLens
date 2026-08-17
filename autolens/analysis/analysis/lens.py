@@ -157,8 +157,8 @@ class AnalysisLens:
 
         Returns
         -------
-        The penalty value of the positions log likelihood, if the positions do not trace close in the source plane,
-        else a None is returned to indicate there is no penalty.
+        The summed penalty value of every positions log likelihood, if positions do not trace close in the
+        source plane, else an array-valued 0.0 to indicate there is no penalty.
         """
         log_likelihood_penalty = self._xp.array(0.0)
 
@@ -169,12 +169,11 @@ class AnalysisLens:
                 if positions_likelihood is not None:
 
                     log_likelihood_penalty = (
-                        positions_likelihood.log_likelihood_penalty_from(
+                        log_likelihood_penalty
+                        + positions_likelihood.log_likelihood_penalty_from(
                             instance=instance, analysis=self, xp=self._xp
                         )
                     )
-
-                    log_likelihood_penalty += log_likelihood_penalty
 
             return log_likelihood_penalty
 

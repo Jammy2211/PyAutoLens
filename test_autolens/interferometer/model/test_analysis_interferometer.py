@@ -81,7 +81,7 @@ def test__positions__likelihood_overwrite__changes_likelihood(
     )
     analysis_log_likelihood = analysis.log_likelihood_function(instance=instance)
 
-    assert analysis_log_likelihood == pytest.approx(-44097289569.2342, 1.0e-4)
+    assert analysis_log_likelihood == pytest.approx(-22048644815.84869, 1.0e-4)
 
 
 def _pixelization_model():
