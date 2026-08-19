@@ -61,6 +61,7 @@ def test__solve_joint_optimization__finite_state_and_decreasing_cost(
     assert np.isfinite(dpsi_opt).all()
 
 
+@requires_jax
 def test__solve_joint_optimization__identity_damping_finite(interferometer_7):
     dataset = interferometer_7.apply_sparse_operator()
     fit = iter_fit_from(dataset, damping="identity", max_consecutive_rejections=3)

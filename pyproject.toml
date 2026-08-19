@@ -24,12 +24,10 @@ classifiers = [
 ]
 keywords = ["cli"]
 dependencies = [
-    # Floor, not a pin. Without one, pip backtracking the extras chain
-    # (autolens[jax] -> autogalaxy[jax] -> autofit[jax] -> autonerves[jax]) may
-    # walk the release history to 2022: "version X does not provide the extra
-    # 'jax'" is a pip *warning*, not an error, so a pre-extras release is a
-    # legal solution. That is how `autolens[optional]` came to install autofit
-    # 2026.4.30.582 and fail on `af.Latent` (#687).
+    # Floor, not a pin (#687 — a floorless backtrack once installed autofit
+    # 2026.4.30.582 and failed on `af.Latent`). Bump to the first release with
+    # JAX in the family's base dependencies once it exists (#702), so
+    # backtracking cannot pair this autolens with a jax-optional chain.
     "autogalaxy>=2026.7.29.2",
     "nautilus-sampler==1.0.5"
 ]
@@ -49,7 +47,9 @@ local_scheme = "no-local-version"
 
 
 [project.optional-dependencies]
-jax = ["autogalaxy[jax]>=2026.7.29.2"]
+# JAX moved into the base dependencies (#702). Kept as a declared no-op so
+# `pip install autolens[jax]` keeps resolving (#687).
+jax = []
 coolest = ["coolest"]
 optional = [
     "autolens[jax]",

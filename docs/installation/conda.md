@@ -8,19 +8,20 @@
 
 This acceleration is achieved through \[**JAX**\](<https://docs.jax.dev/en/latest/notebooks/thinking_in_jax.html>), which provides GPU and TPU support.
 
-**JAX is not installed by default.** To install **PyAutoLens** with JAX, use the `jax` extra:
+**JAX is installed by default** — a plain `pip install autolens` includes it (the older
+`pip install autolens[jax]` command still works and installs the same thing).
 
-```bash
-pip install autolens[jax] --no-cache-dir
-```
-
-A plain `pip install autolens` gives a fully working install that runs on NumPy, but without any of the JAX
-acceleration described above.
-
-The `[jax]` extra installs **CPU-only** JAX. To ensure GPU acceleration, it is recommended that you install JAX with
+The default install includes **CPU-only** JAX. To ensure GPU acceleration, it is recommended that you install JAX with
 GPU support **before** installing **PyAutoLens**, by following the official \[JAX installation guide\](<https://jax.readthedocs.io/en/latest/installation.html>).
 
 If you install **PyAutoLens** without a proper GPU setup, a warning will be displayed.
+
+:::{note}
+**Intel Macs**: JAX no longer publishes wheels for Intel (x86_64) macOS, so on these machines
+`pip install autolens` automatically installs without JAX and runs on the slower NumPy path — a
+warning is printed at import to make this clear. Every other supported platform (Windows, Linux,
+Apple-silicon Macs) gets JAX by default.
+:::
 
 ## Install
 
@@ -57,11 +58,13 @@ The latest version of **PyAutoLens** is installed via pip as follows (the comman
 caching issues impacting the installation):
 
 ```bash
-pip install autolens[jax] --no-cache-dir
+pip install autolens --no-cache-dir
 ```
 
-The `[jax]` extra is recommended, as it enables the JAX acceleration described above. To install without JAX,
-use `pip install autolens --no-cache-dir` instead.
+This includes JAX by default, enabling the acceleration described above. If you need an install without
+JAX on a platform where JAX wheels exist (e.g. a restricted environment), install normally and then run
+`pip uninstall jax jaxlib` — **PyAutoLens** detects the absence at import and falls back to the fully
+supported (but much slower) NumPy path.
 
 If pip prints warnings about dependency version conflicts, these can usually be ignored — the instructions below
 will identify clearly if the installation is a success.
