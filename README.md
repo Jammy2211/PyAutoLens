@@ -64,3 +64,5 @@ Information on how to cite **PyAutoLens** in publications can be found [on the c
 Information on how to contribute to **PyAutoLens** can be found [on the contributing page](https://github.com/PyAutoLabs/PyAutoLens/blob/main/CONTRIBUTING.md).
 
 Hands on support for contributions is available via our Slack workspace, again please email to request an invite.
+
+<sub><i><a href="https://open.spotify.com/track/6Ao5d7TMQ92h87jQqSHGyw">i found you, i found you, i found you beautiful, exploding, i found you</a></i></sub>
