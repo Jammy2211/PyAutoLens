@@ -3,9 +3,10 @@
 # Installation with pip
 
 :::{note}
-**PyAutoLens** requires **Python 3.12 or later**. If you are on Python
-3.9, 3.10, or 3.11, `pip install autolens` will fail with a "no matching
-distribution" error. Upgrade Python to 3.12+ before installing.
+**PyAutoLens** requires **Python 3.12 or later**. On Python 3.9, 3.10 or 3.11,
+`pip install autolens` stops with an error telling you to upgrade — it will not
+quietly install an older release instead. Upgrade Python to 3.12+ before
+installing.
 :::
 
 ## JAX & GPU
@@ -119,16 +120,26 @@ it is safe not to install them initially.
 
 ## Legacy Python versions
 
-We dropped support for Python 3.9, 3.10, and 3.11 in release `2026.4.5.3`
-(April 2026). Pre-`2026.4.5.3` releases on PyPI have been yanked, so they
-will not install via the standard `pip install autolens` command.
+We dropped support for Python 3.9, 3.10 and 3.11 in release `2026.7.29.2`
+(July 2026) — the first release published declaring `Requires-Python >=3.12`.
 
-If you have an existing project that requires a pre-`2026.4.5.3` version,
-you can still install it explicitly by pinning the version, e.g.:
+Raising that floor does not retract what is already published. Releases at or
+below `2026.7.29.1` were published declaring `>=3.9`, and PyPI metadata is
+immutable, so they remain valid candidates forever. Left alone, `pip install
+autolens` on an older Python did not fail — it walked back to `2026.7.29.1` and
+installed a months-old stack without JAX, reporting nothing.
+
+Release `2026.7.29.1.post1` exists to stop that. It contains no code, declares
+`Requires-Python <3.12`, and raises an error when pip tries to build it, so an
+unsupported Python gets an explanation instead of a stale install.
+
+If you need a historical release, pin it exactly — that still resolves on older
+Pythons:
 
 ```bash
 pip install autolens==2025.10.6.1
 ```
 
-Yanked releases remain available for explicit pins; only resolver-driven
-fallback is blocked.
+One gap remains: `pip install --only-binary=:all: autolens` skips source
+distributions entirely, so it steps past `2026.7.29.1.post1` and installs the
+old wheel silently. If you use that flag, pin the version you want.
