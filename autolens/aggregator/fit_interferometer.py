@@ -15,6 +15,8 @@ Two public objects are provided:
   ``Aggregator`` that exposes a generator of ``FitInterferometer`` objects, enabling
   memory-efficient iteration over large result sets.
 """
+
+from __future__ import annotations
 from typing import Optional, List
 
 import autofit as af
