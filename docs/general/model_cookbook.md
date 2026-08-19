@@ -427,7 +427,7 @@ When performing non-linear search chaining, the inferred model of one phase can 
 
 The following example notebooks show how to compose and fit these models:
 
-<https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/advanced/chaining/start_here.ipynb>
+<https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/guides/modeling/chaining.ipynb>
 
 ## Across Datasets (Advanced)
 
