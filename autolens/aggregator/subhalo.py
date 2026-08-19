@@ -10,6 +10,8 @@ collates these per-cell results and exposes generators that yield ``FitImaging``
 for the best-fit model in each cell — both the "with subhalo" fit and (optionally) the
 "no subhalo" baseline — enabling the per-cell log-evidence difference map to be computed.
 """
+
+from __future__ import annotations
 from typing import Optional
 
 import autofit as af

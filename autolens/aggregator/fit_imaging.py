@@ -14,6 +14,8 @@ Two public objects are provided:
   that exposes a generator of ``FitImaging`` objects, enabling memory-efficient iteration
   over large result sets.
 """
+
+from __future__ import annotations
 from typing import Optional, List
 
 import autofit as af
