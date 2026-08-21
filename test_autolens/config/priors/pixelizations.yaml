@@ -50,27 +50,6 @@ delaunay.DelaunayMagnification:
     width_modifier:
       type: Absolute
       value: 8.0
-rectangular.RectangularAdaptDensity:
-  shape_0:
-    limits:
-      lower: 3.0
-      upper: inf
-    lower_limit: 20.0
-    type: Uniform
-    upper_limit: 45.0
-    width_modifier:
-      type: Absolute
-      value: 8.0
-  shape_1:
-    limits:
-      lower: 3.0
-      upper: inf
-    lower_limit: 20.0
-    type: Uniform
-    upper_limit: 45.0
-    width_modifier:
-      type: Absolute
-      value: 8.0
 voronoi.VoronoiBrightnessImage:
   pixels:
     limits:
@@ -123,3 +102,25 @@ voronoi.VoronoiMagnification:
     width_modifier:
       type: Absolute
       value: 8.0
+rectangular_bilinear_adapt_density.RectangularBilinearAdaptDensity: &id001
+  shape_0:
+    limits:
+      lower: 3.0
+      upper: inf
+    lower_limit: 20.0
+    type: Uniform
+    upper_limit: 45.0
+    width_modifier:
+      type: Absolute
+      value: 8.0
+  shape_1:
+    limits:
+      lower: 3.0
+      upper: inf
+    lower_limit: 20.0
+    type: Uniform
+    upper_limit: 45.0
+    width_modifier:
+      type: Absolute
+      value: 8.0
+rectangular_rtu_adapt_density.RectangularRTUAdaptDensity: *id001
