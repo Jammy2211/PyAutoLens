@@ -114,10 +114,10 @@ successful numba install working, with more information provided [at this readth
 
 ## Optional
 
-For interferometer analysis there are two optional dependencies that must be installed via the commands:
+For interferometer analysis there is one optional dependency that must be installed via the command:
 
 ```bash
-pip install pynufft
+pip install nufftax
 ```
 
 **PyAutoLens** will run without these libraries and it is recommended that you only install them if you intend to

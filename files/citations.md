@@ -29,7 +29,6 @@ This work uses the following software packages:
 - `PyAutoFit` https://github.com/PyAutoLabs/PyAutoFit [@pyautofit]
 - `PyAutoGalaxy` https://github.com/PyAutoLabs/PyAutoGalaxy [@Nightingale2018] [@pyautogalaxy]
 - `PyAutoLens` https://github.com/PyAutoLabs/PyAutoLens [@Nightingale2015] [@Nightingale2018] [@pyautolens]
-- `PyNUFFT` https://github.com/jyhmiinlin/pynufft [@pynufft]
 - `Python` https://www.python.org/ [@python]
 - `scikit-image` https://github.com/scikit-image/scikit-image [@scikit-image]
 - `scikit-learn` https://github.com/scikit-learn/scikit-learn [@scikit-learn]

@@ -55,7 +55,6 @@ optional = [
     "autolens[jax]",
     "coolest",
     "numba",
-    "pynufft",
     "zeus-mcmc==2.5.4",
     "getdist==1.4"
 ]

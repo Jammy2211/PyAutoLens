@@ -69,7 +69,7 @@ pip install numba
 For unit tests to pass you will also need the following optional requirements:
 
 ```bash
-pip install pynufft
+pip install nufftax
 ```
 
 If you are using a `conda` environment, add the source repository as follows:
