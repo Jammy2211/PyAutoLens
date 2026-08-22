@@ -28,7 +28,7 @@ dependencies = [
     # 2026.4.30.582 and failed on `af.Latent`). Bump to the first release with
     # JAX in the family's base dependencies once it exists (#702), so
     # backtracking cannot pair this autolens with a jax-optional chain.
-    "autogalaxy>=2026.7.29.2",
+    "autogalaxy>=2026.8.22.1",
     "nautilus-sampler==1.0.5"
 ]
 
