@@ -31,6 +31,12 @@ from .shape_solver import AbstractSolver
 
 logger = logging.getLogger(__name__)
 
+# One-shot latch for the ``PYAUTO_SMALL_DATASETS`` short-circuit warning in
+# ``PointSolver.solve``. Module-level rather than per-instance: a vmap batch calls
+# ``solve`` once per sampled parameter set, and the message is about the process
+# environment, not about any one solver.
+_SMALL_DATASETS_WARNED = False
+
 
 class PointSolver(AbstractSolver):
 
@@ -101,6 +107,13 @@ class PointSolver(AbstractSolver):
         normally. ``PYAUTO_SMALL_DATASETS`` is a smoke-test-only flag and is never set
         inside a ``jax.jit`` trace, so a plain numpy-backed ``Grid2DIrregular`` is safe
         here even when the surrounding analysis uses ``xp=jnp``.
+
+        The short-circuit announces itself with a ``logger.warning`` the first time it
+        fires in a process. It returns the same two coordinates for every lens model, so
+        anything derived from them — a likelihood, a chi-squared, a position pairing — is
+        model-independent, and a parity script that compares such a value against a pinned
+        literal is measuring nothing. That failure mode was silent until it cost a real
+        investigation (PyAutoLens#710), hence the warning rather than a bare return.
         """
         if xp is None:
             xp = self._xp
@@ -117,6 +130,19 @@ class PointSolver(AbstractSolver):
         # JIT-it-yourself pattern.
 
         if os.environ.get("PYAUTO_SMALL_DATASETS") == "1":
+            global _SMALL_DATASETS_WARNED
+            if not _SMALL_DATASETS_WARNED:
+                _SMALL_DATASETS_WARNED = True
+                logger.warning(
+                    "PointSolver.solve is short-circuited: PYAUTO_SMALL_DATASETS=1 is set, "
+                    "so the triangle-tiling solve is skipped and the fixed pair "
+                    "[(1.0, 0.0), (0.0, 1.0)] is returned for EVERY lens model. Any "
+                    "likelihood, chi-squared or position-pairing value computed from these "
+                    "positions is independent of the model and must not be compared against "
+                    "a pinned literal. Scripts that need a real solve should declare "
+                    "`ENV: full_datasets` (workspace test-harness) or unset the flag. This "
+                    "warning is issued once per process."
+                )
             return aa.Grid2DIrregular(values=[(1.0, 0.0), (0.0, 1.0)])
 
         if xp is not np:
