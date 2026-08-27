@@ -118,3 +118,41 @@ def test__save_attributes__dataset_fits_output_for_aggregator(analysis_imaging_7
     assert ext_names[:4] == ["MASK", "DATA", "NOISE_MAP", "PSF"]
 
     os.remove(dataset_fits_path)
+
+
+class _RaisingTracerResult:
+    """
+    Result double whose tracer cannot be built, because materializing the maximum log
+    likelihood sample as a model instance fails.
+    """
+
+    def __init__(self, error):
+        self._error = error
+
+    @property
+    def max_log_likelihood_tracer(self):
+        raise self._error
+
+
+@pytest.mark.parametrize(
+    "error",
+    [
+        AttributeError("no tracer on this result"),
+        af.exc.SamplesException("stored parameters cannot be reconstructed"),
+        af.exc.FitException("ell_comps must satisfy e0**2+e1**2 < 1"),
+    ],
+)
+def test__save_results__tracer_failure_never_kills_the_fit(analysis_imaging_7x7, error):
+    """
+    `save_results` runs after the search has finished but before `paths.completed()`, so a
+    failure writing the (optional) `tracer.json` must be logged and swallowed rather than
+    losing the run its `.completed` marker (PyAutoFit #1535).
+    """
+    paths = af.DirectoryPaths()
+
+    analysis_imaging_7x7.save_results(
+        paths=paths,
+        result=_RaisingTracerResult(error),
+    )
+
+    assert not (paths._files_path / "tracer.json").exists()
