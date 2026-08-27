@@ -19,6 +19,7 @@ shipped; the multi-plane solve path had no coverage at all.
 import numpy as np
 import pytest
 
+import autogalaxy as ag
 import autolens as al
 
 
@@ -200,3 +201,119 @@ def test__plane_redshift_matching_no_plane__raises_value_error(
 
     assert "1.5" in message
     assert "0.5" in message and "1.0" in message and "2.0" in message
+
+
+def _magnification_via_ray_traced_jacobian(tracer, positions, plane_index, h=1e-6):
+    """
+    Magnification computed from ray-tracing alone, with no ``LensCalc`` involved.
+
+    ``magnification_2d_via_hessian_from`` differentiates the *deflection* callable. This instead
+    central-differences the traced position itself -- the map the triangle search actually solves,
+    ``theta -> beta_j`` via ``traced_grid_2d_list_from`` -- and takes ``mu = 1 / det(d beta / d theta)``.
+    Two independent routes to the same number, so agreement is evidence the magnification is right
+    and not merely self-consistent.
+    """
+    magnifications = []
+
+    for y, x in np.asarray(positions):
+
+        def beta(y_value, x_value):
+            grid = al.Grid2DIrregular([(y_value, x_value)])
+            return np.asarray(
+                tracer.traced_grid_2d_list_from(grid=grid)[plane_index].array
+            )[0]
+
+        d_y = (beta(y + h, x) - beta(y - h, x)) / (2.0 * h)
+        d_x = (beta(y, x + h) - beta(y, x - h)) / (2.0 * h)
+
+        jacobian = np.array([[d_y[0], d_x[0]], [d_y[1], d_x[1]]])
+        magnifications.append(1.0 / np.linalg.det(jacobian))
+
+    return np.abs(np.array(magnifications))
+
+
+def test__magnification_matches_ray_traced_jacobian(solver, multi_plane_tracer):
+    """
+    Accuracy, as opposed to self-consistency: the magnification the filter measures at the
+    intermediate plane agrees with one derived from the ray-tracing directly, sharing no code with
+    the Hessian path. Checked to 1e-6 relative; the two agree to ~1e-8 in practice.
+    """
+    positions = solver.solve(
+        tracer=multi_plane_tracer,
+        source_plane_coordinate=(0.02, 0.03),
+        plane_redshift=1.0,
+    )
+
+    plane_index = multi_plane_tracer.plane_index_via_redshift_from(redshift=1.0)
+
+    from_hessian = np.abs(
+        np.asarray(
+            ag.LensCalc.from_tracer(
+                multi_plane_tracer,
+                use_multi_plane=True,
+                plane_i=0,
+                plane_j=plane_index,
+            ).magnification_2d_via_hessian_from(
+                grid=al.Grid2DIrregular(positions).array, xp=np
+            )
+        )
+    )
+
+    from_ray_tracing = _magnification_via_ray_traced_jacobian(
+        tracer=multi_plane_tracer,
+        positions=np.asarray(positions.array),
+        plane_index=plane_index,
+    )
+
+    assert from_hessian == pytest.approx(from_ray_tracing, rel=1e-6)
+
+
+def test__solver_and_fit_measure_magnification_at_the_same_plane(
+    solver, multi_plane_tracer
+):
+    """
+    The solver and the fit reach the plane by different keys -- the fit from the profile *name* via
+    `extract_plane_index_of_profile`, the solver from a *redshift* via `plane_index_via_redshift_from`
+    -- and `AbstractFitPoint.plane_redshift` is what carries the fit's answer into the solver, as
+    `planes[plane_index].redshift`. That is a name -> index -> redshift -> index round trip across
+    two modules, so it is pinned here rather than assumed: both must land on the same plane and
+    therefore the same magnification.
+    """
+    positions = solver.solve(
+        tracer=multi_plane_tracer,
+        source_plane_coordinate=(0.02, 0.03),
+        plane_redshift=1.0,
+    )
+
+    fit = al.FitPositionsImagePair(
+        name="point_0",
+        data=positions,
+        noise_map=al.ArrayIrregular([0.01] * len(positions)),
+        tracer=multi_plane_tracer,
+        solver=solver,
+    )
+
+    # The solver's own resolution, not a re-derivation of it: `_plane_index` is the helper the
+    # search and the filter both call, so this pins the actual shipped path against the fit's.
+    index_from_solver = solver._plane_index(
+        tracer=multi_plane_tracer, plane_redshift=fit.plane_redshift
+    )
+
+    assert fit.plane_index == index_from_solver
+
+    from_solver = np.abs(
+        np.asarray(
+            ag.LensCalc.from_tracer(
+                multi_plane_tracer,
+                use_multi_plane=True,
+                plane_i=0,
+                plane_j=index_from_solver,
+            ).magnification_2d_via_hessian_from(
+                grid=al.Grid2DIrregular(positions).array, xp=np
+            )
+        )
+    )
+
+    assert np.asarray(fit.magnifications_at_positions.array) == pytest.approx(
+        from_solver, rel=1e-12
+    )
