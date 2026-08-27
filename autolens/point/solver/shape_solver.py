@@ -221,6 +221,44 @@ class AbstractSolver:
         """
         return math.ceil(math.log2(self.scale / self.pixel_scale_precision))
 
+    @staticmethod
+    def _plane_index(tracer: Tracer, plane_redshift: Optional[float] = None) -> int:
+        """
+        Resolve the index of the plane being solved for.
+
+        Both the triangle search (``_plane_grid``) and the magnification filter
+        (``_filter_low_magnification``) must agree on which plane is the source plane; when they
+        disagreed, the search solved to the requested plane while the filter measured
+        magnification at the tracer's last plane, and every candidate image was discarded
+        (PyAutoLens #480). They therefore share this one resolution rather than each repeating it.
+
+        Parameters
+        ----------
+        tracer
+            The tracer whose planes are being solved through.
+        plane_redshift
+            The redshift of the source plane. ``None`` means the tracer's last plane, which is the
+            single-source case and is expressed as the index ``-1``.
+
+        Returns
+        -------
+        The index of the plane at ``plane_redshift``, or ``-1`` when it is ``None``.
+        """
+        if plane_redshift is None:
+            return -1
+
+        plane_index = tracer.plane_index_via_redshift_from(redshift=plane_redshift)
+
+        if plane_index is None:
+            raise ValueError(
+                f"No plane in the tracer has redshift {plane_redshift}, so the solver cannot "
+                f"determine which plane to solve for. The tracer's plane redshifts are "
+                f"{list(tracer.plane_redshifts)}. Pass `plane_redshift` as one of these, or omit "
+                f"it to solve for the last plane."
+            )
+
+        return plane_index
+
     def _plane_grid(
         self,
         tracer: Tracer,
@@ -242,10 +280,7 @@ class AbstractSolver:
         -------
         The source plane grid computed by applying the deflections to the image plane grid.
         """
-        if plane_redshift is None:
-            plane_index = -1
-        else:
-            plane_index = tracer.plane_index_via_redshift_from(redshift=plane_redshift)
+        plane_index = self._plane_index(tracer=tracer, plane_redshift=plane_redshift)
 
         deflections = tracer.deflections_between_planes_from(
             grid=grid, plane_i=0, plane_j=plane_index, xp=xp
@@ -320,10 +355,26 @@ class AbstractSolver:
         return final_step.filtered_triangles
 
     def _filter_low_magnification(
-        self, tracer: Tracer, points: List[Tuple[float, float]], xp
+        self,
+        tracer: Tracer,
+        points: List[Tuple[float, float]],
+        xp,
+        plane_redshift: Optional[float] = None,
     ) -> List[Tuple[float, float]]:
         """
         Filter the points to keep only those with an absolute magnification above the threshold.
+
+        The magnification is measured at the plane being solved for, which is the plane the
+        triangle search traced to. Measuring it at the tracer's last plane instead de-magnifies
+        every candidate image of an intermediate-plane source by orders of magnitude, so the
+        threshold discards all of them and the solve returns no images (PyAutoLens #480).
+
+        ``LensCalc.from_tracer`` binds ``tracer.deflections_between_planes_from`` for the
+        requested plane, which is the same callable the search uses. For ``plane_redshift=None``
+        this is not merely equivalent to the previous ``from_mass_obj(tracer)`` but identical:
+        ``Tracer.deflections_yx_2d_from`` dispatches to ``deflections_between_planes_from`` with
+        its ``plane_i=0, plane_j=-1`` defaults whenever the tracer has more than one plane, and a
+        single-plane tracer has only the one plane to measure at.
 
         Parameters
         ----------
@@ -331,14 +382,20 @@ class AbstractSolver:
             The points to filter.
         xp
             The array module used for the magnification calculation.
+        plane_redshift
+            The redshift of the plane being solved for. ``None`` measures at the last plane.
 
         Returns
         -------
         The points with an absolute magnification above the threshold.
         """
         points = xp.array(points)
-        magnifications = ag.LensCalc.from_mass_obj(
-            tracer
+        plane_index = self._plane_index(tracer=tracer, plane_redshift=plane_redshift)
+        magnifications = ag.LensCalc.from_tracer(
+            tracer,
+            use_multi_plane=True,
+            plane_i=0,
+            plane_j=plane_index,
         ).magnification_2d_via_hessian_from(
             grid=aa.Grid2DIrregular(points).array, xp=xp
         )
