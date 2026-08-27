@@ -240,7 +240,10 @@ class PointSolver(AbstractSolver):
         )
 
         filtered_means = self._filter_low_magnification(
-            tracer=tracer, points=kept_triangles.means, xp=xp
+            tracer=tracer,
+            points=kept_triangles.means,
+            xp=xp,
+            plane_redshift=plane_redshift,
         )
 
         # When no triangle traces to the source-plane coordinate -- e.g. the coordinate lies
