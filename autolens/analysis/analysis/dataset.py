@@ -189,5 +189,12 @@ class AnalysisDataset(AgAnalysisDataset, AnalysisLens):
                 obj=result.max_log_likelihood_tracer,
                 file_path=paths._files_path / "tracer.json",
             )
-        except AttributeError:
-            pass
+        except (AttributeError, af.exc.SamplesException, af.exc.FitException) as e:
+            # Building the tracer requires materializing the maximum log likelihood sample as a model
+            # instance, which the model may reject (e.g. `ell_comps` outside the unit disk). Writing an
+            # extra output file must never kill a completed fit before `paths.completed()` is called
+            # (PyAutoFit #1535), so the failure is logged and the fit finishes without `tracer.json`.
+            logger.warning(
+                f"The maximum log likelihood tracer could not be written to tracer.json, "
+                f"the model-fit is otherwise unaffected:\n{e}"
+            )
