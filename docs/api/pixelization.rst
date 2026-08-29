@@ -66,6 +66,8 @@ Regularization [ag.reg]
    ConstantSplit
    Adapt
    AdaptSplit
+   AdaptPower
+   AdaptSplitPower
 
 Settings
 --------
