@@ -37,3 +37,143 @@ constant_zeorth.ConstantZeroth:
     width_modifier:
       type: Relative
       value: 0.5
+adapt_power.AdaptPower:
+  inner_coefficient:
+    limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 1.0e-06
+    type: LogUniform
+    upper_limit: 1000000.0
+    width_modifier:
+      type: Relative
+      value: 0.5
+  outer_coefficient:
+    limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 1.0e-06
+    type: LogUniform
+    upper_limit: 1000000.0
+    width_modifier:
+      type: Relative
+      value: 0.5
+  signal_scale:
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 1.0
+  power:
+    type: Constant
+    value: 1.0
+adapt_split_power.AdaptSplitPower:
+  inner_coefficient:
+    limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 1.0e-06
+    type: LogUniform
+    upper_limit: 1000000.0
+    width_modifier:
+      type: Relative
+      value: 0.5
+  outer_coefficient:
+    limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 1.0e-06
+    type: LogUniform
+    upper_limit: 1000000.0
+    width_modifier:
+      type: Relative
+      value: 0.5
+  signal_scale:
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 1.0
+  power:
+    type: Constant
+    value: 1.0
+adapt_split_zeroth_power.AdaptSplitZerothPower:
+  inner_coefficient:
+    limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 1.0e-06
+    type: LogUniform
+    upper_limit: 1000000.0
+    width_modifier:
+      type: Relative
+      value: 0.5
+  outer_coefficient:
+    limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 1.0e-06
+    type: LogUniform
+    upper_limit: 1000000.0
+    width_modifier:
+      type: Relative
+      value: 0.5
+  signal_scale:
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 1.0
+  zeroth_coefficient:
+    limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 1.0e-06
+    type: LogUniform
+    upper_limit: 1000000.0
+    width_modifier:
+      type: Relative
+      value: 0.5
+  zeroth_signal_scale:
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 1.0
+  power:
+    type: Constant
+    value: 1.0
+matern_adapt_power_kernel.MaternAdaptPowerKernel:
+  inner_coefficient:
+    limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 1.0e-06
+    type: LogUniform
+    upper_limit: 1000000.0
+    width_modifier:
+      type: Relative
+      value: 0.5
+  outer_coefficient:
+    limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 1.0e-06
+    type: LogUniform
+    upper_limit: 1000000.0
+    width_modifier:
+      type: Relative
+      value: 0.5
+  signal_scale:
+    lower_limit: 0.0
+    type: Uniform
+    upper_limit: 1.0
+  scale:
+    limits:
+      lower: 0.0
+      upper: inf
+    lower_limit: 1.0e-06
+    type: LogUniform
+    upper_limit: 1000000.0
+    width_modifier:
+      type: Relative
+      value: 0.2
+  nu:
+    lower_limit: 0.5
+    type: Uniform
+    upper_limit: 5.5
+  power:
+    type: Constant
+    value: 1.0
