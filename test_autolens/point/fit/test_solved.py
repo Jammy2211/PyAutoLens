@@ -306,7 +306,10 @@ class TestTensorVsScalarWeighting:
                 lambda theta: beta_of_theta(theta) - target_beta,
                 x0=np.array(observed_theta),
                 method="hybr",
-                tol=1.0e-14,
+                # 1e-12, not 1e-14: with the adaptive Hessian (PyAutoGalaxy#591) scipy reports
+                # status 3 ("xtol too small") at residual ~1e-16 - a termination-path artefact,
+                # not a physics change.
+                tol=1.0e-12,
             )
             assert solution.success
             return solution.x

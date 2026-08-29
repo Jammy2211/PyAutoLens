@@ -1123,25 +1123,22 @@ def test__bug_480_configuration__richardson_hessian_agrees_at_the_intermediate_p
     np.testing.assert_allclose(magnification_hessian, magnification_traced, rtol=1e-6)
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="lenscalc_numpy_hessian_step_is_too_coarse: LensCalc._hessian_via_richardson uses a "
-    "hardcoded buffer=0.01 arcsec, which is far too coarse where a ray passes ~4e-4 arcsec from a "
-    "compact deflector's centre. On the PyAutoLens#480 configuration it returns "
-    "[-0.00694, -0.00221, 0.00139, 0.00246] where exact JAX autodiff and the ray-traced Jacobian "
-    "both give [0.04508, 0.01099, -0.08602, -0.01118]: wrong by ~100-120% with a flipped sign on "
-    "all four points. Tracked in PyAutoMind/draft/bug/autogalaxy/"
-    "lenscalc_numpy_hessian_step_is_too_coarse.md. When that is fixed this xfail turns into an "
-    "XPASS and must be removed.",
-)
-def test__bug_480_configuration__numpy_richardson_hessian_step_is_too_coarse():
+def test__bug_480_configuration__numpy_richardson_hessian_agrees_at_the_last_plane():
     """
-    The known, filed defect, pinned rather than tolerated.
+    Regression test for PyAutoGalaxy#591.
 
     ``LensCalc.magnification_2d_via_hessian_from`` at the last plane must agree with the ray-traced
-    Jacobian, which the test above shows reproduces exact autodiff on this configuration. It does
-    not, and this test records exactly by how much. The tolerance is the same 1e-3 used everywhere
-    else in this module: it is not widened to make the disagreement go away.
+    Jacobian, which the test above shows reproduces exact autodiff on this configuration. It did
+    not while ``LensCalc._hessian_via_richardson`` used a hardcoded ``buffer=0.01`` arcsec step:
+    where a ray passes ~4e-4 arcsec from the compact z=1.0 deflector's centre that step straddles
+    the whole deflector, and the NumPy path returned
+    ``[-0.00694, -0.00221, 0.00139, 0.00246]`` against the ``[0.04508, 0.01099, -0.08602,
+    -0.01118]`` that exact JAX autodiff and the ray-traced Jacobian agree on -- wrong by
+    ~100-120% with a flipped sign on all four points. PyAutoGalaxy#591 made the Richardson step
+    adapt per point, and this test now asserts the agreement rather than pinning the defect.
+
+    The tolerance is the same 1e-3 used everywhere else in this module: it was not widened when the
+    test recorded a disagreement, and it is not tightened now that it records an agreement.
     """
     tracer = _bug_480_tracer()
 
