@@ -205,6 +205,61 @@ def test__traced_grid_2d_list_from__plane_index_limit__only_traces_up_to_specifi
     assert len(traced_grid_list) == 2
 
 
+@pytest.mark.parametrize("over_sample_size", [1, 4])
+def test__traced_grid_2d_list_from__over_sampled_grid_is_the_traced_over_sampled_grid(
+    over_sample_size,
+):
+    """
+    The `over_sampled` attribute of each traced grid must be the tracer applied to the input grid's
+    `over_sampled` grid. At a uniform over sample size of 1 the second ray-trace is skipped as an
+    optimization, so this is pinned for a sub size of 1 and a sub size above 1.
+    """
+    g0 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
+    g1 = al.Galaxy(redshift=1.0)
+
+    tracer = al.Tracer(galaxies=[g0, g1])
+
+    grid = al.Grid2D.uniform(
+        shape_native=(7, 7), pixel_scales=0.1, over_sample_size=over_sample_size
+    )
+
+    traced_grid_list = tracer.traced_grid_2d_list_from(grid=grid)
+
+    traced_over_sampled_list = tracer.traced_grid_2d_list_from(grid=grid.over_sampled)
+
+    assert np.allclose(
+        np.asarray(traced_grid_list[-1].over_sampled.array),
+        np.asarray(traced_over_sampled_list[-1].array),
+        rtol=0.0,
+        atol=1.0e-12,
+    )
+
+    assert not np.allclose(
+        np.asarray(traced_grid_list[-1].over_sampled.array),
+        np.asarray(grid.over_sampled.array),
+    )
+
+
+def test__traced_grid_2d_list_from__over_sample_size_1__over_sampled_grid_equals_slim_grid():
+    """
+    At a uniform over sample size of 1 every sub pixel is the pixel itself, so the traced over
+    sampled grid is bit identical to the traced slim grid.
+    """
+    g0 = al.Galaxy(redshift=0.5, mass_profile=al.mp.IsothermalSph(einstein_radius=1.0))
+    g1 = al.Galaxy(redshift=1.0)
+
+    tracer = al.Tracer(galaxies=[g0, g1])
+
+    grid = al.Grid2D.uniform(shape_native=(7, 7), pixel_scales=0.1, over_sample_size=1)
+
+    traced_grid_list = tracer.traced_grid_2d_list_from(grid=grid)
+
+    for traced_grid in traced_grid_list:
+        assert np.array_equal(
+            np.asarray(traced_grid.over_sampled.array), np.asarray(traced_grid.array)
+        )
+
+
 # ── grid_2d_at_redshift_from ──────────────────────────────────────────────────
 
 

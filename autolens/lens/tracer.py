@@ -496,13 +496,26 @@ class Tracer(ABC, ag.OperateImageGalaxies):
         )
 
         if isinstance(grid, aa.Grid2D):
-            grid_2d_over_sampled_list = tracer_util.traced_grid_2d_list_from(
-                planes=self.planes,
-                grid=grid.over_sampled,
-                cosmology=self.cosmology,
-                plane_index_limit=plane_index_limit,
-                xp=xp,
-            )
+            # At a uniform over sample size of 1 every sub pixel is the pixel itself, so
+            # `grid.over_sampled` is the slim grid in the same order and tracing it again
+            # doubles every deflection angle calculation for a bit-identical result. The
+            # over sample size is host numpy, so this branch is static at JAX trace time.
+
+            sub_size_all_one = bool(np.all(np.asarray(grid.over_sample_size.array) == 1))
+
+            if sub_size_all_one:
+                grid_2d_over_sampled_list = [
+                    aa.Grid2DIrregular(values=grid_2d.array, xp=xp)
+                    for grid_2d in grid_2d_list
+                ]
+            else:
+                grid_2d_over_sampled_list = tracer_util.traced_grid_2d_list_from(
+                    planes=self.planes,
+                    grid=grid.over_sampled,
+                    cosmology=self.cosmology,
+                    plane_index_limit=plane_index_limit,
+                    xp=xp,
+                )
 
             grid_2d_new_list = []
 
