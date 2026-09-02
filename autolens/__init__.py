@@ -95,6 +95,7 @@ from autogalaxy import convert
 
 from . import aggregator as agg
 from .analysis import model_util
+from .lens import mappings
 from .lens import subhalo
 from .lens.tracer import Tracer
 from .lens.sensitivity import SubhaloSensitivityResult

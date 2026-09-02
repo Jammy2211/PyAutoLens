@@ -7,7 +7,7 @@ import autogalaxy as ag
 
 from autogalaxy.util.plot_utils import plot_array
 from autoarray.plot.array import _zoom_array_2d
-from autoarray.plot.utils import subplots, save_figure, hide_unused_axes, conf_subplot_figsize, tight_layout
+from autoarray.plot.utils import subplots, save_figure, hide_unused_axes, conf_subplot_figsize, tight_layout, plot_regions
 from autoarray.inversion.mappers.abstract import Mapper
 from autoarray.inversion.plot.mapper_plots import plot_mapper
 from autogalaxy.util.plot_utils import _critical_curves_from
@@ -68,7 +68,9 @@ from autolens.lens.plot.tracer_plots import plane_image_from
 def _plot_source_plane(fit, ax, plane_index, zoom_to_brightest=True,
                        colormap=None, use_log10=False, title=None,
                        lines=None, line_colors=None, vmax=None,
-                       zoom_extent_scale: float = 1.0):
+                       zoom_extent_scale: float = 1.0,
+                       regions=None, region_alpha: float = 0.25,
+                       region_labels=None):
     """
     Plot the source-plane image (or a blank inversion placeholder) into an axes.
 
@@ -101,6 +103,15 @@ def _plot_source_plane(fit, ax, plane_index, zoom_to_brightest=True,
         Matplotlib colormap name.
     use_log10 : bool, optional
         If ``True`` the colour scale is applied on a log10 stretch.
+    regions : list, optional
+        Source-plane regions to overlay as filled polygons, each a list of ``(N, 2)``
+        ``(y, x)`` arrays -- e.g. the ``source_contours`` of a
+        `~autoarray.inversion.mappings.mapping.Mapping`.  Drawn identically on the
+        parametric and the inversion path, so a mapping keeps its colour across both.
+    region_alpha : float, optional
+        The alpha of each region's fill.
+    region_labels : list of str, optional
+        A label drawn at the centre of each region, matching its image-plane counterpart.
     """
     tracer = fit.tracer_linear_light_profiles_to_light_profiles
     if not tracer.planes[plane_index].has(cls=aa.Pixelization):
@@ -133,6 +144,13 @@ def _plot_source_plane(fit, ax, plane_index, zoom_to_brightest=True,
             colormap=colormap, use_log10=use_log10, vmax=vmax, lines=lines,
             line_colors=line_colors,
         )
+        # `autogalaxy.util.plot_utils.plot_array` is a thin wrapper which does not forward
+        # `regions=`; the overlay is drawn onto the same axes afterwards instead, using the
+        # same `plot_regions` the pixelized path below reaches through `plot_mapper`. The
+        # polygons are arcsec `(y, x)`, so they land correctly whatever zoom the wrapper
+        # applied.
+        plot_regions(ax=ax, regions=regions, region_alpha=region_alpha,
+                     region_labels=region_labels)
     else:
         # Inversion path: plot the source reconstruction via the mapper.
         try:
@@ -152,6 +170,9 @@ def _plot_source_plane(fit, ax, plane_index, zoom_to_brightest=True,
                 zoom_extent_scale=zoom_extent_scale,
                 lines=lines,
                 line_colors=line_colors,
+                regions=regions,
+                region_alpha=region_alpha,
+                region_labels=region_labels,
             )
         except Exception as exc:
             logger.warning(f"Could not plot source reconstruction for plane {plane_index}: {exc}")
@@ -962,3 +983,213 @@ def _symmetric_vmax(array) -> float:
         vals = np.asarray(array)
     finite = vals[np.isfinite(vals)]
     return float(np.max(np.abs(finite))) if finite.size else 1.0
+
+
+def subplot_mappings(
+    fit,
+    plane_index: int = -1,
+    shape=None,
+    output_path: Optional[str] = None,
+    output_filename: str = "mappings",
+    output_format: str = None,
+    colormap: Optional[str] = None,
+    threshold: Optional[float] = None,
+    min_pixels: Optional[int] = None,
+    total_clumps: Optional[int] = None,
+    pix_indexes: Optional[List] = None,
+    weight_threshold: float = 0.0,
+    pixel_scale_precision: Optional[float] = None,
+    magnification_threshold: float = 0.1,
+    region_alpha: float = 0.25,
+    image_plane_lines=None,
+    image_plane_line_colors=None,
+    source_plane_lines=None,
+    source_plane_line_colors=None,
+    title_prefix: str = None,
+):
+    """
+    2x2 subplot showing, in one look, how the brightest regions of the source map to the
+    image plane and back.
+
+    The panels are:
+
+    * (0, 0) the lens-light-subtracted data, with the image-plane regions and the critical
+      curves overlaid;
+    * (0, 1) the model image of the source plane, with the same regions;
+    * (1, 0) the source plane zoomed to its brightest region, with the source regions and
+      the caustics;
+    * (1, 1) the source plane at full extent, with the same.
+
+    Every source region is filled in its own colour and numbered, and the multiple images
+    it maps to carry the same colour and the same number in the image-plane panels -- so a
+    reader can read a merging pair of source galaxies off the figure by colour alone.
+
+    This is the fit-level counterpart of
+    :func:`~autoarray.inversion.plot.inversion_plots.subplot_mappings`, which works only
+    for a pixelized source. It works for **either** kind of source: a plane which
+    ``has(cls=aa.Pixelization)`` is mapped via the inversion's clumps, and a parametric
+    plane via `ShapeSolver`'s ray-traced triangles.  See
+    :mod:`autolens.lens.mappings` for the two engines.
+
+    Parameters
+    ----------
+    fit : FitImaging
+        The imaging fit to visualise.
+    plane_index : int, optional
+        The index of the source plane whose mappings are drawn.  Defaults to the last plane.
+    shape : Shape, optional
+        The source-plane region for a parametric source.  ``None`` uses a `Circle` at the
+        first source light profile's centre, with its half-light radius.  Ignored for a
+        pixelized source, which finds its own clumps.
+    output_path : str, optional
+        Directory in which to save the figure.  ``None`` does not save it.
+    output_filename : str, optional
+        The filename stem; ``_{plane_index}`` is appended, as the sibling subplots do.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    colormap : str, optional
+        Matplotlib colormap name applied to all image panels.
+    threshold, min_pixels, total_clumps, pix_indexes, weight_threshold
+        The clump-finding controls of the pixelized (engine A) path, passed through to
+        `Inversion.mappings_from`.  ``threshold`` is the knob which decides what counts as
+        a distinct source structure: ~0.5 isolates one smooth source, ~0.2 merges two
+        nearby galaxies, ~0.8 splits a source into its star-forming knots.
+    pixel_scale_precision, magnification_threshold
+        The solver controls of the parametric (engine B) path.
+    region_alpha : float, optional
+        The alpha of each drawn region's fill.
+    image_plane_lines, image_plane_line_colors, source_plane_lines, source_plane_line_colors
+        Pre-computed critical curves and caustics; computed from the fit when not given.
+    title_prefix : str, optional
+        A string prefixed to every panel title.
+    """
+    from autolens.lens import mappings as mappings_module
+
+    plane_index_tag = len(fit.tracer.planes) - 1 if plane_index == -1 else plane_index
+
+    clump_kwargs = {}
+
+    if threshold is not None:
+        clump_kwargs["threshold"] = threshold
+    if min_pixels is not None:
+        clump_kwargs["min_pixels"] = min_pixels
+    if total_clumps is not None:
+        clump_kwargs["total_clumps"] = total_clumps
+    if pix_indexes is not None:
+        clump_kwargs["pix_indexes"] = pix_indexes
+
+    # No guard around this call. A source plane which cannot be mapped -- a plane with
+    # neither a pixelization nor a light profile, a profile with no half-light radius, a
+    # singular inversion -- raises, naming what the caller has to change. Swallowing that
+    # would draw the four panels with no regions on them, which reads as "this source has
+    # no multiple images" and is a worse outcome than a traceback. The one case which
+    # legitimately produces nothing to draw is an empty `mappings` list (below), which is
+    # a real answer rather than a failure.
+    mappings = mappings_module.mappings_from_fit(
+        fit=fit,
+        plane_index=plane_index,
+        shape=shape,
+        pixel_scale_precision=pixel_scale_precision,
+        magnification_threshold=magnification_threshold,
+        weight_threshold=weight_threshold,
+        **clump_kwargs,
+    )
+
+    image_regions = [mapping.image_contours for mapping in mappings]
+    source_regions = [mapping.source_contours for mapping in mappings]
+    region_labels = [str(i + 1) for i in range(len(mappings))]
+
+    if image_plane_lines is None and source_plane_lines is None:
+        (
+            image_plane_lines,
+            image_plane_line_colors,
+            source_plane_lines,
+            source_plane_line_colors,
+        ) = _compute_critical_curves_from_fit(fit)
+
+    source_vmax = _get_source_vmax(fit)
+
+    _pf = (lambda t: f"{title_prefix.rstrip()} {t}") if title_prefix else (lambda t: t)
+
+    fig, axes = subplots(2, 2, figsize=conf_subplot_figsize(2, 2))
+    axes_flat = list(axes.flatten())
+
+    # panel (0, 0): the data with everything but this plane subtracted.
+    try:
+        subtracted_image = fit.subtracted_images_of_planes_list[plane_index]
+    except (IndexError, AttributeError):
+        subtracted_image = None
+
+    if subtracted_image is not None:
+        plot_array(
+            array=subtracted_image,
+            ax=axes_flat[0],
+            title=_pf("Lens Light Subtracted"),
+            colormap=colormap,
+            vmin=0.0 if source_vmax is not None else None,
+            vmax=source_vmax,
+            lines=image_plane_lines,
+            line_colors=image_plane_line_colors,
+        )
+        plot_regions(
+            ax=axes_flat[0],
+            regions=image_regions,
+            region_alpha=region_alpha,
+            region_labels=region_labels,
+        )
+    else:
+        axes_flat[0].axis("off")
+
+    # panel (0, 1): the model image of the plane, with the same regions.
+    try:
+        model_image = fit.model_images_of_planes_list[plane_index]
+    except (IndexError, AttributeError):
+        model_image = None
+
+    if model_image is not None:
+        plot_array(
+            array=model_image,
+            ax=axes_flat[1],
+            title=_pf("Source Model Image"),
+            colormap=colormap,
+            vmax=source_vmax,
+            lines=image_plane_lines,
+            line_colors=image_plane_line_colors,
+        )
+        plot_regions(
+            ax=axes_flat[1],
+            regions=image_regions,
+            region_alpha=region_alpha,
+            region_labels=region_labels,
+        )
+    else:
+        axes_flat[1].axis("off")
+
+    # panels (1, 0) and (1, 1): the source plane, zoomed and unzoomed.
+    for ax, zoom, title in (
+        (axes_flat[2], True, "Source Plane (Zoom)"),
+        (axes_flat[3], False, "Source Plane (No Zoom)"),
+    ):
+        _plot_source_plane(
+            fit,
+            ax,
+            plane_index,
+            zoom_to_brightest=zoom,
+            colormap=colormap,
+            title=_pf(title),
+            lines=source_plane_lines,
+            line_colors=source_plane_line_colors,
+            vmax=source_vmax,
+            regions=source_regions,
+            region_alpha=region_alpha,
+            region_labels=region_labels,
+        )
+
+    hide_unused_axes(axes_flat)
+    tight_layout()
+    save_figure(
+        fig,
+        path=output_path,
+        filename=f"{output_filename}_{plane_index_tag}",
+        format=output_format,
+    )

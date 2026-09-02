@@ -15,6 +15,7 @@ from autolens.imaging.plot.fit_imaging_plots import (
     subplot_fit,
     subplot_fit_log10,
     subplot_of_planes,
+    subplot_mappings,
     subplot_tracer_from_fit,
     subplot_fit_combined,
     subplot_fit_combined_log10,
@@ -138,6 +139,21 @@ class PlotterImaging(Plotter):
         if should_plot("subplot_of_planes"):
             subplot_of_planes(fit, output_path=output_path, output_format=fmt,
                               title_prefix=self.title_prefix)
+
+        # The `subplot_mappings` key lives in the `inversion` section of `plots.yaml`,
+        # where it has sat unread since the mapping visuals were removed in 2025. The
+        # fit-level subplot it now switches on works for a parametric source too, so it is
+        # driven from here (which has the fit) rather than from `Plotter.inversion` (which
+        # has only the inversion, and is never called for a parametric model).
+        if plot_setting(section="inversion", name="subplot_mappings"):
+            for plane_index in plane_indexes_to_plot:
+                subplot_mappings(
+                    fit, plane_index=plane_index, output_path=output_path,
+                    output_format=fmt,
+                    image_plane_lines=ip_lines, image_plane_line_colors=ip_colors,
+                    source_plane_lines=sp_lines, source_plane_line_colors=sp_colors,
+                    title_prefix=self.title_prefix,
+                )
 
         if should_plot("fits_fit"):
             fits_fit(fit=fit, output_path=self.image_path)
