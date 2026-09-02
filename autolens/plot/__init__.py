@@ -53,6 +53,7 @@ from autolens.imaging.plot.fit_imaging_plots import (
     subplot_fit_x1_plane as subplot_fit_imaging_x1_plane,
     subplot_fit_log10_x1_plane as subplot_fit_imaging_log10_x1_plane,
     subplot_of_planes as subplot_fit_imaging_of_planes,
+    subplot_mappings as subplot_fit_imaging_mappings,
     subplot_tracer_from_fit as subplot_fit_imaging_tracer,
     subplot_fit_combined,
     subplot_fit_combined_log10,

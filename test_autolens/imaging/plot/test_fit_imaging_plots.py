@@ -11,6 +11,7 @@ from autolens.imaging.plot.fit_imaging_plots import (
     subplot_fit_x1_plane,
     subplot_fit_log10_x1_plane,
     subplot_of_planes,
+    subplot_mappings,
     subplot_tracer_from_fit,
     subplot_fit_combined,
     subplot_fit_combined_log10,
@@ -216,3 +217,67 @@ def test__compute_critical_curve_lines__unexpected_exception__logs_warning(
     assert record.levelno == logging.WARNING
     assert record.exc_info is not None, "traceback must be attached"
     assert isinstance(record.exc_info[1], RuntimeError)
+
+
+def test__subplot_mappings__parametric_source__output_file_created(
+    fit_imaging_x2_plane_7x7, plot_path, plot_patch
+):
+    """
+    The parametric (ShapeSolver) engine. The filename carries the plane index, as the
+    sibling `mappings_{pixelization_index}` of the inversion subplot does.
+    """
+    subplot_mappings(
+        fit=fit_imaging_x2_plane_7x7,
+        output_path=plot_path,
+        output_format="png",
+    )
+    assert str(plot_path / "mappings_1.png") in plot_patch.paths
+
+
+def test__subplot_mappings__inversion_source__output_file_created(
+    fit_imaging_x2_plane_inversion_7x7, plot_path, plot_patch
+):
+    """
+    The pixelized (inversion) engine, reached through the `pix_indexes` bypass because the
+    7x7 fixture reconstructs to all zeros and so has no clumps of its own.
+    """
+    subplot_mappings(
+        fit=fit_imaging_x2_plane_inversion_7x7,
+        pix_indexes=[[0, 1, 2]],
+        output_path=plot_path,
+        output_format="png",
+    )
+    assert str(plot_path / "mappings_1.png") in plot_patch.paths
+
+
+def test__subplot_mappings__unmappable_plane__raises_rather_than_drawing_nothing(
+    masked_imaging_7x7, plot_path, plot_patch
+):
+    """
+    A source plane which cannot be mapped raises, naming what the caller has to change. It
+    must not draw four empty panels: a figure with no regions reads as "this source has no
+    multiple images", which is a wrong answer rather than a missing one -- so
+    `subplot_mappings` deliberately has no guard around the engine.
+
+    A source plane with neither a pixelization nor a light profile is the case which
+    cannot be mapped at all.
+    """
+    import autolens as al
+
+    fit = al.FitImaging(
+        dataset=masked_imaging_7x7,
+        tracer=al.Tracer(
+            galaxies=[
+                al.Galaxy(
+                    redshift=0.5,
+                    mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.0),
+                ),
+                al.Galaxy(redshift=1.0),
+            ]
+        ),
+    )
+
+    with pytest.raises(ValueError) as exc_info:
+        subplot_mappings(fit=fit, output_path=plot_path, output_format="png")
+
+    assert "shape=" in str(exc_info.value)
