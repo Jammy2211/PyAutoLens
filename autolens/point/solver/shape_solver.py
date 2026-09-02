@@ -569,9 +569,31 @@ class ShapeSolver(AbstractSolver):
     raises instead. See ``test_shape_solver.py::test_jax_and_numpy_kept_triangles_agree``.
     """
 
+    # The one message both rejection routes raise, so a caller sees the same explanation
+    # whether they set `use_jax=True` or passed `xp=jax.numpy` -- and, since it is a plain
+    # string, whether or not JAX is installed.
+    _JAX_REJECTED_MESSAGE = (
+        "ShapeSolver does not support JAX. The JAX triangle containers truncate "
+        "every refinement step to ArrayTriangles.MAX_CONTAINING_SIZE (15) "
+        "triangles to keep static shapes, which is enough for a Point but not for "
+        "a Shape with area: the kept triangles of an extended source number in the "
+        "thousands, so the JAX path silently measures a small fraction of the "
+        "image and returns a magnification orders of magnitude too small. Use "
+        "the NumPy path (`use_jax=False`, the default), or `PointSolver` if you "
+        "want the JAX-differentiable positions of a point source."
+    )
+
     def _xp_from(self, xp):
         """
         Resolve the array module for a solve, rejecting JAX.
+
+        The ``use_jax=True`` case is rejected **before** ``self._xp`` is consulted, because
+        ``self._xp`` imports ``jax.numpy``. Resolving first and checking afterwards made a
+        JAX-free install raise ``ModuleNotFoundError: No module named 'jax'`` from inside
+        the solver rather than the explanation below -- the wrong error, and one which
+        blamed the environment for a decision the solver had already taken. The
+        explicitly-passed-module check reads only ``__name__``, so it imports nothing
+        either.
 
         Parameters
         ----------
@@ -583,19 +605,13 @@ class ShapeSolver(AbstractSolver):
         The array module, which is always ``numpy``.
         """
         if xp is None:
-            xp = self._xp
+            if self.use_jax:
+                raise NotImplementedError(self._JAX_REJECTED_MESSAGE)
+
+            return self._xp
 
         if getattr(xp, "__name__", "").startswith("jax"):
-            raise NotImplementedError(
-                "ShapeSolver does not support JAX. The JAX triangle containers truncate "
-                "every refinement step to ArrayTriangles.MAX_CONTAINING_SIZE (15) "
-                "triangles to keep static shapes, which is enough for a Point but not for "
-                "a Shape with area: the kept triangles of an extended source number in the "
-                "thousands, so the JAX path silently measures a small fraction of the "
-                "image and returns a magnification orders of magnitude too small. Use "
-                "the NumPy path (`use_jax=False`, the default), or `PointSolver` if you "
-                "want the JAX-differentiable positions of a point source."
-            )
+            raise NotImplementedError(self._JAX_REJECTED_MESSAGE)
 
         return xp
 

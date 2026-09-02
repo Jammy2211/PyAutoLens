@@ -545,18 +545,58 @@ def test_intermediate_plane_differs_from_the_last_plane(
 # ---------------------------------------------------------------------------------- #
 
 
-def test_jax_solver_is_rejected_rather_than_silently_wrong(image_grid, sis_tracer):
+def test_use_jax_solver_is_rejected_rather_than_silently_wrong(image_grid, sis_tracer):
     """
     `use_jax=True` used to be silently ignored by `find_magnification`, which hardcoded
     `xp=np`. Consulting `self._xp` instead would have made it silently *wrong*: see
     `test_jax_and_numpy_kept_triangles_agree`. It therefore raises, naming the cap.
+
+    **No `importorskip` here, deliberately.** The rejection must fire on an install with
+    no JAX at all -- that is the install most likely to hit it -- so this test runs on the
+    `unittest-nojax` CI leg, where it caught the solver resolving `self._xp` (which
+    imports `jax.numpy`) before the check, so the user got `ModuleNotFoundError` instead
+    of the explanation.
     """
     solver = ShapeSolver.for_grid(
         grid=image_grid, pixel_scale_precision=0.02, use_jax=True
     )
 
+    for call in (
+        lambda: solver.find_magnification(
+            tracer=sis_tracer, shape=Circle(0.3, 0.0, radius=0.1)
+        ),
+        lambda: solver.solve_triangles(
+            tracer=sis_tracer, shape=Circle(0.3, 0.0, radius=0.1)
+        ),
+        lambda: list(
+            solver.steps(tracer=sis_tracer, shape=Circle(0.3, 0.0, radius=0.1))
+        ),
+    ):
+        with pytest.raises(NotImplementedError) as exc_info:
+            call()
+
+        assert "MAX_CONTAINING_SIZE" in str(exc_info.value)
+
+
+def test_explicit_jax_module_is_rejected_rather_than_silently_wrong(
+    image_grid, sis_tracer
+):
+    """
+    The other route to the JAX path: a NumPy-configured solver handed ``xp=jax.numpy``
+    explicitly. It must give the same error as `use_jax=True`, so neither route can reach
+    the truncated containers.
+
+    This one needs JAX to have a module to pass, hence the guard -- unlike the test above,
+    which is exactly the case that must work *without* it.
+    """
+    jnp = pytest.importorskip("jax.numpy")
+
+    solver = ShapeSolver.for_grid(grid=image_grid, pixel_scale_precision=0.02)
+
     with pytest.raises(NotImplementedError) as exc_info:
-        solver.find_magnification(tracer=sis_tracer, shape=Circle(0.3, 0.0, radius=0.1))
+        solver.find_magnification(
+            tracer=sis_tracer, shape=Circle(0.3, 0.0, radius=0.1), xp=jnp
+        )
 
     assert "MAX_CONTAINING_SIZE" in str(exc_info.value)
 
