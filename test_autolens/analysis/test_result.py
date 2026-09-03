@@ -211,9 +211,14 @@ def test__positions_threshold_from(analysis_imaging_7x7):
 
     result = res.Result(samples_summary=samples_summary, analysis=analysis_imaging_7x7)
 
-    assert result.positions_threshold_from() == pytest.approx(0.0019501455, 1.0e-4)
+    # Knife-edge pin: the fixture is exactly mirror-symmetric (lens centre and source on
+    # x = 0), so the point solver's branch is decided by sub-ULP tie-breaking; PyAutoArray#519's
+    # exact identity transform at angle 0 selected the other branch (positions_threshold
+    # 0.0019501455 -> 0.0019534291, positions[1].x sign flip, magnitude bit-identical). Values
+    # are the exact-transform branch; a 1e-15 centre nudge flips them. See PyAutoLens#721.
+    assert result.positions_threshold_from() == pytest.approx(0.0019534291, 1.0e-4)
     assert result.positions_threshold_from(factor=5.0) == pytest.approx(
-        0.0097507278035, 1.0e-4
+        0.0097671455155, 1.0e-4
     )
     assert result.positions_threshold_from(minimum_threshold=10.0) == pytest.approx(
         10.0, 1.0e-4
@@ -337,11 +342,16 @@ def test__positions_likelihood_from__mass_centre_radial_distance_min(
 
     assert isinstance(positions_likelihood, al.PositionsLH)
     assert len(positions_likelihood.positions) == 2
+    # Knife-edge pin: the fixture is exactly mirror-symmetric (lens centre and source on
+    # x = 0), so the point solver's branch is decided by sub-ULP tie-breaking; PyAutoArray#519's
+    # exact identity transform at angle 0 selected the other branch (positions_threshold
+    # 0.0019501455 -> 0.0019534291, positions[1].x sign flip, magnitude bit-identical). Values
+    # are the exact-transform branch; a 1e-15 centre nudge flips them. See PyAutoLens#721.
     assert positions_likelihood.positions[0] == pytest.approx(
         (-1.00097656e00, 5.63818622e-04), 1.0e-4
     )
     assert positions_likelihood.positions[1] == pytest.approx(
-        (1.00097656e00, -5.63818622e-04), 1.0e-4
+        (1.00097656e00, 5.63818622e-04), 1.0e-4
     )
 
 
