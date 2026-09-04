@@ -10,10 +10,6 @@ This is called strong gravitational lensing and **PyAutoLens** makes it simple t
 
 # Getting Started
 
-## PyAutoLens AI Assistant
-
-The [**PyAutoLens AI Assistant**](https://github.com/PyAutoLabs/autolens_assistant) supports conversation agents such as ChatGPT and coding agents such as Claude Code and Codex. You can get started simply by asking it a question about gravitational lensing or describing the task you would like to perform with **PyAutoLens**. See the [autolens_assistant GitHub page](https://github.com/PyAutoLabs/autolens_assistant) for its full scope and instructions.
-
 ## Human-Readable Documentation and Examples
 
 The following human-readable documentation and examples are also useful for new starters:
@@ -22,6 +18,12 @@ The following human-readable documentation and examples are also useful for new 
 - [The introduction Jupyter Notebook on Colab](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.8.29.1/start_here.ipynb), where you can try **PyAutoLens** in a web browser (without installation).
 - [The autolens_workspace GitHub repository](https://github.com/PyAutoLabs/autolens_workspace), which includes example scripts covering every **PyAutoLens** use case.
 - [The HowToLens GitHub repository](https://github.com/PyAutoLabs/HowToLens): a Jupyter notebook lecture series teaching strong lensing and lens modeling from the ground up.
+
+## PyAutoLens AI Assistant
+
+The [**PyAutoLens AI Assistant**](https://github.com/PyAutoLabs/autolens_assistant) supports conversation agents such as ChatGPT and coding agents such as Claude Code and Codex. You can get started simply by asking it a question about gravitational lensing or describing the task you would like to perform with **PyAutoLens**. See the [autolens_assistant GitHub page](https://github.com/PyAutoLabs/autolens_assistant) for its full scope and instructions.
+
+**The PyAutoLens AI Assistant currently only supports AI coding agents which require a paid subscription, either Claude Code or Codex. Work is ongoing to support free AI coding agents and conversation agents like ChatGPT.**
 
 # Strong Gravitational Lensing
 

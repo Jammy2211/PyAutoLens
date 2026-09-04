@@ -2,10 +2,6 @@
 
 # Start Here
 
-## PyAutoLens AI Assistant
-
-The [**PyAutoLens AI Assistant**](https://github.com/PyAutoLabs/autolens_assistant) supports conversation agents such as ChatGPT and coding agents such as Claude Code and Codex. You can get started simply by asking it a question about gravitational lensing or describing the task you would like to perform with **PyAutoLens**. See the [autolens_assistant GitHub page](https://github.com/PyAutoLabs/autolens_assistant) for its full scope and instructions.
-
 ## Human-Readable Overview
 
 **PyAutoLens** is software for analysing strong gravitational lenses, an astrophysical phenomenon where a galaxy
@@ -24,6 +20,12 @@ Here is a schematic of a strong gravitational lens:
 <https://www.astro.caltech.edu/~george/qsolens/>
 
 This notebook gives an overview of **PyAutoLens**'s features and API.
+
+## PyAutoLens AI Assistant
+
+The [**PyAutoLens AI Assistant**](https://github.com/PyAutoLabs/autolens_assistant) supports conversation agents such as ChatGPT and coding agents such as Claude Code and Codex. You can get started simply by asking it a question about gravitational lensing or describing the task you would like to perform with **PyAutoLens**. See the [autolens_assistant GitHub page](https://github.com/PyAutoLabs/autolens_assistant) for its full scope and instructions.
+
+**The PyAutoLens AI Assistant currently only supports AI coding agents which require a paid subscription, either Claude Code or Codex. Work is ongoing to support free AI coding agents and conversation agents like ChatGPT.**
 
 ## Imports
 
