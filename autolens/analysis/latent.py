@@ -23,6 +23,7 @@ from typing import Callable, Dict, List, Optional
 
 import numpy as np
 
+import autoarray as aa
 import autofit as af
 from autonerves import conf
 from autogalaxy.imaging.model.latent import (
@@ -42,6 +43,11 @@ _MAGZERO_WARNED: set = set()
 # Deduplicates the fallback warning across the many fit evaluations a
 # single search performs.
 _JAX_ZERO_CONTOUR_FALLBACK_WARNED: bool = False
+
+# Set to True the first time ``_pixelized_source_flux`` meets a mapper whose
+# mesh geometry exposes no ``areas_for_magnification``. Deduplicates the
+# warning across the many fit evaluations a single search performs.
+_MESH_AREAS_WARNED: bool = False
 
 
 def _jax_zero_contour_available() -> bool:
@@ -87,6 +93,89 @@ def _maybe_magzero_warn(magzero, name) -> bool:
     return False
 
 
+def _pixelized_source_flux(fit, xp=np):
+    """
+    Source-plane integrated flux of the source galaxy's *pixelized*
+    (inversion) component, in raw image units.
+
+    ``Galaxy.image_2d_from`` returns zeros for a galaxy whose only light
+    model is a ``Pixelization`` — the reconstruction lives on the inversion's
+    mesh, not on a light profile. This helper integrates that reconstruction
+    over the mesh: ``Σ_i s_i A_i``, where ``s_i`` are the reconstructed
+    source-pixel values (``inversion.reconstruction_dict[mapper]``) and
+    ``A_i`` the exact per-pixel areas the mesh geometry publishes as
+    ``areas_for_magnification`` (barycentric dual areas for a Delaunay mesh —
+    PyAutoArray#524 — transformed cell areas for a rectangular mesh).
+
+    The mapper → galaxy association is read from
+    ``inversion.linear_obj_galaxy_dict`` — the dict the inversion is given at
+    construction (``autolens/lens/to_inversion.py``), whose galaxy values are
+    the tracer's own galaxy objects. ``fit.tracer_to_inversion`` must *not* be
+    used here: on ``FitImaging`` it is an uncached property that rebuilds a
+    ``TracerToInversion`` per call, whose mappers are new objects and
+    therefore not keys of ``reconstruction_dict``.
+
+    Returns ``0.0`` when the fit has no inversion or no mapper belongs to the
+    source galaxy (the light-profile path already covers those fits), and
+    ``NaN`` — with a one-time-per-process warning — when a mapper's mesh
+    geometry publishes no exact quadrature areas.
+
+    All branching is on Python structure (``None`` checks, ``isinstance``,
+    dict membership), never on array values, so the function is safe inside
+    the per-sample ``jax.jit`` the latent batch path uses.
+    """
+    global _MESH_AREAS_WARNED
+
+    inversion = getattr(fit, "inversion", None)
+    if inversion is None:
+        return 0.0
+
+    linear_obj_galaxy_dict = getattr(inversion, "linear_obj_galaxy_dict", None)
+    if not linear_obj_galaxy_dict:
+        return 0.0
+
+    try:
+        source_galaxy = fit.tracer.galaxies[-1]
+    except (AttributeError, IndexError):
+        return 0.0
+
+    total = 0.0
+    found_mapper = False
+
+    for linear_obj, galaxy in linear_obj_galaxy_dict.items():
+        if galaxy is not source_galaxy:
+            continue
+        if not isinstance(linear_obj, aa.Mapper):
+            continue
+
+        areas = getattr(
+            getattr(linear_obj, "mesh_geometry", None),
+            "areas_for_magnification",
+            None,
+        )
+        if areas is None:
+            if not _MESH_AREAS_WARNED:
+                logger.warning(
+                    "The mesh geometry '%s' publishes no "
+                    "'areas_for_magnification', so the source-plane flux of "
+                    "the pixelized source cannot be integrated; "
+                    "'total_source_flux' and 'magnification' will be NaN.",
+                    type(getattr(linear_obj, "mesh_geometry", None)).__name__,
+                )
+                _MESH_AREAS_WARNED = True
+            return xp.nan
+
+        found_mapper = True
+        total = total + xp.sum(
+            xp.asarray(inversion.reconstruction_dict[linear_obj]) * xp.asarray(areas)
+        )
+
+    if not found_mapper:
+        return 0.0
+
+    return total
+
+
 def total_lens_flux(fit, magzero=None, xp=np):
     """
     Total integrated flux of the lens galaxy (``fit.tracer.galaxies[0]``),
@@ -122,10 +211,20 @@ def total_source_flux(fit, magzero=None, xp=np):
     """
     Source-plane intrinsic flux of the source galaxy, in raw image units.
 
-    Reads from ``fit.tracer_linear_light_profiles_to_light_profiles`` so
-    that linear light profiles (whose ``intensity`` is solved by the
-    inversion) contribute the correct image — same tracer-conversion
-    handling as :func:`total_source_flux_mujy`.
+    Two contributions are summed, so that a source modelled with light
+    profiles, a pixelization, or both is measured correctly:
+
+    - **Light profiles** — read from
+      ``fit.tracer_linear_light_profiles_to_light_profiles`` so that linear
+      light profiles (whose ``intensity`` is solved by the inversion)
+      contribute the correct image.
+    - **Pixelization** — the inversion's reconstruction integrated over the
+      source mesh with its exact per-pixel ``areas_for_magnification``
+      (barycentric dual areas for a Delaunay mesh, PyAutoArray#524;
+      transformed cell areas for a rectangular mesh); see :func:`_pixelized_source_flux`. Without
+      this term a purely pixelized source has ``image_2d_from`` zeros and a
+      zero source flux, making :func:`magnification` infinite
+      (PyAutoLens#726).
 
     ``magzero`` is accepted but ignored.
     """
@@ -136,7 +235,7 @@ def total_source_flux(fit, magzero=None, xp=np):
         )
     except (AttributeError, IndexError):
         return xp.nan
-    return xp.sum(source_image.array)
+    return xp.sum(source_image.array) + _pixelized_source_flux(fit=fit, xp=xp)
 
 
 def total_lens_flux_mujy(fit, magzero, xp=np):
@@ -190,11 +289,19 @@ def total_source_flux_mujy(fit, magzero, xp=np):
     """
     Source-plane intrinsic flux of the source galaxy, in microjanskies.
 
-    Reads from ``fit.tracer_linear_light_profiles_to_light_profiles`` rather
-    than ``fit.tracer`` so that linear light profiles (whose ``intensity``
-    is solved by the inversion at fit time) contribute the correct image.
-    For non-linear fits this property is a no-op pass-through (returns
+    Same definition as :func:`total_source_flux` — light-profile flux plus
+    the pixelized (inversion) flux — magzero-converted.
+
+    The light-profile term reads from
+    ``fit.tracer_linear_light_profiles_to_light_profiles`` rather than
+    ``fit.tracer`` so that linear light profiles (whose ``intensity`` is
+    solved by the inversion at fit time) contribute the correct image. For
+    non-linear fits this property is a no-op pass-through (returns
     ``fit.tracer``), so the numpy-only and JAX paths both work uniformly.
+    The pixelized term integrates the inversion's reconstruction over the
+    source mesh with its ``areas_for_magnification`` (barycentric dual
+    areas for a Delaunay mesh — PyAutoArray#524 — transformed cell areas for
+    a rectangular mesh); see :func:`_pixelized_source_flux`.
 
     Returns NaN + one warning when ``magzero`` is missing; see
     :func:`total_lens_flux_mujy` for the rationale.
@@ -208,7 +315,7 @@ def total_source_flux_mujy(fit, magzero, xp=np):
         )
     except (AttributeError, IndexError):
         return xp.nan
-    total_flux = xp.sum(source_image.array)
+    total_flux = xp.sum(source_image.array) + _pixelized_source_flux(fit=fit, xp=xp)
     return flux_mujy_via_ab_mag_from(
         ab_mag=ab_mag_via_flux_from(flux=total_flux, magzero=magzero, xp=xp),
         xp=xp,
@@ -218,7 +325,15 @@ def total_source_flux_mujy(fit, magzero, xp=np):
 def magnification(fit, magzero, xp=np):
     """
     Ratio of image-plane to source-plane source flux — the integrated
-    magnification implied by the lens model and source light profile.
+    magnification implied by the lens model and the source's light.
+
+    The denominator is :func:`total_source_flux_mujy`: light-profile flux
+    plus, for a pixelized source, the inversion's reconstruction integrated
+    over the source mesh with its ``areas_for_magnification`` (barycentric
+    dual areas for a Delaunay mesh — PyAutoArray#524 — transformed cell
+    areas for a rectangular mesh). A source whose only light model is a ``Pixelization``
+    therefore has a finite magnification rather than an infinite one
+    (PyAutoLens#726).
 
     ``magzero`` is accepted but unused (the µJy conversions cancel in the
     ratio). It's still required in the signature so the dispatcher can
