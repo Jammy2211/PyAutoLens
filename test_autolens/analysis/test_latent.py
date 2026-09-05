@@ -373,6 +373,22 @@ def _lens_galaxy():
     )
 
 
+# The scene the pixel-scale-stability test re-observes at two pixel scales.
+_SCALE_TEST_LENS = al.Galaxy(
+    redshift=0.5,
+    mass=al.mp.Isothermal(centre=(0.0, 0.0), einstein_radius=1.0),
+)
+_SCALE_TEST_SOURCE = al.Galaxy(
+    redshift=1.0,
+    light=al.lp.Sersic(
+        centre=(0.05, 0.05),
+        intensity=1.0,
+        effective_radius=0.2,
+        sersic_index=1.0,
+    ),
+)
+
+
 def _delaunay_fit(dataset):
     """A real ``FitImaging`` whose source galaxy's only light model is a
     Delaunay pixelization. The Delaunay mesh does not build its own
@@ -416,9 +432,43 @@ def _rectangular_fit(dataset):
     return fit, source
 
 
+_MASK_7X7 = np.array(
+    [
+        [True, True, True, True, True, True, True],
+        [True, True, True, True, True, True, True],
+        [True, True, False, False, False, True, True],
+        [True, True, False, False, False, True, True],
+        [True, True, False, False, False, True, True],
+        [True, True, True, True, True, True, True],
+        [True, True, True, True, True, True, True],
+    ]
+)
+
+
+def _masked_imaging_7x7_at(pixel_scales):
+    """The ``masked_imaging_7x7`` fixture's geometry at arbitrary pixel
+    scales. The fixture itself is 1.0"/pixel, where a division by the data
+    pixel area is numerically invisible."""
+    dataset = aa.Imaging(
+        data=aa.Array2D.no_mask(values=np.ones((7, 7)), pixel_scales=pixel_scales),
+        psf=aa.Convolver(
+            kernel=aa.Array2D.no_mask(
+                values=[[0.0, 0.5, 0.0], [0.5, 1.0, 0.5], [0.0, 0.5, 0.0]],
+                pixel_scales=pixel_scales,
+            )
+        ),
+        noise_map=aa.Array2D.no_mask(
+            values=2.0 * np.ones((7, 7)), pixel_scales=pixel_scales
+        ),
+        over_sample_size_lp=1,
+    )
+    return dataset.apply_mask(mask=aa.Mask2D(mask=_MASK_7X7, pixel_scales=pixel_scales))
+
+
 def _mesh_integrated_flux(fit, source):
-    """Σ_mappers Σ_i s_i A_i for the mappers belonging to ``source`` —
-    computed here independently of the library implementation."""
+    """Σ_mappers Σ_i s_i A_i for the mappers belonging to ``source`` — the
+    plain source-plane surface integral ∫ S d²β, computed here independently
+    of the library implementation."""
     inversion = fit.inversion
     total = 0.0
     for linear_obj, galaxy in inversion.linear_obj_galaxy_dict.items():
@@ -429,6 +479,14 @@ def _mesh_integrated_flux(fit, source):
             * np.asarray(linear_obj.mesh_geometry.areas_for_magnification)
         )
     return total
+
+
+def _expected_pixelized_flux(fit, source):
+    """Σ_i s_i A_i / A_pix — the pixelized source flux in the module's
+    per-data-pixel convention, the one every other flux latent uses. ``A_pix``
+    is read from the same grid the light-profile term is evaluated on."""
+    mesh_integral = _mesh_integrated_flux(fit=fit, source=source)
+    return mesh_integral / fit.dataset.grids.lp.pixel_area
 
 
 def test_pixelized_source_flux_zero_when_fit_has_no_inversion():
@@ -453,7 +511,7 @@ def test_delaunay_pixelized_source_magnification_is_finite(masked_imaging_7x7):
     magnification."""
     fit, source = _delaunay_fit(masked_imaging_7x7)
 
-    denominator = _mesh_integrated_flux(fit=fit, source=source)
+    denominator = _expected_pixelized_flux(fit=fit, source=source)
     lensed = np.sum(fit.galaxy_image_dict[source].array)
 
     assert denominator != 0.0
@@ -468,7 +526,7 @@ def test_delaunay_pixelized_source_magnification_is_finite(masked_imaging_7x7):
 def test_rectangular_pixelized_source_magnification_is_finite(masked_imaging_7x7):
     fit, source = _rectangular_fit(masked_imaging_7x7)
 
-    denominator = _mesh_integrated_flux(fit=fit, source=source)
+    denominator = _expected_pixelized_flux(fit=fit, source=source)
     lensed = np.sum(fit.galaxy_image_dict[source].array)
 
     assert denominator != 0.0
@@ -500,7 +558,7 @@ def test_total_source_flux_sums_light_profile_and_pixelization(masked_imaging_7x
     light_profile_flux = np.sum(
         tracer.galaxies[-1].image_2d_from(grid=fit.dataset.grids.lp).array
     )
-    pixelized_flux = _mesh_integrated_flux(fit=fit, source=source)
+    pixelized_flux = _expected_pixelized_flux(fit=fit, source=source)
 
     assert light_profile_flux != 0.0
     assert pixelized_flux != 0.0
@@ -508,6 +566,132 @@ def test_total_source_flux_sums_light_profile_and_pixelization(masked_imaging_7x
     assert total_source_flux(fit=fit) == pytest.approx(
         light_profile_flux + pixelized_flux
     )
+
+
+def test_pixelized_source_flux_is_per_data_pixel():
+    """The pixelized term is Σ_i s_i A_i / A_pix, not Σ_i s_i A_i — it must
+    join the per-data-pixel convention every other flux latent uses.
+
+    At the 1" fixtures A_pix = 1 and the two are indistinguishable, so this
+    test builds the same fit on 0.5"/pixel data (A_pix = 0.25), where the
+    division is a factor of 4."""
+    dataset = _masked_imaging_7x7_at(pixel_scales=(0.5, 0.5))
+    assert dataset.grids.lp.pixel_area == pytest.approx(0.25)
+
+    fit, source = _rectangular_fit(dataset)
+
+    mesh_integral = _mesh_integrated_flux(fit=fit, source=source)
+    assert mesh_integral != 0.0
+
+    expected = mesh_integral / 0.25
+    assert _pixelized_source_flux(fit=fit) == pytest.approx(expected)
+    assert total_source_flux(fit=fit) == pytest.approx(expected)
+
+    # The division is real, not a no-op inherited from a 1" fixture.
+    assert total_source_flux(fit=fit) != pytest.approx(mesh_integral)
+
+    lensed = np.sum(fit.galaxy_image_dict[source].array)
+    assert magnification(fit=fit, magzero=25.0) == pytest.approx(lensed / expected)
+
+
+def _simulated_lens_dataset(pixel_scales, shape_native):
+    """A noise-free image of ``_SCALE_TEST_LENS`` lensing ``_SCALE_TEST_SOURCE``,
+    masked to a 2" circle — the same physical scene at whatever pixel scale is
+    asked for, so long as ``pixel_scales * shape_native`` is held fixed."""
+    grid = al.Grid2D.uniform(shape_native=shape_native, pixel_scales=pixel_scales)
+    tracer = al.Tracer(galaxies=[_SCALE_TEST_LENS, _SCALE_TEST_SOURCE])
+
+    dataset = aa.Imaging(
+        data=aa.Array2D(
+            values=tracer.image_2d_from(grid=grid).native,
+            mask=aa.Mask2D.all_false(
+                shape_native=shape_native, pixel_scales=pixel_scales
+            ),
+        ),
+        psf=aa.Convolver(
+            kernel=aa.Array2D.no_mask(
+                values=[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]],
+                pixel_scales=pixel_scales,
+            )
+        ),
+        noise_map=aa.Array2D.no_mask(
+            values=0.01 * np.ones(shape_native), pixel_scales=pixel_scales
+        ),
+        over_sample_size_lp=1,
+    )
+    return dataset.apply_mask(
+        mask=aa.Mask2D.circular(
+            shape_native=shape_native, pixel_scales=pixel_scales, radius=2.0
+        )
+    )
+
+
+def test_pixelized_magnification_is_stable_across_pixel_scales():
+    """The physical statement behind the per-data-pixel convention: fit the
+    *same* scene at two pixel scales and the pixelized magnification stays put.
+
+    What it pins is deliberately loose — a rectangular reconstruction of a
+    compact Sersic over a 6.4" field is coarse, so only the order of magnitude
+    is meaningful and the window here is a factor of two. It is exactly what
+    the unscaled ``Sum_i s_i A_i`` violated: undivided, the two answers differ
+    by the pixel-area ratio, 4x, which the last assertion checks is outside
+    the window (so the window is not vacuous).
+
+    It pins nothing about agreement with a light-profile source's
+    magnification, which at this coarseness is not itself scale-stable.
+    """
+    pixelization = al.Pixelization(
+        mesh=al.mesh.RectangularUniform(shape=(20, 20)),
+        regularization=al.reg.Constant(coefficient=1.0),
+    )
+
+    values = {}
+    for pixel_scales, shape_native in (((0.4, 0.4), (16, 16)), ((0.2, 0.2), (32, 32))):
+        dataset = _simulated_lens_dataset(
+            pixel_scales=pixel_scales, shape_native=shape_native
+        )
+        fit = al.FitImaging(
+            dataset=dataset,
+            tracer=al.Tracer(
+                galaxies=[
+                    _SCALE_TEST_LENS,
+                    al.Galaxy(redshift=1.0, pixelization=pixelization),
+                ]
+            ),
+        )
+        values[pixel_scales[0]] = magnification(fit=fit, magzero=25.0)
+
+    assert all(np.isfinite(v) for v in values.values())
+
+    ratio = values[0.4] / values[0.2]
+    assert 0.5 < ratio < 2.0
+
+    # Without the division by the data pixel area the same two fits would
+    # differ by the ratio of pixel areas (0.16 / 0.04), i.e. off the window.
+    unscaled_ratio = ratio * (0.16 / 0.04)
+    assert not 0.5 < unscaled_ratio < 2.0
+
+
+def test_pixelized_source_flux_nan_when_pixel_area_unresolvable(caplog):
+    """A fit whose dataset publishes neither a grid ``pixel_area`` nor
+    ``pixel_scales`` yields NaN plus one warning per process — never a
+    silently unscaled number."""
+    _latent_module._PIXEL_AREA_WARNED = False
+    caplog.set_level(logging.WARNING)
+
+    dataset = _masked_imaging_7x7_at(pixel_scales=(0.5, 0.5))
+    fit, _ = _rectangular_fit(dataset)
+    fit_no_pixel_area = SimpleNamespace(
+        tracer=fit.tracer,
+        inversion=fit.inversion,
+        dataset=SimpleNamespace(grids=SimpleNamespace(lp=SimpleNamespace())),
+    )
+
+    values = [_pixelized_source_flux(fit=fit_no_pixel_area) for _ in range(3)]
+
+    assert all(np.isnan(v) for v in values)
+    matching = [r for r in caplog.records if "data pixel area" in r.message]
+    assert len(matching) == 1
 
 
 def test_light_profile_only_fit_source_flux_unchanged(fit_imaging_x2_plane_7x7):

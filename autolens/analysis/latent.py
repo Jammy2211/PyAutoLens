@@ -49,6 +49,12 @@ _JAX_ZERO_CONTOUR_FALLBACK_WARNED: bool = False
 # warning across the many fit evaluations a single search performs.
 _MESH_AREAS_WARNED: bool = False
 
+# Set to True the first time ``_pixelized_source_flux`` cannot resolve the
+# data's pixel area, and so cannot express the mesh-integrated flux in this
+# module's per-data-pixel convention. Deduplicates that warning across the
+# many fit evaluations a single search performs.
+_PIXEL_AREA_WARNED: bool = False
+
 
 def _jax_zero_contour_available() -> bool:
     """
@@ -93,19 +99,61 @@ def _maybe_magzero_warn(magzero, name) -> bool:
     return False
 
 
+def _data_pixel_area(fit) -> Optional[float]:
+    """
+    The data's pixel area ``A_pix`` in arcsec², or ``None`` if it cannot be
+    resolved from the fit.
+
+    Read from ``fit.dataset.grids.lp`` — the *same* grid the light-profile
+    flux term of :func:`total_source_flux` is evaluated on — so both terms of
+    that sum share one convention. ``Grid2D.pixel_area`` is the product of the
+    grid's ``pixel_scales`` and is a plain Python float, so dividing by it
+    introduces no array op and is trace-safe inside ``jax.jit``. A grid type
+    that publishes no ``pixel_area`` falls back to multiplying out
+    ``pixel_scales``, on the grid and then on the dataset itself.
+    """
+    dataset = getattr(fit, "dataset", None)
+    grid = getattr(getattr(dataset, "grids", None), "lp", None)
+
+    pixel_area = getattr(grid, "pixel_area", None)
+    if pixel_area is not None:
+        return float(pixel_area)
+
+    for obj in (grid, dataset):
+        pixel_scales = getattr(obj, "pixel_scales", None)
+        if pixel_scales is not None:
+            return float(pixel_scales[0]) * float(pixel_scales[1])
+
+    return None
+
+
 def _pixelized_source_flux(fit, xp=np):
     """
     Source-plane integrated flux of the source galaxy's *pixelized*
-    (inversion) component, in raw image units.
+    (inversion) component, in raw image units **per data pixel**.
 
     ``Galaxy.image_2d_from`` returns zeros for a galaxy whose only light
     model is a ``Pixelization`` — the reconstruction lives on the inversion's
     mesh, not on a light profile. This helper integrates that reconstruction
-    over the mesh: ``Σ_i s_i A_i``, where ``s_i`` are the reconstructed
-    source-pixel values (``inversion.reconstruction_dict[mapper]``) and
-    ``A_i`` the exact per-pixel areas the mesh geometry publishes as
+    over the mesh and re-expresses it in this module's per-data-pixel flux
+    convention: ``Σ_i s_i A_i / A_pix``, where ``s_i`` are the reconstructed
+    source-pixel values (``inversion.reconstruction_dict[mapper]``), ``A_i``
+    the exact per-pixel areas the mesh geometry publishes as
     ``areas_for_magnification`` (barycentric dual areas for a Delaunay mesh —
-    PyAutoArray#524 — transformed cell areas for a rectangular mesh).
+    PyAutoArray#524 — transformed cell areas for a rectangular mesh) and
+    ``A_pix`` the data pixel area (:func:`_data_pixel_area`).
+
+    **Why the division by ``A_pix``.** Every other flux latent here is a sum
+    over *data pixels* — ``Σ galaxy_image_dict[galaxy]``,
+    ``Σ galaxy.image_2d_from(grid)`` — i.e. ``∫ I d²θ / A_pix``. The
+    reconstruction ``s_i`` is in those same per-data-pixel units (the mapping
+    matrix maps ``s`` onto image-pixel values), so ``Σ_i s_i A_i`` is the
+    plain surface integral ``∫ S d²β`` and must be divided by ``A_pix`` to
+    join the convention. Only then is :func:`magnification` —
+    ``Σ image / (Σ s A / A_pix)`` — the physical ``∫ I d²θ / ∫ S d²β``.
+    Undivided it scales with the data's pixel scale: on a 0.1"/pixel dataset
+    the pixelized magnification came out exactly 100× too large. The 1"
+    fixtures have ``A_pix = 1``, which is why this was invisible in tests.
 
     The mapper → galaxy association is read from
     ``inversion.linear_obj_galaxy_dict`` — the dict the inversion is given at
@@ -118,13 +166,16 @@ def _pixelized_source_flux(fit, xp=np):
     Returns ``0.0`` when the fit has no inversion or no mapper belongs to the
     source galaxy (the light-profile path already covers those fits), and
     ``NaN`` — with a one-time-per-process warning — when a mapper's mesh
-    geometry publishes no exact quadrature areas.
+    geometry publishes no exact quadrature areas, or when the data pixel area
+    cannot be resolved (an unscaled number would silently be wrong by the
+    pixel area).
 
     All branching is on Python structure (``None`` checks, ``isinstance``,
     dict membership), never on array values, so the function is safe inside
     the per-sample ``jax.jit`` the latent batch path uses.
     """
     global _MESH_AREAS_WARNED
+    global _PIXEL_AREA_WARNED
 
     inversion = getattr(fit, "inversion", None)
     if inversion is None:
@@ -173,7 +224,19 @@ def _pixelized_source_flux(fit, xp=np):
     if not found_mapper:
         return 0.0
 
-    return total
+    pixel_area = _data_pixel_area(fit)
+    if pixel_area is None:
+        if not _PIXEL_AREA_WARNED:
+            logger.warning(
+                "The data pixel area could not be resolved from the fit "
+                "(no 'fit.dataset.grids.lp.pixel_area' and no 'pixel_scales'), "
+                "so the pixelized source flux cannot be expressed per data "
+                "pixel; 'total_source_flux' and 'magnification' will be NaN."
+            )
+            _PIXEL_AREA_WARNED = True
+        return xp.nan
+
+    return total / pixel_area
 
 
 def total_lens_flux(fit, magzero=None, xp=np):
@@ -218,13 +281,14 @@ def total_source_flux(fit, magzero=None, xp=np):
       ``fit.tracer_linear_light_profiles_to_light_profiles`` so that linear
       light profiles (whose ``intensity`` is solved by the inversion)
       contribute the correct image.
-    - **Pixelization** — the inversion's reconstruction integrated over the
-      source mesh with its exact per-pixel ``areas_for_magnification``
-      (barycentric dual areas for a Delaunay mesh, PyAutoArray#524;
-      transformed cell areas for a rectangular mesh); see :func:`_pixelized_source_flux`. Without
-      this term a purely pixelized source has ``image_2d_from`` zeros and a
-      zero source flux, making :func:`magnification` infinite
-      (PyAutoLens#726).
+    - **Pixelization** — the inversion's reconstruction integrated with its
+      exact per-pixel ``areas_for_magnification`` (barycentric dual areas for
+      a Delaunay mesh, PyAutoArray#524; transformed cell areas for a
+      rectangular mesh) and expressed per data pixel (divided by the data
+      pixel area), which is the convention the light-profile term above is
+      already in; see :func:`_pixelized_source_flux`. Without this term a
+      purely pixelized source has ``image_2d_from`` zeros and a zero source
+      flux, making :func:`magnification` infinite (PyAutoLens#726).
 
     ``magzero`` is accepted but ignored.
     """
@@ -298,10 +362,11 @@ def total_source_flux_mujy(fit, magzero, xp=np):
     solved by the inversion at fit time) contribute the correct image. For
     non-linear fits this property is a no-op pass-through (returns
     ``fit.tracer``), so the numpy-only and JAX paths both work uniformly.
-    The pixelized term integrates the inversion's reconstruction over the
-    source mesh with its ``areas_for_magnification`` (barycentric dual
-    areas for a Delaunay mesh — PyAutoArray#524 — transformed cell areas for
-    a rectangular mesh); see :func:`_pixelized_source_flux`.
+    The pixelized term integrates the inversion's reconstruction with its
+    ``areas_for_magnification`` (barycentric dual areas for a Delaunay mesh —
+    PyAutoArray#524 — transformed cell areas for a rectangular mesh) and
+    expresses it per data pixel (divided by the data pixel area), matching the
+    light-profile term's convention; see :func:`_pixelized_source_flux`.
 
     Returns NaN + one warning when ``magzero`` is missing; see
     :func:`total_lens_flux_mujy` for the rationale.
@@ -329,11 +394,13 @@ def magnification(fit, magzero, xp=np):
 
     The denominator is :func:`total_source_flux_mujy`: light-profile flux
     plus, for a pixelized source, the inversion's reconstruction integrated
-    over the source mesh with its ``areas_for_magnification`` (barycentric
-    dual areas for a Delaunay mesh — PyAutoArray#524 — transformed cell
-    areas for a rectangular mesh). A source whose only light model is a ``Pixelization``
-    therefore has a finite magnification rather than an infinite one
-    (PyAutoLens#726).
+    with its ``areas_for_magnification`` (barycentric dual areas for a
+    Delaunay mesh — PyAutoArray#524 — transformed cell areas for a rectangular
+    mesh) and expressed per data pixel (divided by the data pixel area). Both
+    numerator and denominator are then per-data-pixel sums, so the ratio is
+    the physical ``∫ I d²θ / ∫ S d²β`` and does not depend on the data's pixel
+    scale. A source whose only light model is a ``Pixelization`` therefore has
+    a finite magnification rather than an infinite one (PyAutoLens#726).
 
     ``magzero`` is accepted but unused (the µJy conversions cancel in the
     ratio). It's still required in the signature so the dispatcher can
