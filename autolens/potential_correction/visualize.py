@@ -14,14 +14,14 @@ import copy
 import os
 
 import numpy as np
-import matplotlib as mpl
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
-from matplotlib.ticker import MaxNLocator
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 from scipy.interpolate import griddata
 from scipy.spatial import Voronoi, voronoi_plot_2d
+
+# ``matplotlib`` is imported inside the drawing functions below, not here:
+# importing ``matplotlib.pyplot`` at module level cost every ``import autolens``
+# ~0.32s, since ``autolens/__init__.py`` imports this sub-package (census O3).
+# This matches ``potential_correction/mesh.py`` and ``iterative.py``, which
+# already defer their pyplot import the same way.
 
 
 def _plot_anchor_points(ax, anchor_points):
@@ -45,6 +45,11 @@ def imshow_masked_data(
     Shows a 1D (slim) data vector on its 2D mask, with masked pixels blanked,
     a colorbar and optional contours.
     """
+    from matplotlib import pyplot as plt
+    from matplotlib import ticker
+    from matplotlib.ticker import MaxNLocator
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+
     data_1d = np.asarray(data_1d)
     mask_2d = np.asarray(mask_2d)
     if centralize:
@@ -111,6 +116,8 @@ def show_image_irregular_interpolate(
     Shows values on irregular (y, x) points by linear interpolation onto a
     regular grid.
     """
+    from matplotlib import pyplot as plt
+
     points = np.asarray(points)
     points = points[:, ::-1]  # to scipy (x, y) order
 
@@ -141,6 +148,11 @@ def show_image_irregular(
     """
     Shows values on irregular (y, x) points as coloured Voronoi cells.
     """
+    import matplotlib as mpl
+    from matplotlib import cm
+    from matplotlib import pyplot as plt
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+
     points = np.asarray(points)
     points = points[:, ::-1]  # to scipy (x, y) order
 
@@ -180,6 +192,8 @@ def show_fit_dpsi(fit, output="result.png"):
     The six-panel summary of a ``FitDpsiImaging``: residual data, model,
     residual-of-residual, normalized residual, and the dpsi and dkappa maps.
     """
+    from matplotlib import pyplot as plt
+
     plt.figure(figsize=(15, 10))
     cmap = copy.copy(plt.get_cmap("jet"))
     cmap.set_bad(color="white")
@@ -256,6 +270,8 @@ def show_fit_dpsi_src(fit, output="result.png", show_src_grid=True, interpolate=
     model, residual, normalized residual, dpsi map, dkappa map and the
     source reconstruction.
     """
+    from matplotlib import pyplot as plt
+
     fig = plt.figure(figsize=(15, 10))
     cmap = copy.copy(plt.get_cmap("jet"))
     cmap.set_bad(color="white")
