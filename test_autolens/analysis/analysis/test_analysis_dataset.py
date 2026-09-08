@@ -99,23 +99,68 @@ def test__save_results__tracer_output_to_json(analysis_imaging_7x7):
 
 def test__save_attributes__dataset_fits_output_for_aggregator(analysis_imaging_7x7):
     # Regression guard: `save_attributes` must always write `dataset.fits` to the
-    # `files` folder so the aggregator loaders (`ImagingAgg`,
+    # `image` folder so the aggregator loaders (`ImagingAgg`,
     # `agg_util.mask_header_from`) can reload the dataset via
-    # `fit.value(name="dataset")`, independently of whether visualization ran.
+    # `fit.value(name="dataset")`. The write is not gated on visualization.
     from astropy.io import fits
 
     paths = af.DirectoryPaths()
 
+    dataset_fits_path = paths.image_path / "dataset.fits"
+
+    if dataset_fits_path.exists():
+        os.remove(dataset_fits_path)
+
     analysis_imaging_7x7.save_attributes(paths=paths)
 
-    dataset_fits_path = paths._files_path / "dataset.fits"
-
     assert dataset_fits_path.exists()
+    assert not (paths._files_path / "dataset.fits").exists()
 
     with fits.open(dataset_fits_path) as hdu_list:
         ext_names = [hdu.name for hdu in hdu_list]
 
     assert ext_names[:4] == ["MASK", "DATA", "NOISE_MAP", "PSF"]
+
+    # A second call (e.g. a resumed search) must not rewrite the existing file.
+
+    dataset_fits_path.write_bytes(b"sentinel")
+
+    analysis_imaging_7x7.save_attributes(paths=paths)
+
+    assert dataset_fits_path.read_bytes() == b"sentinel"
+
+    os.remove(dataset_fits_path)
+
+
+def test__save_attributes__dataset_fits_output_for_aggregator__interferometer(
+    analysis_interferometer_7,
+):
+    from astropy.io import fits
+
+    paths = af.DirectoryPaths()
+
+    dataset_fits_path = paths.image_path / "dataset.fits"
+
+    if dataset_fits_path.exists():
+        os.remove(dataset_fits_path)
+
+    analysis_interferometer_7.save_attributes(paths=paths)
+
+    assert dataset_fits_path.exists()
+    assert not (paths._files_path / "dataset.fits").exists()
+
+    with fits.open(dataset_fits_path) as hdu_list:
+        ext_names = [hdu.name for hdu in hdu_list]
+
+    assert ext_names[:4] == ["MASK", "DATA", "NOISE_MAP", "UV_WAVELENGTHS"]
+
+    # A second call (e.g. a resumed search) must not rewrite the existing file.
+
+    dataset_fits_path.write_bytes(b"sentinel")
+
+    analysis_interferometer_7.save_attributes(paths=paths)
+
+    assert dataset_fits_path.read_bytes() == b"sentinel"
 
     os.remove(dataset_fits_path)
 

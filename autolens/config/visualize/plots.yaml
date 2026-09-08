@@ -3,19 +3,20 @@
 # For example, if `plots: fit: subplot_fit=True``, the ``subplot_fit.png`` subplot file will
 # be plotted every time visualization is performed.
 
-# There are two settings which are important for inspecting results via the dataset after a fit is complete which are:
+# One setting is important for inspecting results via the dataset after a fit is complete:
 
-# - `fits_dataset`: This outputs `dataset.fits` which the database functionality may use to reperform fits.
 # -`fits_adapt_images`, This outputs `adapt_images.fits` which the database functionality may use to reperform fits.
 
-# These can be disabled to save on hard-disk space but will lead to certain database functionality being disabled.
+# It can be disabled to save on hard-disk space but will lead to certain database functionality being disabled.
+
+# The dataset itself is always output as `dataset.fits` to the `image` folder of every fit, and is not controlled
+# by any setting here.
 
 subplot_format: [png]                      # Output format of all subplots, can be png, pdf or both (e.g. [png, pdf])
 fits_are_zoomed: false                     # If true, output .fits files are zoomed in on the center of the unmasked region image, saving hard-disk space.
 
 dataset:                                   # Settings for plots of all datasets (e.g. Imaging, Interferometer).
   subplot_dataset: true                    # Plot subplot containing all dataset quantities (e.g. the data, noise-map, etc.)?
-  fits_dataset: true                      # Output a .fits file containing the dataset data, noise-map and other quantities?
 
 positions:                                 # Settings for plots with resampling image-positions on (e.g. the image).
   image_with_positions: true
