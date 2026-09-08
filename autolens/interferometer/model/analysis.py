@@ -333,10 +333,10 @@ class AnalysisInterferometer(AnalysisDataset):
 
         - The positions of the brightest pixels in the lensed source which are used to discard mass models.
 
-        The following .fits files are also output via the plotter interface:
+        It also outputs, to the `image` folder, the file `dataset.fits`, which contains:
 
-        - The real space mask applied to the dataset, in the `PrimaryHDU` of `dataset.fits`.
-        - The interferometer dataset as `dataset.fits` (data / noise-map / uv_wavelengths).
+        - The real space mask applied to the dataset, in the `PrimaryHDU`.
+        - The interferometer dataset (data / noise-map / uv_wavelengths).
 
          It is common for these attributes to be loaded by many of the template aggregator functions given in the
          `aggregator` modules. For example, when using the database tools to perform a fit, the default behaviour is for
@@ -351,26 +351,28 @@ class AnalysisInterferometer(AnalysisDataset):
         """
         super().save_attributes(paths=paths)
 
-        # Output `dataset.fits` to the `files` folder so the aggregator loaders
-        # (e.g. `InterferometerAgg`, `agg_util.mask_header_from`) can always
-        # reload the dataset via `fit.value(name="dataset")`, independently of
-        # whether the visualization `fits_dataset` output ran. The plotter
-        # interface also writes this file to the `image` folder for inspection,
-        # but that write is gated on visualization settings and is not
-        # guaranteed for every fit.
-        paths.save_fits(
-            name="dataset",
-            fits=hdu_list_for_output_from(
-                values_list=[
-                    self.dataset.real_space_mask.astype("float"),
-                    self.dataset.data.in_array,
-                    self.dataset.noise_map.in_array,
-                    self.dataset.uv_wavelengths,
-                ],
-                ext_name_list=["mask", "data", "noise_map", "uv_wavelengths"],
-                header_dict=self.dataset.real_space_mask.header_dict,
-            ),
+        hdu_list = hdu_list_for_output_from(
+            values_list=[
+                self.dataset.real_space_mask.astype("float"),
+                self.dataset.data.in_array,
+                self.dataset.noise_map.in_array,
+                self.dataset.uv_wavelengths,
+            ],
+            ext_name_list=["mask", "data", "noise_map", "uv_wavelengths"],
+            header_dict=self.dataset.real_space_mask.header_dict,
         )
+
+        # `dataset.fits` is written once per search, to the `image` folder, and is written
+        # unconditionally (it is not gated on any visualization setting). The write is skipped
+        # if the file already exists, so a resumed search does not rewrite it.
+        #
+        # The aggregator loaders (e.g. `InterferometerAgg`, `agg_util.mask_header_from`) reload
+        # the dataset via `fit.value(name="dataset")`, which scans the `image` folder for .fits
+        # files, so this single write is all that is required.
+        dataset_path = paths.image_path / "dataset.fits"
+
+        if not dataset_path.exists():
+            hdu_list.writeto(dataset_path, overwrite=True)
 
         paths.save_json(
             "transformer_class",
