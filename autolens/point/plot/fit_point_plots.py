@@ -99,9 +99,10 @@ def plot_image_with_points(
     """
     Plot an observed image of a lensed point source (e.g. a quasar) with its point-source positions overlaid.
 
-    The observed positions of the `PointDataset` are drawn as high-contrast markers (white fill, black edge)
-    so they stand out against any colormap. When a `FitPointDataset` is passed, the model-predicted positions
-    are drawn as red crosses, and critical curves can be overlaid via ``image_plane_lines``.
+    The observed positions of the `PointDataset` are drawn as hollow white rings, so they stand out against
+    the image without hiding the point-source emission beneath them. When a `FitPointDataset` is passed, the model-predicted positions
+    are drawn as red crosses (image-plane fits only, as a source-plane fit's model data lies in the source
+    plane), and critical curves can be overlaid via ``image_plane_lines``.
 
     The image is used only for visualization: it does not enter the point-source likelihood.
 
@@ -148,10 +149,14 @@ def plot_image_with_points(
     obs_grid = _yx(dataset.positions)
     ax.scatter(
         obs_grid[:, 1], obs_grid[:, 0],
-        s=60, c="w", edgecolors="k", linewidths=1.5, zorder=6, label="Observed",
+        s=150, facecolors="none", edgecolors="w", linewidths=2, zorder=6, label="Observed",
     )
 
-    if fit is not None:
+    # Only image-plane fits have model positions in the image plane; a source-plane fit's model data is the
+    # source centre, which must not be drawn over the image.
+    from autolens.point.fit.positions.image.abstract import AbstractFitPositionsImagePair
+
+    if fit is not None and isinstance(fit.positions, AbstractFitPositionsImagePair):
         model_grid = _yx(fit.positions.model_data)
         ax.scatter(
             model_grid[:, 1], model_grid[:, 0],
