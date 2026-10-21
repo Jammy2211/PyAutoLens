@@ -1,6 +1,6 @@
 import autofit as af
-import autogalaxy as ag
 
+from autolens.lens.plot.critical_curves import critical_curve_grid_from
 from autolens.weak.model.plotter import PlotterWeak
 
 
@@ -77,9 +77,8 @@ class VisualizerWeak(af.Visualizer):
 
         tracer = fit.tracer
 
-        grid = ag.Grid2D.from_extent(
-            extent=fit.dataset.extent_from(), shape_native=(100, 100)
-        )
+        # The source galaxies span the field, so the grid covers their (square) extent.
+        grid = critical_curve_grid_from(dataset=fit.dataset, scale=1.0)
 
         plotter.tracer(
             tracer=tracer,

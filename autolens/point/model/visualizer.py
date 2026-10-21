@@ -1,7 +1,7 @@
 import autofit as af
-import autogalaxy as ag
 
 from autolens.point.model.plotter import PlotterPoint
+from autolens.lens.plot.critical_curves import critical_curve_grid_from
 from autolens.imaging.plot.fit_imaging_plots import _compute_critical_curve_lines
 
 
@@ -76,9 +76,7 @@ class VisualizerPoint(af.Visualizer):
 
         tracer = fit.tracer
 
-        grid = ag.Grid2D.from_extent(
-            extent=fit.dataset.extent_from(), shape_native=(100, 100)
-        )
+        grid = critical_curve_grid_from(dataset=fit.dataset)
 
         # Compute critical curves and caustics once for all plot functions.
         ip_lines, ip_colors, sp_lines, sp_colors = _compute_critical_curve_lines(

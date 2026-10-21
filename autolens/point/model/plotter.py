@@ -1,7 +1,7 @@
-import autogalaxy as ag
 
 from autolens.analysis.plotter import Plotter
 from autolens.imaging.plot.fit_imaging_plots import _compute_critical_curve_lines
+from autolens.lens.plot.critical_curves import critical_curve_grid_from
 
 from autolens.point.fit.dataset import FitPointDataset
 from autolens.point.plot.fit_point_plots import subplot_fit as subplot_fit_point
@@ -115,9 +115,7 @@ class PlotterPoint(Plotter):
 
         # Use pre-computed critical curves if provided, otherwise compute once here.
         if image_plane_lines is None and source_plane_lines is None:
-            grid = ag.Grid2D.from_extent(
-                extent=fit.dataset.extent_from(), shape_native=(100, 100)
-            )
+            grid = critical_curve_grid_from(dataset=fit.dataset)
             ip_lines, ip_colors, sp_lines, sp_colors = _compute_critical_curve_lines(
                 fit.tracer, grid
             )

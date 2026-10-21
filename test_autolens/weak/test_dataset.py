@@ -99,3 +99,21 @@ def test__weak_dataset__json_round_trip(tmp_path):
     assert np.allclose(loaded.shear_yx.array, dataset.shear_yx.array)
     assert np.allclose(loaded.shear_yx.grid.array, dataset.shear_yx.grid.array)
     assert np.allclose(loaded.noise_map.array, dataset.noise_map.array)
+
+
+def test__critical_curve_grid_from__covers_field_in_yx_order():
+    from autolens.lens.plot.critical_curves import critical_curve_grid_from
+
+    # A field far longer in y than x, offset from the origin: the old `from_extent(extent_from())` transposed it.
+    shear_yx = _make_shear_yx(
+        positions=[(-1.0, 1.0), (9.0, 1.0), (4.0, 3.0)],
+        values=[(0.0, 0.0), (0.0, 0.0), (0.0, 0.0)],
+    )
+    dataset = al.WeakDataset(shear_yx=shear_yx, noise_map=0.3)
+
+    grid = np.asarray(critical_curve_grid_from(dataset=dataset, scale=1.0).array)
+
+    assert np.mean(grid[:, 0]) == pytest.approx(4.0, abs=0.1)
+    assert np.mean(grid[:, 1]) == pytest.approx(2.0, abs=0.1)
+    assert grid[:, 0].min() < -1.0 and grid[:, 0].max() > 9.0
+    assert grid[:, 1].min() < 1.0 and grid[:, 1].max() > 3.0

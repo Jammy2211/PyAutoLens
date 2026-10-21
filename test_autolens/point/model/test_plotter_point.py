@@ -147,3 +147,59 @@ def test__visualizer__no_image__no_image_with_points(
     assert str(plot_path / "fit.png") in plot_patch.paths
     assert str(plot_path / "image_with_points.png") not in plot_patch.paths
     assert str(plot_path / "fit_image_with_points.png") not in plot_patch.paths
+
+
+def test__critical_curve_grid_from__contains_curve_beyond_multiple_images():
+    import numpy as np
+
+    import autolens as al
+    from autolens.lens.plot.critical_curves import _compute_critical_curve_lines
+    from autolens.lens.plot.critical_curves import critical_curve_grid_from
+
+    # Multiple images inside a 1" box, an isothermal tangential critical curve of radius 1.6": a grid covering
+    # only the images' bounding box clips the curve into arcs.
+    dataset = al.PointDataset(
+        name="point_0",
+        positions=al.Grid2DIrregular([(1.0, 0.5), (0.5, 1.0), (-0.5, 0.0), (0.0, -0.5)]),
+        positions_noise_map=al.ArrayIrregular([0.05, 0.05, 0.05, 0.05]),
+    )
+
+    tracer = al.Tracer(
+        galaxies=[
+            al.Galaxy(redshift=0.5, mass=al.mp.Isothermal(einstein_radius=1.6)),
+            al.Galaxy(redshift=1.0),
+        ]
+    )
+
+    grid = critical_curve_grid_from(dataset=dataset)
+
+    image_plane_lines, _, _, _ = _compute_critical_curve_lines(tracer, grid)
+
+    assert len(image_plane_lines) == 1
+
+    line = np.asarray(image_plane_lines[0])
+
+    assert np.allclose(line[0], line[-1], atol=0.05)
+    assert np.max(np.abs(line)) == pytest.approx(1.6, abs=0.05)
+
+
+def test__critical_curve_grid_from__extent_is_x_first():
+    import numpy as np
+
+    import autolens as al
+    from autolens.lens.plot.critical_curves import critical_curve_grid_from
+
+    # Images spread far more in y than x: the grid must be centred on them in (y,x).
+    dataset = al.PointDataset(
+        name="point_0",
+        positions=al.Grid2DIrregular([(3.0, 1.0), (5.0, 1.0)]),
+        positions_noise_map=al.ArrayIrregular([0.05, 0.05]),
+    )
+
+    grid = np.asarray(critical_curve_grid_from(dataset=dataset).array)
+
+    assert np.mean(grid[:, 0]) == pytest.approx(4.0, abs=0.05)
+    assert np.mean(grid[:, 1]) == pytest.approx(1.0, abs=0.05)
+    assert grid[:, 0].max() - grid[:, 0].min() == pytest.approx(
+        grid[:, 1].max() - grid[:, 1].min(), abs=0.05
+    )

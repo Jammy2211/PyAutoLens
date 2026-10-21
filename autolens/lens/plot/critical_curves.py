@@ -8,6 +8,7 @@ which imports those same fit-plot modules and would create a circular import.
 
 import logging
 
+import autogalaxy as ag
 from autogalaxy.util.plot_utils import _critical_curves_from, _caustics_from
 from autoarray.plot.utils import numpy_lines as _to_lines
 
@@ -64,3 +65,47 @@ def _compute_critical_curve_lines(tracer, grid):
             exc_info=True,
         )
         return None, None, None, None
+
+
+def critical_curve_grid_from(
+    dataset, shape_native=(100, 100), scale: float = 2.0, buffer: float = 0.1
+) -> "ag.Grid2D":
+    """
+    Returns the grid on which the critical curves and caustics of a dataset's lens model are computed.
+
+    The grid is a square centred on the bounding box of the dataset's positions (``dataset.extent_from``), whose
+    half-width is ``scale`` times the half-span of that box (plus ``buffer``). For a point dataset critical curves
+    often extend beyond the multiple images, so a grid covering only their bounding box clips them into
+    disconnected arcs and ``scale=2.0`` is used. For a weak lensing dataset the source galaxies already span the
+    field, so ``scale=1.0`` covers it.
+
+    ``dataset.extent_from`` returns ``[y_min, y_max, x_min, x_max]`` whereas ``Grid2D.from_extent`` takes the
+    extent x first, which this function handles.
+
+    Parameters
+    ----------
+    dataset
+        A dataset with an ``extent_from`` method (e.g. a ``PointDataset`` or ``WeakDataset``) whose positions set
+        the centre and size of the grid.
+    shape_native
+        The 2D shape of the grid.
+    scale
+        The factor by which the grid's half-width exceeds the half-span of the positions.
+    buffer
+        A buffer (arc-seconds) added to the half-span of the positions.
+    """
+    y_min, y_max, x_min, x_max = dataset.extent_from(buffer=0.0)
+
+    y_centre, x_centre = (y_min + y_max) / 2.0, (x_min + x_max) / 2.0
+    half_width = scale * (max(y_max - y_min, x_max - x_min) / 2.0 + buffer)
+
+    # `Grid2D.from_extent` takes the extent x first: (x0, x1, y0, y1).
+    return ag.Grid2D.from_extent(
+        extent=(
+            x_centre - half_width,
+            x_centre + half_width,
+            y_centre - half_width,
+            y_centre + half_width,
+        ),
+        shape_native=shape_native,
+    )
