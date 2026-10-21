@@ -68,7 +68,11 @@ def _compute_critical_curve_lines(tracer, grid):
 
 
 def critical_curve_grid_from(
-    dataset, shape_native=(100, 100), scale: float = 2.0, buffer: float = 0.1
+    dataset,
+    shape_native=(100, 100),
+    scale: float = 2.0,
+    buffer: float = 0.1,
+    solver=None,
 ) -> "ag.Grid2D":
     """
     Returns the grid on which the critical curves and caustics of a dataset's lens model are computed.
@@ -82,6 +86,11 @@ def critical_curve_grid_from(
     ``dataset.extent_from`` returns ``[y_min, y_max, x_min, x_max]`` whereas ``Grid2D.from_extent`` takes the
     extent x first, which this function handles.
 
+    If a ``solver`` (e.g. a ``PointSolver``) with rectangular bounds is passed, the square is enlarged where needed
+    so it also covers the solver grid. The point-source positions panels are drawn over the solver grid's extent,
+    so a critical curve computed on a smaller grid would otherwise stop inside the panel as disconnected arcs; on
+    the enlarged grid it is only ever cut by the panel frame itself.
+
     Parameters
     ----------
     dataset
@@ -93,11 +102,35 @@ def critical_curve_grid_from(
         The factor by which the grid's half-width exceeds the half-span of the positions.
     buffer
         A buffer (arc-seconds) added to the half-span of the positions.
+    solver
+        An optional solver whose ``y_min`` / ``y_max`` / ``x_min`` / ``x_max`` bounds the grid is enlarged to cover.
     """
     y_min, y_max, x_min, x_max = dataset.extent_from(buffer=0.0)
 
     y_centre, x_centre = (y_min + y_max) / 2.0, (x_min + x_max) / 2.0
     half_width = scale * (max(y_max - y_min, x_max - x_min) / 2.0 + buffer)
+
+    if solver is not None:
+        try:
+            solver_bounds = [
+                float(solver.y_min),
+                float(solver.y_max),
+                float(solver.x_min),
+                float(solver.x_max),
+            ]
+        except (AttributeError, TypeError, ValueError):
+            solver_bounds = None
+        if solver_bounds is not None and all(
+            abs(bound) < float("inf") for bound in solver_bounds
+        ):
+            s_y_min, s_y_max, s_x_min, s_x_max = solver_bounds
+            half_width = max(
+                half_width,
+                abs(s_y_min - y_centre),
+                abs(s_y_max - y_centre),
+                abs(s_x_min - x_centre),
+                abs(s_x_max - x_centre),
+            )
 
     # `Grid2D.from_extent` takes the extent x first: (x0, x1, y0, y1).
     return ag.Grid2D.from_extent(
