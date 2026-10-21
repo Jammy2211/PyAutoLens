@@ -86,3 +86,83 @@ def subplot_fit(
     save_figure(fig, path=output_path, filename="fit", format=output_format)
 
 
+def plot_image_with_points(
+    image,
+    dataset,
+    fit=None,
+    output_path: Optional[str] = None,
+    output_format: str = None,
+    image_plane_lines=None,
+    image_plane_line_colors=None,
+    title_prefix: str = None,
+):
+    """
+    Plot an observed image of a lensed point source (e.g. a quasar) with its point-source positions overlaid.
+
+    The observed positions of the `PointDataset` are drawn as hollow white rings, so they stand out against
+    the image without hiding the point-source emission beneath them. When a `FitPointDataset` is passed, the model-predicted positions
+    are drawn as red crosses (image-plane fits only, as a source-plane fit's model data lies in the source
+    plane), and critical curves can be overlaid via ``image_plane_lines``.
+
+    The image is used only for visualization: it does not enter the point-source likelihood.
+
+    Parameters
+    ----------
+    image : Array2D
+        The observed image the positions are plotted over.
+    dataset : PointDataset
+        The point-source dataset whose observed positions are overlaid.
+    fit : FitPointDataset, optional
+        If given, its model positions are overlaid as red crosses.
+    output_path : str, optional
+        Directory in which to save the figure.  If ``None`` the figure is
+        not saved to disk.
+    output_format : str, optional
+        Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    image_plane_lines : list, optional
+        Critical-curve lines overlaid on the image.
+    image_plane_line_colors : list, optional
+        Colours for each image-plane line.
+    """
+    from autogalaxy.util.plot_utils import plot_array
+    from autoarray.plot.utils import conf_figsize, _overlay_yx_for_origin
+
+    fig, ax = subplots(1, 1, figsize=conf_figsize("figures"))
+
+    _prefix = f"{title_prefix.rstrip()} " if title_prefix else ""
+    plot_array(
+        array=image,
+        ax=ax,
+        lines=image_plane_lines,
+        line_colors=image_plane_line_colors,
+        title=f"{_prefix}{dataset.name} Image With Points",
+    )
+
+    # Positions are (y,x) arc-seconds: reflect them exactly as `plot_array` does its own overlays, using the
+    # extent and origin of the raster it drew, so they stay registered to the image (PyAutoArray#565).
+    extent, origin = (ax.images[0].get_extent(), ax.images[0].origin) if ax.images else (None, None)
+
+    def _yx(grid):
+        grid = np.array(grid.array if hasattr(grid, "array") else grid).reshape(-1, 2)
+        return _overlay_yx_for_origin(grid, extent, origin)
+
+    obs_grid = _yx(dataset.positions)
+    ax.scatter(
+        obs_grid[:, 1], obs_grid[:, 0],
+        s=150, facecolors="none", edgecolors="w", linewidths=2, zorder=6, label="Observed",
+    )
+
+    # Only image-plane fits have model positions in the image plane; a source-plane fit's model data is the
+    # source centre, which must not be drawn over the image.
+    from autolens.point.fit.positions.image.abstract import AbstractFitPositionsImagePair
+
+    if fit is not None and isinstance(fit.positions, AbstractFitPositionsImagePair):
+        model_grid = _yx(fit.positions.model_data)
+        ax.scatter(
+            model_grid[:, 1], model_grid[:, 0],
+            s=60, c="r", marker="x", linewidths=2, zorder=7, label="Model",
+        )
+
+    ax.legend(loc="upper right", fontsize=8, framealpha=0.8)
+
+    save_figure(fig, path=output_path, filename="image_with_points", format=output_format)

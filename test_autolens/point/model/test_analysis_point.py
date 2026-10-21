@@ -272,3 +272,18 @@ def test__fit_flux_cls_and_fit_time_delays_cls_hooks__forwarded_and_default_unch
 
     assert fit.fit_flux_cls is al.FitFluxesSolved
     assert fit.fit_time_delays_cls is al.FitTimeDelaysSolved
+
+
+def test__image__stored_for_visualization(point_dataset):
+    solver = al.m.MockPointSolver(model_positions=point_dataset.positions)
+    image = al.Array2D.ones(shape_native=(5, 5), pixel_scales=1.0)
+
+    analysis = al.AnalysisPoint(dataset=point_dataset, solver=solver, use_jax=False)
+
+    assert analysis.image is None
+
+    analysis = al.AnalysisPoint(
+        dataset=point_dataset, solver=solver, image=image, use_jax=False
+    )
+
+    assert analysis.image is image

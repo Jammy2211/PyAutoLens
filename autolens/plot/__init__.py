@@ -65,7 +65,10 @@ from autolens.interferometer.plot.fit_interferometer_plots import (
     subplot_tracer_from_fit as subplot_fit_interferometer_tracer,
     subplot_fit_interferometer_combined,
 )
-from autolens.point.plot.fit_point_plots import subplot_fit as subplot_fit_point
+from autolens.point.plot.fit_point_plots import (
+    subplot_fit as subplot_fit_point,
+    plot_image_with_points,
+)
 from autolens.point.plot.point_dataset_plots import subplot_dataset as subplot_point_dataset
 
 from autolens.cluster.plot.cluster_plots import (

@@ -103,6 +103,10 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         fit_time_delays_cls
             The class used to fit the time delays of the point source dataset, which could be the
             min-subtraction (`FitTimeDelays`) or analytically-solved-reference-time (`FitTimeDelaysSolved`) fit.
+        image
+            An optional observed image of the lensed point source (e.g. a quasar), which is used only for
+            visualization: the observed and model point-source positions are plotted over it. It does not enter
+            the likelihood.
         cosmology
             The Cosmology assumed for this analysis.
         title_prefix
@@ -117,6 +121,7 @@ class AnalysisPoint(AgAnalysis, AnalysisLens):
         AnalysisLens.__init__(self=self, cosmology=cosmology, use_jax=self._use_jax)
 
         self.dataset = dataset
+        self.image = image
 
         self.solver = solver
         self.fit_positions_cls = fit_positions_cls
