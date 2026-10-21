@@ -25,6 +25,11 @@ MODEL_COLOR = "r"
 UNMATCHED_COLOR = "0.45"
 MASS_CENTRE_COLOR = "tab:green"
 
+# The model cross is thinner and smaller than the observed marker (``s=110``), so under an exact fit the observed
+# dot stays visible around it rather than being hidden.
+MODEL_MARKER_SIZE = 60
+MODEL_MARKER_LINEWIDTH = 1.2
+
 # Critical-curve colours: `_compute_critical_curve_lines` returns white (tangential) and yellow (radial) lines for
 # dark image backgrounds, which are invisible on the white positions panel, so they are mapped to light colours
 # here that stay readable without swamping the residual lines.
@@ -315,10 +320,10 @@ def plot_fit_model_positions(ax, fit_positions):
             ax.scatter(
                 model[:, 1],
                 model[:, 0],
-                s=80,
+                s=MODEL_MARKER_SIZE,
                 c=MODEL_COLOR,
                 marker="x",
-                linewidths=2.5,
+                linewidths=MODEL_MARKER_LINEWIDTH,
                 zorder=7,
                 label="Model (source plane)",
             )
@@ -347,10 +352,10 @@ def plot_fit_model_positions(ax, fit_positions):
         ax.scatter(
             model[~unmatched, 1],
             model[~unmatched, 0],
-            s=80,
+            s=MODEL_MARKER_SIZE,
             c=MODEL_COLOR,
             marker="x",
-            linewidths=2.5,
+            linewidths=MODEL_MARKER_LINEWIDTH,
             zorder=7,
             label="Model",
         )

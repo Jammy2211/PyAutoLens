@@ -230,3 +230,29 @@ def test__visualizer__before_fit__passes_analysis_solver_to_dataset_panel(
     VisualizerPoint.visualize_before_fit(analysis=analysis, paths=paths, model=None)
 
     assert solvers == [fit_point_dataset_x2_plane.solver]
+
+
+def test__point_solver__off_by_default(fit_point_dataset_x2_plane, plot_path, plot_patch):
+    if plot_path.exists():
+        shutil.rmtree(plot_path)
+
+    plotter = PlotterPoint(image_path=plot_path)
+    plotter.point_solver(fit=fit_point_dataset_x2_plane, image_plane_lines=[])
+
+    assert str(plot_path / "point_solver.png") not in plot_patch.paths
+
+
+def test__point_solver__on_writes_figure(
+    fit_point_dataset_x2_plane, plot_path, plot_patch, monkeypatch
+):
+    import autolens.point.model.plotter as plotter_module
+
+    if plot_path.exists():
+        shutil.rmtree(plot_path)
+
+    monkeypatch.setattr(plotter_module, "plot_setting", lambda section, name: True)
+
+    plotter = PlotterPoint(image_path=plot_path)
+    plotter.point_solver(fit=fit_point_dataset_x2_plane, image_plane_lines=[])
+
+    assert str(plot_path / "point_solver.png") in plot_patch.paths

@@ -124,3 +124,9 @@ class VisualizerPoint(af.Visualizer):
             galaxies=tracer.galaxies,
             grid=grid,
         )
+
+        # Off by default (`fit_point_dataset: subplot_point_solver`): re-solves the best-fit model with NumPy to show
+        # the solver's refinement steps, so it is output only for the full (not quick-update) visualization.
+        plotter.point_solver(
+            fit=fit, image_plane_lines=ip_lines if ip_lines is not None else []
+        )

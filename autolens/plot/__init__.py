@@ -70,6 +70,7 @@ from autolens.point.plot.fit_point_plots import (
     plot_image_with_points,
 )
 from autolens.point.plot.point_dataset_plots import subplot_dataset as subplot_point_dataset
+from autolens.point.plot.point_solver_plots import plot_point_solver
 
 from autolens.cluster.plot.cluster_plots import (
     plot_positions_overlay,

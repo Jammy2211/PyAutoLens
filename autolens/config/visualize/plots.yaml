@@ -59,6 +59,7 @@ point_dataset:                             # Settings for plots of point source 
 
 fit_point_dataset:                         # Settings for plots of fits to point source datasets (e.g. FitPointDatasetPlotter).
   fit_image_with_points: true              # Plot the observed image (if passed to AnalysisPoint) with observed and model positions and critical curves over it (fit_image_with_points.png)?
+  subplot_point_solver: false              # Plot how the PointSolver refines its triangles onto the best-fit model's images (point_solver.png)? Re-solves with NumPy at the best fit only, so it is off by default.
 
 weak_dataset:                              # Settings for plots of weak lensing shear catalogues (e.g. PlotterWeak).
   subplot_dataset: true                    # Plot subplot containing all dataset quantities (e.g. the shear field, noise-map, etc.)?

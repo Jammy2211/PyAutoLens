@@ -23,6 +23,9 @@ class Step:
         The neighbourhood of the filtered triangles.
     up_sampled
         The neighbourhood up-sampled to increase the resolution.
+    plane_triangles
+        The initial triangles ray-traced to the source plane (the copy whose containment of the source-plane shape
+        decides which triangles are kept).
     """
 
     number: int
@@ -39,6 +42,7 @@ class Step:
             self.filtered_triangles,
             self.neighbourhood,
             self.up_sampled,
+            self.plane_triangles,
         ), ()
 
     @classmethod

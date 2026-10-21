@@ -68,6 +68,7 @@ Create figures and subplots showing quantities of standard **PyAutoLens** object
 
     subplot_fit_point
     subplot_point_dataset
+    plot_point_solver
 
 **Subhalo Detection Subplots:**
 

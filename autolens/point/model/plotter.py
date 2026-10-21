@@ -8,6 +8,7 @@ from autolens.point.plot.fit_point_plots import subplot_fit as subplot_fit_point
 from autolens.point.plot.fit_point_plots import plot_image_with_points
 from autolens.point.dataset import PointDataset
 from autolens.point.plot.point_dataset_plots import subplot_dataset
+from autolens.point.plot import point_solver_plots
 
 from autolens.analysis.plotter import plot_setting
 
@@ -160,3 +161,52 @@ class PlotterPoint(Plotter):
                 source_plane_line_colors=sp_colors,
                 title_prefix=self.title_prefix,
             )
+
+    def point_solver(self, fit: FitPointDataset, image_plane_lines=None):
+        """
+        Output `point_solver.png`: how the `PointSolver` refines its triangles onto the images of the fit's model.
+
+        The model's point source is re-solved with NumPy (the JAX path pads the steps and, inside `jax.jit`, hides
+        them), so this is a diagnostic of the model-fit's own solver at this model: did the grid cover every image
+        and how many triangles survive each step. A warning is logged when a step keeps nearly as many triangles as
+        the JAX solver's `MAX_CONTAINING_SIZE`, which the JAX path truncates to.
+
+        Controlled by the `fit_point_dataset: subplot_point_solver` setting, which is off by default as the
+        re-solve and figure cost a few seconds per visualization (more for a many-galaxy multi-plane cluster). The
+        figure is not output for fits without a `PointSolver` (e.g. source-plane fits of a model with no solver).
+
+        Parameters
+        ----------
+        fit
+            The maximum log likelihood `FitPointDataset` of the non-linear search.
+        image_plane_lines
+            Pre-computed critical-curve lines; `None` computes them.
+        """
+        try:
+            if not plot_setting(
+                section=["fit", "fit_point_dataset"], name="subplot_point_solver"
+            ):
+                return
+        except KeyError:
+            return
+
+        solver = getattr(fit, "solver", None)
+        fit_positions = getattr(fit, "positions", None)
+        if solver is None or not hasattr(solver, "steps") or fit_positions is None:
+            return
+
+        data = point_solver_plots.point_solver_data_from(
+            solver=solver,
+            tracer=fit.tracer,
+            source_plane_coordinate=fit_positions.source_plane_coordinate,
+            positions=fit.dataset.positions,
+            plane_redshift=fit_positions.plane_redshift,
+            image_plane_lines=image_plane_lines,
+        )
+        point_solver_plots.warn_if_near_jax_cap(data)
+        point_solver_plots.plot_point_solver_from_data(
+            data=data,
+            output_path=str(self.image_path),
+            output_format=self.fmt,
+            title_prefix=self.title_prefix,
+        )
