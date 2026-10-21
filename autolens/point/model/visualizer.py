@@ -33,6 +33,9 @@ class VisualizerPoint(af.Visualizer):
 
         plotter.dataset_point(dataset=analysis.dataset)
 
+        if getattr(analysis, "image", None) is not None:
+            plotter.image_with_points(image=analysis.image, dataset=analysis.dataset)
+
     @staticmethod
     def visualize(
         analysis,
@@ -89,6 +92,16 @@ class VisualizerPoint(af.Visualizer):
             source_plane_lines=sp_lines,
             source_plane_line_colors=sp_colors,
         )
+
+        # Output even on `quick_update`, so the observed image with model positions updates on-the-fly.
+        if getattr(analysis, "image", None) is not None:
+            plotter.image_with_points(
+                image=analysis.image,
+                dataset=fit.dataset,
+                fit=fit,
+                image_plane_lines=ip_lines,
+                image_plane_line_colors=ip_colors,
+            )
 
         if quick_update:
             return

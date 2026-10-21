@@ -5,6 +5,7 @@ from autolens.imaging.plot.fit_imaging_plots import _compute_critical_curve_line
 
 from autolens.point.fit.dataset import FitPointDataset
 from autolens.point.plot.fit_point_plots import subplot_fit as subplot_fit_point
+from autolens.point.plot.fit_point_plots import plot_image_with_points
 from autolens.point.dataset import PointDataset
 from autolens.point.plot.point_dataset_plots import subplot_dataset
 
@@ -31,6 +32,53 @@ class PlotterPoint(Plotter):
         if should_plot("subplot_dataset"):
             subplot_dataset(dataset, output_path=output_path, output_format=fmt,
                             title_prefix=self.title_prefix)
+
+    def image_with_points(
+        self,
+        image,
+        dataset: PointDataset,
+        fit: FitPointDataset = None,
+        image_plane_lines=None,
+        image_plane_line_colors=None,
+    ):
+        """
+        Output an observed image of the lensed point source with the point-source positions overlaid.
+
+        Before the fit (``fit=None``) only the observed positions are drawn, controlled by the
+        `point_dataset: image_with_points` setting. After the fit the model positions (and critical curves,
+        if given) are also drawn, controlled by the `fit_point_dataset: image_with_points` setting.
+
+        Parameters
+        ----------
+        image
+            The observed image of the lensed point source (e.g. a quasar), used only for visualization.
+        dataset
+            The point dataset whose observed positions are overlaid.
+        fit
+            The maximum log likelihood `FitPointDataset`, whose model positions are overlaid if given.
+        image_plane_lines
+            Pre-computed critical-curve lines to overlay on the image.
+        image_plane_line_colors
+            Colours for each image-plane line.
+        """
+        if fit is None:
+            section = ["point_dataset"]
+        else:
+            section = ["fit", "fit_point_dataset"]
+
+        if not plot_setting(section=section, name="image_with_points"):
+            return
+
+        plot_image_with_points(
+            image=image,
+            dataset=dataset,
+            fit=fit,
+            output_path=str(self.image_path),
+            output_format=self.fmt,
+            image_plane_lines=image_plane_lines,
+            image_plane_line_colors=image_plane_line_colors,
+            title_prefix=self.title_prefix,
+        )
 
     def fit_point(
         self,
