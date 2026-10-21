@@ -154,7 +154,7 @@ def test__critical_curve_grid_from__contains_curve_beyond_multiple_images():
 
     import autolens as al
     from autolens.lens.plot.critical_curves import _compute_critical_curve_lines
-    from autolens.point.model.plotter import critical_curve_grid_from
+    from autolens.lens.plot.critical_curves import critical_curve_grid_from
 
     # Multiple images inside a 1" box, an isothermal tangential critical curve of radius 1.6": a grid covering
     # only the images' bounding box clips the curve into arcs.
@@ -187,7 +187,7 @@ def test__critical_curve_grid_from__extent_is_x_first():
     import numpy as np
 
     import autolens as al
-    from autolens.point.model.plotter import critical_curve_grid_from
+    from autolens.lens.plot.critical_curves import critical_curve_grid_from
 
     # Images spread far more in y than x: the grid must be centred on them in (y,x).
     dataset = al.PointDataset(

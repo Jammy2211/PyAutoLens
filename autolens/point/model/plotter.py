@@ -1,7 +1,7 @@
-import autogalaxy as ag
 
 from autolens.analysis.plotter import Plotter
 from autolens.imaging.plot.fit_imaging_plots import _compute_critical_curve_lines
+from autolens.lens.plot.critical_curves import critical_curve_grid_from
 
 from autolens.point.fit.dataset import FitPointDataset
 from autolens.point.plot.fit_point_plots import subplot_fit as subplot_fit_point
@@ -10,44 +10,6 @@ from autolens.point.dataset import PointDataset
 from autolens.point.plot.point_dataset_plots import subplot_dataset
 
 from autolens.analysis.plotter import plot_setting
-
-
-def critical_curve_grid_from(
-    dataset: PointDataset, shape_native=(100, 100), scale: float = 2.0, buffer: float = 0.1
-) -> ag.Grid2D:
-    """
-    Returns the grid on which the critical curves and caustics of a point-source fit are computed.
-
-    Critical curves often extend beyond the multiple images, so a grid covering only the images' bounding box
-    clips them into disconnected arcs. The grid is therefore a square centred on the multiple images whose
-    half-width is ``scale`` times the half-span of their bounding box (plus ``buffer``).
-
-    Parameters
-    ----------
-    dataset
-        The point dataset whose multiple-image positions set the centre and size of the grid.
-    shape_native
-        The 2D shape of the grid.
-    scale
-        The factor by which the grid's half-width exceeds the half-span of the multiple images.
-    buffer
-        A buffer (arc-seconds) added to the half-span of the multiple images.
-    """
-    y_min, y_max, x_min, x_max = dataset.extent_from(buffer=0.0)
-
-    y_centre, x_centre = (y_min + y_max) / 2.0, (x_min + x_max) / 2.0
-    half_width = scale * (max(y_max - y_min, x_max - x_min) / 2.0 + buffer)
-
-    # `Grid2D.from_extent` takes the extent x first: (x0, x1, y0, y1).
-    return ag.Grid2D.from_extent(
-        extent=(
-            x_centre - half_width,
-            x_centre + half_width,
-            y_centre - half_width,
-            y_centre + half_width,
-        ),
-        shape_native=shape_native,
-    )
 
 
 class PlotterPoint(Plotter):

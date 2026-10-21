@@ -1,6 +1,7 @@
 import autofit as af
 
-from autolens.point.model.plotter import PlotterPoint, critical_curve_grid_from
+from autolens.point.model.plotter import PlotterPoint
+from autolens.lens.plot.critical_curves import critical_curve_grid_from
 from autolens.imaging.plot.fit_imaging_plots import _compute_critical_curve_lines
 
 
