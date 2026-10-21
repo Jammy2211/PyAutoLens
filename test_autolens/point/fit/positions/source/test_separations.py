@@ -22,8 +22,12 @@ def test__fit_positions_source__all_residual_quantities_correct_without_mass_pro
     assert fit.normalized_residual_map.in_list == [1.0 / 0.5, 2.0 / 1.0]
     assert fit.chi_squared_map.in_list == [(1.0 / 0.5) ** 2.0, 2.0 ** 2.0]
     assert fit.chi_squared == pytest.approx(8.0, 1.0e-4)
-    assert fit.noise_normalization == pytest.approx(2.28945, 1.0e-4)
-    assert fit.log_likelihood == pytest.approx(-5.14472988, 1.0e-4)
+    # Σᵢ log((2π)² σᵢ⁴) = 2 log(4π²) + 4 log(0.5); with no mass A = I, so jacobian χ² = magnification χ².
+    assert fit.noise_normalization == pytest.approx(
+        2.0 * np.log(4.0 * np.pi**2) + 4.0 * np.log(0.5), 1.0e-8
+    )
+    assert fit.noise_normalization == pytest.approx(4.57891954, 1.0e-6)
+    assert fit.log_likelihood == pytest.approx(-6.28945977, 1.0e-6)
 
 
 def test__fit_positions_source__with_isothermal_mass_profile__magnification_reduces_source_positions():
@@ -48,10 +52,27 @@ def test__fit_positions_source__with_isothermal_mass_profile__magnification_redu
         [1.1111049387688177, 1.0526308864400329], 1.0e-4
     )
     assert fit.model_data.in_list == [(0.0, 0.9), (0.0, 1.9)]
-    assert fit.chi_squared_map.in_list == pytest.approx(
-        [3.9999555592589244, 3.9999947369459807], 1.0e-4
+
+    # The residuals (0, r - 0.1) are radial, and the radial eigenvalue of an isothermal Jacobian is 1, so
+    # the default jacobian χ²ᵢ = (r - 0.1)² / σᵢ², i.e. (0.9 / 0.5)² and 1.9².
+    assert fit.chi_squared_map.in_list == pytest.approx([3.24, 3.61], 1.0e-6)
+    noise_normalization = 2.0 * np.log(4.0 * np.pi**2) + 4.0 * np.log(0.5)
+    assert fit.log_likelihood == pytest.approx(
+        -0.5 * (3.24 + 3.61 + noise_normalization), 1.0e-6
     )
-    assert fit.log_likelihood == pytest.approx(-4.98805743691215, 1.0e-4)
+    assert fit.log_likelihood == pytest.approx(-5.71445977, 1.0e-6)
+
+    # The opt-in scalar weighting multiplies by µᵢ² = 1 / (1 - 0.1 / r)², over-weighting the radial
+    # residual: χ²ᵢ = (r - 0.1)² µᵢ² / σᵢ² = r² / σᵢ² = 4 for both, with the same normalization.
+    fit = FitPositionsSourceMagnification(
+        name="point_0", data=positions, noise_map=noise_map, tracer=tracer, solver=None
+    )
+
+    assert fit.chi_squared_map.in_list == pytest.approx([4.0, 4.0], 1.0e-4)
+    assert fit.noise_normalization == pytest.approx(noise_normalization, 1.0e-8)
+    assert fit.log_likelihood == pytest.approx(
+        -0.5 * (8.0 + noise_normalization), 1.0e-5
+    )
 
 
 def test__fit_positions_source__multi_plane_tracer__model_data_traces_to_correct_source_plane():
@@ -84,8 +105,57 @@ class FitPositionsSourceJacobian(al.FitPositionsSource):
     weighting = "jacobian"
 
 
-def test__fit_positions_source__default_weighting_is_magnification():
-    assert al.FitPositionsSource.weighting == "magnification"
+class FitPositionsSourceMagnification(al.FitPositionsSource):
+    weighting = "magnification"
+
+
+def test__fit_positions_source__default_weighting_is_jacobian():
+    assert al.FitPositionsSource.weighting == "jacobian"
+
+
+def test__fit_positions_source__jacobian__true_model_outranks_perturbed_models_near_critical():
+    """
+    An elliptical power law with slope 2.3 (so the radial eigenvalue of the Jacobian is not 1) and a quad of
+    images traced exactly from the source centre, with magnifications up to ~17. Under the default jacobian
+    weighting the true model must have a higher log likelihood than small perturbations of it.
+    """
+    source_centre = (0.05, 0.0)
+
+    positions = al.Grid2DIrregular(
+        [
+            (0.947716092108, -0.370287233244),
+            (-0.50956321869, 0.809453183983),
+            (-0.69058165779, -0.617211899037),
+            (0.043787760967, 0.960520345829),
+        ]
+    )
+    noise_map = al.ArrayIrregular([0.005, 0.005, 0.005, 0.005])
+
+    def fit_from(einstein_radius=1.0, centre=(0.0, 0.0)):
+        mass = al.mp.PowerLaw(
+            centre=centre, ell_comps=(0.1, 0.05), einstein_radius=einstein_radius, slope=2.3
+        )
+        tracer = al.Tracer(
+            galaxies=[
+                al.Galaxy(redshift=0.5, mass=mass),
+                al.Galaxy(redshift=1.0, point_0=al.ps.Point(centre=source_centre)),
+            ]
+        )
+        return al.FitPositionsSource(
+            name="point_0", data=positions, noise_map=noise_map, tracer=tracer, solver=None
+        )
+
+    fit_true = fit_from()
+
+    assert np.max(fit_true.magnifications_at_positions.array) > 10.0
+    assert fit_true.chi_squared == pytest.approx(0.0, abs=1.0e-4)
+
+    for fit_perturbed in [
+        fit_from(einstein_radius=1.01),
+        fit_from(centre=(0.005, 0.0)),
+        fit_from(centre=(0.0, 0.005)),
+    ]:
+        assert fit_true.log_likelihood > fit_perturbed.log_likelihood
 
 
 def test__fit_positions_source__jacobian_weighting__matches_solved_at_solved_centre():

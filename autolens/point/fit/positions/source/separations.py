@@ -30,11 +30,13 @@ from autolens.point.solver import PointSolver
 
 class FitPositionsSource(AbstractFitPositions):
     #: How each back-traced position's residual from the source-plane centre is weighted:
-    #: `"magnification"` — the traditional scalar `µᵢ²/σᵢ²` weighting with the magnified-noise
-    #: normalization (the long-standing behaviour of this class, and the Lenstool convention);
-    #: `"jacobian"` — the per-image precision tensor `Wᵢ = Aᵢ⁻ᵀΘᵢAᵢ⁻¹` with the observed-plane
-    #: normalization, matching `FitPositionsSourceSolved` but with the centre a free parameter.
-    weighting = "magnification"
+    #: `"jacobian"` (the default) — the per-image precision tensor `Bᵢ = Aᵢ⁻ᵀΘᵢAᵢ⁻¹`, so each residual is
+    #: measured in the image-plane noise ellipse (the Gravity.jl source-plane likelihood, Lombardi 2024
+    #: Eq. 46; Keeton 2001 Eq. 10; Lenstool's tensor mode, `forme 8`);
+    #: `"magnification"` (opt-in only) — the scalar isotropic approximation `Bᵢ ≈ (µᵢ²/σᵢ²) I₂` of
+    #: Jullo et al. 2007 Eq. 10, which is biased near critical curves (see `__init__`).
+    #: Both use the same model-independent normalization `Σᵢ log((2π)² σᵢ⁴)`.
+    weighting = "jacobian"
 
     def __init__(
         self,
@@ -63,22 +65,28 @@ class FitPositionsSource(AbstractFitPositions):
 
         3) Compute the distance of each ray-traced position to the source-plane centre and compute the residuals,
 
-        4) Compute the magnification of each image-plane position via the Hessian of the tracer's deflection angles.
+        4) Compute the lensing Jacobian `Aᵢ` of each image-plane position via the Hessian of the tracer's
+           deflection angles.
 
-        5) Compute the residuals of each position as the difference between the source-plane centre and each
-           ray-traced position.
+        5) Compute the residual vector `δᵢ = β̂ᵢ − c` of each position, the difference between each ray-traced
+           position `β̂ᵢ` and the source-plane centre `c`.
 
-        6) Compute the chi-squared of each position as the square of the residual multiplied by the magnification and
-           divided by the RMS noise-map value.
+        6) Compute the chi-squared of each position as `δᵢᵀ Bᵢ δᵢ`, with the precision tensor `Bᵢ = Aᵢ⁻ᵀΘᵢAᵢ⁻¹`
+           (`Θᵢ = σᵢ⁻² I₂`, see `autolens.point.fit.solved.precision_tensor_components_from`), so each residual is
+           measured in the image-plane noise ellipse.
 
-        7) Sum the chi-squared values to compute the overall log likelihood of the fit.
+        7) Sum the chi-squared values and the model-independent noise normalization `Σᵢ log((2π)² σᵢ⁴)` to
+           compute the overall log likelihood of the fit.
 
-        Steps 4-6 describe the default `weighting = "magnification"` scalar convention. Setting the
-        `weighting` class attribute to `"jacobian"` instead weights each vector residual `β̂ᵢ − c` (with `c`
-        the profile's free `centre`) by the per-image precision tensor `Wᵢ = Aᵢ⁻ᵀΘᵢAᵢ⁻¹` (see
-        `autolens.point.fit.solved.precision_tensor_components_from`), with the observed-plane noise
-        normalization matching `FitPositionsSourceSolved` — the same tensor likelihood as that class, but
-        with the centre sampled as a free parameter rather than solved and marginalized.
+        Steps 4-6 describe the default `weighting = "jacobian"`. This is the Gravity.jl source-plane likelihood
+        (Lombardi 2024, arXiv:2406.15280, Eq. 46; its marginalised-source form, Eq. 58, is
+        `FitPositionsSourceSolved`), Keeton 2001 Eq. 10, and Lenstool's tensor mode (`forme 8`). It stays
+        robust near critical curves and costs nothing extra over the scalar magnification.
+
+        Setting the `weighting` class attribute to `"magnification"` instead uses the scalar isotropic
+        approximation `Bᵢ ≈ (µᵢ²/σᵢ²) I₂` of Jullo et al. 2007 Eq. 10, i.e. `χ²ᵢ = |δᵢ|² µᵢ²/σᵢ²`. This is exact
+        only along the tangential direction and for a radial eigenvalue of 1. Near critical curves it
+        over-weights the radial direction by about `µ²`, so it is biased, and it is provided as an opt-in only.
 
         Point source fitting uses name pairing, whereby the `name` of the `Point` object is paired to the name of the
         point source dataset to ensure that point source datasets are fitted to the correct point source.
@@ -167,9 +175,9 @@ class FitPositionsSource(AbstractFitPositions):
         """
         Returns the chi-squared of the point-source source-plane fit.
 
-        For `weighting = "magnification"` this is the squared residuals multiplied by the magnifications
-        squared, divided by the noise-map values squared. For `weighting = "jacobian"` it is the per-image
-        quadratic form `(β̂ᵢ−c)ᵀ Wᵢ (β̂ᵢ−c)` with the precision tensor `Wᵢ = Aᵢ⁻ᵀΘᵢAᵢ⁻¹`.
+        For the default `weighting = "jacobian"` it is the per-image quadratic form `(β̂ᵢ−c)ᵀ Bᵢ (β̂ᵢ−c)` with the
+        precision tensor `Bᵢ = Aᵢ⁻ᵀΘᵢAᵢ⁻¹`. For the opt-in `weighting = "magnification"` this is the squared
+        residuals multiplied by the magnifications squared, divided by the noise-map values squared.
         """
         if self.weighting == "magnification":
             return self.residual_map**2.0 / (
@@ -190,26 +198,13 @@ class FitPositionsSource(AbstractFitPositions):
     @property
     def noise_normalization(self) -> float:
         """
-        Returns the noise normalization of the fit's Gaussian likelihood.
+        Returns the noise normalization of the fit's Gaussian likelihood, `Σᵢ log((2π)² σᵢ⁴)`.
 
-        For `weighting = "magnification"` this is the long-standing magnified-noise source-plane-data
-        convention `Σᵢ log(2π µᵢ⁻²σᵢ²)`. For `weighting = "jacobian"` it is the observed-plane
-        (model-independent) convention `Σᵢ log((2π)² σᵢ⁴)` matching `FitPositionsSourceSolved` (see that
-        class's docstring for why a model-dependent normalization would spuriously favour
-        high-magnification models).
+        This is the observed-plane (model-independent) normalization of the 2-D Gaussian over each image
+        position (Lombardi 2024 Eq. 46, `log|Θᵢ/2π|`), used for both weightings: for `"magnification"` it is
+        Eq. 46 with `Bᵢ ≈ µᵢ²Θᵢ`. A model-dependent normalization (e.g. `log det Bᵢ`, or the 1-D
+        `Σᵢ log(2π σᵢ²/µᵢ²)`) would spuriously favour high-magnification models.
         """
-        if self.weighting == "magnification":
-            return self._xp.sum(
-                self._xp.log(
-                    2
-                    * np.pi
-                    * (
-                        self.magnifications_at_positions.array**-2.0
-                        * self.noise_map.array**2.0
-                    )
-                )
-            )
-
         sigma_sq = self.noise_map.array**2.0
         return self._xp.sum(self._xp.log((2.0 * np.pi) ** 2.0 * sigma_sq**2.0))
 
@@ -229,8 +224,10 @@ class FitPositionsSourceSolved(SolvedCentre, FitPositionsSource):
     The lens equation is Taylor-expanded around each observed image position `θ̂ᵢ`, giving a source-plane
     position that is linear in the per-image back-traced position `β̂ᵢ` (`SolvedCentre._beta_hat`, computed the
     same way as `FitPositionsSource.model_data`) and the per-image precision `Wᵢ` (`weighting = "jacobian"` by
-    default — the tensor weighting `Wᵢ = Aᵢ⁻ᵀΘᵢAᵢ⁻¹`; set `weighting = "magnification"` for the scalar
-    `Wᵢ = (µᵢ²/σᵢ²) I₂` weighting used by `FitPositionsSource`, for Lenstool-style comparisons). This makes the
+    default, as for `FitPositionsSource` — the tensor weighting `Wᵢ = Aᵢ⁻ᵀΘᵢAᵢ⁻¹`; set
+    `weighting = "magnification"` for the opt-in scalar `Wᵢ = (µᵢ²/σᵢ²) I₂` approximation of Jullo et al. 2007
+    Eq. 10, which is biased near critical curves). This is the marginalised-source likelihood of Lombardi 2024
+    Eq. 58. This makes the
     source-plane centre solvable in closed form (`SolvedCentre.source_plane_coordinate`, `β*`), and the
     likelihood analytically marginalizes over it (flat prior):
 
@@ -243,9 +240,8 @@ class FitPositionsSourceSolved(SolvedCentre, FitPositionsSource):
     The normalization deliberately uses the observed-plane precision `Θᵢ` (model-independent), NOT `det Wᵢ`:
     this is a likelihood of the *observed image-plane positions* under the linearized lens equation (Lombardi
     2024 Eq. 46), so the Gaussian normalization is over the data space. A `det Wᵢ` normalization would add
-    `-2Σᵢ log|µᵢ|`-like model-dependent terms that spuriously favour high-magnification models. (The
-    long-standing `FitPositionsSource` uses the magnified-noise source-plane-data convention instead — its
-    normalization is intentionally unchanged.)
+    `-2Σᵢ log|µᵢ|`-like model-dependent terms that spuriously favour high-magnification models. The same
+    normalization is used for both weightings, and is inherited from `FitPositionsSource`.
 
     Must be paired (by name) with a parameter-free profile such as `ag.ps.PointSolved`: a `centre`-bearing
     profile (`ag.ps.Point` / `ag.ps.PointFlux`) raises (see `SolvedCentre.source_plane_coordinate`), since its
@@ -286,16 +282,6 @@ class FitPositionsSourceSolved(SolvedCentre, FitPositionsSource):
         `χ² = Σᵢ (β̂ᵢ−β*)ᵀ Wᵢ (β̂ᵢ−β*)`.
         """
         return self._xp.sum(self.chi_squared_map.array)
-
-    @property
-    def noise_normalization(self) -> float:
-        """
-        `noise_norm = Σᵢ log((2π)² / det Θᵢ) = Σᵢ log((2π)² σᵢ⁴)` — the observed-plane (model-independent)
-        Gaussian normalization of the linearized image-plane likelihood (see class docstring; NOT `det Wᵢ`,
-        which would spuriously favour high-magnification models).
-        """
-        sigma_sq = self.noise_map.array**2.0
-        return self._xp.sum(self._xp.log((2.0 * np.pi) ** 2.0 * sigma_sq**2.0))
 
     @property
     def marginalization_term(self) -> float:

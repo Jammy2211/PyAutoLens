@@ -16,8 +16,8 @@ from autolens.point.plot.positions_panel import image_numbers_from, image_order_
 SOURCE_CENTRE = (0.07, 0.07)
 
 
-class FitPositionsSourceJacobian(al.FitPositionsSource):
-    weighting = "jacobian"
+class FitPositionsSourceMagnification(al.FitPositionsSource):
+    weighting = "magnification"
 
 
 # Every positions fit class and the presentation its source-plane panel must use.
@@ -27,8 +27,8 @@ PRESENTATIONS = [
     (al.FitPositionsImagePairRepeatSolved, "image", True, None),
     (al.FitPositionsImagePairAll, "image", False, None),
     (al.FitPositionsImagePairAllSolved, "image", True, None),
-    (al.FitPositionsSource, "source", False, "magnification"),
-    (FitPositionsSourceJacobian, "source", False, "jacobian"),
+    (al.FitPositionsSource, "source", False, "jacobian"),
+    (FitPositionsSourceMagnification, "source", False, "magnification"),
     (al.FitPositionsSourceSolved, "source", True, "jacobian"),
 ]
 
@@ -212,7 +212,7 @@ def test__plot_source_plane_panel__no_inset_without_caustics(dataset, solver):
 
 
 def test__source_plane_data__matches_the_fits_own_chi_squared(dataset, solver):
-    magnification = _fit(al.FitPositionsSource, dataset, solver).positions
+    magnification = _fit(FitPositionsSourceMagnification, dataset, solver).positions
     data = spp.source_plane_data_from(magnification)
 
     # Traced exactly as the fit traces them.
@@ -225,7 +225,7 @@ def test__source_plane_data__matches_the_fits_own_chi_squared(dataset, solver):
     )
 
     # The A·σ ellipse is the covariance of the jacobian chi-squared.
-    jacobian = _fit(FitPositionsSourceJacobian, dataset, solver).positions
+    jacobian = _fit(al.FitPositionsSource, dataset, solver).positions
     jacobian_data = spp.source_plane_data_from(jacobian)
     assert spp.chi_squared_from(
         jacobian_data.traced - jacobian_data.centre, jacobian_data.covariances

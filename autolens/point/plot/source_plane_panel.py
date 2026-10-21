@@ -130,7 +130,7 @@ def presentation_from(fit_positions) -> SourcePlanePresentation:
     Returns how the source-plane panel presents a positions fit, paired to its class.
 
     The class is looked up in :func:`presentation_table` along its method resolution order, so a user subclass of a
-    fit class (e.g. ``FitPositionsSource`` with ``weighting = "jacobian"``) is presented as its parent. The weighting
+    fit class (e.g. ``FitPositionsSource`` with ``weighting = "magnification"``) is presented as its parent. The weighting
     of a source-plane fit is read from the fit itself. A class with no entry is presented as context only, which
     never draws a chi-squared the fit may not compute.
     """
