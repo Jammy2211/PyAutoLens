@@ -321,6 +321,26 @@ def unmatched_model_mask_from(model: np.ndarray, indexes: np.ndarray) -> np.ndar
     return mask
 
 
+def residual_style_from(fit_positions) -> Tuple[str, str]:
+    """
+    Returns the ``(linestyle, legend label)`` of an image-plane fit's residual lines, by its pairing.
+
+    Hard-pairing fits (``FitPositionsImagePair``, ``FitPositionsImagePairRepeat`` and its ``*Solved`` variant) pair
+    each observed position with one model position: solid ``"Residual"`` lines. ``FitPositionsImagePairAll`` (and
+    its ``*Solved`` variant) uses an all-pairs mixture likelihood with no hard pairing, so the line drawn to the
+    nearest model position is only its dominant term: dashed ``"Residual (nearest, soft pairing)"`` lines. The class
+    is looked up along its method resolution order, so a subclass is styled as its parent.
+    """
+    from autolens.point.fit.positions.image.pair_all import FitPositionsImagePairAll
+
+    soft = ("--", "Residual (nearest, soft pairing)")
+    table = {FitPositionsImagePairAll: soft}
+    for cls in type(fit_positions).__mro__:
+        if cls in table:
+            return table[cls]
+    return "-", "Residual"
+
+
 def model_label_from(fit_positions) -> str:
     """
     Returns the legend label of an image-plane fit's model positions: ``"Model"``, or
@@ -352,6 +372,7 @@ def plot_fit_model_positions(ax, fit_positions):
         return
 
     observed, model, indexes = pairing
+    linestyle, label = residual_style_from(fit_positions)
 
     labelled = False
     for obs, index in zip(observed, indexes):
@@ -362,9 +383,10 @@ def plot_fit_model_positions(ax, fit_positions):
             [obs[0], model[index, 0]],
             color=MODEL_COLOR,
             linewidth=1.0,
+            linestyle=linestyle,
             alpha=0.7,
             zorder=6,
-            label=None if labelled else "Residual",
+            label=None if labelled else label,
         )
         labelled = True
 

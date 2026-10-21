@@ -412,3 +412,34 @@ def test__fit_positions_panel__model_label_names_a_solved_centre(
     from autolens.point.plot.positions_panel import model_label_from
 
     assert model_label_from(_fit(cls, dataset, solver).positions) == label
+
+
+@pytest.mark.parametrize(
+    "cls, linestyle, label",
+    [
+        (al.FitPositionsImagePair, "-", "Residual"),
+        (al.FitPositionsImagePairRepeat, "-", "Residual"),
+        (al.FitPositionsImagePairRepeatSolved, "-", "Residual"),
+        (al.FitPositionsImagePairAll, "--", "Residual (nearest, soft pairing)"),
+        (al.FitPositionsImagePairAllSolved, "--", "Residual (nearest, soft pairing)"),
+    ],
+)
+def test__fit_positions_panel__residual_lines_styled_by_pairing(
+    cls, linestyle, label, dataset, solver
+):
+    from autolens.point.plot.positions_panel import (
+        plot_fit_model_positions,
+        residual_style_from,
+    )
+
+    fit_positions = _fit(cls, dataset, solver).positions
+    assert residual_style_from(fit_positions) == (linestyle, label)
+
+    fig, ax = plt.subplots()
+    plot_fit_model_positions(ax, fit_positions)
+    residuals = [line for line in ax.lines if line.get_color() == "r"]
+    assert residuals
+    expected = {"-": ("-", "solid"), "--": ("--", "dashed")}[linestyle]
+    assert all(line.get_linestyle() in expected for line in residuals)
+    assert [line.get_label() for line in residuals][0] == label
+    plt.close(fig)
