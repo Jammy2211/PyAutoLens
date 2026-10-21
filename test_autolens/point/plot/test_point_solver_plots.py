@@ -198,3 +198,60 @@ def test__warn_if_near_jax_cap(data, caplog):
     with caplog.at_level(logging.WARNING):
         psp.warn_if_near_jax_cap(data)
     assert "MAX_CONTAINING_SIZE" in caplog.text
+
+
+def _number_texts(ax):
+    return [t for t in ax.texts if t.get_text().isdigit()]
+
+
+def _gap_in_points(fig, ax, text, x, y):
+    """Distance (points) from an image's display position to the nearest point of its number's box."""
+    bbox = text.get_window_extent(renderer=fig.canvas.get_renderer())
+    px, py = ax.transData.transform((x, y))
+    gap_x = max(bbox.x0 - px, 0.0, px - bbox.x1)
+    gap_y = max(bbox.y0 - py, 0.0, py - bbox.y1)
+    return np.hypot(gap_x, gap_y) * 72.0 / fig.dpi
+
+
+@pytest.mark.parametrize("crowded", [False, True])
+def test__image_numbers_sit_next_to_their_own_images(data, crowded):
+    """
+    Every step-0 image number is drawn a few points from its own image, never moved away to find space, even when
+    images crowd together (the crowded case packs the images into a small part of the panel).
+    """
+    import matplotlib.pyplot as plt
+
+    if crowded:
+        data.solved = np.array(
+            [[0.2, 0.0], [0.25, 0.12], [0.1, 0.22], [-0.05, 0.15], [0.3, -0.1]]
+        )
+
+    fig, ax = plt.subplots(figsize=(6, 6))
+    psp.draw_point_solver_panel(ax, data.steps[0], data, panel_inches=5.0)
+    fig.canvas.draw()
+
+    texts = _number_texts(ax)
+    assert [t.get_text() for t in texts] == [
+        str(i) for i in range(1, len(data.solved) + 1)
+    ]
+    for text, (y, x) in zip(texts, data.solved):
+        assert text.xy == pytest.approx((x, y))
+        assert _gap_in_points(fig, ax, text, x, y) < 10.0
+    plt.close(fig)
+
+
+def test__several_rejected_candidates__corner_label_with_one_arrow_each(data):
+    import matplotlib.pyplot as plt
+
+    data.rejected = np.array([[0.0, 0.0], [1.0, -1.0], [-1.0, 0.5]])
+    fig, ax = plt.subplots(figsize=(6, 6))
+    psp.draw_point_solver_panel(ax, data.steps[0], data, panel_inches=5.0)
+
+    labels = [t for t in ax.texts if "magnification_threshold" in t.get_text()]
+    assert len(labels) == 1
+    assert labels[0].get_transform() == ax.transAxes
+    arrows = [
+        t for t in ax.texts if t.get_text() == "" and getattr(t, "arrow_patch", None)
+    ]
+    assert len(arrows) == 3
+    plt.close(fig)

@@ -356,7 +356,22 @@ def panel_title_from(step, data: PointSolverFigureData, short: bool = False) -> 
     return f"{title} ({counts})"
 
 
-# Candidate placements of the rejected-candidate label, as (x, y) offsets in points and horizontal alignment.
+# Candidate placements of an image number relative to its image, as (dx, dy) offsets in points plus the text's
+# horizontal and vertical alignment: the number's nearest corner sits a few points off the image marker, upper-left
+# first (the teaching figure's look), so a number is always immediately adjacent to its own image.
+_NUMBER_PLACEMENTS = (
+    (-6, 5, "right", "bottom"),
+    (6, 5, "left", "bottom"),
+    (-6, -5, "right", "top"),
+    (6, -5, "left", "top"),
+)
+NUMBER_FONTSIZE = 14
+
+# Radius (points) treated as occupied around an image marker when placing labels.
+_MARKER_RADIUS_POINTS = 6.0
+
+# Candidate placements of the rejected-candidate label next to a single candidate, as (x, y) offsets in points and
+# horizontal alignment.
 _REJECTED_LABEL_PLACEMENTS = (
     (16, -52, "left"),
     (-16, -52, "right"),
@@ -366,14 +381,98 @@ _REJECTED_LABEL_PLACEMENTS = (
     (0, 46, "center"),
 )
 
+# Corners (axes fraction, ha, va) the rejected-candidate label falls back to, with one arrow per candidate.
+_REJECTED_LABEL_CORNERS = (
+    (0.02, 0.98, "left", "top"),
+    (0.98, 0.98, "right", "top"),
+    (0.02, 0.02, "left", "bottom"),
+    (0.98, 0.02, "right", "bottom"),
+)
+
+
+def _points_per_arcsec(data: PointSolverFigureData, panel_inches: float) -> float:
+    width = max(data.extent[1] - data.extent[0], data.extent[3] - data.extent[2])
+    return panel_inches * 72.0 / width
+
+
+def _to_points(data: PointSolverFigureData, xy: np.ndarray, panel_inches: float):
+    """(x,y) arc-seconds -> (x,y) points from the panel's lower-left corner."""
+    scale = _points_per_arcsec(data, panel_inches)
+    xy = np.asarray(xy, dtype=float).reshape(-1, 2)
+    return (xy - np.array([data.extent[0], data.extent[2]])) * scale
+
+
+def _box_overlaps_circles(box, centres, radius) -> np.ndarray:
+    x0, y0, x1, y1 = box
+    if len(centres) == 0:
+        return np.zeros(0, dtype=bool)
+    gap_x = np.maximum(np.maximum(x0 - centres[:, 0], centres[:, 0] - x1), 0.0)
+    gap_y = np.maximum(np.maximum(y0 - centres[:, 1], centres[:, 1] - y1), 0.0)
+    return np.hypot(gap_x, gap_y) < radius
+
+
+def _boxes_overlap(a, b) -> bool:
+    return not (a[2] <= b[0] or b[2] <= a[0] or a[3] <= b[1] or b[3] <= a[1])
+
+
+def _panel_points(data: PointSolverFigureData, panel_inches: float):
+    scale = _points_per_arcsec(data, panel_inches)
+    return (
+        (data.extent[1] - data.extent[0]) * scale,
+        (data.extent[3] - data.extent[2]) * scale,
+    )
+
+
+def number_placements_from(
+    data: PointSolverFigureData, panel_inches: float
+) -> List[Tuple[float, float, str, str]]:
+    """
+    Returns, for every solved image, the ``(dx, dy, ha, va)`` offset (points) of its step-0 number.
+
+    Each number sits a few points off its own image (one of ``_NUMBER_PLACEMENTS``): the first placement which
+    stays inside the panel and overlaps neither another image marker nor an already-placed number, else the one
+    overlapping least. A number is therefore never moved away from its image to find space.
+    """
+    markers = _to_points(
+        data,
+        np.vstack([data.solved[:, ::-1], data.rejected[:, ::-1]]),
+        panel_inches,
+    )
+    width, height = _panel_points(data, panel_inches)
+    placed_boxes, placements = [], []
+    for index, (x, y) in enumerate(markers[: len(data.solved)]):
+        text_width = 0.65 * NUMBER_FONTSIZE * len(str(index + 1)) + 2.0
+        text_height = NUMBER_FONTSIZE + 2.0
+        others = np.delete(markers, index, axis=0)
+        best, best_score = _NUMBER_PLACEMENTS[0], np.inf
+        for dx, dy, ha, va in _NUMBER_PLACEMENTS:
+            x0 = x + dx - (text_width if ha == "right" else 0.0)
+            y0 = y + dy - (text_height if va == "top" else 0.0)
+            box = (x0, y0, x0 + text_width, y0 + text_height)
+            inside = (
+                box[0] >= 0 and box[1] >= 0 and box[2] <= width and box[3] <= height
+            )
+            score = (
+                int(_box_overlaps_circles(box, others, _MARKER_RADIUS_POINTS).sum())
+                + sum(_boxes_overlap(box, other) for other in placed_boxes)
+                + (0 if inside else 100)
+            )
+            if score < best_score:
+                best, best_score, best_box = (dx, dy, ha, va), score, box
+            if score == 0:
+                break
+        placements.append(best)
+        placed_boxes.append(best_box)
+    return placements
+
 
 def _rejected_label_placement(
     data: PointSolverFigureData, x, y, panel_inches: float, fontsize: float
-) -> Tuple[float, float, str]:
+) -> Optional[Tuple[float, float, str]]:
     """
-    Returns the offset and alignment of the rejected-candidate label: the first candidate placement which lies
-    inside the panel and clear of every image and image number, else the one furthest from them, so the label
-    neither hides an image nor runs off the panel.
+    Returns the offset and alignment of the label of a single rejected candidate placed next to it: the first
+    candidate placement which lies inside the panel and clear of every image and image number, or ``None`` if none
+    is clear (the label then goes in a corner).
     """
     x_min, x_max, y_min, y_max = data.extent
     arcsec_per_point = max(x_max - x_min, y_max - y_min) / (panel_inches * 72.0)
@@ -384,10 +483,9 @@ def _rejected_label_placement(
 
     obstacles = data.solved[:, ::-1]  # (x,y)
     if 0 < len(data.solved) <= MAX_NUMBERED_IMAGES:
-        numbers = obstacles + np.array([-22.0, 15.0]) * arcsec_per_point
+        numbers = obstacles + np.array([-15.0, 12.0]) * arcsec_per_point
         obstacles = np.vstack([obstacles, numbers])
 
-    best, best_score = _REJECTED_LABEL_PLACEMENTS[0], -np.inf
     clear = 10.0 * arcsec_per_point
     for dx, dy, ha in _REJECTED_LABEL_PLACEMENTS:
         centre_x = (
@@ -410,9 +508,50 @@ def _rejected_label_placement(
             clearance = np.inf
         if inside and clearance >= clear:
             return dx, dy, ha
-        score = clearance + (0.0 if inside else -1e6)
-        if score > best_score:
-            best, best_score = (dx, dy, ha), score
+    return None
+
+
+def _segment_hits(start, end, centres, radius) -> int:
+    """Number of circles of ``radius`` around ``centres`` that the segment start -> end passes through."""
+    if len(centres) == 0:
+        return 0
+    start, end = np.asarray(start, float), np.asarray(end, float)
+    direction = end - start
+    length2 = max(float(direction @ direction), 1e-12)
+    t = np.clip(((centres - start) @ direction) / length2, 0.0, 1.0)
+    closest = start + t[:, None] * direction
+    return int((np.linalg.norm(centres - closest, axis=1) < radius).sum())
+
+
+def rejected_corner_from(
+    data: PointSolverFigureData, panel_inches: float, fontsize: float
+) -> Tuple[float, float, str, str]:
+    """
+    Returns the corner ``(x, y, ha, va)`` (axes fraction) of the rejected-candidates label: the corner whose text
+    box covers no image and whose arrows to the candidates cross the fewest image markers, then are shortest.
+    """
+    width, height = _panel_points(data, panel_inches)
+    images = _to_points(data, data.solved[:, ::-1], panel_inches)
+    targets = _to_points(data, data.rejected[:MAX_REJECTED_ARROWS, ::-1], panel_inches)
+    box_width, box_height = 0.55 * fontsize * 24, 3.6 * fontsize
+
+    best, best_score = _REJECTED_LABEL_CORNERS[0], np.inf
+    for fx, fy, ha, va in _REJECTED_LABEL_CORNERS:
+        x0 = fx * width - (box_width if ha == "right" else 0.0)
+        y0 = fy * height - (box_height if va == "top" else 0.0)
+        box = (x0, y0, x0 + box_width, y0 + box_height)
+        centre = ((box[0] + box[2]) / 2.0, (box[1] + box[3]) / 2.0)
+        covered = int(
+            _box_overlaps_circles(box, images, _MARKER_RADIUS_POINTS + 4.0).sum()
+        )
+        crossings, length = 0, 0.0
+        for target in targets:
+            others = images[np.linalg.norm(images - target, axis=1) > 1e-6]
+            crossings += _segment_hits(centre, target, others, _MARKER_RADIUS_POINTS)
+            length += float(np.hypot(*(np.asarray(target) - centre)))
+        score = 1e6 * covered + 1e4 * crossings + length
+        if score < best_score:
+            best, best_score = (fx, fy, ha, va), score
     return best
 
 
@@ -423,30 +562,38 @@ def _annotate_images(
     annotation_fontsize: float = 10,
 ):
     if len(data.solved) <= MAX_NUMBERED_IMAGES:
-        for number, (y, x) in enumerate(data.solved, start=1):
+        placements = number_placements_from(data, panel_inches)
+        for number, ((y, x), (dx, dy, ha, va)) in enumerate(
+            zip(data.solved, placements), start=1
+        ):
             ax.annotate(
                 f"{number}",
                 (x, y),
-                xytext=(-22, 8),
+                xytext=(dx, dy),
                 textcoords="offset points",
-                fontsize=14,
+                ha=ha,
+                va=va,
+                fontsize=NUMBER_FONTSIZE,
                 weight="bold",
                 zorder=10,
                 bbox=dict(fc="w", ec="none", alpha=0.8, pad=0.5),
             )
-    if len(data.rejected):
-        y, x = data.rejected[0]
-        where = "at the lens centre" if data.rejected_at_lens_centre else "here"
-        text = (
-            f"kept {where},\nrejected by\nmagnification_threshold"
-            if len(data.rejected) == 1
-            else f"{len(data.rejected)} candidates kept,\nthen rejected by\nmagnification_threshold"
-        )
-        dx, dy, ha = _rejected_label_placement(
+    if len(data.rejected) == 0:
+        return
+
+    y, x = data.rejected[0]
+    where = "at the lens centre" if data.rejected_at_lens_centre else "here"
+    near = (
+        _rejected_label_placement(
             data, x, y, panel_inches=panel_inches, fontsize=annotation_fontsize
         )
+        if len(data.rejected) == 1
+        else None
+    )
+    if near is not None:
+        dx, dy, ha = near
         ax.annotate(
-            text,
+            f"kept {where},\nrejected by\nmagnification_threshold",
             (x, y),
             xytext=(dx, dy),
             textcoords="offset points",
@@ -457,20 +604,36 @@ def _annotate_images(
             zorder=10,
             bbox=dict(fc="w", ec="none", alpha=0.85, pad=1),
         )
-        # One arrow from the same label to each further rejected candidate.
-        arcsec_per_point = max(
-            data.extent[1] - data.extent[0], data.extent[3] - data.extent[2]
-        ) / (panel_inches * 72.0)
-        label_xy = (x + dx * arcsec_per_point, y + dy * arcsec_per_point)
-        for other_y, other_x in data.rejected[1:MAX_REJECTED_ARROWS]:
-            ax.annotate(
-                "",
-                (other_x, other_y),
-                xytext=label_xy,
-                textcoords="data",
-                arrowprops=dict(arrowstyle="->", lw=0.8),
-                zorder=9.5,
-            )
+        return
+
+    # No clear spot next to the candidate (or several candidates): the label goes in the emptiest corner, with
+    # one arrow per candidate drawn from it.
+    text = (
+        f"kept {where},\nrejected by\nmagnification_threshold"
+        if len(data.rejected) == 1
+        else f"{len(data.rejected)} candidates kept,\nthen rejected by\nmagnification_threshold"
+    )
+    fx, fy, ha, va = rejected_corner_from(data, panel_inches, annotation_fontsize)
+    label = ax.text(
+        fx,
+        fy,
+        text,
+        transform=ax.transAxes,
+        ha=ha,
+        va=va,
+        fontsize=annotation_fontsize,
+        zorder=10,
+        bbox=dict(fc="w", ec="0.6", lw=0.6, alpha=0.95, pad=3),
+    )
+    for other_y, other_x in data.rejected[:MAX_REJECTED_ARROWS]:
+        ax.annotate(
+            "",
+            (other_x, other_y),
+            xytext=(0.5, 0.5),
+            textcoords=label,
+            arrowprops=dict(arrowstyle="->", lw=0.8, shrinkB=3),
+            zorder=9.5,
+        )
 
 
 def draw_point_solver_panel(
