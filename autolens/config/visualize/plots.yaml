@@ -55,10 +55,10 @@ fit_interferometer:                        # Settings for plots of fits to inter
 
 point_dataset:                             # Settings for plots of point source datasets (e.g. PointDatasetPlotter).
   subplot_dataset: true                    # Plot subplot containing all dataset quantities (e.g. the data, noise-map, etc.)?
-  image_with_points: true                  # Plot the observed image (if passed to AnalysisPoint) with the observed positions over it?
+  image_with_points: true                  # Plot the observed image (if passed to AnalysisPoint) with the observed positions over it (image_with_points.png)?
 
 fit_point_dataset:                         # Settings for plots of fits to point source datasets (e.g. FitPointDatasetPlotter).
-  image_with_points: true                  # Plot the observed image (if passed to AnalysisPoint) with observed and model positions over it?
+  fit_image_with_points: true              # Plot the observed image (if passed to AnalysisPoint) with observed and model positions and critical curves over it (fit_image_with_points.png)?
 
 weak_dataset:                              # Settings for plots of weak lensing shear catalogues (e.g. PlotterWeak).
   subplot_dataset: true                    # Plot subplot containing all dataset quantities (e.g. the shear field, noise-map, etc.)?

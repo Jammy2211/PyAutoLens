@@ -104,6 +104,15 @@ def plot_image_with_points(
     are drawn as red crosses (image-plane fits only, as a source-plane fit's model data lies in the source
     plane), and critical curves can be overlaid via ``image_plane_lines``.
 
+    The function produces two figures, depending on whether a fit is passed:
+
+    - ``fit=None`` (dataset-only): only the observed image and observed positions are drawn, saved as
+      ``image_with_points``. Use this to display the data before lens modeling, passing no fit and no
+      ``image_plane_lines``.
+    - ``fit`` given: the model positions (and critical curves, via ``image_plane_lines``) are added, the title
+      becomes "<name> Fit Image With Points" and the figure is saved as ``fit_image_with_points``, so it does not
+      overwrite the dataset-only figure.
+
     The image is used only for visualization: it does not enter the point-source likelihood.
 
     Parameters
@@ -113,7 +122,8 @@ def plot_image_with_points(
     dataset : PointDataset
         The point-source dataset whose observed positions are overlaid.
     fit : FitPointDataset, optional
-        If given, its model positions are overlaid as red crosses.
+        If given, its model positions are overlaid as red crosses and the figure is saved as
+        ``fit_image_with_points``; if ``None`` it is the dataset-only ``image_with_points``.
     output_path : str, optional
         Directory in which to save the figure.  If ``None`` the figure is
         not saved to disk.
@@ -135,7 +145,7 @@ def plot_image_with_points(
         ax=ax,
         lines=image_plane_lines,
         line_colors=image_plane_line_colors,
-        title=f"{_prefix}{dataset.name} Image With Points",
+        title=f"{_prefix}{dataset.name} {'Image' if fit is None else 'Fit Image'} With Points",
     )
 
     # Positions are (y,x) arc-seconds: reflect them exactly as `plot_array` does its own overlays, using the
@@ -165,4 +175,5 @@ def plot_image_with_points(
 
     ax.legend(loc="upper right", fontsize=8, framealpha=0.8)
 
-    save_figure(fig, path=output_path, filename="image_with_points", format=output_format)
+    filename = "image_with_points" if fit is None else "fit_image_with_points"
+    save_figure(fig, path=output_path, filename=filename, format=output_format)
