@@ -115,9 +115,9 @@ class AbstractFitPoint(aa.AbstractFit, ABC):
 
         These magnifications are used for two purposes:
 
-        1) For a source-plane chi-squared calculation, the residuals are multiplied by the magnification to account for
-           how the noise in the image-plane positions is magnified to the source-plane, thus defining a
-           better chi-squared.
+        1) For the opt-in `weighting = "magnification"` source-plane chi-squared, the residuals are multiplied by the
+           magnification to approximate how the noise in the image-plane positions maps to the source-plane (the
+           default `"jacobian"` weighting uses the full lensing Jacobian instead).
 
         2) For fitting the fluxes of point sources, the magnification is used to scale the flux of the point source
            in the source-plane to the image-plane, thus computing the model image-plane fluxes.

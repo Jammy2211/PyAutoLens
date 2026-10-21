@@ -34,10 +34,15 @@ eigenvalues of `Wᵢ` are `λ²/σᵢ²` with `λ` the *linear* stretch along ea
 the tensor is exact in every regime: isotropically each stretch is `√µ` (giving `µᵢ/σᵢ²`),
 while near a critical curve the tangential stretch is `≈ µ` (giving `µᵢ²/σᵢ²` along the arc).
 
-The `weighting = "magnification"` class-attribute option instead uses the scalar weighting
-`Wᵢ = (µᵢ²/σᵢ²) I₂` already used by `FitPositionsSource.chi_squared_map` — the traditional
-Lenstool-style approximation, which coincides with the tensor only in the near-critical
-tangential limit (NOT isotropically) — retained for comparisons with that convention.
+This tensor weighting (`weighting = "jacobian"`, the default of both `FitPositionsSource` and
+`FitPositionsSourceSolved`) measures each source-plane residual in the image-plane noise ellipse.
+It is the Gravity.jl source-plane likelihood (Lombardi 2024 Eq. 46; marginalised source Eq. 58),
+Keeton 2001 Eq. 10, and Lenstool's tensor mode (`forme 8`).
+
+The opt-in `weighting = "magnification"` class-attribute option instead uses the scalar isotropic
+weighting `Wᵢ = (µᵢ²/σᵢ²) I₂` of Jullo et al. 2007 Eq. 10. It is exact only tangentially and for a
+radial eigenvalue of 1; near critical curves it over-weights the radial direction by about `µ²`,
+so it is biased.
 
 The solved source-plane centre is then the precision-weighted mean of the per-image
 back-traced positions `β̂ᵢ`:
@@ -97,10 +102,12 @@ def precision_tensor_components_from(fit, weighting: str) -> Tuple:
         The point-source fit object (any `AbstractFitPositions` subclass) providing `positions`, `tracer`,
         `name`, `noise_map` and `_xp`.
     weighting
-        `"jacobian"` — the tensor weighting `Wᵢ = Aᵢ⁻ᵀΘᵢAᵢ⁻¹`, with `Aᵢ` the lensing Jacobian at the observed
-        position (see module docstring).
-        `"magnification"` — the traditional scalar weighting `Wᵢ = (µᵢ²/σᵢ²) I₂`, matching
-        `FitPositionsSource.chi_squared_map` (the near-critical tangential limit of the tensor).
+        `"jacobian"` (the default) — the tensor weighting `Wᵢ = Aᵢ⁻ᵀΘᵢAᵢ⁻¹`, with `Aᵢ` the lensing Jacobian at
+        the observed position, so each residual is measured in the image-plane noise ellipse (Lombardi 2024
+        Eq. 46; Keeton 2001 Eq. 10; Lenstool `forme 8`; see module docstring).
+        `"magnification"` (opt-in) — the scalar isotropic approximation `Wᵢ = (µᵢ²/σᵢ²) I₂` of Jullo et al.
+        2007 Eq. 10, exact only tangentially and for a radial eigenvalue of 1; near critical curves it
+        over-weights the radial direction by about `µ²`, so it is biased.
     """
     xp = fit._xp
     precision_scalar = _as_array(fit.noise_map) ** -2.0  # Θ = σ⁻² I
@@ -114,8 +121,8 @@ def precision_tensor_components_from(fit, weighting: str) -> Tuple:
     if weighting != "jacobian":
         raise exc.PointProfileMismatchException(
             f"Unsupported weighting '{weighting}' for the source-plane position residuals. "
-            f"Valid options are 'jacobian' (tensor weighting, the default of the *Solved fit classes) or "
-            f"'magnification' (scalar isotropic weighting, the default of `FitPositionsSource`)."
+            f"Valid options are 'jacobian' (tensor weighting, the default) or "
+            f"'magnification' (opt-in scalar isotropic weighting)."
         )
 
     lens_calc = _lens_calc_for(fit)

@@ -65,7 +65,8 @@ def test__fit_dataset__nonmatching_point_name__positions_and_flux_are_none(
         (al.FitPositionsImagePair,       -22.14472),
         (al.FitPositionsImagePairRepeat, -22.14472),
         (al.FitPositionsImagePairAll,    -24.6435280294),
-        (al.FitPositionsSource,          -12.9947298),
+        # No mass (A = I): χ² = 0.02 / 0.5² + (2.9² + 3.9²) = 23.70, norm = 2 log(4π²) + 4 log(0.5).
+        (al.FitPositionsSource,          -14.13945977),
     ],
     ids=[
         "FitPositionsImagePair",
