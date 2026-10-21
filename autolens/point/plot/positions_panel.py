@@ -321,6 +321,20 @@ def unmatched_model_mask_from(model: np.ndarray, indexes: np.ndarray) -> np.ndar
     return mask
 
 
+def model_label_from(fit_positions) -> str:
+    """
+    Returns the legend label of an image-plane fit's model positions: ``"Model"``, or
+    ``"Model (from solved β*)"`` for a ``*Solved`` fit, whose model images are solved from the analytically solved
+    source centre rather than a free ``centre`` parameter (the same ``β*`` the source-plane panel marks with a
+    diamond).
+    """
+    from autolens.point.fit.solved import SolvedCentre
+
+    if isinstance(fit_positions, SolvedCentre):
+        return "Model (from solved β*)"
+    return "Model"
+
+
 def plot_fit_model_positions(ax, fit_positions):
     """
     Draws the model positions of a positions fit on top of the observed positions.
@@ -365,7 +379,7 @@ def plot_fit_model_positions(ax, fit_positions):
             marker="x",
             linewidths=MODEL_MARKER_LINEWIDTH,
             zorder=7,
-            label="Model",
+            label=model_label_from(fit_positions),
         )
     if np.any(unmatched):
         ax.scatter(

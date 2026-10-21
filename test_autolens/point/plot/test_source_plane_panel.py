@@ -20,7 +20,7 @@ class FitPositionsSourceJacobian(al.FitPositionsSource):
     weighting = "jacobian"
 
 
-# Every positions fit class, the presentation its source-plane panel must use, and the subtitle naming it.
+# Every positions fit class and the presentation its source-plane panel must use.
 PRESENTATIONS = [
     (al.FitPositionsImagePair, "image", False, None),
     (al.FitPositionsImagePairRepeat, "image", False, None),
@@ -118,14 +118,9 @@ def test__presentation_from__paired_to_fit_class(
     assert presentation.solved_centre is solved
     assert presentation.weighting == weighting
 
-    if plane == "image":
-        assert presentation.subtitle == "Image-plane χ² — traced positions for context"
-    else:
-        assert presentation.subtitle == f"Source-plane χ² ({weighting} weighting)"
-
     assert presentation.centre_marker == ("D" if solved else "*")
     assert presentation.centre_label == (
-        "Solved source centre β*" if solved else "Model source centre"
+        "Solved source centre (β*)" if solved else "Model source centre"
     )
 
 
@@ -166,33 +161,37 @@ def test__plot_source_plane_panel__draws_what_the_fit_class_uses(
     solid_ellipses = [e for e in ellipses if e.get_linestyle() in ("-", "solid")]
     dashed_ellipses = [e for e in ellipses if e.get_linestyle() in ("--", "dashed")]
     labels = _legend_labels(ax)
-    chi_squared_texts = [t for t in _texts(ax) if t.startswith("χ²")]
+    chi_squared_labels = [label for label in labels if label.startswith("χ² =")]
     n = len(data.traced)
 
     assert ax.get_title() == "Fit Source Plane (point_0)"
-    assert any(text.get_text() == data.presentation.subtitle for text in ax.texts)
+    # No subtitle or other free-floating fit-type text: only the image numbers are annotations.
+    assert all(text.get_text().isdigit() for text in ax.texts)
+    assert not any(label.startswith("χ²") for label in _texts(ax))
     assert data.presentation.centre_label in labels
     assert "Caustic" in labels
     assert len(ax.child_axes) == 1  # the caustic inset
 
     if plane == "image":
         assert circles == [] and ellipses == []
-        assert chi_squared_texts == []
+        assert chi_squared_labels == []
         assert not any("noise" in label for label in labels)
     elif weighting == "magnification":
         assert len(circles) == n
         assert len(dashed_ellipses) == n and solid_ellipses == []
         assert any(label.startswith("χ² noise σ/|μ|") for label in labels)
         assert "Propagated noise A·σ (reference)" in labels
-        assert len(chi_squared_texts) == 1
-        assert "(magnification)" in chi_squared_texts[0]
-        assert "(jacobian, reference)" in chi_squared_texts[0]
+        assert chi_squared_labels == [
+            f"χ² = {spp._format_chi_squared(data.chi_squared)}"
+        ]
     else:
         assert circles == []
         assert len(solid_ellipses) == n and dashed_ellipses == []
-        assert "χ² noise A·σ (ellipse)" in labels
-        assert len(chi_squared_texts) == 1
-        assert chi_squared_texts[0].endswith("(jacobian)")
+        assert "χ² noise A·σ (jacobian)" in labels
+        assert "Propagated noise A·σ (reference)" not in labels
+        assert chi_squared_labels == [
+            f"χ² = {spp._format_chi_squared(data.chi_squared)}"
+        ]
 
     # The zoom contains every traced position and the centre.
     x_min, x_max, y_min, y_max = zoom
@@ -227,12 +226,10 @@ def test__source_plane_data__matches_the_fits_own_chi_squared(dataset, solver):
 
     # The A·σ ellipse is the covariance of the jacobian chi-squared.
     jacobian = _fit(FitPositionsSourceJacobian, dataset, solver).positions
-    assert data.jacobian_chi_squared == pytest.approx(
-        float(np.sum(np.asarray(jacobian.chi_squared_map.array))), rel=1e-6
-    )
-    assert spp.source_plane_data_from(jacobian).chi_squared == pytest.approx(
-        data.jacobian_chi_squared, rel=1e-6
-    )
+    jacobian_data = spp.source_plane_data_from(jacobian)
+    assert spp.chi_squared_from(
+        jacobian_data.traced - jacobian_data.centre, jacobian_data.covariances
+    ) == pytest.approx(jacobian_data.chi_squared, rel=1e-6)
 
     # The solved centre is the fit's own β*.
     solved = _fit(al.FitPositionsSourceSolved, dataset, solver).positions
@@ -247,7 +244,7 @@ def test__image_plane_fit__no_chi_squared_computed(dataset, solver):
     )
 
     assert data.chi_squared is None
-    assert spp.chi_squared_text_from(data) is None
+    assert spp.chi_squared_label_from(data) is None
 
 
 def test__ellipse_from__axes_and_angle():
@@ -399,3 +396,19 @@ def test__point_plane_caustics_from__own_plane_differs_from_last_plane(solver, d
 
     assert len(own) >= 1 and len(last) >= 1
     assert np.vstack(own).mean(axis=0) != pytest.approx(np.vstack(last).mean(axis=0))
+
+
+@pytest.mark.parametrize(
+    "cls, label",
+    [
+        (al.FitPositionsImagePair, "Model"),
+        (al.FitPositionsImagePairAllSolved, "Model (from solved β*)"),
+        (al.FitPositionsImagePairRepeatSolved, "Model (from solved β*)"),
+    ],
+)
+def test__fit_positions_panel__model_label_names_a_solved_centre(
+    cls, label, dataset, solver
+):
+    from autolens.point.plot.positions_panel import model_label_from
+
+    assert model_label_from(_fit(cls, dataset, solver).positions) == label

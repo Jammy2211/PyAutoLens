@@ -138,12 +138,6 @@ def subplot_fit(
         title=f"{_prefix}Fit Positions ({fit.dataset.name})",
         extent=extent,
     )
-    # The source-plane panel's title is lifted above its subtitle: lift this one equally so the titles align.
-    ax.set_title(
-        ax.get_title(),
-        fontsize=ax.title.get_fontsize(),
-        pad=source_plane_panel.TITLE_PAD,
-    )
     plot_image_numbers(ax, fit.dataset.positions, numbers, extent)
 
     # Source-plane panel

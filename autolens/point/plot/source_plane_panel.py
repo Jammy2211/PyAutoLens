@@ -8,19 +8,22 @@ compute (:func:`presentation_from`, one entry per class of ``autolens.point.fit.
 - **Image-plane chi-squared** (``FitPositionsImagePair``, ``FitPositionsImagePairRepeat``,
   ``FitPositionsImagePairAll`` and their ``*Solved`` variants): the panel is context only. It shows the traced
   positions, the source centre and the caustics, with no noise footprints and no chi-squared box, as the fit's
-  chi-squared is measured in the image plane. Subtitle: "Image-plane χ² — traced positions for context".
-- **Source-plane chi-squared** (``FitPositionsSource``, ``FitPositionsSourceSolved``): the subtitle names the
-  weighting, and the footprint the chi-squared actually uses is drawn on every traced position:
+  chi-squared is measured in the image plane.
+- **Source-plane chi-squared** (``FitPositionsSource``, ``FitPositionsSourceSolved``): the footprint the
+  chi-squared actually uses is drawn on every traced position:
 
   - ``weighting = "magnification"``: a circle of radius ``σ/|μ|`` (the scalar noise of
-    ``χ²ᵢ = |β̂ᵢ − c|² µᵢ² / σᵢ²``), plus the ``A·σ`` ellipse faint and dashed as the propagated noise (reference);
+    ``χ²ᵢ = |β̂ᵢ − c|² µᵢ² / σᵢ²``), plus the ``A·σ`` ellipse dashed as the propagated noise (reference);
   - ``weighting = "jacobian"``: the ``A·σ`` ellipse, the source-plane covariance ``σ² A Aᵀ = Wᵢ⁻¹`` of the
     precision tensor ``Wᵢ = Aᵢ⁻ᵀΘᵢAᵢ⁻¹`` the chi-squared uses;
 
-  and a box gives the fit's chi-squared (plus the jacobian chi-squared for reference under magnification weighting).
+  and the legend gives the chi-squared the fit uses (only that one), as a handle-less entry ``χ² = <value>``.
 
 The source centre is a red star for a free-centre fit (the point-source profile's ``centre``) and a red diamond for
-a ``*Solved`` fit (the analytically solved ``β*``), named in the legend.
+a ``*Solved`` fit (the analytically solved ``β*``).
+
+Every fit-type cue lives in the legend, as marker symbols and labels (the centre marker, the weighting-specific
+noise label, the chi-squared entry): the panel carries no free-floating annotation text about the fit type.
 
 The panel is zoomed onto the traced positions and the centre with a margin; an inset in the emptiest corner shows the
 whole tangential caustic with a box marking the zoom. The caustics are those of the plane the point source is in
@@ -50,8 +53,9 @@ ZOOM_MARGIN = 0.3
 # Size of the caustic inset, as a fraction of the panel.
 INSET_SIZE = 0.3
 
-# Title padding (points) leaving room for the subtitle beneath the title.
-TITLE_PAD = 22
+# The propagated-noise reference ellipses under magnification weighting: dashed and darker than the primary
+# footprint's colour so they read on white, but thinner than the primary σ/|μ| circles.
+REFERENCE_NOISE_COLOR = "#c25400"
 
 
 @dataclass(frozen=True)
@@ -81,19 +85,13 @@ class SourcePlanePresentation:
         return self.chi_squared_plane == SOURCE_PLANE
 
     @property
-    def subtitle(self) -> str:
-        if not self.is_source_plane:
-            return "Image-plane χ² — traced positions for context"
-        return f"Source-plane χ² ({self.weighting} weighting)"
-
-    @property
     def centre_marker(self) -> str:
         return "D" if self.solved_centre else "*"
 
     @property
     def centre_label(self) -> str:
         return (
-            "Solved source centre β*" if self.solved_centre else "Model source centre"
+            "Solved source centre (β*)" if self.solved_centre else "Model source centre"
         )
 
 
@@ -245,7 +243,6 @@ class SourcePlaneData:
     magnification_radii: np.ndarray
     covariances: np.ndarray
     chi_squared: Optional[float]
-    jacobian_chi_squared: Optional[float]
 
 
 def source_plane_data_from(fit_positions, numbers=None) -> SourcePlaneData:
@@ -279,10 +276,9 @@ def source_plane_data_from(fit_positions, numbers=None) -> SourcePlaneData:
     except Exception:
         covariances = np.full((len(traced), 2, 2), np.nan)
 
-    chi_squared = jacobian_chi_squared = None
+    chi_squared = None
     if presentation.is_source_plane:
         chi_squared = float(np.sum(_np(fit_positions.chi_squared_map)))
-        jacobian_chi_squared = chi_squared_from(traced - centre, covariances)
 
     if numbers is None:
         numbers = pp.image_numbers_from(fit_positions.data)
@@ -296,7 +292,6 @@ def source_plane_data_from(fit_positions, numbers=None) -> SourcePlaneData:
         magnification_radii=radii,
         covariances=covariances,
         chi_squared=chi_squared,
-        jacobian_chi_squared=jacobian_chi_squared,
     )
 
 
@@ -504,21 +499,14 @@ def _format_chi_squared(value: float) -> str:
     return f"{value:,.0f}" if abs(value) >= 1000 else f"{value:.3g}"
 
 
-def chi_squared_text_from(data: SourcePlaneData) -> Optional[str]:
+def chi_squared_label_from(data: SourcePlaneData) -> Optional[str]:
     """
-    Returns the text of the chi-squared box, or ``None`` for an image-plane fit (which has no source-plane
-    chi-squared to show).
+    Returns the legend entry of the chi-squared the fit uses, e.g. ``"χ² = 10,023"``, or ``None`` for an
+    image-plane fit (which has no source-plane chi-squared to show).
     """
-    presentation = data.presentation
-    if not presentation.is_source_plane or data.chi_squared is None:
+    if not data.presentation.is_source_plane or data.chi_squared is None:
         return None
-    text = f"χ² = {_format_chi_squared(data.chi_squared)} ({presentation.weighting})"
-    if (
-        presentation.weighting == "magnification"
-        and data.jacobian_chi_squared is not None
-    ):
-        text += f"\nχ² = {_format_chi_squared(data.jacobian_chi_squared)} (jacobian, reference)"
-    return text
+    return f"χ² = {_format_chi_squared(data.chi_squared)}"
 
 
 def _plot_footprints(ax, data: SourcePlaneData):
@@ -553,20 +541,20 @@ def _plot_footprints(ax, data: SourcePlaneData):
 
     if presentation.weighting == "magnification":
         reference = dict(
-            edgecolor=JACOBIAN_NOISE_COLOR,
-            linewidth=0.9,
+            edgecolor=REFERENCE_NOISE_COLOR,
+            linewidth=1.0,
             linestyle="--",
-            alpha=0.45,
+            alpha=0.9,
             zorder=4.8,
         )
         if _ellipses(**reference):
             ax.plot(
                 [],
                 [],
-                color=JACOBIAN_NOISE_COLOR,
-                linewidth=0.9,
+                color=REFERENCE_NOISE_COLOR,
+                linewidth=1.0,
                 linestyle="--",
-                alpha=0.45,
+                alpha=0.9,
                 label="Propagated noise A·σ (reference)",
             )
         for (y, x), radius in zip(data.traced, data.magnification_radii):
@@ -595,7 +583,7 @@ def _plot_footprints(ax, data: SourcePlaneData):
                 [],
                 color=JACOBIAN_NOISE_COLOR,
                 linewidth=1.2,
-                label="χ² noise A·σ (ellipse)",
+                label="χ² noise A·σ (jacobian)",
             )
 
 
@@ -664,8 +652,7 @@ def plot_source_plane_panel(
     data
         The panel's quantities, from :func:`source_plane_data_from`.
     title
-        The panel title, e.g. ``"Fit Source Plane (point_0)"``; the subtitle naming the chi-squared is drawn below
-        it.
+        The panel title, e.g. ``"Fit Source Plane (point_0)"``.
     tangential_caustics, radial_caustics
         The caustics of the point source's plane, as lists of (N, 2) (y,x) arrays.
     """
@@ -673,7 +660,6 @@ def plot_source_plane_panel(
 
     tangential = list(tangential_caustics or [])
     radial = list(radial_caustics or [])
-    presentation = data.presentation
 
     zoom = zoom_extent_from(data)
     corners = ranked_corners_from(zoom, _footprint_points(data))
@@ -682,9 +668,6 @@ def plot_source_plane_panel(
     inset_corner, inset_bounds = corners[0]
     remaining = corners[1:] if has_inset else corners
     legend_corner = remaining[0][0]
-    box_corner = next(
-        (corner for corner, _ in remaining[1:] if corner[1] == 0), remaining[1][0]
-    )
 
     _plot_caustics(ax, tangential, radial)
     _plot_footprints(ax, data)
@@ -702,22 +685,15 @@ def plot_source_plane_panel(
     _plot_centre(ax, data)
 
     apply_labels(ax, title=title, xlabel="", ylabel="")
-    ax.set_title(ax.get_title(), fontsize=ax.title.get_fontsize(), pad=TITLE_PAD)
-    ax.annotate(
-        presentation.subtitle,
-        xy=(0.5, 1.0),
-        xycoords="axes fraction",
-        xytext=(0, 5),
-        textcoords="offset points",
-        ha="center",
-        va="bottom",
-        fontsize=11,
-        color="0.25",
-    )
     apply_extent(ax, zoom)
     ax.set_aspect("equal", adjustable="box")
 
     pp.plot_image_numbers(ax, traced, data.numbers, zoom)
+
+    chi_squared_label = chi_squared_label_from(data)
+    if chi_squared_label is not None:
+        # A handle-less entry: the chi-squared the fit uses, in the legend with the other fit-type cues.
+        ax.plot([], [], linestyle="none", marker="none", label=chi_squared_label)
 
     ax.legend(
         loc=CORNER_LOCATIONS[legend_corner],
@@ -725,21 +701,6 @@ def plot_source_plane_panel(
         framealpha=0.85,
         markerscale=0.6,
     )
-
-    text = chi_squared_text_from(data)
-    if text is not None:
-        right, top = box_corner
-        ax.text(
-            0.98 if right else 0.02,
-            0.98 if top else 0.02,
-            text,
-            transform=ax.transAxes,
-            ha="right" if right else "left",
-            va="top" if top else "bottom",
-            fontsize=9,
-            bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="0.7", alpha=0.9),
-            zorder=10,
-        )
 
     if has_inset:
         _add_inset(ax, data, tangential, radial, zoom, inset_bounds)
