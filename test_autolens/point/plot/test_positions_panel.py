@@ -132,7 +132,8 @@ def test__subplot_fit__title_extent_legend_mass_centres_and_curves(figures):
 
     ax = figures[0].axes[0]
     assert ax.get_title() == "Fit Positions (point_0)"
-    assert figures[0].axes[1].get_title() == "Fit Fluxes (point_0)"
+    assert figures[0].axes[1].get_title() == "Fit Source Plane (point_0)"
+    assert figures[0].axes[2].get_title() == "Fit Fluxes (point_0)"
     assert ax.get_xlabel() == "" and ax.get_ylabel() == ""
     assert ax.get_xlim() == pytest.approx((fit.solver.x_min, fit.solver.x_max))
 
@@ -171,13 +172,14 @@ def test__subplot_fit__computes_critical_curves_when_none_given(figures, monkeyp
     assert "Critical curve" not in _legend_labels(figures[0].axes[0])
 
 
-def test__subplot_fit__source_plane_fit_has_no_residual_lines(figures):
+def test__subplot_fit__source_plane_fit_draws_no_model_on_image_plane(figures):
     fit_point_plots.subplot_fit(
         fit=_fit(fit_positions_cls=al.FitPositionsSource), image_plane_lines=[]
     )
 
     labels = _legend_labels(figures[0].axes[0])
-    assert "Model (source plane)" in labels
+    assert "Model (source plane)" not in labels
+    assert "Model" not in labels
     assert "Residual" not in labels
     assert "Unmatched model image" not in labels
 

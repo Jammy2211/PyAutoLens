@@ -37,6 +37,15 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 
+from autolens.point.plot.positions_panel import (
+    MARKER_RADIUS_POINTS,
+    NUMBER_PLACEMENTS,
+    adjacent_number_placements_from,
+    box_overlaps_circles,
+    boxes_overlap,
+    image_order_from,
+)
+
 logger = logging.getLogger(__name__)
 
 TESTED_COLOR = "#8a8f95"
@@ -284,7 +293,7 @@ def point_solver_data_from(
             plane_redshift=plane_redshift,
         )
     )
-    solved = solved[np.argsort(-np.arctan2(solved[:, 0], solved[:, 1]))]
+    solved = solved[image_order_from(solved)]
 
     positions = None if positions is None else _yx(positions)
     extent = _extent_from(solver=solver, positions=positions)
@@ -356,19 +365,13 @@ def panel_title_from(step, data: PointSolverFigureData, short: bool = False) -> 
     return f"{title} ({counts})"
 
 
-# Candidate placements of an image number relative to its image, as (dx, dy) offsets in points plus the text's
-# horizontal and vertical alignment: the number's nearest corner sits a few points off the image marker, upper-left
-# first (the teaching figure's look), so a number is always immediately adjacent to its own image.
-_NUMBER_PLACEMENTS = (
-    (-6, 5, "right", "bottom"),
-    (6, 5, "left", "bottom"),
-    (-6, -5, "right", "top"),
-    (6, -5, "left", "top"),
-)
+# The placement of image numbers is shared with the point-source fit panels (``positions_panel``), so an image's
+# number sits beside it the same way in every point-source figure.
+_NUMBER_PLACEMENTS = NUMBER_PLACEMENTS
 NUMBER_FONTSIZE = 14
 
 # Radius (points) treated as occupied around an image marker when placing labels.
-_MARKER_RADIUS_POINTS = 6.0
+_MARKER_RADIUS_POINTS = MARKER_RADIUS_POINTS
 
 # Candidate placements of the rejected-candidate label next to a single candidate, as (x, y) offsets in points and
 # horizontal alignment.
@@ -402,17 +405,8 @@ def _to_points(data: PointSolverFigureData, xy: np.ndarray, panel_inches: float)
     return (xy - np.array([data.extent[0], data.extent[2]])) * scale
 
 
-def _box_overlaps_circles(box, centres, radius) -> np.ndarray:
-    x0, y0, x1, y1 = box
-    if len(centres) == 0:
-        return np.zeros(0, dtype=bool)
-    gap_x = np.maximum(np.maximum(x0 - centres[:, 0], centres[:, 0] - x1), 0.0)
-    gap_y = np.maximum(np.maximum(y0 - centres[:, 1], centres[:, 1] - y1), 0.0)
-    return np.hypot(gap_x, gap_y) < radius
-
-
-def _boxes_overlap(a, b) -> bool:
-    return not (a[2] <= b[0] or b[2] <= a[0] or a[3] <= b[1] or b[3] <= a[1])
+_box_overlaps_circles = box_overlaps_circles
+_boxes_overlap = boxes_overlap
 
 
 def _panel_points(data: PointSolverFigureData, panel_inches: float):
@@ -439,31 +433,13 @@ def number_placements_from(
         panel_inches,
     )
     width, height = _panel_points(data, panel_inches)
-    placed_boxes, placements = [], []
-    for index, (x, y) in enumerate(markers[: len(data.solved)]):
-        text_width = 0.65 * NUMBER_FONTSIZE * len(str(index + 1)) + 2.0
-        text_height = NUMBER_FONTSIZE + 2.0
-        others = np.delete(markers, index, axis=0)
-        best, best_score = _NUMBER_PLACEMENTS[0], np.inf
-        for dx, dy, ha, va in _NUMBER_PLACEMENTS:
-            x0 = x + dx - (text_width if ha == "right" else 0.0)
-            y0 = y + dy - (text_height if va == "top" else 0.0)
-            box = (x0, y0, x0 + text_width, y0 + text_height)
-            inside = (
-                box[0] >= 0 and box[1] >= 0 and box[2] <= width and box[3] <= height
-            )
-            score = (
-                int(_box_overlaps_circles(box, others, _MARKER_RADIUS_POINTS).sum())
-                + sum(_boxes_overlap(box, other) for other in placed_boxes)
-                + (0 if inside else 100)
-            )
-            if score < best_score:
-                best, best_score, best_box = (dx, dy, ha, va), score, box
-            if score == 0:
-                break
-        placements.append(best)
-        placed_boxes.append(best_box)
-    return placements
+    return adjacent_number_placements_from(
+        markers=markers,
+        labels=[str(index + 1) for index in range(len(data.solved))],
+        width=width,
+        height=height,
+        fontsize=NUMBER_FONTSIZE,
+    )
 
 
 def _rejected_label_placement(

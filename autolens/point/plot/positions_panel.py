@@ -13,7 +13,12 @@ Both panels are drawn on the same frame:
 - **No axis labels**, so the arc-second tick labels are not overlapped.
 
 The fit panel additionally draws the model positions, the residual lines of the fit's own pairing, unmatched model
-images, critical curves and the centres of the tracer's mass profiles.
+images, critical curves, the centres of the tracer's mass profiles and the image numbers.
+
+**Image numbers.** Images are numbered 1..N in the order of :func:`image_order_from` (descending angle about the
+origin, the order the ``PointSolver`` figure numbers its solved images in), and each number is placed immediately
+beside its own image by :func:`adjacent_number_placements_from`, which the ``PointSolver`` figure shares. The fit's
+image-plane and source-plane panels use the same numbers, so image ``i`` can be followed from one to the other.
 """
 
 import numpy as np
@@ -34,6 +39,23 @@ MODEL_MARKER_LINEWIDTH = 1.2
 # dark image backgrounds, which are invisible on the white positions panel, so they are mapped to light colours
 # here that stay readable without swamping the residual lines.
 CRITICAL_CURVE_COLOR_MAP = {"white": "0.6", "yellow": "tab:olive"}
+
+
+# Candidate placements of an image number relative to its image, as (dx, dy) offsets in points plus the text's
+# horizontal and vertical alignment: the number's nearest corner sits a few points off the image marker, upper-left
+# first, so a number is always immediately adjacent to its own image.
+NUMBER_PLACEMENTS = (
+    (-6, 5, "right", "bottom"),
+    (6, 5, "left", "bottom"),
+    (-6, -5, "right", "top"),
+    (6, -5, "left", "top"),
+)
+
+# Radius (points) treated as occupied around an image marker when placing labels.
+MARKER_RADIUS_POINTS = 6.0
+
+# Font size of the image numbers on the fit panels.
+FIT_NUMBER_FONTSIZE = 12
 
 
 def _np_grid(grid) -> np.ndarray:
@@ -299,6 +321,40 @@ def unmatched_model_mask_from(model: np.ndarray, indexes: np.ndarray) -> np.ndar
     return mask
 
 
+def residual_style_from(fit_positions) -> Tuple[str, str]:
+    """
+    Returns the ``(linestyle, legend label)`` of an image-plane fit's residual lines, by its pairing.
+
+    Hard-pairing fits (``FitPositionsImagePair``, ``FitPositionsImagePairRepeat`` and its ``*Solved`` variant) pair
+    each observed position with one model position: solid ``"Residual"`` lines. ``FitPositionsImagePairAll`` (and
+    its ``*Solved`` variant) uses an all-pairs mixture likelihood with no hard pairing, so the line drawn to the
+    nearest model position is only its dominant term: dashed ``"Residual (nearest, soft pairing)"`` lines. The class
+    is looked up along its method resolution order, so a subclass is styled as its parent.
+    """
+    from autolens.point.fit.positions.image.pair_all import FitPositionsImagePairAll
+
+    soft = ("--", "Residual (nearest, soft pairing)")
+    table = {FitPositionsImagePairAll: soft}
+    for cls in type(fit_positions).__mro__:
+        if cls in table:
+            return table[cls]
+    return "-", "Residual"
+
+
+def model_label_from(fit_positions) -> str:
+    """
+    Returns the legend label of an image-plane fit's model positions: ``"Model"``, or
+    ``"Model (from solved β*)"`` for a ``*Solved`` fit, whose model images are solved from the analytically solved
+    source centre rather than a free ``centre`` parameter (the same ``β*`` the source-plane panel marks with a
+    diamond).
+    """
+    from autolens.point.fit.solved import SolvedCentre
+
+    if isinstance(fit_positions, SolvedCentre):
+        return "Model (from solved β*)"
+    return "Model"
+
+
 def plot_fit_model_positions(ax, fit_positions):
     """
     Draws the model positions of a positions fit on top of the observed positions.
@@ -307,29 +363,16 @@ def plot_fit_model_positions(ax, fit_positions):
     each observed position to the model position the fit pairs it with, and model images no observed position is
     paired with are drawn as hollow grey crosses (``Unmatched model image``).
 
-    For a source-plane fit (e.g. ``FitPositionsSource``) the model data are the observed positions ray-traced to
-    the source plane: they are drawn as red crosses labelled ``Model (source plane)`` and no residual lines are
-    drawn, as there is no image-plane pairing.
+    For a source-plane fit (e.g. ``FitPositionsSource``) nothing is drawn: its model data are the observed positions
+    ray-traced to the source plane, which belong on the fit's source-plane panel, not the image plane.
     """
     pairing = model_pairing_from(fit_positions)
 
     if pairing is None:
-        model = _np_grid(fit_positions.model_data)
-        model = model[np.isfinite(model).all(axis=1)]
-        if len(model):
-            ax.scatter(
-                model[:, 1],
-                model[:, 0],
-                s=MODEL_MARKER_SIZE,
-                c=MODEL_COLOR,
-                marker="x",
-                linewidths=MODEL_MARKER_LINEWIDTH,
-                zorder=7,
-                label="Model (source plane)",
-            )
         return
 
     observed, model, indexes = pairing
+    linestyle, label = residual_style_from(fit_positions)
 
     labelled = False
     for obs, index in zip(observed, indexes):
@@ -340,9 +383,10 @@ def plot_fit_model_positions(ax, fit_positions):
             [obs[0], model[index, 0]],
             color=MODEL_COLOR,
             linewidth=1.0,
+            linestyle=linestyle,
             alpha=0.7,
             zorder=6,
-            label=None if labelled else "Residual",
+            label=None if labelled else label,
         )
         labelled = True
 
@@ -357,7 +401,7 @@ def plot_fit_model_positions(ax, fit_positions):
             marker="x",
             linewidths=MODEL_MARKER_LINEWIDTH,
             zorder=7,
-            label="Model",
+            label=model_label_from(fit_positions),
         )
     if np.any(unmatched):
         ax.scatter(
@@ -384,3 +428,155 @@ def finish_positions_panel(ax, title: str, extent: List[float]):
     apply_extent(ax, extent)
     ax.set_aspect("equal", adjustable="box")
     ax.legend(loc="best", fontsize=9, framealpha=0.85, markerscale=0.7)
+
+
+def image_order_from(positions) -> np.ndarray:
+    """
+    Returns the indexes of the positions in numbering order: descending angle about the origin, the order in which
+    the ``PointSolver`` figure numbers its solved images. Image ``k`` (1-based) is ``positions[order[k - 1]]``.
+    """
+    positions = _np_grid(positions)
+    return np.argsort(-np.arctan2(positions[:, 0], positions[:, 1]), kind="stable")
+
+
+def image_numbers_from(positions) -> np.ndarray:
+    """
+    Returns the 1-based number of every position, in the positions' own (dataset) order, following
+    :func:`image_order_from`.
+    """
+    order = image_order_from(positions)
+    numbers = np.empty(len(order), dtype=int)
+    numbers[order] = np.arange(1, len(order) + 1)
+    return numbers
+
+
+def box_overlaps_circles(box, centres, radius) -> np.ndarray:
+    """
+    Returns, for every circle of ``radius`` around ``centres``, whether it overlaps the ``(x0, y0, x1, y1)`` box.
+    """
+    x0, y0, x1, y1 = box
+    if len(centres) == 0:
+        return np.zeros(0, dtype=bool)
+    gap_x = np.maximum(np.maximum(x0 - centres[:, 0], centres[:, 0] - x1), 0.0)
+    gap_y = np.maximum(np.maximum(y0 - centres[:, 1], centres[:, 1] - y1), 0.0)
+    return np.hypot(gap_x, gap_y) < radius
+
+
+def boxes_overlap(a, b) -> bool:
+    return not (a[2] <= b[0] or b[2] <= a[0] or a[3] <= b[1] or b[3] <= a[1])
+
+
+def adjacent_number_placements_from(
+    markers: np.ndarray,
+    labels: List[str],
+    width: float,
+    height: float,
+    fontsize: float,
+) -> List[Tuple[float, float, str, str]]:
+    """
+    Returns, for each of the first ``len(labels)`` markers, the ``(dx, dy, ha, va)`` offset (points) of its label.
+
+    Each label sits a few points off its own marker (one of ``NUMBER_PLACEMENTS``): the first placement which stays
+    inside the panel and overlaps neither another marker nor an already-placed label, else the one overlapping
+    least. A label is therefore never moved away from its marker to find space.
+
+    Parameters
+    ----------
+    markers
+        The (x, y) positions of every marker in points from the panel's lower-left corner; markers after the first
+        ``len(labels)`` are obstacles only (e.g. rejected candidates).
+    labels
+        The text of each numbered marker's label.
+    width, height
+        The size of the panel in points.
+    fontsize
+        The label font size in points.
+    """
+    markers = np.asarray(markers, dtype=float).reshape(-1, 2)
+    placed_boxes, placements = [], []
+    for index, (x, y) in enumerate(markers[: len(labels)]):
+        text_width = 0.65 * fontsize * len(labels[index]) + 2.0
+        text_height = fontsize + 2.0
+        others = np.delete(markers, index, axis=0)
+        best, best_score, best_box = NUMBER_PLACEMENTS[0], np.inf, None
+        for dx, dy, ha, va in NUMBER_PLACEMENTS:
+            x0 = x + dx - (text_width if ha == "right" else 0.0)
+            y0 = y + dy - (text_height if va == "top" else 0.0)
+            box = (x0, y0, x0 + text_width, y0 + text_height)
+            inside = (
+                box[0] >= 0 and box[1] >= 0 and box[2] <= width and box[3] <= height
+            )
+            score = (
+                int(box_overlaps_circles(box, others, MARKER_RADIUS_POINTS).sum())
+                + sum(boxes_overlap(box, other) for other in placed_boxes)
+                + (0 if inside else 100)
+            )
+            if score < best_score:
+                best, best_score, best_box = (dx, dy, ha, va), score, box
+            if score == 0:
+                break
+        placements.append(best)
+        placed_boxes.append(best_box)
+    return placements
+
+
+def _panel_size_points(ax, extent) -> Tuple[float, float, float]:
+    """
+    Returns the ``(width, height, points_per_arcsec)`` of an equal-aspect panel showing ``extent``, from the axes'
+    position in its figure.
+    """
+    fig_width, fig_height = ax.figure.get_size_inches()
+    position = ax.get_position()
+    box_width = position.width * fig_width * 72.0
+    box_height = position.height * fig_height * 72.0
+    span_x = max(extent[1] - extent[0], 1e-30)
+    span_y = max(extent[3] - extent[2], 1e-30)
+    scale = min(box_width / span_x, box_height / span_y)
+    return span_x * scale, span_y * scale, scale
+
+
+def plot_image_numbers(
+    ax,
+    positions,
+    numbers,
+    extent: List[float],
+    fontsize: float = FIT_NUMBER_FONTSIZE,
+):
+    """
+    Labels every position with its image number, placed immediately beside it by
+    :func:`adjacent_number_placements_from`.
+
+    Parameters
+    ----------
+    positions
+        The (y,x) positions which are labelled.
+    numbers
+        The number of each position (see :func:`image_numbers_from`).
+    extent
+        The ``[x_min, x_max, y_min, y_max]`` extent of the panel, used to convert positions to points.
+    """
+    positions = _np_grid(positions)
+    if len(positions) == 0:
+        return
+    width, height, scale = _panel_size_points(ax, extent)
+    markers = (positions[:, ::-1] - np.array([extent[0], extent[2]])) * scale
+    placements = adjacent_number_placements_from(
+        markers=markers,
+        labels=[str(number) for number in numbers],
+        width=width,
+        height=height,
+        fontsize=fontsize,
+    )
+    for (y, x), number, (dx, dy, ha, va) in zip(positions, numbers, placements):
+        ax.annotate(
+            f"{number}",
+            (x, y),
+            xytext=(dx, dy),
+            textcoords="offset points",
+            ha=ha,
+            va=va,
+            fontsize=fontsize,
+            weight="bold",
+            zorder=10,
+            bbox=dict(fc="w", ec="none", alpha=0.8, pad=0.5),
+        )
