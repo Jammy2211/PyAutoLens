@@ -1003,6 +1003,24 @@ def subplot_fit_per_image(
 # ---------------------------------------------------------------------------
 
 
+# An image wider than this (arc-seconds) is cluster scale: a bright BCG and faint arcs need a log10 colour scale.
+CLUSTER_IMAGE_WIDTH = 20.0
+
+
+def use_log10_from(image, multi: bool) -> bool:
+    """
+    Clusters (several sources, or a cluster-scale image even when one source is drawn) use a log10 colour scale;
+    a galaxy-scale lens keeps the library's linear scale.
+    """
+    if multi:
+        return True
+    try:
+        width = float(np.max(np.asarray(image.shape_native)) * np.max(image.pixel_scales))
+    except Exception:
+        return False
+    return width > CLUSTER_IMAGE_WIDTH
+
+
 def plot_image_with_points(
     image,
     datasets=None,
@@ -1020,8 +1038,9 @@ def plot_image_with_points(
 
     With ``fits=None`` only the observed positions of ``datasets`` are drawn (``image_with_points.png``); with
     ``fits`` the model positions, residual lines and each source's tangential critical curves at its own redshift are
-    added (``fit_image_with_points.png``, so both figures coexist). Clusters (several sources) use a log10 colour
-    scale (a bright BCG and faint arcs); a single lens keeps the linear scale. There is no legend.
+    added (``fit_image_with_points.png``, so both figures coexist). Clusters (several sources, or an image wider than
+    ``CLUSTER_IMAGE_WIDTH``) use a log10 colour scale (a bright BCG and faint arcs); a galaxy-scale lens keeps the
+    linear scale. There is no legend.
 
     ``image_plane_lines`` (pre-computed last-plane curves) are drawn only when ``curves`` cannot be computed.
     """
@@ -1049,7 +1068,7 @@ def plot_image_with_points(
     title = f"{_prefix(title_prefix)}{name}" + (f" ({records[0].name})" if not multi else "")
 
     fig, ax = subplots(1, 1, figsize=figsize_from(records))
-    plot_array(array=image, ax=ax, use_log10=multi, title=title)
+    plot_array(array=image, ax=ax, use_log10=use_log10_from(image, multi), title=title)
     scale_fonts(ax, scale)
     for other in fig.axes[1:]:
         for tick in other.get_yticklabels():
