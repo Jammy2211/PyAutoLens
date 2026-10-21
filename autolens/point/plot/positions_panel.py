@@ -36,9 +36,10 @@ MODEL_MARKER_SIZE = 60
 MODEL_MARKER_LINEWIDTH = 1.2
 
 # Critical-curve colours: `_compute_critical_curve_lines` returns white (tangential) and yellow (radial) lines for
-# dark image backgrounds, which are invisible on the white positions panel, so they are mapped to light colours
-# here that stay readable without swamping the residual lines.
-CRITICAL_CURVE_COLOR_MAP = {"white": "0.6", "yellow": "tab:olive"}
+# dark image backgrounds, which are invisible on the white positions panel, so they are mapped to dark grey and dark
+# olive here, drawn thick so the curves read clearly against the markers.
+CRITICAL_CURVE_COLOR_MAP = {"white": "0.2", "yellow": "#5c5c00"}
+CRITICAL_CURVE_LINEWIDTH = 1.8
 
 
 # Candidate placements of an image number relative to its image, as (dx, dy) offsets in points plus the text's
@@ -192,7 +193,7 @@ def plot_observed_positions(ax, positions, noise_map):
 
 def plot_critical_curves(ax, lines, line_colors=None):
     """
-    Draws critical curves as thin, light lines labelled ``Critical curve`` in the legend.
+    Draws critical curves as thick, dark lines labelled ``Critical curve`` in the legend.
 
     The curves are computed on :func:`~autolens.lens.plot.critical_curves.critical_curve_grid_from` passed the
     solver, whose grid covers the whole panel, so a curve is never broken inside the panel: a curve which runs past
@@ -210,8 +211,7 @@ def plot_critical_curves(ax, lines, line_colors=None):
             line[:, 1],
             line[:, 0],
             color=CRITICAL_CURVE_COLOR_MAP.get(color, color),
-            linewidth=0.9,
-            alpha=0.8,
+            linewidth=CRITICAL_CURVE_LINEWIDTH,
             zorder=2,
             label=None if labelled else "Critical curve",
         )
@@ -248,7 +248,7 @@ def mass_centres_from(tracer) -> np.ndarray:
     return np.asarray(centres, dtype=float).reshape(-1, 2)
 
 
-def plot_mass_centres(ax, tracer):
+def plot_mass_centres(ax, tracer, size: float = 140, linewidths: float = 2):
     """
     Draws the centre of every mass profile in the tracer as a ``+`` labelled ``Mass centre`` in the legend.
     """
@@ -258,10 +258,10 @@ def plot_mass_centres(ax, tracer):
     ax.scatter(
         centres[:, 1],
         centres[:, 0],
-        s=140,
+        s=size,
         c=MASS_CENTRE_COLOR,
         marker="+",
-        linewidths=2,
+        linewidths=linewidths,
         zorder=4.5,
         label="Mass centre",
     )

@@ -2,7 +2,7 @@ import autofit as af
 
 from autolens.point.model.plotter import PlotterPoint
 from autolens.lens.plot.critical_curves import critical_curve_grid_from
-from autolens.imaging.plot.fit_imaging_plots import _compute_critical_curve_lines
+from autolens.point.plot import point_sources as ps
 
 
 class VisualizerPoint(af.Visualizer):
@@ -77,26 +77,17 @@ class VisualizerPoint(af.Visualizer):
         )
 
         tracer = fit.tracer
+        solver = getattr(fit, "solver", None)
 
         grid = critical_curve_grid_from(dataset=fit.dataset)
 
-        # Compute critical curves and caustics once for all plot functions, on a grid which also covers the
-        # solver grid, so the curves on the solver-extent positions panel are only ever cut by its frame.
-        ip_lines, ip_colors, sp_lines, sp_colors = _compute_critical_curve_lines(
-            tracer,
-            critical_curve_grid_from(
-                dataset=fit.dataset, solver=getattr(fit, "solver", None)
-            ),
-        )
+        # The critical curves and caustics of the point source's own plane (and of the last plane, for the tracer
+        # figures), computed once from the FULL tracer on the solver extent for every figure (the fast
+        # deflection-field contouring of `point_sources.curves_for_planes`).
+        curves = curves_for_point_fits(fits=[fit], solver=solver)
+        ip_lines, ip_colors, sp_lines, sp_colors = last_plane_lines_from(tracer, curves)
 
-        plotter.fit_point(
-            fit=fit,
-            quick_update=quick_update,
-            image_plane_lines=ip_lines,
-            image_plane_line_colors=ip_colors,
-            source_plane_lines=sp_lines,
-            source_plane_line_colors=sp_colors,
-        )
+        plotter.fit_point(fit=fit, quick_update=quick_update, curves=curves)
 
         # Output even on `quick_update`, so the observed image with model positions updates on-the-fly. Saved as
         # `fit_image_with_points.png`, so the dataset-only `image_with_points.png` from before the fit is kept.
@@ -107,10 +98,13 @@ class VisualizerPoint(af.Visualizer):
                 fit=fit,
                 image_plane_lines=ip_lines,
                 image_plane_line_colors=ip_colors,
+                curves=curves,
             )
 
         if quick_update:
             return
+
+        plotter.fit_per_image(fit_list=[fit], curves=curves, solver=solver)
 
         plotter.tracer(
             tracer=tracer,
@@ -130,3 +124,146 @@ class VisualizerPoint(af.Visualizer):
         plotter.point_solver(
             fit=fit, image_plane_lines=ip_lines if ip_lines is not None else []
         )
+
+    @staticmethod
+    def visualize_before_fit_combined(
+        analyses,
+        paths: af.AbstractPaths,
+        model: af.AbstractPriorModel,
+    ):
+        """
+        Before the fit of several point datasets (e.g. a cluster), output the figures of every source in one panel
+        to the top-level ``image`` folder: ``dataset_point.png`` and, if an observed image was passed to an
+        ``AnalysisPoint``, ``image_with_points.png``. Each dataset's own figures are output by
+        ``visualize_before_fit`` to its ``analyses/analysis_<i>`` folder.
+        """
+        analyses = _point_analyses_from(analyses)
+        if len(analyses) < 2:
+            return
+
+        plotter = PlotterPoint(
+            image_path=paths.image_path, title_prefix=analyses[0].title_prefix
+        )
+        _visualize_datasets_combined(plotter, analyses)
+
+    @staticmethod
+    def visualize_combined(
+        analyses,
+        paths: af.AbstractPaths,
+        instance: af.ModelInstance,
+        during_analysis: bool,
+        quick_update: bool = False,
+    ):
+        """
+        Output the figures of every point dataset of a multi-dataset (e.g. cluster) fit in one panel, to the
+        top-level ``image`` folder of the search (each dataset's own figures are output by ``visualize`` to its
+        ``analyses/analysis_<i>`` folder):
+
+        - ``fit.png``: every source's observed and model positions and its critical curves at its own redshift
+          (also output on a quick update);
+        - ``fit_per_image.png``: one row per source, with the residual ranking range shared by every source
+          (``fit_per_image/<name>.png`` beyond 8 sources);
+        - ``fit_image_with_points.png`` if an observed image was passed to an ``AnalysisPoint``;
+        - the dataset figures of ``visualize_before_fit_combined`` (``dataset_point.png``,
+          ``image_with_points.png``), as a factor-graph fit does not call that function.
+
+        The curves are computed once, from the FULL tracer, for every source plane.
+        """
+        pairs = [
+            (analysis, single_instance)
+            for analysis, single_instance in zip(analyses, instance)
+            if _is_point_analysis(analysis)
+        ]
+        if len(pairs) < 2:
+            return
+
+        analyses = [analysis for analysis, _ in pairs]
+        plotter = PlotterPoint(
+            image_path=paths.image_path, title_prefix=analyses[0].title_prefix
+        )
+
+        fit_list = [
+            analysis.fit_for_visualization(instance=single_instance)
+            for analysis, single_instance in pairs
+        ]
+        solver = getattr(analyses[0], "solver", None) or getattr(
+            fit_list[0], "solver", None
+        )
+        curves = curves_for_point_fits(fits=fit_list, solver=solver)
+
+        plotter.fit_point_combined(
+            fit_list=fit_list, curves=curves, solver=solver, quick_update=quick_update
+        )
+
+        image = _image_from(analyses)
+        if image is not None:
+            plotter.image_with_points_combined(
+                image=image,
+                dataset_list=[fit.dataset for fit in fit_list],
+                fit_list=fit_list,
+                curves=curves,
+                solver=solver,
+            )
+
+        if quick_update:
+            return
+
+        plotter.fit_per_image(
+            fit_list=fit_list, curves=curves, solver=solver, combined=True
+        )
+        _visualize_datasets_combined(plotter, analyses)
+
+
+def _is_point_analysis(analysis) -> bool:
+    from autolens.point.model.analysis import AnalysisPoint
+
+    return isinstance(analysis, AnalysisPoint)
+
+
+def _point_analyses_from(analyses):
+    if analyses is None:
+        return []
+    return [getattr(a, "analysis", a) for a in analyses if _is_point_analysis(getattr(a, "analysis", a))]
+
+
+def _image_from(analyses):
+    for analysis in analyses:
+        image = getattr(analysis, "image", None)
+        if image is not None:
+            return image
+    return None
+
+
+def _visualize_datasets_combined(plotter, analyses):
+    solver = getattr(analyses[0], "solver", None)
+    dataset_list = [analysis.dataset for analysis in analyses]
+    plotter.dataset_point_combined(dataset_list=dataset_list, solver=solver)
+    image = _image_from(analyses)
+    if image is not None:
+        plotter.image_with_points_combined(
+            image=image, dataset_list=dataset_list, solver=solver
+        )
+
+
+def curves_for_point_fits(fits, solver=None):
+    """
+    The per-plane critical curves and caustics of point-source fits: every source's own plane and the last plane,
+    from the FULL tracer, on the extent of the positions figures (the solver grid, enlarged to contain every observed
+    position).
+    """
+    records = ps.records_from_fits(fits)
+    extent = ps.union_extent_from(records, solver=solver)
+    return ps.curves_for_fits(fits, records, extent)
+
+
+def last_plane_lines_from(tracer, curves):
+    """
+    The last plane's curves as the ``(image_plane_lines, colors, source_plane_lines, colors)`` the tracer and galaxy
+    figures draw (``None`` lines when there are none).
+    """
+    last = curves.get(len(tracer.planes) - 1) if curves else None
+    if last is None:
+        return None, None, None, None
+    ip_lines, ip_colors = last.image_plane_lines()
+    sp_lines, sp_colors = last.source_plane_lines()
+    return ip_lines, ip_colors, sp_lines, sp_colors

@@ -24,7 +24,10 @@ def subplot_dataset(
       panel extent is the ``PointSolver`` grid extent when ``solver`` is given
       (where the model can find images), otherwise the critical-curve region of
       ``critical_curve_grid_from``, so no position is clipped. There are no axis
-      labels, only arc-second tick labels.
+      labels, only arc-second tick labels. Images are numbered 1..N as on every
+      point-source figure. This is the one-source case of
+      :func:`~autolens.point.plot.multi_source_plots.plot_dataset_positions`,
+      which draws every source of a cluster in one panel.
     * **Fluxes panel** (shown only when ``dataset.fluxes`` is not
       ``None``): a line/bar plot of the observed flux values indexed by
       image position.
@@ -44,43 +47,43 @@ def subplot_dataset(
         The solver of the model-fit, whose grid sets the positions panel extent.
     """
     from autoarray.plot.yx import plot_yx
-    from autolens.point.plot.positions_panel import (
-        finish_positions_panel,
-        plot_observed_positions,
-        positions_extent_from,
+    from autolens.point.plot import multi_source_plots as msp
+    from autolens.point.plot import point_sources as ps
+
+    if dataset.fluxes is None:
+        msp.plot_dataset_positions(
+            [dataset],
+            solver=solver,
+            output_path=output_path,
+            output_format=output_format,
+            filename="dataset_point",
+            title_prefix=title_prefix,
+        )
+        return
+
+    records = ps.records_from_datasets([dataset])
+    ps.assign_styles(records)
+    extent = ps.union_extent_from(records, solver=solver)
+
+    fig, axes = subplots(1, 2, figsize=conf_subplot_figsize(1, 2))
+    axes_flat = list(np.array(axes).flatten())
+
+    msp.draw_dataset_positions(
+        axes_flat[0], records, extent, title=msp.dataset_title_from(records, title_prefix)
     )
-
-    has_fluxes = dataset.fluxes is not None
-    n = 2 if has_fluxes else 1
-
-    fig, axes = subplots(1, n, figsize=conf_subplot_figsize(1, n))
-    axes_flat = [axes] if n == 1 else list(np.array(axes).flatten())
 
     _prefix = f"{title_prefix.rstrip()} " if title_prefix else ""
-
-    plot_observed_positions(
-        ax=axes_flat[0],
-        positions=dataset.positions,
-        noise_map=dataset.positions_noise_map,
+    y = np.array(dataset.fluxes)
+    x = np.arange(len(y))
+    plot_yx(
+        y=y,
+        x=x,
+        ax=axes_flat[1],
+        title=f"{_prefix}Dataset Fluxes ({dataset.name})",
+        output_path=None,
+        output_filename="point_dataset_fluxes",
+        output_format=output_format,
     )
-    finish_positions_panel(
-        ax=axes_flat[0],
-        title=f"{_prefix}Dataset Positions ({dataset.name})",
-        extent=positions_extent_from(positions=dataset.positions, solver=solver),
-    )
-
-    if has_fluxes and n > 1:
-        y = np.array(dataset.fluxes)
-        x = np.arange(len(y))
-        plot_yx(
-            y=y,
-            x=x,
-            ax=axes_flat[1],
-            title=f"{_prefix}Dataset Fluxes ({dataset.name})",
-            output_path=None,
-            output_filename="point_dataset_fluxes",
-            output_format=output_format,
-        )
 
     tight_layout()
     save_figure(fig, path=output_path, filename="dataset_point", format=output_format)

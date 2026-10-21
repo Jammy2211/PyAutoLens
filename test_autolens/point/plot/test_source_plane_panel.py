@@ -271,8 +271,13 @@ def test__image_numbers_from__point_solver_order():
 @pytest.fixture(name="figures")
 def make_figures(monkeypatch):
     figures = []
+    from autolens.point.plot import multi_source_plots
+
     monkeypatch.setattr(
         fit_point_plots, "save_figure", lambda fig, **kwargs: figures.append(fig)
+    )
+    monkeypatch.setattr(
+        multi_source_plots, "save_figure", lambda fig, **kwargs: figures.append(fig)
     )
     return figures
 
@@ -298,18 +303,29 @@ def test__subplot_fit__layout_and_consistent_image_numbers(
     )
     fit = _fit(al.FitPositionsSource, dataset, solver)
 
+    from autolens.point.plot import multi_source_plots
+
     fit_point_plots.subplot_fit(fit=fit, image_plane_lines=[], source_plane_lines=[])
 
-    axes = figures[0].axes
-    titles = [ax.get_title() for ax in axes]
-    expected = ["Fit Positions (point_0)", "Fit Source Plane (point_0)"]
+    titles = [ax.get_title() for ax in figures[0].axes]
+    expected = ["Fit Positions (point_0)"]
     if fluxes is not None:
         expected.append("Fit Fluxes (point_0)")
     assert titles == expected
-
-    # The source-plane fit's traced positions are not drawn on the image plane.
-    image_labels = _legend_labels(axes[0])
+    image_labels = _legend_labels(figures[0].axes[0])
     assert "Model (source plane)" not in image_labels
+
+    # fit_per_image.png: the residual ranking, image-plane and source-plane panels of the source.
+    figures.clear()
+    multi_source_plots.subplot_fit_per_image([fit], curves={})
+    axes = figures[0].axes
+    assert [ax.get_title() for ax in axes] == [
+        "Residuals (point_0, z = 1)",
+        "IP (point_0, z = 1)",
+        "SP (point_0, z = 1)",
+    ]
+    # No legends on fit_per_image.
+    assert all(ax.get_legend() is None for ax in axes)
 
     # Image k is the same observed position on both panels.
     numbers = image_numbers_from(dataset.positions)
@@ -321,8 +337,8 @@ def test__subplot_fit__layout_and_consistent_image_numbers(
     expected_source = sorted(
         (str(n), tuple(np.round(p[::-1], 8))) for n, p in zip(numbers, traced)
     )
-    assert _number_texts(axes[0]) == expected_image
-    assert _number_texts(axes[1]) == expected_source
+    assert _number_texts(axes[1]) == expected_image
+    assert _number_texts(axes[2]) == expected_source
 
 
 def _three_plane_fit(solver, dataset):
