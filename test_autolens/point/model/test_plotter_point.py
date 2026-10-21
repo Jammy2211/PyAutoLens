@@ -203,3 +203,30 @@ def test__critical_curve_grid_from__extent_is_x_first():
     assert grid[:, 0].max() - grid[:, 0].min() == pytest.approx(
         grid[:, 1].max() - grid[:, 1].min(), abs=0.05
     )
+
+
+def test__visualizer__before_fit__passes_analysis_solver_to_dataset_panel(
+    fit_point_dataset_x2_plane, plot_path, plot_patch, monkeypatch
+):
+    from types import SimpleNamespace
+
+    import autolens.point.model.plotter as plotter_module
+    from autolens.point.model.visualizer import VisualizerPoint
+
+    solvers = []
+
+    def recording_subplot_dataset(dataset, **kwargs):
+        solvers.append(kwargs.get("solver"))
+
+    monkeypatch.setattr(plotter_module, "subplot_dataset", recording_subplot_dataset)
+
+    analysis = SimpleNamespace(
+        dataset=fit_point_dataset_x2_plane.dataset,
+        solver=fit_point_dataset_x2_plane.solver,
+        title_prefix=None,
+    )
+    paths = SimpleNamespace(image_path=plot_path, output_path=plot_path)
+
+    VisualizerPoint.visualize_before_fit(analysis=analysis, paths=paths, model=None)
+
+    assert solvers == [fit_point_dataset_x2_plane.solver]

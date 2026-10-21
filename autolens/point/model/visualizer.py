@@ -31,7 +31,9 @@ class VisualizerPoint(af.Visualizer):
             image_path=paths.image_path, title_prefix=analysis.title_prefix
         )
 
-        plotter.dataset_point(dataset=analysis.dataset)
+        plotter.dataset_point(
+            dataset=analysis.dataset, solver=getattr(analysis, "solver", None)
+        )
 
         if getattr(analysis, "image", None) is not None:
             # Dataset-only figure (observed positions, no model): `image_with_points.png`.
@@ -78,9 +80,13 @@ class VisualizerPoint(af.Visualizer):
 
         grid = critical_curve_grid_from(dataset=fit.dataset)
 
-        # Compute critical curves and caustics once for all plot functions.
+        # Compute critical curves and caustics once for all plot functions, on a grid which also covers the
+        # solver grid, so the curves on the solver-extent positions panel are only ever cut by its frame.
         ip_lines, ip_colors, sp_lines, sp_colors = _compute_critical_curve_lines(
-            tracer, grid
+            tracer,
+            critical_curve_grid_from(
+                dataset=fit.dataset, solver=getattr(fit, "solver", None)
+            ),
         )
 
         plotter.fit_point(

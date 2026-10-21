@@ -13,6 +13,7 @@ def subplot_fit(
     source_plane_lines=None,
     source_plane_line_colors=None,
     title_prefix: str = None,
+    solver=None,
 ):
     """
     Produce a subplot summarising a `FitPointDataset`.
@@ -20,9 +21,27 @@ def subplot_fit(
     The subplot contains one or two panels depending on whether flux
     measurements are present in the dataset:
 
-    * **Positions panel** (always shown): observed point-source positions
-      plotted as a grid, with the model-predicted positions overlaid as
-      red scatter points.
+    * **Positions panel** (always shown), titled ``Fit Positions (<name>)``.
+      Drawn on the same frame as the dataset positions panel (the
+      ``PointSolver`` grid extent, no axis labels), it shows:
+
+      - the observed positions as large filled markers with their noise-map
+        circles and the sigma in the legend;
+      - the model positions on top as red crosses;
+      - a thin ``Residual`` line from each observed position to the model
+        position the fit's own pairing matches it to (Hungarian for
+        ``FitPositionsImagePair``, nearest for ``FitPositionsImagePairRepeat``
+        and the dominant nearest term of ``FitPositionsImagePairAll``);
+      - model images no observed position is paired with as hollow grey
+        crosses (``Unmatched model image``);
+      - the tangential / radial critical curves, thin and light, clipped at the
+        panel edge where they extend beyond the solver grid;
+      - the centre of every mass profile in the tracer (``Mass centre``).
+
+      For a source-plane fit (e.g. ``FitPositionsSource``) the model data are
+      the observed positions ray-traced to the source plane: they are drawn as
+      ``Model (source plane)`` crosses and no residual lines or unmatched images
+      are drawn, as there is no image-plane pairing.
     * **Fluxes panel** (shown only when ``fit.dataset.fluxes`` is not
       ``None``): a bar/line plot of the observed flux values.
 
@@ -35,38 +54,70 @@ def subplot_fit(
         not saved to disk.
     output_format : str, optional
         Image format passed to :func:`~autoarray.plot.utils.save_figure`.
+    image_plane_lines : list, optional
+        Critical-curve lines drawn on the positions panel. If this and
+        ``source_plane_lines`` are both ``None`` they are computed from the
+        fit's tracer on ``critical_curve_grid_from`` (enlarged to cover the
+        solver grid); pass ``[]`` to draw none.
+    image_plane_line_colors : list, optional
+        Colours of each image-plane line (``"white"`` tangential, ``"yellow"``
+        radial, as returned by the critical-curve helper).
+    source_plane_lines, source_plane_line_colors
+        Accepted for a uniform plotter interface; not drawn.
+    title_prefix : str, optional
+        Text prepended to every panel title.
+    solver : PointSolver, optional
+        The solver whose grid sets the positions panel extent. Defaults to
+        ``fit.solver``.
     """
-    from autogalaxy.util.plot_utils import plot_grid
     from autoarray.plot.yx import plot_yx
+    from autolens.point.plot.positions_panel import (
+        finish_positions_panel,
+        plot_critical_curves,
+        plot_fit_model_positions,
+        plot_mass_centres,
+        plot_observed_positions,
+        positions_extent_from,
+    )
 
     has_fluxes = fit.dataset.fluxes is not None
     n = 2 if has_fluxes else 1
 
+    if solver is None:
+        solver = getattr(fit, "solver", None)
+
+    if image_plane_lines is None and source_plane_lines is None:
+        from autolens.lens.plot.critical_curves import (
+            _compute_critical_curve_lines,
+            critical_curve_grid_from,
+        )
+
+        image_plane_lines, image_plane_line_colors, _, _ = (
+            _compute_critical_curve_lines(
+                fit.tracer, critical_curve_grid_from(dataset=fit.dataset, solver=solver)
+            )
+        )
+
     fig, axes = subplots(1, n, figsize=conf_subplot_figsize(1, n))
     axes_flat = [axes] if n == 1 else list(np.array(axes).flatten())
 
-    # Positions panel
-    obs_grid = np.array(
-        fit.dataset.positions.array
-        if hasattr(fit.dataset.positions, "array")
-        else fit.dataset.positions
-    )
-    model_grid = np.array(
-        fit.positions.model_data.array
-        if hasattr(fit.positions.model_data, "array")
-        else fit.positions.model_data
-    )
-
     _prefix = f"{title_prefix.rstrip()} " if title_prefix else ""
-    plot_grid(
-        grid=obs_grid,
-        ax=axes_flat[0],
-        title=f"{_prefix}{fit.dataset.name} Fit Positions",
-        output_path=None,
-        output_filename=None,
-        output_format=output_format,
+
+    # Positions panel
+    ax = axes_flat[0]
+    plot_critical_curves(ax, image_plane_lines, image_plane_line_colors)
+    plot_mass_centres(ax, fit.tracer)
+    plot_observed_positions(
+        ax=ax,
+        positions=fit.dataset.positions,
+        noise_map=fit.dataset.positions_noise_map,
     )
-    axes_flat[0].scatter(model_grid[:, 1], model_grid[:, 0], c="r", s=20, zorder=5)
+    plot_fit_model_positions(ax, fit.positions)
+    finish_positions_panel(
+        ax=ax,
+        title=f"{_prefix}Fit Positions ({fit.dataset.name})",
+        extent=positions_extent_from(positions=fit.dataset.positions, solver=solver),
+    )
 
     # Fluxes panel
     if has_fluxes and n > 1:
@@ -76,7 +127,7 @@ def subplot_fit(
             y=y,
             x=x,
             ax=axes_flat[1],
-            title=f"{_prefix}{fit.dataset.name} Fit Fluxes",
+            title=f"{_prefix}Fit Fluxes ({fit.dataset.name})",
             output_path=None,
             output_filename="fit_point_fluxes",
             output_format=output_format,

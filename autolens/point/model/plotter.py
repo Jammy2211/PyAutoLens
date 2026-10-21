@@ -13,7 +13,7 @@ from autolens.analysis.plotter import plot_setting
 
 
 class PlotterPoint(Plotter):
-    def dataset_point(self, dataset: PointDataset):
+    def dataset_point(self, dataset: PointDataset, solver=None):
         """
         Output visualization of a `PointDataset` dataset.
 
@@ -21,6 +21,9 @@ class PlotterPoint(Plotter):
         ----------
         dataset
             The point dataset which is visualized.
+        solver
+            The `PointSolver` of the model-fit, whose grid sets the extent of the positions panel. If `None`, the
+            panel extent falls back to the critical-curve region around the positions.
         """
 
         def should_plot(name):
@@ -30,8 +33,13 @@ class PlotterPoint(Plotter):
         fmt = self.fmt
 
         if should_plot("subplot_dataset"):
-            subplot_dataset(dataset, output_path=output_path, output_format=fmt,
-                            title_prefix=self.title_prefix)
+            subplot_dataset(
+                dataset,
+                output_path=output_path,
+                output_format=fmt,
+                title_prefix=self.title_prefix,
+                solver=solver,
+            )
 
     def image_with_points(
         self,
@@ -115,7 +123,9 @@ class PlotterPoint(Plotter):
 
         # Use pre-computed critical curves if provided, otherwise compute once here.
         if image_plane_lines is None and source_plane_lines is None:
-            grid = critical_curve_grid_from(dataset=fit.dataset)
+            grid = critical_curve_grid_from(
+                dataset=fit.dataset, solver=getattr(fit, "solver", None)
+            )
             ip_lines, ip_colors, sp_lines, sp_colors = _compute_critical_curve_lines(
                 fit.tracer, grid
             )
@@ -124,6 +134,11 @@ class PlotterPoint(Plotter):
                 image_plane_lines, image_plane_line_colors,
                 source_plane_lines, source_plane_line_colors,
             )
+
+        # `subplot_fit` computes the curves itself when it is given none, so pass an explicit empty list when the
+        # model has no critical curves, rather than computing them twice.
+        if ip_lines is None:
+            ip_lines, ip_colors = [], []
 
         if quick_update:
             subplot_fit_point(
