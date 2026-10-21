@@ -44,9 +44,10 @@ class PlotterPoint(Plotter):
         """
         Output an observed image of the lensed point source with the point-source positions overlaid.
 
-        Before the fit (``fit=None``) only the observed positions are drawn, controlled by the
-        `point_dataset: image_with_points` setting. After the fit the model positions (and critical curves,
-        if given) are also drawn, controlled by the `fit_point_dataset: image_with_points` setting.
+        Before the fit (``fit=None``) only the observed positions are drawn, output as `image_with_points.png`
+        and controlled by the `point_dataset: image_with_points` setting. After the fit the model positions (and
+        critical curves, if given) are also drawn, output as `fit_image_with_points.png` (so both figures coexist)
+        and controlled by the `fit_point_dataset: fit_image_with_points` setting.
 
         Parameters
         ----------
@@ -62,11 +63,11 @@ class PlotterPoint(Plotter):
             Colours for each image-plane line.
         """
         if fit is None:
-            section = ["point_dataset"]
+            section, name = ["point_dataset"], "image_with_points"
         else:
-            section = ["fit", "fit_point_dataset"]
+            section, name = ["fit", "fit_point_dataset"], "fit_image_with_points"
 
-        if not plot_setting(section=section, name="image_with_points"):
+        if not plot_setting(section=section, name=name):
             return
 
         plot_image_with_points(

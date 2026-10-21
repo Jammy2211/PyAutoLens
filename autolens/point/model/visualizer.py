@@ -34,6 +34,7 @@ class VisualizerPoint(af.Visualizer):
         plotter.dataset_point(dataset=analysis.dataset)
 
         if getattr(analysis, "image", None) is not None:
+            # Dataset-only figure (observed positions, no model): `image_with_points.png`.
             plotter.image_with_points(image=analysis.image, dataset=analysis.dataset)
 
     @staticmethod
@@ -93,7 +94,8 @@ class VisualizerPoint(af.Visualizer):
             source_plane_line_colors=sp_colors,
         )
 
-        # Output even on `quick_update`, so the observed image with model positions updates on-the-fly.
+        # Output even on `quick_update`, so the observed image with model positions updates on-the-fly. Saved as
+        # `fit_image_with_points.png`, so the dataset-only `image_with_points.png` from before the fit is kept.
         if getattr(analysis, "image", None) is not None:
             plotter.image_with_points(
                 image=analysis.image,
