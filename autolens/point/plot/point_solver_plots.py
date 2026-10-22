@@ -17,10 +17,21 @@ shrink onto the images:
   threshold rejects.
 - **Neighbours** (orange): the rim added around the kept triangles before up-sampling.
 - **Up-sampled** (green outlines): the triangles tested at the next step.
-- the critical curve, the observed positions (hollow circles) and the solved images (red crosses).
+- the critical curves of the source's own plane, the observed positions (hollow circles) and the solved images (red
+  crosses).
 
-Panel 0 numbers the images and labels a rejected candidate. Kept triangles too small to draw at the panel's
-size (below ~3 screen pixels) are drawn as a triangle marker at their centroid instead.
+The extent spans the source's own images and rejected candidates (padded, square, with round tick values), not the
+solver's full grid, so a cluster source with images tens of arc-seconds apart is drawn as large as a galaxy-scale
+one. A galaxy-scale grid only just larger than its images is shown whole instead, so its tiling fills the panel. Panel 0 numbers the images ``1, 2, ...`` and the rejected candidates ``r1, r2, ...``. Kept triangles too small
+to draw at the panel's size (below ~3 screen pixels) are drawn as a triangle marker at their centroid instead.
+
+**Display grid.** When the solver's own step-0 triangles are too small to draw at that extent (e.g. a cluster grid
+of 0.2" triangles over a 40" span), the source is re-solved for the figure only on a coarse uniform grid covering the
+extent, whose pixel scale is the smaller of a tenth of the span and the closest separation between any two images
+or rejected candidates divided by 1.6 (so close pairs still start in separate triangles), with the solver's own
+``pixel_scale_precision`` and ``magnification_threshold``. The display solve is used only if it recovers the
+solver's images and rejected candidates; otherwise the solver's own steps are drawn. The solver passed in, and so
+the model-fit, is never changed.
 
 One per-panel draw function, :func:`draw_point_solver_panel`, is shared by the 2x2 still (``point_solver.png``) and
 the teaching animation (``point_solver.gif``, one panel per frame), so the two cannot drift apart.
@@ -31,18 +42,18 @@ behind the implicit-differentiation rule.
 """
 
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Optional, Tuple
 
 import numpy as np
 
 from autolens.point.plot.positions_panel import (
-    MARKER_RADIUS_POINTS,
+    CRITICAL_CURVE_COLOR_MAP,
+    CRITICAL_CURVE_LINEWIDTH,
     NUMBER_PLACEMENTS,
+    UNMATCHED_COLOR,
     adjacent_number_placements_from,
-    box_overlaps_circles,
-    boxes_overlap,
     image_order_from,
 )
 
@@ -53,9 +64,31 @@ NEIGHBOUR_COLOR = "#f2a33a"
 KEPT_COLOR = "#1f6fd1"
 REJECTED_COLOR = "#9db7d9"
 UP_SAMPLED_COLOR = "#2e9e5b"
-CRITICAL_CURVE_COLOR = "#7b3fa0"
+CRITICAL_CURVE_COLOR = CRITICAL_CURVE_COLOR_MAP["white"]
+RADIAL_CRITICAL_CURVE_COLOR = CRITICAL_CURVE_COLOR_MAP["yellow"]
 OBSERVED_COLOR = "k"
 SOLVED_COLOR = "r"
+REJECTED_LABEL_COLOR = UNMATCHED_COLOR
+
+# The width (inches) of one panel of the 2x2 still, which the display-grid decision is made for.
+STILL_PANEL_INCHES = 0.85 * 6.0
+
+# The extent spans the source's images and rejected candidates, padded by this fraction of their range on each side.
+EXTENT_PAD = 0.2
+
+# The display grid starts with about this many triangles across the extent...
+DISPLAY_TRIANGLES_ACROSS = 10
+
+# ... and with a pixel scale below the closest separation of two images (or rejected candidates) divided by this, so
+# a close pair (e.g. an image beside a member galaxy's core) starts in separate triangles.
+DISPLAY_SEPARATION_FRACTION = 1.6
+
+# The display solve recovers an image when it lands within this many arc-seconds of the solver's own (or within two
+# ``pixel_scale_precision``, if larger).
+RECOVERY_TOLERANCE = 0.01
+
+# Tick steps (times a power of ten) the extent is widened to, so its ticks fall on round values.
+_NICE_TICK_STEPS = (1.0, 1.2, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 8.0)
 
 # A kept triangle whose edge spans fewer typographic points (1/72 inch) than this on the panel is drawn as a
 # centroid marker: about 3 screen pixels, independent of the dpi the figure is saved at.
@@ -70,9 +103,6 @@ DENSE_TILING = 5000
 # Tested triangles whose edge spans fewer points than this (e.g. a cluster's step-0 tiling of hundreds of thousands
 # of triangles) merge into a solid slab when outlined, so they are drawn as a light grey shade instead.
 MIN_OUTLINE_POINTS = 1.5
-
-# At most this many rejected candidates get an arrow from the step-0 label.
-MAX_REJECTED_ARROWS = 5
 
 # Seconds each animation frame is shown; the final step is held for ``FINAL_FRAME_REPEATS`` frames.
 FRAME_SECONDS = 1.25
@@ -99,15 +129,19 @@ class PointSolverFigureData:
     magnification_threshold
         The solver's ``magnification_threshold``, quoted in the legend.
     extent
-        The ``[x_min, x_max, y_min, y_max]`` extent shared by every panel.
+        The ``[x_min, x_max, y_min, y_max]`` extent shared by every panel: the source's own images and rejected
+        candidates, padded.
     lines
-        The critical-curve lines, each a (N, 2) array of (y,x) coordinates.
+        The (tangential) critical-curve lines, each a (N, 2) array of (y,x) coordinates.
     positions
         The (y,x) observed positions, or ``None``.
     max_kept
-        The largest number of triangles kept at any step.
-    rejected_at_lens_centre
-        Whether the first rejected candidate lies at the centre of a mass profile, which sets its step-0 label.
+        The largest number of triangles kept at any step of the solver's own solve.
+    radial_lines
+        The radial critical-curve lines, each a (N, 2) array of (y,x) coordinates.
+    display_pixel_scale
+        The pixel scale of the coarse display grid the steps were re-solved on, or ``None`` when they are the
+        solver's own steps.
     """
 
     steps: list
@@ -120,7 +154,8 @@ class PointSolverFigureData:
     lines: List[np.ndarray]
     positions: Optional[np.ndarray]
     max_kept: int
-    rejected_at_lens_centre: bool = False
+    radial_lines: List[np.ndarray] = field(default_factory=list)
+    display_pixel_scale: Optional[float] = None
 
 
 def _yx(grid) -> np.ndarray:
@@ -197,6 +232,10 @@ def select_steps(steps: list) -> list:
 
 
 def _extent_from(solver, positions) -> List[float]:
+    """
+    The solver's full extent (enlarged to contain every observed position), padded: the fallback extent of a source
+    with no images, rejected candidates or observed positions to span.
+    """
     from autolens.point.plot.positions_panel import (
         positions_extent_from,
         solver_extent_from,
@@ -214,16 +253,199 @@ def _extent_from(solver, positions) -> List[float]:
     return [extent[0] - pad, extent[1] + pad, extent[2] - pad, extent[3] + pad]
 
 
-def _critical_curve_lines_from(tracer, extent) -> List[np.ndarray]:
-    import autoarray as aa
-    from autolens.lens.plot.critical_curves import _compute_critical_curve_lines
+def round_extent_from(centre, half_width: float) -> List[float]:
+    """
+    Returns a square ``[x_min, x_max, y_min, y_max]`` extent containing the square of ``half_width`` about the
+    (y,x) ``centre``, widened so the ticks :func:`autoarray.plot.utils.apply_extent` places (the centre and
+    ``extent_factor_2d`` of the half-width either side) fall on round values, e.g. ``-20"``, ``0"``, ``20"`` rather
+    than ``-15.0"``, ``2.2"``, ``20.0"``.
 
-    x_min, x_max, y_min, y_max = extent
-    grid = aa.Grid2D.from_extent(
-        extent=(x_min, x_max, y_min, y_max), shape_native=(100, 100)
+    The tick step is the smallest round step (1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6 or 8 times a power of ten) whose
+    extent still contains the square once its centre is snapped to a multiple of half the step's power of ten.
+    """
+    from autoarray.plot.utils import _conf_ticks
+
+    factor = _conf_ticks("extent_factor_2d", 0.75)
+    centre_y, centre_x = (float(v) for v in centre)
+    half_width = max(float(half_width), 1e-6)
+
+    target = factor * half_width
+    power = 10.0 ** np.floor(np.log10(target))
+    for multiple in [m * power for m in _NICE_TICK_STEPS] + [
+        m * 10.0 * power for m in _NICE_TICK_STEPS
+    ]:
+        if multiple < target:
+            continue
+        snap = 0.5 * 10.0 ** np.floor(np.log10(multiple) + 1e-9)
+        y = round(centre_y / snap) * snap
+        x = round(centre_x / snap) * snap
+        half = multiple / factor
+        if half >= half_width + max(abs(y - centre_y), abs(x - centre_x)) - 1e-12:
+            return [x - half, x + half, y - half, y + half]
+    return [
+        centre_x - half_width,
+        centre_x + half_width,
+        centre_y - half_width,
+        centre_y + half_width,
+    ]
+
+
+def source_extent_from(points, min_width: float = 0.0) -> Optional[List[float]]:
+    """
+    Returns the extent shared by every panel: a square spanning the (y,x) ``points`` (a source's solved images,
+    rejected candidates and observed positions), padded by ``EXTENT_PAD`` of their range on each side, at least
+    ``min_width`` wide and widened to round ticks by :func:`round_extent_from`. ``None`` if there are no points.
+    """
+    points = np.asarray(points, dtype=float).reshape(-1, 2)
+    points = points[np.isfinite(points).all(axis=1)]
+    if len(points) == 0:
+        return None
+    lo, hi = points.min(axis=0), points.max(axis=0)
+    width = max(float(np.max(hi - lo)) * (1.0 + 2.0 * EXTENT_PAD), min_width)
+    return round_extent_from(centre=0.5 * (lo + hi), half_width=0.5 * width)
+
+
+def _within_solver_extent_from(extent, solver) -> List[float]:
+    """
+    Returns ``extent``, unless it runs past the area the solver tiles and that area is at most twice as wide (e.g.
+    a galaxy-scale grid only just larger than its images), in which case the solver's own extent (with round ticks)
+    is returned, so the step-0 tiling fills the panel instead of stopping short of its edges.
+    """
+    from autolens.point.plot.positions_panel import solver_extent_from
+
+    tiled = solver_extent_from(solver)
+    if tiled is None:
+        return extent
+    inside = (
+        extent[0] >= tiled[0]
+        and extent[1] <= tiled[1]
+        and extent[2] >= tiled[2]
+        and extent[3] <= tiled[3]
     )
-    lines, _, _, _ = _compute_critical_curve_lines(tracer, grid)
-    return [np.asarray(line) for line in (lines or [])]
+    width = max(tiled[1] - tiled[0], tiled[3] - tiled[2])
+    if inside or width > 2.0 * (extent[1] - extent[0]):
+        return extent
+    centre = (0.5 * (tiled[2] + tiled[3]), 0.5 * (tiled[0] + tiled[1]))
+    return round_extent_from(centre=centre, half_width=0.5 * width)
+
+
+def _too_small_to_draw(edge: float, extent, panel_inches: float) -> bool:
+    width = max(extent[1] - extent[0], extent[3] - extent[2])
+    return edge / width * panel_inches * 72.0 < MIN_TRIANGLE_POINTS
+
+
+def display_pixel_scale_from(extent, points) -> float:
+    """
+    Returns the starting pixel scale of the display grid: a ``DISPLAY_TRIANGLES_ACROSS``-th of the extent, capped at
+    the closest separation of any two (y,x) ``points`` (the solved images and rejected candidates) divided by
+    ``DISPLAY_SEPARATION_FRACTION``, so every image starts in its own triangle.
+    """
+    pixel_scale = (extent[1] - extent[0]) / DISPLAY_TRIANGLES_ACROSS
+    points = np.asarray(points, dtype=float).reshape(-1, 2)
+    if len(points) > 1:
+        separations = np.linalg.norm(points[:, None] - points[None], axis=2)
+        closest = float(separations[np.triu_indices(len(points), 1)].min())
+        if closest > 0.0:
+            pixel_scale = min(pixel_scale, closest / DISPLAY_SEPARATION_FRACTION)
+    return pixel_scale
+
+
+def display_solver_from(solver, extent, pixel_scale: float):
+    """
+    Returns a solver of the same class as ``solver`` tiling ``extent`` (plus a pixel of margin) with triangles of
+    ``pixel_scale``, with the solver's own ``pixel_scale_precision``, ``magnification_threshold`` and
+    ``neighbor_degree``. It is used for the figure only.
+    """
+    x_min, x_max, y_min, y_max = extent
+    return type(solver).for_limits_and_scale(
+        y_min=y_min - pixel_scale,
+        y_max=y_max + pixel_scale,
+        x_min=x_min - pixel_scale,
+        x_max=x_max + pixel_scale,
+        scale=pixel_scale,
+        pixel_scale_precision=solver.pixel_scale_precision,
+        magnification_threshold=solver.magnification_threshold,
+        neighbor_degree=getattr(solver, "neighbor_degree", 1),
+    )
+
+
+def recovers(reference: np.ndarray, found: np.ndarray, tolerance: float) -> bool:
+    """
+    Returns whether ``found`` holds as many (y,x) points as ``reference`` and every reference point lies within
+    ``tolerance`` of one of them.
+    """
+    reference = np.asarray(reference, dtype=float).reshape(-1, 2)
+    found = np.asarray(found, dtype=float).reshape(-1, 2)
+    if len(reference) != len(found):
+        return False
+    if len(reference) == 0:
+        return True
+    distance = np.linalg.norm(reference[:, None] - found[None], axis=2).min(axis=1)
+    return bool(distance.max() <= tolerance)
+
+
+@dataclass
+class _Solve:
+    steps: list
+    final_centres: np.ndarray
+    rejected: np.ndarray
+    solved: np.ndarray
+
+
+def _solve_from(solver, tracer, beta, plane_redshift) -> _Solve:
+    """
+    Re-solves the point source with NumPy, returning every refinement step, the centroids of the final kept
+    triangles, those the magnification threshold rejects and the solved images (in numbering order).
+    """
+    from autoarray.structures.triangles.shape import Point
+
+    steps = list(
+        solver.steps(
+            tracer=tracer, shape=Point(*beta), xp=np, plane_redshift=plane_redshift
+        )
+    )
+
+    final_centres = np.zeros((0, 2))
+    rejected = np.zeros((0, 2))
+    if len(steps):
+        final_centres = triangles_xy_from(steps[-1].filtered_triangles).mean(axis=1)[
+            :, ::-1
+        ]
+    if len(final_centres):
+        filtered = np.asarray(
+            solver._filter_low_magnification(
+                tracer=tracer,
+                points=final_centres,
+                xp=np,
+                plane_redshift=plane_redshift,
+            )
+        ).reshape(-1, 2)
+        rejected = final_centres[~np.isfinite(filtered).all(axis=1)]
+    else:
+        final_centres = np.zeros((0, 2))
+
+    solved = _yx(
+        solver.solve(
+            tracer=tracer,
+            source_plane_coordinate=beta,
+            xp=np,
+            plane_redshift=plane_redshift,
+        )
+    )
+    return _Solve(
+        steps=steps,
+        final_centres=final_centres,
+        rejected=rejected,
+        solved=solved[image_order_from(solved)],
+    )
+
+
+def _plane_index_from(tracer, plane_redshift: Optional[float]) -> int:
+    last = len(tracer.planes) - 1
+    if plane_redshift is None:
+        return last
+    redshifts = np.asarray(tracer.plane_redshifts, dtype=float)
+    return int(np.argmin(np.abs(redshifts - float(plane_redshift))))
 
 
 def point_solver_data_from(
@@ -233,9 +455,14 @@ def point_solver_data_from(
     positions=None,
     plane_redshift: Optional[float] = None,
     image_plane_lines=None,
+    panel_inches: float = STILL_PANEL_INCHES,
 ) -> PointSolverFigureData:
     """
     Re-solves the point source with NumPy and collects everything the point-solver figure draws.
+
+    The extent spans the source's solved images, rejected candidates and observed positions. If the solver's
+    step-0 triangles are too small to draw on it, the steps are re-solved on a coarse display grid (see the module
+    docstring), provided that solve recovers the solver's images and rejected candidates.
 
     Parameters
     ----------
@@ -251,81 +478,80 @@ def point_solver_data_from(
         The redshift of the plane the source is in, for multi-plane lenses (e.g. clusters). ``None`` is the last
         plane.
     image_plane_lines
-        Pre-computed critical-curve lines. ``None`` computes them on a grid covering the panel; pass ``[]`` to draw
-        none.
+        Pre-computed critical-curve lines, drawn as tangential curves. ``None`` computes the tangential and radial
+        critical curves of the source's own plane (of the full tracer) on a grid covering the extent; pass ``[]``
+        to draw none.
+    panel_inches
+        The width of a panel in inches, which decides whether the step-0 triangles are too small to draw.
     """
-    from autoarray.structures.triangles.shape import Point
-
     beta = tuple(float(v) for v in np.asarray(source_plane_coordinate).ravel()[:2])
 
-    steps = list(
-        solver.steps(
-            tracer=tracer, shape=Point(*beta), xp=np, plane_redshift=plane_redshift
-        )
-    )
-    if len(steps) == 0:
+    real = _solve_from(solver, tracer, beta, plane_redshift)
+    if len(real.steps) == 0:
         raise ValueError(
             "The solver took no refinement steps, so there is nothing to plot."
         )
 
-    final_centres = triangles_xy_from(steps[-1].filtered_triangles).mean(axis=1)[
-        :, ::-1
-    ]
-    if len(final_centres):
-        filtered = np.asarray(
-            solver._filter_low_magnification(
-                tracer=tracer,
-                points=final_centres,
-                xp=np,
-                plane_redshift=plane_redshift,
-            )
-        ).reshape(-1, 2)
-        rejected = final_centres[~np.isfinite(filtered).all(axis=1)]
-    else:
-        final_centres = np.zeros((0, 2))
-        rejected = np.zeros((0, 2))
-
-    solved = _yx(
-        solver.solve(
-            tracer=tracer,
-            source_plane_coordinate=beta,
-            xp=np,
-            plane_redshift=plane_redshift,
-        )
-    )
-    solved = solved[image_order_from(solved)]
-
     positions = None if positions is None else _yx(positions)
-    extent = _extent_from(solver=solver, positions=positions)
+    candidates = np.vstack([real.solved, real.rejected])
+    extent = source_extent_from(
+        candidates if positions is None else np.vstack([candidates, positions]),
+        min_width=10.0 * float(solver.scale),
+    )
+    if extent is None:
+        extent = _extent_from(solver=solver, positions=positions)
+    else:
+        extent = _within_solver_extent_from(extent, solver)
 
+    shown, display_pixel_scale = real, None
+    if _too_small_to_draw(_edge_of(real.steps[0]), extent, panel_inches):
+        pixel_scale = display_pixel_scale_from(extent, candidates)
+        if pixel_scale > float(solver.scale):
+            display = _solve_from(
+                display_solver_from(solver, extent, pixel_scale),
+                tracer,
+                beta,
+                plane_redshift,
+            )
+            tolerance = max(
+                RECOVERY_TOLERANCE, 2.0 * float(solver.pixel_scale_precision)
+            )
+            if (
+                len(display.steps)
+                and recovers(real.solved, display.solved, tolerance)
+                and recovers(real.rejected, display.rejected, tolerance)
+            ):
+                shown, display_pixel_scale = display, pixel_scale
+            else:
+                logger.info(
+                    f"PointSolver figure: the {pixel_scale:.3g}\" display grid does not recover the solver's "
+                    f"images, so the solver's own steps are drawn."
+                )
+
+    radial_lines = []
     if image_plane_lines is None:
-        lines = _critical_curve_lines_from(tracer, extent)
+        from autolens.point.plot.point_sources import curves_for_planes
+
+        plane_index = _plane_index_from(tracer, plane_redshift)
+        curves = curves_for_planes(tracer, [plane_index], extent).get(plane_index)
+        lines = [] if curves is None else list(curves.tangential)
+        radial_lines = [] if curves is None else list(curves.radial)
     else:
         lines = [np.asarray(line) for line in image_plane_lines]
 
-    rejected_at_lens_centre = False
-    if len(rejected):
-        from autolens.point.plot.positions_panel import mass_centres_from
-
-        centres = mass_centres_from(tracer)
-        if len(centres):
-            rejected_at_lens_centre = bool(
-                np.linalg.norm(centres - rejected[0], axis=1).min()
-                <= 2.0 * float(solver.scale)
-            )
-
     return PointSolverFigureData(
-        steps=select_steps(steps),
-        n_steps=len(steps),
-        solved=solved,
-        rejected=rejected,
-        final_centres=final_centres,
+        steps=select_steps(shown.steps),
+        n_steps=len(shown.steps),
+        solved=shown.solved,
+        rejected=shown.rejected,
+        final_centres=shown.final_centres,
         magnification_threshold=float(solver.magnification_threshold),
         extent=extent,
         lines=lines,
         positions=positions,
-        max_kept=max(len(triangles_xy_from(s.filtered_triangles)) for s in steps),
-        rejected_at_lens_centre=rejected_at_lens_centre,
+        max_kept=max(len(triangles_xy_from(s.filtered_triangles)) for s in real.steps),
+        radial_lines=radial_lines,
+        display_pixel_scale=display_pixel_scale,
     )
 
 
@@ -343,8 +569,7 @@ def is_too_small_to_draw(
     Returns whether a step's triangles span fewer than ``MIN_TRIANGLE_POINTS`` points on a panel
     ``panel_inches`` wide, in which case its kept triangles are drawn as centroid markers.
     """
-    width = max(data.extent[1] - data.extent[0], data.extent[3] - data.extent[2])
-    return _edge_of(step) / width * panel_inches * 72.0 < MIN_TRIANGLE_POINTS
+    return _too_small_to_draw(_edge_of(step), data.extent, panel_inches)
 
 
 def panel_title_from(step, data: PointSolverFigureData, short: bool = False) -> str:
@@ -370,27 +595,8 @@ def panel_title_from(step, data: PointSolverFigureData, short: bool = False) -> 
 _NUMBER_PLACEMENTS = NUMBER_PLACEMENTS
 NUMBER_FONTSIZE = 14
 
-# Radius (points) treated as occupied around an image marker when placing labels.
-_MARKER_RADIUS_POINTS = MARKER_RADIUS_POINTS
-
-# Candidate placements of the rejected-candidate label next to a single candidate, as (x, y) offsets in points and
-# horizontal alignment.
-_REJECTED_LABEL_PLACEMENTS = (
-    (16, -52, "left"),
-    (-16, -52, "right"),
-    (0, -58, "center"),
-    (16, 40, "left"),
-    (-16, 40, "right"),
-    (0, 46, "center"),
-)
-
-# Corners (axes fraction, ha, va) the rejected-candidate label falls back to, with one arrow per candidate.
-_REJECTED_LABEL_CORNERS = (
-    (0.02, 0.98, "left", "top"),
-    (0.98, 0.98, "right", "top"),
-    (0.02, 0.02, "left", "bottom"),
-    (0.98, 0.02, "right", "bottom"),
-)
+# Rejected-candidate labels (``r1``, ``r2``, ...) are this fraction of the image-number font size.
+REJECTED_LABEL_SCALE = 0.9
 
 
 def _points_per_arcsec(data: PointSolverFigureData, panel_inches: float) -> float:
@@ -405,10 +611,6 @@ def _to_points(data: PointSolverFigureData, xy: np.ndarray, panel_inches: float)
     return (xy - np.array([data.extent[0], data.extent[2]])) * scale
 
 
-_box_overlaps_circles = box_overlaps_circles
-_boxes_overlap = boxes_overlap
-
-
 def _panel_points(data: PointSolverFigureData, panel_inches: float):
     scale = _points_per_arcsec(data, panel_inches)
     return (
@@ -417,15 +619,34 @@ def _panel_points(data: PointSolverFigureData, panel_inches: float):
     )
 
 
+def image_labels_from(data: PointSolverFigureData) -> List[str]:
+    """
+    Returns the step-0 labels: ``1, 2, ...`` for the solved images then ``r1, r2, ...`` for the rejected
+    candidates. Either set is left unlabelled (empty) beyond ``MAX_NUMBERED_IMAGES``, so a crowded panel stays
+    readable.
+    """
+    labels = []
+    if len(data.solved) <= MAX_NUMBERED_IMAGES:
+        labels += [str(index + 1) for index in range(len(data.solved))]
+    else:
+        labels += [""] * len(data.solved)
+    if len(data.rejected) <= MAX_NUMBERED_IMAGES:
+        labels += [f"r{index + 1}" for index in range(len(data.rejected))]
+    else:
+        labels += [""] * len(data.rejected)
+    return labels
+
+
 def number_placements_from(
     data: PointSolverFigureData, panel_inches: float
 ) -> List[Tuple[float, float, str, str]]:
     """
-    Returns, for every solved image, the ``(dx, dy, ha, va)`` offset (points) of its step-0 number.
+    Returns, for every solved image then every rejected candidate, the ``(dx, dy, ha, va)`` offset (points) of its
+    step-0 label.
 
-    Each number sits a few points off its own image (one of ``_NUMBER_PLACEMENTS``): the first placement which
-    stays inside the panel and overlaps neither another image marker nor an already-placed number, else the one
-    overlapping least. A number is therefore never moved away from its image to find space.
+    Each label sits a few points off its own marker (one of ``_NUMBER_PLACEMENTS``): the first placement which
+    stays inside the panel and overlaps neither another marker nor an already-placed label, else the one overlapping
+    least. A label is therefore never moved away from its marker to find space.
     """
     markers = _to_points(
         data,
@@ -435,180 +656,41 @@ def number_placements_from(
     width, height = _panel_points(data, panel_inches)
     return adjacent_number_placements_from(
         markers=markers,
-        labels=[str(index + 1) for index in range(len(data.solved))],
+        labels=[label or " " for label in image_labels_from(data)],
         width=width,
         height=height,
         fontsize=NUMBER_FONTSIZE,
     )
 
 
-def _rejected_label_placement(
-    data: PointSolverFigureData, x, y, panel_inches: float, fontsize: float
-) -> Optional[Tuple[float, float, str]]:
+def _annotate_images(ax, data: PointSolverFigureData, panel_inches: float):
     """
-    Returns the offset and alignment of the label of a single rejected candidate placed next to it: the first
-    candidate placement which lies inside the panel and clear of every image and image number, or ``None`` if none
-    is clear (the label then goes in a corner).
+    Labels the solved images ``1, 2, ...`` (bold) and the rejected candidates ``r1, r2, ...`` (grey italic), each
+    beside its own marker.
     """
-    x_min, x_max, y_min, y_max = data.extent
-    arcsec_per_point = max(x_max - x_min, y_max - y_min) / (panel_inches * 72.0)
-    half_width = (
-        0.5 * 0.55 * fontsize * 24 * arcsec_per_point
-    )  # ~24 characters per line
-    half_height = 2.1 * fontsize * arcsec_per_point  # three lines
-
-    obstacles = data.solved[:, ::-1]  # (x,y)
-    if 0 < len(data.solved) <= MAX_NUMBERED_IMAGES:
-        numbers = obstacles + np.array([-15.0, 12.0]) * arcsec_per_point
-        obstacles = np.vstack([obstacles, numbers])
-
-    clear = 10.0 * arcsec_per_point
-    for dx, dy, ha in _REJECTED_LABEL_PLACEMENTS:
-        centre_x = (
-            x
-            + dx * arcsec_per_point
-            + {"left": 1, "right": -1, "center": 0}[ha] * half_width
-        )
-        centre_y = y + dy * arcsec_per_point
-        inside = (
-            centre_x - half_width >= x_min
-            and centre_x + half_width <= x_max
-            and centre_y - half_height >= y_min
-            and centre_y + half_height <= y_max
-        )
-        if len(obstacles):
-            gap_x = np.maximum(np.abs(obstacles[:, 0] - centre_x) - half_width, 0.0)
-            gap_y = np.maximum(np.abs(obstacles[:, 1] - centre_y) - half_height, 0.0)
-            clearance = float(np.hypot(gap_x, gap_y).min())
-        else:
-            clearance = np.inf
-        if inside and clearance >= clear:
-            return dx, dy, ha
-    return None
-
-
-def _segment_hits(start, end, centres, radius) -> int:
-    """Number of circles of ``radius`` around ``centres`` that the segment start -> end passes through."""
-    if len(centres) == 0:
-        return 0
-    start, end = np.asarray(start, float), np.asarray(end, float)
-    direction = end - start
-    length2 = max(float(direction @ direction), 1e-12)
-    t = np.clip(((centres - start) @ direction) / length2, 0.0, 1.0)
-    closest = start + t[:, None] * direction
-    return int((np.linalg.norm(centres - closest, axis=1) < radius).sum())
-
-
-def rejected_corner_from(
-    data: PointSolverFigureData, panel_inches: float, fontsize: float
-) -> Tuple[float, float, str, str]:
-    """
-    Returns the corner ``(x, y, ha, va)`` (axes fraction) of the rejected-candidates label: the corner whose text
-    box covers no image and whose arrows to the candidates cross the fewest image markers, then are shortest.
-    """
-    width, height = _panel_points(data, panel_inches)
-    images = _to_points(data, data.solved[:, ::-1], panel_inches)
-    targets = _to_points(data, data.rejected[:MAX_REJECTED_ARROWS, ::-1], panel_inches)
-    box_width, box_height = 0.55 * fontsize * 24, 3.6 * fontsize
-
-    best, best_score = _REJECTED_LABEL_CORNERS[0], np.inf
-    for fx, fy, ha, va in _REJECTED_LABEL_CORNERS:
-        x0 = fx * width - (box_width if ha == "right" else 0.0)
-        y0 = fy * height - (box_height if va == "top" else 0.0)
-        box = (x0, y0, x0 + box_width, y0 + box_height)
-        centre = ((box[0] + box[2]) / 2.0, (box[1] + box[3]) / 2.0)
-        covered = int(
-            _box_overlaps_circles(box, images, _MARKER_RADIUS_POINTS + 4.0).sum()
-        )
-        crossings, length = 0, 0.0
-        for target in targets:
-            others = images[np.linalg.norm(images - target, axis=1) > 1e-6]
-            crossings += _segment_hits(centre, target, others, _MARKER_RADIUS_POINTS)
-            length += float(np.hypot(*(np.asarray(target) - centre)))
-        score = 1e6 * covered + 1e4 * crossings + length
-        if score < best_score:
-            best, best_score = (fx, fy, ha, va), score
-    return best
-
-
-def _annotate_images(
-    ax,
-    data: PointSolverFigureData,
-    panel_inches: float,
-    annotation_fontsize: float = 10,
-):
-    if len(data.solved) <= MAX_NUMBERED_IMAGES:
-        placements = number_placements_from(data, panel_inches)
-        for number, ((y, x), (dx, dy, ha, va)) in enumerate(
-            zip(data.solved, placements), start=1
-        ):
-            ax.annotate(
-                f"{number}",
-                (x, y),
-                xytext=(dx, dy),
-                textcoords="offset points",
-                ha=ha,
-                va=va,
-                fontsize=NUMBER_FONTSIZE,
-                weight="bold",
-                zorder=10,
-                bbox=dict(fc="w", ec="none", alpha=0.8, pad=0.5),
-            )
-    if len(data.rejected) == 0:
+    points = np.vstack([data.solved, data.rejected])
+    labels = image_labels_from(data)
+    if len(points) == 0:
         return
-
-    y, x = data.rejected[0]
-    where = "at the lens centre" if data.rejected_at_lens_centre else "here"
-    near = (
-        _rejected_label_placement(
-            data, x, y, panel_inches=panel_inches, fontsize=annotation_fontsize
-        )
-        if len(data.rejected) == 1
-        else None
-    )
-    if near is not None:
-        dx, dy, ha = near
+    placements = number_placements_from(data, panel_inches)
+    for (y, x), label, (dx, dy, ha, va) in zip(points, labels, placements):
+        if not label:
+            continue
+        rejected = label.startswith("r")
         ax.annotate(
-            f"kept {where},\nrejected by\nmagnification_threshold",
+            label,
             (x, y),
             xytext=(dx, dy),
             textcoords="offset points",
             ha=ha,
-            va="center",
-            fontsize=annotation_fontsize,
-            arrowprops=dict(arrowstyle="->", lw=0.8),
+            va=va,
+            fontsize=NUMBER_FONTSIZE * (REJECTED_LABEL_SCALE if rejected else 1.0),
+            weight="normal" if rejected else "bold",
+            style="italic" if rejected else "normal",
+            color=REJECTED_LABEL_COLOR if rejected else "k",
             zorder=10,
-            bbox=dict(fc="w", ec="none", alpha=0.85, pad=1),
-        )
-        return
-
-    # No clear spot next to the candidate (or several candidates): the label goes in the emptiest corner, with
-    # one arrow per candidate drawn from it.
-    text = (
-        f"kept {where},\nrejected by\nmagnification_threshold"
-        if len(data.rejected) == 1
-        else f"{len(data.rejected)} candidates kept,\nthen rejected by\nmagnification_threshold"
-    )
-    fx, fy, ha, va = rejected_corner_from(data, panel_inches, annotation_fontsize)
-    label = ax.text(
-        fx,
-        fy,
-        text,
-        transform=ax.transAxes,
-        ha=ha,
-        va=va,
-        fontsize=annotation_fontsize,
-        zorder=10,
-        bbox=dict(fc="w", ec="0.6", lw=0.6, alpha=0.95, pad=3),
-    )
-    for other_y, other_x in data.rejected[:MAX_REJECTED_ARROWS]:
-        ax.annotate(
-            "",
-            (other_x, other_y),
-            xytext=(0.5, 0.5),
-            textcoords=label,
-            arrowprops=dict(arrowstyle="->", lw=0.8, shrinkB=3),
-            zorder=9.5,
+            annotation_clip=True,
+            bbox=dict(fc="w", ec="none", alpha=0.8, pad=0.5),
         )
 
 
@@ -626,8 +708,9 @@ def draw_point_solver_panel(
     Draws one refinement step on ``ax``: the panel shared by the 2x2 still and every animation frame.
 
     Step 0 is drawn as an overview (no up-sampled triangles, hairline outlines on a dense tiling) with the images
-    numbered and a rejected candidate labelled. Every panel uses the same fixed extent, with standard arc-second
-    tick labels and no axis-label text.
+    numbered ``1, 2, ...`` and the rejected candidates ``r1, r2, ...``. Every panel uses the same fixed extent,
+    with standard arc-second tick labels and no axis-label text. ``annotation_fontsize`` is no longer used (the
+    labels share the image-number font size) and is kept for backwards compatibility.
 
     Returns ``True`` if the kept triangles were drawn as centroid markers (too small to draw), so the caller can
     add the matching legend entry.
@@ -721,12 +804,20 @@ def draw_point_solver_panel(
             )
         )
 
-    for line in data.lines:
-        line = np.asarray(line)
-        if line.ndim == 2 and len(line):
-            ax.plot(
-                line[:, 1], line[:, 0], color=CRITICAL_CURVE_COLOR, lw=1.0, zorder=5
-            )
+    for lines, color in (
+        (data.lines, CRITICAL_CURVE_COLOR),
+        (data.radial_lines, RADIAL_CRITICAL_CURVE_COLOR),
+    ):
+        for line in lines:
+            line = np.asarray(line)
+            if line.ndim == 2 and len(line):
+                ax.plot(
+                    line[:, 1],
+                    line[:, 0],
+                    color=color,
+                    lw=CRITICAL_CURVE_LINEWIDTH,
+                    zorder=5,
+                )
 
     if data.positions is not None and len(data.positions):
         ax.scatter(
@@ -750,9 +841,7 @@ def draw_point_solver_panel(
         )
 
     if overview:
-        _annotate_images(
-            ax, data, panel_inches=panel_inches, annotation_fontsize=annotation_fontsize
-        )
+        _annotate_images(ax, data, panel_inches=panel_inches)
 
     apply_extent(ax, data.extent)
     ax.set_aspect("equal")
@@ -773,8 +862,11 @@ def legend_handles_from(data: PointSolverFigureData, marked: bool) -> list:
     from matplotlib.lines import Line2D
     from matplotlib.patches import Patch
 
+    tested = "Triangles tested"
+    if data.display_pixel_scale is not None:
+        tested += " (display grid)"
     handles = [
-        Patch(fc="none", ec=TESTED_COLOR, label="Triangles tested"),
+        Patch(fc="none", ec=TESTED_COLOR, label=tested),
         Patch(fc=KEPT_COLOR, alpha=0.85, label="Kept (contains source)"),
         Patch(
             fc=REJECTED_COLOR,
@@ -796,7 +888,26 @@ def legend_handles_from(data: PointSolverFigureData, marked: bool) -> list:
                 label="Kept (too small to draw)",
             )
         )
-    handles.append(Line2D([], [], color=CRITICAL_CURVE_COLOR, label="Critical curve"))
+    if len(data.lines):
+        handles.append(
+            Line2D(
+                [],
+                [],
+                color=CRITICAL_CURVE_COLOR,
+                lw=CRITICAL_CURVE_LINEWIDTH,
+                label="Critical curve",
+            )
+        )
+    if len(data.radial_lines):
+        handles.append(
+            Line2D(
+                [],
+                [],
+                color=RADIAL_CRITICAL_CURVE_COLOR,
+                lw=CRITICAL_CURVE_LINEWIDTH,
+                label="Radial critical curve",
+            )
+        )
     if data.positions is not None and len(data.positions):
         handles.append(
             Line2D(
@@ -874,7 +985,6 @@ def _save_animation(data, output_path, filename, title_prefix, dpi=100):
             panel_inches=panel_inches,
             title=prefix + panel_title_from(step, data, short=True),
             tick_fontsize=9,
-            annotation_fontsize=9,
         )
 
     animation = FuncAnimation(fig, update, frames=frames)
@@ -911,10 +1021,12 @@ def plot_point_solver(
     """
     Plot how the ``PointSolver`` refines its triangle tiling to find the multiple images of a point source.
 
-    The figure (``point_solver.png``) is a 2x2 subplot of steps 0, 1, 2 and the final step on one fixed extent: the
-    triangles tested, kept (blue), kept then rejected by ``magnification_threshold`` (hatched), the neighbour rim
-    (orange) and the triangles up-sampled for the next step (green), with the critical curve, the observed
-    positions and the solved images. See the module docstring for the full legend.
+    The figure (``point_solver.png``) is a 2x2 subplot of steps 0, 1, 2 and the final step on one fixed extent
+    spanning the source's images: the triangles tested, kept (blue), kept then rejected by
+    ``magnification_threshold`` (hatched), the neighbour rim (orange) and the triangles up-sampled for the next step
+    (green), with the critical curves, the observed positions and the solved images. When the solver's triangles
+    are too small to draw on that extent the steps are re-solved on a coarse display grid. See the module docstring
+    for the full legend.
 
     With ``animate=True`` the same panels are written as a looping GIF (``point_solver.gif``), one step per frame
     (``FRAME_SECONDS`` each, the final step held longer), via ``matplotlib.animation`` and ``PillowWriter`` (no
@@ -936,7 +1048,7 @@ def plot_point_solver(
     plane_redshift
         The redshift of the source's plane, for multi-plane lenses (e.g. clusters). ``None`` is the last plane.
     image_plane_lines
-        Pre-computed critical-curve lines; ``None`` computes them, ``[]`` draws none.
+        Pre-computed critical-curve lines; ``None`` computes the source plane's own curves, ``[]`` draws none.
     output_path
         Directory in which to save the figure. If ``None`` the still is shown (and the animation returned).
     output_format
