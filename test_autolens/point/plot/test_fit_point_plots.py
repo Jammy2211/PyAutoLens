@@ -79,8 +79,8 @@ def test__plot_image_with_points__dataset_only__no_model_points_or_lines(
     assert scatter_labels.count("Observed") == 1
     assert "Model" not in scatter_labels
     assert len(plot_array_kwargs) == 1
-    assert plot_array_kwargs[0]["lines"] is None
-    assert plot_array_kwargs[0]["title"].endswith("Image With Points")
+    assert "lines" not in plot_array_kwargs[0]
+    assert plot_array_kwargs[0]["title"].startswith("Image With Points")
     assert "Fit Image" not in plot_array_kwargs[0]["title"]
 
 

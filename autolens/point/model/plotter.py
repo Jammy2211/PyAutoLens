@@ -1,16 +1,25 @@
 
 from autolens.analysis.plotter import Plotter
-from autolens.imaging.plot.fit_imaging_plots import _compute_critical_curve_lines
-from autolens.lens.plot.critical_curves import critical_curve_grid_from
-
 from autolens.point.fit.dataset import FitPointDataset
 from autolens.point.plot.fit_point_plots import subplot_fit as subplot_fit_point
 from autolens.point.plot.fit_point_plots import plot_image_with_points
 from autolens.point.dataset import PointDataset
 from autolens.point.plot.point_dataset_plots import subplot_dataset
 from autolens.point.plot import point_solver_plots
+from autolens.point.plot import multi_source_plots
 
 from autolens.analysis.plotter import plot_setting
+
+
+def _setting(section, name: str, default: bool = True) -> bool:
+    """
+    A ``plots.yaml`` toggle which falls back to ``default`` when a (e.g. older workspace) config does not have the
+    key.
+    """
+    try:
+        return plot_setting(section=section, name=name)
+    except KeyError:
+        return default
 
 
 class PlotterPoint(Plotter):
@@ -49,6 +58,7 @@ class PlotterPoint(Plotter):
         fit: FitPointDataset = None,
         image_plane_lines=None,
         image_plane_line_colors=None,
+        curves=None,
     ):
         """
         Output an observed image of the lensed point source with the point-source positions overlaid.
@@ -70,13 +80,16 @@ class PlotterPoint(Plotter):
             Pre-computed critical-curve lines to overlay on the image.
         image_plane_line_colors
             Colours for each image-plane line.
+        curves
+            The per-plane curves of :func:`~autolens.point.plot.point_sources.curves_for_planes`, so each source's
+            curves are drawn at its own redshift.
         """
         if fit is None:
             section, name = ["point_dataset"], "image_with_points"
         else:
             section, name = ["fit", "fit_point_dataset"], "fit_image_with_points"
 
-        if not plot_setting(section=section, name=name):
+        if not _setting(section, name):
             return
 
         plot_image_with_points(
@@ -88,6 +101,7 @@ class PlotterPoint(Plotter):
             image_plane_lines=image_plane_lines,
             image_plane_line_colors=image_plane_line_colors,
             title_prefix=self.title_prefix,
+            curves=curves,
         )
 
     def fit_point(
@@ -98,9 +112,11 @@ class PlotterPoint(Plotter):
         image_plane_line_colors=None,
         source_plane_lines=None,
         source_plane_line_colors=None,
+        curves=None,
     ):
         """
-        Visualizes a `FitPointDataset` object.
+        Visualizes a `FitPointDataset` object: ``fit.png`` (controlled by ``fit: subplot_fit``, also output on a
+        quick update).
 
         Parameters
         ----------
@@ -114,53 +130,102 @@ class PlotterPoint(Plotter):
             Pre-computed caustic lines to overlay on source-plane panels.
         source_plane_line_colors
             Colours for each source-plane line.
+        curves
+            The per-plane curves of :func:`~autolens.point.plot.point_sources.curves_for_planes`; computed if
+            ``None``.
         """
-
-        def should_plot(name):
-            return plot_setting(section=["fit", "fit_point_dataset"], name=name)
-
-        output_path = str(self.image_path)
-        fmt = self.fmt
-
-        # Use pre-computed critical curves if provided, otherwise compute once here.
-        if image_plane_lines is None and source_plane_lines is None:
-            grid = critical_curve_grid_from(
-                dataset=fit.dataset, solver=getattr(fit, "solver", None)
-            )
-            ip_lines, ip_colors, sp_lines, sp_colors = _compute_critical_curve_lines(
-                fit.tracer, grid
-            )
-        else:
-            ip_lines, ip_colors, sp_lines, sp_colors = (
-                image_plane_lines, image_plane_line_colors,
-                source_plane_lines, source_plane_line_colors,
-            )
-
-        # `subplot_fit` computes the curves itself when it is given none, so pass an explicit empty list when the
-        # model has no critical curves, rather than computing them twice.
-        if ip_lines is None:
-            ip_lines, ip_colors = [], []
-
-        if quick_update:
-            subplot_fit_point(
-                fit, output_path=output_path, output_format=fmt,
-                image_plane_lines=ip_lines,
-                image_plane_line_colors=ip_colors,
-                source_plane_lines=sp_lines,
-                source_plane_line_colors=sp_colors,
-                title_prefix=self.title_prefix,
-            )
+        if not quick_update and not _setting(["fit", "fit_point_dataset"], "subplot_fit"):
             return
 
-        if should_plot("subplot_fit"):
-            subplot_fit_point(
-                fit, output_path=output_path, output_format=fmt,
-                image_plane_lines=ip_lines,
-                image_plane_line_colors=ip_colors,
-                source_plane_lines=sp_lines,
-                source_plane_line_colors=sp_colors,
-                title_prefix=self.title_prefix,
-            )
+        subplot_fit_point(
+            fit,
+            output_path=str(self.image_path),
+            output_format=self.fmt,
+            image_plane_lines=image_plane_lines,
+            image_plane_line_colors=image_plane_line_colors,
+            source_plane_lines=source_plane_lines,
+            source_plane_line_colors=source_plane_line_colors,
+            title_prefix=self.title_prefix,
+            curves=curves,
+        )
+
+    def fit_per_image(self, fit_list, curves=None, solver=None, combined: bool = False):
+        """
+        Output ``fit_per_image.png``: one row per source of its residual ranking, image-plane zoom and source-plane
+        panel (beyond 8 sources, one file per source in ``fit_per_image/``).
+
+        Controlled by ``fit_point_dataset: fit_per_image`` for a single dataset and
+        ``fit_point_dataset: fit_per_image_combined`` for the all-sources figure of a multi-dataset (e.g. cluster)
+        fit, whose ranking range is shared by every source.
+        """
+        name = "fit_per_image_combined" if combined else "fit_per_image"
+        if not _setting(["fit", "fit_point_dataset"], name):
+            return
+        multi_source_plots.subplot_fit_per_image(
+            fit_list,
+            curves=curves,
+            solver=solver,
+            output_path=str(self.image_path),
+            output_format=self.fmt,
+            title_prefix=self.title_prefix,
+        )
+
+    def dataset_point_combined(self, dataset_list, solver=None):
+        """
+        Output ``dataset_point.png`` of every point dataset of a multi-dataset (e.g. cluster) fit in one panel,
+        controlled by ``point_dataset: subplot_dataset_combined``.
+        """
+        if not _setting(["point_dataset"], "subplot_dataset_combined"):
+            return
+        multi_source_plots.plot_dataset_positions(
+            dataset_list,
+            solver=solver,
+            output_path=str(self.image_path),
+            output_format=self.fmt,
+            title_prefix=self.title_prefix,
+        )
+
+    def fit_point_combined(self, fit_list, curves=None, solver=None, quick_update: bool = False):
+        """
+        Output ``fit.png`` of every point dataset of a multi-dataset (e.g. cluster) fit in one panel ("Fit
+        Positions", each source's curves at its own redshift), controlled by
+        ``fit_point_dataset: subplot_fit_combined`` and always output on a quick update.
+        """
+        if not quick_update and not _setting(
+            ["fit", "fit_point_dataset"], "subplot_fit_combined"
+        ):
+            return
+        multi_source_plots.plot_fit_positions(
+            fit_list,
+            solver=solver,
+            curves=curves,
+            output_path=str(self.image_path),
+            output_format=self.fmt,
+            title_prefix=self.title_prefix,
+        )
+
+    def image_with_points_combined(self, image, dataset_list, fit_list=None, curves=None, solver=None):
+        """
+        Output ``image_with_points.png`` (no fit) or ``fit_image_with_points.png`` of every point dataset of a
+        multi-dataset (e.g. cluster) fit over one observed image, controlled by
+        ``point_dataset: image_with_points_combined`` and ``fit_point_dataset: fit_image_with_points_combined``.
+        """
+        if fit_list is None:
+            section, name = ["point_dataset"], "image_with_points_combined"
+        else:
+            section, name = ["fit", "fit_point_dataset"], "fit_image_with_points_combined"
+        if not _setting(section, name):
+            return
+        multi_source_plots.plot_image_with_points(
+            image=image,
+            datasets=dataset_list,
+            fits=fit_list,
+            curves=curves,
+            solver=solver,
+            output_path=str(self.image_path),
+            output_format=self.fmt,
+            title_prefix=self.title_prefix,
+        )
 
     def point_solver(self, fit: FitPointDataset, image_plane_lines=None):
         """

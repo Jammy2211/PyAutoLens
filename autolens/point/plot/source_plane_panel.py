@@ -41,8 +41,11 @@ from autolens.point.plot import positions_panel as pp
 IMAGE_PLANE = "image"
 SOURCE_PLANE = "source"
 
-CAUSTIC_COLOR = "0.6"
-RADIAL_CAUSTIC_COLOR = "tab:olive"
+# Caustics are dark and thick (as the critical curves of the image-plane panels), so they read clearly.
+CAUSTIC_COLOR = "0.2"
+RADIAL_CAUSTIC_COLOR = "#5c5c00"
+CAUSTIC_LINEWIDTH = 1.8
+INSET_CAUSTIC_LINEWIDTH = 1.4
 CENTRE_COLOR = pp.MODEL_COLOR
 MAGNIFICATION_NOISE_COLOR = "tab:purple"
 JACOBIAN_NOISE_COLOR = pp.NOISE_COLOR
@@ -454,7 +457,7 @@ def _footprint_points(data: SourcePlaneData) -> np.ndarray:
     return points[np.isfinite(points).all(axis=1)]
 
 
-def _plot_caustics(ax, tangential, radial, linewidth=0.9, label=True):
+def _plot_caustics(ax, tangential, radial, linewidth=CAUSTIC_LINEWIDTH, label=True):
     labelled = False
     for line, color in [(c, CAUSTIC_COLOR) for c in tangential] + [
         (c, RADIAL_CAUSTIC_COLOR) for c in radial
@@ -464,7 +467,6 @@ def _plot_caustics(ax, tangential, radial, linewidth=0.9, label=True):
             line[:, 0],
             color=color,
             linewidth=linewidth,
-            alpha=0.8,
             zorder=2,
             label="Caustic" if (label and not labelled) else None,
         )
@@ -599,7 +601,9 @@ def _add_inset(ax, data: SourcePlaneData, tangential, radial, zoom, bounds):
         return None
 
     inset = ax.inset_axes(bounds)
-    _plot_caustics(inset, tangential, radial, linewidth=0.8, label=False)
+    _plot_caustics(
+        inset, tangential, radial, linewidth=INSET_CAUSTIC_LINEWIDTH, label=False
+    )
     _plot_centre(inset, data, size=50, label=False)
 
     points = np.vstack(framed + [data.traced, data.centre[None, :]])
@@ -641,6 +645,8 @@ def plot_source_plane_panel(
     title: str,
     tangential_caustics=None,
     radial_caustics=None,
+    point_colors=None,
+    legend: bool = True,
 ):
     """
     Draws the "Fit Source Plane" panel of a positions fit on ``ax`` (see the module docstring).
@@ -655,6 +661,10 @@ def plot_source_plane_panel(
         The panel title, e.g. ``"Fit Source Plane (point_0)"``.
     tangential_caustics, radial_caustics
         The caustics of the point source's plane, as lists of (N, 2) (y,x) arrays.
+    point_colors
+        The colour of each traced position (black if ``None``), e.g. the per-image colours of ``fit_per_image.png``.
+    legend
+        Whether the panel draws its legend (``fit_per_image.png`` draws none).
     """
     from autoarray.plot.utils import apply_extent, apply_labels
 
@@ -677,8 +687,10 @@ def plot_source_plane_panel(
         traced[:, 1],
         traced[:, 0],
         s=110,
-        c=pp.OBSERVED_COLOR,
+        c=pp.OBSERVED_COLOR if point_colors is None else list(point_colors),
         marker="o",
+        edgecolors="k",
+        linewidths=0.6,
         zorder=4,
         label=f"Observed, traced ({pp.sigma_label_from(data.sigma)})",
     )
@@ -695,12 +707,13 @@ def plot_source_plane_panel(
         # A handle-less entry: the chi-squared the fit uses, in the legend with the other fit-type cues.
         ax.plot([], [], linestyle="none", marker="none", label=chi_squared_label)
 
-    ax.legend(
-        loc=CORNER_LOCATIONS[legend_corner],
-        fontsize=8,
-        framealpha=0.85,
-        markerscale=0.6,
-    )
+    if legend:
+        ax.legend(
+            loc=CORNER_LOCATIONS[legend_corner],
+            fontsize=8,
+            framealpha=0.85,
+            markerscale=0.6,
+        )
 
     if has_inset:
         _add_inset(ax, data, tangential, radial, zoom, inset_bounds)

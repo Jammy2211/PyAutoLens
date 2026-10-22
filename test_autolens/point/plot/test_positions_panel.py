@@ -3,7 +3,7 @@ import pytest
 
 import autolens as al
 from autolens import fixtures
-from autolens.point.plot import fit_point_plots, point_dataset_plots
+from autolens.point.plot import fit_point_plots, multi_source_plots, point_dataset_plots
 from autolens.point.plot.positions_panel import (
     fallback_extent_from,
     mass_centres_from,
@@ -27,6 +27,7 @@ def make_figures(monkeypatch):
 
     monkeypatch.setattr(point_dataset_plots, "save_figure", capture)
     monkeypatch.setattr(fit_point_plots, "save_figure", capture)
+    monkeypatch.setattr(multi_source_plots, "save_figure", capture)
     return figures
 
 
@@ -132,8 +133,8 @@ def test__subplot_fit__title_extent_legend_mass_centres_and_curves(figures):
 
     ax = figures[0].axes[0]
     assert ax.get_title() == "Fit Positions (point_0)"
-    assert figures[0].axes[1].get_title() == "Fit Source Plane (point_0)"
-    assert figures[0].axes[2].get_title() == "Fit Fluxes (point_0)"
+    # The source-plane panel moved to fit_per_image.png: fit.png is Fit Positions (+ Fit Fluxes).
+    assert figures[0].axes[1].get_title() == "Fit Fluxes (point_0)"
     assert ax.get_xlabel() == "" and ax.get_ylabel() == ""
     assert ax.get_xlim() == pytest.approx((fit.solver.x_min, fit.solver.x_max))
 
@@ -150,15 +151,19 @@ def test__subplot_fit__title_extent_legend_mass_centres_and_curves(figures):
 
 
 def test__subplot_fit__computes_critical_curves_when_none_given(figures, monkeypatch):
-    import autolens.lens.plot.critical_curves as critical_curves
+    from autolens.point.plot import point_sources
 
     calls = []
 
-    def fake_lines(tracer, grid):
-        calls.append(grid)
-        return [np.array([[0.0, 1.0], [1.0, 0.0]])], ["white"], None, None
+    def fake_curves(tracer, plane_indexes, extent, shape=400):
+        calls.append(list(plane_indexes))
+        line = np.array([[0.0, 1.0], [1.0, 0.0], [0.0, -1.0]])
+        return {
+            j: point_sources.PlaneCurves(j, 1.0, [line], [], [line], [])
+            for j in set(plane_indexes)
+        }
 
-    monkeypatch.setattr(critical_curves, "_compute_critical_curve_lines", fake_lines)
+    monkeypatch.setattr(point_sources, "curves_for_planes", fake_curves)
 
     fit_point_plots.subplot_fit(fit=_fit())
 
