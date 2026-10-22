@@ -120,10 +120,9 @@ class VisualizerPoint(af.Visualizer):
         )
 
         # Off by default (`fit_point_dataset: subplot_point_solver`): re-solves the best-fit model with NumPy to show
-        # the solver's refinement steps, so it is output only for the full (not quick-update) visualization.
-        plotter.point_solver(
-            fit=fit, image_plane_lines=ip_lines if ip_lines is not None else []
-        )
+        # the solver's refinement steps, so it is output only for the full (not quick-update) visualization. The
+        # figure computes the critical curves of the source's own plane on its own (per-source) extent.
+        plotter.point_solver(fit=fit)
 
     @staticmethod
     def visualize_before_fit_combined(

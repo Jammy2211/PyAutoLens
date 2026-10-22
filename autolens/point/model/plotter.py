@@ -245,7 +245,8 @@ class PlotterPoint(Plotter):
         fit
             The maximum log likelihood `FitPointDataset` of the non-linear search.
         image_plane_lines
-            Pre-computed critical-curve lines; `None` computes them.
+            Pre-computed critical-curve lines; `None` computes the critical curves of the source's own plane on the
+            figure's extent.
         """
         try:
             if not plot_setting(

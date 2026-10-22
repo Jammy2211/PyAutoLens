@@ -81,11 +81,66 @@ def test__point_solver_data_from(data, solver):
     assert len(data.solved) == 4
     assert len(data.rejected) == 1
     assert np.linalg.norm(data.rejected[0]) < 0.1
-    assert data.rejected_at_lens_centre
 
-    # Every panel shares one extent covering the solver grid.
-    assert data.extent[0] < solver.x_min and data.extent[1] > solver.x_max
-    assert data.extent[2] < solver.y_min and data.extent[3] > solver.y_max
+    # The coarse teaching grid's triangles are drawable, so its own steps are shown.
+    assert data.display_pixel_scale is None
+
+
+def test__extent__spans_the_sources_images_and_rejected_candidates(data):
+    """
+    Every panel shares one square extent covering the source's images and rejected candidates (not the solver's
+    full grid), padded so none sits on the edge.
+    """
+    x_min, x_max, y_min, y_max = data.extent
+    assert x_max - x_min == pytest.approx(y_max - y_min)
+
+    points = np.vstack([data.solved, data.rejected])
+    margin = 0.1 * (x_max - x_min)
+    assert np.all(points[:, 1] > x_min + margin) and np.all(
+        points[:, 1] < x_max - margin
+    )
+    assert np.all(points[:, 0] > y_min + margin) and np.all(
+        points[:, 0] < y_max - margin
+    )
+
+
+def test__extent__grid_only_just_larger_than_the_images_is_shown_whole(data, solver):
+    x_min, x_max, y_min, y_max = data.extent
+    assert x_min <= solver.x_min and x_max >= solver.x_max
+    assert y_min <= solver.y_min and y_max >= solver.y_max
+    assert x_max - x_min < 1.2 * (solver.x_max - solver.x_min)
+
+
+def test__source_extent_from__cluster_scale_span_is_the_images_not_the_grid():
+    points = np.array([[14.6, -14.8], [-16.4, 19.0], [0.0, 0.0]])
+    x_min, x_max, y_min, y_max = psp.source_extent_from(points)
+
+    assert x_min < -14.8 and x_max > 19.0 and y_min < -16.4 and y_max > 14.6
+    assert x_max - x_min < 60.0
+    assert psp.source_extent_from(np.zeros((0, 2))) is None
+
+
+@pytest.mark.parametrize(
+    "centre, half_width",
+    [((2.2, 2.5), 20.5), ((0.31, -0.07), 1.9), ((-3.1, 7.4), 0.42)],
+)
+def test__round_extent_from__ticks_are_round_and_contain_the_square(centre, half_width):
+    from autoarray.plot.utils import _inward_ticks
+
+    x_min, x_max, y_min, y_max = psp.round_extent_from(centre, half_width)
+
+    assert x_max - x_min == pytest.approx(y_max - y_min)
+    assert x_min <= centre[1] - half_width and x_max >= centre[1] + half_width
+    assert y_min <= centre[0] - half_width and y_max >= centre[0] + half_width
+    # No more than twice as wide as asked for.
+    assert x_max - x_min <= 4.0 * half_width
+
+    for lo, hi in ((x_min, x_max), (y_min, y_max)):
+        ticks = _inward_ticks(lo, hi, 0.75, 3)
+        step = ticks[1] - ticks[0]
+        power = 10.0 ** np.floor(np.log10(step))
+        # The tick values are round: two significant figures at most.
+        assert np.allclose(np.round(ticks / power * 10.0), ticks / power * 10.0)
 
 
 def test__split_kept__rejected_triangles_converge_on_rejected_candidate(data):
@@ -240,18 +295,135 @@ def test__image_numbers_sit_next_to_their_own_images(data, crowded):
     plt.close(fig)
 
 
-def test__several_rejected_candidates__corner_label_with_one_arrow_each(data):
+def test__rejected_candidates__r_labels_and_no_annotation_box(data):
+    """
+    Rejected candidates are labelled ``r1, r2, ...`` in grey italic next to each candidate, with no annotation box
+    or arrows.
+    """
     import matplotlib.pyplot as plt
 
     data.rejected = np.array([[0.0, 0.0], [1.0, -1.0], [-1.0, 0.5]])
     fig, ax = plt.subplots(figsize=(6, 6))
     psp.draw_point_solver_panel(ax, data.steps[0], data, panel_inches=5.0)
+    fig.canvas.draw()
 
-    labels = [t for t in ax.texts if "magnification_threshold" in t.get_text()]
-    assert len(labels) == 1
-    assert labels[0].get_transform() == ax.transAxes
-    arrows = [
-        t for t in ax.texts if t.get_text() == "" and getattr(t, "arrow_patch", None)
-    ]
-    assert len(arrows) == 3
+    labels = [t for t in ax.texts if t.get_text().startswith("r")]
+    assert [t.get_text() for t in labels] == ["r1", "r2", "r3"]
+    for text, (y, x) in zip(labels, data.rejected):
+        assert text.xy == pytest.approx((x, y))
+        assert text.get_style() == "italic"
+        assert text.get_color() == psp.REJECTED_LABEL_COLOR
+        assert _gap_in_points(fig, ax, text, x, y) < 10.0
+
+    assert not any("magnification_threshold" in t.get_text() for t in ax.texts)
+    assert not any(t.get_text() == "" for t in ax.texts)
+    assert all(t.get_transform() != ax.transAxes for t in ax.texts)
     plt.close(fig)
+
+
+def test__display_pixel_scale_from__tenth_of_span_capped_by_closest_separation():
+    extent = [-5.0, 5.0, -5.0, 5.0]
+    far = np.array([[3.0, 3.0], [-3.0, -3.0], [3.0, -3.0]])
+    assert psp.display_pixel_scale_from(extent, far) == pytest.approx(1.0)
+
+    close = np.vstack([far, [[3.0, 3.8]]])
+    assert psp.display_pixel_scale_from(extent, close) == pytest.approx(
+        0.8 / psp.DISPLAY_SEPARATION_FRACTION
+    )
+
+
+def test__recovers():
+    reference = np.array([[1.0, 1.0], [-1.0, 0.5]])
+    assert psp.recovers(reference, reference[::-1] + 0.001, tolerance=0.01)
+    assert not psp.recovers(reference, reference[:1], tolerance=0.01)
+    assert not psp.recovers(reference, reference + 0.1, tolerance=0.01)
+    assert psp.recovers(np.zeros((0, 2)), np.zeros((0, 2)), tolerance=0.01)
+
+
+@pytest.fixture(name="fine_solver")
+def make_fine_solver():
+    """A grid whose step-0 triangles are too small to draw on the source's span."""
+    return al.PointSolver.for_grid(
+        grid=al.Grid2D.uniform(shape_native=(200, 200), pixel_scales=0.02),
+        pixel_scale_precision=0.01,
+        magnification_threshold=0.1,
+    )
+
+
+def test__display_grid__fine_solver_is_re_solved_on_a_coarse_grid(fine_solver, tracer):
+    real = psp.point_solver_data_from(
+        solver=fine_solver,
+        tracer=tracer,
+        source_plane_coordinate=(0.07, 0.07),
+        image_plane_lines=[],
+        panel_inches=1e6,  # large enough that the solver's own triangles are drawable
+    )
+    assert real.display_pixel_scale is None
+    assert real.n_steps == fine_solver.n_steps
+
+    data = psp.point_solver_data_from(
+        solver=fine_solver,
+        tracer=tracer,
+        source_plane_coordinate=(0.07, 0.07),
+        image_plane_lines=[],
+    )
+    assert psp.is_too_small_to_draw(real.steps[0], data, psp.STILL_PANEL_INCHES)
+
+    expected = psp.display_pixel_scale_from(
+        data.extent, np.vstack([real.solved, real.rejected])
+    )
+    assert data.display_pixel_scale == pytest.approx(expected)
+    assert psp._edge_of(data.steps[0]) == pytest.approx(expected)
+    assert not psp.is_too_small_to_draw(data.steps[0], data, psp.STILL_PANEL_INCHES)
+
+    # The display solve finds the solver's own images and rejected candidate.
+    assert psp.recovers(real.solved, data.solved, tolerance=0.02)
+    assert psp.recovers(real.rejected, data.rejected, tolerance=0.02)
+    assert data.extent == real.extent
+
+    labels = [h.get_label() for h in psp.legend_handles_from(data, marked=False)]
+    assert "Triangles tested (display grid)" in labels
+
+
+def test__display_grid__falls_back_to_the_solvers_steps_when_it_misses_an_image(
+    fine_solver, tracer, monkeypatch
+):
+    def missing_solver(solver, extent, pixel_scale):
+        # Tiles only a corner of the extent, so the display solve misses images.
+        return al.PointSolver.for_limits_and_scale(
+            y_min=extent[3] - pixel_scale,
+            y_max=extent[3] + pixel_scale,
+            x_min=extent[1] - pixel_scale,
+            x_max=extent[1] + pixel_scale,
+            scale=pixel_scale,
+            pixel_scale_precision=solver.pixel_scale_precision,
+            magnification_threshold=solver.magnification_threshold,
+        )
+
+    monkeypatch.setattr(psp, "display_solver_from", missing_solver)
+
+    data = psp.point_solver_data_from(
+        solver=fine_solver,
+        tracer=tracer,
+        source_plane_coordinate=(0.07, 0.07),
+        image_plane_lines=[],
+    )
+    assert data.display_pixel_scale is None
+    assert data.n_steps == fine_solver.n_steps
+    assert psp._edge_of(data.steps[0]) == pytest.approx(fine_solver.scale, rel=1e-6)
+    assert len(data.solved) == 4
+
+    labels = [h.get_label() for h in psp.legend_handles_from(data, marked=False)]
+    assert "Triangles tested" in labels
+
+
+def test__critical_curves__source_plane_own_curves_when_not_given(solver, tracer):
+    data = psp.point_solver_data_from(
+        solver=solver,
+        tracer=tracer,
+        source_plane_coordinate=(0.07, 0.07),
+    )
+    assert len(data.lines) >= 1
+
+    labels = [h.get_label() for h in psp.legend_handles_from(data, marked=False)]
+    assert "Critical curve" in labels
