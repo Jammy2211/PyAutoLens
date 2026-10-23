@@ -353,8 +353,8 @@ def display_pixel_scale_from(extent, points) -> float:
 def display_solver_from(solver, extent, pixel_scale: float):
     """
     Returns a solver of the same class as ``solver`` tiling ``extent`` (plus a pixel of margin) with triangles of
-    ``pixel_scale``, with the solver's own ``pixel_scale_precision``, ``magnification_threshold`` and
-    ``neighbor_degree``. It is used for the figure only.
+    ``pixel_scale``, with the solver's own ``pixel_scale_precision``, ``magnification_threshold``,
+    ``neighbor_degree`` and ``residual_threshold``. It is used for the figure only.
     """
     x_min, x_max, y_min, y_max = extent
     return type(solver).for_limits_and_scale(
@@ -366,6 +366,7 @@ def display_solver_from(solver, extent, pixel_scale: float):
         pixel_scale_precision=solver.pixel_scale_precision,
         magnification_threshold=solver.magnification_threshold,
         neighbor_degree=getattr(solver, "neighbor_degree", 1),
+        residual_threshold=getattr(solver, "residual_threshold", 10.0),
     )
 
 

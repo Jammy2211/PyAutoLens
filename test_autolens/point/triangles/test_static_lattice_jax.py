@@ -61,6 +61,9 @@ else:
             ),
             pixel_scale_precision=0.001,
             magnification_threshold=0.1,
+            # The residual filter adds one trace of the padded candidates; this test
+            # counts the triangle-step traces only.
+            residual_threshold=None,
             use_jax=True,
         )
 

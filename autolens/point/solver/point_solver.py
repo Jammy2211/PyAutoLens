@@ -199,9 +199,9 @@ class PointSolver(AbstractSolver):
         # `_solve_array`, because there are two distinct routes to an empty answer:
         #
         #   1. no triangle contained the coordinate  -> `filtered_means` is already length 0
-        #   2. every candidate failed the magnification threshold -> `_filter_low_magnification`
-        #      preserves the length and writes NaN rows, which become `inf` and are then stripped
-        #      by `remove_infinities`, landing here at length 0
+        #   2. every candidate failed the magnification threshold (or the residual
+        #      threshold) -> the filters preserve the length and write NaN rows, which become
+        #      `inf` and are then stripped by `remove_infinities`, landing here at length 0
         #
         # Only reachable on the NumPy path: the JAX path keeps its padded static shape, so
         # `len(solution)` is non-zero there and this reads no traced value.
@@ -212,7 +212,13 @@ class PointSolver(AbstractSolver):
                 f"{tuple(source_plane_coordinate)}, so an empty grid is returned. This means "
                 f"either that the coordinate lies outside the region traced by the image-plane "
                 f"grid, or that every candidate image was rejected by "
-                f"`magnification_threshold` (currently {self.magnification_threshold})."
+                f"`magnification_threshold` (currently {self.magnification_threshold})"
+                + (
+                    ""
+                    if self.residual_threshold is None
+                    else f" or `residual_threshold` (currently {self.residual_threshold})"
+                )
+                + "."
             )
 
         return aa.Grid2DIrregular(solution)
@@ -226,7 +232,8 @@ class PointSolver(AbstractSolver):
         remove_infinities: bool = False,
     ):
         """
-        The raw solve: triangle refinement, magnification filtering and sentinel padding,
+        The raw solve: triangle refinement, magnification (and, unless ``residual_threshold``
+        is ``None``, source-residual) filtering and sentinel padding,
         returning the bare ``xp`` positions array (no ``Grid2DIrregular`` wrap, no logging).
 
         On the JAX path this is the primal of the ``custom_jvp`` wrapper built by
@@ -247,6 +254,20 @@ class PointSolver(AbstractSolver):
             xp=xp,
             plane_redshift=plane_redshift,
         )
+
+        # On by default (``None`` disables): drop candidates that do not satisfy the lens
+        # equation, e.g. on a zero-core mass profile's singular centre (PyAutoLens#799). A
+        # mask, like the magnification filter, so the shape stays static; the length-0 NumPy
+        # case has nothing to trace.
+        if self.residual_threshold is not None and len(filtered_means) > 0:
+
+            filtered_means = self._filter_large_residual(
+                tracer=tracer,
+                points=filtered_means,
+                source_plane_coordinate=source_plane_coordinate,
+                xp=xp,
+                plane_redshift=plane_redshift,
+            )
 
         # When no triangle traces to the source-plane coordinate -- e.g. the coordinate lies
         # outside the region the image-plane grid tiles -- `filtered_means` comes back with shape

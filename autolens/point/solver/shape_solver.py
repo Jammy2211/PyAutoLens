@@ -44,6 +44,7 @@ class AbstractSolver:
         magnification_threshold=0.1,
         neighbor_degree: int = 1,
         use_jax: bool = False,
+        residual_threshold: Optional[float] = 10.0,
     ):
         """
         Determine the image plane coordinates that are traced to be a source plane coordinate.
@@ -75,6 +76,32 @@ class AbstractSolver:
             galaxy / profile classes it carries as JAX pytrees on the first call. The
             user wraps the call in their own ``@jax.jit`` — see the ``lens_calc.py``
             workspace guide for the canonical pattern.
+        residual_threshold
+            ``PointSolver`` rejects every candidate image whose source-plane residual
+            ``|beta(theta) - beta|`` exceeds ``residual_threshold * pixel_scale_precision``.
+            The default is 10.0; ``None`` disables the filter.
+
+            This removes candidates on the centre of a zero-core mass profile (e.g. a
+            ``dPIEMassSph`` cluster member with ``r_core=0``, PyAutoLens#799). The deflection
+            is discontinuous there, so a triangle around the centre traces to a triangle
+            inscribed in a circle of the member's Einstein radius. That triangle can contain
+            the source at every refinement step with no root inside it. The candidate then
+            lies within one final triangle of the centre, with a residual of order the
+            Einstein radius (~0.04" on cluster members). The magnification filter can pass
+            it, because in a near-critical host ``|mu|`` there is ~0.1-0.3.
+
+            A true image traces to within its final triangle, so its residual is of order
+            the final triangle edge times the largest singular value of the lens-equation
+            Jacobian, which near a cusp is small. On the cluster and near-cusp fixtures of
+            PyAutoLens#799, true images reach 3.6 times ``pixel_scale_precision`` (1.1 times
+            near a cusp) and the core candidates at least 38 times, so 10 is the default: it
+            keeps every true image with margin and removes every core candidate. The
+            linearised correction ``|A^-1 r|`` is deliberately not used: ``A`` is huge near a
+            singular centre, so it would accept the core candidate.
+
+            The cut scales with ``pixel_scale_precision``. At a coarse precision (e.g. 0.01,
+            a cut of 0.1") it is looser than the ~0.04" core residuals, so core candidates
+            can survive; lower ``residual_threshold`` or refine the precision if they matter.
         """
         self.y_min = y_min
         self.y_max = y_max
@@ -85,6 +112,7 @@ class AbstractSolver:
         self.magnification_threshold = magnification_threshold
         self.neighbor_degree = neighbor_degree
         self.use_jax = use_jax
+        self.residual_threshold = residual_threshold
 
         # The grid ``for_grid`` was built from, when there was one. It is the image-plane
         # pixelization ``image_regions_from`` reports its regions on; a solver built via
@@ -159,6 +187,7 @@ class AbstractSolver:
         magnification_threshold=0.1,
         neighbor_degree: int = 1,
         use_jax: bool = False,
+        residual_threshold: Optional[float] = 10.0,
     ):
         """
         Create a solver for a given grid.
@@ -176,6 +205,8 @@ class AbstractSolver:
         neighbor_degree
             The number of times recursively add neighbors for the triangles that contain
         use_jax
+            Forwarded to the constructor; see ``__init__``.
+        residual_threshold
             Forwarded to the constructor; see ``__init__``.
 
         Returns
@@ -197,6 +228,7 @@ class AbstractSolver:
             magnification_threshold=magnification_threshold,
             neighbor_degree=neighbor_degree,
             use_jax=use_jax,
+            residual_threshold=residual_threshold,
         )
 
         # Remembered so ``ShapeSolver.image_regions_from`` can report image-plane regions
@@ -218,6 +250,7 @@ class AbstractSolver:
         magnification_threshold=0.1,
         neighbor_degree: int = 1,
         use_jax: bool = False,
+        residual_threshold: Optional[float] = 10.0,
     ):
         """
         Create a solver for an explicit image-plane extent.
@@ -236,6 +269,8 @@ class AbstractSolver:
             The number of times recursively add neighbors for the triangles that contain
         use_jax
             Forwarded to the constructor; see ``__init__``.
+        residual_threshold
+            Forwarded to the constructor; see ``__init__``.
 
         Returns
         -------
@@ -251,6 +286,7 @@ class AbstractSolver:
             magnification_threshold=magnification_threshold,
             neighbor_degree=neighbor_degree,
             use_jax=use_jax,
+            residual_threshold=residual_threshold,
         )
 
     @property
@@ -447,6 +483,54 @@ class AbstractSolver:
         mask = xp.abs(magnifications) > self.magnification_threshold
         return xp.where(mask[:, None], points, xp.nan)
 
+    def _filter_large_residual(
+        self,
+        tracer: Tracer,
+        points,
+        source_plane_coordinate: Tuple[float, float],
+        xp,
+        plane_redshift: Optional[float] = None,
+    ):
+        """
+        Reject the points whose source-plane residual ``|beta(theta) - beta|`` exceeds
+        ``residual_threshold * pixel_scale_precision`` (see ``__init__``).
+
+        The points are traced with ``_plane_grid``, the callable the triangle search uses,
+        so the residual is measured at the plane being solved for. Rejected points become
+        ``nan`` rows, as in ``_filter_low_magnification``, so the array keeps its static
+        shape; rows that are already ``nan`` stay ``nan``.
+
+        Parameters
+        ----------
+        points
+            The ``(n, 2)`` candidate image-plane positions.
+        source_plane_coordinate
+            The plane coordinate being solved for.
+        xp
+            The array module used for the trace.
+        plane_redshift
+            The redshift of the plane being solved for. ``None`` is the last plane.
+
+        Returns
+        -------
+        The points with a source-plane residual no larger than the threshold.
+        """
+        traced = self._plane_grid(
+            tracer=tracer,
+            grid=aa.Grid2DIrregular(points),
+            xp=xp,
+            plane_redshift=plane_redshift,
+        ).array
+        beta = xp.stack(
+            [
+                xp.asarray(source_plane_coordinate[0]),
+                xp.asarray(source_plane_coordinate[1]),
+            ]
+        )
+        residuals = xp.sqrt(xp.sum((traced - beta[None, :]) ** 2, axis=1))
+        reject = residuals > self.residual_threshold * self.pixel_scale_precision
+        return xp.where(reject[:, None], xp.nan, points)
+
     def _plane_triangles(
         self,
         tracer: Tracer,
@@ -547,6 +631,7 @@ class AbstractSolver:
             self.magnification_threshold,
             self.neighbor_degree,
             self.use_jax,
+            self.residual_threshold,
         )
 
     @classmethod
@@ -561,6 +646,7 @@ class AbstractSolver:
             magnification_threshold,
             neighbor_degree,
             use_jax,
+            residual_threshold,
         ) = aux_data
         return cls(
             y_min=y_min,
@@ -572,6 +658,7 @@ class AbstractSolver:
             magnification_threshold=magnification_threshold,
             neighbor_degree=neighbor_degree,
             use_jax=use_jax,
+            residual_threshold=residual_threshold,
         )
 
 
