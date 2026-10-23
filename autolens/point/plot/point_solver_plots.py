@@ -366,7 +366,7 @@ def display_solver_from(solver, extent, pixel_scale: float):
         pixel_scale_precision=solver.pixel_scale_precision,
         magnification_threshold=solver.magnification_threshold,
         neighbor_degree=getattr(solver, "neighbor_degree", 1),
-        residual_threshold=getattr(solver, "residual_threshold", None),
+        residual_threshold=getattr(solver, "residual_threshold", 10.0),
     )
 
 

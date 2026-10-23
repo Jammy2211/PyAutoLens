@@ -12,7 +12,8 @@ The fixture reproduces that with one member inside a cored host whose lens-equat
 the member is ~ -0.05 I (overcritical): two true images (``mu`` ~ 210 and ~ -155) and one spurious
 candidate at ~6e-4" from the member centre, residual 0.066", ``mu`` 0.29.
 
-``residual_threshold`` (default ``None``, bit-identical behaviour) removes it. The JAX tests skip
+``residual_threshold`` (default 10.0; ``None`` disables it and restores the pre-#799 solve) removes
+it. The JAX tests skip
 on the NumPy-only (no ``[optional]`` extras) CI leg.
 """
 
@@ -70,12 +71,13 @@ def _isothermal_tracer(einstein_radius=1.0):
     )
 
 
-def _solver(residual_threshold=None, use_jax=False):
+def _solver(use_jax=False, **kwargs):
+    """A solver over the fixture grid; ``residual_threshold`` is only passed when given."""
     return al.PointSolver.for_grid(
         grid=al.Grid2D.uniform(shape_native=(40, 40), pixel_scales=0.1),
         pixel_scale_precision=PRECISION,
-        residual_threshold=residual_threshold,
         use_jax=use_jax,
+        **kwargs,
     )
 
 
@@ -96,12 +98,14 @@ def _finite_sorted(positions):
     return positions[np.lexsort((positions[:, 1], positions[:, 0]))]
 
 
-def test__default_solve_returns_a_candidate_on_the_zero_core_centre():
-    """The baseline the option exists for: the default solver keeps the spurious point."""
+def test__disabled_filter_returns_a_candidate_on_the_zero_core_centre():
+    """The baseline the filter exists for: with it disabled the solver keeps the spurious point."""
     tracer = _core_tracer()
 
     positions = np.asarray(
-        _solver().solve(tracer, source_plane_coordinate=SOURCE).array
+        _solver(residual_threshold=None)
+        .solve(tracer, source_plane_coordinate=SOURCE)
+        .array
     )
 
     assert positions.shape == (3, 2)
@@ -112,50 +116,73 @@ def test__default_solve_returns_a_candidate_on_the_zero_core_centre():
     assert (residuals[~near] < PRECISION).all()
 
 
-def test__residual_threshold_removes_the_spurious_candidate_only():
+def test__default_solver_removes_the_spurious_candidate_only():
     tracer = _core_tracer()
 
+    unfiltered = np.asarray(
+        _solver(residual_threshold=None)
+        .solve(tracer, source_plane_coordinate=SOURCE)
+        .array
+    )
     default = np.asarray(_solver().solve(tracer, source_plane_coordinate=SOURCE).array)
-    filtered = np.asarray(
+    explicit = np.asarray(
         _solver(residual_threshold=10.0)
         .solve(tracer, source_plane_coordinate=SOURCE)
         .array
     )
 
-    assert filtered.shape == (2, 2)
-    assert not _near_member(filtered).any()
-    np.testing.assert_array_equal(filtered, default[~_near_member(default)])
+    assert default.shape == (2, 2)
+    assert not _near_member(default).any()
+    np.testing.assert_array_equal(default, unfiltered[~_near_member(unfiltered)])
+    np.testing.assert_array_equal(explicit, default)
 
 
 @pytest.mark.parametrize("source", [(0.05, 0.02), (0.0, 0.0), (0.3, -0.2)])
 def test__residual_threshold_leaves_a_normal_lens_unchanged(source):
     tracer = _isothermal_tracer()
 
-    default = np.asarray(_solver().solve(tracer, source_plane_coordinate=source).array)
-    filtered = np.asarray(
-        _solver(residual_threshold=10.0)
+    unfiltered = np.asarray(
+        _solver(residual_threshold=None)
         .solve(tracer, source_plane_coordinate=source)
         .array
     )
+    default = np.asarray(_solver().solve(tracer, source_plane_coordinate=source).array)
 
-    assert len(default) > 0
-    np.testing.assert_array_equal(filtered, default)
+    assert len(unfiltered) > 0
+    np.testing.assert_array_equal(default, unfiltered)
 
 
-def test__residual_threshold_defaults_to_none_and_threads_through_constructors():
+def test__residual_threshold_defaults_to_10_and_threads_through_constructors():
     grid = al.Grid2D.uniform(shape_native=(10, 10), pixel_scales=1.0)
 
     assert (
         al.PointSolver.for_grid(
             grid=grid, pixel_scale_precision=0.01
         ).residual_threshold
-        is None
+        == 10.0
+    )
+    assert (
+        al.PointSolver.for_limits_and_scale(
+            pixel_scale_precision=0.01
+        ).residual_threshold
+        == 10.0
+    )
+    assert (
+        al.PointSolver(
+            y_min=-1.0,
+            y_max=1.0,
+            x_min=-1.0,
+            x_max=1.0,
+            scale=0.1,
+            pixel_scale_precision=0.01,
+        ).residual_threshold
+        == 10.0
     )
     assert (
         al.PointSolver.for_grid(
-            grid=grid, pixel_scale_precision=0.01, residual_threshold=10.0
+            grid=grid, pixel_scale_precision=0.01, residual_threshold=None
         ).residual_threshold
-        == 10.0
+        is None
     )
     assert (
         al.PointSolver.for_limits_and_scale(
@@ -166,13 +193,17 @@ def test__residual_threshold_defaults_to_none_and_threads_through_constructors()
 
 
 def test__tree_flatten_roundtrips_residual_threshold():
-    solver = _solver(residual_threshold=10.0)
+    for residual_threshold, kwargs in (
+        (10.0, {}),
+        (None, {"residual_threshold": None}),
+    ):
+        solver = _solver(**kwargs)
 
-    children, aux = solver.tree_flatten()
-    rebuilt = al.PointSolver.tree_unflatten(aux, children)
+        children, aux = solver.tree_flatten()
+        rebuilt = al.PointSolver.tree_unflatten(aux, children)
 
-    assert rebuilt.residual_threshold == 10.0
-    assert rebuilt.magnification_threshold == solver.magnification_threshold
+        assert rebuilt.residual_threshold == residual_threshold
+        assert rebuilt.magnification_threshold == solver.magnification_threshold
 
 
 if importlib.util.find_spec("jax") is not None:
@@ -234,21 +265,19 @@ requires_jax = pytest.mark.skipif(
 
 
 @requires_jax
-def test__jit_residual_threshold_removes_the_spurious_candidate():
+def test__jit_default_residual_threshold_removes_the_spurious_candidate():
     register_tracer_classes(_core_tracer())
 
-    default = _jit_solve(_solver(use_jax=True), _core_tracer, SOURCE)
-    filtered = _jit_solve(
-        _solver(residual_threshold=10.0, use_jax=True), _core_tracer, SOURCE
+    unfiltered = _jit_solve(
+        _solver(residual_threshold=None, use_jax=True), _core_tracer, SOURCE
     )
+    filtered = _jit_solve(_solver(use_jax=True), _core_tracer, SOURCE)
 
-    assert default.shape == filtered.shape
-    assert _near_member(_finite_sorted(default)).sum() == 1
+    assert unfiltered.shape == filtered.shape
+    assert _near_member(_finite_sorted(unfiltered)).sum() == 1
 
     numpy = np.asarray(
-        _solver(residual_threshold=10.0)
-        .solve(_core_tracer(), source_plane_coordinate=SOURCE)
-        .array
+        _solver().solve(_core_tracer(), source_plane_coordinate=SOURCE).array
     )
     np.testing.assert_allclose(
         _finite_sorted(filtered), _finite_sorted(numpy), rtol=0.0, atol=1e-10

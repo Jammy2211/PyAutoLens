@@ -199,7 +199,7 @@ class PointSolver(AbstractSolver):
         # `_solve_array`, because there are two distinct routes to an empty answer:
         #
         #   1. no triangle contained the coordinate  -> `filtered_means` is already length 0
-        #   2. every candidate failed the magnification threshold (or the opt-in residual
+        #   2. every candidate failed the magnification threshold (or the residual
         #      threshold) -> the filters preserve the length and write NaN rows, which become
         #      `inf` and are then stripped by `remove_infinities`, landing here at length 0
         #
@@ -232,8 +232,8 @@ class PointSolver(AbstractSolver):
         remove_infinities: bool = False,
     ):
         """
-        The raw solve: triangle refinement, magnification (and, if ``residual_threshold`` is
-        set, source-residual) filtering and sentinel padding,
+        The raw solve: triangle refinement, magnification (and, unless ``residual_threshold``
+        is ``None``, source-residual) filtering and sentinel padding,
         returning the bare ``xp`` positions array (no ``Grid2DIrregular`` wrap, no logging).
 
         On the JAX path this is the primal of the ``custom_jvp`` wrapper built by
@@ -255,9 +255,10 @@ class PointSolver(AbstractSolver):
             plane_redshift=plane_redshift,
         )
 
-        # Opt-in: drop candidates that do not satisfy the lens equation, e.g. on a zero-core
-        # mass profile's singular centre (PyAutoLens#799). A mask, like the magnification
-        # filter, so the shape stays static; the length-0 NumPy case has nothing to trace.
+        # On by default (``None`` disables): drop candidates that do not satisfy the lens
+        # equation, e.g. on a zero-core mass profile's singular centre (PyAutoLens#799). A
+        # mask, like the magnification filter, so the shape stays static; the length-0 NumPy
+        # case has nothing to trace.
         if self.residual_threshold is not None and len(filtered_means) > 0:
 
             filtered_means = self._filter_large_residual(

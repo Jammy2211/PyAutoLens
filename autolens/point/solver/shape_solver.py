@@ -44,7 +44,7 @@ class AbstractSolver:
         magnification_threshold=0.1,
         neighbor_degree: int = 1,
         use_jax: bool = False,
-        residual_threshold: Optional[float] = None,
+        residual_threshold: Optional[float] = 10.0,
     ):
         """
         Determine the image plane coordinates that are traced to be a source plane coordinate.
@@ -77,9 +77,9 @@ class AbstractSolver:
             user wraps the call in their own ``@jax.jit`` — see the ``lens_calc.py``
             workspace guide for the canonical pattern.
         residual_threshold
-            If set, ``PointSolver`` rejects every candidate image whose source-plane residual
+            ``PointSolver`` rejects every candidate image whose source-plane residual
             ``|beta(theta) - beta|`` exceeds ``residual_threshold * pixel_scale_precision``.
-            ``None`` (the default) applies no such filter, so the solve is unchanged.
+            The default is 10.0; ``None`` disables the filter.
 
             This removes candidates on the centre of a zero-core mass profile (e.g. a
             ``dPIEMassSph`` cluster member with ``r_core=0``, PyAutoLens#799). The deflection
@@ -94,9 +94,14 @@ class AbstractSolver:
             the final triangle edge times the largest singular value of the lens-equation
             Jacobian, which near a cusp is small. On the cluster and near-cusp fixtures of
             PyAutoLens#799, true images reach 3.6 times ``pixel_scale_precision`` (1.1 times
-            near a cusp) and the core candidates at least 38 times, so 10 is a safe value.
-            The linearised correction ``|A^-1 r|`` is deliberately not used:
-            ``A`` is huge near a singular centre, so it would accept the core candidate.
+            near a cusp) and the core candidates at least 38 times, so 10 is the default: it
+            keeps every true image with margin and removes every core candidate. The
+            linearised correction ``|A^-1 r|`` is deliberately not used: ``A`` is huge near a
+            singular centre, so it would accept the core candidate.
+
+            The cut scales with ``pixel_scale_precision``. At a coarse precision (e.g. 0.01,
+            a cut of 0.1") it is looser than the ~0.04" core residuals, so core candidates
+            can survive; lower ``residual_threshold`` or refine the precision if they matter.
         """
         self.y_min = y_min
         self.y_max = y_max
@@ -182,7 +187,7 @@ class AbstractSolver:
         magnification_threshold=0.1,
         neighbor_degree: int = 1,
         use_jax: bool = False,
-        residual_threshold: Optional[float] = None,
+        residual_threshold: Optional[float] = 10.0,
     ):
         """
         Create a solver for a given grid.
@@ -245,7 +250,7 @@ class AbstractSolver:
         magnification_threshold=0.1,
         neighbor_degree: int = 1,
         use_jax: bool = False,
-        residual_threshold: Optional[float] = None,
+        residual_threshold: Optional[float] = 10.0,
     ):
         """
         Create a solver for an explicit image-plane extent.
