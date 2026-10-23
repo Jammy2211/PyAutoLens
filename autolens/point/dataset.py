@@ -58,6 +58,13 @@ class PointDataset:
         be paired with the `Point` model-component which has the name `source_1`. If a dataset component is not
         successfully paired with a model-component, an error is raised.
 
+        The dataset holds observations only and stores no magnifications, which are model quantities. The
+        magnification at each observed position is available on any point fit (e.g. `FitFluxes`,
+        `FitPositionsImagePairAllSolved`) and on a finished model-fit's `ResultPoint`, via
+        `signed_magnifications_at_positions` (sign = image parity) and `magnifications_at_positions` (|mu|). For
+        arbitrary (y,x) image-plane coordinates use
+        `ag.LensCalc.from_tracer(tracer=...).magnification_2d_via_hessian_from(grid=...)`.
+
         Parameters
         ----------
         name

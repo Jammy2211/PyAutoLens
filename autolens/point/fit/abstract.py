@@ -13,7 +13,16 @@ classes (position fits, flux fits, time-delay fits):
 
 Concrete subclasses implement ``figure_of_merit`` to compute the chi-squared or
 log-likelihood for the specific observable (positions, fluxes, time delays) being fitted.
+
+Magnification at a point: every point fit exposes ``signed_magnifications_at_positions``
+(the Hessian magnification at each observed image position, with the image parity
+preserved as its sign) and ``magnifications_at_positions`` (its absolute value, which
+the flux fits and magnification weighting consume). For multi-plane tracers these use
+the plane of the paired point source, not the final plane. The same accessors are
+available on a finished model-fit via ``ResultPoint``. For arbitrary (y,x) coordinates
+use ``ag.LensCalc.from_tracer(tracer=...).magnification_2d_via_hessian_from(grid=...)``.
 """
+
 from abc import ABC
 import numpy as np
 from typing import Optional, Tuple
@@ -108,19 +117,24 @@ class AbstractFitPoint(aa.AbstractFit, ABC):
         return self._noise_map
 
     @property
-    def magnifications_at_positions(self) -> aa.ArrayIrregular:
+    def signed_magnifications_at_positions(self) -> aa.ArrayIrregular:
         """
-        The magnification of every observed position in the image-plane, which is computed from the tracer's deflection
-        angle map via the Hessian.
+        The signed magnification of every observed position in the image-plane, computed from the tracer's
+        deflection angle map via the Hessian, with the image parity preserved.
 
-        These magnifications are used for two purposes:
+        The magnification is mu = 1 / det(A), where A is the lensing Jacobian. Its sign is the physical image
+        parity observable: positive for images of positive parity (minima, and maxima such as the central image),
+        negative for saddle-point images of negative parity. This accessor returns the raw signed value; the
+        unsigned `magnifications_at_positions` is `abs()` of it.
 
-        1) For the opt-in `weighting = "magnification"` source-plane chi-squared, the residuals are multiplied by the
-           magnification to approximate how the noise in the image-plane positions maps to the source-plane (the
-           default `"jacobian"` weighting uses the full lensing Jacobian instead).
+        For multi-plane tracers (more than two planes) the magnification is computed with multi-plane lensing up to
+        the plane containing the paired point-source profile (`plane_j`), not the final plane, so each source in a
+        cluster gets the magnification appropriate to its own redshift.
 
-        2) For fitting the fluxes of point sources, the magnification is used to scale the flux of the point source
-           in the source-plane to the image-plane, thus computing the model image-plane fluxes.
+        This property is JAX-traceable and returns an `aa.ArrayIrregular` on both the NumPy and JAX backends.
+
+        To compute the magnification at arbitrary (y,x) image-plane coordinates (rather than at the observed
+        positions of a dataset), use `ag.LensCalc.from_tracer(...).magnification_2d_via_hessian_from(grid=...)`.
         """
         use_multi_plane = len(self.tracer.planes) > 2
         plane_j = (
@@ -138,7 +152,25 @@ class AbstractFitPoint(aa.AbstractFit, ABC):
         )
         if self.use_jax:
             magnifications = aa.ArrayIrregular(values=magnifications)
-        return abs(magnifications)
+        return magnifications
+
+    @property
+    def magnifications_at_positions(self) -> aa.ArrayIrregular:
+        """
+        The (unsigned) magnification of every observed position in the image-plane, which is computed from the
+        tracer's deflection angle map via the Hessian. This is `abs()` of `signed_magnifications_at_positions`, so the
+        image parity (sign) is discarded; use `signed_magnifications_at_positions` to read the parity.
+
+        These magnifications are used for two purposes, both of which consume |mu| by construction:
+
+        1) For the opt-in `weighting = "magnification"` source-plane chi-squared, the residuals are multiplied by the
+           magnification to approximate how the noise in the image-plane positions maps to the source-plane (the
+           default `"jacobian"` weighting uses the full lensing Jacobian instead).
+
+        2) For fitting the fluxes of point sources, the magnification is used to scale the flux of the point source
+           in the source-plane to the image-plane, thus computing the model image-plane fluxes.
+        """
+        return abs(self.signed_magnifications_at_positions)
 
     @property
     def source_plane_coordinate(self) -> Tuple[float, float]:
