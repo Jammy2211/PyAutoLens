@@ -95,13 +95,27 @@ class AbstractSolver:
             Jacobian, which near a cusp is small. On the cluster and near-cusp fixtures of
             PyAutoLens#799, true images reach 3.6 times ``pixel_scale_precision`` (1.1 times
             near a cusp) and the core candidates at least 38 times, so 10 is the default: it
-            keeps every true image with margin and removes every core candidate. The
-            linearised correction ``|A^-1 r|`` is deliberately not used: ``A`` is huge near a
-            singular centre, so it would accept the core candidate.
+            keeps every true image with margin and removes every core candidate.
 
-            The cut scales with ``pixel_scale_precision``. At a coarse precision (e.g. 0.01,
-            a cut of 0.1") it is looser than the ~0.04" core residuals, so core candidates
-            can survive; lower ``residual_threshold`` or refine the precision if they matter.
+            The linearised (Newton) distance ``|A^-1 r|`` is deliberately not used, alone or
+            combined with the residual. It does not detect a singular centre in general: at
+            the centre of a steep power law (slope > 2) or a point mass, ``A`` is huge, so
+            ``|A^-1 r|`` is about one final triangle edge even though the residual is
+            hundreds of times the precision. (At a zero-core dPIE centre it is large, so it
+            would work there.) Near a fold or cusp, true images also reach several triangle
+            edges, because ``A`` is nearly singular.
+
+            The cut scales with ``pixel_scale_precision``. At a coarse precision it is looser
+            than the ~0.04" core residuals: at 0.005 the margin is ~1.3x, and at 0.01 (a cut
+            of 0.1") core candidates survive. Lower ``residual_threshold`` or refine the
+            precision if they matter.
+
+            A true image whose lens-equation Jacobian has a large singular value can exceed
+            the cut. Demagnified central images of a small-core, very elliptical cored
+            profile reach ~11 times the precision, so they are rejected. They have
+            ``|mu|`` of ~0.01-0.02, so at the default ``magnification_threshold`` (0.1) they
+            are already removed. This only matters when the magnification threshold is
+            lowered below ~0.02.
         """
         self.y_min = y_min
         self.y_max = y_max
